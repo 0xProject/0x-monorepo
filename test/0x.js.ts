@@ -22,30 +22,39 @@ describe('ZeroEx library', () => {
                 const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
                 expect(isValid).to.be.false;
             });
-            it('malformed r', () => {
+            it('r lacks 0x prefix', () => {
+                const malformedR = signature.r.replace('0x', '');
                 const malformedSignature = {
                     v: signature.v,
-                    r: signature.r.replace('0x', ''),
+                    r: malformedR,
+                    s: signature.s,
+                };
+                const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
+                expect(isValid).to.be.false;
+            });
+            it('r is too short', () => {
+                const malformedR = signature.r.substr(10);
+                const malformedSignature = {
+                    v: signature.v,
+                    r: malformedR,
                     s: signature.s,
                 };
                 const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
                 expect(isValid).to.be.false;
             });
         });
-        describe('should return false for invalid signature', () => {
-            it('wrong data', () => {
-                const isValid = ZeroEx.isValidSignature('wrong data', signature, address);
-                expect(isValid).to.be.false;
-            });
-            it('wrong signer', () => {
-                const isValid = ZeroEx.isValidSignature(data, signature, '0xIamWrong');
-                expect(isValid).to.be.false;
-            });
-            it('wrong signature', () => {
-                const wrongSignature = Object.assign({}, signature, {v: 28});
-                const isValid = ZeroEx.isValidSignature(data, wrongSignature, address);
-                expect(isValid).to.be.false;
-            });
+        it('should return false if the data doesn\'t pertain to the signature & address', () => {
+            const isValid = ZeroEx.isValidSignature('wrong data', signature, address);
+            expect(isValid).to.be.false;
+        });
+        it('should return false if the address doesn\'t pertain to the signature & data', () => {
+            const isValid = ZeroEx.isValidSignature(data, signature, '0xIamWrong');
+            expect(isValid).to.be.false;
+        });
+        it('should return false if the signature doesn\'t pertain to the data & address', () => {
+            const wrongSignature = Object.assign({}, signature, {v: 28});
+            const isValid = ZeroEx.isValidSignature(data, wrongSignature, address);
+            expect(isValid).to.be.false;
         });
         it('should return true for valid signature', () => {
             const isValid = ZeroEx.isValidSignature(data, signature, address);
