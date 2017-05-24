@@ -18,6 +18,7 @@
     "lint": "tslint src/ts/**/*",
     "test": "run-s clean build:commonjs && mocha lib/test/**/*.js",
     "test:coverage": "nyc npm run test --all",
+    "docs:json": "typedoc --json docs/index.json .",
     "docs:generate": "typedoc --out docs .",
     "docs:open": "opn docs/index.html"
   },
