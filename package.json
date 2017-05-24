@@ -1,0 +1,23 @@
+{
+  "name": "0x.js",
+  "version": "0.0.0",
+  "description": "Official 0x library",
+  "keywords": [
+    "0x.js",
+    "0xproject",
+    "ethereum",
+    "tokens",
+    "exchange"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xProject/0x.js"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "dependencies": {
+    "tslint-config-0xproject": "^0.0.0"
+  }
+}
