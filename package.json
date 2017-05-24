@@ -16,7 +16,8 @@
     "build:es6": "tsc -m es6 --outDir lib-esm",
     "build": "npm run clean && run-p build:*",
     "lint": "tslint src/ts/**/*",
-    "test": "run-s clean build:commonjs && mocha lib/test/**/*.js"
+    "test": "run-s clean build:commonjs && mocha lib/test/**/*.js",
+    "test:coverage": "nyc npm run test --all"
   },
   "repository": {
     "type": "git",
@@ -33,7 +34,9 @@
     "chai": "^3.5.0",
     "mocha": "^3.4.1",
     "npm-run-all": "^4.0.2",
+    "nyc": "^10.3.2",
     "shx": "^0.2.2",
+    "source-map-support": "^0.4.15",
     "tslint": "^5.3.2",
     "tslint-config-0xproject": "^0.0.2",
     "typescript": "^2.3.3",
