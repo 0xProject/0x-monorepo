@@ -11,7 +11,8 @@ export interface ECSignature {
 
 export class ZeroEx {
     /**
-     * Checks if the signature is valid
+     * Verifies that the elliptic curve signature `signature` was generated
+     * by signing `data` with the private key corresponding to the `signer` address.
      */
     public static isValidSignature(data: string, signature: ECSignature, signer: ETHAddressHex): boolean {
         const dataBuff = ethUtil.toBuffer(data);

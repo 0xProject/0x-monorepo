@@ -4,6 +4,7 @@ import 'mocha';
 
 describe('ZeroEx library', () => {
     describe('#isValidSignature', () => {
+        // This test data was borrowed from the JSON RPC documentation
         // Source: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign
         const data = '0xdeadbeaf';
         const signature = {
@@ -66,7 +67,7 @@ describe('ZeroEx library', () => {
             const isValid = ZeroEx.isValidSignature(data, wrongSignature, address);
             expect(isValid).to.be.false;
         });
-        it('should return true for valid signature', () => {
+        it('should return true if the signature does pertain to the data & address', () => {
             const isValid = ZeroEx.isValidSignature(data, signature, address);
             expect(isValid).to.be.true;
         });
