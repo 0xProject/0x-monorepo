@@ -18,6 +18,7 @@ declare module 'web3' {
             }
             sign(address: string, message: string, callback: (err: Error, signData: string) => void): string;
             getBlock(blockHash: string, callback: (err: Error, blockObj: any) => void): BigNumber.BigNumber;
+            getBlockNumber(callback: (err: Error, blockNumber: number) => void): void;
             contract(abi: AbiDefinition[]): Contract;
             getBalance(addressHexString: string,
                 callback?: (err: any, result: BigNumber.BigNumber) => void): BigNumber.BigNumber;
