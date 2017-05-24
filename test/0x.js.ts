@@ -4,6 +4,7 @@ import 'mocha';
 
 describe('ZeroEx library', () => {
     describe('#isValidSignature', () => {
+        // Source: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign
         const data = '0xdeadbeaf';
         const signature = {
             v: 27,
