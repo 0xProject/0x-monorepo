@@ -1,5 +1,7 @@
 declare module 'web3' {
 
+    import * as BigNumber from 'bignumber.js';
+
     class Web3 {
         public static providers: typeof providers;
 

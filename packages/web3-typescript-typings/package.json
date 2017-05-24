@@ -12,5 +12,11 @@
   "bugs": {
     "url": "https://github.com/0xProject/web3-typescript-typings/issues"
   },
-  "homepage": "https://github.com/0xProject/web3-typescript-typings#readme"
+  "homepage": "https://github.com/0xProject/web3-typescript-typings#readme",
+  "devDependencies": {
+    "@types/bignumber.js": "^4.0.2"
+  },
+  "dependencies": {
+    "bignumber.js": "^4.0.2"
+  }
 }
