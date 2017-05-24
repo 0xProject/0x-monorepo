@@ -10,7 +10,7 @@ module.exports = {
         path: path.resolve(__dirname, '_bundles'),
         filename: '[name].js',
         libraryTarget: 'umd',
-        library: 'zeroEx',
+        library: 'ZeroEx',
         umdNamedDefine: true
     },
     resolve: {
