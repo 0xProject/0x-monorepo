@@ -57,5 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# built library using in commonjs module syntax
 lib
+# built library using es6 module syntax to enable webpack and rollup tree shaking
 lib-esm
+# UMD bundles that export the global variable
+_bundles
