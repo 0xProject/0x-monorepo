@@ -14,10 +14,10 @@ module.exports = {
         filename: '[name].js',
         libraryTarget: 'umd',
         library: 'ZeroEx',
-        umdNamedDefine: true
+        umdNamedDefine: true,
     },
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.js'],
     },
     devtool: 'source-map',
     plugins: [
@@ -25,7 +25,7 @@ module.exports = {
             minimize: true,
             sourceMap: true,
             include: /\.min\.js$/,
-        })
+        }),
     ],
     module: {
         loaders: [{
@@ -34,7 +34,7 @@ module.exports = {
             exclude: /node_modules/,
             query: {
                 declaration: false,
-            }
-        }]
-    }
-}
+            },
+        }],
+    },
+};
