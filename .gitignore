@@ -63,3 +63,6 @@ lib
 lib-esm
 # UMD bundles that export the global variable
 _bundles
+
+# generated documentation
+docs
