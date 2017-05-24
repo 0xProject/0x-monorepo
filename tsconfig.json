@@ -10,6 +10,7 @@
     "strictNullChecks": true
   },
   "include": [
-    "./src/ts/**/*"
+    "./src/**/*",
+    "./test/**/*"
   ]
 }

@@ -16,7 +16,7 @@
     "build:es6": "tsc -m es6 --outDir lib-esm",
     "build": "npm run clean && run-p build:*",
     "lint": "tslint src/ts/**/*",
-    "test": "mocha -r ts-node/register test/**/*"
+    "test": "run-s clean build:commonjs && mocha lib/test/**/*.js"
   },
   "repository": {
     "type": "git",
