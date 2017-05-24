@@ -17,7 +17,7 @@
     "build": "npm run clean && run-p build:*",
     "lint": "tslint src/ts/**/*",
     "test": "run-s clean build:commonjs && mocha lib/test/**/*.js",
-    "coverage": "nyc npm run test --all"
+    "test:coverage": "nyc npm run test --all"
   },
   "repository": {
     "type": "git",
