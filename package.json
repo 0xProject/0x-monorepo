@@ -1,7 +1,7 @@
 {
   "name": "0x.js",
   "version": "0.0.0",
-  "description": "Official 0x library",
+  "description": "A javascript library for interacting with the 0x protocol",
   "keywords": [
     "0x.js",
     "0xproject",
@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/0xProject/0x.js"
   },
-  "license": "MIT",
+  "license": "Apache 2.0",
   "engines": {
     "node": ">=6.0.0"
   },
