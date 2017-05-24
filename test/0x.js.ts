@@ -1,5 +1,5 @@
 import {ZeroEx} from '../src/ts/0x.js';
-import { expect } from 'chai';
+import {expect} from 'chai';
 import 'mocha';
 
 describe('ZeroEx library', () => {
