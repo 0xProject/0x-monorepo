@@ -46,5 +46,8 @@
     "typedoc": "^0.7.1",
     "typescript": "^2.3.3",
     "webpack": "^2.6.0"
+  },
+  "dependencies": {
+    "ethereumjs-util": "^5.1.1"
   }
 }
