@@ -1,4 +1,4 @@
-export class zeroEx {
+export class ZeroEx {
     public verifySignature() {
         // TODO
     }
