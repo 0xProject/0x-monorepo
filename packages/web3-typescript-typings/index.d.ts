@@ -27,11 +27,13 @@ declare module 'web3' {
             filter(value: string|FilterObject): FilterResult;
             getAccounts(callback: (err: Error, value: any) => void): string[];
             sendTransaction(txData: any, callback: (err: Error, value: any) => void): void;
+            getTransactionReceipt(txHash: string, callback: (err: Error, receipt: any) => void): void;
         };
 
         public setProvider(provider: providers.Provider): void;
         public currentProvider(): any;
         public fromWei(amount: BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
+        public toWei(amount: BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
         public isAddress(address: string): boolean;
     }
 
