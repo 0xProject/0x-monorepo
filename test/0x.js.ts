@@ -42,6 +42,16 @@ describe('ZeroEx library', () => {
                 const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
                 expect(isValid).to.be.false;
             });
+            it('s is not hex', () => {
+                const malformedS = signature.s.replace('0', 'z');
+                const malformedSignature = {
+                    v: signature.v,
+                    r: signature.r,
+                    s: malformedS,
+                };
+                const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
+                expect(isValid).to.be.false;
+            });
         });
         it('should return false if the data doesn\'t pertain to the signature & address', () => {
             const isValid = ZeroEx.isValidSignature('wrong data', signature, address);
