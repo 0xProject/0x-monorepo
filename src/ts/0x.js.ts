@@ -1,4 +1,6 @@
+import * as BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
+import {assert} from './utils/assert';
 
 /**
  * Elliptic Curve signature
@@ -15,6 +17,10 @@ export class ZeroEx {
      * by signing `data` with the private key corresponding to the `signer` address.
      */
     public static isValidSignature(data: string, signature: ECSignature, signer: ETHAddressHex): boolean {
+        assert.isString('data', data);
+        assert.isObject('signature', signature);
+        assert.isETHAddressHex('signer', signer);
+
         const dataBuff = ethUtil.toBuffer(data);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
         try {

@@ -31,6 +31,7 @@
     "node": ">=6.0.0"
   },
   "devDependencies": {
+    "@types/bignumber.js": "^4.0.2",
     "@types/chai": "^3.5.2",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.22",
@@ -46,9 +47,12 @@
     "tslint-config-0xproject": "^0.0.2",
     "typedoc": "^0.7.1",
     "typescript": "^2.3.3",
+    "web3-typescript-typings": "0.0.3",
     "webpack": "^2.6.0"
   },
   "dependencies": {
-    "ethereumjs-util": "^5.1.1"
+    "bignumber.js": "^4.0.2",
+    "ethereumjs-util": "^5.1.1",
+    "web3": "^0.19.0"
   }
 }
