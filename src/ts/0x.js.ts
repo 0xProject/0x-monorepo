@@ -1,8 +1,12 @@
 import * as BigNumber from 'bignumber.js';
+import * as BN from 'bn.js';
 import * as ethUtil from 'ethereumjs-util';
+import * as ethABI from 'ethereumjs-abi';
 import * as _ from 'lodash';
+import {constants} from './utils/constants';
 import {assert} from './utils/assert';
 import {ECSignatureSchema} from './schemas/ec_signature_schema';
+import {SolidityTypes} from './types';
 
 /**
  * Elliptic Curve signature
@@ -16,6 +20,42 @@ export interface ECSignature {
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
+    public static getOrderHash(exchangeContractAddr: string, makerAddr: string, takerAddr: string,
+                               depositTokenAddr: string, receiveTokenAddr: string, feeRecipient: string,
+                               depositAmt: BigNumber.BigNumber, receiveAmt: BigNumber.BigNumber,
+                               makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,
+                               expiration: BigNumber.BigNumber, salt: BigNumber.BigNumber): string {
+        takerAddr = takerAddr !== '' ? takerAddr : constants.NULL_ADDRESS;
+        assert.isETHAddressHex('exchangeContractAddr', exchangeContractAddr);
+        assert.isETHAddressHex('makerAddr', makerAddr);
+        assert.isETHAddressHex('takerAddr', takerAddr);
+        assert.isETHAddressHex('depositTokenAddr', depositTokenAddr);
+        assert.isETHAddressHex('receiveTokenAddr', receiveTokenAddr);
+        assert.isETHAddressHex('feeRecipient', feeRecipient);
+        assert.isBigNumber('depositAmt', depositAmt);
+        assert.isBigNumber('receiveAmt', receiveAmt);
+        assert.isBigNumber('makerFee', makerFee);
+        assert.isBigNumber('takerFee', takerFee);
+        assert.isBigNumber('expiration', expiration);
+        assert.isBigNumber('salt', salt);
+        const orderParts = [
+            {value: exchangeContractAddr, type: SolidityTypes.address},
+            {value: makerAddr, type: SolidityTypes.address},
+            {value: takerAddr, type: SolidityTypes.address},
+            {value: depositTokenAddr, type: SolidityTypes.address},
+            {value: receiveTokenAddr, type: SolidityTypes.address},
+            {value: feeRecipient, type: SolidityTypes.address},
+            {value: new BN(depositAmt.toString(), 10), type: SolidityTypes.uint256},
+            {value: new BN(receiveAmt.toString(), 10), type: SolidityTypes.uint256},
+            {value: new BN(makerFee.toString(), 10), type: SolidityTypes.uint256},
+            {value: new BN(takerFee.toString(), 10), type: SolidityTypes.uint256},
+            {value: new BN(expiration.toString(), 10), type: SolidityTypes.uint256},
+            {value: new BN(salt.toString(), 10), type: SolidityTypes.uint256},
+        ];
+        const hashBuff = ethABI.soliditySHA3(_.map(orderParts, 'type'), _.map(orderParts, 'value'));
+        const buffHashHex = ethUtil.bufferToHex(hashBuff);
+        return buffHashHex;
+    }
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddressHex` address.

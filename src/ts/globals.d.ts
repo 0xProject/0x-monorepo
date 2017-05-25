@@ -1,4 +1,5 @@
 declare module 'chai-bignumber';
+declare module 'bn.js';
 
 declare interface Schema {
     id: string;
@@ -22,4 +23,8 @@ declare module 'ethereumjs-util' {
     const ecrecover: (msgHashBuff: Buffer, v: number, r: Buffer, s: Buffer) => string;
     const pubToAddress: (pubKey: string) => Buffer;
     const isValidAddress: (address: string) => boolean;
+}
+
+declare module 'ethereumjs-abi' {
+    const soliditySHA3: (argTypes: string[], args: any) => Buffer;
 }
