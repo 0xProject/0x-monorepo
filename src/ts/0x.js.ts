@@ -36,7 +36,11 @@ export class ZeroEx {
             return false;
         }
     }
-    /** Generates pseudo-random 256 bits salt */
+    /**
+     * Generates pseudo-random 256 bit salt.
+     * The salt is used to ensure that the 0x order generated has a unique orderHash that does
+     * not collide with any other outstanding orders.
+     */
     public static generatePseudoRandomSalt(): BigNumber.BigNumber {
         // BigNumber.random returns a pseudo-random number between 0 & 1 with a passed in number of decimal places.
         // Source: https://mikemcl.github.io/bignumber.js/#random
