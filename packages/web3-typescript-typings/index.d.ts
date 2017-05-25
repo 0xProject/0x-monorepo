@@ -19,61 +19,61 @@ declare module 'web3' {
             sign(address: string, message: string, callback: (err: Error, signData: string) => void): string;
             getBlock(blockHash: string, callback: (err: Error, blockObj: any) => void): BigNumber.BigNumber;
             getBlockNumber(callback: (err: Error, blockNumber: number) => void): void;
-            contract(abi: AbiDefinition[]): Contract;
+            contract(abi: Web3.AbiDefinition[]): Web3.Contract;
             getBalance(addressHexString: string,
                 callback?: (err: any, result: BigNumber.BigNumber) => void): BigNumber.BigNumber;
             getCode(addressHexString: string,
                 callback?: (err: any, code: string) => void): string;
-            filter(value: string|FilterObject): FilterResult;
+            filter(value: string|Web3.FilterObject): Web3.FilterResult;
             getAccounts(callback: (err: Error, value: any) => void): string[];
             sendTransaction(txData: any, callback: (err: Error, value: any) => void): void;
             getTransactionReceipt(txHash: string, callback: (err: Error, receipt: any) => void): void;
         };
 
-        public setProvider(provider: Provider): void;
+        public setProvider(provider: Web3.Provider): void;
         public currentProvider(): any;
         public fromWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
         public toWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
         public isAddress(address: string): boolean;
     }
 
-    export interface AbiIOParameter {
-        name: string;
-        type: string;
-    }
-
-    export interface AbiDefinition {
-        constants: boolean;
-        inputs: AbiIOParameter[];
-        name: string;
-        outputs: AbiIOParameter[];
-        type: string;
-    }
-
-    export interface Contract {}
-
-    export interface FilterObject {
-        fromBlock: number|string;
-        toBlock: number|string;
-        address: string;
-        topics: string[];
-    }
-
-    export interface FilterResult {
-        get(callback: () => void): void;
-        watch(callback: () => void): void;
-        stopWatching(): void;
-    }
-
-    export interface Provider {}
-
     namespace providers {
-        class HttpProvider implements Provider {
+        class HttpProvider implements Web3.Provider {
             constructor(url?: string);
         }
     }
 
-    namespace Web3 {} // Empty module so the class is exportable as a module
+    namespace Web3 {
+        interface AbiIOParameter {
+            name: string;
+            type: string;
+        }
+
+        interface AbiDefinition {
+            constants: boolean;
+            inputs: AbiIOParameter[];
+            name: string;
+            outputs: AbiIOParameter[];
+            type: string;
+        }
+
+        interface Contract {}
+
+        interface FilterObject {
+            fromBlock: number|string;
+            toBlock: number|string;
+            address: string;
+            topics: string[];
+        }
+
+        interface FilterResult {
+            get(callback: () => void): void;
+            watch(callback: () => void): void;
+            stopWatching(): void;
+        }
+
+        interface Provider {}
+    }
     /* tslint:disable */
     export default Web3;
     /* tslint:enable */
