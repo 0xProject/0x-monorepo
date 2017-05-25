@@ -17,7 +17,7 @@ export const assert = {
         this.assert(_.isString(value) && HEX_REGEX.test(value),
             this.typeAssertionMessage(variableName, 'HexString', value));
     },
-    isETHAddressHex(variableName: string, value: ETHAddressHex) {
+    isETHAddressHex(variableName: string, value: string) {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },

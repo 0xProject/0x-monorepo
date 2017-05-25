@@ -20,10 +20,10 @@ export class ZeroEx {
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signer` address.
      */
-    public static isValidSignature(dataHex: string, signature: ECSignature, signer: ETHAddressHex): boolean {
+    public static isValidSignature(dataHex: string, signature: ECSignature, signerAddress: string): boolean {
         assert.isHexString('dataHex', dataHex);
         assert.doesConformToSchema('signature', signature, ECSignatureSchema);
-        assert.isETHAddressHex('signer', signer);
+        assert.isETHAddressHex('signerAddress', signerAddress);
 
         const dataBuff = ethUtil.toBuffer(dataHex);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
@@ -33,7 +33,7 @@ export class ZeroEx {
                 ethUtil.toBuffer(signature.r),
                 ethUtil.toBuffer(signature.s));
             const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
-            return retrievedAddress === signer;
+            return retrievedAddress === signerAddress;
         } catch (err) {
             return false;
         }
