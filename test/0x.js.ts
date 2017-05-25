@@ -52,7 +52,6 @@ describe('ZeroEx library', () => {
                     const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
                     throw new Error('isValidSignature should have thrown');
                 } catch (err) {
-                    console.log(err);
                     // continue
                 }
             });
