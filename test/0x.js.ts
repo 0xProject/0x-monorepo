@@ -56,7 +56,7 @@ describe('ZeroEx library', () => {
             });
         });
         it('should return false if the data doesn\'t pertain to the signature & address', () => {
-            const isValid = ZeroEx.isValidSignature('wrong data', signature, address);
+            const isValid = ZeroEx.isValidSignature('0x00', signature, address);
             expect(isValid).to.be.false;
         });
         it('should return false if the address doesn\'t pertain to the signature & data', () => {
