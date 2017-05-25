@@ -12,13 +12,14 @@ export interface ECSignature {
 }
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
+const ORDER_HASH_LENGTH = 66;
 
 export class ZeroEx {
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signer` address.
      */
-    public static isValidSignature(data: string, signature: ECSignature, signer: ETHAddressHex): boolean {
+    public static isValidSignature(data: HexString, signature: ECSignature, signer: ETHAddressHex): boolean {
         assert.isString('data', data);
         assert.isObject('signature', signature);
         assert.isETHAddressHex('signer', signer);
@@ -48,5 +49,10 @@ export class ZeroEx {
         const factor = new BigNumber(10).pow(MAX_DIGITS_IN_UNSIGNED_256_INT - 1);
         const salt = randomNumber.times(factor).round();
         return salt;
+    }
+    /** Checks if order hash is valid */
+    public static isValidOrderHash(orderHash: HexString): boolean {
+        assert.isHexString('orderHash', orderHash);
+        return orderHash.length === ORDER_HASH_LENGTH;
     }
 }
