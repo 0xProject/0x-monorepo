@@ -1,7 +1,12 @@
 import {ZeroEx} from '../src/ts/0x.js';
-import {expect} from 'chai';
+import * as chai from 'chai';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
+import ChaiBigNumber = require('chai-bignumber');
+
+// Use BigNumber chai add-on
+chai.use(ChaiBigNumber());
+const expect = chai.expect;
 
 describe('ZeroEx library', () => {
     describe('#isValidSignature', () => {
@@ -80,6 +85,24 @@ describe('ZeroEx library', () => {
             expect(salt.greaterThanOrEqualTo(0)).to.be.true;
             const twoPow256 = new BigNumber(2).pow(256);
             expect(salt.lessThan(twoPow256)).to.be.true;
+        });
+    });
+    describe('#toUnitAmount', () => {
+        it('Should return the expected unit amount for the decimals passed in', () => {
+            const baseUnitAmount = new BigNumber(1000000000);
+            const decimals = 6;
+            const unitAmount = ZeroEx.toUnitAmount(baseUnitAmount, decimals);
+            const expectedUnitAmount = new BigNumber(1000);
+            expect(unitAmount).to.be.bignumber.equal(expectedUnitAmount);
+        });
+    });
+    describe('#toBaseUnitAmount', () => {
+        it('Should return the expected base unit amount for the decimals passed in', () => {
+            const unitAmount = new BigNumber(1000);
+            const decimals = 6;
+            const baseUnitAmount = ZeroEx.toBaseUnitAmount(unitAmount, decimals);
+            const expectedUnitAmount = new BigNumber(1000000000);
+            expect(baseUnitAmount).to.be.bignumber.equal(expectedUnitAmount);
         });
     });
 });
