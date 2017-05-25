@@ -20,41 +20,47 @@ export interface ECSignature {
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
-    public static getOrderHash(exchangeContractAddr: string, makerAddr: string, takerAddr: string,
-                               depositTokenAddr: string, receiveTokenAddr: string, feeRecipient: string,
-                               depositAmt: BigNumber.BigNumber, receiveAmt: BigNumber.BigNumber,
-                               makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,
-                               expiration: BigNumber.BigNumber, salt: BigNumber.BigNumber): string {
-        takerAddr = takerAddr !== '' ? takerAddr : constants.NULL_ADDRESS;
+    /**
+     * Computes the orderHash given the order parameters and returns it as a hex encoded string.
+     */
+    public static getOrderHashHex(exchangeContractAddr: string, makerAddr: string, takerAddr: string,
+                                  tokenMAddress: string, tokenTAddress: string, feeRecipient: string,
+                                  valueM: BigNumber.BigNumber, valueT: BigNumber.BigNumber,
+                                  makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,
+                                  expiration: BigNumber.BigNumber, salt: BigNumber.BigNumber): string {
+        takerAddr = _.isEmpty(takerAddr) ? constants.NULL_ADDRESS : takerAddr ;
         assert.isETHAddressHex('exchangeContractAddr', exchangeContractAddr);
         assert.isETHAddressHex('makerAddr', makerAddr);
         assert.isETHAddressHex('takerAddr', takerAddr);
-        assert.isETHAddressHex('depositTokenAddr', depositTokenAddr);
-        assert.isETHAddressHex('receiveTokenAddr', receiveTokenAddr);
+        assert.isETHAddressHex('tokenMAddress', tokenMAddress);
+        assert.isETHAddressHex('tokenTAddress', tokenTAddress);
         assert.isETHAddressHex('feeRecipient', feeRecipient);
-        assert.isBigNumber('depositAmt', depositAmt);
-        assert.isBigNumber('receiveAmt', receiveAmt);
+        assert.isBigNumber('valueM', valueM);
+        assert.isBigNumber('valueT', valueT);
         assert.isBigNumber('makerFee', makerFee);
         assert.isBigNumber('takerFee', takerFee);
         assert.isBigNumber('expiration', expiration);
         assert.isBigNumber('salt', salt);
+
         const orderParts = [
             {value: exchangeContractAddr, type: SolidityTypes.address},
             {value: makerAddr, type: SolidityTypes.address},
             {value: takerAddr, type: SolidityTypes.address},
-            {value: depositTokenAddr, type: SolidityTypes.address},
-            {value: receiveTokenAddr, type: SolidityTypes.address},
+            {value: tokenMAddress, type: SolidityTypes.address},
+            {value: tokenTAddress, type: SolidityTypes.address},
             {value: feeRecipient, type: SolidityTypes.address},
-            {value: new BN(depositAmt.toString(), 10), type: SolidityTypes.uint256},
-            {value: new BN(receiveAmt.toString(), 10), type: SolidityTypes.uint256},
-            {value: new BN(makerFee.toString(), 10), type: SolidityTypes.uint256},
-            {value: new BN(takerFee.toString(), 10), type: SolidityTypes.uint256},
-            {value: new BN(expiration.toString(), 10), type: SolidityTypes.uint256},
-            {value: new BN(salt.toString(), 10), type: SolidityTypes.uint256},
+            {value: this.bigNumberToBN(valueM), type: SolidityTypes.uint256},
+            {value: this.bigNumberToBN(valueT), type: SolidityTypes.uint256},
+            {value: this.bigNumberToBN(makerFee), type: SolidityTypes.uint256},
+            {value: this.bigNumberToBN(takerFee), type: SolidityTypes.uint256},
+            {value: this.bigNumberToBN(expiration), type: SolidityTypes.uint256},
+            {value: this.bigNumberToBN(salt), type: SolidityTypes.uint256},
         ];
-        const hashBuff = ethABI.soliditySHA3(_.map(orderParts, 'type'), _.map(orderParts, 'value'));
-        const buffHashHex = ethUtil.bufferToHex(hashBuff);
-        return buffHashHex;
+        const types = _.map(orderParts, o => o.type);
+        const values = _.map(orderParts, o => o.value);
+        const hashBuff = ethABI.soliditySHA3(types, values);
+        const hashHex = ethUtil.bufferToHex(hashBuff);
+        return hashHex;
     }
     /**
      * Verifies that the elliptic curve signature `signature` was generated
@@ -122,5 +128,14 @@ export class ZeroEx {
         const unit = new BigNumber(10).pow(decimals);
         const baseUnitAmount = amount.times(unit);
         return baseUnitAmount;
+    }
+
+    /**
+     * Converts BigNumber instance to BN
+     * We do it because ethABI accepts only BN's
+     * We should be consistent about using BigNumbers in our codebase and not use BN anywhere else
+     */
+    private static bigNumberToBN(value: BigNumber.BigNumber) {
+        return new BN(value.toString(), 10);
     }
 }

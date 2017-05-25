@@ -17,5 +17,4 @@ export const SolidityTypes = strEnum([
     'string',
     'bool',
 ]);
-
 export type SolidityTypes = keyof typeof SolidityTypes;
