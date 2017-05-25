@@ -54,7 +54,7 @@ export class ZeroEx {
     /** Checks if order hash is valid */
     public static isValidOrderHash(orderHash: string): boolean {
         assert.isString('orderHash', orderHash);
-        const isValid = /^0x[0-9A-F]{66}$/i.test(orderHash);
+        const isValid = /^0x[0-9A-F]{64}$/i.test(orderHash);
         return isValid;
     }
     /*
