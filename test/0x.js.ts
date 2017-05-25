@@ -1,6 +1,7 @@
 import {ZeroEx} from '../src/ts/0x.js';
 import {expect} from 'chai';
 import 'mocha';
+import * as BigNumber from 'bignumber.js';
 
 describe('ZeroEx library', () => {
     describe('#isValidSignature', () => {
@@ -71,6 +72,18 @@ describe('ZeroEx library', () => {
         it('should return true if the signature does pertain to the data & address', () => {
             const isValid = ZeroEx.isValidSignature(data, signature, address);
             expect(isValid).to.be.true;
+        });
+    });
+    describe('#generateSalt', () => {
+        it('generates different salts', () => {
+            const equal = ZeroEx.generatePseudoRandomSalt().eq(ZeroEx.generatePseudoRandomSalt());
+            expect(equal).to.be.false;
+        });
+        it('generates salt in range [0..2^256)', () => {
+            const salt = ZeroEx.generatePseudoRandomSalt();
+            expect(salt.greaterThanOrEqualTo(0)).to.be.true;
+            const twoPow256 = new BigNumber(2).pow(256);
+            expect(salt.lessThan(twoPow256)).to.be.true;
         });
     });
 });
