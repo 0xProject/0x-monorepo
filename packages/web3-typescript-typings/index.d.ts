@@ -30,7 +30,7 @@ declare module 'web3' {
             getTransactionReceipt(txHash: string, callback: (err: Error, receipt: any) => void): void;
         };
 
-        public setProvider(provider: providers.Provider): void;
+        public setProvider(provider: Provider): void;
         public currentProvider(): any;
         public fromWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
         public toWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
@@ -65,9 +65,9 @@ declare module 'web3' {
         stopWatching(): void;
     }
 
-    namespace providers {
-        interface Provider {}
+    interface Provider {}
 
+    namespace providers {
         class HttpProvider implements Provider {
             constructor(url?: string);
         }
