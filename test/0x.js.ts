@@ -99,6 +99,8 @@ describe('ZeroEx library', () => {
         it('returns true if order hash is correct', () => {
             const isValid = ZeroEx.isValidOrderHash('0x' + Array(65).join('0'));
             expect(isValid).to.be.true;
+        });
+    });
     describe('#toUnitAmount', () => {
         it('Should return the expected unit amount for the decimals passed in', () => {
             const baseUnitAmount = new BigNumber(1000000000);

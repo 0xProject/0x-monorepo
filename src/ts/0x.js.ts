@@ -56,6 +56,7 @@ export class ZeroEx {
         assert.isString('orderHash', orderHash);
         const isValid = /^0x[0-9A-F]{66}$/i.test(orderHash);
         return isValid;
+    }
     /*
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
      * E.g: If a currency has 18 decimal places, 1e18 or one quintillion of the currency is equivalent
