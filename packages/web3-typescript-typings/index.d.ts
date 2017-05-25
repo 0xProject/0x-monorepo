@@ -37,12 +37,12 @@ declare module 'web3' {
         public isAddress(address: string): boolean;
     }
 
-    interface AbiIOParameter {
+    export interface AbiIOParameter {
         name: string;
         type: string;
     }
 
-    interface AbiDefinition {
+    export interface AbiDefinition {
         constants: boolean;
         inputs: AbiIOParameter[];
         name: string;
@@ -50,22 +50,22 @@ declare module 'web3' {
         type: string;
     }
 
-    interface Contract {}
+    export interface Contract {}
 
-    interface FilterObject {
+    export interface FilterObject {
         fromBlock: number|string;
         toBlock: number|string;
         address: string;
         topics: string[];
     }
 
-    interface FilterResult {
+    export interface FilterResult {
         get(callback: () => void): void;
         watch(callback: () => void): void;
         stopWatching(): void;
     }
 
-    interface Provider {}
+    export interface Provider {}
 
     namespace providers {
         class HttpProvider implements Provider {
@@ -74,5 +74,7 @@ declare module 'web3' {
     }
 
     namespace Web3 {} // Empty module so the class is exportable as a module
-    export = Web3;
+    /* tslint:disable */
+    export default Web3;
+    /* tslint:enable */
 }
