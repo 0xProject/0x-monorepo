@@ -52,7 +52,7 @@ describe('ZeroEx library', () => {
             });
         });
         it('should return false if the data doesn\'t pertain to the signature & address', () => {
-            const isValid = ZeroEx.isValidSignature('0x00', signature, address);
+            const isValid = ZeroEx.isValidSignature('0x0', signature, address);
             expect(isValid).to.be.false;
         });
         it('should return false if the address doesn\'t pertain to the signature & data', () => {
@@ -83,6 +83,10 @@ describe('ZeroEx library', () => {
         });
     });
     describe('#isValidOrderHash', () => {
+        it('returns false if the value is not a hex string', () => {
+            const isValid = ZeroEx.isValidOrderHash('not a hex');
+            expect(isValid).to.be.false;
+        });
         it('returns false if the length is wrong', () => {
             const isValid = ZeroEx.isValidOrderHash('0xdeadbeef');
             expect(isValid).to.be.false;

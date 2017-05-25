@@ -1,5 +1,6 @@
 import * as BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 import {assert} from './utils/assert';
 import {ECSignatureSchema} from './schemas/ec_signature_schema';
 
@@ -13,17 +14,16 @@ export interface ECSignature {
 }
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
-const ORDER_HASH_LENGTH = 66;
 
 export class ZeroEx {
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signer` address.
      */
-    public static isValidSignature(dataHex: string, signature: ECSignature, signerAddress: string): boolean {
+    public static isValidSignature(dataHex: string, signature: ECSignature, signerETHAddressHex: string): boolean {
         assert.isHexString('dataHex', dataHex);
         assert.doesConformToSchema('signature', signature, ECSignatureSchema);
-        assert.isETHAddressHex('signerAddress', signerAddress);
+        assert.isETHAddressHex('signerAddress', signerETHAddressHex);
 
         const dataBuff = ethUtil.toBuffer(dataHex);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
@@ -33,7 +33,7 @@ export class ZeroEx {
                 ethUtil.toBuffer(signature.r),
                 ethUtil.toBuffer(signature.s));
             const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
-            return retrievedAddress === signerAddress;
+            return retrievedAddress === signerETHAddressHex;
         } catch (err) {
             return false;
         }
@@ -53,7 +53,8 @@ export class ZeroEx {
     }
     /** Checks if order hash is valid */
     public static isValidOrderHash(orderHash: string): boolean {
-        assert.isHexString('orderHash', orderHash);
-        return orderHash.length === ORDER_HASH_LENGTH;
+        assert.isString('orderHash', orderHash);
+        const isValid = /^0x[0-9A-F]{66}$/i.test(orderHash);
+        return isValid;
     }
 }

@@ -3,7 +3,7 @@ import * as BigNumber from 'bignumber.js';
 import Web3 = require('web3');
 import {SchemaValidator} from './schema_validator';
 
-const HEX_REGEX = /^0x([0-9A-F]{2})*$/i;
+const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
 export const assert = {
     isBigNumber(variableName: string, value: BigNumber.BigNumber) {
