@@ -3,6 +3,8 @@ import * as BigNumber from 'bignumber.js';
 import Web3 = require('web3');
 import {SchemaValidator} from './schema_validator';
 
+const HEX_REGEX = /^0x[0-9A-F]*$/i;
+
 export const assert = {
     isBigNumber(variableName: string, value: BigNumber.BigNumber) {
         const isBigNumber = _.isObject(value) && value.isBigNumber;
@@ -11,7 +13,11 @@ export const assert = {
     isString(variableName: string, value: string) {
         this.assert(_.isString(value), this.typeAssertionMessage(variableName, 'string', value));
     },
-    isETHAddressHex(variableName: string, value: ETHAddressHex) {
+    isHexString(variableName: string, value: string) {
+        this.assert(_.isString(value) && HEX_REGEX.test(value),
+            this.typeAssertionMessage(variableName, 'HexString', value));
+    },
+    isETHAddressHex(variableName: string, value: string) {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },

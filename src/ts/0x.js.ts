@@ -1,5 +1,6 @@
 import * as BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 import {assert} from './utils/assert';
 import {ECSignatureSchema} from './schemas/ec_signature_schema';
 
@@ -17,14 +18,14 @@ const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 export class ZeroEx {
     /**
      * Verifies that the elliptic curve signature `signature` was generated
-     * by signing `data` with the private key corresponding to the `signer` address.
+     * by signing `data` with the private key corresponding to the `signerAddressHex` address.
      */
-    public static isValidSignature(data: string, signature: ECSignature, signer: ETHAddressHex): boolean {
-        assert.isString('data', data);
+    public static isValidSignature(dataHex: string, signature: ECSignature, signerAddressHex: string): boolean {
+        assert.isHexString('dataHex', dataHex);
         assert.doesConformToSchema('signature', signature, ECSignatureSchema);
-        assert.isETHAddressHex('signer', signer);
+        assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
-        const dataBuff = ethUtil.toBuffer(data);
+        const dataBuff = ethUtil.toBuffer(dataHex);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
         try {
             const pubKey = ethUtil.ecrecover(msgHashBuff,
@@ -32,7 +33,7 @@ export class ZeroEx {
                 ethUtil.toBuffer(signature.r),
                 ethUtil.toBuffer(signature.s));
             const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
-            return retrievedAddress === signer;
+            return retrievedAddress === signerAddressHex;
         } catch (err) {
             return false;
         }
@@ -49,6 +50,12 @@ export class ZeroEx {
         const factor = new BigNumber(10).pow(MAX_DIGITS_IN_UNSIGNED_256_INT - 1);
         const salt = randomNumber.times(factor).round();
         return salt;
+    }
+    /** Checks if order hash is valid */
+    public static isValidOrderHash(orderHash: string): boolean {
+        assert.isString('orderHash', orderHash);
+        const isValid = /^0x[0-9A-F]{64}$/i.test(orderHash);
+        return isValid;
     }
     /*
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).

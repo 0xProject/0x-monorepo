@@ -57,7 +57,7 @@ describe('ZeroEx library', () => {
             });
         });
         it('should return false if the data doesn\'t pertain to the signature & address', () => {
-            const isValid = ZeroEx.isValidSignature('wrong data', signature, address);
+            const isValid = ZeroEx.isValidSignature('0x0', signature, address);
             expect(isValid).to.be.false;
         });
         it('should return false if the address doesn\'t pertain to the signature & data', () => {
@@ -85,6 +85,20 @@ describe('ZeroEx library', () => {
             expect(salt.greaterThanOrEqualTo(0)).to.be.true;
             const twoPow256 = new BigNumber(2).pow(256);
             expect(salt.lessThan(twoPow256)).to.be.true;
+        });
+    });
+    describe('#isValidOrderHash', () => {
+        it('returns false if the value is not a hex string', () => {
+            const isValid = ZeroEx.isValidOrderHash('not a hex');
+            expect(isValid).to.be.false;
+        });
+        it('returns false if the length is wrong', () => {
+            const isValid = ZeroEx.isValidOrderHash('0xdeadbeef');
+            expect(isValid).to.be.false;
+        });
+        it('returns true if order hash is correct', () => {
+            const isValid = ZeroEx.isValidOrderHash('0x' + Array(65).join('0'));
+            expect(isValid).to.be.true;
         });
     });
     describe('#toUnitAmount', () => {
