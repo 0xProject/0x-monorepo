@@ -2,6 +2,10 @@ declare type ETHPublicKey = string;
 declare type ETHAddressHex = string;
 declare type ETHAddressBuff = Buffer;
 
+declare interface Schema {
+    id: string;
+}
+
 declare module 'ethereumjs-util' {
     const toBuffer: (data: string) => Buffer;
     const hashPersonalMessage: (msg: Buffer) => Buffer;
