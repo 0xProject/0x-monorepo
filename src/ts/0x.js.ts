@@ -12,7 +12,7 @@ const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
     public web3Wrapper: Web3Wrapper;
-    public exchange: ContractInstance;
+    public exchange: ExchangeWrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddressHex` address.
