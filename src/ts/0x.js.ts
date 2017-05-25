@@ -1,10 +1,7 @@
 import * as BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
-import * as _ from 'lodash';
 import Web3 from 'web3';
 import {assert} from './utils/assert';
-import {utils} from './utils/utils';
-import {ZeroExError} from './types';
 import {Web3Wrapper} from './web3_wrapper';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import contract = require('truffle-contract');
