@@ -21,12 +21,7 @@ describe('ZeroEx library', () => {
                     r: signature.r,
                     s: signature.s,
                 };
-                try {
-                    const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
-                    throw new Error('isValidSignature should have thrown');
-                } catch (err) {
-                    // continue
-                }
+                expect(() => ZeroEx.isValidSignature(data, malformedSignature, address)).to.throw();
             });
             it('r lacks 0x prefix', () => {
                 const malformedR = signature.r.replace('0x', '');
@@ -35,12 +30,7 @@ describe('ZeroEx library', () => {
                     r: malformedR,
                     s: signature.s,
                 };
-                try {
-                    const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
-                    throw new Error('isValidSignature should have thrown');
-                } catch (err) {
-                    // continue
-                }
+                expect(() => ZeroEx.isValidSignature(data, malformedSignature, address)).to.throw();
             });
             it('r is too short', () => {
                 const malformedR = signature.r.substr(10);
@@ -49,12 +39,7 @@ describe('ZeroEx library', () => {
                     r: malformedR,
                     s: signature.s.replace('0', 'z'),
                 };
-                try {
-                    const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
-                    throw new Error('isValidSignature should have thrown');
-                } catch (err) {
-                    // continue
-                }
+                expect(() => ZeroEx.isValidSignature(data, malformedSignature, address)).to.throw();
             });
             it('s is not hex', () => {
                 const malformedS = signature.s.replace('0', 'z');
@@ -63,12 +48,7 @@ describe('ZeroEx library', () => {
                     r: signature.r,
                     s: malformedS,
                 };
-                try {
-                    const isValid = ZeroEx.isValidSignature(data, malformedSignature, address);
-                    throw new Error('isValidSignature should have thrown');
-                } catch (err) {
-                    // continue
-                }
+                expect(() => ZeroEx.isValidSignature(data, malformedSignature, address)).to.throw();
             });
         });
         it('should return false if the data doesn\'t pertain to the signature & address', () => {
