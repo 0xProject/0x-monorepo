@@ -1,21 +1,21 @@
 import * as BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
+import Web3 from 'web3';
 import {assert} from './utils/assert';
+import {utils} from './utils/utils';
+import {ZeroExError} from './types';
+import {Web3Wrapper} from './web3_wrapper';
+import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
+import contract = require('truffle-contract');
 import {ECSignatureSchema} from './schemas/ec_signature_schema';
-
-/**
- * Elliptic Curve signature
- */
-export interface ECSignature {
-    v: number;
-    r: string;
-    s: string;
-}
+import {ECSignature} from './types';
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
+    public web3Wrapper: Web3Wrapper;
+    public exchange: ContractInstance;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddressHex` address.
@@ -82,5 +82,9 @@ export class ZeroEx {
         const unit = new BigNumber(10).pow(decimals);
         const baseUnitAmount = amount.times(unit);
         return baseUnitAmount;
+    }
+    constructor(web3: Web3) {
+        this.web3Wrapper = new Web3Wrapper(web3);
+        this.exchange = new ExchangeWrapper(this.web3Wrapper);
     }
 }
