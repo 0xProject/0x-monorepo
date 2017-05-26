@@ -10,10 +10,9 @@
     "exchange"
   ],
   "scripts": {
-    "clean": "shx rm -rf _bundles lib lib-esm",
+    "clean": "shx rm -rf _bundles lib",
     "build:bundle": "webpack",
     "build:commonjs": "tsc; copyfiles -u 2 ./src/artifacts/*.json ./../0x.js/lib/src/artifacts;",
-    "build:es6": "tsc -m es6 --outDir lib-esm",
     "build": "npm run clean && run-p build:*",
     "lint": "tslint src/ts/**/*",
     "test": "run-s clean build:commonjs && mocha lib/test/**/*.js",
