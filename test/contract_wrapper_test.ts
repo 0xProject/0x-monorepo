@@ -1,8 +1,8 @@
 import 'mocha';
 import * as chai from 'chai';
 import chaiAsPromised = require('chai-as-promised');
-import {web3Factory} from './utils/web3_factory';
 import * as Web3 from 'web3';
+import {web3Factory} from './utils/web3_factory';
 import {ExchangeWrapper} from '../src/ts/contract_wrappers/exchange_wrapper';
 import {BlockchainClean} from './utils/blockchain_clean';
 import {Web3Wrapper} from './../src/ts/web3_wrapper';
