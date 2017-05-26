@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import Web3 from 'web3';
+import Web3 = require('web3');
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 
