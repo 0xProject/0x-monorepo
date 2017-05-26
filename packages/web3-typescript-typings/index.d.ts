@@ -75,6 +75,6 @@ declare module 'web3' {
         interface Provider {}
     }
     /* tslint:disable */
-    export default Web3;
+    export = Web3;
     /* tslint:enable */
 }
