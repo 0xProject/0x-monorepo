@@ -3,12 +3,50 @@ import * as chai from 'chai';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
+import {constants} from '../src/ts/utils/constants';
 
 // Use BigNumber chai add-on
 chai.use(ChaiBigNumber());
 const expect = chai.expect;
 
 describe('ZeroEx library', () => {
+    describe('#getOrderHash', () => {
+        const ORDER_HASH = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
+        it('defaults takerAddress to NULL address', () => {
+            const orderHash = ZeroEx.getOrderHashHex(
+                constants.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
+                '',
+                constants.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
+                new BigNumber(0),
+                new BigNumber(0),
+                new BigNumber(0),
+                new BigNumber(0),
+                new BigNumber(0),
+                new BigNumber(0),
+            );
+            expect(orderHash).to.be.equal(ORDER_HASH);
+        });
+        it('calculates the order hash', () => {
+            const orderHash = ZeroEx.getOrderHashHex(
+                constants.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
+                constants.NULL_ADDRESS,
+                new BigNumber(0),
+                new BigNumber(0),
+                new BigNumber(0),
+                new BigNumber(0),
+                new BigNumber(0),
+                new BigNumber(0),
+            );
+            expect(orderHash).to.be.equal(ORDER_HASH);
+        });
+    });
     describe('#isValidSignature', () => {
         // This test data was borrowed from the JSON RPC documentation
         // Source: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign
