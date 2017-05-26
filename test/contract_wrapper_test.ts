@@ -92,7 +92,6 @@ describe('ExchangeWrapper', () => {
         });
         it('should return true if the signature does pertain to the dataHex & address', async () => {
             const isValid = await exchangeWrapper.isValidSignatureAsync(dataHex, signature, address);
-            console.log('isValid', isValid);
             expect(isValid).to.be.true;
         });
     });
