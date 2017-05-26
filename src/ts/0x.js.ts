@@ -132,8 +132,9 @@ export class ZeroEx {
 
     /**
      * Converts BigNumber instance to BN
-     * We do it because ethABI accepts only BN's
-     * We should be consistent about using BigNumbers in our codebase and not use BN anywhere else
+     * The only we convert to BN is to remain compatible with `ethABI. soliditySHA3 ` that
+     * expects values of Solidity type `uint` to be of type `BN`.
+     * We do not use BN anywhere else in the codebase.
      */
     private static bigNumberToBN(value: BigNumber.BigNumber) {
         return new BN(value.toString(), 10);

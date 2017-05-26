@@ -26,5 +26,5 @@ declare module 'ethereumjs-util' {
 }
 
 declare module 'ethereumjs-abi' {
-    const soliditySHA3: (argTypes: string[], args: any) => Buffer;
+    const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
 }

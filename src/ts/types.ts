@@ -13,8 +13,5 @@ function strEnum(values: string[]): {[key: string]: string} {
 export const SolidityTypes = strEnum([
     'address',
     'uint256',
-    'uint8',
-    'string',
-    'bool',
 ]);
 export type SolidityTypes = keyof typeof SolidityTypes;
