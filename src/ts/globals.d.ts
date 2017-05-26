@@ -1,5 +1,8 @@
 declare module 'chai-bignumber';
 declare module 'bn.js';
+declare module 'request-promise-native';
+declare module 'web3-provider-engine';
+declare module 'web3-provider-engine/subproviders/rpc';
 
 declare interface Schema {
     id: string;
@@ -12,6 +15,7 @@ declare interface Schema {
 declare namespace Chai {
     interface Assertion {
         bignumber: Assertion;
+        eventually: Assertion;
     }
 }
 /* tslint:enable */
@@ -30,6 +34,7 @@ declare module 'ethereumjs-util' {
     const ecrecover: (msgHashBuff: Buffer, v: number, r: Buffer, s: Buffer) => string;
     const pubToAddress: (pubKey: string) => Buffer;
     const isValidAddress: (address: string) => boolean;
+    const bufferToInt: (buffer: Buffer) => number;
 }
 
 // truffle-contract declarations
