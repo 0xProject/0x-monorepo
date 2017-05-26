@@ -26,7 +26,7 @@ export class RPC {
         const didRevert = await this.sendAsync(payload);
         return didRevert;
     }
-    private toPayload(method: string, params: any[] = []) {
+    private toPayload(method: string, params: any[] = []): string {
         const payload = JSON.stringify({
             id: this.id,
             method,
@@ -35,7 +35,7 @@ export class RPC {
         this.id += 1;
         return payload;
     }
-    private async sendAsync(payload: string) {
+    private async sendAsync(payload: string): Promise<any> {
         const opts = {
             method: 'POST',
             uri: `http://${this.host}:${this.port}`,

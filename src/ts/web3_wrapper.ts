@@ -34,7 +34,7 @@ export class Web3Wrapper {
     public getCurrentProvider(): Web3.Provider {
         return this.web3.currentProvider;
     }
-    public async getNetworkIdIfExistsAsync() {
+    public async getNetworkIdIfExistsAsync(): Promise<number|undefined> {
         try {
             const networkId = await this.getNetworkAsync();
             return Number(networkId);
@@ -64,7 +64,7 @@ export class Web3Wrapper {
         const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
         return timestamp;
     }
-    private async getNetworkAsync() {
+    private async getNetworkAsync(): Promise<number> {
         const networkId = await promisify(this.web3.version.getNetwork)();
         return networkId;
     }
