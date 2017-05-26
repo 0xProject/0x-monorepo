@@ -14,8 +14,10 @@ export class ContractWrapper {
         const providerObj = this.web3Wrapper.getCurrentProvider();
         c.setProvider(providerObj);
 
-        const networkId = await this.web3Wrapper.getNetworkIdIfExistsAsync();
-        const artifactNetworkConfigs = _.isUndefined(networkId) ? undefined : artifact.networks[networkId];
+        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+        const artifactNetworkConfigs = _.isUndefined(networkIdIfExists) ?
+                                       undefined :
+                                       artifact.networks[networkIdIfExists];
         let contractAddress;
         if (!_.isUndefined(address)) {
             contractAddress = address;
