@@ -33,12 +33,7 @@ export class ContractWrapper {
         }
 
         try {
-            let contractInstance;
-            if (_.isUndefined(address)) {
-                contractInstance = await c.deployed();
-            } else {
-                contractInstance = await c.at(address);
-            }
+            const contractInstance = _.isUndefined(address) ? await c.deployed() : await c.at(address);
             return contractInstance;
         } catch (err) {
             const errMsg = `${err}`;
