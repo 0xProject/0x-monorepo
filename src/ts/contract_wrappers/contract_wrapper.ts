@@ -42,10 +42,10 @@ export class ContractWrapper {
             return contractInstance;
         } catch (err) {
             const errMsg = `${err}`;
-            utils.consoleLog(`Notice: Error encountered: ${err} ${err.stack}`);
             if (_.includes(errMsg, 'not been deployed to detected network')) {
                 throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
             } else {
+                utils.consoleLog(`Notice: Error encountered: ${err} ${err.stack}`);
                 throw new Error(ZeroExError.UNHANDLED_ERROR);
             }
         }
