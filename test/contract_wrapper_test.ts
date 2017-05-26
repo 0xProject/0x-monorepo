@@ -4,12 +4,12 @@ import chaiAsPromised = require('chai-as-promised');
 import * as Web3 from 'web3';
 import {web3Factory} from './utils/web3_factory';
 import {ExchangeWrapper} from '../src/ts/contract_wrappers/exchange_wrapper';
-import {BlockchainClean} from './utils/blockchain_clean';
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {Web3Wrapper} from './../src/ts/web3_wrapper';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
-const blockchainClean = new BlockchainClean();
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('ExchangeWrapper', () => {
     let web3Wrapper: Web3Wrapper;
@@ -20,10 +20,10 @@ describe('ExchangeWrapper', () => {
         exchangeWrapper = new ExchangeWrapper(web3Wrapper);
     });
     beforeEach(async () => {
-        await blockchainClean.setupAsync();
+        await blockchainLifecycle.startAsync();
     });
     afterEach(async () => {
-        await blockchainClean.restoreAsync();
+        await blockchainLifecycle.revertAsync();
     });
     describe('#isValidSignatureAsync', () => {
         // The Exchange smart contract `isValidSignature` method only validates orderHashes and assumes
