@@ -19,7 +19,6 @@ export class ExchangeWrapper extends ContractWrapper {
         const senderAddressIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
         assert.assert(!_.isUndefined(senderAddressIfExists), ZeroExError.USER_HAS_NO_ASSOCIATED_ADDRESSES);
 
-        // TODO: remove `any` here
         const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
         const exchangeInstance = contractInstance as ExchangeContract;
 
