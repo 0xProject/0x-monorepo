@@ -21,7 +21,10 @@
     "docs:json": "typedoc --json docs/index.json .",
     "docs:generate": "typedoc --out docs .",
     "docs:open": "opn docs/index.html",
-    "update_contracts": "artifacts=(Proxy Exchange TokenRegistry Token Mintable EtherToken); for i in \"${artifacts[@]}\"; do copyfiles -u 4 ./../contracts/build/contracts/$i.json ./../0x.js/src/artifacts; done;"
+    "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ./../contracts/build/contracts/$i.json ./../0x.js/src/artifacts; done;"
+  },
+  "config": {
+    "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken"
   },
   "repository": {
     "type": "git",
