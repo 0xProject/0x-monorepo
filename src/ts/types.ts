@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as BigNumber from 'bignumber.js';
 
 // Utility function to create a K:V from a list of strings
 // Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
@@ -28,3 +29,9 @@ export interface ECSignature {
 export interface ExchangeContract {
     isValidSignature: any;
 }
+
+export const SolidityTypes = strEnum([
+    'address',
+    'uint256',
+]);
+export type SolidityTypes = keyof typeof SolidityTypes;

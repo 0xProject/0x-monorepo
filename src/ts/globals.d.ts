@@ -1,4 +1,5 @@
 declare module 'chai-bignumber';
+declare module 'bn.js';
 
 declare interface Schema {
     id: string;
@@ -50,4 +51,8 @@ declare module 'truffle-contract' {
 declare function promisify(original: any, settings?: any): ((...arg: any[]) => Promise<any>);
 declare module 'es6-promisify' {
     export = promisify;
+}
+
+declare module 'ethereumjs-abi' {
+    const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
 }
