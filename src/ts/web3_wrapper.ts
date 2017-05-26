@@ -12,7 +12,7 @@ export class Web3Wrapper {
     public isAddress(address: string): boolean {
         return this.web3.isAddress(address);
     }
-    public async getSenderAddressIfExistsAsync(): Promise<string> {
+    public async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
         const defaultAccount = this.web3.eth.defaultAccount;
         if (!_.isUndefined(defaultAccount)) {
             return defaultAccount;
@@ -20,10 +20,10 @@ export class Web3Wrapper {
         const firstAccount = await this.getFirstAddressIfExistsAsync();
         return firstAccount;
     }
-    public async getFirstAddressIfExistsAsync(): Promise<string> {
+    public async getFirstAddressIfExistsAsync(): Promise<string|undefined> {
         const addresses = await promisify(this.web3.eth.getAccounts)();
         if (_.isEmpty(addresses)) {
-            return '';
+            return undefined;
         }
         return (addresses as string[])[0];
     }
