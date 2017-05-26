@@ -10,20 +10,21 @@ export class ExchangeWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
     }
-    public async isValidSignatureAsync(dataHex: string, ecSignature: ECSignature, maker: string) {
+    public async isValidSignatureAsync(dataHex: string, ecSignature: ECSignature,
+                                       signerAddressHex: string): Promise<boolean> {
         assert.isHexString('dataHex', dataHex);
         assert.doesConformToSchema('ecSignature', ecSignature, ECSignatureSchema);
-        assert.isString('maker', maker);
+        assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
-        const senderAddressIfExists = this.web3Wrapper.getSenderAddressIfExistsAsync();
+        const senderAddressIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
         assert.assert(!_.isUndefined(senderAddressIfExists), ZeroExError.USER_HAS_NO_ASSOCIATED_ADDRESSES);
 
-        // TODO: remove any here
+        // TODO: remove `any` here
         const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
         const exchangeInstance = contractInstance as ExchangeContract;
 
         const isValidSignature = await exchangeInstance.isValidSignature.call(
-            maker,
+            signerAddressHex,
             dataHex,
             ecSignature.v,
             ecSignature.r,
