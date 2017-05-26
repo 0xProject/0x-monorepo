@@ -10,3 +10,4 @@ test:
     - cd ../contracts; npm install && npm run migrate
     - npm run update_contracts
     - npm run test:coverage
+    - npm run lint
