@@ -6,7 +6,8 @@ export class BlockchainLifecycle {
     constructor() {
         this.rpc = new RPC();
     }
-    // TODO: Check if running on TestRPC or on actual node, if actual node, re-deploy contracts instead
+    // TODO: In order to run these tests on an actual node, we should check if we are running against
+    // TestRPC, if so, use snapshots, otherwise re-deploy contracts before every test
     public async startAsync(): Promise<void> {
         this.snapshotId = await this.rpc.takeSnapshotAsync();
     }
