@@ -1,6 +1,6 @@
 import * as BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
-import Web3 = require('web3');
+import * as Web3 from 'web3';
 import {assert} from './utils/assert';
 import {Web3Wrapper} from './web3_wrapper';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import Web3 = require('web3');
+import * as Web3 from 'web3';
 import {SchemaValidator} from './schema_validator';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;

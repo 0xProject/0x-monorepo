@@ -52,7 +52,7 @@
     "tslint-config-0xproject": "^0.0.2",
     "typedoc": "^0.7.1",
     "typescript": "^2.3.3",
-    "web3-typescript-typings": "0.0.7",
+    "web3-typescript-typings": "0.0.8",
     "webpack": "^2.6.0"
   },
   "dependencies": {
