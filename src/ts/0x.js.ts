@@ -1,11 +1,11 @@
+import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import * as BN from 'bn.js';
 import * as ethUtil from 'ethereumjs-util';
 import contract = require('truffle-contract');
 import * as Web3 from 'web3';
-import {Web3Wrapper} from './web3_wrapper';
 import * as ethABI from 'ethereumjs-abi';
-import * as _ from 'lodash';
+import {Web3Wrapper} from './web3_wrapper';
 import {constants} from './utils/constants';
 import {assert} from './utils/assert';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
