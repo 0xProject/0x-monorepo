@@ -4,4 +4,10 @@ machine:
 
 test:
   override:
+    - node node_modules/ethereumjs-testrpc/bin/testrpc:
+        background: true
+    - git clone git@github.com:0xProject/contracts.git ../contracts
+    - cd ../contracts; npm install && npm run migrate
+    - npm run update_contracts
     - npm run test:coverage
+    - npm run lint
