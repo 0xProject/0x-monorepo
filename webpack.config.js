@@ -17,7 +17,7 @@ module.exports = {
         umdNamedDefine: true,
     },
     resolve: {
-        extensions: ['.ts', '.js'],
+        extensions: ['.ts', '.js', '.json'],
     },
     devtool: 'source-map',
     plugins: [
@@ -28,13 +28,23 @@ module.exports = {
         }),
     ],
     module: {
-        loaders: [{
-            test: /\.ts$/,
-            loader: 'awesome-typescript-loader',
-            exclude: /node_modules/,
-            query: {
-                declaration: false,
+        rules: [
+            {
+                test: /\.ts$/,
+                use: [
+                    {
+                        loader: 'awesome-typescript-loader',
+                        query: {
+                            declaration: false,
+                        },
+                    },
+                ],
+                exclude: /node_modules/,
             },
-        }],
+            {
+                test: /\.json$/,
+                loader: 'json-loader',
+            },
+        ],
     },
 };

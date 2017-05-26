@@ -1,3 +1,5 @@
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
+    RPC_HOST: 'localhost',
+    RPC_PORT: 8545,
 };
