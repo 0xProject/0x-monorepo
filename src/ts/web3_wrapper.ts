@@ -54,8 +54,6 @@ export class Web3Wrapper {
         const didFindCode = _.isNull(code.match(zeroHexAddressRegex));
         return didFindCode;
     }
-    // Note: since `sign` is overloaded to be both a sync and async method, it doesn't play nice
-    // with our callAsync method. We therefore handle it here as a special case.
     public async signTransactionAsync(address: string, message: string): Promise<string> {
         const signData = await promisify(this.web3.eth.sign)(address, message);
         return signData;
