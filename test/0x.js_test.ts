@@ -180,7 +180,7 @@ describe('ZeroEx library', () => {
             const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
-        it ('should return the correct ECSignature on Party > V1.6.6', async () => {
+        it ('should return the correct ECSignature on Parity > V1.6.6', async () => {
             const newParityNodeVersion = 'Parity//v1.6.7-beta-e128418-20170518/x86_64-macos/rustc1.17.0';
             const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
             // tslint:disable-next-line: max-line-length
@@ -204,7 +204,7 @@ describe('ZeroEx library', () => {
             const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
-        it ('should return the correct ECSignature on Party < V1.6.6', async () => {
+        it ('should return the correct ECSignature on Parity < V1.6.6', async () => {
             const newParityNodeVersion = 'Parity//v1.6.6-beta-8c6e3f3-20170411/x86_64-macos/rustc1.16.0';
             const orderHash = '0xc793e33ffded933b76f2f48d9aa3339fc090399d5e7f5dec8d3660f5480793f7';
             // tslint:disable-next-line: max-line-length
