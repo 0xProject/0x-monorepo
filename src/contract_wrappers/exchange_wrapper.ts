@@ -52,7 +52,21 @@ export class ExchangeWrapper extends ContractWrapper {
                                 takerTokenAmount: BigNumber.BigNumber, makerFee: BigNumber.BigNumber,
                                 takerFee: BigNumber.BigNumber, expirationUnixTimestampSec: BigNumber.BigNumber,
                                 feeRecipient: string, fillAmount: BigNumber.BigNumber,
-                                signatureData: ECSignature, salt: BigNumber.BigNumber) {
+                                ecSignature: ECSignature, salt: BigNumber.BigNumber) {
+        assert.isBigNumber('salt', salt);
+        assert.isBigNumber('makerFee', makerFee);
+        assert.isBigNumber('takerFee', takerFee);
+        assert.isBigNumber('fillAmount', fillAmount);
+        assert.isBigNumber('makerTokenAmount', makerTokenAmount);
+        assert.isBigNumber('takerTokenAmount', takerTokenAmount);
+        assert.isBigNumber('expirationUnixTimestampSec', expirationUnixTimestampSec);
+        assert.isETHAddressHex('maker', maker);
+        assert.isETHAddressHex('taker', taker);
+        assert.isETHAddressHex('feeRecipient', feeRecipient);
+        assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
+        assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
+        assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
+
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeInstanceOrThrowAsync();
 
