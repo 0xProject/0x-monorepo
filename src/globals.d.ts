@@ -15,7 +15,7 @@ declare interface Schema {
 declare namespace Chai {
     interface Assertion {
         bignumber: Assertion;
-        eventually: Assertion;
+        eventually: PromisedAssertion;
     }
 }
 /* tslint:enable */
