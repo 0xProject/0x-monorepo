@@ -3,8 +3,8 @@ import * as chai from 'chai';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
-import {ZeroEx} from '../src/ts/0x.js';
-import {constants} from '../src/ts/utils/constants';
+import {ZeroEx} from '../src/0x.js';
+import {constants} from '../src/utils/constants';
 
 // Use BigNumber chai add-on
 chai.use(ChaiBigNumber());
