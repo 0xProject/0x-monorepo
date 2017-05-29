@@ -134,7 +134,7 @@ export class ZeroEx {
         this.exchange = new ExchangeWrapper(this.web3Wrapper);
     }
     /**
-     * Signs an orderHash and returns it's ECSignature
+     * Signs an orderHash and returns it's elliptic curve signature
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
     public async signOrderHashAsync(orderHashHex: string): Promise<ECSignature> {
