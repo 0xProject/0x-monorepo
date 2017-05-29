@@ -4,7 +4,7 @@ import {ECSignature, ZeroExError, ExchangeContract} from '../types';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
-import {ECSignatureSchema} from '../schemas/ec_signature_schema';
+import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 
 export class ExchangeWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper) {
@@ -13,7 +13,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async isValidSignatureAsync(dataHex: string, ecSignature: ECSignature,
                                        signerAddressHex: string): Promise<boolean> {
         assert.isHexString('dataHex', dataHex);
-        assert.doesConformToSchema('ecSignature', ecSignature, ECSignatureSchema);
+        assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
         const senderAddressIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();

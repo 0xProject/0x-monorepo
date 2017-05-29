@@ -1,10 +1,10 @@
-export const ECSignatureParameter = {
-    id: '/ECSignatureParameter',
+export const ecSignatureParameter = {
+    id: '/ecSignatureParameter',
     type: 'string',
     pattern: '^0[xX][0-9A-Fa-f]{64}$',
 };
 
-export const ECSignatureSchema = {
+export const ecSignatureSchema = {
     id: '/ECSignature',
     properties: {
         v: {
@@ -12,8 +12,8 @@ export const ECSignatureSchema = {
             minimum: 27,
             maximum: 28,
         },
-        r: {$ref: '/ECSignatureParameter'},
-        s: {$ref: '/ECSignatureParameter'},
+        r: {$ref: '/ecSignatureParameter'},
+        s: {$ref: '/ecSignatureParameter'},
     },
     required: ['v', 'r', 's'],
     type: 'object',

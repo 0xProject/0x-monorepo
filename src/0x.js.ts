@@ -11,7 +11,7 @@ import {assert} from './utils/assert';
 import findVersions = require('find-versions');
 import compareVersions = require('compare-versions');
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
-import {ECSignatureSchema} from './schemas/ec_signature_schema';
+import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
@@ -67,7 +67,7 @@ export class ZeroEx {
      */
     public static isValidSignature(dataHex: string, signature: ECSignature, signerAddressHex: string): boolean {
         assert.isHexString('dataHex', dataHex);
-        assert.doesConformToSchema('signature', signature, ECSignatureSchema);
+        assert.doesConformToSchema('signature', signature, ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
         const dataBuff = ethUtil.toBuffer(dataHex);
