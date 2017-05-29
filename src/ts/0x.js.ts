@@ -1,25 +1,22 @@
+import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
+import contract = require('truffle-contract');
+import * as Web3 from 'web3';
 import * as ethABI from 'ethereumjs-abi';
-import * as _ from 'lodash';
+import {Web3Wrapper} from './web3_wrapper';
 import {constants} from './utils/constants';
 import {utils} from './utils/utils';
 import {assert} from './utils/assert';
+import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {ECSignatureSchema} from './schemas/ec_signature_schema';
-import {SolidityTypes} from './types';
-
-/**
- * Elliptic Curve signature
- */
-export interface ECSignature {
-    v: number;
-    r: string;
-    s: string;
-}
+import {SolidityTypes, ECSignature} from './types';
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
+    public web3Wrapper: Web3Wrapper;
+    public exchange: ExchangeWrapper;
     /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
      */
@@ -74,7 +71,8 @@ export class ZeroEx {
         const dataBuff = ethUtil.toBuffer(dataHex);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
         try {
-            const pubKey = ethUtil.ecrecover(msgHashBuff,
+            const pubKey = ethUtil.ecrecover(
+                msgHashBuff,
                 signature.v,
                 ethUtil.toBuffer(signature.r),
                 ethUtil.toBuffer(signature.s));
@@ -128,5 +126,9 @@ export class ZeroEx {
         const unit = new BigNumber(10).pow(decimals);
         const baseUnitAmount = amount.times(unit);
         return baseUnitAmount;
+    }
+    constructor(web3: Web3) {
+        this.web3Wrapper = new Web3Wrapper(web3);
+        this.exchange = new ExchangeWrapper(this.web3Wrapper);
     }
 }

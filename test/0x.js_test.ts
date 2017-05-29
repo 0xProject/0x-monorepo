@@ -1,8 +1,9 @@
-import {ZeroEx} from '../src/ts/0x.js';
+import * as _ from 'lodash';
 import * as chai from 'chai';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
+import {ZeroEx} from '../src/ts/0x.js';
 import {constants} from '../src/ts/utils/constants';
 
 // Use BigNumber chai add-on
@@ -104,7 +105,7 @@ describe('ZeroEx library', () => {
             expect(isValid).to.be.false;
         });
         it('should return false if the signature doesn\'t pertain to the data & address', () => {
-            const wrongSignature = Object.assign({}, signature, {v: 28});
+            const wrongSignature = _.assign({}, signature, {v: 28});
             const isValid = ZeroEx.isValidSignature(data, wrongSignature, address);
             expect(isValid).to.be.false;
         });
