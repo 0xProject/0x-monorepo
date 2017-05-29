@@ -1,9 +1,9 @@
 import * as BigNumber from 'bignumber.js';
-import * as BN from 'bn.js';
 import * as ethUtil from 'ethereumjs-util';
 import * as ethABI from 'ethereumjs-abi';
 import * as _ from 'lodash';
 import {constants} from './utils/constants';
+import {utils} from './utils/utils';
 import {assert} from './utils/assert';
 import {ECSignatureSchema} from './schemas/ec_signature_schema';
 import {SolidityTypes} from './types';
@@ -49,12 +49,12 @@ export class ZeroEx {
             {value: tokenMAddress, type: SolidityTypes.address},
             {value: tokenTAddress, type: SolidityTypes.address},
             {value: feeRecipient, type: SolidityTypes.address},
-            {value: this.bigNumberToBN(valueM), type: SolidityTypes.uint256},
-            {value: this.bigNumberToBN(valueT), type: SolidityTypes.uint256},
-            {value: this.bigNumberToBN(makerFee), type: SolidityTypes.uint256},
-            {value: this.bigNumberToBN(takerFee), type: SolidityTypes.uint256},
-            {value: this.bigNumberToBN(expiration), type: SolidityTypes.uint256},
-            {value: this.bigNumberToBN(salt), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(valueM), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(valueT), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(makerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(takerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(expiration), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(salt), type: SolidityTypes.uint256},
         ];
         const types = _.map(orderParts, o => o.type);
         const values = _.map(orderParts, o => o.value);
@@ -128,15 +128,5 @@ export class ZeroEx {
         const unit = new BigNumber(10).pow(decimals);
         const baseUnitAmount = amount.times(unit);
         return baseUnitAmount;
-    }
-
-    /**
-     * Converts BigNumber instance to BN
-     * The only we convert to BN is to remain compatible with `ethABI. soliditySHA3 ` that
-     * expects values of Solidity type `uint` to be of type `BN`.
-     * We do not use BN anywhere else in the codebase.
-     */
-    private static bigNumberToBN(value: BigNumber.BigNumber) {
-        return new BN(value.toString(), 10);
     }
 }
