@@ -3,8 +3,6 @@ declare module 'bn.js';
 declare module 'request-promise-native';
 declare module 'web3-provider-engine';
 declare module 'web3-provider-engine/subproviders/rpc';
-declare module 'find-versions';
-declare module 'compare-versions';
 
 declare interface Schema {
     id: string;
@@ -53,6 +51,18 @@ declare interface Artifact {
 declare function contract(artifacts: Artifact): ContractFactory;
 declare module 'truffle-contract' {
     export = contract;
+}
+
+// find-version declarations
+declare function findVersions(version: string): string[];
+declare module 'find-versions' {
+    export = findVersions;
+}
+
+// compare-version declarations
+declare function compareVersions(firstVersion: string, secondVersion: string): number;
+declare module 'compare-versions' {
+    export = compareVersions;
 }
 
 // es6-promisify declarations
