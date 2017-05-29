@@ -10,12 +10,14 @@
     "exchange"
   ],
   "scripts": {
-    "build": "npm run clean && run-p build:*:prod",
+    "prebuild": "npm run clean",
+    "build": "run-p build:*:prod",
     "lint": "tslint src/**/*.ts",
-    "test": "run-s test:commonjs test:umd",
-    "test:coverage": "nyc npm run test:commonjs --all",
+    "test": "run-s clean test:commonjs",
+    "test:umd": "run-s substitute_umd_bundle run_mocha; npm run clean",
+    "test:coverage": "nyc npm run test --all",
     "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
-    "testrpc": "testrpc -p 8545 --networkId 50 -m \"concert load couple harbor equip island argue ramp clarify fence smart topic\"",
+    "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
     "docs:json": "typedoc --json docs/index.json .",
     "docs:generate": "typedoc --out docs .",
     "docs:open": "opn docs/index.html",
@@ -25,15 +27,14 @@
     "build:umd:dev": "webpack",
     "build:umd:prod": "webpack -p",
     "build:commonjs:dev": "tsc; copyfiles -u 2 ./src/artifacts/*.json ../0x.js/lib/src/artifacts;",
-    "run_mocha": "mocha test_temp/test/**/*_test.js",
-    "test:commonjs": "run-s build:commonjs:dev setup_commonjs run_mocha tear_down",
-    "test:umd": "run-s build:*:dev setup_umd run_mocha tear_down",
-    "setup_commonjs": "shx cp -r lib test_temp",
-    "setup_umd": "shx mkdir -p test_temp/src && shx cp _bundles/* test_temp/src && shx cp -r lib/test test_temp/test",
-    "tear_down": "shx rm -rf test_temp"
+    "test:commonjs": "run-s build:commonjs:dev run_mocha",
+    "pretest:umd": "run-s clean build:*:dev",
+    "substitute_umd_bundle": "shx rm -rf lib/src && shx mv _bundles lib/src",
+    "run_mocha": "mocha lib/test/**/*_test.js"
   },
   "config": {
-    "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken"
+    "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken",
+    "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
   },
   "repository": {
     "type": "git",
