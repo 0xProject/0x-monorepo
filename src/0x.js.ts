@@ -101,11 +101,11 @@ export class ZeroEx {
         const isValid = /^0x[0-9A-F]{64}$/i.test(orderHash);
         return isValid;
     }
-    /*
+    /**
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
      * E.g: If a currency has 18 decimal places, 1e18 or one quintillion of the currency is equivalent
      * to 1 unit.
-    */
+     */
     public static toUnitAmount(amount: BigNumber.BigNumber, decimals: number): BigNumber.BigNumber {
         assert.isBigNumber('amount', amount);
         assert.isNumber('decimals', decimals);
@@ -114,11 +114,11 @@ export class ZeroEx {
         const unit = amount.div(aUnit);
         return unit;
     }
-    /*
+    /**
      * A baseUnit is defined as the smallest denomination of a token. An amount expressed in baseUnits
      * is the amount expressed in the smallest denomination.
      * E.g: 1 unit of a token with 18 decimal places is expressed in baseUnits as 1000000000000000000
-    */
+     */
     public static toBaseUnitAmount(amount: BigNumber.BigNumber, decimals: number): BigNumber.BigNumber {
         assert.isBigNumber('amount', amount);
         assert.isNumber('decimals', decimals);
