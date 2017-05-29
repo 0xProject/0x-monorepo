@@ -3,7 +3,7 @@ import {Web3Wrapper} from '../web3_wrapper';
 import {ECSignature, ZeroExError, ExchangeContract} from '../types';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
-import * as ExchangeArtifacts from '../../artifacts/Exchange.json';
+import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ECSignatureSchema} from '../schemas/ec_signature_schema';
 
 export class ExchangeWrapper extends ContractWrapper {

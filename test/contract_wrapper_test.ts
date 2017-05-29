@@ -3,9 +3,9 @@ import * as chai from 'chai';
 import chaiAsPromised = require('chai-as-promised');
 import * as Web3 from 'web3';
 import {web3Factory} from './utils/web3_factory';
-import {ExchangeWrapper} from '../src/ts/contract_wrappers/exchange_wrapper';
+import {ExchangeWrapper} from '../src/contract_wrappers/exchange_wrapper';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import {Web3Wrapper} from './../src/ts/web3_wrapper';
+import {Web3Wrapper} from './../src/web3_wrapper';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
