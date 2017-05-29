@@ -12,7 +12,7 @@
   "scripts": {
     "build": "npm run clean && run-p build:*:prod",
     "lint": "tslint src/**/*.ts",
-    "test": "run-s build:dev test:commonjs test:umd",
+    "test": "run-s test:commonjs test:umd",
     "test:coverage": "nyc npm run test --all",
     "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
     "testrpc": "testrpc -p 8545 --networkId 50",
