@@ -92,9 +92,9 @@ export class ExchangeWrapper extends ContractWrapper {
             orderValues,
             fillAmount,
             shouldCheckTransfer,
-            signatureData.v,
-            signatureData.r,
-            signatureData.s,
+            ecSignature.v,
+            ecSignature.r,
+            ecSignature.s,
             {
                 from: senderAddress,
             },
