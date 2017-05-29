@@ -12,9 +12,8 @@ export const utils = {
         return new BN(value.toString(), 10);
     },
     consoleLog(message: string): void {
-        /* tslint:disable */
+        // tslint:disable-next-line: no-console
         console.log(message);
-        /* tslint:enable */
     },
     isParityNode(nodeVersion: string): boolean {
         return _.includes(nodeVersion, 'Parity');
