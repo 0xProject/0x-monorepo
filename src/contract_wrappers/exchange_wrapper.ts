@@ -1,10 +1,18 @@
 import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
-import {ECSignature, ZeroExError, ExchangeContract} from '../types';
+import {
+    ECSignature,
+    ExchangeContract,
+    ExchangeContractErrs,
+    OrderValues,
+    OrderAddresses,
+} from '../types';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
+import {ContractResponse} from '../types';
+import {constants} from '../utils/constants';
 
 export class ExchangeWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper) {
@@ -31,6 +39,60 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return isValidSignature;
     }
+    public async fillOrderAsync(maker: string, taker: string, makerTokenAddress: string,
+                                takerTokenAddress: string, makerTokenAmount: BigNumber.BigNumber,
+                                takerTokenAmount: BigNumber.BigNumber, makerFee: BigNumber.BigNumber,
+                                takerFee: BigNumber.BigNumber, expirationUnixTimestampSec: BigNumber.BigNumber,
+                                feeRecipient: string, fillAmount: BigNumber.BigNumber,
+                                signatureData: ECSignature, salt: BigNumber.BigNumber) {
+        const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
+        const exchangeInstance = await this.getExchangeInstanceOrThrowAsync();
+
+        taker = taker === '' ? constants.NULL_ADDRESS : taker;
+        const shouldCheckTransfer = true;
+        const orderAddresses: OrderAddresses = [
+            maker,
+            taker,
+            makerTokenAddress,
+            takerTokenAddress,
+            feeRecipient,
+        ];
+        const orderValues: OrderValues = [
+            makerTokenAmount,
+            takerTokenAmount,
+            makerFee,
+            takerFee,
+            expirationUnixTimestampSec,
+            salt,
+        ];
+        const response: ContractResponse = await exchangeInstance.fill(
+            orderAddresses,
+            orderValues,
+            fillAmount,
+            shouldCheckTransfer,
+            signatureData.v,
+            signatureData.r,
+            signatureData.s,
+            {
+                from: senderAddress,
+            },
+        );
+        const errEvent = _.find(response.logs, {event: 'LogError'});
+        if (!_.isUndefined(errEvent)) {
+            const errCode = errEvent.args.errorId.toNumber();
+            const humanReadableErrMessage = this.exchangeContractErrToMsg[errCode];
+            throw new Error(humanReadableErrMessage);
+        }
+        return response;
+    }
+    private exchangeContractErrToMsg = {
+        [ExchangeContractErrs.ERROR_FILL_EXPIRED]: 'The order you attempted to fill is expired',
+        [ExchangeContractErrs.ERROR_CANCEL_EXPIRED]: 'The order you attempted to cancel is expired',
+        [ExchangeContractErrs.ERROR_FILL_NO_VALUE]: 'This order has already been filled or cancelled',
+        [ExchangeContractErrs.ERROR_CANCEL_NO_VALUE]: 'This order has already been filled or cancelled',
+        [ExchangeContractErrs.ERROR_FILL_TRUNCATION]: 'The rounding error was too large when filling this order',
+        [ExchangeContractErrs.ERROR_FILL_BALANCE_ALLOWANCE]: 'Maker or taker has insufficient balance or allowance',
+    };
     private async getExchangeInstanceOrThrowAsync(): Promise<ExchangeContract> {
         const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
         return contractInstance as ExchangeContract;
