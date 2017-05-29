@@ -30,8 +30,21 @@ export interface ExchangeContract {
     isValidSignature: any;
 }
 
+export interface TokenRegistryContract {
+    getTokenMetaData: any;
+    getTokenAddresses: any;
+}
+
 export const SolidityTypes = strEnum([
     'address',
     'uint256',
 ]);
 export type SolidityTypes = keyof typeof SolidityTypes;
+
+export interface Token {
+    name: string;
+    address: string;
+    symbol: string;
+    decimals: number;
+    url: string;
+};
