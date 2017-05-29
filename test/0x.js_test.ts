@@ -165,6 +165,7 @@ describe('ZeroEx library', () => {
         afterEach(() => {
             // clean up any stubs after the test has completed
             _.each(stubs, s => s.restore());
+            stubs = [];
         });
         it ('Should return the correct ECSignature on TestPRC nodeVersion', async () => {
             const orderHash = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
