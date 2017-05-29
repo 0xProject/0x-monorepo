@@ -20,7 +20,7 @@
     "docs:generate": "typedoc --out docs .",
     "docs:open": "opn docs/index.html",
 
-    "clean": "shx rm -rf _bundles lib",
+    "clean": "shx rm -rf _bundles lib test_temp",
     "build:dev": "npm run clean && run-p build:*:dev",
     "build:umd:dev": "webpack",
     "build:umd:prod": "webpack -p",

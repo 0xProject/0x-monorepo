@@ -1,15 +1,16 @@
 /**
  * This is to generate the umd bundle only
  */
+const lodash = require('lodash');
 const webpack = require('webpack');
 const path = require('path');
-const PROD = process.env.NODE_ENV === 'production';
+const production = process.env.NODE_ENV === 'production';
 
 let entry = {
     '0x': './src/0x.js.ts',
 };
-if (PROD) {
-    entry = Object.assign({}, entry, {'0x.min': './src/0x.js.ts'});
+if (production) {
+    entry = _.assign({}, entry, {'0x.min': './src/0x.js.ts'});
 }
 
 module.exports = {
