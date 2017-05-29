@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as BN from 'bn.js';
 
 export const utils = {
@@ -14,5 +15,8 @@ export const utils = {
         /* tslint:disable */
         console.log(message);
         /* tslint:enable */
+    },
+    isParityNode(nodeVersion: string): boolean {
+        return _.includes(nodeVersion, 'Parity');
     },
 };

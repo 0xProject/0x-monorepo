@@ -3,6 +3,8 @@ declare module 'bn.js';
 declare module 'request-promise-native';
 declare module 'web3-provider-engine';
 declare module 'web3-provider-engine/subproviders/rpc';
+declare module 'find-versions';
+declare module 'compare-versions';
 
 declare interface Schema {
     id: string;
@@ -35,6 +37,7 @@ declare module 'ethereumjs-util' {
     const pubToAddress: (pubKey: string) => Buffer;
     const isValidAddress: (address: string) => boolean;
     const bufferToInt: (buffer: Buffer) => number;
+    const fromRpcSig: (signature: string) => {v: number, r: Buffer, s: Buffer};
 }
 
 // truffle-contract declarations
