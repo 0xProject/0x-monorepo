@@ -5,7 +5,7 @@ import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
 import * as Sinon from 'sinon';
 import {ZeroEx} from '../src/0x.js';
-import {constants} from '../src/utils/constants';
+import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 
 // Use BigNumber chai add-on

@@ -10,18 +10,27 @@
     "exchange"
   ],
   "scripts": {
-    "clean": "shx rm -rf _bundles lib",
-    "build:bundle": "webpack",
-    "build:commonjs": "tsc; copyfiles -u 2 ./src/artifacts/*.json ../0x.js/lib/src/artifacts;",
-    "build": "npm run clean && run-p build:*",
+    "build": "npm run clean && run-p build:*:prod",
     "lint": "tslint src/**/*.ts",
-    "test": "run-s clean build:commonjs && mocha lib/test/**/*_test.js",
+    "test": "run-s test:commonjs test:umd",
     "test:coverage": "nyc npm run test --all",
+    "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
+    "testrpc": "testrpc -p 8545 --networkId 50 -m \"concert load couple harbor equip island argue ramp clarify fence smart topic\"",
     "docs:json": "typedoc --json docs/index.json .",
     "docs:generate": "typedoc --out docs .",
     "docs:open": "opn docs/index.html",
-    "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
-    "testrpc": "testrpc -p 8545 --networkId 50 -m \"concert load couple harbor equip island argue ramp clarify fence smart topic\""
+
+    "clean": "shx rm -rf _bundles lib test_temp",
+    "build:dev": "npm run clean && run-p build:*:dev",
+    "build:umd:dev": "webpack",
+    "build:umd:prod": "webpack -p",
+    "build:commonjs:dev": "tsc; copyfiles -u 2 ./src/artifacts/*.json ../0x.js/lib/src/artifacts;",
+    "run_mocha": "mocha test_temp/test/**/*_test.js",
+    "test:commonjs": "run-s build:commonjs:dev setup_commonjs run_mocha tear_down",
+    "test:umd": "run-s build:*:dev setup_umd run_mocha tear_down",
+    "setup_commonjs": "shx cp -r lib test_temp",
+    "setup_umd": "shx mkdir -p test_temp/src && shx cp _bundles/* test_temp/src && shx cp -r lib/test test_temp/test",
+    "tear_down": "shx rm -rf test_temp"
   },
   "config": {
     "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken"

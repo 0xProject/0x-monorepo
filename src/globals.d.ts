@@ -15,6 +15,7 @@ declare interface Schema {
 declare namespace Chai {
     interface Assertion {
         bignumber: Assertion;
+        // HACK: In order to comply with chai-as-promised we make eventually a `PromisedAssertion` not an `Assertion`
         eventually: PromisedAssertion;
     }
 }
