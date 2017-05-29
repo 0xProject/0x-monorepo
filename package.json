@@ -21,7 +21,7 @@
     "docs:generate": "typedoc --out docs .",
     "docs:open": "opn docs/index.html",
     "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
-    "testrpc": "testrpc -p 8545 --networkId 50"
+    "testrpc": "testrpc -p 8545 --networkId 50 -m \"concert load couple harbor equip island argue ramp clarify fence smart topic\""
   },
   "config": {
     "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken"
