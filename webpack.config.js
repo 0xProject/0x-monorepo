@@ -6,8 +6,8 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        '0x': './src/ts/0x.js.ts',
-        '0x.min': './src/ts/0x.js.ts'
+        '0x': './src/0x.js.ts',
+        '0x.min': './src/0x.js.ts'
     },
     output: {
         path: path.resolve(__dirname, '_bundles'),
