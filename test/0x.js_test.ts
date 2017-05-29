@@ -4,7 +4,7 @@ import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
 import {ZeroEx} from '../src/0x.js';
-import {constants} from '../src/utils/constants';
+import {constants} from './utils/constants';
 
 // Use BigNumber chai add-on
 chai.use(ChaiBigNumber());
