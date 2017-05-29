@@ -36,6 +36,7 @@ declare module 'ethereumjs-util' {
     const pubToAddress: (pubKey: string) => Buffer;
     const isValidAddress: (address: string) => boolean;
     const bufferToInt: (buffer: Buffer) => number;
+    const fromRpcSig: (signature: string) => {v: number, r: Buffer, s: Buffer};
 }
 
 // truffle-contract declarations
@@ -51,6 +52,18 @@ declare interface Artifact {
 declare function contract(artifacts: Artifact): ContractFactory;
 declare module 'truffle-contract' {
     export = contract;
+}
+
+// find-version declarations
+declare function findVersions(version: string): string[];
+declare module 'find-versions' {
+    export = findVersions;
+}
+
+// compare-version declarations
+declare function compareVersions(firstVersion: string, secondVersion: string): number;
+declare module 'compare-versions' {
+    export = compareVersions;
 }
 
 // es6-promisify declarations

@@ -13,6 +13,7 @@ export const ZeroExError = strEnum([
   'CONTRACT_DOES_NOT_EXIST',
   'UNHANDLED_ERROR',
   'USER_HAS_NO_ASSOCIATED_ADDRESSES',
+  'INVALID_SIGNATURE',
 ]);
 export type ZeroExError = keyof typeof ZeroExError;
 
