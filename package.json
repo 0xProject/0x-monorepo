@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "clean": "shx rm -rf _bundles lib",
-    "build:bundle": "webpack",
+    "build:umd": "webpack",
     "build:commonjs": "tsc; copyfiles -u 2 ./src/artifacts/*.json ../0x.js/lib/src/artifacts;",
     "build": "npm run clean && run-p build:*",
     "lint": "tslint src/**/*.ts",
