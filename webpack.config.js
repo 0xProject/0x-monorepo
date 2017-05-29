@@ -3,12 +3,17 @@
  */
 const webpack = require('webpack');
 const path = require('path');
+const PROD = process.env.NODE_ENV === 'production';
+
+let entry = {
+    '0x': './src/0x.js.ts',
+};
+if (PROD) {
+    entry = Object.assign({}, entry, {'0x.min': './src/0x.js.ts'});
+}
 
 module.exports = {
-    entry: {
-        '0x': './src/0x.js.ts',
-        '0x.min': './src/0x.js.ts'
-    },
+    entry,
     output: {
         path: path.resolve(__dirname, '_bundles'),
         filename: '[name].js',
