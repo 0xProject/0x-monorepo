@@ -10,4 +10,5 @@ test:
     - cd ../contracts; git checkout 38c2b4c; npm install && npm run migrate
     - npm run update_contracts
     - npm run test:coverage
+    - npm run test:umd
     - npm run lint
