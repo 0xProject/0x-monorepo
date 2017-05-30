@@ -17,8 +17,9 @@ describe('ZeroEx library', () => {
         it('overrides the provider in the nested web3 instance and invalidates contractInstances', async () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3);
-            // Instantiate the exchangeContract instance with the current provider
+            // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any).instantiateExchangeContractIfDoesntExistAsync();
+            await (zeroEx.tokenRegistry as any).instantiateTokenRegistryContractIfDoesntExistAsync();
 
             const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
