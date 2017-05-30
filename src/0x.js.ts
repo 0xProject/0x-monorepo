@@ -137,8 +137,7 @@ export class ZeroEx {
         this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
     }
     /**
-     * Sets a new provider for the web3 instance used by 0x.js internally and invalidates any instantiated
-     * contract instances instantiated with the old provider.
+     * Sets a new provider for the web3 instance used by 0x.js
      */
     public setProvider(provider: Web3.Provider) {
         this.web3Wrapper.setProvider(provider);
