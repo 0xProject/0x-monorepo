@@ -2,10 +2,13 @@ import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
+import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenArtifacts from '../artifacts/Token.json';
 import * as ProxyArtifacts from '../artifacts/Proxy.json';
 import {TokenContract, InternalError} from '../types';
+
+const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
 
 export class TokenWrapper extends ContractWrapper {
     private tokenContractsByAddress: {[address: string]: TokenContract};
@@ -31,7 +34,8 @@ export class TokenWrapper extends ContractWrapper {
         return balance;
     }
     /**
-     * Retrieves the allowance of an ERC20 token set to the 0x proxy contract by an owner address
+     * Retrieves the allowance in baseUnits of the ERC20 token set to the 0x proxy contract
+     * by an owner address
      */
     public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
@@ -39,9 +43,33 @@ export class TokenWrapper extends ContractWrapper {
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
         const proxyAddress = await this.getProxyAddressAsync();
-        let allowance = await tokenContract.allowance.call(ownerAddress, proxyAddress);
-        allowance = _.isUndefined(allowance) ? new BigNumber(0) : new BigNumber(allowance);
-        return allowance;
+        let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, proxyAddress);
+        allowanceInBaseUnits = _.isUndefined(allowanceInBaseUnits) ?
+                               new BigNumber(0) :
+                               new BigNumber(allowanceInBaseUnits);
+        return allowanceInBaseUnits;
+    }
+    /**
+     * Sets the 0x proxy contract's allowance to a specified number of a tokens' baseUnits on behalf
+     * of an owner address.
+     */
+    public async setProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
+                                        amountInBaseUnits: BigNumber.BigNumber) {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
+
+        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        const proxyAddress = await this.getProxyAddressAsync();
+        // Hack: for some reason default estimated gas amount causes `base fee exceeds gas limit` exception
+        // on testrpc. Probably related to https://github.com/ethereumjs/testrpc/issues/294
+        // TODO: Debug issue in testrpc and submit a PR, then remove this hack
+        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+        const gas = networkIdIfExists === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
+        await tokenContract.approve(proxyAddress, amountInBaseUnits, {
+            from: ownerAddress,
+            gas,
+        });
     }
     private async getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
         let tokenContract = this.tokenContractsByAddress[tokenAddress];

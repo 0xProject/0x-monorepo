@@ -42,6 +42,7 @@ export interface TokenContract {
     allowance: {
         call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
     };
+    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, opts: any) => void;
 }
 
 export interface TokenRegistryContract {
