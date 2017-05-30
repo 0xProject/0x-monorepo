@@ -12,7 +12,7 @@ export class ExchangeWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
     }
-    public invalidateExchangeContract() {
+    public invalidateContractInstance() {
         delete this.exchangeContractIfExists;
     }
     public async isValidSignatureAsync(dataHex: string, ecSignature: ECSignature,
