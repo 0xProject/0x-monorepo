@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Web3 from 'web3';
 
 // Utility function to create a K:V from a list of strings
 // Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
@@ -28,6 +29,8 @@ export interface ECSignature {
 
 export interface ExchangeContract {
     isValidSignature: any;
+    currentProvider: Web3.Provider;
+    setProvider: (provider: Web3.Provider) => void;
 }
 
 export const SolidityTypes = strEnum([
