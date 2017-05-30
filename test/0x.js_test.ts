@@ -18,8 +18,8 @@ describe('ZeroEx library', () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3);
             // Instantiate the contract instances with the current provider
-            await (zeroEx.exchange as any).instantiateExchangeContractIfDoesntExistAsync();
-            await (zeroEx.tokenRegistry as any).instantiateTokenRegistryContractIfDoesntExistAsync();
+            await (zeroEx.exchange as any).getExchangeContractAsync();
+            await (zeroEx.tokenRegistry as any).getTokenRegistryContractAsync();
             expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.an('undefined');
             expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.an('undefined');
 

@@ -6,20 +6,20 @@ import {ContractWrapper} from './contract_wrapper';
 import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
 
 export class TokenRegistryWrapper extends ContractWrapper {
-    private tokenRegistryContractIfExists: TokenRegistryContract;
+    private tokenRegistryContractIfExists?: TokenRegistryContract;
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
     }
-    public invalidateContractInstance() {
+    public invalidateContractInstance(): void {
         delete this.tokenRegistryContractIfExists;
     }
     public async getTokensAsync(): Promise<Token[]> {
-        await this.instantiateTokenRegistryContractIfDoesntExistAsync();
+        const tokenRegistryContract = await this.getTokenRegistryContractAsync();
 
-        const addresses = await this.tokenRegistryContractIfExists.getTokenAddresses.call();
+        const addresses = await tokenRegistryContract.getTokenAddresses.call();
         const tokenMetadataPromises: Array<Promise<TokenMetadata>> = _.map(
             addresses,
-            (address: string) => (this.tokenRegistryContractIfExists.getTokenMetaData.call(address)),
+            (address: string) => (tokenRegistryContract.getTokenMetaData.call(address)),
         );
         const tokensMetadata = await Promise.all(tokenMetadataPromises);
         const tokens = _.map(tokensMetadata, metadata => {
@@ -33,11 +33,12 @@ export class TokenRegistryWrapper extends ContractWrapper {
         });
         return tokens;
     }
-    private async instantiateTokenRegistryContractIfDoesntExistAsync() {
+    private async getTokenRegistryContractAsync(): Promise<TokenRegistryContract> {
         if (!_.isUndefined(this.tokenRegistryContractIfExists)) {
-            return;
+            return this.tokenRegistryContractIfExists;
         }
         const contractInstance = await this.instantiateContractIfExistsAsync((TokenRegistryArtifacts as any));
         this.tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
+        return this.tokenRegistryContractIfExists;
     }
 }
