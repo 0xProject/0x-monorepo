@@ -10,14 +10,18 @@ import {constants} from './constants';
 
 export const web3Factory = {
     create(): Web3 {
+        const provider = this.getRpcProvider();
+        const web3 = new Web3();
+        web3.setProvider(provider);
+        return web3;
+    },
+    getRpcProvider(): Web3.Provider {
         const provider = new ProviderEngine();
         const rpcUrl = `http://${constants.RPC_HOST}:${constants.RPC_PORT}`;
         provider.addProvider(new RpcSubprovider({
             rpcUrl,
         }));
         provider.start();
-        const web3 = new Web3();
-        web3.setProvider(provider);
-        return web3;
+        return provider;
     },
 };
