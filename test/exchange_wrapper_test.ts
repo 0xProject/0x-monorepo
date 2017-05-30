@@ -4,7 +4,7 @@ import chaiAsPromised = require('chai-as-promised');
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import * as OrderJSON from './fixtures/orders/5_MKR_for_42_MLN.json';
+import * as OrderJSON from './fixtures/orders/5_MLN_for_42_GLM.json';
 import * as BigNumber from 'bignumber.js';
 import {signedOrderFromJSON} from './utils/order';
 
@@ -95,10 +95,11 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#fillOrderAsync', () => {
-        const fillAmount = new BigNumber(1);
         const signedOrder = signedOrderFromJSON(OrderJSON);
-        it('fillsOrder', async () => {
-            // const orderFillResponse = await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
+        it('should throw when the fill amount is zero', async () => {
+            const fillAmount = new BigNumber(0);
+            expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
+                .to.be.rejectedWith('This order has already been filled or cancelled');
         });
     });
 });
