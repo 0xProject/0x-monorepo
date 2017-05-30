@@ -6,7 +6,8 @@ export const addressSchema = {
 
 export const numberSchema = {
     id: '/numberSchema',
-    type: 'number',
+    type: 'string',
+    format: '\d+(\.\d+)?',
 };
 
 export const orderSchema = {
@@ -25,13 +26,12 @@ export const orderSchema = {
         takerTokenAddress: {$ref: '/addressSchema'},
 
         salt: {$ref: '/numberSchema'},
-        fillAmount: {$ref: '/numberSchema'},
         feeRecipient: {$ref: '/addressSchema'},
         expirationUnixTimestampSec: {$ref: '/numberSchema'},
     },
     required: [
         'maker', /*'taker',*/ 'makerFee', 'takerFee', 'makerTokenAmount', 'takerTokenAmount',
-        'salt', 'fillAmount', 'feeRecipient', 'expirationUnixTimestampSec',
+        'salt', 'feeRecipient', 'expirationUnixTimestampSec',
     ],
     type: 'object',
 };
@@ -42,7 +42,7 @@ export const signedOrderSchema = {
         { $ref: '/orderSchema' },
         {
             properties: {
-                ecSignature: {$ref: '/addressSchema'},
+                ecSignature: {$ref: '/ECSignature'},
             },
             required: ['ecSignature'],
         },
