@@ -53,12 +53,42 @@ describe('TokenWrapper', () => {
         });
     });
     describe('#getProxyAllowanceAsync', () => {
+        it('should get the proxy allowance', async () => {
+            const aToken = tokens[0];
+            const aOwnerAddress = userAddresses[0];
+
+            const amountInUnits = new BigNumber('50');
+            const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, aToken.decimals);
+            await zeroEx.token.setProxyAllowanceAsync(aToken.address, aOwnerAddress, amountInBaseUnits);
+
+            const allowance = await zeroEx.token.getProxyAllowanceAsync(aToken.address, aOwnerAddress);
+            const expectedAllowance = amountInBaseUnits;
+            expect(allowance).to.be.bignumber.equal(expectedAllowance);
+        });
         it('should return 0 if no allowance set yet', async () => {
             const aToken = tokens[0];
-            const aOwner = userAddresses[0];
-            const allowance = await zeroEx.token.getProxyAllowanceAsync(aToken.address, aOwner);
+            const aOwnerAddress = userAddresses[0];
+            const allowance = await zeroEx.token.getProxyAllowanceAsync(aToken.address, aOwnerAddress);
             const expectedAllowance = new BigNumber('0');
             expect(allowance).to.be.bignumber.equal(expectedAllowance);
+        });
+    });
+    describe('#setProxyAllowanceAsync', () => {
+        it('should set the proxy allowance', async () => {
+            const aToken = tokens[0];
+            const aOwnerAddress = userAddresses[0];
+
+            const allowanceBeforeSet = await zeroEx.token.getProxyAllowanceAsync(aToken.address, aOwnerAddress);
+            const expectedAllowanceBeforeAllowanceSet = new BigNumber('0');
+            expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
+
+            const amountInUnits = new BigNumber('50');
+            const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, aToken.decimals);
+            await zeroEx.token.setProxyAllowanceAsync(aToken.address, aOwnerAddress, amountInBaseUnits);
+
+            const allowanceAfterSet = await zeroEx.token.getProxyAllowanceAsync(aToken.address, aOwnerAddress);
+            const expectedAllowanceAfterAllowanceSet = amountInBaseUnits;
+            expect(allowanceAfterSet).to.be.bignumber.equal(expectedAllowanceAfterAllowanceSet);
         });
     });
 });
