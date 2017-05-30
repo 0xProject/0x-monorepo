@@ -52,4 +52,13 @@ describe('TokenWrapper', () => {
             expect(balance).to.be.bignumber.equal(expectedBalance);
         });
     });
+    describe('#getProxyAllowanceAsync', () => {
+        it('should return 0 if no allowance set yet', async () => {
+            const aToken = tokens[0];
+            const aOwner = userAddresses[0];
+            const allowance = await zeroEx.token.getProxyAllowanceAsync(aToken.address, aOwner);
+            const expectedAllowance = new BigNumber('0');
+            expect(allowance).to.be.bignumber.equal(expectedAllowance);
+        });
+    });
 });
