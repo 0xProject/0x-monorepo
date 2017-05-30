@@ -21,7 +21,7 @@ const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 export class ZeroEx {
     public exchange: ExchangeWrapper;
     public tokenRegistry: TokenRegistryWrapper;
-    public erc20: TokenWrapper;
+    public token: TokenWrapper;
     private web3Wrapper: Web3Wrapper;
     /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
@@ -137,7 +137,7 @@ export class ZeroEx {
         this.web3Wrapper = new Web3Wrapper(web3);
         this.exchange = new ExchangeWrapper(this.web3Wrapper);
         this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
-        this.erc20 = new TokenWrapper(this.web3Wrapper);
+        this.token = new TokenWrapper(this.web3Wrapper);
     }
     /**
      * Sets a new provider for the web3 instance used by 0x.js
@@ -146,7 +146,7 @@ export class ZeroEx {
         this.web3Wrapper.setProvider(provider);
         this.exchange.invalidateContractInstance();
         this.tokenRegistry.invalidateContractInstance();
-        this.erc20.invalidateContractInstances();
+        this.token.invalidateContractInstances();
     }
     /**
      * Signs an orderHash and returns it's elliptic curve signature
