@@ -4,10 +4,9 @@ export const addressSchema = {
     pattern: '^0[xX][0-9A-Fa-f]{40}$',
 };
 
-export const bigNumberSchema = {
-    id: '/bigNumberSchema',
-    type: 'string',
-    pattern: '^\d*$',
+export const numberSchema = {
+    id: '/numberSchema',
+    type: 'number',
 };
 
 export const orderSchema = {
@@ -16,19 +15,19 @@ export const orderSchema = {
         maker: {$ref: '/addressSchema'},
         taker: {$ref: '/addressSchema'},
 
-        makerFee: {$ref: '/bigNumberSchema'},
-        takerFee: {$ref: '/bigNumberSchema'},
+        makerFee: {$ref: '/numberSchema'},
+        takerFee: {$ref: '/numberSchema'},
 
-        makerTokenAmount: {$ref: '/bigNumberSchema'},
-        takerTokenAmount: {$ref: '/bigNumberSchema'},
+        makerTokenAmount: {$ref: '/numberSchema'},
+        takerTokenAmount: {$ref: '/numberSchema'},
 
         makerTokenAddress: {$ref: '/addressSchema'},
         takerTokenAddress: {$ref: '/addressSchema'},
 
-        salt: {$ref: '/bigNumberSchema'},
-        fillAmount: {$ref: '/bigNumberSchema'},
+        salt: {$ref: '/numberSchema'},
+        fillAmount: {$ref: '/numberSchema'},
         feeRecipient: {$ref: '/addressSchema'},
-        expirationUnixTimestampSec: {$ref: '/bigNumberSchema'},
+        expirationUnixTimestampSec: {$ref: '/numberSchema'},
     },
     required: [
         'maker', /*'taker',*/ 'makerFee', 'takerFee', 'makerTokenAmount', 'takerTokenAmount',
