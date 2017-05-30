@@ -68,3 +68,26 @@ export interface ContractEvent {
     event: string;
     args: any;
 }
+
+export interface Order {
+    maker: string;
+    taker?: string;
+
+    makerFee: BigNumber.BigNumber;
+    takerFee: BigNumber.BigNumber;
+
+    makerTokenAmount: BigNumber.BigNumber;
+    takerTokenAmount: BigNumber.BigNumber;
+
+    makerTokenAddress: string;
+    takerTokenAddress: string;
+
+    salt: BigNumber.BigNumber;
+    fillAmount: BigNumber.BigNumber;
+    feeRecipient: string;
+    expirationUnixTimestampSec: BigNumber.BigNumber;
+}
+
+export interface SignedOrder extends Order {
+    ecSignature: ECSignature;
+}
