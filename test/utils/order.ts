@@ -1,4 +1,4 @@
-import {SignedOrder} from '../../lib/src/types';
+import {SignedOrder} from '../../src/types';
 import * as BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
