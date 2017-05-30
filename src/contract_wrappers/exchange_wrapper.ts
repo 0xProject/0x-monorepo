@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
 import {ECSignature, ZeroExError, ExchangeContract} from '../types';
 import {assert} from '../utils/assert';
