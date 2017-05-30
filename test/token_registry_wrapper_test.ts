@@ -31,12 +31,12 @@ describe('TokenRegistryWrapper', () => {
     describe('#getTokensAsync', () => {
         it('should return all the tokens added to the tokenRegistry during the migration', async () => {
             const tokens = await zeroEx.tokenRegistry.getTokensAsync();
-            expect(tokens.length).to.be.equal(TOKEN_REGISTRY_SIZE_AFTER_MIGRATION);
+            expect(tokens).to.have.lengthOf(TOKEN_REGISTRY_SIZE_AFTER_MIGRATION);
 
             const schemaValidator = new SchemaValidator();
             _.each(tokens, token => {
                 const validationResult = schemaValidator.validate(token, tokenSchema);
-                expect(validationResult.errors.length).to.be.equal(0);
+                expect(validationResult.errors).to.have.lengthOf(0);
             });
         });
     });
