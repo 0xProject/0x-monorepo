@@ -1,6 +1,5 @@
 import 'mocha';
 import * as chai from 'chai';
-import chaiAsPromised = require('chai-as-promised');
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
@@ -10,7 +9,6 @@ import {ZeroExError, Token} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 
 const expect = chai.expect;
-chai.use(chaiAsPromised);
 const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('TokenWrapper', () => {
