@@ -4,6 +4,7 @@ import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
 import * as Sinon from 'sinon';
+import ProviderEngine = require('web3-provider-engine');
 import {ZeroEx} from '../src/0x.js';
 import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
@@ -13,6 +14,28 @@ chai.use(ChaiBigNumber());
 const expect = chai.expect;
 
 describe('ZeroEx library', () => {
+    describe('#setProvider', () => {
+        it('overrides the provider in the nested web3 instance and invalidates contractInstances', async () => {
+            const web3 = web3Factory.create();
+            const zeroEx = new ZeroEx(web3);
+            // Instantiate the exchangeContract instance with the current provider
+            await (zeroEx.exchange as any).instantiateExchangeContractIfDoesntExistAsync();
+
+            const newProvider = web3Factory.getRpcProvider();
+            // Add property to newProvider so that we can differentiate it from old provider
+            (newProvider as any).zeroExTestId = 1;
+            zeroEx.setProvider(newProvider);
+
+            // Check that exchangeContract instance removed after provider update
+            expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.an('undefined');
+
+            // Check that all nested web3 instances return the updated provider
+            const nestedWeb3WrapperProvider = (zeroEx as any).web3Wrapper.getCurrentProvider();
+            expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
+            const contractWrapperWeb3WrapperProvider = zeroEx.exchange.web3Wrapper.getCurrentProvider();
+            expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
+        });
+    });
     describe('#getOrderHash', () => {
         const expectedOrderHash = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
         it('defaults takerAddress to NULL address', () => {
