@@ -7,8 +7,12 @@ import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 
 export class ExchangeWrapper extends ContractWrapper {
+    private exchangeContractIfExists?: ExchangeContract;
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
+    }
+    public invalidateContractInstance(): void {
+        delete this.exchangeContractIfExists;
     }
     public async isValidSignatureAsync(dataHex: string, ecSignature: ECSignature,
                                        signerAddressHex: string): Promise<boolean> {
@@ -19,10 +23,9 @@ export class ExchangeWrapper extends ContractWrapper {
         const senderAddressIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
         assert.assert(!_.isUndefined(senderAddressIfExists), ZeroExError.USER_HAS_NO_ASSOCIATED_ADDRESSES);
 
-        const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
-        const exchangeInstance = contractInstance as ExchangeContract;
+        const exchangeContract = await this.getExchangeContractAsync();
 
-        const isValidSignature = await exchangeInstance.isValidSignature.call(
+        const isValidSignature = await exchangeContract.isValidSignature.call(
             signerAddressHex,
             dataHex,
             ecSignature.v,
@@ -33,5 +36,13 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         return isValidSignature;
+    }
+    private async getExchangeContractAsync(): Promise<ExchangeContract> {
+        if (!_.isUndefined(this.exchangeContractIfExists)) {
+            return this.exchangeContractIfExists;
+        }
+        const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
+        this.exchangeContractIfExists = contractInstance as ExchangeContract;
+        return this.exchangeContractIfExists;
     }
 }

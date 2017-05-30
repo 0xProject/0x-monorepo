@@ -1,7 +1,6 @@
 import 'mocha';
 import * as chai from 'chai';
 import chaiAsPromised = require('chai-as-promised');
-import * as Web3 from 'web3';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';

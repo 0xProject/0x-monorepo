@@ -6,12 +6,15 @@ import {ContractWrapper} from './contract_wrapper';
 import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
 
 export class TokenRegistryWrapper extends ContractWrapper {
+    private tokenRegistryContractIfExists?: TokenRegistryContract;
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
     }
+    public invalidateContractInstance(): void {
+        delete this.tokenRegistryContractIfExists;
+    }
     public async getTokensAsync(): Promise<Token[]> {
-        const contractInstance = await this.instantiateContractIfExistsAsync((TokenRegistryArtifacts as any));
-        const tokenRegistryContract = contractInstance as TokenRegistryContract;
+        const tokenRegistryContract = await this.getTokenRegistryContractAsync();
 
         const addresses = await tokenRegistryContract.getTokenAddresses.call();
         const tokenMetadataPromises: Array<Promise<TokenMetadata>> = _.map(
@@ -29,5 +32,13 @@ export class TokenRegistryWrapper extends ContractWrapper {
             };
         });
         return tokens;
+    }
+    private async getTokenRegistryContractAsync(): Promise<TokenRegistryContract> {
+        if (!_.isUndefined(this.tokenRegistryContractIfExists)) {
+            return this.tokenRegistryContractIfExists;
+        }
+        const contractInstance = await this.instantiateContractIfExistsAsync((TokenRegistryArtifacts as any));
+        this.tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
+        return this.tokenRegistryContractIfExists;
     }
 }

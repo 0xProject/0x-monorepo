@@ -9,6 +9,9 @@ export class Web3Wrapper {
         this.web3 = new Web3();
         this.web3.setProvider(web3.currentProvider);
     }
+    public setProvider(provider: Web3.Provider) {
+        this.web3.setProvider(provider);
+    }
     public isAddress(address: string): boolean {
         return this.web3.isAddress(address);
     }
