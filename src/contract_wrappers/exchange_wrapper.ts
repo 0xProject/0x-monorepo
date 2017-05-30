@@ -7,6 +7,7 @@ import {
     OrderValues,
     OrderAddresses,
     SignedOrder,
+    ContractEvent,
 } from '../types';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
@@ -86,16 +87,19 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: senderAddress,
             },
         );
-        const errEvent = _.find(response.logs, {event: 'LogError'});
-        if (!_.isUndefined(errEvent)) {
-            const errCode = errEvent.args.errorId.toNumber();
-            const humanReadableErrMessage = this.exchangeContractErrToMsg[errCode];
-            throw new Error(humanReadableErrMessage);
-        }
+        this.throwErrorLogsAsErrors(response.logs);
         return response;
     }
     private async getExchangeInstanceOrThrowAsync(): Promise<ExchangeContract> {
         const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
         return contractInstance as ExchangeContract;
+    }
+    private throwErrorLogsAsErrors(logs: ContractEvent[]): void {
+        const errEvent = _.find(logs, {event: 'LogError'});
+        if (!_.isUndefined(errEvent)) {
+            const errCode = errEvent.args.errorId.toNumber();
+            const humanReadableErrMessage = this.exchangeContractErrToMsg[errCode];
+            throw new Error(humanReadableErrMessage);
+        }
     }
 }
