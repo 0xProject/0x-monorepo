@@ -45,6 +45,15 @@ export interface ExchangeContract {
     ) => ContractResponse;
 }
 
+export interface TokenRegistryContract {
+    getTokenMetaData: {
+        call: (address: string) => Promise<TokenMetadata>;
+    };
+    getTokenAddresses: {
+        call: () => Promise<string[]>;
+    };
+}
+
 export const SolidityTypes = strEnum([
     'address',
     'uint256',
@@ -89,4 +98,15 @@ export interface Order {
 
 export interface SignedOrder extends Order {
     ecSignature: ECSignature;
+}
+
+//                          [address, name, symbol, projectUrl, decimals, ipfsHash, swarmHash]
+export type TokenMetadata = [string, string, string, string, BigNumber.BigNumber, string, string];
+
+export interface Token {
+    name: string;
+    address: string;
+    symbol: string;
+    decimals: number;
+    url: string;
 }

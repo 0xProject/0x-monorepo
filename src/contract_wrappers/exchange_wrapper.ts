@@ -26,8 +26,12 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrs.ERROR_FILL_TRUNCATION]: 'The rounding error was too large when filling this order',
         [ExchangeContractErrs.ERROR_FILL_BALANCE_ALLOWANCE]: 'Maker or taker has insufficient balance or allowance',
     };
+    private exchangeContractIfExists?: ExchangeContract;
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
+    }
+    public invalidateContractInstance(): void {
+        delete this.exchangeContractIfExists;
     }
     public async isValidSignatureAsync(dataHex: string, ecSignature: ECSignature,
                                        signerAddressHex: string): Promise<boolean> {
@@ -36,7 +40,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
-        const exchangeInstance = await this.getExchangeInstanceOrThrowAsync();
+        const exchangeInstance = await this.getExchangeContractAsync();
 
         const isValidSignature = await exchangeInstance.isValidSignature.call(
             signerAddressHex,
@@ -101,5 +105,13 @@ export class ExchangeWrapper extends ContractWrapper {
             const humanReadableErrMessage = this.exchangeContractErrToMsg[errCode];
             throw new Error(humanReadableErrMessage);
         }
+    }
+    private async getExchangeContractAsync(): Promise<ExchangeContract> {
+        if (!_.isUndefined(this.exchangeContractIfExists)) {
+            return this.exchangeContractIfExists;
+        }
+        const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
+        this.exchangeContractIfExists = contractInstance as ExchangeContract;
+        return this.exchangeContractIfExists;
     }
 }
