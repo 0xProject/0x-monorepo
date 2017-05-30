@@ -6,11 +6,13 @@ import {
     ExchangeContractErrs,
     OrderValues,
     OrderAddresses,
+    SignedOrder,
 } from '../types';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
+import {signedOrderSchema} from '../schemas/signed_order_schema';
 import {ContractResponse} from '../types';
 import {constants} from '../utils/constants';
 
@@ -47,54 +49,38 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return isValidSignature;
     }
-    public async fillOrderAsync(maker: string, taker: string, makerTokenAddress: string,
-                                takerTokenAddress: string, makerTokenAmount: BigNumber.BigNumber,
-                                takerTokenAmount: BigNumber.BigNumber, makerFee: BigNumber.BigNumber,
-                                takerFee: BigNumber.BigNumber, expirationUnixTimestampSec: BigNumber.BigNumber,
-                                feeRecipient: string, fillAmount: BigNumber.BigNumber,
-                                ecSignature: ECSignature, salt: BigNumber.BigNumber) {
-        assert.isBigNumber('salt', salt);
-        assert.isBigNumber('makerFee', makerFee);
-        assert.isBigNumber('takerFee', takerFee);
-        assert.isBigNumber('fillAmount', fillAmount);
-        assert.isBigNumber('makerTokenAmount', makerTokenAmount);
-        assert.isBigNumber('takerTokenAmount', takerTokenAmount);
-        assert.isBigNumber('expirationUnixTimestampSec', expirationUnixTimestampSec);
-        assert.isETHAddressHex('maker', maker);
-        assert.isETHAddressHex('taker', taker);
-        assert.isETHAddressHex('feeRecipient', feeRecipient);
-        assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
-        assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
-        assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
+    public async fillOrderAsync(signedOrder: SignedOrder, shouldCheckTransfer: boolean = true) {
+        assert.doesConformToSchema('signedOrder', JSON.parse(JSON.stringify(signedOrder)), signedOrderSchema);
+        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeInstanceOrThrowAsync();
 
-        taker = taker === '' ? constants.NULL_ADDRESS : taker;
-        const shouldCheckTransfer = true;
+        const taker = _.isUndefined(signedOrder.taker) ? constants.NULL_ADDRESS : signedOrder.taker;
+
         const orderAddresses: OrderAddresses = [
-            maker,
+            signedOrder.maker,
             taker,
-            makerTokenAddress,
-            takerTokenAddress,
-            feeRecipient,
+            signedOrder.makerTokenAddress,
+            signedOrder.takerTokenAddress,
+            signedOrder.feeRecipient,
         ];
         const orderValues: OrderValues = [
-            makerTokenAmount,
-            takerTokenAmount,
-            makerFee,
-            takerFee,
-            expirationUnixTimestampSec,
-            salt,
+            signedOrder.makerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.makerFee,
+            signedOrder.takerFee,
+            signedOrder.expirationUnixTimestampSec,
+            signedOrder.salt,
         ];
         const response: ContractResponse = await exchangeInstance.fill(
             orderAddresses,
             orderValues,
-            fillAmount,
+            signedOrder.fillAmount,
             shouldCheckTransfer,
-            ecSignature.v,
-            ecSignature.r,
-            ecSignature.s,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
             {
                 from: senderAddress,
             },
