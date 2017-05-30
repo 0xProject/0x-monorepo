@@ -13,16 +13,16 @@ import compareVersions = require('compare-versions');
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
-import {ERC20Wrapper} from './contract_wrappers/erc20_wrapper';
+import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
-    public web3Wrapper: Web3Wrapper;
     public exchange: ExchangeWrapper;
     public tokenRegistry: TokenRegistryWrapper;
-    public erc20: ERC20Wrapper;
+    public erc20: TokenWrapper;
+    private web3Wrapper: Web3Wrapper;
     /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
      */
@@ -137,7 +137,16 @@ export class ZeroEx {
         this.web3Wrapper = new Web3Wrapper(web3);
         this.exchange = new ExchangeWrapper(this.web3Wrapper);
         this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
-        this.erc20 = new ERC20Wrapper(this.web3Wrapper);
+        this.erc20 = new TokenWrapper(this.web3Wrapper);
+    }
+    /**
+     * Sets a new provider for the web3 instance used by 0x.js
+     */
+    public setProvider(provider: Web3.Provider) {
+        this.web3Wrapper.setProvider(provider);
+        this.exchange.invalidateContractInstance();
+        this.tokenRegistry.invalidateContractInstance();
+        this.erc20.invalidateContractInstances();
     }
     /**
      * Signs an orderHash and returns it's elliptic curve signature

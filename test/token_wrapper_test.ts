@@ -13,7 +13,7 @@ const expect = chai.expect;
 chai.use(chaiAsPromised);
 const blockchainLifecycle = new BlockchainLifecycle();
 
-describe('ERC20Wrapper', () => {
+describe('TokenWrapper', () => {
     let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
