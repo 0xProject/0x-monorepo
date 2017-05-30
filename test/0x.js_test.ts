@@ -7,6 +7,7 @@ import * as Sinon from 'sinon';
 import {ZeroEx} from '../src/0x.js';
 import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
+import {Order} from '../src/types';
 
 // Use BigNumber chai add-on
 chai.use(ChaiBigNumber());
@@ -43,38 +44,28 @@ describe('ZeroEx library', () => {
     });
     describe('#getOrderHash', () => {
         const expectedOrderHash = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
+        const order: Order = {
+            maker: constants.NULL_ADDRESS,
+            feeRecipient: constants.NULL_ADDRESS,
+            makerTokenAddress: constants.NULL_ADDRESS,
+            takerTokenAddress: constants.NULL_ADDRESS,
+            salt: new BigNumber(0),
+            makerFee: new BigNumber(0),
+            takerFee: new BigNumber(0),
+            makerTokenAmount: new BigNumber(0),
+            takerTokenAmount: new BigNumber(0),
+            expirationUnixTimestampSec: new BigNumber(0),
+        };
+        const exchangeAddress = constants.NULL_ADDRESS;
         it('defaults takerAddress to NULL address', () => {
-            const orderHash = ZeroEx.getOrderHashHex(
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                '',
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-            );
+            const orderHash = ZeroEx.getOrderHashHex(exchangeAddress, order);
             expect(orderHash).to.be.equal(expectedOrderHash);
         });
         it('calculates the order hash', () => {
-            const orderHash = ZeroEx.getOrderHashHex(
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-            );
+            const orderWithZeroTaker = _.assign(order, {
+                taker: constants.NULL_ADDRESS,
+            });
+            const orderHash = ZeroEx.getOrderHashHex(exchangeAddress, orderWithZeroTaker);
             expect(orderHash).to.be.equal(expectedOrderHash);
         });
     });

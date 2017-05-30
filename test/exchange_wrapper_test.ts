@@ -4,9 +4,8 @@ import chaiAsPromised = require('chai-as-promised');
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import * as OrderJSON from './fixtures/orders/5_MLN_for_42_GLM.json';
 import * as BigNumber from 'bignumber.js';
-import {signedOrderFromJSON} from './utils/order';
+import {createSignedOrder} from './utils/order';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -94,8 +93,8 @@ describe('ExchangeWrapper', () => {
             expect(isValid).to.be.true;
         });
     });
-    describe('#fillOrderAsync', () => {
-        const signedOrder = signedOrderFromJSON(OrderJSON);
+    describe('#fillOrderAsync', async () => {
+        const signedOrder = await createSignedOrder(zeroEx);
         it('should throw when the fill amount is zero', async () => {
             const fillAmount = new BigNumber(0);
             expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))

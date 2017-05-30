@@ -27,12 +27,11 @@
     "build:umd:dev": "webpack",
     "build:umd:prod": "webpack -p",
     "build:commonjs:dev": "tsc; copyfiles -u 2 ./src/artifacts/*.json ../0x.js/lib/src/artifacts;",
-    "test:commonjs": "run-s build:commonjs:dev copy_fixtures run_mocha",
+    "test:commonjs": "run-s build:commonjs:dev run_mocha",
     "pretest:umd": "run-s clean build:*:dev",
     "substitute_umd_bundle": "npm run remove_src_files_not_used_by_tests; shx mv _bundles/* lib/src",
     "remove_src_files_not_used_by_tests": "find ./lib/src \\( -path ./lib/src/utils -o -path ./lib/src/schemas -o -path \"./lib/src/types.*\" \\) -prune -o -type f -print | xargs rm",
-    "run_mocha": "mocha lib/test/**/*_test.js",
-    "copy_fixtures": "shx cp -r ./test/fixtures ./lib/test/fixtures"
+    "run_mocha": "mocha lib/test/**/*_test.js"
   },
   "config": {
     "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken",

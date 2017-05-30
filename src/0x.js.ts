@@ -14,6 +14,8 @@ import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
+import {Order} from './types';
+import {orderSchema} from "./schemas/signed_order_schema";
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
@@ -24,38 +26,23 @@ export class ZeroEx {
     /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
      */
-    public static getOrderHashHex(exchangeContractAddr: string, makerAddr: string, takerAddr: string,
-                                  tokenMAddress: string, tokenTAddress: string, feeRecipient: string,
-                                  valueM: BigNumber.BigNumber, valueT: BigNumber.BigNumber,
-                                  makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,
-                                  expiration: BigNumber.BigNumber, salt: BigNumber.BigNumber): string {
-        takerAddr = _.isEmpty(takerAddr) ? constants.NULL_ADDRESS : takerAddr ;
-        assert.isETHAddressHex('exchangeContractAddr', exchangeContractAddr);
-        assert.isETHAddressHex('makerAddr', makerAddr);
-        assert.isETHAddressHex('takerAddr', takerAddr);
-        assert.isETHAddressHex('tokenMAddress', tokenMAddress);
-        assert.isETHAddressHex('tokenTAddress', tokenTAddress);
-        assert.isETHAddressHex('feeRecipient', feeRecipient);
-        assert.isBigNumber('valueM', valueM);
-        assert.isBigNumber('valueT', valueT);
-        assert.isBigNumber('makerFee', makerFee);
-        assert.isBigNumber('takerFee', takerFee);
-        assert.isBigNumber('expiration', expiration);
-        assert.isBigNumber('salt', salt);
+    public static getOrderHashHex(exchangeContractAddr: string, order: Order): string {
+        assert.doesConformToSchema('order', JSON.parse(JSON.stringify(order)), orderSchema);
+        const taker = _.isEmpty(order.taker) ? constants.NULL_ADDRESS : order.taker ;
 
         const orderParts = [
             {value: exchangeContractAddr, type: SolidityTypes.address},
-            {value: makerAddr, type: SolidityTypes.address},
-            {value: takerAddr, type: SolidityTypes.address},
-            {value: tokenMAddress, type: SolidityTypes.address},
-            {value: tokenTAddress, type: SolidityTypes.address},
-            {value: feeRecipient, type: SolidityTypes.address},
-            {value: utils.bigNumberToBN(valueM), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(valueT), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(makerFee), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(takerFee), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(expiration), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(salt), type: SolidityTypes.uint256},
+            {value: order.maker, type: SolidityTypes.address},
+            {value: order.taker, type: SolidityTypes.address},
+            {value: order.makerTokenAddress, type: SolidityTypes.address},
+            {value: order.takerTokenAddress, type: SolidityTypes.address},
+            {value: order.feeRecipient, type: SolidityTypes.address},
+            {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.uint256},
         ];
         const types = _.map(orderParts, o => o.type);
         const values = _.map(orderParts, o => o.value);
