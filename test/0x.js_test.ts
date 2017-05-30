@@ -194,9 +194,9 @@ describe('ZeroEx library', () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3);
             stubs = [
-                Sinon.stub(zeroEx.web3Wrapper, 'getNodeVersionAsync')
+                Sinon.stub((zeroEx as any).web3Wrapper, 'getNodeVersionAsync')
                     .returns(Promise.resolve(newParityNodeVersion)),
-                Sinon.stub(zeroEx.web3Wrapper, 'signTransactionAsync')
+                Sinon.stub((zeroEx as any).web3Wrapper, 'signTransactionAsync')
                     .returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
@@ -218,9 +218,9 @@ describe('ZeroEx library', () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3);
             stubs = [
-                Sinon.stub(zeroEx.web3Wrapper, 'getNodeVersionAsync')
+                Sinon.stub((zeroEx as any).web3Wrapper, 'getNodeVersionAsync')
                     .returns(Promise.resolve(newParityNodeVersion)),
-                Sinon.stub(zeroEx.web3Wrapper, 'signTransactionAsync')
+                Sinon.stub((zeroEx as any).web3Wrapper, 'signTransactionAsync')
                     .returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
