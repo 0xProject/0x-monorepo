@@ -57,6 +57,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async fillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean = true): Promise<ContractResponse> {
         assert.doesConformToSchema('signedOrder', JSON.parse(JSON.stringify(signedOrder)), signedOrderSchema);
+        assert.isBigNumber('fillAmount', fillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
