@@ -4,10 +4,10 @@ import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenArtifacts from '../artifacts/Token.json';
-import {ERC20Contract} from '../types';
+import {TokenContract} from '../types';
 
 export class TokenWrapper extends ContractWrapper {
-    private tokenContractsByAddress: {[address: string]: ERC20Contract};
+    private tokenContractsByAddress: {[address: string]: TokenContract};
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
         this.tokenContractsByAddress = {};
@@ -29,13 +29,13 @@ export class TokenWrapper extends ContractWrapper {
         balance = _.isUndefined(balance) ? new BigNumber(0) : new BigNumber(balance);
         return balance;
     }
-    private async getTokenContractAsync(tokenAddress: string): Promise<ERC20Contract> {
+    private async getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
         let tokenContract = this.tokenContractsByAddress[tokenAddress];
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
         const contractInstance = await this.instantiateContractIfExistsAsync((TokenArtifacts as any), tokenAddress);
-        tokenContract = contractInstance as ERC20Contract;
+        tokenContract = contractInstance as TokenContract;
         this.tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
     }
