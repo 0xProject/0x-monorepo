@@ -38,13 +38,13 @@ describe('TokenWrapper', () => {
             const expectedBalance = new BigNumber('100000000000000000000000000');
             expect(balance).to.be.bignumber.equal(expectedBalance);
         });
-        it ('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
+        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             const aOwnerAddress = userAddresses[0];
             expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, aOwnerAddress))
                 .to.be.rejectedWith(ZeroExError.CONTRACT_DOES_NOT_EXIST);
         });
-        it ('should return a balance of 0 for a non-existent owner address', async () => {
+        it('should return a balance of 0 for a non-existent owner address', async () => {
             const aToken = tokens[0];
             const aNonExistentOwner = '0x198C6Ad858F213Fb31b6FE809E25040E6B964593';
             const balance = await zeroEx.token.getBalanceAsync(aToken.address, aNonExistentOwner);
