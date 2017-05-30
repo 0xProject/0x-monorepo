@@ -31,8 +31,12 @@ export interface ExchangeContract {
 }
 
 export interface TokenRegistryContract {
-    getTokenMetaData: any;
-    getTokenAddresses: any;
+    getTokenMetaData: {
+        call: (address: string) => Promise<TokenMetadata>;
+    };
+    getTokenAddresses: {
+        call: () => Promise<string[]>;
+    };
 }
 
 export const SolidityTypes = strEnum([
