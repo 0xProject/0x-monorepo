@@ -20,8 +20,8 @@ describe('ZeroEx library', () => {
             // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any).getExchangeContractAsync();
             await (zeroEx.tokenRegistry as any).getTokenRegistryContractAsync();
-            expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.an('undefined');
-            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.an('undefined');
+            expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.undefined;
+            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.undefined;
 
             const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
@@ -29,8 +29,8 @@ describe('ZeroEx library', () => {
             zeroEx.setProvider(newProvider);
 
             // Check that contractInstances with old provider are removed after provider update
-            expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.an('undefined');
-            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.be.an('undefined');
+            expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.undefined;
+            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.be.undefined;
 
             // Check that all nested web3 instances return the updated provider
             const nestedWeb3WrapperProvider = (zeroEx as any).web3Wrapper.getCurrentProvider();
