@@ -98,8 +98,7 @@ describe('ExchangeWrapper', () => {
         const fillAmount = new BigNumber(1);
         const signedOrder = signedOrderFromJSON(OrderJSON);
         it('fillsOrder', async () => {
-            const orderFillResponse = await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
-            console.log(orderFillResponse);
+            // const orderFillResponse = await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
         });
     });
 });
