@@ -30,6 +30,12 @@ export interface ExchangeContract {
     isValidSignature: any;
 }
 
+export interface ERC20Contract {
+    balanceOf: {
+        call: (address: string) => Promise<BigNumber.BigNumber>;
+    };
+}
+
 export interface TokenRegistryContract {
     getTokenMetaData: any;
     getTokenAddresses: any;
