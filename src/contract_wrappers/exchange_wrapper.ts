@@ -49,7 +49,8 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return isValidSignature;
     }
-    public async fillOrderAsync(signedOrder: SignedOrder, shouldCheckTransfer: boolean = true) {
+    public async fillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber,
+                                shouldCheckTransfer: boolean = true): Promise<ContractResponse> {
         assert.doesConformToSchema('signedOrder', JSON.parse(JSON.stringify(signedOrder)), signedOrderSchema);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
 
@@ -76,7 +77,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const response: ContractResponse = await exchangeInstance.fill(
             orderAddresses,
             orderValues,
-            signedOrder.fillAmount,
+            fillAmount,
             shouldCheckTransfer,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
