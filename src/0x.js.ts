@@ -18,9 +18,9 @@ import {SolidityTypes, ECSignature, ZeroExError} from './types';
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
-    public web3Wrapper: Web3Wrapper;
     public exchange: ExchangeWrapper;
     public tokenRegistry: TokenRegistryWrapper;
+    private web3Wrapper: Web3Wrapper;
     /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
      */

@@ -49,10 +49,9 @@ export class Web3Wrapper {
     }
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
         const code = await promisify(this.web3.eth.getCode)(address);
-        // Regex matches 0x0, 0x00, 0x in order to accomodate poorly implemented clients
-        const zeroHexAddressRegex = /^0x0*$/i;
-        const didFindCode = _.isNull(code.match(zeroHexAddressRegex));
-        return didFindCode;
+        // Regex matches 0x0, 0x00, 0x in order to accommodate poorly implemented clients
+        const codeIsEmpty = /^0x0{0,40}$/i.test(code);
+        return !codeIsEmpty;
     }
     public async signTransactionAsync(address: string, message: string): Promise<string> {
         const signData = await promisify(this.web3.eth.sign)(address, message);
