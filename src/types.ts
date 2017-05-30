@@ -41,6 +41,9 @@ export const SolidityTypes = strEnum([
 ]);
 export type SolidityTypes = keyof typeof SolidityTypes;
 
+//                          [address, name, symbol, projectUrl, decimals, ipfsHash, swarmHash]
+export type TokenMetadata = [string, string, string, string, BigNumber.BigNumber, string, string];
+
 export interface Token {
     name: string;
     address: string;

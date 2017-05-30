@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
-import {Token, TokenRegistryContract} from '../types';
+import {Token, TokenRegistryContract, TokenMetadata} from '../types';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
@@ -14,7 +14,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const tokenRegistryContract = contractInstance as TokenRegistryContract;
 
         const addresses = await tokenRegistryContract.getTokenAddresses.call();
-        const tokenMetadataPromises: Array<Promise<any[]>> = _.map(
+        const tokenMetadataPromises: Array<Promise<TokenMetadata>> = _.map(
             addresses,
             (address: string) => (tokenRegistryContract.getTokenMetaData.call(address)),
         );
