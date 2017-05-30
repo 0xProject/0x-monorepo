@@ -81,16 +81,12 @@ export interface ContractEvent {
 export interface Order {
     maker: string;
     taker?: string;
-
     makerFee: BigNumber.BigNumber;
     takerFee: BigNumber.BigNumber;
-
     makerTokenAmount: BigNumber.BigNumber;
     takerTokenAmount: BigNumber.BigNumber;
-
     makerTokenAddress: string;
     takerTokenAddress: string;
-
     salt: BigNumber.BigNumber;
     feeRecipient: string;
     expirationUnixTimestampSec: BigNumber.BigNumber;
