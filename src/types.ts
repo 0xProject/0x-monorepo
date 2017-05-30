@@ -83,7 +83,6 @@ export interface Order {
     takerTokenAddress: string;
 
     salt: BigNumber.BigNumber;
-    fillAmount: BigNumber.BigNumber;
     feeRecipient: string;
     expirationUnixTimestampSec: BigNumber.BigNumber;
 }
