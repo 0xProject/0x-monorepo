@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
-import {ZeroExError, Token, TokenRegistryContract} from '../types';
+import {Token, TokenRegistryContract} from '../types';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
