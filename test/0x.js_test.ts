@@ -20,6 +20,8 @@ describe('ZeroEx library', () => {
             // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any).instantiateExchangeContractIfDoesntExistAsync();
             await (zeroEx.tokenRegistry as any).instantiateTokenRegistryContractIfDoesntExistAsync();
+            expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.an('undefined');
+            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.an('undefined');
 
             const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
