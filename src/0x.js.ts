@@ -134,6 +134,14 @@ export class ZeroEx {
         this.exchange = new ExchangeWrapper(this.web3Wrapper);
     }
     /**
+     * Sets a new provider for the web3 instance used by 0x.js internally and invalidates any instantiated
+     * contract instances created with the old provider.
+     */
+    public setProvider(provider: Web3.Provider) {
+        this.web3Wrapper.setProvider(provider);
+        this.exchange.invalidateExchangeContract();
+    }
+    /**
      * Signs an orderHash and returns it's elliptic curve signature
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
