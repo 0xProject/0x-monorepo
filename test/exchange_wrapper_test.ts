@@ -1,10 +1,12 @@
 import 'mocha';
 import * as chai from 'chai';
 import chaiAsPromised = require('chai-as-promised');
-import * as Web3 from 'web3';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import * as OrderJSON from './fixtures/orders/5_MKR_for_42_MLN.json';
+import * as BigNumber from 'bignumber.js';
+import {signedOrderFromJSON} from './utils/order';
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -90,6 +92,14 @@ describe('ExchangeWrapper', () => {
         it('should return true if the signature does pertain to the dataHex & address', async () => {
             const isValid = await zeroEx.exchange.isValidSignatureAsync(dataHex, signature, address);
             expect(isValid).to.be.true;
+        });
+    });
+    describe('#fillOrderAsync', () => {
+        const fillAmount = new BigNumber(1);
+        const signedOrder = signedOrderFromJSON(OrderJSON);
+        it('fillsOrder', async () => {
+            const orderFillResponse = await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
+            console.log(orderFillResponse);
         });
     });
 });
