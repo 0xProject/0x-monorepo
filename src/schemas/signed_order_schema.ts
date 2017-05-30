@@ -38,6 +38,7 @@ export const orderSchema = {
 };
 
 export const signedOrderSchema = {
+    id: '/signedOrderSchema',
     allOf: [
         { $ref: '/orderSchema' },
         {
