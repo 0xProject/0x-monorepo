@@ -4,7 +4,6 @@ import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
 import * as Sinon from 'sinon';
-import ProviderEngine = require('web3-provider-engine');
 import {ZeroEx} from '../src/0x.js';
 import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
