@@ -26,8 +26,9 @@ describe('ZeroEx library', () => {
             (newProvider as any).zeroExTestId = 1;
             zeroEx.setProvider(newProvider);
 
-            // Check that exchangeContract instance removed after provider update
+            // Check that contractInstances with old provider are removed after provider update
             expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.an('undefined');
+            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.be.an('undefined');
 
             // Check that all nested web3 instances return the updated provider
             const nestedWeb3WrapperProvider = (zeroEx as any).web3Wrapper.getCurrentProvider();

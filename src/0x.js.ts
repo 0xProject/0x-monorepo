@@ -143,6 +143,7 @@ export class ZeroEx {
     public setProvider(provider: Web3.Provider) {
         this.web3Wrapper.setProvider(provider);
         this.exchange.invalidateContractInstance();
+        this.tokenRegistry.invalidateContractInstance();
     }
     /**
      * Signs an orderHash and returns it's elliptic curve signature
