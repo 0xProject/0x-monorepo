@@ -6,7 +6,7 @@ import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenArtifacts from '../artifacts/Token.json';
 import * as ProxyArtifacts from '../artifacts/Proxy.json';
-import {TokenContract, InternalError} from '../types';
+import {TokenContract, ZeroExError} from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
 
@@ -20,7 +20,7 @@ export class TokenWrapper extends ContractWrapper {
         this.tokenContractsByAddress = {};
     }
     /**
-     * Returns an owner's ERC20 token balance
+     * Returns an owner's ERC20 token balance.
      */
     public async getBalanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
@@ -30,12 +30,12 @@ export class TokenWrapper extends ContractWrapper {
         let balance = await tokenContract.balanceOf.call(ownerAddress);
         // The BigNumber instance returned by Web3 is of a much older version then our own, we therefore
         // should always re-instantiate the returned BigNumber after retrieval.
-        balance = _.isUndefined(balance) ? new BigNumber(0) : new BigNumber(balance);
+        balance = new BigNumber(balance);
         return balance;
     }
     /**
      * Retrieves the allowance in baseUnits of the ERC20 token set to the 0x proxy contract
-     * by an owner address
+     * by an owner address.
      */
     public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
@@ -44,9 +44,7 @@ export class TokenWrapper extends ContractWrapper {
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
         const proxyAddress = await this.getProxyAddressAsync();
         let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, proxyAddress);
-        allowanceInBaseUnits = _.isUndefined(allowanceInBaseUnits) ?
-                               new BigNumber(0) :
-                               new BigNumber(allowanceInBaseUnits);
+        allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
         return allowanceInBaseUnits;
     }
     /**
@@ -102,7 +100,7 @@ export class TokenWrapper extends ContractWrapper {
                                        undefined :
                                        (ProxyArtifacts as any).networks[networkIdIfExists];
         if (_.isUndefined(proxyNetworkConfigsIfExists)) {
-            throw new Error(InternalError.PROXY_ADDRESS_NOT_FOUND);
+            throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
         }
         const proxyAddress = proxyNetworkConfigsIfExists.address;
         return proxyAddress;
