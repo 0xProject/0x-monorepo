@@ -20,7 +20,7 @@ export class TokenWrapper extends ContractWrapper {
         this.tokenContractsByAddress = {};
     }
     /**
-     * Returns an owner's ERC20 token balance
+     * Returns an owner's ERC20 token balance.
      */
     public async getBalanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
@@ -35,7 +35,7 @@ export class TokenWrapper extends ContractWrapper {
     }
     /**
      * Retrieves the allowance in baseUnits of the ERC20 token set to the 0x proxy contract
-     * by an owner address
+     * by an owner address.
      */
     public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
