@@ -13,6 +13,7 @@ import compareVersions = require('compare-versions');
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
+import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
 import {Order} from './types';
 import {orderSchema} from "./schemas/signed_order_schema";
@@ -22,6 +23,7 @@ const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 export class ZeroEx {
     public exchange: ExchangeWrapper;
     public tokenRegistry: TokenRegistryWrapper;
+    public token: TokenWrapper;
     private web3Wrapper: Web3Wrapper;
     /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
@@ -122,6 +124,7 @@ export class ZeroEx {
         this.web3Wrapper = new Web3Wrapper(web3);
         this.exchange = new ExchangeWrapper(this.web3Wrapper);
         this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
+        this.token = new TokenWrapper(this.web3Wrapper);
     }
     /**
      * Sets a new provider for the web3 instance used by 0x.js
@@ -130,6 +133,7 @@ export class ZeroEx {
         this.web3Wrapper.setProvider(provider);
         this.exchange.invalidateContractInstance();
         this.tokenRegistry.invalidateContractInstance();
+        this.token.invalidateContractInstances();
     }
     /**
      * Signs an orderHash and returns it's elliptic curve signature

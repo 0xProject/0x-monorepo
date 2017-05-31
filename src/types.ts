@@ -17,6 +17,11 @@ export const ZeroExError = strEnum([
 ]);
 export type ZeroExError = keyof typeof ZeroExError;
 
+export const InternalError = strEnum([
+  'PROXY_ADDRESS_NOT_FOUND',
+]);
+export type InternalError = keyof typeof InternalError;
+
 /**
  * Elliptic Curve signature
  */
@@ -43,6 +48,17 @@ export interface ExchangeContract {
         orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
         shouldCheckTransfer: boolean, v: number, r: string, s: string, txData: TxData,
     ) => ContractResponse;
+}
+
+export interface TokenContract {
+    balanceOf: {
+        call: (address: string) => Promise<BigNumber.BigNumber>;
+    };
+    allowance: {
+        call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
+    };
+    transfer: (to: string, amountInBaseUnits: BigNumber.BigNumber, opts: any) => Promise<boolean>;
+    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, opts: any) => void;
 }
 
 export interface TokenRegistryContract {

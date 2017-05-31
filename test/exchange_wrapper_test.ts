@@ -1,6 +1,5 @@
 import 'mocha';
 import * as chai from 'chai';
-import chaiAsPromised = require('chai-as-promised');
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
@@ -8,7 +7,6 @@ import * as BigNumber from 'bignumber.js';
 import {createSignedOrder} from './utils/order';
 
 const expect = chai.expect;
-chai.use(chaiAsPromised);
 const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('ExchangeWrapper', () => {
