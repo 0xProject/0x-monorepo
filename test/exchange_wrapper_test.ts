@@ -6,7 +6,7 @@ import promisify = require('es6-promisify');
 import * as _ from 'lodash';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import * as BigNumber from 'bignumber.js';
-import {createSignedOrder} from './utils/order';
+import {orderFactory} from './utils/order';
 import {Token} from '../src/types';
 import * as Web3 from 'web3';
 
@@ -101,34 +101,31 @@ describe('ExchangeWrapper', () => {
     });
     describe('#fillOrderAsync', () => {
         let tokens: Token[];
+        let addressBySymbol: {[symbol: string]: string} = {};
+        let networkId: number;
         const setBalance = async (toAddress: string,
                                     amountInBaseUnits: BigNumber.BigNumber|number,
-                                    symbol: string) => {
+                                    tokenAddress: string) => {
             const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
-            const token = _.find(tokens, {symbol});
-            if (_.isUndefined(token)) {
-                throw new Error(`Token ${symbol} not found`);
-            } else {
-                await zeroEx.token.transferAsync(token.address, userAddresses[0], toAddress, amount);
-            }
+            await zeroEx.token.transferAsync(tokenAddress, userAddresses[0], toAddress, amount);
         };
         const setAllowance = async (ownerAddress: string,
                                     amountInBaseUnits: BigNumber.BigNumber|number,
-                                    symbol: string) => {
+                                    tokenAddress: string) => {
             const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
-            const token = _.find(tokens, {symbol});
-            if (_.isUndefined(token)) {
-                throw new Error(`Token ${symbol} not found`);
-            } else {
-                await zeroEx.token.setProxyAllowanceAsync(token.address, ownerAddress, amount);
-            }
+            await zeroEx.token.setProxyAllowanceAsync(tokenAddress, ownerAddress, amount);
         };
         before('fetch tokens', async () => {
             tokens = await zeroEx.tokenRegistry.getTokensAsync();
+            _.forEach(tokens, token => {
+                addressBySymbol[token.symbol] = token.address;
+            });
+            networkId = await promisify(web3.version.getNetwork)();
         });
         describe('failed fills', () => {
             it('should throw when the fill amount is zero', async () => {
-                const signedOrder = await createSignedOrder(zeroEx, tokens, 5, 'MLN', 5, 'GNT');
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, userAddresses[0],
+                    5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(0);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
                     .to.be.rejectedWith('This order has already been filled or cancelled');
@@ -139,13 +136,23 @@ describe('ExchangeWrapper', () => {
                web3.eth.defaultAccount = userAddresses[0];
             });
             it('should fill the valid order', async () => {
-                await setAllowance(userAddresses[0], 5, 'MLN');
-                await setBalance(userAddresses[1], 5, 'GNT');
-                await setAllowance(userAddresses[1], 5, 'GNT');
-                const signedOrder = await createSignedOrder(zeroEx, tokens, 5, 'MLN', 5, 'GNT');
+                const maker = userAddresses[0];
+                const taker = userAddresses[1];
+                await setAllowance(maker, 5, addressBySymbol.MLN);
+                await setBalance(taker, 5, addressBySymbol.GNT);
+                await setAllowance(taker, 5, addressBySymbol.GNT);
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker,
+                    5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
-                web3.eth.defaultAccount = userAddresses[1];
+                web3.eth.defaultAccount = taker;
+                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, maker)).to.be.bignumber.greaterThan(5);
+                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(0);
+                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(5);
+                expect(await zeroEx.token.getProxyAllowanceAsync(addressBySymbol.MLN, maker)).to.be.bignumber.equal(5);
+                expect(await zeroEx.token.getProxyAllowanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(5);
                 await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
+                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(5);
+                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(0);
             });
         });
     });
