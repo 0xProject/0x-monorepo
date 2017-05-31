@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
+import {setBigNumberConfig} from './bignumber_config';
+setBigNumberConfig();
 import * as ethUtil from 'ethereumjs-util';
 import contract = require('truffle-contract');
 import * as Web3 from 'web3';
