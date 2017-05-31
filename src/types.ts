@@ -14,13 +14,9 @@ export const ZeroExError = strEnum([
   'UNHANDLED_ERROR',
   'USER_HAS_NO_ASSOCIATED_ADDRESSES',
   'INVALID_SIGNATURE',
+  'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
 ]);
 export type ZeroExError = keyof typeof ZeroExError;
-
-export const InternalError = strEnum([
-  'PROXY_ADDRESS_NOT_FOUND',
-]);
-export type InternalError = keyof typeof InternalError;
 
 /**
  * Elliptic Curve signature

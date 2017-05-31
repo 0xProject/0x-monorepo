@@ -6,7 +6,7 @@ import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenArtifacts from '../artifacts/Token.json';
 import * as ProxyArtifacts from '../artifacts/Proxy.json';
-import {TokenContract, InternalError} from '../types';
+import {TokenContract, ZeroExError} from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
 
@@ -85,7 +85,7 @@ export class TokenWrapper extends ContractWrapper {
                                        undefined :
                                        (ProxyArtifacts as any).networks[networkIdIfExists];
         if (_.isUndefined(proxyNetworkConfigsIfExists)) {
-            throw new Error(InternalError.PROXY_ADDRESS_NOT_FOUND);
+            throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
         }
         const proxyAddress = proxyNetworkConfigsIfExists.address;
         return proxyAddress;
