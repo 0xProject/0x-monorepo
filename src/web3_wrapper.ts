@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
-import {ZeroExError} from "./types";
-import {assert} from "./utils/assert";
+import {ZeroExError} from './types';
+import {assert} from './utils/assert';
 
 export class Web3Wrapper {
     private web3: Web3;

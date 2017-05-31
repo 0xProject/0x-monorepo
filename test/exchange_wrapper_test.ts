@@ -89,7 +89,7 @@ describe('ExchangeWrapper', () => {
             expect(isValid).to.be.false;
         });
         it('should return false if the signature doesn\'t pertain to the dataHex & address', async () => {
-            const wrongSignature = Object.assign({}, signature, {v: 28});
+            const wrongSignature = {...signature, v: 28};
             const isValid = await zeroEx.exchange.isValidSignatureAsync(dataHex, wrongSignature, address);
             expect(isValid).to.be.false;
         });

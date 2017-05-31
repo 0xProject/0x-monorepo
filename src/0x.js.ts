@@ -18,7 +18,7 @@ import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
 import {Order} from './types';
-import {orderSchema} from "./schemas/signed_order_schema";
+import {orderSchema} from './schemas/signed_order_schema';
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 

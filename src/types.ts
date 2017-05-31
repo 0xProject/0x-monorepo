@@ -83,7 +83,7 @@ export enum ExchangeContractErrs {
     ERROR_FILL_BALANCE_ALLOWANCE, // Insufficient balance or allowance for token transfer
     ERROR_CANCEL_EXPIRED, // Order has already expired
     ERROR_CANCEL_NO_VALUE, // Order has already been fully filled or cancelled
-};
+}
 
 export interface ContractResponse {
     logs: ContractEvent[];
