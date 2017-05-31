@@ -35,11 +35,8 @@ export async function createSignedOrder(
         feeRecipient: constants.NULL_ADDRESS,
         expirationUnixTimestampSec: new BigNumber(INF_TIMESTAMP),
     };
-    console.log(order.makerTokenAmount.toString());
-    console.log(order.takerTokenAmount.toString());
     const orderHash = ZeroEx.getOrderHashHex(EXCHANGE_ADDRESS, order);
     const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
     const signedOrder: SignedOrder = _.assign(order, {ecSignature});
-    console.log(signedOrder);
     return signedOrder;
 }
