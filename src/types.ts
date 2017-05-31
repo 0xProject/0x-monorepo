@@ -38,6 +38,7 @@ export interface TokenContract {
     allowance: {
         call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
     };
+    transfer: (to: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
     approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => void;
 }
 
