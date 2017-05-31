@@ -102,10 +102,10 @@ export class ZeroEx {
         return salt;
     }
     /** Checks if order hash is valid */
-    public static isValidOrderHash(orderHash: string): boolean {
-        assert.isString('orderHash', orderHash);
-        const isValid = /^0x[0-9A-F]{64}$/i.test(orderHash);
-        return isValid;
+    public static isValidOrderHash(orderHashHex: string): boolean {
+        assert.isString('orderHashHex', orderHashHex);
+        const isValidOrderHash = utils.isValidOrderHash(orderHashHex);
+        return isValidOrderHash;
     }
     /**
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).

@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
 import {SchemaValidator} from './schema_validator';
+import {utils} from './utils';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
@@ -26,6 +27,9 @@ export const assert = {
     },
     isNumber(variableName: string, value: number): void {
         this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));
+    },
+    isValidOrderHash(variableName: string, value: string): void {
+        this.assert(utils.isValidOrderHash(value), this.typeAssertionMessage(variableName, 'orderHash', value));
     },
     doesConformToSchema(variableName: string, value: object, schema: Schema): void {
         const schemaValidator = new SchemaValidator();
