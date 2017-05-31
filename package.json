@@ -12,7 +12,7 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "run-p build:*:prod",
-    "lint": "tslint src/**/*.ts test/**/*.ts",
+    "lint": "tslint src/*.ts test/*.ts",
     "test": "run-s clean test:commonjs",
     "test:umd": "run-s substitute_umd_bundle run_mocha; npm run clean",
     "test:coverage": "nyc npm run test --all",
