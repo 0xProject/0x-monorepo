@@ -2,18 +2,25 @@ import 'mocha';
 import * as chai from 'chai';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
+import promisify = require('es6-promisify');
+import * as _ from 'lodash';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import * as BigNumber from 'bignumber.js';
 import {createSignedOrder} from './utils/order';
+import {Token} from '../src/types';
+import * as Web3 from 'web3';
 
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('ExchangeWrapper', () => {
     let zeroEx: ZeroEx;
+    let userAddresses: string[];
+    let web3: Web3;
     before(async () => {
-        const web3 = web3Factory.create();
+        web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3);
+        userAddresses = await promisify(web3.eth.getAccounts)();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -91,12 +98,41 @@ describe('ExchangeWrapper', () => {
             expect(isValid).to.be.true;
         });
     });
-    describe('#fillOrderAsync', async () => {
-        const signedOrder = await createSignedOrder(zeroEx);
-        it('should throw when the fill amount is zero', async () => {
-            const fillAmount = new BigNumber(0);
-            expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
-                .to.be.rejectedWith('This order has already been filled or cancelled');
+    describe('#fillOrderAsync', () => {
+        let tokens: Token[];
+        const giveMeTokens = async (toAddress: string,
+                                    amountInBaseUnits: BigNumber.BigNumber|number,
+                                    symbol: string) => {
+            const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
+            const token = _.find(tokens, {symbol});
+            if (_.isUndefined(token)) {
+                throw new Error(`Token ${symbol} not found`);
+            } else {
+                await zeroEx.token.transferAsync(token.address, userAddresses[0], toAddress, amount);
+            }
+        };
+        before('fetch tokens', async () => {
+            tokens = await zeroEx.tokenRegistry.getTokensAsync();
+        });
+        describe('failed fills', () => {
+            it('should throw when the fill amount is zero', async () => {
+                const signedOrder = await createSignedOrder(zeroEx, tokens, 5, 'MLN', 5, 'GNT');
+                const fillAmount = new BigNumber(0);
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
+                    .to.be.rejectedWith('This order has already been filled or cancelled');
+            });
+        });
+        describe('successful fills', () => {
+            afterEach('reset default account', () => {
+               web3.eth.defaultAccount = userAddresses[0];
+            });
+            it('should fill the valid order', async () => {
+                const signedOrder = await createSignedOrder(zeroEx, tokens, 5, 'MLN', 5, 'GNT');
+                await giveMeTokens(userAddresses[0], 5, 'GNT');
+                const fillAmount = new BigNumber(0);
+                web3.eth.defaultAccount = userAddresses[1];
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount)).to.become(undefined);
+            });
         });
     });
 });
