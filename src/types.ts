@@ -29,6 +29,15 @@ export interface ECSignature {
 
 export interface ExchangeContract {
     isValidSignature: any;
+    getUnavailableValueT: {
+        call: (orderHash: string) => BigNumber.BigNumber;
+    };
+    filled: {
+        call: (orderHash: string) => BigNumber.BigNumber;
+    };
+    cancelled: {
+        call: (orderHash: string) => BigNumber.BigNumber;
+    };
 }
 
 export interface TokenContract {
