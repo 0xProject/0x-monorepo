@@ -21,6 +21,7 @@ describe('ExchangeWrapper', () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3);
         userAddresses = await promisify(web3.eth.getAccounts)();
+        web3.eth.defaultAccount = userAddresses[0];
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -100,7 +101,7 @@ describe('ExchangeWrapper', () => {
     });
     describe('#fillOrderAsync', () => {
         let tokens: Token[];
-        const giveMeTokens = async (toAddress: string,
+        const setBalance = async (toAddress: string,
                                     amountInBaseUnits: BigNumber.BigNumber|number,
                                     symbol: string) => {
             const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
@@ -109,6 +110,17 @@ describe('ExchangeWrapper', () => {
                 throw new Error(`Token ${symbol} not found`);
             } else {
                 await zeroEx.token.transferAsync(token.address, userAddresses[0], toAddress, amount);
+            }
+        };
+        const setAllowance = async (ownerAddress: string,
+                                    amountInBaseUnits: BigNumber.BigNumber|number,
+                                    symbol: string) => {
+            const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
+            const token = _.find(tokens, {symbol});
+            if (_.isUndefined(token)) {
+                throw new Error(`Token ${symbol} not found`);
+            } else {
+                await zeroEx.token.setProxyAllowanceAsync(token.address, ownerAddress, amount);
             }
         };
         before('fetch tokens', async () => {
@@ -127,11 +139,13 @@ describe('ExchangeWrapper', () => {
                web3.eth.defaultAccount = userAddresses[0];
             });
             it('should fill the valid order', async () => {
+                await setAllowance(userAddresses[0], 5, 'MLN');
+                await setBalance(userAddresses[1], 5, 'GNT');
+                await setAllowance(userAddresses[1], 5, 'GNT');
                 const signedOrder = await createSignedOrder(zeroEx, tokens, 5, 'MLN', 5, 'GNT');
-                await giveMeTokens(userAddresses[0], 5, 'GNT');
-                const fillAmount = new BigNumber(0);
+                const fillAmount = new BigNumber(5);
                 web3.eth.defaultAccount = userAddresses[1];
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount)).to.become(undefined);
+                await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
             });
         });
     });
