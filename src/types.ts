@@ -38,7 +38,7 @@ export interface TokenContract {
     allowance: {
         call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
     };
-    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, opts: any) => void;
+    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => void;
 }
 
 export interface TokenRegistryContract {
@@ -65,4 +65,9 @@ export interface Token {
     symbol: string;
     decimals: number;
     url: string;
+};
+
+export interface TxOpts {
+    from: string;
+    gas?: number;
 };
