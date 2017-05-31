@@ -28,6 +28,25 @@ describe('TokenWrapper', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
+    describe('#transferAsync', () => {
+        it('should successfully transfer tokens', async () => {
+            const token = tokens[0];
+            const fromAddress = userAddresses[0];
+            const toAddress = userAddresses[1];
+            const preBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
+            expect(preBalance).to.be.bignumber.equal(0);
+            await zeroEx.token.transferAsync(token.address, fromAddress, toAddress, new BigNumber(42));
+            const postBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
+            expect(postBalance).to.be.bignumber.equal(42);
+        });
+        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
+            const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
+            const aOwnerAddress = userAddresses[0];
+            expect(zeroEx.token.transferAsync(
+                nonExistentTokenAddress, userAddresses[0], userAddresses[1], new BigNumber(42),
+            )).to.be.rejectedWith(ZeroExError.CONTRACT_DOES_NOT_EXIST);
+        });
+    });
     describe('#getBalanceAsync', () => {
         it('should return the balance for an existing ERC20 token', async () => {
             const aToken = tokens[0];

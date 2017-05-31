@@ -54,7 +54,7 @@ export class TokenWrapper extends ContractWrapper {
      * of an owner address.
      */
     public async setProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                        amountInBaseUnits: BigNumber.BigNumber) {
+                                        amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
@@ -69,6 +69,21 @@ export class TokenWrapper extends ContractWrapper {
         await tokenContract.approve(proxyAddress, amountInBaseUnits, {
             from: ownerAddress,
             gas,
+        });
+    }
+    /**
+     * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
+     */
+    public async transferAsync(tokenAddress: string, fromAddress: string, toAddress: string,
+                               amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isETHAddressHex('fromAddress', fromAddress);
+        assert.isETHAddressHex('toAddress', toAddress);
+        assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
+
+        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        await tokenContract.transfer(toAddress, amountInBaseUnits, {
+            from: fromAddress,
         });
     }
     private async getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
