@@ -15,9 +15,9 @@ export const orderFactory = {
         takerTokenAmount: BigNumber.BigNumber|number,
         takerTokenAddress: string,
         expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
-        const INF_TIMESTAMP = new BigNumber(2524604400);
+        const defaultExpirationUnixTimestampSec = new BigNumber(2524604400); // Close to infinite
         expirationUnixTimestampSec = _.isUndefined(expirationUnixTimestampSec) ?
-            INF_TIMESTAMP :
+            defaultExpirationUnixTimestampSec :
             expirationUnixTimestampSec;
         const order = {
             maker,
