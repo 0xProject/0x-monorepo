@@ -37,5 +37,5 @@ export const orderFactory = {
         const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
         const signedOrder: SignedOrder = _.assign(order, {ecSignature});
         return signedOrder;
-    }
-}
+    },
+};
