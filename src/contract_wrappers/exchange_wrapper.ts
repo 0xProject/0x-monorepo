@@ -116,6 +116,9 @@ export class ExchangeWrapper extends ContractWrapper {
         if (fillAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
+        if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
+            throw new Error(FillOrderValidationErrs.NOT_A_TAKER);
+        }
     }
     private async getExchangeInstanceOrThrowAsync(): Promise<ExchangeContract> {
         const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));

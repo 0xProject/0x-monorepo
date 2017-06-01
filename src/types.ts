@@ -81,6 +81,7 @@ export enum ExchangeContractErrs {
 
 export const FillOrderValidationErrs = strEnum([
     'FILL_AMOUNT_IS_ZERO',
+    'NOT_A_TAKER',
 ]);
 export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
 

@@ -129,12 +129,21 @@ describe('ExchangeWrapper', () => {
         describe('failed fills', () => {
             it('should throw when the fill amount is zero', async () => {
                 const maker = userAddresses[0];
-                const taker = userAddresses[1];
+                const taker = userAddresses[0];
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(0);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
                     .to.be.rejectedWith(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
+            });
+            it('should throw when sender is not a taker', async () => {
+                const maker = userAddresses[0];
+                const taker = userAddresses[1];
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
+                    5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
+                const fillAmount = new BigNumber(5);
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
+                    .to.be.rejectedWith(FillOrderValidationErrs.NOT_A_TAKER);
             });
         });
         describe('successful fills', () => {
