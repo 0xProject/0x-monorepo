@@ -4,6 +4,7 @@ import {
     ECSignature,
     ExchangeContract,
     ExchangeContractErrCodes,
+    ExchangeContractErrs,
     FillOrderValidationErrs,
     OrderValues,
     OrderAddresses,
@@ -21,12 +22,12 @@ import {constants} from '../utils/constants';
 
 export class ExchangeWrapper extends ContractWrapper {
     private exchangeContractErrCodesToMsg = {
-        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: 'The order you attempted to fill is expired',
-        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: 'The order you attempted to cancel is expired',
-        [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: 'This order has already been filled or cancelled',
-        [ExchangeContractErrCodes.ERROR_CANCEL_NO_VALUE]: 'This order has already been filled or cancelled',
-        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: 'The rounding error was too large when filling this order',
-        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: 'Maker or taker has insufficient balance or allowance',
+        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.ORDER_EXPIRED,
+        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: ExchangeContractErrs.ORDER_EXPIRED,
+        [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO,
+        [ExchangeContractErrCodes.ERROR_CANCEL_NO_VALUE]: ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO,
+        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.ORDER_ROUNDING_ERROR,
+        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.ORDER_BALANCE_ALLOWANCE_ERROR,
     };
     private exchangeContractIfExists?: ExchangeContract;
     constructor(web3Wrapper: Web3Wrapper) {
@@ -131,8 +132,8 @@ export class ExchangeWrapper extends ContractWrapper {
         const errEvent = _.find(logs, {event: 'LogError'});
         if (!_.isUndefined(errEvent)) {
             const errCode = errEvent.args.errorId.toNumber();
-            const humanReadableErrMessage = this.exchangeContractErrCodesToMsg[errCode];
-            throw new Error(humanReadableErrMessage);
+            const errMessage = this.exchangeContractErrCodesToMsg[errCode];
+            throw new Error(errMessage);
         }
     }
     private async getExchangeContractAsync(): Promise<ExchangeContract> {

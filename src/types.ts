@@ -77,6 +77,14 @@ export enum ExchangeContractErrCodes {
     ERROR_CANCEL_NO_VALUE, // Order has already been fully filled or cancelled
 }
 
+export const ExchangeContractErrs = strEnum([
+    'ORDER_EXPIRED',
+    'ORDER_REMAINING_FILL_AMOUNT_ZERO',
+    'ORDER_ROUNDING_ERROR',
+    'ORDER_BALANCE_ALLOWANCE_ERROR',
+]);
+export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
+
 export const FillOrderValidationErrs = strEnum([
     'FILL_AMOUNT_IS_ZERO',
     'NOT_A_TAKER',
