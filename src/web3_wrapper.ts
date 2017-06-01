@@ -20,14 +20,6 @@ export class Web3Wrapper {
     public setDefaultAccount(address: string): void {
         this.web3.eth.defaultAccount = address;
     }
-    public async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
-        const defaultAccount = this.web3.eth.defaultAccount;
-        if (!_.isUndefined(defaultAccount)) {
-            return defaultAccount;
-        }
-        const firstAccount = await this.getFirstAddressIfExistsAsync();
-        return firstAccount;
-    }
     public async getSenderAddressOrThrowAsync(): Promise<string> {
         const senderAddressIfExists = await this.getSenderAddressIfExistsAsync();
         assert.assert(!_.isUndefined(senderAddressIfExists), ZeroExError.USER_HAS_NO_ASSOCIATED_ADDRESSES);
@@ -73,6 +65,14 @@ export class Web3Wrapper {
     public async getBlockTimestampAsync(blockHash: string): Promise<number> {
         const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
         return timestamp;
+    }
+    private async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
+        const defaultAccount = this.web3.eth.defaultAccount;
+        if (!_.isUndefined(defaultAccount)) {
+            return defaultAccount;
+        }
+        const firstAccount = await this.getFirstAddressIfExistsAsync();
+        return firstAccount;
     }
     private async getNetworkAsync(): Promise<number> {
         const networkId = await promisify(this.web3.version.getNetwork)();

@@ -157,6 +157,8 @@ export class ZeroEx {
     public async signOrderHashAsync(orderHashHex: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
 
+        const makerAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
+
         let msgHashHex;
         const nodeVersion = await this.web3Wrapper.getNodeVersionAsync();
         const isParityNode = utils.isParityNode(nodeVersion);
@@ -169,12 +171,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const makerAddressIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
-        if (_.isUndefined(makerAddressIfExists)) {
-            throw new Error(ZeroExError.USER_HAS_NO_ASSOCIATED_ADDRESSES);
-        }
-
-        const signature = await this.web3Wrapper.signTransactionAsync(makerAddressIfExists, msgHashHex);
+        const signature = await this.web3Wrapper.signTransactionAsync(makerAddress, msgHashHex);
 
         let signatureData;
         const [nodeVersionNumber] = findVersions(nodeVersion);
@@ -204,7 +201,7 @@ export class ZeroEx {
             r: ethUtil.bufferToHex(r),
             s: ethUtil.bufferToHex(s),
         };
-        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, makerAddressIfExists);
+        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, makerAddress);
         if (!isValidSignature) {
             throw new Error(ZeroExError.INVALID_SIGNATURE);
         }
