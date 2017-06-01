@@ -6,7 +6,7 @@ import promisify = require('es6-promisify');
 import * as _ from 'lodash';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import * as BigNumber from 'bignumber.js';
-import {orderFactory} from './utils/order';
+import {orderFactory} from './utils/order_factory';
 import {Token} from '../src/types';
 import * as Web3 from 'web3';
 import * as dirtyChai from 'dirty-chai';
@@ -128,7 +128,9 @@ describe('ExchangeWrapper', () => {
         });
         describe('failed fills', () => {
             it('should throw when the fill amount is zero', async () => {
-                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, userAddresses[0],
+                const maker = userAddresses[0];
+                const taker = userAddresses[1];
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(0);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
@@ -145,14 +147,9 @@ describe('ExchangeWrapper', () => {
                 await setAllowance(maker, 5, addressBySymbol.MLN);
                 await setBalance(taker, 5, addressBySymbol.GNT);
                 await setAllowance(taker, 5, addressBySymbol.GNT);
-                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker,
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
-                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, maker)).to.be.bignumber.greaterThan(5);
-                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(0);
-                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(5);
-                expect(await zeroEx.token.getProxyAllowanceAsync(addressBySymbol.MLN, maker)).to.be.bignumber.equal(5);
-                expect(await zeroEx.token.getProxyAllowanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(5);
                 zeroEx.setDefaultAccount(taker);
                 await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(5);

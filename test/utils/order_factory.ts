@@ -10,6 +10,7 @@ export const orderFactory = {
         zeroEx: ZeroEx,
         networkId: number,
         maker: string,
+        taker: string,
         makerTokenAmount: BigNumber.BigNumber|number,
         makerTokenAddress: string,
         takerTokenAmount: BigNumber.BigNumber|number,
@@ -19,7 +20,7 @@ export const orderFactory = {
         const INF_TIMESTAMP = 2524604400;
         const order = {
             maker,
-            taker: undefined,
+            taker,
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
             makerTokenAmount: _.isNumber(makerTokenAmount) ? new BigNumber(makerTokenAmount) : makerTokenAmount,
