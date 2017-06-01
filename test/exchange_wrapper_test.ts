@@ -178,9 +178,9 @@ describe('ExchangeWrapper', () => {
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                     .to.be.bignumber.equal(fillTakerAmountInBaseUnits);
                 await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer);
-                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, takerAddress))
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, takerAddress))
                     .to.be.bignumber.equal(fillTakerAmountInBaseUnits);
-                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, takerAddress))
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                     .to.be.bignumber.equal(0);
             });
         });
