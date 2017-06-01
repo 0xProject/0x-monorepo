@@ -89,6 +89,10 @@ export const FillOrderValidationErrs = strEnum([
     'FILL_AMOUNT_IS_ZERO',
     'NOT_A_TAKER',
     'EXPIRED',
+    'NOT_ENOUGH_TAKER_BALANCE',
+    'NOT_ENOUGH_TAKER_ALLOWANCE',
+    'NOT_ENOUGH_MAKER_BALANCE',
+    'NOT_ENOUGH_MAKER_ALLOWANCE',
 ]);
 export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
 

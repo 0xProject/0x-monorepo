@@ -19,6 +19,7 @@ import {signedOrderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
 import {ContractResponse} from '../types';
 import {constants} from '../utils/constants';
+import {TokenWrapper} from './token_wrapper';
 
 export class ExchangeWrapper extends ContractWrapper {
     private exchangeContractErrCodesToMsg = {
@@ -30,8 +31,10 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.ORDER_BALANCE_ALLOWANCE_ERROR,
     };
     private exchangeContractIfExists?: ExchangeContract;
-    constructor(web3Wrapper: Web3Wrapper) {
+    private tokenWrapper: TokenWrapper;
+    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
+        this.tokenWrapper = tokenWrapper;
     }
     public invalidateContractInstance(): void {
         delete this.exchangeContractIfExists;
@@ -117,7 +120,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
-    private validateFillOrder(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string) {
+    private async validateFillOrder(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string) {
         if (fillAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
@@ -126,6 +129,15 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         if (signedOrder.expirationUnixTimestampSec.lessThan(Date.now() / 1000)) {
             throw new Error(FillOrderValidationErrs.EXPIRED);
+        }
+        const makerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress, signedOrder.maker);
+        const takerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
+        const makerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.makerTokenAddress,
+                                                                              signedOrder.maker);
+        const takerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress,
+                                                                              senderAddress);
+        if (fillAmount.greaterThan(takerBalance)) {
+            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
         }
     }
     private throwErrorLogsAsErrors(logs: ContractEvent[]): void {
