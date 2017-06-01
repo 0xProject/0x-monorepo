@@ -104,8 +104,8 @@ describe('ExchangeWrapper', () => {
         const addressBySymbol: {[symbol: string]: string} = {};
         let networkId: number;
         const setBalance = async (toAddress: string,
-                                    amountInBaseUnits: BigNumber.BigNumber|number,
-                                    tokenAddress: string) => {
+                                  amountInBaseUnits: BigNumber.BigNumber|number,
+                                  tokenAddress: string) => {
             const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
             await zeroEx.token.transferAsync(tokenAddress, userAddresses[0], toAddress, amount);
         };
