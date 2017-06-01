@@ -18,10 +18,6 @@ declare namespace Chai {
         bignumber: Assertion;
         // HACK: In order to comply with chai-as-promised we make eventually a `PromisedAssertion` not an `Assertion`
         eventually: PromisedAssertion;
-        true: () => void;
-        false: () => void;
-        rejected: () => void;
-        undefined: () => void;
     }
 }
 /* tslint:enable */

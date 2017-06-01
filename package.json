@@ -46,8 +46,6 @@
   },
   "devDependencies": {
     "@types/bignumber.js": "^4.0.2",
-    "@types/chai": "^3.5.2",
-    "@types/chai-as-promised": "0.0.30",
     "@types/jsonschema": "^1.1.1",
     "@types/lodash": "^4.14.64",
     "@types/mocha": "^2.2.41",
@@ -57,7 +55,9 @@
     "bignumber.js": "^4.0.2",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "chai-as-promised-typescript-typings": "0.0.2",
     "chai-bignumber": "^2.0.0",
+    "chai-typescript-typings": "^0.0.0",
     "copyfiles": "^1.2.0",
     "dirty-chai": "^1.2.2",
     "ethereumjs-testrpc": "3.0.5",
