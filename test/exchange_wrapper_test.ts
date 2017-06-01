@@ -104,10 +104,7 @@ describe('ExchangeWrapper', () => {
     });
     describe('#fillOrderAsync', () => {
         let tokens: Token[];
-        const addressBySymbol: {[symbol: string]: string} = {};
-        let networkId: number;
         const fillAmount = new BigNumber(5);
-        const shouldCheckTransfer = false;
         let maker: string;
         let taker: string;
         let networkId: number;
