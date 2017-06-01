@@ -103,9 +103,9 @@ export class ZeroEx {
     }
     constructor(web3: Web3) {
         this.web3Wrapper = new Web3Wrapper(web3);
-        this.exchange = new ExchangeWrapper(this.web3Wrapper);
-        this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
         this.token = new TokenWrapper(this.web3Wrapper);
+        this.exchange = new ExchangeWrapper(this.web3Wrapper, this.token);
+        this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
     }
     /**
      * Sets a new provider for the web3 instance used by 0x.js

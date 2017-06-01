@@ -104,7 +104,7 @@ describe('ExchangeWrapper', () => {
     });
     describe('#fillOrderAsync', () => {
         let tokens: Token[];
-        const fillAmount = new BigNumber(5);
+        const fillTakerAmountInBaseUnits = new BigNumber(5);
         let maker: string;
         let taker: string;
         const addressBySymbol: {[symbol: string]: string} = {};
@@ -141,18 +141,29 @@ describe('ExchangeWrapper', () => {
                 const takerAmount = 5;
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
                     makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.NOT_A_TAKER);
             });
             it('should throw when order is expired', async () => {
-                const oldTimestamp = new BigNumber(42);
+                const timestampInThePast = new BigNumber(42);
                 const makerAmount = 5;
                 const takerAmount = 5;
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
-                    makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT, oldTimestamp);
+                    makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT, timestampInThePast);
                 zeroEx.setDefaultAccount(taker);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.EXPIRED);
+            });
+            it('should throw when not enough balance', async () => {
+                const makerAmount = 10;
+                const takerAmount = 10;
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
+                    makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
+                zeroEx.setDefaultAccount(taker);
+                const moreThanTheBalance = new BigNumber(6);
+                const checkTransfer = true;
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, moreThanTheBalance, checkTransfer))
+                    .to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
             });
         });
         describe('successful fills', () => {
@@ -162,9 +173,9 @@ describe('ExchangeWrapper', () => {
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
                     makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
                 zeroEx.setDefaultAccount(taker);
-                await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer);
+                await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker))
-                    .to.be.bignumber.equal(fillAmount);
+                    .to.be.bignumber.equal(fillTakerAmountInBaseUnits);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, taker))
                     .to.be.bignumber.equal(0);
             });
