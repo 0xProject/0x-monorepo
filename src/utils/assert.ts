@@ -31,6 +31,9 @@ export const assert = {
     isValidOrderHash(variableName: string, value: string): void {
         this.assert(utils.isValidOrderHash(value), this.typeAssertionMessage(variableName, 'orderHash', value));
     },
+    isBoolean(variableName: string, value: boolean): void {
+        this.assert(_.isBoolean(value), this.typeAssertionMessage(variableName, 'boolean', value));
+    },
     doesConformToSchema(variableName: string, value: object, schema: Schema): void {
         const schemaValidator = new SchemaValidator();
         const validationResult = schemaValidator.validate(value, schema);
