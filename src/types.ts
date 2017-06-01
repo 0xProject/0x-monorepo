@@ -36,9 +36,9 @@ export interface ExchangeContract {
     isValidSignature: any;
     fill: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-         shouldCheckTransfer: boolean, v: number, r: string, s: string, txData: TxOpts): ContractResponse;
+         shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts): ContractResponse;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-                      shouldCheckTransfer: boolean, v: number, r: string, s: string, txData: TxOpts) => number;
+                      shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts) => number;
     };
 }
 
