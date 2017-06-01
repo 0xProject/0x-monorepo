@@ -76,7 +76,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeContractAsync();
 
-        this.validateFillOrder(signedOrder, fillTakerAmountInBaseUnits, senderAddress);
+        await this.validateFillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, senderAddress);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -120,7 +120,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
-    private async validateFillOrder(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string) {
+    private async validateFillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string) {
         if (fillAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }

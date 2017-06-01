@@ -161,7 +161,8 @@ describe('ExchangeWrapper', () => {
                     makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
                 zeroEx.setDefaultAccount(taker);
                 const moreThanTheBalance = new BigNumber(6);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, moreThanTheBalance, true))
+                const checkTransfer = true;
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, moreThanTheBalance, checkTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
             });
         });
