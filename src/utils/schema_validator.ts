@@ -1,6 +1,6 @@
 import {Validator, ValidatorResult} from 'jsonschema';
 import {ecSignatureSchema, ecSignatureParameter} from '../schemas/ec_signature_schema';
-import {addressSchema, numberSchema, orderSchema, signedOrderSchema} from '../schemas/signed_order_schema';
+import {addressSchema, numberSchema, orderSchema, signedOrderSchema} from '../schemas/order_schemas';
 import {tokenSchema} from '../schemas/token_schema';
 
 export class SchemaValidator {

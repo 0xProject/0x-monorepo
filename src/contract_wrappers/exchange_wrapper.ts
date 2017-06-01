@@ -13,7 +13,7 @@ import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
-import {signedOrderSchema} from '../schemas/signed_order_schema';
+import {signedOrderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
 import {ContractResponse} from '../types';
 import {constants} from '../utils/constants';
