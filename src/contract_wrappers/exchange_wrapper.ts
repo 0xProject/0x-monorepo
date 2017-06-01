@@ -73,7 +73,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeContractAsync();
 
-        this.validateFillOrder(signedOrder, fillTakerAmountInBaseUnits, senderAddress, shouldCheckTransfer);
+        this.validateFillOrder(signedOrder, fillTakerAmountInBaseUnits, senderAddress);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
