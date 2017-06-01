@@ -51,7 +51,7 @@ describe('ExchangeWrapper', () => {
                     s: signature.s,
                 };
                 expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
-                    .to.be.rejected;
+                    .to.be.rejected();
             });
             it('r lacks 0x prefix', () => {
                 const malformedR = signature.r.replace('0x', '');
@@ -61,7 +61,7 @@ describe('ExchangeWrapper', () => {
                     s: signature.s,
                 };
                 expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
-                    .to.be.rejected;
+                    .to.be.rejected();
             });
             it('r is too short', () => {
                 const malformedR = signature.r.substr(10);
@@ -71,7 +71,7 @@ describe('ExchangeWrapper', () => {
                     s: signature.s.replace('0', 'z'),
                 };
                 expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
-                    .to.be.rejected;
+                    .to.be.rejected();
             });
             it('s is not hex', () => {
                 const malformedS = signature.s.replace('0', 'z');
@@ -81,26 +81,26 @@ describe('ExchangeWrapper', () => {
                     s: malformedS,
                 };
                 expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
-                    .to.be.rejected;
+                    .to.be.rejected();
             });
         });
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
             const isValid = await zeroEx.exchange.isValidSignatureAsync('0x0', signature, address);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return false if the address doesn\'t pertain to the signature & dataHex', async () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
             const isValid = await zeroEx.exchange.isValidSignatureAsync(dataHex, signature, validUnrelatedAddress);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return false if the signature doesn\'t pertain to the dataHex & address', async () => {
             const wrongSignature = {...signature, v: 28};
             const isValid = await zeroEx.exchange.isValidSignatureAsync(dataHex, wrongSignature, address);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return true if the signature does pertain to the dataHex & address', async () => {
             const isValid = await zeroEx.exchange.isValidSignatureAsync(dataHex, signature, address);
-            expect(isValid).to.be.true;
+            expect(isValid).to.be.true();
         });
     });
     describe('#fillOrderAsync', () => {

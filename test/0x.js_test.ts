@@ -3,6 +3,7 @@ import * as chai from 'chai';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
+import * as dirtyChai from 'dirty-chai';
 import * as Sinon from 'sinon';
 import {ZeroEx} from '../src/0x.js';
 import {constants} from './utils/constants';
@@ -11,6 +12,7 @@ import {Order} from '../src/types';
 
 // Use BigNumber chai add-on
 chai.use(ChaiBigNumber());
+chai.use(dirtyChai);
 const expect = chai.expect;
 
 describe('ZeroEx library', () => {
@@ -21,8 +23,8 @@ describe('ZeroEx library', () => {
             // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any).getExchangeContractAsync();
             await (zeroEx.tokenRegistry as any).getTokenRegistryContractAsync();
-            expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.undefined;
-            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.undefined;
+            expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.undefined();
+            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.undefined();
 
             const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
@@ -30,8 +32,8 @@ describe('ZeroEx library', () => {
             zeroEx.setProvider(newProvider);
 
             // Check that contractInstances with old provider are removed after provider update
-            expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.undefined;
-            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.be.undefined;
+            expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.undefined();
+            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.be.undefined();
 
             // Check that all nested web3 instances return the updated provider
             const nestedWeb3WrapperProvider = (zeroEx as any).web3Wrapper.getCurrentProvider();
@@ -118,47 +120,47 @@ describe('ZeroEx library', () => {
         });
         it('should return false if the data doesn\'t pertain to the signature & address', () => {
             const isValid = ZeroEx.isValidSignature('0x0', signature, address);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return false if the address doesn\'t pertain to the signature & data', () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
             const isValid = ZeroEx.isValidSignature(data, signature, validUnrelatedAddress);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return false if the signature doesn\'t pertain to the data & address', () => {
             const wrongSignature = _.assign({}, signature, {v: 28});
             const isValid = ZeroEx.isValidSignature(data, wrongSignature, address);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return true if the signature does pertain to the data & address', () => {
             const isValid = ZeroEx.isValidSignature(data, signature, address);
-            expect(isValid).to.be.true;
+            expect(isValid).to.be.true();
         });
     });
     describe('#generateSalt', () => {
         it('generates different salts', () => {
             const equal = ZeroEx.generatePseudoRandomSalt().eq(ZeroEx.generatePseudoRandomSalt());
-            expect(equal).to.be.false;
+            expect(equal).to.be.false();
         });
         it('generates salt in range [0..2^256)', () => {
             const salt = ZeroEx.generatePseudoRandomSalt();
-            expect(salt.greaterThanOrEqualTo(0)).to.be.true;
+            expect(salt.greaterThanOrEqualTo(0)).to.be.true();
             const twoPow256 = new BigNumber(2).pow(256);
-            expect(salt.lessThan(twoPow256)).to.be.true;
+            expect(salt.lessThan(twoPow256)).to.be.true();
         });
     });
     describe('#isValidOrderHash', () => {
         it('returns false if the value is not a hex string', () => {
             const isValid = ZeroEx.isValidOrderHash('not a hex');
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('returns false if the length is wrong', () => {
             const isValid = ZeroEx.isValidOrderHash('0xdeadbeef');
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('returns true if order hash is correct', () => {
             const isValid = ZeroEx.isValidOrderHash('0x' + Array(65).join('0'));
-            expect(isValid).to.be.true;
+            expect(isValid).to.be.true();
         });
     });
     describe('#toUnitAmount', () => {
