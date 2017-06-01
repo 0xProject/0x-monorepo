@@ -154,15 +154,14 @@ describe('ExchangeWrapper', () => {
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.EXPIRED);
             });
-            it('should throw when not enough balance', async () => {
+            it('should throw when taker balance is less than fill amount', async () => {
                 const makerAmount = 10;
                 const takerAmount = 10;
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
                     makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
                 zeroEx.setDefaultAccount(taker);
                 const moreThanTheBalance = new BigNumber(6);
-                const checkTransfer = true;
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, moreThanTheBalance, checkTransfer))
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, moreThanTheBalance, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
             });
         });
