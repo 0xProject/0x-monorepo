@@ -142,7 +142,7 @@ describe('ExchangeWrapper', () => {
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(0);
                 zeroEx.setDefaultAccount(taker);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
             });
             it('should throw when sender is not a taker', async () => {
