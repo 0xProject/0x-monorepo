@@ -110,18 +110,6 @@ describe('ExchangeWrapper', () => {
         let networkId: number;
         const addressBySymbol: {[symbol: string]: string} = {};
         const shouldCheckTransfer = false;
-        const setBalanceAsync = async (toAddress: string,
-                                       amountInBaseUnits: BigNumber.BigNumber|number,
-                                       tokenAddress: string) => {
-            const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
-            await zeroEx.token.transferAsync(tokenAddress, userAddresses[0], toAddress, amount);
-        };
-        const setAllowanceAsync = async (ownerAddress: string,
-                                         amountInBaseUnits: BigNumber.BigNumber|number,
-                                         tokenAddress: string) => {
-            const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
-            await zeroEx.token.setProxyAllowanceAsync(tokenAddress, ownerAddress, amount);
-        };
         before('fetch tokens', async () => {
             tokens = await zeroEx.tokenRegistry.getTokensAsync();
             _.forEach(tokens, token => {
@@ -132,9 +120,9 @@ describe('ExchangeWrapper', () => {
         beforeEach('setup', async () => {
             maker = userAddresses[0];
             taker = userAddresses[1];
-            await setAllowanceAsync(maker, 5, addressBySymbol.MLN);
-            await setBalanceAsync(taker, 5, addressBySymbol.GNT);
-            await setAllowanceAsync(taker, 5, addressBySymbol.GNT);
+            await zeroEx.token.setProxyAllowanceAsync(addressBySymbol.MLN, maker, new BigNumber(5));
+            await zeroEx.token.transferAsync(addressBySymbol.GNT, maker, taker, new BigNumber(5));
+            await zeroEx.token.setProxyAllowanceAsync(addressBySymbol.GNT, taker, new BigNumber(5));
         });
         afterEach('reset default account', () => {
             zeroEx.setDefaultAccount(userAddresses[0]);
