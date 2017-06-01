@@ -108,6 +108,8 @@ describe('ExchangeWrapper', () => {
         const addressBySymbol: {[symbol: string]: string} = {};
         let networkId: number;
         const shouldCheckTransfer = false;
+        let maker: string;
+        let taker: string;
         const setBalance = async (toAddress: string,
                                   amountInBaseUnits: BigNumber.BigNumber|number,
                                   tokenAddress: string) => {
@@ -127,19 +129,23 @@ describe('ExchangeWrapper', () => {
             });
             networkId = await promisify(web3.version.getNetwork)();
         });
+        beforeEach('setup', () => {
+            maker = userAddresses[0];
+            taker = userAddresses[1];
+        });
+        afterEach('reset default account', () => {
+            zeroEx.setDefaultAccount(userAddresses[0]);
+        });
         describe('failed fills', () => {
             it('should throw when the fill amount is zero', async () => {
-                const maker = userAddresses[0];
-                const taker = userAddresses[0];
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(0);
+                zeroEx.setDefaultAccount(taker);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
             });
             it('should throw when sender is not a taker', async () => {
-                const maker = userAddresses[0];
-                const taker = userAddresses[1];
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
@@ -148,12 +154,7 @@ describe('ExchangeWrapper', () => {
             });
         });
         describe('successful fills', () => {
-            afterEach('reset default account', () => {
-               zeroEx.setDefaultAccount(userAddresses[0]);
-            });
             it('should fill the valid order', async () => {
-                const maker = userAddresses[0];
-                const taker = userAddresses[1];
                 await setAllowance(maker, 5, addressBySymbol.MLN);
                 await setBalance(taker, 5, addressBySymbol.GNT);
                 await setAllowance(taker, 5, addressBySymbol.GNT);
