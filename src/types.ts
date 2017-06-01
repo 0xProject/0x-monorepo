@@ -79,6 +79,11 @@ export enum ExchangeContractErrs {
     ERROR_CANCEL_NO_VALUE, // Order has already been fully filled or cancelled
 }
 
+export const FillOrderValidationErrs = strEnum([
+    'FILL_AMOUNT_IS_ZERO',
+]);
+export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
+
 export interface ContractResponse {
     logs: ContractEvent[];
 }

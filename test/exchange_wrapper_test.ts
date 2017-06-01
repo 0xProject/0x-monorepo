@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import * as BigNumber from 'bignumber.js';
 import {orderFactory} from './utils/order_factory';
-import {Token} from '../src/types';
+import {FillOrderValidationErrs, Token} from '../src/types';
 import * as Web3 from 'web3';
 import * as dirtyChai from 'dirty-chai';
 import ChaiBigNumber = require('chai-bignumber');
@@ -134,7 +134,7 @@ describe('ExchangeWrapper', () => {
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(0);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
-                    .to.be.rejectedWith('This order has already been filled or cancelled');
+                    .to.be.rejectedWith(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
             });
         });
         describe('successful fills', () => {
