@@ -31,7 +31,7 @@ export type OrderAddresses = [string, string, string, string, string];
 
 export type OrderValues = [
     BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
-    BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
+    BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber
 ];
 
 export interface ExchangeContract {
@@ -78,6 +78,13 @@ export enum ExchangeContractErrCodes {
     ERROR_CANCEL_EXPIRED, // Order has already expired
     ERROR_CANCEL_NO_VALUE, // Order has already been fully filled or cancelled
 }
+
+export const FillOrderValidationErrs = strEnum([
+    'FILL_AMOUNT_IS_ZERO',
+    'NOT_A_TAKER',
+    'EXPIRED',
+]);
+export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
 
 export interface ContractResponse {
     logs: ContractEvent[];

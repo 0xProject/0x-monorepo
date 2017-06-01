@@ -4,6 +4,7 @@ import {
     ECSignature,
     ExchangeContract,
     ExchangeContractErrCodes,
+    FillOrderValidationErrs,
     OrderValues,
     OrderAddresses,
     SignedOrder,
@@ -66,6 +67,8 @@ export class ExchangeWrapper extends ContractWrapper {
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeInstanceOrThrowAsync();
 
+        this.validateFillOrder(signedOrder, fillAmount, senderAddress, shouldCheckTransfer);
+
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
             signedOrder.taker,
@@ -107,6 +110,18 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this.throwErrorLogsAsErrors(response.logs);
+    }
+    private validateFillOrder(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string,
+                              shouldCheckTransfer: boolean = true) {
+        if (fillAmount.eq(0)) {
+            throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
+        }
+        if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
+            throw new Error(FillOrderValidationErrs.NOT_A_TAKER);
+        }
+        if (signedOrder.expirationUnixTimestampSec.lessThan(Date.now() / 1000)) {
+            throw new Error(FillOrderValidationErrs.EXPIRED);
+        }
     }
     private async getExchangeInstanceOrThrowAsync(): Promise<ExchangeContract> {
         const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
