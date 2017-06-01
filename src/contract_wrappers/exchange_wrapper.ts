@@ -153,7 +153,8 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
-    private async validateFillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string) {
+    private async validateFillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber,
+                                         senderAddress: string) {
         if (fillAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
