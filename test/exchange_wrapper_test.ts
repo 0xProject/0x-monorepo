@@ -1,16 +1,16 @@
+import * as _ from 'lodash';
 import 'mocha';
 import * as chai from 'chai';
-import {web3Factory} from './utils/web3_factory';
-import {ZeroEx} from '../src/0x.js';
-import promisify = require('es6-promisify');
-import * as _ from 'lodash';
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import * as BigNumber from 'bignumber.js';
-import {orderFactory} from './utils/order_factory';
-import {FillOrderValidationErrs, Token} from '../src/types';
 import * as Web3 from 'web3';
+import * as BigNumber from 'bignumber.js';
 import * as dirtyChai from 'dirty-chai';
 import ChaiBigNumber = require('chai-bignumber');
+import promisify = require('es6-promisify');
+import {web3Factory} from './utils/web3_factory';
+import {ZeroEx} from '../src/0x.js';
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {orderFactory} from './utils/order_factory';
+import {FillOrderValidationErrs, Token} from '../src/types';
 
 chai.use(dirtyChai);
 chai.use(ChaiBigNumber());
