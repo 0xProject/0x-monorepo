@@ -145,11 +145,11 @@ describe('ExchangeWrapper', () => {
                     .to.be.rejectedWith(FillOrderValidationErrs.NOT_A_TAKER);
             });
             it('should throw when order is expired', async () => {
-                const OLD_TIMESTAMP = new BigNumber(42);
+                const oldTimestamp = new BigNumber(42);
                 const makerAmount = 5;
                 const takerAmount = 5;
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
-                    makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT, OLD_TIMESTAMP);
+                    makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT, oldTimestamp);
                 zeroEx.setDefaultAccount(taker);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.EXPIRED);
