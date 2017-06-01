@@ -235,7 +235,7 @@ async@^1.4.0, async@^1.4.2, async@^1.5.2, async@~1.5.0:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
-async@^2.0.1, async@^2.1.2, async@^2.4.0:
+async@^2.1.2, async@^2.4.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.4.1.tgz#62a56b279c98a11d0987096a01cc3eeb8eb7bbd7"
   dependencies:
@@ -412,9 +412,9 @@ bignumber.js@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-4.0.2.tgz#2d1dc37ee5968867ecea90b6da4d16e68608d21d"
 
-"bignumber.js@git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2", "bignumber.js@git+https://github.com/debris/bignumber.js.git#master":
+"bignumber.js@git+https://github.com/debris/bignumber.js#master", "bignumber.js@git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2":
   version "2.0.7"
-  resolved "git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2"
+  resolved "git+https://github.com/debris/bignumber.js#94d7146671b9719e00a09c29b01a691bc85048c2"
 
 bignumber.js@~2.1.4:
   version "2.1.4"
@@ -964,6 +964,10 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
+dirty-chai@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/dirty-chai/-/dirty-chai-1.2.2.tgz#78495e619635f7fe44219aa4c837849bf183142e"
+
 dom-walk@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/dom-walk/-/dom-walk-0.1.1.tgz#672226dc74c8f799ad35307df936aba11acd6018"
@@ -1124,17 +1128,7 @@ ethereumjs-account@^2.0.3, ethereumjs-account@~2.0.4:
     ethereumjs-util "^4.0.1"
     rlp "^2.0.0"
 
-ethereumjs-block@^1.2.2:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/ethereumjs-block/-/ethereumjs-block-1.5.0.tgz#b0b9018e9cd73146c601dc7db2f6b2a4561e468c"
-  dependencies:
-    async "^2.0.1"
-    ethereum-common "0.0.18"
-    ethereumjs-tx "^1.2.2"
-    ethereumjs-util "^5.0.0"
-    merkle-patricia-tree "^2.1.2"
-
-ethereumjs-block@~1.2.2:
+ethereumjs-block@^1.2.2, ethereumjs-block@~1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/ethereumjs-block/-/ethereumjs-block-1.2.2.tgz#2ec7534a59021b8ec9b83c30e49690c6ebaedda1"
   dependencies:
@@ -1167,7 +1161,7 @@ ethereumjs-testrpc@3.0.5:
     web3-provider-engine "~8.1.0"
     yargs "~3.29.0"
 
-ethereumjs-tx@^1.0.0, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.2.2, ethereumjs-tx@^1.3.0:
+ethereumjs-tx@^1.0.0, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.3.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-1.3.1.tgz#d6909abcfb37da6404fc18124d351eda20047dac"
   dependencies:
@@ -3199,23 +3193,13 @@ sntp@1.x.x:
   dependencies:
     hoek "2.x.x"
 
-solc@0.4.6:
+solc@0.4.6, solc@^0.4.2:
   version "0.4.6"
   resolved "https://registry.yarnpkg.com/solc/-/solc-0.4.6.tgz#afa929a1ceafc0252cfbb4217c8e2b1dab139db7"
   dependencies:
     fs-extra "^0.30.0"
     memorystream "^0.3.1"
     require-from-string "^1.1.0"
-    yargs "^4.7.1"
-
-solc@^0.4.2:
-  version "0.4.11"
-  resolved "https://registry.yarnpkg.com/solc/-/solc-0.4.11.tgz#2522eb43e7c0419bac2060b96e20a2593bfb5e8b"
-  dependencies:
-    fs-extra "^0.30.0"
-    memorystream "^0.3.1"
-    require-from-string "^1.1.0"
-    semver "^5.3.0"
     yargs "^4.7.1"
 
 source-list-map@^1.1.1:

@@ -9,7 +9,11 @@ import * as BigNumber from 'bignumber.js';
 import {orderFactory} from './utils/order';
 import {Token} from '../src/types';
 import * as Web3 from 'web3';
+import * as dirtyChai from 'dirty-chai';
+import ChaiBigNumber = require('chai-bignumber');
 
+chai.use(dirtyChai);
+chai.use(ChaiBigNumber());
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 
