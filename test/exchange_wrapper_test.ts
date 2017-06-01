@@ -109,15 +109,15 @@ describe('ExchangeWrapper', () => {
         let networkId: number;
         const addressBySymbol: {[symbol: string]: string} = {};
         const shouldCheckTransfer = false;
-        const setBalance = async (toAddress: string,
-                                  amountInBaseUnits: BigNumber.BigNumber|number,
-                                  tokenAddress: string) => {
+        const setBalanceAsync = async (toAddress: string,
+                                       amountInBaseUnits: BigNumber.BigNumber|number,
+                                       tokenAddress: string) => {
             const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
             await zeroEx.token.transferAsync(tokenAddress, userAddresses[0], toAddress, amount);
         };
-        const setAllowance = async (ownerAddress: string,
-                                    amountInBaseUnits: BigNumber.BigNumber|number,
-                                    tokenAddress: string) => {
+        const setAllowanceAsync = async (ownerAddress: string,
+                                         amountInBaseUnits: BigNumber.BigNumber|number,
+                                         tokenAddress: string) => {
             const amount = _.isNumber(amountInBaseUnits) ? new BigNumber(amountInBaseUnits) : amountInBaseUnits;
             await zeroEx.token.setProxyAllowanceAsync(tokenAddress, ownerAddress, amount);
         };
@@ -154,9 +154,9 @@ describe('ExchangeWrapper', () => {
         });
         describe('successful fills', () => {
             it('should fill the valid order', async () => {
-                await setAllowance(maker, 5, addressBySymbol.MLN);
-                await setBalance(taker, 5, addressBySymbol.GNT);
-                await setAllowance(taker, 5, addressBySymbol.GNT);
+                await setAllowanceAsync(maker, 5, addressBySymbol.MLN);
+                await setBalanceAsync(taker, 5, addressBySymbol.GNT);
+                await setAllowanceAsync(taker, 5, addressBySymbol.GNT);
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
