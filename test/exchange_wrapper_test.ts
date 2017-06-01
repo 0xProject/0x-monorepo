@@ -154,6 +154,16 @@ describe('ExchangeWrapper', () => {
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.EXPIRED);
             });
+            it('should throw when not enough balance', async () => {
+                const makerAmount = 10;
+                const takerAmount = 10;
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
+                    makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
+                zeroEx.setDefaultAccount(taker);
+                const tooMuch = new BigNumber(6);
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, tooMuch, true))
+                    .to.be.rejectedWith(FillOrderValidationErrs.EXPIRED);
+            });
         });
         describe('successful fills', () => {
             it('should fill the valid order', async () => {
