@@ -11,6 +11,7 @@ import {Web3Wrapper} from './web3_wrapper';
 import {constants} from './utils/constants';
 import {utils} from './utils/utils';
 import {assert} from './utils/assert';
+import {SchemaValidator} from './utils/schema_validator';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
@@ -33,7 +34,9 @@ export class ZeroEx {
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
      */
     public static getOrderHashHex(exchangeContractAddr: string, order: Order): string {
-        assert.doesConformToSchema('order', JSON.parse(JSON.stringify(order)), orderSchema);
+        assert.doesConformToSchema('order',
+                                   SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
+                                   orderSchema);
         const taker = _.isEmpty(order.taker) ? constants.NULL_ADDRESS : order.taker ;
 
         const orderParts = [

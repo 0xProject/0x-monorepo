@@ -14,6 +14,7 @@ import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {signedOrderSchema} from '../schemas/signed_order_schema';
+import {SchemaValidator} from '../utils/schema_validator';
 import {ContractResponse} from '../types';
 import {constants} from '../utils/constants';
 
@@ -56,7 +57,9 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     public async fillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean = true): Promise<void> {
-        assert.doesConformToSchema('signedOrder', JSON.parse(JSON.stringify(signedOrder)), signedOrderSchema);
+        assert.doesConformToSchema('signedOrder',
+                                   SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
+                                   signedOrderSchema);
         assert.isBigNumber('fillAmount', fillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
 
