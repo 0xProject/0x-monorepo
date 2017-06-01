@@ -107,7 +107,6 @@ describe('ExchangeWrapper', () => {
         const fillAmount = new BigNumber(5);
         let maker: string;
         let taker: string;
-        let networkId: number;
         const addressBySymbol: {[symbol: string]: string} = {};
         const shouldCheckTransfer = false;
         before('fetch tokens', async () => {
@@ -115,7 +114,6 @@ describe('ExchangeWrapper', () => {
             _.forEach(tokens, token => {
                 addressBySymbol[token.symbol] = token.address;
             });
-            networkId = await promisify(web3.version.getNetwork)();
         });
         beforeEach('setup', async () => {
             maker = userAddresses[0];
@@ -131,7 +129,7 @@ describe('ExchangeWrapper', () => {
             it('should throw when the fill amount is zero', async () => {
                 const makerAmount = 5;
                 const takerAmount = 5;
-                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
                     makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
                 const zeroFillAmount = new BigNumber(0);
                 zeroEx.setDefaultAccount(taker);
@@ -141,7 +139,7 @@ describe('ExchangeWrapper', () => {
             it('should throw when sender is not a taker', async () => {
                 const makerAmount = 5;
                 const takerAmount = 5;
-                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
                     makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.NOT_A_TAKER);
@@ -150,7 +148,7 @@ describe('ExchangeWrapper', () => {
                 const OLD_TIMESTAMP = new BigNumber(42);
                 const makerAmount = 5;
                 const takerAmount = 5;
-                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
                     makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT, OLD_TIMESTAMP);
                 zeroEx.setDefaultAccount(taker);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
@@ -161,7 +159,7 @@ describe('ExchangeWrapper', () => {
             it('should fill the valid order', async () => {
                 const makerAmount = 5;
                 const takerAmount = 5;
-                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, maker, taker,
                     makerAmount, addressBySymbol.MLN, takerAmount, addressBySymbol.GNT);
                 zeroEx.setDefaultAccount(taker);
                 await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer);

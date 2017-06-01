@@ -8,7 +8,6 @@ import * as ExchangeArtifacts from '../../src/artifacts/Exchange.json';
 export const orderFactory = {
     async createSignedOrderAsync(
         zeroEx: ZeroEx,
-        networkId: number,
         maker: string,
         taker: string,
         makerTokenAmount: BigNumber.BigNumber|number,
