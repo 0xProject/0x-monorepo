@@ -43,27 +43,6 @@ describe('ZeroEx library', () => {
             expect((tokenRegistryWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
         });
     });
-    describe('#getOrderHash', () => {
-        const expectedOrderHash = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
-        const order: Order = {
-            maker: constants.NULL_ADDRESS,
-            taker: constants.NULL_ADDRESS,
-            feeRecipient: constants.NULL_ADDRESS,
-            makerTokenAddress: constants.NULL_ADDRESS,
-            takerTokenAddress: constants.NULL_ADDRESS,
-            salt: new BigNumber(0),
-            makerFee: new BigNumber(0),
-            takerFee: new BigNumber(0),
-            makerTokenAmount: new BigNumber(0),
-            takerTokenAmount: new BigNumber(0),
-            expirationUnixTimestampSec: new BigNumber(0),
-        };
-        const exchangeAddress = constants.NULL_ADDRESS;
-        it('calculates the order hash', () => {
-            const orderHash = ZeroEx.getOrderHashHex(exchangeAddress, order);
-            expect(orderHash).to.be.equal(expectedOrderHash);
-        });
-    });
     describe('#isValidSignature', () => {
         // This test data was borrowed from the JSON RPC documentation
         // Source: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign
@@ -172,6 +151,28 @@ describe('ZeroEx library', () => {
             const baseUnitAmount = ZeroEx.toBaseUnitAmount(unitAmount, decimals);
             const expectedUnitAmount = new BigNumber(1000000000);
             expect(baseUnitAmount).to.be.bignumber.equal(expectedUnitAmount);
+        });
+    });
+    describe('#getOrderHashAsync', () => {
+        const expectedOrderHash = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
+        const order: Order = {
+            maker: constants.NULL_ADDRESS,
+            taker: constants.NULL_ADDRESS,
+            feeRecipient: constants.NULL_ADDRESS,
+            makerTokenAddress: constants.NULL_ADDRESS,
+            takerTokenAddress: constants.NULL_ADDRESS,
+            salt: new BigNumber(0),
+            makerFee: new BigNumber(0),
+            takerFee: new BigNumber(0),
+            makerTokenAmount: new BigNumber(0),
+            takerTokenAmount: new BigNumber(0),
+            expirationUnixTimestampSec: new BigNumber(0),
+        };
+        it('calculates the order hash', async () => {
+            const web3 = web3Factory.create();
+            const zeroEx = new ZeroEx(web3);
+            const orderHash = await zeroEx.getOrderHashHexAsync(order);
+            expect(orderHash).to.be.equal(expectedOrderHash);
         });
     });
     describe('#signOrderHashAsync', () => {

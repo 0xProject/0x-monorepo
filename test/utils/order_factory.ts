@@ -16,8 +16,6 @@ export const orderFactory = {
         takerTokenAmount: BigNumber.BigNumber|number,
         takerTokenAddress: string,
         expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
-        // TODO refactor and check
-        const exchangeAddress: string = (ExchangeArtifacts as any).networks[networkId].address;
         const INF_TIMESTAMP = new BigNumber(2524604400);
         expirationUnixTimestampSec = _.isUndefined(expirationUnixTimestampSec) ?
             INF_TIMESTAMP :
@@ -35,7 +33,7 @@ export const orderFactory = {
             feeRecipient: constants.NULL_ADDRESS,
             expirationUnixTimestampSec,
         };
-        const orderHash = ZeroEx.getOrderHashHex(exchangeAddress, order);
+        const orderHash = await zeroEx.getOrderHashHexAsync(order);
         const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
         const signedOrder: SignedOrder = _.assign(order, {ecSignature});
         return signedOrder;

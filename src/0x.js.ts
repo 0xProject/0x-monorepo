@@ -19,6 +19,7 @@ import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
 import {Order} from './types';
 import {orderSchema} from './schemas/order_schemas';
+import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -32,34 +33,6 @@ export class ZeroEx {
     public tokenRegistry: TokenRegistryWrapper;
     public token: TokenWrapper;
     private web3Wrapper: Web3Wrapper;
-    /**
-     * Computes the orderHash given the order parameters and returns it as a hex encoded string.
-     */
-    public static getOrderHashHex(exchangeContractAddr: string, order: Order): string {
-        assert.doesConformToSchema('order',
-                                   SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
-                                   orderSchema);
-
-        const orderParts = [
-            {value: exchangeContractAddr, type: SolidityTypes.address},
-            {value: order.maker, type: SolidityTypes.address},
-            {value: order.taker, type: SolidityTypes.address},
-            {value: order.makerTokenAddress, type: SolidityTypes.address},
-            {value: order.takerTokenAddress, type: SolidityTypes.address},
-            {value: order.feeRecipient, type: SolidityTypes.address},
-            {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.uint256},
-        ];
-        const types = _.map(orderParts, o => o.type);
-        const values = _.map(orderParts, o => o.value);
-        const hashBuff = ethABI.soliditySHA3(types, values);
-        const hashHex = ethUtil.bufferToHex(hashBuff);
-        return hashHex;
-    }
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddressHex` address.
@@ -151,6 +124,35 @@ export class ZeroEx {
         this.web3Wrapper.setDefaultAccount(account);
     }
     /**
+     * Computes the orderHash given the order parameters and returns it as a hex encoded string.
+     */
+    public async getOrderHashHexAsync(order: Order): Promise<string> {
+        const exchangeContractAddr = await this.getExchangeAddressAsync();
+        assert.doesConformToSchema('order',
+                                   SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
+                                   orderSchema);
+
+        const orderParts = [
+            {value: exchangeContractAddr, type: SolidityTypes.address},
+            {value: order.maker, type: SolidityTypes.address},
+            {value: order.taker, type: SolidityTypes.address},
+            {value: order.makerTokenAddress, type: SolidityTypes.address},
+            {value: order.takerTokenAddress, type: SolidityTypes.address},
+            {value: order.feeRecipient, type: SolidityTypes.address},
+            {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.uint256},
+        ];
+        const types = _.map(orderParts, o => o.type);
+        const values = _.map(orderParts, o => o.value);
+        const hashBuff = ethABI.soliditySHA3(types, values);
+        const hashHex = ethUtil.bufferToHex(hashBuff);
+        return hashHex;
+    }
+    /**
      * Signs an orderHash and returns it's elliptic curve signature
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
@@ -206,5 +208,16 @@ export class ZeroEx {
             throw new Error(ZeroExError.INVALID_SIGNATURE);
         }
         return ecSignature;
+    }
+    private async getExchangeAddressAsync() {
+        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+        const exchangeNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
+                                       undefined :
+                                       (ExchangeArtifacts as any).networks[networkIdIfExists];
+        if (_.isUndefined(exchangeNetworkConfigsIfExists)) {
+            throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
+        }
+        const exchangeAddress = exchangeNetworkConfigsIfExists.address;
+        return exchangeAddress;
     }
 }
