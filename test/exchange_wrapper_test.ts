@@ -104,11 +104,11 @@ describe('ExchangeWrapper', () => {
     });
     describe('#fillOrderAsync', () => {
         let tokens: Token[];
-        const addressBySymbol: {[symbol: string]: string} = {};
-        let networkId: number;
-        const shouldCheckTransfer = false;
         let maker: string;
         let taker: string;
+        let networkId: number;
+        const addressBySymbol: {[symbol: string]: string} = {};
+        const shouldCheckTransfer = false;
         const setBalance = async (toAddress: string,
                                   amountInBaseUnits: BigNumber.BigNumber|number,
                                   tokenAddress: string) => {
