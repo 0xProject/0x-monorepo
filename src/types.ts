@@ -31,7 +31,7 @@ export type OrderAddresses = [string, string, string, string, string];
 
 export type OrderValues = [
     BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
-    BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
+    BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber
 ];
 
 export interface ExchangeContract {
@@ -82,6 +82,7 @@ export enum ExchangeContractErrs {
 export const FillOrderValidationErrs = strEnum([
     'FILL_AMOUNT_IS_ZERO',
     'NOT_A_TAKER',
+    'EXPIRED',
 ]);
 export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
 
