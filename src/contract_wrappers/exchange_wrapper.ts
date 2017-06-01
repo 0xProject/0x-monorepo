@@ -58,9 +58,9 @@ export class ExchangeWrapper extends ContractWrapper {
         return isValidSignature;
     }
     /**
-     * Fills a signed order with a specified amount in baseUnits of the taker token. The caller can
+     * Fills a signed order with a fillAmount denominated in baseUnits of the taker token. The caller can
      * decide whether they want the call to throw if the balance/allowance checks fail by setting
-     * shouldCheckTransfer to false. If true, the call will fail without throwing, preserving gas costs.
+     * shouldCheckTransfer to false. If set to true, the call will fail without throwing, preserving gas costs.
      */
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean): Promise<void> {
