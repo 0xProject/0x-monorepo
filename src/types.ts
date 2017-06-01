@@ -34,15 +34,11 @@ export type OrderValues = [
     BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber
 ];
 
-export interface TxData {
-    from: string;
-}
-
 export interface ExchangeContract {
     isValidSignature: any;
     fill: (
         orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-        shouldCheckTransfer: boolean, v: number, r: string, s: string, txData: TxData,
+        shouldCheckTransfer: boolean, v: number, r: string, s: string, txData: TxOpts,
     ) => ContractResponse;
 }
 
