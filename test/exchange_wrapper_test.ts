@@ -107,6 +107,7 @@ describe('ExchangeWrapper', () => {
         let tokens: Token[];
         const addressBySymbol: {[symbol: string]: string} = {};
         let networkId: number;
+        const shouldCheckTransfer = false;
         const setBalance = async (toAddress: string,
                                   amountInBaseUnits: BigNumber.BigNumber|number,
                                   tokenAddress: string) => {
@@ -133,7 +134,7 @@ describe('ExchangeWrapper', () => {
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(0);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
             });
             it('should throw when sender is not a taker', async () => {
@@ -142,7 +143,7 @@ describe('ExchangeWrapper', () => {
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
+                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer))
                     .to.be.rejectedWith(FillOrderValidationErrs.NOT_A_TAKER);
             });
         });
@@ -160,7 +161,7 @@ describe('ExchangeWrapper', () => {
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
                 zeroEx.setDefaultAccount(taker);
-                await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
+                await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(5);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(0);
             });

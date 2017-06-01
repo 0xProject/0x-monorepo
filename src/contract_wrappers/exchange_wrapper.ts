@@ -57,18 +57,23 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return isValidSignature;
     }
-    public async fillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber,
-                                shouldCheckTransfer: boolean = true): Promise<void> {
+    /**
+     * Fills a signed order with a specified amount in baseUnits of the taker token. The caller can
+     * decide whether they want the call to throw if the balance/allowance checks fail by setting
+     * shouldCheckTransfer to false. If true, the call will fail without throwing, preserving gas costs.
+     */
+    public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+                                shouldCheckTransfer: boolean): Promise<void> {
         assert.doesConformToSchema('signedOrder',
                                    SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
                                    signedOrderSchema);
-        assert.isBigNumber('fillAmount', fillAmount);
+        assert.isBigNumber('fillTakerAmountInBaseUnits', fillTakerAmountInBaseUnits);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeInstanceOrThrowAsync();
 
-        this.validateFillOrder(signedOrder, fillAmount, senderAddress, shouldCheckTransfer);
+        this.validateFillOrder(signedOrder, fillTakerAmountInBaseUnits, senderAddress, shouldCheckTransfer);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -88,7 +93,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const gas = await exchangeInstance.fill.estimateGas(
             orderAddresses,
             orderValues,
-            fillAmount,
+            fillTakerAmountInBaseUnits,
             shouldCheckTransfer,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
@@ -100,7 +105,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const response: ContractResponse = await exchangeInstance.fill(
             orderAddresses,
             orderValues,
-            fillAmount,
+            fillTakerAmountInBaseUnits,
             shouldCheckTransfer,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
