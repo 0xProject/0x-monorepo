@@ -19,7 +19,7 @@ import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
 import {Order} from './types';
 import {orderSchema} from './schemas/order_schemas';
-import * as ExchangeArtifacts from '../artifacts/Exchange.json';
+import * as ExchangeArtifacts from './artifacts/Exchange.json';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
