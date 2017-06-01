@@ -128,7 +128,9 @@ describe('ExchangeWrapper', () => {
         });
         describe('failed fills', () => {
             it('should throw when the fill amount is zero', async () => {
-                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, userAddresses[0],
+                const maker = userAddresses[0];
+                const taker = userAddresses[1];
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(0);
                 expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount))
@@ -145,7 +147,7 @@ describe('ExchangeWrapper', () => {
                 await setAllowance(maker, 5, addressBySymbol.MLN);
                 await setBalance(taker, 5, addressBySymbol.GNT);
                 await setAllowance(taker, 5, addressBySymbol.GNT);
-                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker,
+                const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
                 zeroEx.setDefaultAccount(taker);
