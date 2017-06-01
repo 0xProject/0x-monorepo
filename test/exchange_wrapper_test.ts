@@ -148,11 +148,6 @@ describe('ExchangeWrapper', () => {
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
-                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, maker)).to.be.bignumber.greaterThan(5);
-                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(0);
-                expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(5);
-                expect(await zeroEx.token.getProxyAllowanceAsync(addressBySymbol.MLN, maker)).to.be.bignumber.equal(5);
-                expect(await zeroEx.token.getProxyAllowanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(5);
                 zeroEx.setDefaultAccount(taker);
                 await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(5);
