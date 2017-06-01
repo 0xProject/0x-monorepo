@@ -10,7 +10,6 @@ import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 import {Order} from '../src/types';
 
-// Use BigNumber chai add-on
 chai.use(ChaiBigNumber());
 chai.use(dirtyChai);
 const expect = chai.expect;
