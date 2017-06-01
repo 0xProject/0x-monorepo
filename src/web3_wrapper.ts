@@ -17,6 +17,9 @@ export class Web3Wrapper {
     public isAddress(address: string): boolean {
         return this.web3.isAddress(address);
     }
+    public setDefaultAccount(address: string): void {
+        this.web3.eth.defaultAccount = address;
+    }
     public async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
         const defaultAccount = this.web3.eth.defaultAccount;
         if (!_.isUndefined(defaultAccount)) {

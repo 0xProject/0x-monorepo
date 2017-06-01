@@ -133,7 +133,7 @@ describe('ExchangeWrapper', () => {
         });
         describe('successful fills', () => {
             afterEach('reset default account', () => {
-               web3.eth.defaultAccount = userAddresses[0];
+               zeroEx.setDefaultAccount(userAddresses[0]);
             });
             it('should fill the valid order', async () => {
                 const maker = userAddresses[0];
@@ -144,12 +144,12 @@ describe('ExchangeWrapper', () => {
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
                 const fillAmount = new BigNumber(5);
-                web3.eth.defaultAccount = taker;
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, maker)).to.be.bignumber.greaterThan(5);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(0);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(5);
                 expect(await zeroEx.token.getProxyAllowanceAsync(addressBySymbol.MLN, maker)).to.be.bignumber.equal(5);
                 expect(await zeroEx.token.getProxyAllowanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(5);
+                zeroEx.setDefaultAccount(taker);
                 await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(5);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.GNT, taker)).to.be.bignumber.equal(0);

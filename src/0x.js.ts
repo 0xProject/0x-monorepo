@@ -137,6 +137,13 @@ export class ZeroEx {
         this.tokenRegistry.invalidateContractInstance();
         this.token.invalidateContractInstances();
     }
+
+    /**
+     * Sets default account for sending transactions.
+     */
+    public setDefaultAccount(account: string): void {
+        this.web3Wrapper.setDefaultAccount(account);
+    }
     /**
      * Signs an orderHash and returns it's elliptic curve signature
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
