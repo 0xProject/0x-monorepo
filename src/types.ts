@@ -70,7 +70,7 @@ export const SolidityTypes = strEnum([
 ]);
 export type SolidityTypes = keyof typeof SolidityTypes;
 
-export enum ExchangeContractErrs {
+export enum ExchangeContractErrCodes {
     ERROR_FILL_EXPIRED, // Order has already expired
     ERROR_FILL_NO_VALUE, // Order has already been fully filled or cancelled
     ERROR_FILL_TRUNCATION, // Rounding error too large

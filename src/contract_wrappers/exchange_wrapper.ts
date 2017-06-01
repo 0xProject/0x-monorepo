@@ -3,7 +3,7 @@ import {Web3Wrapper} from '../web3_wrapper';
 import {
     ECSignature,
     ExchangeContract,
-    ExchangeContractErrs,
+    ExchangeContractErrCodes,
     OrderValues,
     OrderAddresses,
     SignedOrder,
@@ -19,13 +19,13 @@ import {ContractResponse} from '../types';
 import {constants} from '../utils/constants';
 
 export class ExchangeWrapper extends ContractWrapper {
-    private exchangeContractErrToMsg = {
-        [ExchangeContractErrs.ERROR_FILL_EXPIRED]: 'The order you attempted to fill is expired',
-        [ExchangeContractErrs.ERROR_CANCEL_EXPIRED]: 'The order you attempted to cancel is expired',
-        [ExchangeContractErrs.ERROR_FILL_NO_VALUE]: 'This order has already been filled or cancelled',
-        [ExchangeContractErrs.ERROR_CANCEL_NO_VALUE]: 'This order has already been filled or cancelled',
-        [ExchangeContractErrs.ERROR_FILL_TRUNCATION]: 'The rounding error was too large when filling this order',
-        [ExchangeContractErrs.ERROR_FILL_BALANCE_ALLOWANCE]: 'Maker or taker has insufficient balance or allowance',
+    private exchangeContractErrCodesToMsg = {
+        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: 'The order you attempted to fill is expired',
+        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: 'The order you attempted to cancel is expired',
+        [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: 'This order has already been filled or cancelled',
+        [ExchangeContractErrCodes.ERROR_CANCEL_NO_VALUE]: 'This order has already been filled or cancelled',
+        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: 'The rounding error was too large when filling this order',
+        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: 'Maker or taker has insufficient balance or allowance',
     };
     private exchangeContractIfExists?: ExchangeContract;
     constructor(web3Wrapper: Web3Wrapper) {
@@ -116,7 +116,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const errEvent = _.find(logs, {event: 'LogError'});
         if (!_.isUndefined(errEvent)) {
             const errCode = errEvent.args.errorId.toNumber();
-            const humanReadableErrMessage = this.exchangeContractErrToMsg[errCode];
+            const humanReadableErrMessage = this.exchangeContractErrCodesToMsg[errCode];
             throw new Error(humanReadableErrMessage);
         }
     }
