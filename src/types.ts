@@ -88,7 +88,6 @@ export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 export const FillOrderValidationErrs = strEnum([
     'FILL_AMOUNT_IS_ZERO',
     'NOT_A_TAKER',
-    'EXPIRED',
 ]);
 export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
 

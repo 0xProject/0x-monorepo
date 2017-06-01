@@ -14,14 +14,10 @@ export const orderFactory = {
         makerTokenAmount: BigNumber.BigNumber|number,
         makerTokenAddress: string,
         takerTokenAmount: BigNumber.BigNumber|number,
-        takerTokenAddress: string,
-        expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
+        takerTokenAddress: string): Promise<SignedOrder> {
         // TODO refactor and check
         const exchangeAddress: string = (ExchangeArtifacts as any).networks[networkId].address;
-        const INF_TIMESTAMP = new BigNumber(2524604400);
-        expirationUnixTimestampSec = _.isUndefined(expirationUnixTimestampSec) ?
-            INF_TIMESTAMP :
-            expirationUnixTimestampSec;
+        const INF_TIMESTAMP = 2524604400;
         const order = {
             maker,
             taker,
@@ -33,7 +29,7 @@ export const orderFactory = {
             takerTokenAddress,
             salt: ZeroEx.generatePseudoRandomSalt(),
             feeRecipient: constants.NULL_ADDRESS,
-            expirationUnixTimestampSec,
+            expirationUnixTimestampSec: new BigNumber(INF_TIMESTAMP),
         };
         const orderHash = ZeroEx.getOrderHashHex(exchangeAddress, order);
         const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
