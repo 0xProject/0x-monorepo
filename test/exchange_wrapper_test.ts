@@ -6,7 +6,7 @@ import promisify = require('es6-promisify');
 import * as _ from 'lodash';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import * as BigNumber from 'bignumber.js';
-import {orderFactory} from './utils/order';
+import {orderFactory} from './utils/order_factory';
 import {Token} from '../src/types';
 import * as Web3 from 'web3';
 import * as dirtyChai from 'dirty-chai';
