@@ -132,9 +132,12 @@ describe('ExchangeWrapper', () => {
             });
             networkId = await promisify(web3.version.getNetwork)();
         });
-        beforeEach('setup', () => {
+        beforeEach('setup', async () => {
             maker = userAddresses[0];
             taker = userAddresses[1];
+            await setAllowance(maker, 5, addressBySymbol.MLN);
+            await setBalance(taker, 5, addressBySymbol.GNT);
+            await setAllowance(taker, 5, addressBySymbol.GNT);
         });
         afterEach('reset default account', () => {
             zeroEx.setDefaultAccount(userAddresses[0]);
@@ -165,12 +168,8 @@ describe('ExchangeWrapper', () => {
         });
         describe('successful fills', () => {
             it('should fill the valid order', async () => {
-                await setAllowance(maker, 5, addressBySymbol.MLN);
-                await setBalance(taker, 5, addressBySymbol.GNT);
-                await setAllowance(taker, 5, addressBySymbol.GNT);
                 const signedOrder = await orderFactory.createSignedOrderAsync(zeroEx, networkId, maker, taker,
                     5, addressBySymbol.MLN, 5, addressBySymbol.GNT);
-                const fillAmount = new BigNumber(5);
                 zeroEx.setDefaultAccount(taker);
                 await zeroEx.exchange.fillOrderAsync(signedOrder, fillAmount, shouldCheckTransfer);
                 expect(await zeroEx.token.getBalanceAsync(addressBySymbol.MLN, taker)).to.be.bignumber.equal(5);
