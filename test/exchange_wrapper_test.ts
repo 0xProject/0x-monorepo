@@ -101,7 +101,7 @@ describe('ExchangeWrapper', () => {
     });
     describe('#fillOrderAsync', () => {
         let tokens: Token[];
-        let addressBySymbol: {[symbol: string]: string} = {};
+        const addressBySymbol: {[symbol: string]: string} = {};
         let networkId: number;
         const setBalance = async (toAddress: string,
                                     amountInBaseUnits: BigNumber.BigNumber|number,
