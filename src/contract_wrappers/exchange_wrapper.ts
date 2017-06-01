@@ -74,9 +74,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
-        const exchangeInstance = await this.getExchangeContractAsync();
-
         await this.validateFillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, senderAddress);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -120,7 +120,8 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
-    private async validateFillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string) {
+    private async validateFillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber,
+                                         senderAddress: string) {
         if (fillAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
@@ -130,7 +131,8 @@ export class ExchangeWrapper extends ContractWrapper {
         if (signedOrder.expirationUnixTimestampSec.lessThan(Date.now() / 1000)) {
             throw new Error(FillOrderValidationErrs.EXPIRED);
         }
-        const makerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress, signedOrder.maker);
+        const makerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress,
+                                                                        signedOrder.maker);
         const takerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
         const makerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.makerTokenAddress,
                                                                               signedOrder.maker);
