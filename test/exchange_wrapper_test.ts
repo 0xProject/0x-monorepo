@@ -25,7 +25,6 @@ describe('ExchangeWrapper', () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3);
         userAddresses = await promisify(web3.eth.getAccounts)();
-        web3.eth.defaultAccount = userAddresses[0];
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
