@@ -120,7 +120,7 @@ export class ZeroEx {
     /**
      * Sets default account for sending transactions.
      */
-    public setDefaultAccount(account: string): void {
+    public setTransactionSenderAccount(account: string): void {
         this.web3Wrapper.setDefaultAccount(account);
     }
     /**
