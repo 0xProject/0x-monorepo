@@ -31,7 +31,7 @@ export type OrderAddresses = [string, string, string, string, string];
 
 export type OrderValues = [
     BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
-    BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber
+    BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
 ];
 
 export interface ExchangeContract {
@@ -90,7 +90,7 @@ export interface ContractEvent {
 
 export interface Order {
     maker: string;
-    taker?: string;
+    taker: string;
     makerFee: BigNumber.BigNumber;
     takerFee: BigNumber.BigNumber;
     makerTokenAmount: BigNumber.BigNumber;

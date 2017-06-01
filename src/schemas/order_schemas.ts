@@ -30,7 +30,7 @@ export const orderSchema = {
         expirationUnixTimestampSec: {$ref: '/numberSchema'},
     },
     required: [
-        'maker', /*'taker',*/ 'makerFee', 'takerFee', 'makerTokenAmount', 'takerTokenAmount',
+        'maker', 'taker', 'makerFee', 'takerFee', 'makerTokenAmount', 'takerTokenAmount',
         'salt', 'feeRecipient', 'expirationUnixTimestampSec',
     ],
     type: 'object',

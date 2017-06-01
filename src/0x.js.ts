@@ -26,6 +26,8 @@ bigNumberConfigs.configure();
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
+    public static NULL_ADDRESS = constants.NULL_ADDRESS;
+
     public exchange: ExchangeWrapper;
     public tokenRegistry: TokenRegistryWrapper;
     public token: TokenWrapper;
@@ -37,7 +39,6 @@ export class ZeroEx {
         assert.doesConformToSchema('order',
                                    SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
                                    orderSchema);
-        const taker = _.isEmpty(order.taker) ? constants.NULL_ADDRESS : order.taker ;
 
         const orderParts = [
             {value: exchangeContractAddr, type: SolidityTypes.address},

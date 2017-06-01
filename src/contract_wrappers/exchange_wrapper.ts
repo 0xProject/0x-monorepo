@@ -66,11 +66,9 @@ export class ExchangeWrapper extends ContractWrapper {
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeInstanceOrThrowAsync();
 
-        const taker = _.isUndefined(signedOrder.taker) ? constants.NULL_ADDRESS : signedOrder.taker;
-
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
-            taker,
+            signedOrder.taker,
             signedOrder.makerTokenAddress,
             signedOrder.takerTokenAddress,
             signedOrder.feeRecipient,
