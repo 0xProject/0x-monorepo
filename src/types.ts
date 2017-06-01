@@ -29,10 +29,8 @@ export interface ECSignature {
 
 export type OrderAddresses = [string, string, string, string, string];
 
-export type OrderValues = [
-    BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
-    BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber
-];
+export type OrderValues = [BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
+                           BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber];
 
 export interface ExchangeContract {
     isValidSignature: any;
