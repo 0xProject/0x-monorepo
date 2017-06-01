@@ -12,17 +12,17 @@ export class FillScenarios {
         this.userAddresses = userAddresses;
         this.tokens = tokens;
     }
-    public async createAFillableSignedOrderAsync(takerAddress: string, fillableAmount: BigNumber.BigNumber,
+    public async createAFillableSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
+                                                 takerAddress: string, fillableAmount: BigNumber.BigNumber,
                                                  expirationUnixTimestampSec?: BigNumber.BigNumber):
                                            Promise<SignedOrder> {
         const [makerAddress] = this.userAddresses;
-        const [makerToken, takerToken] = this.tokens;
-        await this.zeroEx.token.setProxyAllowanceAsync(makerToken.address, makerAddress, fillableAmount);
-        await this.zeroEx.token.transferAsync(takerToken.address, makerAddress, takerAddress, fillableAmount);
-        await this.zeroEx.token.setProxyAllowanceAsync(takerToken.address, takerAddress, fillableAmount);
+        await this.zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, fillableAmount);
+        await this.zeroEx.token.transferAsync(takerTokenAddress, makerAddress, takerAddress, fillableAmount);
+        await this.zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, fillableAmount);
 
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx, makerAddress,
-            takerAddress, fillableAmount, makerToken.address, fillableAmount, takerToken.address,
+            takerAddress, fillableAmount, makerTokenAddress, fillableAmount, takerTokenAddress,
             expirationUnixTimestampSec);
         return signedOrder;
     }
