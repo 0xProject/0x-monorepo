@@ -80,6 +80,18 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.expirationUnixTimestampSec,
             signedOrder.salt,
         ];
+        const gas = await exchangeInstance.fill.estimateGas(
+            orderAddresses,
+            orderValues,
+            fillAmount,
+            shouldCheckTransfer,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: senderAddress,
+            },
+        );
         const response: ContractResponse = await exchangeInstance.fill(
             orderAddresses,
             orderValues,
@@ -90,6 +102,7 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.s,
             {
                 from: senderAddress,
+                gas,
             },
         );
         this.throwErrorLogsAsErrors(response.logs);
