@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {setBigNumberConfig} from './bignumber_config';
-setBigNumberConfig();
+import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
 import contract = require('truffle-contract');
 import * as Web3 from 'web3';
@@ -19,6 +18,9 @@ import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
 import {Order} from './types';
 import {orderSchema} from './schemas/signed_order_schema';
+
+// Customize our BigNumber instances
+bigNumberConfigs.configure();
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
