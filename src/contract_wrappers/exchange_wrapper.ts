@@ -117,8 +117,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
-    private validateFillOrder(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string,
-                              shouldCheckTransfer: boolean = true) {
+    private validateFillOrder(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber, senderAddress: string) {
         if (fillAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
