@@ -66,9 +66,9 @@ export interface Token {
     symbol: string;
     decimals: number;
     url: string;
-};
+}
 
 export interface TxOpts {
     from: string;
     gas?: number;
-};
+}
