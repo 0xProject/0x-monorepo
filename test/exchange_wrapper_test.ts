@@ -10,7 +10,7 @@ import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {orderFactory} from './utils/order_factory';
-import {FillOrderValidationErrs, Token} from '../src/types';
+import {FillOrderValidationErrs, Token, SignedOrder} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 
 chai.use(dirtyChai);
@@ -187,11 +187,21 @@ describe('ExchangeWrapper', () => {
         let makerTokenAddress: string;
         let takerTokenAddress: string;
         let takerAddress: string;
+        let fillableAmount: BigNumber.BigNumber;
+        let partialFillAmount: BigNumber.BigNumber;
+        let signedOrder: SignedOrder;
         before(() => {
             takerAddress = userAddresses[1];
             const [makerToken, takerToken] = tokens;
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
+        });
+        beforeEach(async () => {
+            fillableAmount = new BigNumber(5);
+            partialFillAmount = new BigNumber(2);
+            signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
+            );
         });
         describe('#getUnavailableTakerAmountAsync', () => {
             it ('should throw if passed an invalid orderHash', async () => {
@@ -203,11 +213,6 @@ describe('ExchangeWrapper', () => {
                 expect(unavailableValueT).to.be.bignumber.equal(0);
             });
             it ('should return the unavailableValueT for a valid and partially filled orderHash', async () => {
-                const fillableAmount = new BigNumber(5);
-                const partialFillAmount = new BigNumber(2);
-                const signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
-                    makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
-                );
                 const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
                 const unavailableValueT = await zeroEx.exchange.getUnavailableTakerAmountAsync(orderHash);
                 expect(unavailableValueT).to.be.bignumber.equal(partialFillAmount);
@@ -223,11 +228,6 @@ describe('ExchangeWrapper', () => {
                 expect(filledValueT).to.be.bignumber.equal(0);
             });
             it ('should return the filledValueT for a valid and partially filled orderHash', async () => {
-                const fillableAmount = new BigNumber(5);
-                const partialFillAmount = new BigNumber(2);
-                const signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
-                    makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
-                );
                 const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
                 const filledValueT = await zeroEx.exchange.getFilledTakerAmountAsync(orderHash);
                 expect(filledValueT).to.be.bignumber.equal(partialFillAmount);
@@ -243,11 +243,6 @@ describe('ExchangeWrapper', () => {
                 expect(cancelledValueT).to.be.bignumber.equal(0);
             });
             it ('should return the cancelledValueT for a valid and partially filled orderHash', async () => {
-                const fillableAmount = new BigNumber(5);
-                const partialFillAmount = new BigNumber(2);
-                const signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
-                    makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
-                );
                 const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
                 const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHash);
                 expect(cancelledValueT).to.be.bignumber.equal(0);
