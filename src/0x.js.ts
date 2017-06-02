@@ -135,7 +135,7 @@ export class ZeroEx {
         return senderAccountIfExists;
     }
     /**
-     * Computes the orderHash given the order parameters and returns it as a hex encoded string.
+     * Computes the orderHash for a given order and returns it as a hex encoded string.
      */
     public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         const exchangeContractAddr = await this.getExchangeAddressAsync();
