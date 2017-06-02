@@ -71,6 +71,8 @@ export class ZeroEx {
     }
     /** Checks if order hash is valid */
     public static isValidOrderHash(orderHashHex: string): boolean {
+        // Since this method can be called to check if any arbitrary string conforms to an orderHash's
+        // format, we only assert that we were indeed passed a string.
         assert.isString('orderHashHex', orderHashHex);
         const isValidOrderHash = utils.isValidOrderHash(orderHashHex);
         return isValidOrderHash;
