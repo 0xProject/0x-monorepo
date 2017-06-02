@@ -78,7 +78,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeContractAsync();
-        const zrxTokenAddress = await exchangeInstance.ZRX.call();
+        const zrxTokenAddress = await this.getZRXTokenAddressAsync(exchangeInstance);
         await this.validateFillOrderAsync(signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress);
 
         const orderAddresses: OrderAddresses = [
@@ -225,5 +225,8 @@ export class ExchangeWrapper extends ContractWrapper {
         const contractInstance = await this.instantiateContractIfExistsAsync((ExchangeArtifacts as any));
         this.exchangeContractIfExists = contractInstance as ExchangeContract;
         return this.exchangeContractIfExists;
+    }
+    private async getZRXTokenAddressAsync(exchangeInstance: ExchangeContract): Promise<string> {
+        return exchangeInstance.ZRX.call();
     }
 }
