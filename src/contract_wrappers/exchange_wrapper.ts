@@ -61,9 +61,12 @@ export class ExchangeWrapper extends ContractWrapper {
         return isValidSignature;
     }
     /**
-     * Fills a signed order with a fillAmount denominated in baseUnits of the taker token. The caller can
-     * decide whether they want the call to throw if the balance/allowance checks fail by setting
-     * shouldCheckTransfer to false. If set to true, the call will fail without throwing, preserving gas costs.
+     * Fills a signed order with a fillAmount denominated in baseUnits of the taker token.
+     * Since the order in which transactions are included in the next block is indeterminate, race-conditions
+     * could arise where a users balance or allowance changes before the fillOrder executes. Because of this,
+     * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if while
+     * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
+     * false foregoes this check and causes the smart contract to throw instead.
      */
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean): Promise<void> {
