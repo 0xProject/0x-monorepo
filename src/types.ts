@@ -89,13 +89,6 @@ export const ExchangeContractErrs = strEnum([
     'ORDER_REMAINING_FILL_AMOUNT_ZERO',
     'ORDER_FILL_ROUNDING_ERROR',
     'FILL_BALANCE_ALLOWANCE_ERROR',
-]);
-export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
-
-export const FillOrderValidationErrs = strEnum([
-    'FILL_AMOUNT_IS_ZERO',
-    'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
-    'FILL_ORDER_EXPIRED',
     'NOT_ENOUGH_TAKER_BALANCE',
     'NOT_ENOUGH_TAKER_ALLOWANCE',
     'NOT_ENOUGH_MAKER_BALANCE',
@@ -104,9 +97,10 @@ export const FillOrderValidationErrs = strEnum([
     'NOT_ENOUGH_TAKER_FEE_ALLOWANCE',
     'NOT_ENOUGH_MAKER_FEE_BALANCE',
     'NOT_ENOUGH_MAKER_FEE_ALLOWANCE',
-    'ROUNDING_ERROR',
+    'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
+
 ]);
-export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
+export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 
 export interface ContractResponse {
     logs: ContractEvent[];

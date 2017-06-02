@@ -5,7 +5,6 @@ import {
     ExchangeContract,
     ExchangeContractErrCodes,
     ExchangeContractErrs,
-    FillOrderValidationErrs,
     OrderValues,
     OrderAddresses,
     SignedOrder,
@@ -126,14 +125,14 @@ export class ExchangeWrapper extends ContractWrapper {
                                                           fillTakerAmount: BigNumber.BigNumber,
                                                           senderAddress: string): Promise<void> {
         if (fillTakerAmount.eq(0)) {
-            throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
+            throw new Error(ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO);
         }
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
-            throw new Error(FillOrderValidationErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
+            throw new Error(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
         }
         const currentUnixTimestampSec = Date.now() / 1000;
         if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(FillOrderValidationErrs.FILL_ORDER_EXPIRED);
+            throw new Error(ExchangeContractErrs.ORDER_FILL_EXPIRED);
         }
         const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         await this.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder, fillTakerAmount,
@@ -143,7 +142,7 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.takerTokenAmount, fillTakerAmount, signedOrder.makerTokenAmount,
         );
         if (wouldRoundingErrorOccur) {
-            throw new Error(FillOrderValidationErrs.ROUNDING_ERROR);
+            throw new Error(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
         }
     }
     private async validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder: SignedOrder,
@@ -168,16 +167,16 @@ export class ExchangeWrapper extends ContractWrapper {
         const fillMakerAmountInBaseUnits = fillTakerAmount.div(exchangeRate);
 
         if (fillTakerAmount.greaterThan(takerBalance)) {
-            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
+            throw new Error(ExchangeContractErrs.NOT_ENOUGH_TAKER_BALANCE);
         }
         if (fillTakerAmount.greaterThan(takerAllowance)) {
-            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
         }
         if (fillMakerAmountInBaseUnits.greaterThan(makerBalance)) {
-            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_BALANCE);
+            throw new Error(ExchangeContractErrs.NOT_ENOUGH_MAKER_BALANCE);
         }
         if (fillMakerAmountInBaseUnits.greaterThan(makerAllowance)) {
-            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.NOT_ENOUGH_MAKER_ALLOWANCE);
         }
 
         const makerFeeBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress,
@@ -189,16 +188,16 @@ export class ExchangeWrapper extends ContractWrapper {
             senderAddress);
 
         if (signedOrder.takerFee.greaterThan(takerFeeBalance)) {
-            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_FEE_BALANCE);
+            throw new Error(ExchangeContractErrs.NOT_ENOUGH_TAKER_FEE_BALANCE);
         }
         if (signedOrder.takerFee.greaterThan(takerFeeAllowance)) {
-            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_FEE_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.NOT_ENOUGH_TAKER_FEE_ALLOWANCE);
         }
         if (signedOrder.makerFee.greaterThan(makerFeeBalance)) {
-            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_FEE_BALANCE);
+            throw new Error(ExchangeContractErrs.NOT_ENOUGH_MAKER_FEE_BALANCE);
         }
         if (signedOrder.makerFee.greaterThan(makerFeeAllowance)) {
-            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_FEE_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.NOT_ENOUGH_MAKER_FEE_ALLOWANCE);
         }
     }
     private throwErrorLogsAsErrors(logs: ContractEvent[]): void {
