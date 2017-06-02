@@ -34,6 +34,10 @@ export type OrderValues = [BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.B
 
 export interface ExchangeContract {
     isValidSignature: any;
+    isRoundingError: {
+        call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+               makerTokenAmount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
+    };
     fill: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
          shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts): ContractResponse;
@@ -93,6 +97,7 @@ export const FillOrderValidationErrs = strEnum([
     'NOT_ENOUGH_TAKER_ALLOWANCE',
     'NOT_ENOUGH_MAKER_BALANCE',
     'NOT_ENOUGH_MAKER_ALLOWANCE',
+    'ROUNDING_ERROR',
 ]);
 export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
 

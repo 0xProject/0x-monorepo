@@ -14,20 +14,29 @@ export class FillScenarios {
         this.tokens = tokens;
         this.coinBase = userAddresses[0];
     }
-    public async createAFillableSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
-                                                 makerAddress: string, takerAddress: string,
-                                                 fillableAmount: BigNumber.BigNumber,
-                                                 expirationUnixTimestampSec?: BigNumber.BigNumber):
+    public async createFillableSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
+                                                makerAddress: string, takerAddress: string,
+                                                fillableAmount: BigNumber.BigNumber,
+                                                expirationUnixTimestampSec?: BigNumber.BigNumber):
                                            Promise<SignedOrder> {
-        await this.zeroEx.token.transferAsync(makerTokenAddress, this.coinBase, makerAddress, fillableAmount);
-        await this.zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, fillableAmount);
-        await this.zeroEx.token.transferAsync(takerTokenAddress, this.coinBase, takerAddress, fillableAmount);
-        await this.zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, fillableAmount);
+        return this.createAsymetricFillableSignedOrderAsync(
+            makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+            fillableAmount, fillableAmount, expirationUnixTimestampSec,
+        );
+    }
+    public async createAsymetricFillableSignedOrderAsync(
+        makerTokenAddress: string, takerTokenAddress: string, makerAddress: string, takerAddress: string,
+        makerFillableAmount: BigNumber.BigNumber, takerFillableAmount: BigNumber.BigNumber,
+        expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
+        await this.zeroEx.token.transferAsync(makerTokenAddress, this.coinBase, makerAddress, makerFillableAmount);
+        await this.zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, makerFillableAmount);
+        await this.zeroEx.token.transferAsync(takerTokenAddress, this.coinBase, takerAddress, takerFillableAmount);
+        await this.zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount);
 
         const transactionSenderAccount = await this.zeroEx.getTransactionSenderAccountIfExistsAsync();
         this.zeroEx.setTransactionSenderAccount(makerAddress);
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx, makerAddress,
-            takerAddress, fillableAmount, makerTokenAddress, fillableAmount, takerTokenAddress,
+            takerAddress, makerFillableAmount, makerTokenAddress, takerFillableAmount, takerTokenAddress,
             expirationUnixTimestampSec);
         this.zeroEx.setTransactionSenderAccount(transactionSenderAccount as string);
         return signedOrder;

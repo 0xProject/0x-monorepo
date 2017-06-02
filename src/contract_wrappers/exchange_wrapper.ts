@@ -154,6 +154,10 @@ export class ExchangeWrapper extends ContractWrapper {
         if (fillMakerAmountInBaseUnits.greaterThan(makerAllowance)) {
             throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_ALLOWANCE);
         }
+        if (await this.isRoundingErrorAsync(signedOrder.takerTokenAmount, fillTakerAmountInBaseUnits,
+                                            signedOrder.makerTokenAmount)) {
+            throw new Error(FillOrderValidationErrs.ROUNDING_ERROR);
+        }
     }
     private throwErrorLogsAsErrors(logs: ContractEvent[]): void {
         const errEvent = _.find(logs, {event: 'LogError'});
@@ -162,6 +166,18 @@ export class ExchangeWrapper extends ContractWrapper {
             const errMessage = this.exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
         }
+    }
+    private async isRoundingErrorAsync(takerTokenAmount: BigNumber.BigNumber,
+                                       fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+                                       makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
+        const exchangeInstance = await this.getExchangeContractAsync();
+        const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
+        const isRoundingError = await exchangeInstance.isRoundingError.call(
+            takerTokenAmount, fillTakerAmountInBaseUnits, makerTokenAmount, {
+                from: senderAddress,
+            },
+        );
+        return isRoundingError;
     }
     private async getExchangeContractAsync(): Promise<ExchangeContract> {
         if (!_.isUndefined(this.exchangeContractIfExists)) {

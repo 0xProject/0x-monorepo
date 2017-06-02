@@ -127,7 +127,7 @@ describe('ExchangeWrapper', () => {
         describe('failed fills', () => {
             it('should throw when the fill amount is zero', async () => {
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 const zeroFillAmount = new BigNumber(0);
@@ -138,7 +138,7 @@ describe('ExchangeWrapper', () => {
             });
             it('should throw when sender is not a taker', async () => {
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 return expect(zeroEx.exchange.fillOrderAsync(
@@ -148,7 +148,7 @@ describe('ExchangeWrapper', () => {
             it('should throw when order is expired', async () => {
                 const expirationInPast = new BigNumber(42);
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount, expirationInPast,
                 );
                 zeroEx.setTransactionSenderAccount(takerAddress);
@@ -158,7 +158,7 @@ describe('ExchangeWrapper', () => {
             });
             it('should throw when taker balance is less than fill amount', async () => {
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 zeroEx.setTransactionSenderAccount(takerAddress);
@@ -169,7 +169,7 @@ describe('ExchangeWrapper', () => {
             });
             it('should throw when taker allowance is less than fill amount', async () => {
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 const newAllowanceWhichIsLessThanFillAmount = fillTakerAmountInBaseUnits.minus(1);
@@ -182,7 +182,7 @@ describe('ExchangeWrapper', () => {
             });
             it('should throw when maker balance is less than maker fill amount', async () => {
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 const lackingMakerBalance = new BigNumber(3);
@@ -194,7 +194,7 @@ describe('ExchangeWrapper', () => {
             });
             it('should throw when maker allowance is less than maker fill amount', async () => {
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 const newAllowanceWhichIsLessThanFillAmount = fillTakerAmountInBaseUnits.minus(1);
@@ -205,11 +205,24 @@ describe('ExchangeWrapper', () => {
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
                 )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_MAKER_ALLOWANCE);
             });
+            it('should throw when there would be a rounding error', async () => {
+                const makerFillableAmount = new BigNumber(3);
+                const takerFillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createAsymetricFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+                    makerFillableAmount, takerFillableAmount,
+                );
+                const fillTakerAmountInBaseUnitsThatCausesRoundingError = new BigNumber(3);
+                zeroEx.setTransactionSenderAccount(takerAddress);
+                return expect(zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillTakerAmountInBaseUnitsThatCausesRoundingError, shouldCheckTransfer,
+                )).to.be.rejectedWith(FillOrderValidationErrs.ROUNDING_ERROR);
+            });
         });
         describe('successful fills', () => {
             it('should fill the valid order', async () => {
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
 
@@ -234,7 +247,7 @@ describe('ExchangeWrapper', () => {
             });
             it('should partially fill the valid order', async () => {
                 const fillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 const partialFillAmount = new BigNumber(3);
