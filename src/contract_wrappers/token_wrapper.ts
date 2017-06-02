@@ -108,6 +108,8 @@ export class TokenWrapper extends ContractWrapper {
     }
     /**
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
+     * Requires the fromAddress to have sufficient funds and to have approved an allowance of
+     * `amountInBaseUnits` for toAddress.
      */
     public async transferFromAsync(tokenAddress: string, fromAddress: string, toAddress: string,
                                    senderAddress: string, amountInBaseUnits: BigNumber.BigNumber):
