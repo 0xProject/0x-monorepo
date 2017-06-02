@@ -10,6 +10,7 @@ import {Token} from '../src/types';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {tokenSchema} from '../src/schemas/token_schema';
 
+chai.config.includeStack = true;
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 const blockchainLifecycle = new BlockchainLifecycle();
