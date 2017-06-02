@@ -914,6 +914,10 @@ chai-bignumber@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/chai-bignumber/-/chai-bignumber-2.0.0.tgz#0cbf9b81790801c3f24fb77f59fa1e17a9c6e3f2"
 
+"chai-bignumber@git+ssh://git@github.com:0xProject/chai-bignumber.git":
+  version "2.0.0"
+  resolved "git+ssh://git@github.com/0xProject/chai-bignumber.git#9ef233f3e2ca3ab250b66149390c833c117c27e7"
+
 chai-typescript-typings@^0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/chai-typescript-typings/-/chai-typescript-typings-0.0.0.tgz#52e076d72cf29129c94ab1dba6e33ce3828a0724"

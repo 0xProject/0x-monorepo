@@ -28,8 +28,7 @@ export class TokenWrapper extends ContractWrapper {
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
         let balance = await tokenContract.balanceOf.call(ownerAddress);
-        // The BigNumber instance returned by Web3 is of a much older version then our own, we therefore
-        // should always re-instantiate the returned BigNumber after retrieval.
+        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         balance = new BigNumber(balance);
         return balance;
     }
@@ -64,6 +63,7 @@ export class TokenWrapper extends ContractWrapper {
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
         let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, spenderAddress);
+        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
         return allowanceInBaseUnits;
     }

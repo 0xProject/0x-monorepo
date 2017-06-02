@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as BigNumber from 'bignumber.js';
 import {Web3Wrapper} from '../web3_wrapper';
 import {
     ECSignature,
@@ -58,6 +59,44 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         return isValidSignature;
+    }
+    /**
+     * Returns the unavailable takerAmount of an order. Unavailable amount is defined as the total
+     * amount that has been filled or cancelled. The remaining takerAmount can be calculated by
+     * subtracting the unavailable amount from the total order takerAmount.
+     */
+    public async getUnavailableTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
+        assert.isValidOrderHash('orderHashHex', orderHashHex);
+
+        const exchangeContract = await this.getExchangeContractAsync();
+        let unavailableAmountInBaseUnits = await exchangeContract.getUnavailableValueT.call(orderHashHex);
+        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
+        unavailableAmountInBaseUnits = new BigNumber(unavailableAmountInBaseUnits);
+        return unavailableAmountInBaseUnits;
+    }
+    /**
+     * Retrieve the takerAmount of an order that has already been filled.
+     */
+    public async getFilledTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
+        assert.isValidOrderHash('orderHashHex', orderHashHex);
+
+        const exchangeContract = await this.getExchangeContractAsync();
+        let fillAmountInBaseUnits = await exchangeContract.filled.call(orderHashHex);
+        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
+        fillAmountInBaseUnits = new BigNumber(fillAmountInBaseUnits);
+        return fillAmountInBaseUnits;
+    }
+    /**
+     * Retrieve the takerAmount of an order that has been cancelled.
+     */
+    public async getCanceledTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
+        assert.isValidOrderHash('orderHashHex', orderHashHex);
+
+        const exchangeContract = await this.getExchangeContractAsync();
+        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.call(orderHashHex);
+        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
+        cancelledAmountInBaseUnits = new BigNumber(cancelledAmountInBaseUnits);
+        return cancelledAmountInBaseUnits;
     }
     /**
      * Fills a signed order with a fillAmount denominated in baseUnits of the taker token.

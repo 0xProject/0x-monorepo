@@ -51,6 +51,24 @@ export class FillScenarios {
             makerFillableAmount, takerFillableAmount, feeRecepient, expirationUnixTimestampSec,
         );
     }
+    public async createPartiallyFilledSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
+                                                       takerAddress: string, fillableAmount: BigNumber.BigNumber,
+                                                       partialFillAmount: BigNumber.BigNumber) {
+        const prevSenderAccount = await this.zeroEx.getTransactionSenderAccountIfExistsAsync();
+        const [makerAddress] = this.userAddresses;
+        const signedOrder = await this.createAsymmetricFillableSignedOrderAsync(
+            makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+            fillableAmount, fillableAmount,
+        );
+
+        this.zeroEx.setTransactionSenderAccount(takerAddress);
+        const shouldCheckTransfer = false;
+        await this.zeroEx.exchange.fillOrderAsync(signedOrder, partialFillAmount, shouldCheckTransfer);
+
+        // Re-set sender account so as to avoid introducing side-effects
+        this.zeroEx.setTransactionSenderAccount(prevSenderAccount as string);
+        return signedOrder;
+    }
     private async createAsymmetricFillableSignedOrderWithFeesAsync(
         makerTokenAddress: string, takerTokenAddress: string,
         makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,

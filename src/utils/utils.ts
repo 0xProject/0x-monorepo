@@ -18,4 +18,8 @@ export const utils = {
     isParityNode(nodeVersion: string): boolean {
         return _.includes(nodeVersion, 'Parity');
     },
+    isValidOrderHash(orderHashHex: string) {
+        const isValid = /^0x[0-9A-F]{64}$/i.test(orderHashHex);
+        return isValid;
+    },
 };
