@@ -203,9 +203,9 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         this.exchangeLogEventObjs = [];
     }
-    private async validateFillOrderAsync(signedOrder: SignedOrder, fillAmount: BigNumber.BigNumber,
+    private async validateFillOrderAsync(signedOrder: SignedOrder, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
                                          senderAddress: string) {
-        if (fillAmount.eq(0)) {
+        if (fillTakerAmountInBaseUnits.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
@@ -221,11 +221,21 @@ export class ExchangeWrapper extends ContractWrapper {
                                                                               signedOrder.maker);
         const takerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress,
                                                                               senderAddress);
-        if (fillAmount.greaterThan(takerBalance)) {
+        // How many taker tokens would you get for 1 maker token;
+        const exchangeRate = signedOrder.takerTokenAmount.div(signedOrder.makerTokenAmount);
+        const fillMakerAmountInBaseUnits = fillTakerAmountInBaseUnits.div(exchangeRate);
+
+        if (fillTakerAmountInBaseUnits.greaterThan(takerBalance)) {
             throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
         }
-        if (fillAmount.greaterThan(takerAllowance)) {
+        if (fillTakerAmountInBaseUnits.greaterThan(takerAllowance)) {
             throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
+        }
+        if (fillMakerAmountInBaseUnits.greaterThan(makerBalance)) {
+            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_BALANCE);
+        }
+        if (fillMakerAmountInBaseUnits.greaterThan(makerAllowance)) {
+            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_ALLOWANCE);
         }
     }
     private throwErrorLogsAsErrors(logs: ContractEvent[]): void {

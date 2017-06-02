@@ -190,6 +190,31 @@ describe('ExchangeWrapper', () => {
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
                 )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
             });
+            it('should throw when maker balance is less than maker fill amount', async () => {
+                const fillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                const lackingMakerBalance = new BigNumber(3);
+                await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinBase, lackingMakerBalance);
+                zeroEx.setTransactionSenderAccount(takerAddress);
+                return expect(zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_MAKER_BALANCE);
+            });
+            it('should throw when maker allowance is less than maker fill amount', async () => {
+                const fillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                const newAllowanceWhichIsLessThanFillAmount = fillTakerAmountInBaseUnits.minus(1);
+                await zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress,
+                    newAllowanceWhichIsLessThanFillAmount);
+                zeroEx.setTransactionSenderAccount(takerAddress);
+                return expect(zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_MAKER_ALLOWANCE);
+            });
         });
         describe('successful fills', () => {
             it('should fill the valid order', async () => {
