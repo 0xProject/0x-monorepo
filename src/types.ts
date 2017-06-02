@@ -15,6 +15,8 @@ export const ZeroExError = strEnum([
   'USER_HAS_NO_ASSOCIATED_ADDRESSES',
   'INVALID_SIGNATURE',
   'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+  'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
+  'INSUFFICIENT_BALANCE_FOR_TRANSFER',
 ]);
 export type ZeroExError = keyof typeof ZeroExError;
 
@@ -38,7 +40,9 @@ export interface TokenContract {
     allowance: {
         call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
     };
-    transfer: (to: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
+    transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
+    transferFrom: (fromAddress: string, toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
+                   txOpts: TxOpts) => Promise<boolean>;
     approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => void;
 }
 

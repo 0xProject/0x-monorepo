@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
+import {Web3Wrapper} from '../web3_wrapper';
 import {SchemaValidator} from './schema_validator';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
@@ -23,6 +24,11 @@ export const assert = {
     isETHAddressHex(variableName: string, value: string): void {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
+    },
+    async isSenderAddressAvailableAsync(web3Wrapper: Web3Wrapper, senderAddress: string) {
+        const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailable(senderAddress);
+        assert.assert(isSenderAddressAvailable, 'Specified senderAddress isn\'t available through the \
+                                                 supplied web3 instance');
     },
     isNumber(variableName: string, value: number): void {
         this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));

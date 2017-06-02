@@ -34,17 +34,48 @@ export class TokenWrapper extends ContractWrapper {
         return balance;
     }
     /**
-     * Retrieves the allowance in baseUnits of the ERC20 token set to the 0x proxy contract
-     * by an owner address.
+     * Sets the spender's allowance to a specified number of baseUnits on behalf of the owner address.
+     * Equivalent to the ERC20 spec method `approve`.
+     */
+    public async setAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string,
+                                   amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('spenderAddress', spenderAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
+
+        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        // Hack: for some reason default estimated gas amount causes `base fee exceeds gas limit` exception
+        // on testrpc. Probably related to https://github.com/ethereumjs/testrpc/issues/294
+        // TODO: Debug issue in testrpc and submit a PR, then remove this hack
+        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+        const gas = networkIdIfExists === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
+        await tokenContract.approve(spenderAddress, amountInBaseUnits, {
+            from: ownerAddress,
+            gas,
+        });
+    }
+    /**
+     * Retrieves the owners allowance in baseUnits set to the spender's address.
+     */
+    public async getAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string) {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+
+        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, spenderAddress);
+        allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
+        return allowanceInBaseUnits;
+    }
+    /**
+     * Retrieves the owner's allowance in baseUnits set to the 0x proxy contract.
      */
     public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
-        const tokenContract = await this.getTokenContractAsync(tokenAddress);
         const proxyAddress = await this.getProxyAddressAsync();
-        let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, proxyAddress);
-        allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
+        const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress);
         return allowanceInBaseUnits;
     }
     /**
@@ -57,17 +88,8 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
-        const tokenContract = await this.getTokenContractAsync(tokenAddress);
         const proxyAddress = await this.getProxyAddressAsync();
-        // Hack: for some reason default estimated gas amount causes `base fee exceeds gas limit` exception
-        // on testrpc. Probably related to https://github.com/ethereumjs/testrpc/issues/294
-        // TODO: Debug issue in testrpc and submit a PR, then remove this hack
-        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
-        const gas = networkIdIfExists === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
-        await tokenContract.approve(proxyAddress, amountInBaseUnits, {
-            from: ownerAddress,
-            gas,
-        });
+        await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
     }
     /**
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
@@ -82,6 +104,35 @@ export class TokenWrapper extends ContractWrapper {
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
         await tokenContract.transfer(toAddress, amountInBaseUnits, {
             from: fromAddress,
+        });
+    }
+    /**
+     * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
+     */
+    public async transferFromAsync(tokenAddress: string, fromAddress: string, toAddress: string,
+                                   senderAddress: string, amountInBaseUnits: BigNumber.BigNumber):
+                                   Promise<void> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isETHAddressHex('fromAddress', fromAddress);
+        assert.isETHAddressHex('toAddress', toAddress);
+        assert.isETHAddressHex('senderAddress', senderAddress);
+        assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
+        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, senderAddress);
+
+        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+
+        const fromAddressAllowance = await this.getAllowanceAsync(tokenAddress, fromAddress, toAddress);
+        if (fromAddressAllowance.lessThan(amountInBaseUnits)) {
+            throw new Error(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
+        }
+
+        const fromAddressBalance = await this.getBalanceAsync(tokenAddress, fromAddress);
+        if (fromAddressBalance.lessThan(amountInBaseUnits)) {
+            throw new Error(ZeroExError.INSUFFICIENT_BALANCE_FOR_TRANSFER);
+        }
+
+        await tokenContract.transferFrom(fromAddress, toAddress, amountInBaseUnits, {
+            from: senderAddress,
         });
     }
     private async getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {

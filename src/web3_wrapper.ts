@@ -24,11 +24,15 @@ export class Web3Wrapper {
         return firstAccount;
     }
     public async getFirstAddressIfExistsAsync(): Promise<string|undefined> {
-        const addresses = await promisify(this.web3.eth.getAccounts)();
+        const addresses = await this.getAvailableSenderAddressesAsync();
         if (_.isEmpty(addresses)) {
             return undefined;
         }
-        return (addresses as string[])[0];
+        return addresses[0];
+    }
+    public async isSenderAddressAvailable(senderAddress: string): Promise<boolean> {
+        const addresses = await this.getAvailableSenderAddressesAsync();
+        return _.includes(addresses, senderAddress);
     }
     public async getNodeVersionAsync(): Promise<string> {
         const nodeVersion = await promisify(this.web3.version.getNode)();
@@ -63,6 +67,10 @@ export class Web3Wrapper {
     public async getBlockTimestampAsync(blockHash: string): Promise<number> {
         const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
         return timestamp;
+    }
+    private async getAvailableSenderAddressesAsync(): Promise<string[]> {
+        const addresses: string[] = await promisify(this.web3.eth.getAccounts)();
+        return addresses;
     }
     private async getNetworkAsync(): Promise<number> {
         const networkId = await promisify(this.web3.version.getNetwork)();
