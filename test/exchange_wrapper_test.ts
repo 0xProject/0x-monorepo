@@ -9,9 +9,9 @@ import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import {orderFactory} from './utils/order_factory';
 import {FillOrderValidationErrs, Token} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
+import {TokenUtils} from './utils/token_utils';
 
 chai.use(dirtyChai);
 chai.use(ChaiBigNumber());
@@ -111,15 +111,19 @@ describe('ExchangeWrapper', () => {
         let coinBase: string;
         let makerAddress: string;
         let takerAddress: string;
+        let feeRecipient: string;
+        let zrxTokenAddress: string;
         const fillTakerAmountInBaseUnits = new BigNumber(5);
         const shouldCheckTransfer = false;
         before('fetch tokens', async () => {
-            [coinBase, makerAddress, takerAddress] = userAddresses;
+            [coinBase, makerAddress, takerAddress, feeRecipient] = userAddresses;
             tokens = await zeroEx.tokenRegistry.getTokensAsync();
-            const [makerToken, takerToken] = tokens;
+            const tokenUtils = new TokenUtils(tokens);
+            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
-            fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens);
+            zrxTokenAddress = tokenUtils.getProtocolTokenOrThrow().address;
+            fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens, zrxTokenAddress);
         });
         afterEach('reset default account', () => {
             zeroEx.setTransactionSenderAccount(userAddresses[0]);
@@ -261,6 +265,19 @@ describe('ExchangeWrapper', () => {
                     .to.be.bignumber.equal(partialFillAmount);
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                     .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
+            });
+            it('should fill the valid orders with fees', async () => {
+                const fillableAmount = new BigNumber(5);
+                const makerFee = new BigNumber(1);
+                const takerFee = new BigNumber(2);
+                const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                    makerTokenAddress, takerTokenAddress, makerFee, takerFee,
+                    makerAddress, takerAddress, fillableAmount, feeRecipient,
+                );
+                zeroEx.setTransactionSenderAccount(takerAddress);
+                await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer);
+                expect(await zeroEx.token.getBalanceAsync(zrxTokenAddress, feeRecipient))
+                    .to.be.bignumber.equal(makerFee.plus(takerFee));
             });
         });
     });
