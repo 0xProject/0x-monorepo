@@ -3,13 +3,16 @@ import * as chai from 'chai';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import ChaiBigNumber = require('chai-bignumber');
+import * as dirtyChai from 'dirty-chai';
 import * as Sinon from 'sinon';
 import {ZeroEx} from '../src/0x.js';
 import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
+import {Order} from '../src/types';
 
-// Use BigNumber chai add-on
+chai.config.includeStack = true;
 chai.use(ChaiBigNumber());
+chai.use(dirtyChai);
 const expect = chai.expect;
 
 describe('ZeroEx library', () => {
@@ -20,8 +23,8 @@ describe('ZeroEx library', () => {
             // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any).getExchangeContractAsync();
             await (zeroEx.tokenRegistry as any).getTokenRegistryContractAsync();
-            expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.undefined;
-            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.undefined;
+            expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.undefined();
+            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.undefined();
 
             const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
@@ -29,8 +32,8 @@ describe('ZeroEx library', () => {
             zeroEx.setProvider(newProvider);
 
             // Check that contractInstances with old provider are removed after provider update
-            expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.undefined;
-            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.be.undefined;
+            expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.undefined();
+            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.be.undefined();
 
             // Check that all nested web3 instances return the updated provider
             const nestedWeb3WrapperProvider = (zeroEx as any).web3Wrapper.getCurrentProvider();
@@ -39,43 +42,6 @@ describe('ZeroEx library', () => {
             expect((exchangeWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
             const tokenRegistryWeb3WrapperProvider = zeroEx.tokenRegistry.web3Wrapper.getCurrentProvider();
             expect((tokenRegistryWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
-        });
-    });
-    describe('#getOrderHash', () => {
-        const expectedOrderHash = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
-        it('defaults takerAddress to NULL address', () => {
-            const orderHash = ZeroEx.getOrderHashHex(
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                '',
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-            );
-            expect(orderHash).to.be.equal(expectedOrderHash);
-        });
-        it('calculates the order hash', () => {
-            const orderHash = ZeroEx.getOrderHashHex(
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                constants.NULL_ADDRESS,
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-            );
-            expect(orderHash).to.be.equal(expectedOrderHash);
         });
     });
     describe('#isValidSignature', () => {
@@ -127,47 +93,47 @@ describe('ZeroEx library', () => {
         });
         it('should return false if the data doesn\'t pertain to the signature & address', () => {
             const isValid = ZeroEx.isValidSignature('0x0', signature, address);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return false if the address doesn\'t pertain to the signature & data', () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
             const isValid = ZeroEx.isValidSignature(data, signature, validUnrelatedAddress);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return false if the signature doesn\'t pertain to the data & address', () => {
             const wrongSignature = _.assign({}, signature, {v: 28});
             const isValid = ZeroEx.isValidSignature(data, wrongSignature, address);
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('should return true if the signature does pertain to the data & address', () => {
             const isValid = ZeroEx.isValidSignature(data, signature, address);
-            expect(isValid).to.be.true;
+            expect(isValid).to.be.true();
         });
     });
     describe('#generateSalt', () => {
         it('generates different salts', () => {
             const equal = ZeroEx.generatePseudoRandomSalt().eq(ZeroEx.generatePseudoRandomSalt());
-            expect(equal).to.be.false;
+            expect(equal).to.be.false();
         });
         it('generates salt in range [0..2^256)', () => {
             const salt = ZeroEx.generatePseudoRandomSalt();
-            expect(salt.greaterThanOrEqualTo(0)).to.be.true;
+            expect(salt.greaterThanOrEqualTo(0)).to.be.true();
             const twoPow256 = new BigNumber(2).pow(256);
-            expect(salt.lessThan(twoPow256)).to.be.true;
+            expect(salt.lessThan(twoPow256)).to.be.true();
         });
     });
     describe('#isValidOrderHash', () => {
         it('returns false if the value is not a hex string', () => {
             const isValid = ZeroEx.isValidOrderHash('not a hex');
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('returns false if the length is wrong', () => {
             const isValid = ZeroEx.isValidOrderHash('0xdeadbeef');
-            expect(isValid).to.be.false;
+            expect(isValid).to.be.false();
         });
         it('returns true if order hash is correct', () => {
             const isValid = ZeroEx.isValidOrderHash('0x' + Array(65).join('0'));
-            expect(isValid).to.be.true;
+            expect(isValid).to.be.true();
         });
     });
     describe('#toUnitAmount', () => {
@@ -186,6 +152,41 @@ describe('ZeroEx library', () => {
             const baseUnitAmount = ZeroEx.toBaseUnitAmount(unitAmount, decimals);
             const expectedUnitAmount = new BigNumber(1000000000);
             expect(baseUnitAmount).to.be.bignumber.equal(expectedUnitAmount);
+        });
+    });
+    describe('#getOrderHashAsync', () => {
+        const exchangeContractAddress = constants.NULL_ADDRESS;
+        const expectedOrderHash = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
+        const order: Order = {
+            maker: constants.NULL_ADDRESS,
+            taker: constants.NULL_ADDRESS,
+            feeRecipient: constants.NULL_ADDRESS,
+            makerTokenAddress: constants.NULL_ADDRESS,
+            takerTokenAddress: constants.NULL_ADDRESS,
+            salt: new BigNumber(0),
+            makerFee: new BigNumber(0),
+            takerFee: new BigNumber(0),
+            makerTokenAmount: new BigNumber(0),
+            takerTokenAmount: new BigNumber(0),
+            expirationUnixTimestampSec: new BigNumber(0),
+        };
+        let stubs: Sinon.SinonStub[] = [];
+        afterEach(() => {
+            // clean up any stubs after the test has completed
+            _.each(stubs, s => s.restore());
+            stubs = [];
+        });
+        it('calculates the order hash', async () => {
+            const web3 = web3Factory.create();
+            const zeroEx = new ZeroEx(web3);
+
+            stubs = [
+                Sinon.stub((zeroEx as any), 'getExchangeAddressAsync')
+                    .returns(Promise.resolve(exchangeContractAddress)),
+            ];
+
+            const orderHash = await zeroEx.getOrderHashHexAsync(order);
+            expect(orderHash).to.be.equal(expectedOrderHash);
         });
     });
     describe('#signOrderHashAsync', () => {

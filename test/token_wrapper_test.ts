@@ -8,6 +8,7 @@ import {ZeroEx} from '../src/0x.js';
 import {ZeroExError, Token} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 
+chai.config.includeStack = true;
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 

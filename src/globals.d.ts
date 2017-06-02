@@ -1,4 +1,5 @@
 declare module 'chai-bignumber';
+declare module 'dirty-chai';
 declare module 'bn.js';
 declare module 'request-promise-native';
 declare module 'web3-provider-engine';

@@ -17,4 +17,4 @@ export class BlockchainLifecycle {
             throw new Error(`Snapshot with id #${this.snapshotId} failed to revert`);
         }
     }
-};
+}

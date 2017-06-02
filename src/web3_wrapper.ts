@@ -2,6 +2,8 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
+import {ZeroExError} from './types';
+import {assert} from './utils/assert';
 
 export class Web3Wrapper {
     private web3: Web3;
@@ -15,13 +17,16 @@ export class Web3Wrapper {
     public isAddress(address: string): boolean {
         return this.web3.isAddress(address);
     }
-    public async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
-        const defaultAccount = this.web3.eth.defaultAccount;
-        if (!_.isUndefined(defaultAccount)) {
-            return defaultAccount;
-        }
-        const firstAccount = await this.getFirstAddressIfExistsAsync();
-        return firstAccount;
+    public getDefaultAccount(): string {
+        return this.web3.eth.defaultAccount;
+    }
+    public setDefaultAccount(address: string): void {
+        this.web3.eth.defaultAccount = address;
+    }
+    public async getSenderAddressOrThrowAsync(): Promise<string> {
+        const senderAddressIfExists = await this.getSenderAddressIfExistsAsync();
+        assert.assert(!_.isUndefined(senderAddressIfExists), ZeroExError.USER_HAS_NO_ASSOCIATED_ADDRESSES);
+        return senderAddressIfExists as string;
     }
     public async getFirstAddressIfExistsAsync(): Promise<string|undefined> {
         const addresses = await this.getAvailableSenderAddressesAsync();
@@ -67,6 +72,14 @@ export class Web3Wrapper {
     public async getBlockTimestampAsync(blockHash: string): Promise<number> {
         const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
         return timestamp;
+    }
+    public async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
+        const defaultAccount = this.web3.eth.defaultAccount;
+        if (!_.isUndefined(defaultAccount)) {
+            return defaultAccount;
+        }
+        const firstAccount = await this.getFirstAddressIfExistsAsync();
+        return firstAccount;
     }
     private async getAvailableSenderAddressesAsync(): Promise<string[]> {
         const addresses: string[] = await promisify(this.web3.eth.getAccounts)();
