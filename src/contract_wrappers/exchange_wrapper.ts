@@ -133,7 +133,7 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const currentUnixTimestampSec = Date.now() / 1000;
         if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(FillOrderValidationErrs.EXPIRED);
+            throw new Error(FillOrderValidationErrs.FILL_ORDER_EXPIRED);
         }
         const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         await this.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder, fillTakerAmount,

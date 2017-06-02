@@ -95,7 +95,7 @@ export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 export const FillOrderValidationErrs = strEnum([
     'FILL_AMOUNT_IS_ZERO',
     'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
-    'EXPIRED',
+    'FILL_ORDER_EXPIRED',
     'NOT_ENOUGH_TAKER_BALANCE',
     'NOT_ENOUGH_TAKER_ALLOWANCE',
     'NOT_ENOUGH_MAKER_BALANCE',

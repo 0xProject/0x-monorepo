@@ -158,7 +158,7 @@ describe('ExchangeWrapper', () => {
                 zeroEx.setTransactionSenderAccount(takerAddress);
                 return expect(zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmount, shouldCheckTransfer,
-                )).to.be.rejectedWith(FillOrderValidationErrs.EXPIRED);
+                )).to.be.rejectedWith(FillOrderValidationErrs.FILL_ORDER_EXPIRED);
             });
             describe('should throw when not enough balance or allowance to fulfill the order', () => {
                 const fillableAmount = new BigNumber(5);
