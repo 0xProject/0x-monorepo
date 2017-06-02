@@ -1,70 +1,38 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
+import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
 import contract = require('truffle-contract');
 import * as Web3 from 'web3';
 import * as ethABI from 'ethereumjs-abi';
+import findVersions = require('find-versions');
+import compareVersions = require('compare-versions');
 import {Web3Wrapper} from './web3_wrapper';
 import {constants} from './utils/constants';
 import {utils} from './utils/utils';
 import {assert} from './utils/assert';
-import findVersions = require('find-versions');
-import compareVersions = require('compare-versions');
+import {SchemaValidator} from './utils/schema_validator';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
+import {Order} from './types';
+import {orderSchema} from './schemas/order_schemas';
+import * as ExchangeArtifacts from './artifacts/Exchange.json';
+
+// Customize our BigNumber instances
+bigNumberConfigs.configure();
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export class ZeroEx {
+    public static NULL_ADDRESS = constants.NULL_ADDRESS;
+
     public exchange: ExchangeWrapper;
     public tokenRegistry: TokenRegistryWrapper;
     public token: TokenWrapper;
     private web3Wrapper: Web3Wrapper;
-    /**
-     * Computes the orderHash given the order parameters and returns it as a hex encoded string.
-     */
-    public static getOrderHashHex(exchangeContractAddr: string, makerAddr: string, takerAddr: string,
-                                  tokenMAddress: string, tokenTAddress: string, feeRecipient: string,
-                                  valueM: BigNumber.BigNumber, valueT: BigNumber.BigNumber,
-                                  makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,
-                                  expiration: BigNumber.BigNumber, salt: BigNumber.BigNumber): string {
-        takerAddr = _.isEmpty(takerAddr) ? constants.NULL_ADDRESS : takerAddr ;
-        assert.isETHAddressHex('exchangeContractAddr', exchangeContractAddr);
-        assert.isETHAddressHex('makerAddr', makerAddr);
-        assert.isETHAddressHex('takerAddr', takerAddr);
-        assert.isETHAddressHex('tokenMAddress', tokenMAddress);
-        assert.isETHAddressHex('tokenTAddress', tokenTAddress);
-        assert.isETHAddressHex('feeRecipient', feeRecipient);
-        assert.isBigNumber('valueM', valueM);
-        assert.isBigNumber('valueT', valueT);
-        assert.isBigNumber('makerFee', makerFee);
-        assert.isBigNumber('takerFee', takerFee);
-        assert.isBigNumber('expiration', expiration);
-        assert.isBigNumber('salt', salt);
-
-        const orderParts = [
-            {value: exchangeContractAddr, type: SolidityTypes.address},
-            {value: makerAddr, type: SolidityTypes.address},
-            {value: takerAddr, type: SolidityTypes.address},
-            {value: tokenMAddress, type: SolidityTypes.address},
-            {value: tokenTAddress, type: SolidityTypes.address},
-            {value: feeRecipient, type: SolidityTypes.address},
-            {value: utils.bigNumberToBN(valueM), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(valueT), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(makerFee), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(takerFee), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(expiration), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(salt), type: SolidityTypes.uint256},
-        ];
-        const types = _.map(orderParts, o => o.type);
-        const values = _.map(orderParts, o => o.value);
-        const hashBuff = ethABI.soliditySHA3(types, values);
-        const hashHex = ethUtil.bufferToHex(hashBuff);
-        return hashHex;
-    }
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddressHex` address.
@@ -135,9 +103,9 @@ export class ZeroEx {
     }
     constructor(web3: Web3) {
         this.web3Wrapper = new Web3Wrapper(web3);
-        this.exchange = new ExchangeWrapper(this.web3Wrapper);
-        this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
         this.token = new TokenWrapper(this.web3Wrapper);
+        this.exchange = new ExchangeWrapper(this.web3Wrapper, this.token);
+        this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
     }
     /**
      * Sets a new provider for the web3 instance used by 0x.js
@@ -149,11 +117,55 @@ export class ZeroEx {
         this.token.invalidateContractInstances();
     }
     /**
+     * Sets default account for sending transactions.
+     */
+    public setTransactionSenderAccount(account: string): void {
+        this.web3Wrapper.setDefaultAccount(account);
+    }
+    /**
+     * Get the default account set for sending transactions.
+     */
+    public async getTransactionSenderAccountIfExistsAsync(): Promise<string|undefined> {
+        const senderAccountIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
+        return senderAccountIfExists;
+    }
+    /**
+     * Computes the orderHash for a given order and returns it as a hex encoded string.
+     */
+    public async getOrderHashHexAsync(order: Order): Promise<string> {
+        const exchangeContractAddr = await this.getExchangeAddressAsync();
+        assert.doesConformToSchema('order',
+                                   SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
+                                   orderSchema);
+
+        const orderParts = [
+            {value: exchangeContractAddr, type: SolidityTypes.address},
+            {value: order.maker, type: SolidityTypes.address},
+            {value: order.taker, type: SolidityTypes.address},
+            {value: order.makerTokenAddress, type: SolidityTypes.address},
+            {value: order.takerTokenAddress, type: SolidityTypes.address},
+            {value: order.feeRecipient, type: SolidityTypes.address},
+            {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.uint256},
+        ];
+        const types = _.map(orderParts, o => o.type);
+        const values = _.map(orderParts, o => o.value);
+        const hashBuff = ethABI.soliditySHA3(types, values);
+        const hashHex = ethUtil.bufferToHex(hashBuff);
+        return hashHex;
+    }
+    /**
      * Signs an orderHash and returns it's elliptic curve signature
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
     public async signOrderHashAsync(orderHashHex: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
+
+        const makerAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
 
         let msgHashHex;
         const nodeVersion = await this.web3Wrapper.getNodeVersionAsync();
@@ -167,12 +179,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const makerAddressIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
-        if (_.isUndefined(makerAddressIfExists)) {
-            throw new Error(ZeroExError.USER_HAS_NO_ASSOCIATED_ADDRESSES);
-        }
-
-        const signature = await this.web3Wrapper.signTransactionAsync(makerAddressIfExists, msgHashHex);
+        const signature = await this.web3Wrapper.signTransactionAsync(makerAddress, msgHashHex);
 
         let signatureData;
         const [nodeVersionNumber] = findVersions(nodeVersion);
@@ -202,10 +209,21 @@ export class ZeroEx {
             r: ethUtil.bufferToHex(r),
             s: ethUtil.bufferToHex(s),
         };
-        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, makerAddressIfExists);
+        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, makerAddress);
         if (!isValidSignature) {
             throw new Error(ZeroExError.INVALID_SIGNATURE);
         }
         return ecSignature;
+    }
+    private async getExchangeAddressAsync() {
+        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+        const exchangeNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
+                                       undefined :
+                                       (ExchangeArtifacts as any).networks[networkIdIfExists];
+        if (_.isUndefined(exchangeNetworkConfigsIfExists)) {
+            throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
+        }
+        const exchangeAddress = exchangeNetworkConfigsIfExists.address;
+        return exchangeAddress;
     }
 }
