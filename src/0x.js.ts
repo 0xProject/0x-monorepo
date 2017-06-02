@@ -69,7 +69,10 @@ export class ZeroEx {
         const salt = randomNumber.times(factor).round();
         return salt;
     }
-    /** Checks if order hash is valid */
+    /**
+     * Checks if the supplied hex encoded order hash is valid.
+     * Note: Valid means it has the expected format, not that an order with the orderHash exists.
+     */
     public static isValidOrderHash(orderHashHex: string): boolean {
         // Since this method can be called to check if any arbitrary string conforms to an orderHash's
         // format, we only assert that we were indeed passed a string.
