@@ -79,7 +79,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeContractAsync();
         const zrxTokenAddress = await this.getZRXTokenAddressAsync(exchangeInstance);
-        await this.validateFillOrderAsync(signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress);
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -123,8 +123,8 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
-    private async validateFillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
-                                         senderAddress: string, zrxTokenAddress: string): Promise<void> {
+    private async validateFillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
+                                                          senderAddress: string, zrxTokenAddress: string): Promise<void> {
         if (fillTakerAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
@@ -135,7 +135,7 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(FillOrderValidationErrs.EXPIRED);
         }
 
-        await this.validateFillOrderBalancesAndAllowancesAsync(signedOrder, fillTakerAmount,
+        await this.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder, fillTakerAmount,
                                                                senderAddress, zrxTokenAddress);
 
         if (await this.isRoundingErrorAsync(signedOrder.takerTokenAmount, fillTakerAmount,
@@ -143,10 +143,10 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(FillOrderValidationErrs.ROUNDING_ERROR);
         }
     }
-    private async validateFillOrderBalancesAndAllowancesAsync(signedOrder: SignedOrder,
-                                                              fillTakerAmount: BigNumber.BigNumber,
-                                                              senderAddress: string,
-                                                              zrxTokenAddress: string): Promise<void> {
+    private async validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                                               fillTakerAmount: BigNumber.BigNumber,
+                                                                               senderAddress: string,
+                                                                               zrxTokenAddress: string): Promise<void> {
         // TODO: There is a possibility that the user might have enough funds
         // to fulfill the order or pay fees but not both. This will happen if
         // makerToken === zrxToken || makerToken === zrxToken
