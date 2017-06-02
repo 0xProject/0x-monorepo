@@ -129,7 +129,7 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
-            throw new Error(FillOrderValidationErrs.NOT_A_TAKER);
+            throw new Error(FillOrderValidationErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
         }
         if (signedOrder.expirationUnixTimestampSec.lessThan(Date.now() / 1000)) {
             throw new Error(FillOrderValidationErrs.EXPIRED);

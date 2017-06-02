@@ -147,7 +147,7 @@ describe('ExchangeWrapper', () => {
                 );
                 return expect(zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmount, shouldCheckTransfer,
-                )).to.be.rejectedWith(FillOrderValidationErrs.NOT_A_TAKER);
+                )).to.be.rejectedWith(FillOrderValidationErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
             });
             it('should throw when order is expired', async () => {
                 const expirationInPast = new BigNumber(42);
