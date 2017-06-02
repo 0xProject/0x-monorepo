@@ -150,7 +150,3 @@ export interface TxOpts {
     from: string;
     gas?: number;
 }
-
-export interface TokenAddressBySymbol {
-    [symbol: string]: string;
-}
