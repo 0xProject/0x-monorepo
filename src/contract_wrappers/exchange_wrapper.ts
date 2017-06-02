@@ -10,6 +10,7 @@ import {
     OrderAddresses,
     SignedOrder,
     ContractEvent,
+    ContractResponse,
 } from '../types';
 import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
@@ -17,18 +18,17 @@ import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {signedOrderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
-import {ContractResponse} from '../types';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 
 export class ExchangeWrapper extends ContractWrapper {
     private exchangeContractErrCodesToMsg = {
-        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.ORDER_EXPIRED,
-        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: ExchangeContractErrs.ORDER_EXPIRED,
+        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.ORDER_FILL_EXPIRED,
+        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: ExchangeContractErrs.ORDER_FILL_EXPIRED,
         [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO,
         [ExchangeContractErrCodes.ERROR_CANCEL_NO_VALUE]: ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO,
-        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.ORDER_ROUNDING_ERROR,
-        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.ORDER_BALANCE_ALLOWANCE_ERROR,
+        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR,
+        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FILL_BALANCE_ALLOWANCE_ERROR,
     };
     private exchangeContractIfExists?: ExchangeContract;
     private tokenWrapper: TokenWrapper;

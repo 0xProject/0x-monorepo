@@ -85,10 +85,10 @@ export enum ExchangeContractErrCodes {
 }
 
 export const ExchangeContractErrs = strEnum([
-    'ORDER_EXPIRED',
+    'ORDER_FILL_EXPIRED',
     'ORDER_REMAINING_FILL_AMOUNT_ZERO',
-    'ORDER_ROUNDING_ERROR',
-    'ORDER_BALANCE_ALLOWANCE_ERROR',
+    'ORDER_FILL_ROUNDING_ERROR',
+    'FILL_BALANCE_ALLOWANCE_ERROR',
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 
