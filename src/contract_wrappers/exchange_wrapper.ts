@@ -139,8 +139,10 @@ export class ExchangeWrapper extends ContractWrapper {
         await this.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder, fillTakerAmount,
                                                                senderAddress, zrxTokenAddress);
 
-        if (await this.isRoundingErrorAsync(signedOrder.takerTokenAmount, fillTakerAmount,
-                                            signedOrder.makerTokenAmount)) {
+        const wouldRoundingErrorOccur = await this.isRoundingErrorAsync(
+            signedOrder.takerTokenAmount, fillTakerAmount, signedOrder.makerTokenAmount,
+        );
+        if (wouldRoundingErrorOccur) {
             throw new Error(FillOrderValidationErrs.ROUNDING_ERROR);
         }
     }
