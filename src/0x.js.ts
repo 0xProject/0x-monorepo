@@ -124,6 +124,12 @@ export class ZeroEx {
         this.web3Wrapper.setDefaultAccount(account);
     }
     /**
+     * Gets default account for sending transactions.
+     */
+    public getTransactionSenderAccount(): string {
+        return this.web3Wrapper.getDefaultAccount();
+    }
+    /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
      */
     public async getOrderHashHexAsync(order: Order): Promise<string> {

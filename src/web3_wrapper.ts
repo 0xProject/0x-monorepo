@@ -17,6 +17,9 @@ export class Web3Wrapper {
     public isAddress(address: string): boolean {
         return this.web3.isAddress(address);
     }
+    public getDefaultAccount(): string {
+        return this.web3.eth.defaultAccount;
+    }
     public setDefaultAccount(address: string): void {
         this.web3.eth.defaultAccount = address;
     }
