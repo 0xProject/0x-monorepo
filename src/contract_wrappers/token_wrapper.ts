@@ -129,7 +129,7 @@ export class TokenWrapper extends ContractWrapper {
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
 
-        const fromAddressAllowance = await this.getAllowanceAsync(tokenAddress, fromAddress, toAddress);
+        const fromAddressAllowance = await this.getAllowanceAsync(tokenAddress, fromAddress, senderAddress);
         if (fromAddressAllowance.lessThan(amountInBaseUnits)) {
             throw new Error(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
         }

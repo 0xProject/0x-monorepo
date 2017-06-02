@@ -68,9 +68,11 @@ describe('TokenWrapper', () => {
     describe('#transferFromAsync', () => {
         let token: Token;
         let toAddress: string;
+        let senderAddress: string;
         before(async () => {
             token = tokens[0];
             toAddress = addressWithoutFunds;
+            senderAddress = userAddresses[2];
         });
         it('should fail to transfer tokens if fromAddress has insufficient allowance set', async () => {
             const fromAddress = coinbase;
@@ -83,7 +85,6 @@ describe('TokenWrapper', () => {
                                                                               toAddress);
             expect(fromAddressAllowance).to.be.bignumber.equal(0);
 
-            const senderAddress = toAddress;
             return expect(zeroEx.token.transferFromAsync(
                 token.address, fromAddress, toAddress, senderAddress, transferAmount,
             )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
@@ -95,12 +96,11 @@ describe('TokenWrapper', () => {
             const fromAddressBalance = await zeroEx.token.getBalanceAsync(token.address, fromAddress);
             expect(fromAddressBalance).to.be.bignumber.equal(0);
 
-            await zeroEx.token.setAllowanceAsync(token.address, fromAddress, toAddress, transferAmount);
+            await zeroEx.token.setAllowanceAsync(token.address, fromAddress, senderAddress, transferAmount);
             const fromAddressAllowance = await zeroEx.token.getAllowanceAsync(token.address, fromAddress,
-                                                                              toAddress);
+                                                                              senderAddress);
             expect(fromAddressAllowance).to.be.bignumber.equal(transferAmount);
 
-            const senderAddress = toAddress;
             return expect(zeroEx.token.transferFromAsync(
                 token.address, fromAddress, toAddress, senderAddress, transferAmount,
             )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_BALANCE_FOR_TRANSFER);
@@ -112,9 +112,8 @@ describe('TokenWrapper', () => {
             expect(preBalance).to.be.bignumber.equal(0);
 
             const transferAmount = new BigNumber(42);
-            await zeroEx.token.setAllowanceAsync(token.address, fromAddress, toAddress, transferAmount);
+            await zeroEx.token.setAllowanceAsync(token.address, fromAddress, senderAddress, transferAmount);
 
-            const senderAddress = toAddress;
             await zeroEx.token.transferFromAsync(token.address, fromAddress, toAddress, senderAddress,
                                                  transferAmount);
             const postBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
@@ -123,7 +122,6 @@ describe('TokenWrapper', () => {
         it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const fromAddress = coinbase;
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-            const senderAddress = fromAddress;
             return expect(zeroEx.token.transferFromAsync(
                 nonExistentTokenAddress, fromAddress, toAddress, senderAddress, new BigNumber(42),
             )).to.be.rejectedWith(ZeroExError.CONTRACT_DOES_NOT_EXIST);
