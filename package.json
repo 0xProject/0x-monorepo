@@ -33,7 +33,7 @@
     "run_mocha": "mocha lib/test/**/*_test.js --timeout 3000"
   },
   "config": {
-    "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken",
+    "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken ProtocolToken",
     "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
   },
   "repository": {
