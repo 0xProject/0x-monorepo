@@ -131,7 +131,8 @@ export class ExchangeWrapper extends ContractWrapper {
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
             throw new Error(FillOrderValidationErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
         }
-        if (signedOrder.expirationUnixTimestampSec.lessThan(Date.now() / 1000)) {
+        const currentUnixTimestampSec = Date.now() / 1000;
+        if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(FillOrderValidationErrs.EXPIRED);
         }
         const zrxTokenAddress = await this.getZRXTokenAddressAsync();
