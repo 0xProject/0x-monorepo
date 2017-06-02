@@ -8,7 +8,7 @@ import * as Sinon from 'sinon';
 import {ZeroEx} from '../src/0x.js';
 import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
-import {Order} from '../src/types';
+import {Order, DoneCallback} from '../src/types';
 
 chai.config.includeStack = true;
 chai.use(ChaiBigNumber());
@@ -17,7 +17,7 @@ const expect = chai.expect;
 
 describe('ZeroEx library', () => {
     describe('#setProvider', () => {
-        it('overrides the provider in the nested web3 instance and invalidates contractInstances', async () => {
+        it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3);
             // Instantiate the contract instances with the current provider
@@ -29,7 +29,7 @@ describe('ZeroEx library', () => {
             const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
             (newProvider as any).zeroExTestId = 1;
-            zeroEx.setProvider(newProvider);
+            await zeroEx.setProviderAsync(newProvider);
 
             // Check that contractInstances with old provider are removed after provider update
             expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.undefined();

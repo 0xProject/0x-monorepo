@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
+import promisify = require('es6-promisify');
 import {Web3Wrapper} from '../web3_wrapper';
 import {
     ECSignature,
@@ -10,9 +11,17 @@ import {
     OrderAddresses,
     SignedOrder,
     ContractEvent,
+    ZeroExError,
+    ExchangeEvents,
+    SubscriptionOpts,
+    IndexFilterValues,
+    CreateContractEvent,
+    ContractEventObj,
+    EventCallback,
     ContractResponse,
 } from '../types';
 import {assert} from '../utils/assert';
+import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
@@ -31,12 +40,15 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FILL_BALANCE_ALLOWANCE_ERROR,
     };
     private exchangeContractIfExists?: ExchangeContract;
+    private exchangeLogEventObjs: ContractEventObj[];
     private tokenWrapper: TokenWrapper;
     constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
         this.tokenWrapper = tokenWrapper;
+        this.exchangeLogEventObjs = [];
     }
-    public invalidateContractInstance(): void {
+    public async invalidateContractInstanceAsync(): Promise<void> {
+        await this.stopWatchingExchangeLogEventsAsync();
         delete this.exchangeContractIfExists;
     }
     public async isValidSignatureAsync(dataHex: string, ecSignature: ECSignature,
@@ -159,6 +171,39 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
+     * Subscribe to an event type emitted by the Exchange smart contract
+     */
+    public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
+                                indexFilterValues: IndexFilterValues, callback: EventCallback) {
+        const exchangeContract = await this.getExchangeContractAsync();
+        let createLogEvent: CreateContractEvent;
+        switch (eventName) {
+            case ExchangeEvents.LogFill:
+                createLogEvent = exchangeContract.LogFill;
+                break;
+            case ExchangeEvents.LogError:
+                createLogEvent = exchangeContract.LogError;
+                break;
+            case ExchangeEvents.LogCancel:
+                createLogEvent = exchangeContract.LogCancel;
+                break;
+            default:
+                utils.spawnSwitchErr('ExchangeEvents', eventName);
+                return;
+        }
+
+        const logEventObj: ContractEventObj = createLogEvent(indexFilterValues, subscriptionOpts);
+        logEventObj.watch(callback);
+        this.exchangeLogEventObjs.push(logEventObj);
+    }
+    private async stopWatchingExchangeLogEventsAsync() {
+        const stopWatchingPromises = _.map(this.exchangeLogEventObjs, logEventObj => {
+            return promisify(logEventObj.stopWatching, logEventObj)();
+        });
+        await Promise.all(stopWatchingPromises);
+        this.exchangeLogEventObjs = [];
     }
     private async validateFillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                           fillTakerAmount: BigNumber.BigNumber,

@@ -35,8 +35,26 @@ export type OrderAddresses = [string, string, string, string, string];
 export type OrderValues = [BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
                            BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber];
 
+export type EventCallbackAsync = (err: Error, event: ContractEvent) => Promise<void>;
+export type EventCallbackSync = (err: Error, event: ContractEvent) => void;
+export type EventCallback = EventCallbackSync|EventCallbackAsync;
+export interface ContractEventObj {
+    watch: (eventWatch: EventCallback) => void;
+    stopWatching: () => void;
+}
+export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
+                                   subscriptionOpts: SubscriptionOpts) => ContractEventObj;
 export interface ExchangeContract {
-    isValidSignature: any;
+    isValidSignature: {
+        call: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
+               txOpts: TxOpts) => Promise<boolean>;
+    };
+    LogFill: CreateContractEvent;
+    LogCancel: CreateContractEvent;
+    LogError: CreateContractEvent;
+    ZRX: {
+        call: () => Promise<string>;
+    };
     getUnavailableValueT: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
@@ -55,9 +73,6 @@ export interface ExchangeContract {
     };
     cancelled: {
         call: (orderHash: string) => BigNumber.BigNumber;
-    };
-    ZRX: {
-        call: () => Promise<string>;
     };
 }
 
@@ -121,6 +136,13 @@ export interface ContractResponse {
 }
 
 export interface ContractEvent {
+    logIndex: number;
+    transactionIndex: number;
+    transactionHash: string;
+    blockHash: string;
+    blockNumber: number;
+    address: string;
+    type: string;
     event: string;
     args: any;
 }
@@ -158,3 +180,27 @@ export interface TxOpts {
     from: string;
     gas?: number;
 }
+
+export interface TokenAddressBySymbol {
+    [symbol: string]: string;
+}
+
+export const ExchangeEvents = strEnum([
+    'LogFill',
+    'LogCancel',
+    'LogError',
+]);
+export type ExchangeEvents = keyof typeof ExchangeEvents;
+
+export interface IndexFilterValues {
+    [index: string]: any;
+}
+
+export type BlockParam = 'latest'|'earliest'|'pending'|number;
+
+export interface SubscriptionOpts {
+    fromBlock: BlockParam;
+    toBlock: BlockParam;
+}
+
+export type DoneCallback = (err?: Error) => void;
