@@ -10,6 +10,7 @@ import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 import {Order, DoneCallback} from '../src/types';
 
+chai.config.includeStack = true;
 chai.use(ChaiBigNumber());
 chai.use(dirtyChai);
 const expect = chai.expect;

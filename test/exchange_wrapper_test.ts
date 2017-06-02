@@ -21,6 +21,7 @@ import {
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 
+chai.config.includeStack = true;
 chai.use(dirtyChai);
 chai.use(ChaiBigNumber());
 const expect = chai.expect;
