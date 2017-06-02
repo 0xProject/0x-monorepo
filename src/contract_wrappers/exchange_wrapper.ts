@@ -70,7 +70,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isValidOrderHash('orderHashHex', orderHashHex);
 
         const exchangeContract = await this.getExchangeContractAsync();
-        const unavailableAmountInBaseUnits = await exchangeContract.getUnavailableValueT.call(orderHashHex);
+        let unavailableAmountInBaseUnits = await exchangeContract.getUnavailableValueT.call(orderHashHex);
+        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
+        unavailableAmountInBaseUnits = new BigNumber(unavailableAmountInBaseUnits);
         return unavailableAmountInBaseUnits;
     }
     /**
@@ -80,7 +82,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isValidOrderHash('orderHashHex', orderHashHex);
 
         const exchangeContract = await this.getExchangeContractAsync();
-        const fillAmountInBaseUnits = await exchangeContract.filled.call(orderHashHex);
+        let fillAmountInBaseUnits = await exchangeContract.filled.call(orderHashHex);
+        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
+        fillAmountInBaseUnits = new BigNumber(fillAmountInBaseUnits);
         return fillAmountInBaseUnits;
     }
     /**
@@ -90,7 +94,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isValidOrderHash('orderHashHex', orderHashHex);
 
         const exchangeContract = await this.getExchangeContractAsync();
-        const cancelledAmountInBaseUnits = await exchangeContract.cancelled.call(orderHashHex);
+        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.call(orderHashHex);
+        // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
+        cancelledAmountInBaseUnits = new BigNumber(cancelledAmountInBaseUnits);
         return cancelledAmountInBaseUnits;
     }
     /**
