@@ -193,9 +193,11 @@ export interface IndexFilterValues {
     [index: string]: any;
 }
 
+export type BlockParam = 'latest'|'earliest'|'pending'|number;
+
 export interface SubscriptionOpts {
-    fromBlock: string|number;
-    toBlock: string|number;
+    fromBlock: BlockParam;
+    toBlock: BlockParam;
 }
 
 export type DoneCallback = (err?: Error) => void;
