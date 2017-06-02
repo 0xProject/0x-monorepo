@@ -203,7 +203,7 @@ describe('ExchangeWrapper', () => {
                     )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_MAKER_ALLOWANCE);
                 });
             });
-            it('should throw when there would be a rounding error', async () => {
+            it('should throw when there a rounding error would have occurred', async () => {
                 const makerFillableAmount = new BigNumber(3);
                 const takerFillableAmount = new BigNumber(5);
                 const signedOrder = await fillScenarios.createAsymetricFillableSignedOrderAsync(
