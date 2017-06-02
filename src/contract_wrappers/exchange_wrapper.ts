@@ -168,42 +168,42 @@ export class ExchangeWrapper extends ContractWrapper {
         const takerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress,
                                                                               senderAddress);
 
-        // How many taker tokens would you get for 1 maker token;
+        // exchangeRate is the price of one maker token denominated in taker tokens
         const exchangeRate = signedOrder.takerTokenAmount.div(signedOrder.makerTokenAmount);
         const fillMakerAmountInBaseUnits = fillTakerAmount.div(exchangeRate);
 
         if (fillTakerAmount.greaterThan(takerBalance)) {
-            throw new Error(ExchangeContractErrs.NOT_ENOUGH_TAKER_BALANCE);
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_TAKER_BALANCE);
         }
         if (fillTakerAmount.greaterThan(takerAllowance)) {
-            throw new Error(ExchangeContractErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_TAKER_ALLOWANCE);
         }
         if (fillMakerAmountInBaseUnits.greaterThan(makerBalance)) {
-            throw new Error(ExchangeContractErrs.NOT_ENOUGH_MAKER_BALANCE);
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_MAKER_BALANCE);
         }
         if (fillMakerAmountInBaseUnits.greaterThan(makerAllowance)) {
-            throw new Error(ExchangeContractErrs.NOT_ENOUGH_MAKER_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_MAKER_ALLOWANCE);
         }
 
         const makerFeeBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress,
-            signedOrder.maker);
+                                                                        signedOrder.maker);
         const takerFeeBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
         const makerFeeAllowance = await this.tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress,
-            signedOrder.maker);
+                                                                                 signedOrder.maker);
         const takerFeeAllowance = await this.tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress,
-            senderAddress);
+                                                                                 senderAddress);
 
         if (signedOrder.takerFee.greaterThan(takerFeeBalance)) {
-            throw new Error(ExchangeContractErrs.NOT_ENOUGH_TAKER_FEE_BALANCE);
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_TAKER_FEE_BALANCE);
         }
         if (signedOrder.takerFee.greaterThan(takerFeeAllowance)) {
-            throw new Error(ExchangeContractErrs.NOT_ENOUGH_TAKER_FEE_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_TAKER_FEE_ALLOWANCE);
         }
         if (signedOrder.makerFee.greaterThan(makerFeeBalance)) {
-            throw new Error(ExchangeContractErrs.NOT_ENOUGH_MAKER_FEE_BALANCE);
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_MAKER_FEE_BALANCE);
         }
         if (signedOrder.makerFee.greaterThan(makerFeeAllowance)) {
-            throw new Error(ExchangeContractErrs.NOT_ENOUGH_MAKER_FEE_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_MAKER_FEE_ALLOWANCE);
         }
     }
     private throwErrorLogsAsErrors(logs: ContractEvent[]): void {
