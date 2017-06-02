@@ -65,7 +65,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * could arise where a users balance or allowance changes before the fillOrder executes. Because of this,
      * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if while
      * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
-     * false foregoes this check and causes the smart contract to throw instead.
+     * false forgoes this check and causes the smart contract to throw instead.
      */
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean): Promise<void> {
@@ -145,14 +145,20 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
         }
     }
+
+    /**
+     * This method does not currently validate the edge-case where the makerToken or takerToken is also the token used
+     * to pay fees  (ZRX). It is possible for them to have enough for fees and the transfer but not both.
+     * Handling the edge-cases that arise when this happens would require making sure that the user has sufficient
+     * funds to pay both the fees and the transfer amount. We decided to punt on this for now as the contracts
+     * will throw for these edge-cases.
+     * TODO: Throw errors before calling the smart contract for these edge-cases
+     * TODO: in order to minimize the callers gas costs.
+     */
     private async validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                                                fillTakerAmount: BigNumber.BigNumber,
                                                                                senderAddress: string,
                                                                                zrxTokenAddress: string): Promise<void> {
-        // TODO: There is a possibility that the user might have enough funds
-        // to fulfill the order or pay fees but not both. This will happen if
-        // makerToken === zrxToken || makerToken === zrxToken
-        // We don't check it for now. The contract checks it and throws.
 
         const makerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress,
             signedOrder.maker);
