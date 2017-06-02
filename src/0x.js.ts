@@ -115,9 +115,9 @@ export class ZeroEx {
     /**
      * Sets a new provider for the web3 instance used by 0x.js
      */
-    public setProvider(provider: Web3.Provider) {
+    public async setProviderAsync(provider: Web3.Provider) {
         this.web3Wrapper.setProvider(provider);
-        this.exchange.invalidateContractInstance();
+        await this.exchange.invalidateContractInstanceAsync();
         this.tokenRegistry.invalidateContractInstance();
         this.token.invalidateContractInstances();
     }

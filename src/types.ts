@@ -51,6 +51,22 @@ export interface ExchangeContract {
     };
 }
 
+export type EventCallbackAsync = (err: Error, event: ContractEvent) => Promise<void>;
+export type EventCallbackSync = (err: Error, event: ContractEvent) => void;
+export type EventCallback = EventCallbackSync|EventCallbackAsync;
+export interface ContractEventObj {
+    watch: (eventWatch: EventCallback) => void;
+    stopWatching: () => void;
+}
+export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
+                                   subscriptionOpts: SubscriptionOpts) => ContractEventObj;
+export interface ExchangeContract {
+    isValidSignature: any;
+    LogFill: CreateContractEvent;
+    LogCancel: CreateContractEvent;
+    LogError: CreateContractEvent;
+}
+
 export interface TokenContract {
     balanceOf: {
         call: (address: string) => Promise<BigNumber.BigNumber>;
@@ -110,6 +126,13 @@ export interface ContractResponse {
 }
 
 export interface ContractEvent {
+    logIndex: number;
+    transactionIndex: number;
+    transactionHash: string;
+    blockHash: string;
+    blockNumber: number;
+    address: string;
+    type: string;
     event: string;
     args: any;
 }
@@ -151,3 +174,21 @@ export interface TxOpts {
 export interface TokenAddressBySymbol {
     [symbol: string]: string;
 }
+
+export const ExchangeEvents = strEnum([
+    'LogFill',
+    'LogCancel',
+    'LogError',
+]);
+export type ExchangeEvents = keyof typeof ExchangeEvents;
+
+export interface IndexFilterValues {
+    [index: string]: any;
+}
+
+export interface SubscriptionOpts {
+    fromBlock: string|number;
+    toBlock: string|number;
+}
+
+export type DoneCallback = (err?: Error) => void;

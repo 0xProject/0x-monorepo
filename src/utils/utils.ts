@@ -22,4 +22,7 @@ export const utils = {
         const isValid = /^0x[0-9A-F]{64}$/i.test(orderHashHex);
         return isValid;
     },
+    spawnSwitchErr(name: string, value: any) {
+        return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
+    },
 };
