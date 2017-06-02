@@ -161,8 +161,7 @@ describe('TokenWrapper', () => {
             const expectedAllowanceBeforeAllowanceSet = new BigNumber(0);
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
-            const amountInUnits = new BigNumber(50);
-            const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, token.decimals);
+            const amountInBaseUnits = new BigNumber(50);
             await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
 
             const allowanceAfterSet = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
@@ -176,8 +175,7 @@ describe('TokenWrapper', () => {
             const ownerAddress = coinbase;
             const spenderAddress = addressWithoutFunds;
 
-            const amountInUnits = new BigNumber(50);
-            const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, token.decimals);
+            const amountInBaseUnits = new BigNumber(50);
             await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
 
             const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
@@ -198,8 +196,7 @@ describe('TokenWrapper', () => {
             const token = tokens[0];
             const ownerAddress = coinbase;
 
-            const amountInUnits = new BigNumber(50);
-            const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, token.decimals);
+            const amountInBaseUnits = new BigNumber(50);
             await zeroEx.token.setProxyAllowanceAsync(token.address, ownerAddress, amountInBaseUnits);
 
             const allowance = await zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress);
@@ -216,8 +213,7 @@ describe('TokenWrapper', () => {
             const expectedAllowanceBeforeAllowanceSet = new BigNumber(0);
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
-            const amountInUnits = new BigNumber(50);
-            const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, token.decimals);
+            const amountInBaseUnits = new BigNumber(50);
             await zeroEx.token.setProxyAllowanceAsync(token.address, ownerAddress, amountInBaseUnits);
 
             const allowanceAfterSet = await zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress);
