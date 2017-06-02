@@ -18,14 +18,20 @@ chai.use(ChaiBigNumber());
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 
+const NON_EXISTENT_ORDER_HASH = '0x79370342234e7acd6bbeac335bd3bb1d368383294b64b8160a00f4060e4d3777';
+
 describe('ExchangeWrapper', () => {
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let web3: Web3;
+    let tokens: Token[];
+    let fillScenarios: FillScenarios;
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3);
         userAddresses = await promisify(web3.eth.getAccounts)();
+        tokens = await zeroEx.tokenRegistry.getTokensAsync();
+        fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -104,24 +110,16 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#fillOrderAsync', () => {
-        let tokens: Token[];
         let makerTokenAddress: string;
         let takerTokenAddress: string;
-        let fillScenarios: FillScenarios;
         let takerAddress: string;
         const fillTakerAmountInBaseUnits = new BigNumber(5);
-        const addressBySymbol: {[symbol: string]: string} = {};
         const shouldCheckTransfer = false;
         before('fetch tokens', async () => {
             takerAddress = userAddresses[1];
-            tokens = await zeroEx.tokenRegistry.getTokensAsync();
-            _.forEach(tokens, token => {
-                addressBySymbol[token.symbol] = token.address;
-            });
             const [makerToken, takerToken] = tokens;
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
-            fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens);
         });
         afterEach('reset default account', () => {
             zeroEx.setTransactionSenderAccount(userAddresses[0]);
@@ -182,6 +180,77 @@ describe('ExchangeWrapper', () => {
                     .to.be.bignumber.equal(fillTakerAmountInBaseUnits);
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                     .to.be.bignumber.equal(0);
+            });
+        });
+    });
+    describe('tests that require partially filled order', () => {
+        let makerTokenAddress: string;
+        let takerTokenAddress: string;
+        let takerAddress: string;
+        before(() => {
+            takerAddress = userAddresses[1];
+            const [makerToken, takerToken] = tokens;
+            makerTokenAddress = makerToken.address;
+            takerTokenAddress = takerToken.address;
+        });
+        describe('#getUnavailableTakerAmountAsync', () => {
+            it ('should throw if passed an invalid orderHash', async () => {
+                const invalidOrderHashHex = '0x123';
+                expect(zeroEx.exchange.getUnavailableTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
+            });
+            it ('should return zero if passed a valid but non-existent orderHash', async () => {
+                const unavailableValueT = await zeroEx.exchange.getUnavailableTakerAmountAsync(NON_EXISTENT_ORDER_HASH);
+                expect(unavailableValueT).to.be.bignumber.equal(0);
+            });
+            it ('should return the unavailableValueT for a valid and partially filled orderHash', async () => {
+                const fillableAmount = new BigNumber(5);
+                const partialFillAmount = new BigNumber(2);
+                const signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
+                );
+                const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
+                const unavailableValueT = await zeroEx.exchange.getUnavailableTakerAmountAsync(orderHash);
+                expect(unavailableValueT).to.be.bignumber.equal(partialFillAmount);
+            });
+        });
+        describe('#getFilledTakerAmountAsync', () => {
+            it ('should throw if passed an invalid orderHash', async () => {
+                const invalidOrderHashHex = '0x123';
+                expect(zeroEx.exchange.getFilledTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
+            });
+            it ('should return zero if passed a valid but non-existent orderHash', async () => {
+                const filledValueT = await zeroEx.exchange.getFilledTakerAmountAsync(NON_EXISTENT_ORDER_HASH);
+                expect(filledValueT).to.be.bignumber.equal(0);
+            });
+            it ('should return the filledValueT for a valid and partially filled orderHash', async () => {
+                const fillableAmount = new BigNumber(5);
+                const partialFillAmount = new BigNumber(2);
+                const signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
+                );
+                const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
+                const filledValueT = await zeroEx.exchange.getFilledTakerAmountAsync(orderHash);
+                expect(filledValueT).to.be.bignumber.equal(partialFillAmount);
+            });
+        });
+        describe('#getCanceledTakerAmountAsync', () => {
+            it ('should throw if passed an invalid orderHash', async () => {
+                const invalidOrderHashHex = '0x123';
+                expect(zeroEx.exchange.getCanceledTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
+            });
+            it ('should return zero if passed a valid but non-existent orderHash', async () => {
+                const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(NON_EXISTENT_ORDER_HASH);
+                expect(cancelledValueT).to.be.bignumber.equal(0);
+            });
+            it ('should return the cancelledValueT for a valid and partially filled orderHash', async () => {
+                const fillableAmount = new BigNumber(5);
+                const partialFillAmount = new BigNumber(2);
+                const signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
+                );
+                const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
+                const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHash);
+                expect(cancelledValueT).to.be.bignumber.equal(0);
             });
         });
     });

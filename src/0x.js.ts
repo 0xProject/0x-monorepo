@@ -17,7 +17,7 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
-import {Order} from './types';
+import {Order, SignedOrder} from './types';
 import {orderSchema} from './schemas/order_schemas';
 import * as ExchangeArtifacts from './artifacts/Exchange.json';
 
@@ -116,7 +116,6 @@ export class ZeroEx {
         this.tokenRegistry.invalidateContractInstance();
         this.token.invalidateContractInstances();
     }
-
     /**
      * Sets default account for sending transactions.
      */
@@ -124,9 +123,16 @@ export class ZeroEx {
         this.web3Wrapper.setDefaultAccount(account);
     }
     /**
+     * Get the default account set for sending transactions.
+     */
+    public async getTransactionSenderAccountAsync(): Promise<string> {
+        const senderAccount = await this.web3Wrapper.getSenderAddressOrThrowAsync();
+        return senderAccount;
+    }
+    /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.
      */
-    public async getOrderHashHexAsync(order: Order): Promise<string> {
+    public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         const exchangeContractAddr = await this.getExchangeAddressAsync();
         assert.doesConformToSchema('order',
                                    SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
