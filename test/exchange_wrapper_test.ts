@@ -115,7 +115,7 @@ describe('ExchangeWrapper', () => {
         let zrxTokenAddress: string;
         const fillTakerAmount = new BigNumber(5);
         const shouldCheckTransfer = false;
-        before('fetch tokens', async () => {
+        before(async () => {
             [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
             tokens = await zeroEx.tokenRegistry.getTokensAsync();
             const tokenUtils = new TokenUtils(tokens);
@@ -171,7 +171,6 @@ describe('ExchangeWrapper', () => {
                     );
                 });
                 it('should throw when taker balance is less than fill amount', async () => {
-
                     await zeroEx.token.transferAsync(takerTokenAddress, takerAddress, coinbase, lackingBalance);
                     zeroEx.setTransactionSenderAccount(takerAddress);
                     return expect(zeroEx.exchange.fillOrderAsync(
@@ -267,7 +266,6 @@ describe('ExchangeWrapper', () => {
                 const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
-
                 expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
                     .to.be.bignumber.equal(fillableAmount);
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
