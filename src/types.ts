@@ -10,11 +10,12 @@ function strEnum(values: string[]): {[key: string]: string} {
 }
 
 export const ZeroExError = strEnum([
-  'CONTRACT_DOES_NOT_EXIST',
-  'UNHANDLED_ERROR',
-  'USER_HAS_NO_ASSOCIATED_ADDRESSES',
-  'INVALID_SIGNATURE',
-  'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    'CONTRACT_DOES_NOT_EXIST',
+    'UNHANDLED_ERROR',
+    'USER_HAS_NO_ASSOCIATED_ADDRESSES',
+    'INVALID_SIGNATURE',
+    'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    'ZRX_NOT_IN_TOKEN_REGISTRY',
 ]);
 export type ZeroExError = keyof typeof ZeroExError;
 
