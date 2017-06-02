@@ -35,7 +35,7 @@ export class Web3Wrapper {
         }
         return addresses[0];
     }
-    public async isSenderAddressAvailable(senderAddress: string): Promise<boolean> {
+    public async isSenderAddressAvailableAsync(senderAddress: string): Promise<boolean> {
         const addresses = await this.getAvailableSenderAddressesAsync();
         return _.includes(addresses, senderAddress);
     }

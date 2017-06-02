@@ -26,7 +26,7 @@ export const assert = {
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },
     async isSenderAddressAvailableAsync(web3Wrapper: Web3Wrapper, senderAddress: string) {
-        const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailable(senderAddress);
+        const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailableAsync(senderAddress);
         assert.assert(isSenderAddressAvailable, 'Specified senderAddress isn\'t available through the \
                                                  supplied web3 instance');
     },
