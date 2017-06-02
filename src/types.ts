@@ -10,11 +10,12 @@ function strEnum(values: string[]): {[key: string]: string} {
 }
 
 export const ZeroExError = strEnum([
-  'CONTRACT_DOES_NOT_EXIST',
-  'UNHANDLED_ERROR',
-  'USER_HAS_NO_ASSOCIATED_ADDRESSES',
-  'INVALID_SIGNATURE',
-  'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    'CONTRACT_DOES_NOT_EXIST',
+    'UNHANDLED_ERROR',
+    'USER_HAS_NO_ASSOCIATED_ADDRESSES',
+    'INVALID_SIGNATURE',
+    'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    'ZRX_NOT_IN_TOKEN_REGISTRY',
 ]);
 export type ZeroExError = keyof typeof ZeroExError;
 
@@ -89,24 +90,18 @@ export const ExchangeContractErrs = strEnum([
     'ORDER_REMAINING_FILL_AMOUNT_ZERO',
     'ORDER_FILL_ROUNDING_ERROR',
     'FILL_BALANCE_ALLOWANCE_ERROR',
+    'INSUFFICIENT_TAKER_BALANCE',
+    'INSUFFICIENT_TAKER_ALLOWANCE',
+    'INSUFFICIENT_MAKER_BALANCE',
+    'INSUFFICIENT_MAKER_ALLOWANCE',
+    'INSUFFICIENT_TAKER_FEE_BALANCE',
+    'INSUFFICIENT_TAKER_FEE_ALLOWANCE',
+    'INSUFFICIENT_MAKER_FEE_BALANCE',
+    'INSUFFICIENT_MAKER_FEE_ALLOWANCE',
+    'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
+
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
-
-export const FillOrderValidationErrs = strEnum([
-    'FILL_AMOUNT_IS_ZERO',
-    'NOT_A_TAKER',
-    'EXPIRED',
-    'NOT_ENOUGH_TAKER_BALANCE',
-    'NOT_ENOUGH_TAKER_ALLOWANCE',
-    'NOT_ENOUGH_MAKER_BALANCE',
-    'NOT_ENOUGH_MAKER_ALLOWANCE',
-    'NOT_ENOUGH_TAKER_FEE_BALANCE',
-    'NOT_ENOUGH_TAKER_FEE_ALLOWANCE',
-    'NOT_ENOUGH_MAKER_FEE_BALANCE',
-    'NOT_ENOUGH_MAKER_FEE_ALLOWANCE',
-    'ROUNDING_ERROR',
-]);
-export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;
 
 export interface ContractResponse {
     logs: ContractEvent[];

@@ -11,7 +11,7 @@ export class TokenUtils {
     public getProtocolTokenOrThrow(): Token {
         const zrxToken = _.find(this.tokens, {symbol: PROTOCOL_TOKEN_SYMBOL});
         if (_.isUndefined(zrxToken)) {
-            throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
+            throw new Error(ZeroExError.ZRX_NOT_IN_TOKEN_REGISTRY);
         }
         return zrxToken;
     }
