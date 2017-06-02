@@ -44,6 +44,9 @@ export interface ExchangeContract {
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
                       shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts) => number;
     };
+    ZRX: {
+        call: () => Promise<string>;
+    };
 }
 
 export interface TokenContract {
@@ -97,6 +100,10 @@ export const FillOrderValidationErrs = strEnum([
     'NOT_ENOUGH_TAKER_ALLOWANCE',
     'NOT_ENOUGH_MAKER_BALANCE',
     'NOT_ENOUGH_MAKER_ALLOWANCE',
+    'NOT_ENOUGH_TAKER_FEE_BALANCE',
+    'NOT_ENOUGH_TAKER_FEE_ALLOWANCE',
+    'NOT_ENOUGH_MAKER_FEE_BALANCE',
+    'NOT_ENOUGH_MAKER_FEE_ALLOWANCE',
     'ROUNDING_ERROR',
 ]);
 export type FillOrderValidationErrs = keyof typeof FillOrderValidationErrs;

@@ -9,7 +9,7 @@ import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import {FillOrderValidationErrs, Token} from '../src/types';
+import {FillOrderValidationErrs, SignedOrder, Token} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 
@@ -221,6 +221,49 @@ describe('ExchangeWrapper', () => {
                 return expect(zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnitsThatCausesRoundingError, shouldCheckTransfer,
                 )).to.be.rejectedWith(FillOrderValidationErrs.ROUNDING_ERROR);
+            });
+            describe('should raise when not enough balance or allowance to pay fees', () => {
+                const fillableAmount = new BigNumber(5);
+                const makerFee = new BigNumber(2);
+                const takerFee = new BigNumber(2);
+                let signedOrder: SignedOrder;
+                beforeEach('setup', async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                        makerTokenAddress, takerTokenAddress, makerFee, takerFee,
+                        makerAddress, takerAddress, fillableAmount, feeRecipient,
+                    );
+                    zeroEx.setTransactionSenderAccount(takerAddress);
+                });
+                it('should throw when maker doesn\'t have enough balance to pay fees', async () => {
+                    const lackingBalance = new BigNumber(1);
+                    await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, coinBase, lackingBalance);
+                    return expect(zeroEx.exchange.fillOrderAsync(
+                        signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                    )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_MAKER_FEE_BALANCE);
+                });
+                it('should throw when maker doesn\'t have enough allowance to pay fees', async () => {
+                    const newAllowanceWhichIsLessThanFees = makerFee.minus(1);
+                    await zeroEx.token.setProxyAllowanceAsync(zrxTokenAddress, makerAddress,
+                        newAllowanceWhichIsLessThanFees);
+                    return expect(zeroEx.exchange.fillOrderAsync(
+                        signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                    )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_MAKER_FEE_ALLOWANCE);
+                });
+                it('should throw when taker doesn\'t have enough balance to pay fees', async () => {
+                    const lackingBalance = new BigNumber(1);
+                    await zeroEx.token.transferAsync(zrxTokenAddress, takerAddress, coinBase, lackingBalance);
+                    return expect(zeroEx.exchange.fillOrderAsync(
+                        signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                    )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_FEE_BALANCE);
+                });
+                it('should throw when taker doesn\'t have enough allowance to pay fees', async () => {
+                    const newAllowanceWhichIsLessThanFees = makerFee.minus(1);
+                    await zeroEx.token.setProxyAllowanceAsync(zrxTokenAddress, takerAddress,
+                        newAllowanceWhichIsLessThanFees);
+                    return expect(zeroEx.exchange.fillOrderAsync(
+                        signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                    )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_FEE_ALLOWANCE);
+                });
             });
         });
         describe('successful fills', () => {

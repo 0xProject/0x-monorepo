@@ -74,9 +74,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
-        await this.validateFillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, senderAddress);
-
         const exchangeInstance = await this.getExchangeContractAsync();
+        const zrxTokenAddress = await exchangeInstance.ZRX.call();
+        await this.validateFillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, senderAddress, zrxTokenAddress);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -121,7 +121,7 @@ export class ExchangeWrapper extends ContractWrapper {
         this.throwErrorLogsAsErrors(response.logs);
     }
     private async validateFillOrderAsync(signedOrder: SignedOrder, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
-                                         senderAddress: string) {
+                                         senderAddress: string, zrxTokenAddress: string): Promise<void> {
         if (fillTakerAmountInBaseUnits.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
@@ -131,13 +131,32 @@ export class ExchangeWrapper extends ContractWrapper {
         if (signedOrder.expirationUnixTimestampSec.lessThan(Date.now() / 1000)) {
             throw new Error(FillOrderValidationErrs.EXPIRED);
         }
+
+        await this.validateFillOrderBalancesAndAllowancesAsync(signedOrder, fillTakerAmountInBaseUnits,
+                                                               senderAddress, zrxTokenAddress);
+
+        if (await this.isRoundingErrorAsync(signedOrder.takerTokenAmount, fillTakerAmountInBaseUnits,
+                                            signedOrder.makerTokenAmount)) {
+            throw new Error(FillOrderValidationErrs.ROUNDING_ERROR);
+        }
+    }
+    private async validateFillOrderBalancesAndAllowancesAsync(signedOrder: SignedOrder,
+                                                              fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+                                                              senderAddress: string,
+                                                              zrxTokenAddress: string): Promise<void> {
+        // TODO: There is a possibility that the user might have enough funds
+        // to fulfill the order or pay fees but not both. This will happen if
+        // makerToken === zrxToken || makerToken === zrxToken
+        // We don't check it for now. The contract checks it and throws.
+
         const makerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress,
-                                                                        signedOrder.maker);
+            signedOrder.maker);
         const takerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
         const makerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.makerTokenAddress,
-                                                                              signedOrder.maker);
+            signedOrder.maker);
         const takerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress,
-                                                                              senderAddress);
+            senderAddress);
+
         // How many taker tokens would you get for 1 maker token;
         const exchangeRate = signedOrder.takerTokenAmount.div(signedOrder.makerTokenAmount);
         const fillMakerAmountInBaseUnits = fillTakerAmountInBaseUnits.div(exchangeRate);
@@ -154,9 +173,26 @@ export class ExchangeWrapper extends ContractWrapper {
         if (fillMakerAmountInBaseUnits.greaterThan(makerAllowance)) {
             throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_ALLOWANCE);
         }
-        if (await this.isRoundingErrorAsync(signedOrder.takerTokenAmount, fillTakerAmountInBaseUnits,
-                                            signedOrder.makerTokenAmount)) {
-            throw new Error(FillOrderValidationErrs.ROUNDING_ERROR);
+
+        const makerFeeBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress,
+            signedOrder.maker);
+        const takerFeeBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
+        const makerFeeAllowance = await this.tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress,
+            signedOrder.maker);
+        const takerFeeAllowance = await this.tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress,
+            senderAddress);
+
+        if (signedOrder.takerFee.greaterThan(takerFeeBalance)) {
+            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_FEE_BALANCE);
+        }
+        if (signedOrder.takerFee.greaterThan(takerFeeAllowance)) {
+            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_FEE_ALLOWANCE);
+        }
+        if (signedOrder.makerFee.greaterThan(makerFeeBalance)) {
+            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_FEE_BALANCE);
+        }
+        if (signedOrder.makerFee.greaterThan(makerFeeAllowance)) {
+            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_MAKER_FEE_ALLOWANCE);
         }
     }
     private throwErrorLogsAsErrors(logs: ContractEvent[]): void {
