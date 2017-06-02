@@ -161,12 +161,12 @@ export class ExchangeWrapper extends ContractWrapper {
                                                                                zrxTokenAddress: string): Promise<void> {
 
         const makerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress,
-            signedOrder.maker);
+                                                                     signedOrder.maker);
         const takerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
         const makerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.makerTokenAddress,
-            signedOrder.maker);
+                                                                              signedOrder.maker);
         const takerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress,
-            senderAddress);
+                                                                              senderAddress);
 
         // How many taker tokens would you get for 1 maker token;
         const exchangeRate = signedOrder.takerTokenAmount.div(signedOrder.makerTokenAmount);
