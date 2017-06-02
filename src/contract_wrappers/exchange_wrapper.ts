@@ -68,18 +68,18 @@ export class ExchangeWrapper extends ContractWrapper {
      * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
      * false foregoes this check and causes the smart contract to throw instead.
      */
-    public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+    public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean): Promise<void> {
         assert.doesConformToSchema('signedOrder',
                                    SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
                                    signedOrderSchema);
-        assert.isBigNumber('fillTakerAmountInBaseUnits', fillTakerAmountInBaseUnits);
+        assert.isBigNumber('fillTakerAmount', fillTakerAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeContractAsync();
         const zrxTokenAddress = await exchangeInstance.ZRX.call();
-        await this.validateFillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, senderAddress, zrxTokenAddress);
+        await this.validateFillOrderAsync(signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -99,7 +99,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const gas = await exchangeInstance.fill.estimateGas(
             orderAddresses,
             orderValues,
-            fillTakerAmountInBaseUnits,
+            fillTakerAmount,
             shouldCheckTransfer,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
@@ -111,7 +111,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const response: ContractResponse = await exchangeInstance.fill(
             orderAddresses,
             orderValues,
-            fillTakerAmountInBaseUnits,
+            fillTakerAmount,
             shouldCheckTransfer,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
@@ -123,9 +123,9 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
-    private async validateFillOrderAsync(signedOrder: SignedOrder, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+    private async validateFillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
                                          senderAddress: string, zrxTokenAddress: string): Promise<void> {
-        if (fillTakerAmountInBaseUnits.eq(0)) {
+        if (fillTakerAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
@@ -135,16 +135,16 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(FillOrderValidationErrs.EXPIRED);
         }
 
-        await this.validateFillOrderBalancesAndAllowancesAsync(signedOrder, fillTakerAmountInBaseUnits,
+        await this.validateFillOrderBalancesAndAllowancesAsync(signedOrder, fillTakerAmount,
                                                                senderAddress, zrxTokenAddress);
 
-        if (await this.isRoundingErrorAsync(signedOrder.takerTokenAmount, fillTakerAmountInBaseUnits,
+        if (await this.isRoundingErrorAsync(signedOrder.takerTokenAmount, fillTakerAmount,
                                             signedOrder.makerTokenAmount)) {
             throw new Error(FillOrderValidationErrs.ROUNDING_ERROR);
         }
     }
     private async validateFillOrderBalancesAndAllowancesAsync(signedOrder: SignedOrder,
-                                                              fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+                                                              fillTakerAmount: BigNumber.BigNumber,
                                                               senderAddress: string,
                                                               zrxTokenAddress: string): Promise<void> {
         // TODO: There is a possibility that the user might have enough funds
@@ -162,12 +162,12 @@ export class ExchangeWrapper extends ContractWrapper {
 
         // How many taker tokens would you get for 1 maker token;
         const exchangeRate = signedOrder.takerTokenAmount.div(signedOrder.makerTokenAmount);
-        const fillMakerAmountInBaseUnits = fillTakerAmountInBaseUnits.div(exchangeRate);
+        const fillMakerAmountInBaseUnits = fillTakerAmount.div(exchangeRate);
 
-        if (fillTakerAmountInBaseUnits.greaterThan(takerBalance)) {
+        if (fillTakerAmount.greaterThan(takerBalance)) {
             throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
         }
-        if (fillTakerAmountInBaseUnits.greaterThan(takerAllowance)) {
+        if (fillTakerAmount.greaterThan(takerAllowance)) {
             throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
         }
         if (fillMakerAmountInBaseUnits.greaterThan(makerBalance)) {
@@ -207,12 +207,12 @@ export class ExchangeWrapper extends ContractWrapper {
         }
     }
     private async isRoundingErrorAsync(takerTokenAmount: BigNumber.BigNumber,
-                                       fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+                                       fillTakerAmount: BigNumber.BigNumber,
                                        makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
         const exchangeInstance = await this.getExchangeContractAsync();
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const isRoundingError = await exchangeInstance.isRoundingError.call(
-            takerTokenAmount, fillTakerAmountInBaseUnits, makerTokenAmount, {
+            takerTokenAmount, fillTakerAmount, makerTokenAmount, {
                 from: senderAddress,
             },
         );

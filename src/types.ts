@@ -35,7 +35,7 @@ export type OrderValues = [BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.B
 export interface ExchangeContract {
     isValidSignature: any;
     isRoundingError: {
-        call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmountInBaseUnits: BigNumber.BigNumber,
+        call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmount: BigNumber.BigNumber,
                makerTokenAmount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
     };
     fill: {
