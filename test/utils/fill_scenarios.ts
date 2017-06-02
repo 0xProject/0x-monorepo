@@ -71,13 +71,14 @@ export class FillScenarios {
             await this.zeroEx.token.setProxyAllowanceAsync(this.zrxTokenAddress, takerAddress, takerFee);
         }
 
-        const transactionSenderAccount = await this.zeroEx.getTransactionSenderAccountIfExistsAsync();
+        const prevTransactionSenderAccount = await this.zeroEx.getTransactionSenderAccountIfExistsAsync();
         this.zeroEx.setTransactionSenderAccount(makerAddress);
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx,
             makerAddress, takerAddress, makerFee, takerFee,
             makerFillableAmount, makerTokenAddress, takerFillableAmount, takerTokenAddress,
             feeRecepient, expirationUnixTimestampSec);
-        this.zeroEx.setTransactionSenderAccount(transactionSenderAccount as string);
+        // We re-set the transactionSender to avoid introducing side-effects
+        this.zeroEx.setTransactionSenderAccount(prevTransactionSenderAccount as string);
         return signedOrder;
     }
 }

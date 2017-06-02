@@ -16,8 +16,9 @@ export class TokenUtils {
         return zrxToken;
     }
     public getNonProtocolTokens(): Token[] {
-        return _.filter(this.tokens, token => {
+        const nonProtocolTokens = _.filter(this.tokens, token => {
             return token.symbol !== PROTOCOL_TOKEN_SYMBOL;
         });
+        return nonProtocolTokens;
     }
 }
