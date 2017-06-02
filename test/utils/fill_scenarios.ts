@@ -8,13 +8,13 @@ export class FillScenarios {
     private zeroEx: ZeroEx;
     private userAddresses: string[];
     private tokens: Token[];
-    private coinBase: string;
+    private coinbase: string;
     private zrxTokenAddress: string;
     constructor(zeroEx: ZeroEx, userAddresses: string[], tokens: Token[], zrxTokenAddress: string) {
         this.zeroEx = zeroEx;
         this.userAddresses = userAddresses;
         this.tokens = tokens;
-        this.coinBase = userAddresses[0];
+        this.coinbase = userAddresses[0];
         this.zrxTokenAddress = zrxTokenAddress;
     }
     public async createFillableSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
@@ -57,17 +57,17 @@ export class FillScenarios {
         makerAddress: string, takerAddress: string,
         makerFillableAmount: BigNumber.BigNumber, takerFillableAmount: BigNumber.BigNumber,
         feeRecepient: string, expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
-        await this.zeroEx.token.transferAsync(makerTokenAddress, this.coinBase, makerAddress, makerFillableAmount);
+        await this.zeroEx.token.transferAsync(makerTokenAddress, this.coinbase, makerAddress, makerFillableAmount);
         await this.zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, makerFillableAmount);
-        await this.zeroEx.token.transferAsync(takerTokenAddress, this.coinBase, takerAddress, takerFillableAmount);
+        await this.zeroEx.token.transferAsync(takerTokenAddress, this.coinbase, takerAddress, takerFillableAmount);
         await this.zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount);
 
         if (!makerFee.isZero()) {
-            await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinBase, makerAddress, makerFee);
+            await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinbase, makerAddress, makerFee);
             await this.zeroEx.token.setProxyAllowanceAsync(this.zrxTokenAddress, makerAddress, makerFee);
         }
         if (!takerFee.isZero()) {
-            await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinBase, takerAddress, takerFee);
+            await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinbase, takerAddress, takerFee);
             await this.zeroEx.token.setProxyAllowanceAsync(this.zrxTokenAddress, takerAddress, takerFee);
         }
 

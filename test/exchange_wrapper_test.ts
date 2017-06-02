@@ -108,7 +108,7 @@ describe('ExchangeWrapper', () => {
         let makerTokenAddress: string;
         let takerTokenAddress: string;
         let fillScenarios: FillScenarios;
-        let coinBase: string;
+        let coinbase: string;
         let makerAddress: string;
         let takerAddress: string;
         let feeRecipient: string;
@@ -116,7 +116,7 @@ describe('ExchangeWrapper', () => {
         const fillTakerAmountInBaseUnits = new BigNumber(5);
         const shouldCheckTransfer = false;
         before('fetch tokens', async () => {
-            [coinBase, makerAddress, takerAddress, feeRecipient] = userAddresses;
+            [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
             tokens = await zeroEx.tokenRegistry.getTokensAsync();
             const tokenUtils = new TokenUtils(tokens);
             const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
@@ -172,7 +172,7 @@ describe('ExchangeWrapper', () => {
                 });
                 it('should throw when taker balance is less than fill amount', async () => {
 
-                    await zeroEx.token.transferAsync(takerTokenAddress, takerAddress, coinBase, lackingBalance);
+                    await zeroEx.token.transferAsync(takerTokenAddress, takerAddress, coinbase, lackingBalance);
                     zeroEx.setTransactionSenderAccount(takerAddress);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
@@ -188,7 +188,7 @@ describe('ExchangeWrapper', () => {
                     )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
                 });
                 it('should throw when maker balance is less than maker fill amount', async () => {
-                    await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinBase, lackingBalance);
+                    await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinbase, lackingBalance);
                     zeroEx.setTransactionSenderAccount(takerAddress);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
@@ -231,7 +231,7 @@ describe('ExchangeWrapper', () => {
                 });
                 it('should throw when maker doesn\'t have enough balance to pay fees', async () => {
                     const lackingBalance = new BigNumber(1);
-                    await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, coinBase, lackingBalance);
+                    await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, coinbase, lackingBalance);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
                     )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_MAKER_FEE_BALANCE);
@@ -246,7 +246,7 @@ describe('ExchangeWrapper', () => {
                 });
                 it('should throw when taker doesn\'t have enough balance to pay fees', async () => {
                     const lackingBalance = new BigNumber(1);
-                    await zeroEx.token.transferAsync(zrxTokenAddress, takerAddress, coinBase, lackingBalance);
+                    await zeroEx.token.transferAsync(zrxTokenAddress, takerAddress, coinbase, lackingBalance);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
                     )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_FEE_BALANCE);
