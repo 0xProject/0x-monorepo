@@ -434,7 +434,7 @@ describe('ExchangeWrapper', () => {
         // we do need both. A hack is to make the top-level a sync fn w/ a done callback and then
         // wrap the rest of the test in an async block
         // Source: https://github.com/mochajs/mocha/issues/2407
-        it ('Should receive the LogFill event when an order is filled', (done: DoneCallback) => {
+        it('Should receive the LogFill event when an order is filled', (done: DoneCallback) => {
             (async () => {
                 const subscriptionOpts: SubscriptionOpts = {
                     fromBlock: 0,
