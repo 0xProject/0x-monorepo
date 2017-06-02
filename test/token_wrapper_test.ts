@@ -161,7 +161,7 @@ describe('TokenWrapper', () => {
             const expectedAllowanceBeforeAllowanceSet = new BigNumber(0);
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
-            const amountInUnits = new BigNumber('50');
+            const amountInUnits = new BigNumber(50);
             const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, token.decimals);
             await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
 
@@ -176,7 +176,7 @@ describe('TokenWrapper', () => {
             const ownerAddress = coinbase;
             const spenderAddress = addressWithoutFunds;
 
-            const amountInUnits = new BigNumber('50');
+            const amountInUnits = new BigNumber(50);
             const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, token.decimals);
             await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
 
@@ -198,7 +198,7 @@ describe('TokenWrapper', () => {
             const token = tokens[0];
             const ownerAddress = coinbase;
 
-            const amountInUnits = new BigNumber('50');
+            const amountInUnits = new BigNumber(50);
             const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, token.decimals);
             await zeroEx.token.setProxyAllowanceAsync(token.address, ownerAddress, amountInBaseUnits);
 
@@ -216,7 +216,7 @@ describe('TokenWrapper', () => {
             const expectedAllowanceBeforeAllowanceSet = new BigNumber(0);
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
-            const amountInUnits = new BigNumber('50');
+            const amountInUnits = new BigNumber(50);
             const amountInBaseUnits = ZeroEx.toBaseUnitAmount(amountInUnits, token.decimals);
             await zeroEx.token.setProxyAllowanceAsync(token.address, ownerAddress, amountInBaseUnits);
 
