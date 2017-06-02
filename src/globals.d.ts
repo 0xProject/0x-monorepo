@@ -14,6 +14,12 @@ declare interface Schema {
 // disallow `namespace`, we disable tslint for the following.
 /* tslint:disable */
 declare namespace Chai {
+    interface NumberComparer {
+        (value: number|BigNumber.BigNumber, message?: string): Assertion;
+    }
+    interface NumericComparison {
+        greaterThan: NumberComparer;
+    }
     interface Assertion {
         bignumber: Assertion;
         // HACK: In order to comply with chai-as-promised we make eventually a `PromisedAssertion` not an `Assertion`
