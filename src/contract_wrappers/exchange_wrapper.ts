@@ -78,8 +78,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeContractAsync();
-        const zrxTokenAddress = await this.getZRXTokenAddressAsync(exchangeInstance);
-        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress);
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, senderAddress);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -123,8 +122,9 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
-    private async validateFillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
-                                                          senderAddress: string, zrxTokenAddress: string): Promise<void> {
+    private async validateFillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                          fillTakerAmount: BigNumber.BigNumber,
+                                                          senderAddress: string): Promise<void> {
         if (fillTakerAmount.eq(0)) {
             throw new Error(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
         }
@@ -134,7 +134,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (signedOrder.expirationUnixTimestampSec.lessThan(Date.now() / 1000)) {
             throw new Error(FillOrderValidationErrs.EXPIRED);
         }
-
+        const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         await this.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder, fillTakerAmount,
                                                                senderAddress, zrxTokenAddress);
 
@@ -226,7 +226,8 @@ export class ExchangeWrapper extends ContractWrapper {
         this.exchangeContractIfExists = contractInstance as ExchangeContract;
         return this.exchangeContractIfExists;
     }
-    private async getZRXTokenAddressAsync(exchangeInstance: ExchangeContract): Promise<string> {
+    private async getZRXTokenAddressAsync(): Promise<string> {
+        const exchangeInstance = await this.getExchangeContractAsync();
         return exchangeInstance.ZRX.call();
     }
 }
