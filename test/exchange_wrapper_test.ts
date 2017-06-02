@@ -207,6 +207,23 @@ describe('ExchangeWrapper', () => {
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                     .to.be.bignumber.equal(fillableAmount.minus(fillTakerAmountInBaseUnits));
             });
+            it('should partially fill the valid order', async () => {
+                const fillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                const partialFillAmount = new BigNumber(3);
+                zeroEx.setTransactionSenderAccount(takerAddress);
+                await zeroEx.exchange.fillOrderAsync(signedOrder, partialFillAmount, shouldCheckTransfer);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(partialFillAmount);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(partialFillAmount);
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
+            });
         });
     });
 });
