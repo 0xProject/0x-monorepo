@@ -116,7 +116,6 @@ export class ZeroEx {
         this.tokenRegistry.invalidateContractInstance();
         this.token.invalidateContractInstances();
     }
-
     /**
      * Sets default account for sending transactions.
      */
@@ -131,7 +130,7 @@ export class ZeroEx {
         return senderAccountIfExists;
     }
     /**
-     * Computes the orderHash given the order parameters and returns it as a hex encoded string.
+     * Computes the orderHash for a given order and returns it as a hex encoded string.
      */
     public async getOrderHashHexAsync(order: Order): Promise<string> {
         const exchangeContractAddr = await this.getExchangeAddressAsync();
