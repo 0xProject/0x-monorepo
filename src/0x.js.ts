@@ -130,9 +130,9 @@ export class ZeroEx {
     /**
      * Get the default account set for sending transactions.
      */
-    public async getTransactionSenderAccountAsync(): Promise<string> {
-        const senderAccount = await this.web3Wrapper.getSenderAddressOrThrowAsync();
-        return senderAccount;
+    public async getTransactionSenderAccountIfExistsAsync(): Promise<string|undefined> {
+        const senderAccountIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
+        return senderAccountIfExists;
     }
     /**
      * Computes the orderHash given the order parameters and returns it as a hex encoded string.

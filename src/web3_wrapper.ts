@@ -17,6 +17,9 @@ export class Web3Wrapper {
     public isAddress(address: string): boolean {
         return this.web3.isAddress(address);
     }
+    public getDefaultAccount(): string {
+        return this.web3.eth.defaultAccount;
+    }
     public setDefaultAccount(address: string): void {
         this.web3.eth.defaultAccount = address;
     }
@@ -66,7 +69,7 @@ export class Web3Wrapper {
         const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
         return timestamp;
     }
-    private async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
+    public async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
         const defaultAccount = this.web3.eth.defaultAccount;
         if (!_.isUndefined(defaultAccount)) {
             return defaultAccount;
