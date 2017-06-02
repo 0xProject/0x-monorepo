@@ -162,7 +162,7 @@ describe('ExchangeWrapper', () => {
             });
             describe('should throw when not enough balance or allowance to fulfill the order', () => {
                 const fillableAmount = new BigNumber(5);
-                const lackingBalance = new BigNumber(3);
+                const balanceToSubtractFromMaker = new BigNumber(3);
                 const lackingAllowance = new BigNumber(3);
                 let signedOrder: SignedOrder;
                 beforeEach('create fillable signed order', async () => {
@@ -171,7 +171,7 @@ describe('ExchangeWrapper', () => {
                     );
                 });
                 it('should throw when taker balance is less than fill amount', async () => {
-                    await zeroEx.token.transferAsync(takerTokenAddress, takerAddress, coinbase, lackingBalance);
+                    await zeroEx.token.transferAsync(takerTokenAddress, takerAddress, coinbase, balanceToSubtractFromMaker);
                     zeroEx.setTransactionSenderAccount(takerAddress);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmount, shouldCheckTransfer,
@@ -187,7 +187,7 @@ describe('ExchangeWrapper', () => {
                     )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_TAKER_ALLOWANCE);
                 });
                 it('should throw when maker balance is less than maker fill amount', async () => {
-                    await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinbase, lackingBalance);
+                    await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinbase, balanceToSubtractFromMaker);
                     zeroEx.setTransactionSenderAccount(takerAddress);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmount, shouldCheckTransfer,
@@ -229,8 +229,8 @@ describe('ExchangeWrapper', () => {
                     zeroEx.setTransactionSenderAccount(takerAddress);
                 });
                 it('should throw when maker doesn\'t have enough balance to pay fees', async () => {
-                    const lackingBalance = new BigNumber(1);
-                    await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, coinbase, lackingBalance);
+                    const balanceToSubtractFromMaker = new BigNumber(1);
+                    await zeroEx.token.transferAsync(zrxTokenAddress, makerAddress, coinbase, balanceToSubtractFromMaker);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmount, shouldCheckTransfer,
                     )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_MAKER_FEE_BALANCE);
@@ -244,8 +244,8 @@ describe('ExchangeWrapper', () => {
                     )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_MAKER_FEE_ALLOWANCE);
                 });
                 it('should throw when taker doesn\'t have enough balance to pay fees', async () => {
-                    const lackingBalance = new BigNumber(1);
-                    await zeroEx.token.transferAsync(zrxTokenAddress, takerAddress, coinbase, lackingBalance);
+                    const balanceToSubtractFromTaker = new BigNumber(1);
+                    await zeroEx.token.transferAsync(zrxTokenAddress, takerAddress, coinbase, balanceToSubtractFromTaker);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmount, shouldCheckTransfer,
                     )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_TAKER_FEE_BALANCE);
@@ -261,7 +261,7 @@ describe('ExchangeWrapper', () => {
             });
         });
         describe('successful fills', () => {
-            it('should fill the valid order', async () => {
+            it('should fill a valid order', async () => {
                 const fillableAmount = new BigNumber(5);
                 const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
