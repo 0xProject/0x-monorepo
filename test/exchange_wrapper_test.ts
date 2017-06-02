@@ -50,37 +50,37 @@ describe('ExchangeWrapper', () => {
                     r: signature.r,
                     s: signature.s,
                 };
-                expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
+                return expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
                     .to.be.rejected();
             });
-            it('r lacks 0x prefix', () => {
+            it('r lacks 0x prefix', async () => {
                 const malformedR = signature.r.replace('0x', '');
                 const malformedSignature = {
                     v: signature.v,
                     r: malformedR,
                     s: signature.s,
                 };
-                expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
+                return expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
                     .to.be.rejected();
             });
-            it('r is too short', () => {
+            it('r is too short', async () => {
                 const malformedR = signature.r.substr(10);
                 const malformedSignature = {
                     v: signature.v,
                     r: malformedR,
                     s: signature.s.replace('0', 'z'),
                 };
-                expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
+                return expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
                     .to.be.rejected();
             });
-            it('s is not hex', () => {
+            it('s is not hex', async () => {
                 const malformedS = signature.s.replace('0', 'z');
                 const malformedSignature = {
                     v: signature.v,
                     r: signature.r,
                     s: malformedS,
                 };
-                expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
+                return expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
                     .to.be.rejected();
             });
         });
@@ -132,16 +132,18 @@ describe('ExchangeWrapper', () => {
                 );
                 const zeroFillAmount = new BigNumber(0);
                 zeroEx.setTransactionSenderAccount(takerAddress);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, zeroFillAmount, shouldCheckTransfer))
-                    .to.be.rejectedWith(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
+                return expect(zeroEx.exchange.fillOrderAsync(
+                    signedOrder, zeroFillAmount, shouldCheckTransfer,
+                )).to.be.rejectedWith(FillOrderValidationErrs.FILL_AMOUNT_IS_ZERO);
             });
             it('should throw when sender is not a taker', async () => {
                 const fillableAmount = new BigNumber(5);
                 const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer))
-                    .to.be.rejectedWith(FillOrderValidationErrs.NOT_A_TAKER);
+                return expect(zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                )).to.be.rejectedWith(FillOrderValidationErrs.NOT_A_TAKER);
             });
             it('should throw when order is expired', async () => {
                 const expirationInPast = new BigNumber(42);
@@ -150,8 +152,9 @@ describe('ExchangeWrapper', () => {
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount, expirationInPast,
                 );
                 zeroEx.setTransactionSenderAccount(takerAddress);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer))
-                    .to.be.rejectedWith(FillOrderValidationErrs.EXPIRED);
+                return expect(zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                )).to.be.rejectedWith(FillOrderValidationErrs.EXPIRED);
             });
             it('should throw when taker balance is less than fill amount', async () => {
                 const fillableAmount = new BigNumber(5);
@@ -160,8 +163,22 @@ describe('ExchangeWrapper', () => {
                 );
                 zeroEx.setTransactionSenderAccount(takerAddress);
                 const moreThanTheBalance = new BigNumber(6);
-                expect(zeroEx.exchange.fillOrderAsync(signedOrder, moreThanTheBalance, shouldCheckTransfer))
-                    .to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
+                return expect(zeroEx.exchange.fillOrderAsync(
+                    signedOrder, moreThanTheBalance, shouldCheckTransfer,
+                )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
+            });
+            it('should throw when taker allowance is less than fill amount', async () => {
+                const fillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                const newAllowanceWhichIsLessThanFillAmount = fillTakerAmountInBaseUnits.minus(1);
+                await zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress,
+                                                    newAllowanceWhichIsLessThanFillAmount);
+                zeroEx.setTransactionSenderAccount(takerAddress);
+                return expect(zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer,
+                )).to.be.rejectedWith(FillOrderValidationErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
             });
         });
         describe('successful fills', () => {

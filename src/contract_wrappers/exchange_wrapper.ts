@@ -141,6 +141,9 @@ export class ExchangeWrapper extends ContractWrapper {
         if (fillAmount.greaterThan(takerBalance)) {
             throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_BALANCE);
         }
+        if (fillAmount.greaterThan(takerAllowance)) {
+            throw new Error(FillOrderValidationErrs.NOT_ENOUGH_TAKER_ALLOWANCE);
+        }
     }
     private throwErrorLogsAsErrors(logs: ContractEvent[]): void {
         const errEvent = _.find(logs, {event: 'LogError'});
