@@ -56,14 +56,10 @@ export class FillScenarios {
                                                        partialFillAmount: BigNumber.BigNumber) {
         const prevSenderAccount = await this.zeroEx.getTransactionSenderAccountIfExistsAsync();
         const [makerAddress] = this.userAddresses;
-        await this.zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, fillableAmount);
-        await this.zeroEx.token.transferAsync(takerTokenAddress, makerAddress, takerAddress, fillableAmount);
-        await this.zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, fillableAmount);
-
         const signedOrder = await this.createAsymmetricFillableSignedOrderAsync(
-             makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
-             fillableAmount, fillableAmount,
-         );
+            makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+            fillableAmount, fillableAmount,
+        );
 
         this.zeroEx.setTransactionSenderAccount(takerAddress);
         const shouldCheckTransfer = false;

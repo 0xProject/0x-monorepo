@@ -32,11 +32,11 @@ const NON_EXISTENT_ORDER_HASH = '0x79370342234e7acd6bbeac335bd3bb1d368383294b64b
 describe('ExchangeWrapper', () => {
     let web3: Web3;
     let zeroEx: ZeroEx;
-    let userAddresses: string[];
     let tokenUtils: TokenUtils;
     let tokens: Token[];
-    let fillScenarios: FillScenarios;
+    let userAddresses: string[];
     let zrxTokenAddress: string;
+    let fillScenarios: FillScenarios;
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3);
