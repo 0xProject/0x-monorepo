@@ -33,8 +33,26 @@ export type OrderAddresses = [string, string, string, string, string];
 export type OrderValues = [BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
                            BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber];
 
+export type EventCallbackAsync = (err: Error, event: ContractEvent) => Promise<void>;
+export type EventCallbackSync = (err: Error, event: ContractEvent) => void;
+export type EventCallback = EventCallbackSync|EventCallbackAsync;
+export interface ContractEventObj {
+    watch: (eventWatch: EventCallback) => void;
+    stopWatching: () => void;
+}
+export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
+                                   subscriptionOpts: SubscriptionOpts) => ContractEventObj;
 export interface ExchangeContract {
-    isValidSignature: any;
+    isValidSignature: {
+        call: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
+               txOpts: TxOpts) => Promise<boolean>;
+    };
+    LogFill: CreateContractEvent;
+    LogCancel: CreateContractEvent;
+    LogError: CreateContractEvent;
+    ZRX: {
+        call: () => Promise<string>;
+    };
     getUnavailableValueT: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
@@ -53,25 +71,6 @@ export interface ExchangeContract {
     };
     cancelled: {
         call: (orderHash: string) => BigNumber.BigNumber;
-    };
-}
-
-export type EventCallbackAsync = (err: Error, event: ContractEvent) => Promise<void>;
-export type EventCallbackSync = (err: Error, event: ContractEvent) => void;
-export type EventCallback = EventCallbackSync|EventCallbackAsync;
-export interface ContractEventObj {
-    watch: (eventWatch: EventCallback) => void;
-    stopWatching: () => void;
-}
-export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
-                                   subscriptionOpts: SubscriptionOpts) => ContractEventObj;
-export interface ExchangeContract {
-    isValidSignature: any;
-    LogFill: CreateContractEvent;
-    LogCancel: CreateContractEvent;
-    LogError: CreateContractEvent;
-    ZRX: {
-        call: () => Promise<string>;
     };
 }
 
