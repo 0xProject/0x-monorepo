@@ -24,12 +24,12 @@ export class FillScenarios {
         await this.zeroEx.token.transferAsync(takerTokenAddress, this.coinBase, takerAddress, fillableAmount);
         await this.zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, fillableAmount);
 
-        const transactionSenderAccount = this.zeroEx.getTransactionSenderAccount();
+        const transactionSenderAccount = await this.zeroEx.getTransactionSenderAccountIfExistsAsync();
         this.zeroEx.setTransactionSenderAccount(makerAddress);
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx, makerAddress,
             takerAddress, fillableAmount, makerTokenAddress, fillableAmount, takerTokenAddress,
             expirationUnixTimestampSec);
-        this.zeroEx.setTransactionSenderAccount(transactionSenderAccount);
+        this.zeroEx.setTransactionSenderAccount(transactionSenderAccount as string);
         return signedOrder;
     }
 }
