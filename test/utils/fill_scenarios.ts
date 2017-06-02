@@ -22,7 +22,7 @@ export class FillScenarios {
                                                 fillableAmount: BigNumber.BigNumber,
                                                 expirationUnixTimestampSec?: BigNumber.BigNumber):
                                            Promise<SignedOrder> {
-        return this.createAsymetricFillableSignedOrderAsync(
+        return this.createAsymmetricFillableSignedOrderAsync(
             makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
             fillableAmount, fillableAmount, expirationUnixTimestampSec,
         );
@@ -34,24 +34,24 @@ export class FillScenarios {
         fillableAmount: BigNumber.BigNumber,
         feeRecepient: string, expirationUnixTimestampSec?: BigNumber.BigNumber,
     ): Promise<SignedOrder> {
-        return this.createAsymetricFillableSignedOrderWithFeesAsync(
+        return this.createAsymmetricFillableSignedOrderWithFeesAsync(
             makerTokenAddress, takerTokenAddress, makerFee, takerFee, makerAddress, takerAddress,
             fillableAmount, fillableAmount, feeRecepient, expirationUnixTimestampSec,
         );
     }
-    public async createAsymetricFillableSignedOrderAsync(
+    public async createAsymmetricFillableSignedOrderAsync(
         makerTokenAddress: string, takerTokenAddress: string, makerAddress: string, takerAddress: string,
         makerFillableAmount: BigNumber.BigNumber, takerFillableAmount: BigNumber.BigNumber,
         expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
         const makerFee = new BigNumber(0);
         const takerFee = new BigNumber(0);
         const feeRecepient = constants.NULL_ADDRESS;
-        return this.createAsymetricFillableSignedOrderWithFeesAsync(
+        return this.createAsymmetricFillableSignedOrderWithFeesAsync(
             makerTokenAddress, takerTokenAddress, makerFee, takerFee, makerAddress, takerAddress,
             makerFillableAmount, takerFillableAmount, feeRecepient, expirationUnixTimestampSec,
         );
     }
-    private async createAsymetricFillableSignedOrderWithFeesAsync(
+    private async createAsymmetricFillableSignedOrderWithFeesAsync(
         makerTokenAddress: string, takerTokenAddress: string,
         makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,
         makerAddress: string, takerAddress: string,

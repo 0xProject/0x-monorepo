@@ -204,11 +204,11 @@ describe('ExchangeWrapper', () => {
                 });
             });
             it('should throw when there a rounding error would have occurred', async () => {
-                const makerFillableAmount = new BigNumber(3);
-                const takerFillableAmount = new BigNumber(5);
-                const signedOrder = await fillScenarios.createAsymetricFillableSignedOrderAsync(
+                const makerAmount = new BigNumber(3);
+                const takerAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
-                    makerFillableAmount, takerFillableAmount,
+                    makerAmount, takerAmount,
                 );
                 const fillTakerAmountThatCausesRoundingError = new BigNumber(3);
                 zeroEx.setTransactionSenderAccount(takerAddress);
@@ -216,7 +216,7 @@ describe('ExchangeWrapper', () => {
                     signedOrder, fillTakerAmountThatCausesRoundingError, shouldCheckTransfer,
                 )).to.be.rejectedWith(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
             });
-            describe('should raise when not enough balance or allowance to pay fees', () => {
+            describe('should throw when not enough balance or allowance to pay fees', () => {
                 const fillableAmount = new BigNumber(5);
                 const makerFee = new BigNumber(2);
                 const takerFee = new BigNumber(2);
