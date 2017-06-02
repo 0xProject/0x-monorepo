@@ -10,7 +10,15 @@ import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {orderFactory} from './utils/order_factory';
-import {FillOrderValidationErrs, Token, SignedOrder} from '../src/types';
+import {
+    FillOrderValidationErrs,
+    Token,
+    SignedOrder,
+    SubscriptionOpts,
+    ExchangeEvents,
+    ContractEvent,
+    DoneCallback,
+} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 
 chai.use(dirtyChai);
@@ -292,6 +300,80 @@ describe('ExchangeWrapper', () => {
                 const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHash);
                 expect(cancelledValueT).to.be.bignumber.equal(0);
             });
+        });
+    });
+    describe('#subscribeAsync', () => {
+        const indexFilterValues = {};
+        const shouldCheckTransfer = false;
+        let makerTokenAddress: string;
+        let takerTokenAddress: string;
+        let coinBase: string;
+        let takerAddress: string;
+        let makerAddress: string;
+        let fillableAmount: BigNumber.BigNumber;
+        let signedOrder: SignedOrder;
+        before(() => {
+            [coinBase, makerAddress, takerAddress] = userAddresses;
+            const [makerToken, takerToken] = tokens;
+            makerTokenAddress = makerToken.address;
+            takerTokenAddress = takerToken.address;
+        });
+        beforeEach(async () => {
+            fillableAmount = new BigNumber(5);
+            signedOrder = await fillScenarios.createAFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+        });
+        afterEach(async () => {
+            (zeroEx.exchange as any).stopWatchingExchangeLogEventsAsync();
+        });
+        // Hack: Mocha does not allow a test to be both async and have a `done` callback
+        // Since we need to await the receipt of the event in the `subscribeAsync` callback,
+        // we do need both. A hack is to make the top-level a sync fn w/ a done callback and then
+        // wrap the rest of the test in an async block
+        // Source: https://github.com/mochajs/mocha/issues/2407
+        it ('Should receive the LogFill event when an order is filled', (done: DoneCallback) => {
+            (async () => {
+                const subscriptionOpts: SubscriptionOpts = {
+                    fromBlock: 0,
+                    toBlock: 'latest',
+                };
+                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
+                                                     indexFilterValues, (err: Error, event: ContractEvent) => {
+                    expect(err).to.be.null();
+                    expect(event).to.not.be.undefined();
+                    done();
+                });
+                const fillTakerAmountInBaseUnits = new BigNumber(1);
+                zeroEx.setTransactionSenderAccount(takerAddress);
+                await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer);
+            })();
+        });
+        it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
+            (async () => {
+                const subscriptionOpts: SubscriptionOpts = {
+                    fromBlock: 0,
+                    toBlock: 'latest',
+                };
+                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
+                                                     indexFilterValues, (err: Error, event: ContractEvent) => {
+                    done(new Error('Expected this subscription to have been cancelled'));
+                });
+
+                const newProvider = web3Factory.getRpcProvider();
+                await zeroEx.setProviderAsync(newProvider);
+
+                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
+                                                     indexFilterValues, (err: Error, event: ContractEvent) => {
+                    expect(err).to.be.null();
+                    expect(event).to.not.be.undefined();
+                    done();
+                });
+
+                const fillTakerAmountInBaseUnits = new BigNumber(1);
+                zeroEx.setTransactionSenderAccount(takerAddress);
+                await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer);
+            })();
         });
     });
 });
