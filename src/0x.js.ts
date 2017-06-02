@@ -17,7 +17,7 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {SolidityTypes, ECSignature, ZeroExError} from './types';
-import {Order} from './types';
+import {Order, SignedOrder} from './types';
 import {orderSchema} from './schemas/order_schemas';
 import * as ExchangeArtifacts from './artifacts/Exchange.json';
 
@@ -69,11 +69,16 @@ export class ZeroEx {
         const salt = randomNumber.times(factor).round();
         return salt;
     }
-    /** Checks if order hash is valid */
-    public static isValidOrderHash(orderHash: string): boolean {
-        assert.isString('orderHash', orderHash);
-        const isValid = /^0x[0-9A-F]{64}$/i.test(orderHash);
-        return isValid;
+    /**
+     * Checks if the supplied hex encoded order hash is valid.
+     * Note: Valid means it has the expected format, not that an order with the orderHash exists.
+     */
+    public static isValidOrderHash(orderHashHex: string): boolean {
+        // Since this method can be called to check if any arbitrary string conforms to an orderHash's
+        // format, we only assert that we were indeed passed a string.
+        assert.isString('orderHashHex', orderHashHex);
+        const isValidOrderHash = utils.isValidOrderHash(orderHashHex);
+        return isValidOrderHash;
     }
     /**
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
@@ -132,7 +137,7 @@ export class ZeroEx {
     /**
      * Computes the orderHash for a given order and returns it as a hex encoded string.
      */
-    public async getOrderHashHexAsync(order: Order): Promise<string> {
+    public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         const exchangeContractAddr = await this.getExchangeAddressAsync();
         assert.doesConformToSchema('order',
                                    SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),

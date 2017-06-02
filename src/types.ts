@@ -35,6 +35,9 @@ export type OrderValues = [BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.B
 
 export interface ExchangeContract {
     isValidSignature: any;
+    getUnavailableValueT: {
+        call: (orderHash: string) => BigNumber.BigNumber;
+    };
     isRoundingError: {
         call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmount: BigNumber.BigNumber,
                makerTokenAmount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
@@ -44,6 +47,12 @@ export interface ExchangeContract {
          shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts): ContractResponse;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
                       shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts) => number;
+    };
+    filled: {
+        call: (orderHash: string) => BigNumber.BigNumber;
+    };
+    cancelled: {
+        call: (orderHash: string) => BigNumber.BigNumber;
     };
     ZRX: {
         call: () => Promise<string>;
