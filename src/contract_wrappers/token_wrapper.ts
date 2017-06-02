@@ -102,6 +102,12 @@ export class TokenWrapper extends ContractWrapper {
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
+
+        const fromAddressBalance = await this.getBalanceAsync(tokenAddress, fromAddress);
+        if (fromAddressBalance.lessThan(amountInBaseUnits)) {
+            throw new Error(ZeroExError.INSUFFICIENT_BALANCE_FOR_TRANSFER);
+        }
+
         await tokenContract.transfer(toAddress, amountInBaseUnits, {
             from: fromAddress,
         });

@@ -33,23 +33,34 @@ describe('TokenWrapper', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('#transferAsync', () => {
+        let token: Token;
+        let transferAmount: BigNumber.BigNumber;
+        before(() => {
+            token = tokens[0];
+            transferAmount = new BigNumber(42);
+        });
         it('should successfully transfer tokens', async () => {
-            const token = tokens[0];
             const fromAddress = coinbase;
             const toAddress = addressWithoutFunds;
             const preBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             expect(preBalance).to.be.bignumber.equal(0);
-            const transferAmount = new BigNumber(42);
             await zeroEx.token.transferAsync(token.address, fromAddress, toAddress, transferAmount);
             const postBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
+        });
+        it('should fail to transfer tokens if fromAddress has an insufficient balance', async () => {
+            const fromAddress = addressWithoutFunds;
+            const toAddress = coinbase;
+            return expect(zeroEx.token.transferAsync(
+                token.address, fromAddress, toAddress, transferAmount,
+            )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_BALANCE_FOR_TRANSFER);
         });
         it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             const fromAddress = coinbase;
             const toAddress = coinbase;
             return expect(zeroEx.token.transferAsync(
-                nonExistentTokenAddress, fromAddress, toAddress, new BigNumber(42),
+                nonExistentTokenAddress, fromAddress, toAddress, transferAmount,
             )).to.be.rejectedWith(ZeroExError.CONTRACT_DOES_NOT_EXIST);
         });
     });
