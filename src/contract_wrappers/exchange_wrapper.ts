@@ -199,9 +199,10 @@ export class ExchangeWrapper extends ContractWrapper {
         this.exchangeLogEventObjs.push(logEventObj);
     }
     private async stopWatchingExchangeLogEventsAsync() {
-        for (const logEventObj of this.exchangeLogEventObjs) {
-            await promisify(logEventObj.stopWatching, logEventObj)();
-        }
+        const stopWatchingPromises = _.map(this.exchangeLogEventObjs, logEventObj => {
+            return promisify(logEventObj.stopWatching, logEventObj)();
+        });
+        await Promise.all(stopWatchingPromises);
         this.exchangeLogEventObjs = [];
     }
     private async validateFillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
