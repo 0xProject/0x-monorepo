@@ -146,7 +146,7 @@ describe('TokenWrapper', () => {
             const token = tokens[0];
             const nonExistentOwner = '0x198C6Ad858F213Fb31b6FE809E25040E6B964593';
             const balance = await zeroEx.token.getBalanceAsync(token.address, nonExistentOwner);
-            const expectedBalance = new BigNumber('0');
+            const expectedBalance = new BigNumber(0);
             return expect(balance).to.be.bignumber.equal(expectedBalance);
         });
     });
@@ -158,7 +158,7 @@ describe('TokenWrapper', () => {
 
             const allowanceBeforeSet = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress,
                                                                             spenderAddress);
-            const expectedAllowanceBeforeAllowanceSet = new BigNumber('0');
+            const expectedAllowanceBeforeAllowanceSet = new BigNumber(0);
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
             const amountInUnits = new BigNumber('50');
@@ -189,7 +189,7 @@ describe('TokenWrapper', () => {
             const ownerAddress = coinbase;
             const spenderAddress = addressWithoutFunds;
             const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
-            const expectedAllowance = new BigNumber('0');
+            const expectedAllowance = new BigNumber(0);
             return expect(allowance).to.be.bignumber.equal(expectedAllowance);
         });
     });
@@ -213,7 +213,7 @@ describe('TokenWrapper', () => {
             const ownerAddress = coinbase;
 
             const allowanceBeforeSet = await zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress);
-            const expectedAllowanceBeforeAllowanceSet = new BigNumber('0');
+            const expectedAllowanceBeforeAllowanceSet = new BigNumber(0);
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
             const amountInUnits = new BigNumber('50');
