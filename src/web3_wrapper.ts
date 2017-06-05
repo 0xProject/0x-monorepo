@@ -23,20 +23,8 @@ export class Web3Wrapper {
     public setDefaultAccount(address: string): void {
         this.web3.eth.defaultAccount = address;
     }
-    public async getSenderAddressOrThrowAsync(): Promise<string> {
-        const senderAddressIfExists = await this.getSenderAddressIfExistsAsync();
-        assert.assert(!_.isUndefined(senderAddressIfExists), ZeroExError.USER_HAS_NO_ASSOCIATED_ADDRESSES);
-        return senderAddressIfExists as string;
-    }
-    public async getFirstAddressIfExistsAsync(): Promise<string|undefined> {
-        const addresses = await this.getAvailableSenderAddressesAsync();
-        if (_.isEmpty(addresses)) {
-            return undefined;
-        }
-        return addresses[0];
-    }
     public async isSenderAddressAvailableAsync(senderAddress: string): Promise<boolean> {
-        const addresses = await this.getAvailableSenderAddressesAsync();
+        const addresses = await this.getAvailableAccountsAsync();
         return _.includes(addresses, senderAddress);
     }
     public async getNodeVersionAsync(): Promise<string> {
@@ -73,15 +61,7 @@ export class Web3Wrapper {
         const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
         return timestamp;
     }
-    public async getSenderAddressIfExistsAsync(): Promise<string|undefined> {
-        const defaultAccount = this.web3.eth.defaultAccount;
-        if (!_.isUndefined(defaultAccount)) {
-            return defaultAccount;
-        }
-        const firstAccount = await this.getFirstAddressIfExistsAsync();
-        return firstAccount;
-    }
-    private async getAvailableSenderAddressesAsync(): Promise<string[]> {
+    public async getAvailableAccountsAsync(): Promise<string[]> {
         const addresses: string[] = await promisify(this.web3.eth.getAccounts)();
         return addresses;
     }

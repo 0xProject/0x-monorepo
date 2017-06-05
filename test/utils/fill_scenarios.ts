@@ -54,19 +54,14 @@ export class FillScenarios {
     public async createPartiallyFilledSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
                                                        takerAddress: string, fillableAmount: BigNumber.BigNumber,
                                                        partialFillAmount: BigNumber.BigNumber) {
-        const prevSenderAccount = await this.zeroEx.getTransactionSenderAccountIfExistsAsync();
+        const prevSenderAccount = await this.zeroEx.getAvailableAccountsAsync();
         const [makerAddress] = this.userAddresses;
         const signedOrder = await this.createAsymmetricFillableSignedOrderAsync(
             makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
             fillableAmount, fillableAmount,
         );
-
-        this.zeroEx.setTransactionSenderAccount(takerAddress);
         const shouldCheckTransfer = false;
-        await this.zeroEx.exchange.fillOrderAsync(signedOrder, partialFillAmount, shouldCheckTransfer);
-
-        // Re-set sender account so as to avoid introducing side-effects
-        this.zeroEx.setTransactionSenderAccount(prevSenderAccount as string);
+        await this.zeroEx.exchange.fillOrderAsync(signedOrder, partialFillAmount, shouldCheckTransfer, takerAddress);
         return signedOrder;
     }
     private async createAsymmetricFillableSignedOrderWithFeesAsync(
@@ -89,14 +84,10 @@ export class FillScenarios {
             await this.zeroEx.token.setProxyAllowanceAsync(this.zrxTokenAddress, takerAddress, takerFee);
         }
 
-        const prevTransactionSenderAccount = await this.zeroEx.getTransactionSenderAccountIfExistsAsync();
-        this.zeroEx.setTransactionSenderAccount(makerAddress);
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx,
             makerAddress, takerAddress, makerFee, takerFee,
             makerFillableAmount, makerTokenAddress, takerFillableAmount, takerTokenAddress,
             feeRecepient, expirationUnixTimestampSec);
-        // We re-set the transactionSender to avoid introducing side-effects
-        this.zeroEx.setTransactionSenderAccount(prevTransactionSenderAccount as string);
         return signedOrder;
     }
 }

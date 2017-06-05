@@ -26,10 +26,14 @@ export const assert = {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },
-    async isSenderAddressAvailableAsync(web3Wrapper: Web3Wrapper, senderAddress: string) {
-        const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailableAsync(senderAddress);
-        assert.assert(isSenderAddressAvailable, 'Specified senderAddress isn\'t available through the \
-                                                 supplied web3 instance');
+    async isSenderAccountHexAsync(web3Wrapper: Web3Wrapper, senderAccount: string): Promise<void> {
+        assert.isETHAddressHex('senderAccount', senderAccount);
+        await assert.isSenderAccountAvailableAsync(web3Wrapper, senderAccount);
+    },
+    async isSenderAccountAvailableAsync(web3Wrapper: Web3Wrapper, senderAccount: string): Promise<void> {
+        const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailableAsync(senderAccount);
+        assert.assert(isSenderAddressAvailable, `Specified senderAccount ${senderAccount} isn't available through the \
+                                                 supplied web3 instance`);
     },
     isNumber(variableName: string, value: number): void {
         this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));

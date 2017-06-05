@@ -122,17 +122,11 @@ export class ZeroEx {
         this.token.invalidateContractInstances();
     }
     /**
-     * Sets default account for sending transactions.
+     * Gets accounts available for sending transactions.
      */
-    public setTransactionSenderAccount(account: string): void {
-        this.web3Wrapper.setDefaultAccount(account);
-    }
-    /**
-     * Get the default account set for sending transactions.
-     */
-    public async getTransactionSenderAccountIfExistsAsync(): Promise<string|undefined> {
-        const senderAccountIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
-        return senderAccountIfExists;
+    public async getAvailableAccountsAsync(): Promise<string[]> {
+        const availableAccounts = await this.web3Wrapper.getAvailableAccountsAsync();
+        return availableAccounts;
     }
     /**
      * Computes the orderHash for a given order and returns it as a hex encoded string.
@@ -167,10 +161,10 @@ export class ZeroEx {
      * Signs an orderHash and returns it's elliptic curve signature
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
-    public async signOrderHashAsync(orderHashHex: string): Promise<ECSignature> {
+    public async signOrderHashAsync(orderHashHex: string, senderAccount: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
-
-        const makerAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
+        await assert.isSenderAccountHexAsync(this.web3Wrapper, senderAccount);
+        const makerAddress = senderAccount;
 
         let msgHashHex;
         const nodeVersion = await this.web3Wrapper.getNodeVersionAsync();
