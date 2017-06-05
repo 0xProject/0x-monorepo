@@ -5,6 +5,7 @@ import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import * as dirtyChai from 'dirty-chai';
 import ChaiBigNumber = require('chai-bignumber');
+import * as chaiAsPromised from 'chai-as-promised';
 import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
@@ -24,6 +25,7 @@ import {TokenUtils} from './utils/token_utils';
 chai.config.includeStack = true;
 chai.use(dirtyChai);
 chai.use(ChaiBigNumber());
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 
