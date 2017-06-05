@@ -3,11 +3,15 @@
   "version": "0.0.8",
   "description": "Typescript type definitions for web3",
   "main": "index.d.js",
+  "types": "index.d.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/0xProject/web3-typescript-typings.git"
   },
   "author": "Fabio Berger",
+  "contributors": [
+    "Leonid Logvinov <logvinov.leon@gmail.com>"
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/0xProject/web3-typescript-typings/issues"
