@@ -14,7 +14,7 @@
     "build": "run-p build:*:prod",
     "lint": "tslint src/*.ts test/*.ts",
     "test": "run-s clean test:commonjs",
-    "test:umd": "run-s substitute_umd_bundle run_mocha; npm run clean",
+    "test:umd": "./scripts/test_umd.sh",
     "test:coverage": "nyc npm run test --all",
     "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
     "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
