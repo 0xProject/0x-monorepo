@@ -361,7 +361,7 @@ describe('ExchangeWrapper', () => {
         describe('#getUnavailableTakerAmountAsync', () => {
             it ('should throw if passed an invalid orderHash', async () => {
                 const invalidOrderHashHex = '0x123';
-                expect(zeroEx.exchange.getUnavailableTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
+                return expect(zeroEx.exchange.getUnavailableTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
             });
             it ('should return zero if passed a valid but non-existent orderHash', async () => {
                 const unavailableValueT = await zeroEx.exchange.getUnavailableTakerAmountAsync(NON_EXISTENT_ORDER_HASH);
@@ -376,7 +376,7 @@ describe('ExchangeWrapper', () => {
         describe('#getFilledTakerAmountAsync', () => {
             it ('should throw if passed an invalid orderHash', async () => {
                 const invalidOrderHashHex = '0x123';
-                expect(zeroEx.exchange.getFilledTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
+                return expect(zeroEx.exchange.getFilledTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
             });
             it ('should return zero if passed a valid but non-existent orderHash', async () => {
                 const filledValueT = await zeroEx.exchange.getFilledTakerAmountAsync(NON_EXISTENT_ORDER_HASH);
@@ -391,7 +391,7 @@ describe('ExchangeWrapper', () => {
         describe('#getCanceledTakerAmountAsync', () => {
             it ('should throw if passed an invalid orderHash', async () => {
                 const invalidOrderHashHex = '0x123';
-                expect(zeroEx.exchange.getCanceledTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
+                return expect(zeroEx.exchange.getCanceledTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
             });
             it ('should return zero if passed a valid but non-existent orderHash', async () => {
                 const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(NON_EXISTENT_ORDER_HASH);
@@ -427,7 +427,7 @@ describe('ExchangeWrapper', () => {
             );
         });
         afterEach(async () => {
-            (zeroEx.exchange as any).stopWatchingExchangeLogEventsAsync();
+            await (zeroEx.exchange as any).stopWatchingExchangeLogEventsAsync();
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
         // Since we need to await the receipt of the event in the `subscribeAsync` callback,
