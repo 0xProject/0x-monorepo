@@ -7,7 +7,7 @@ export const addressSchema = {
 export const numberSchema = {
     id: '/numberSchema',
     type: 'string',
-    format: '\d+(\.\d+)?',
+    pattern: '^\\d+(\\.\\d+)?$',
 };
 
 export const orderSchema = {
