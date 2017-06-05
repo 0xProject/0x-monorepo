@@ -1,5 +1,6 @@
 import 'mocha';
 import * as chai from 'chai';
+import {ChaiSetup} from './chai_setup';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
@@ -8,7 +9,7 @@ import {ZeroEx} from '../src/0x.js';
 import {ZeroExError, Token} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 
-chai.config.includeStack = true;
+ChaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 
