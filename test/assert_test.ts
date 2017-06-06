@@ -20,7 +20,7 @@ describe('Assertion library', () => {
             const validUnrelatedAddress = '0x8b0292b11a196601eddce54b665cafeca0347d42';
             const varName = 'account';
             return expect(assert.isSenderAddressHexAsync(varName, validUnrelatedAddress, (zeroEx as any).web3Wrapper))
-                .to.be.rejectedWith(`Specified sender account ${validUnrelatedAddress} \
+                .to.be.rejectedWith(`Specified ${varName} ${validUnrelatedAddress} \
                 isn't available through the supplied web3 instance`);
         });
         it('doesn\'t throw if account is available', async () => {
