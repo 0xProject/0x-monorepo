@@ -9,9 +9,9 @@ import {
     ExchangeContractErrs,
     OrderValues,
     OrderAddresses,
+    Order,
     SignedOrder,
     ContractEvent,
-    ZeroExError,
     ExchangeEvents,
     SubscriptionOpts,
     IndexFilterValues,
@@ -169,6 +169,53 @@ export class ExchangeWrapper extends ContractWrapper {
         this.throwErrorLogsAsErrors(response.logs);
     }
     /**
+     * Cancels the order.
+     */
+    public async cancelOrderAsync(order: Order, cancelAmount: BigNumber.BigNumber): Promise<void> {
+        assert.doesConformToSchema('order',
+            SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
+            signedOrderSchema);
+        assert.isBigNumber('cancelAmount', cancelAmount);
+        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, order.maker);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        await this.validateCancelOrderAndThrowIfInvalidAsync(order, cancelAmount);
+
+        const orderAddresses: OrderAddresses = [
+            order.maker,
+            order.taker,
+            order.makerTokenAddress,
+            order.takerTokenAddress,
+            order.feeRecipient,
+        ];
+        const orderValues: OrderValues = [
+            order.makerTokenAmount,
+            order.takerTokenAmount,
+            order.makerFee,
+            order.takerFee,
+            order.expirationUnixTimestampSec,
+            order.salt,
+        ];
+        const gas = await exchangeInstance.cancel.estimateGas(
+            orderAddresses,
+            orderValues,
+            cancelAmount,
+            {
+                from: order.maker,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.cancel(
+            orderAddresses,
+            orderValues,
+            cancelAmount,
+            {
+                from: order.maker,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
      * Subscribe to an event type emitted by the Exchange smart contract
      */
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
@@ -224,6 +271,10 @@ export class ExchangeWrapper extends ContractWrapper {
         if (wouldRoundingErrorOccur) {
             throw new Error(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
         }
+    }
+    private async validateCancelOrderAndThrowIfInvalidAsync(order: Order,
+                                                            cancelAmount: BigNumber.BigNumber): Promise<void> {
+        // TODO
     }
 
     /**

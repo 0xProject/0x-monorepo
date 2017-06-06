@@ -68,6 +68,12 @@ export interface ExchangeContract {
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
                       shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts) => number;
     };
+    cancel: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
+         txOpts: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
+                      txOpts: TxOpts) => number;
+    };
     filled: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
