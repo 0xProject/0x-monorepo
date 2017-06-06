@@ -25,6 +25,7 @@ export class TokenWrapper extends ContractWrapper {
     public async getBalanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        await assert.isAnyAddressAvailableAsync(this.web3Wrapper);
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
         let balance = await tokenContract.balanceOf.call(ownerAddress);
@@ -60,6 +61,7 @@ export class TokenWrapper extends ContractWrapper {
     public async getAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        await assert.isAnyAddressAvailableAsync(this.web3Wrapper);
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
         let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, spenderAddress);

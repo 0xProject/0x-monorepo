@@ -17,12 +17,6 @@ export class Web3Wrapper {
     public isAddress(address: string): boolean {
         return this.web3.isAddress(address);
     }
-    public getDefaultAddress(): string {
-        return this.web3.eth.defaultAccount;
-    }
-    public setDefaultAddress(address: string): void {
-        this.web3.eth.defaultAccount = address;
-    }
     public async isSenderAddressAvailableAsync(senderAddress: string): Promise<boolean> {
         const addresses = await this.getAvailableAddressesAsync();
         return _.includes(addresses, senderAddress);
