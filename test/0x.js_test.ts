@@ -194,7 +194,7 @@ describe('ZeroEx library', () => {
         let makerAccount: string;
         const web3 = web3Factory.create();
         const zeroEx = new ZeroEx(web3);
-        before('get maker account', async () => {
+        before(async () => {
             const availableAccounts = await zeroEx.getAvailableAccountsAsync();
             makerAccount = availableAccounts[0];
         });
