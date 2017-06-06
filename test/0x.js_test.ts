@@ -191,12 +191,12 @@ describe('ZeroEx library', () => {
     });
     describe('#signOrderHashAsync', () => {
         let stubs: Sinon.SinonStub[] = [];
-        let makerAccount: string;
+        let makerAddress: string;
         const web3 = web3Factory.create();
         const zeroEx = new ZeroEx(web3);
         before(async () => {
-            const availableAccounts = await zeroEx.getAvailableAddressesAsync();
-            makerAccount = availableAccounts[0];
+            const availableAddreses = await zeroEx.getAvailableAddressesAsync();
+            makerAddress = availableAddreses[0];
         });
         afterEach(() => {
             // clean up any stubs after the test has completed
@@ -210,7 +210,7 @@ describe('ZeroEx library', () => {
                 r: '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
                 s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
             };
-            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAccount);
+            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
         it ('should return the correct ECSignature on Parity > V1.6.6', async () => {
@@ -231,7 +231,7 @@ describe('ZeroEx library', () => {
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
-            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAccount);
+            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
         it ('should return the correct ECSignature on Parity < V1.6.6', async () => {
@@ -252,7 +252,7 @@ describe('ZeroEx library', () => {
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
-            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAccount);
+            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
     });
