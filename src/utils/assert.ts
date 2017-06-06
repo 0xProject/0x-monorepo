@@ -26,7 +26,7 @@ export const assert = {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },
-    async isSenderAccountHexAsync(variableName: string, senderAccount: string,
+    async isSenderAddressHexAsync(variableName: string, senderAccount: string,
                                   web3Wrapper: Web3Wrapper): Promise<void> {
         assert.isETHAddressHex(variableName, senderAccount);
         await assert.isSenderAccountAvailableAsync(web3Wrapper, senderAccount);

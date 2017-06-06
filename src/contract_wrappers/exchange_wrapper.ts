@@ -121,7 +121,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                    signedOrderSchema);
         assert.isBigNumber('fillTakerAmount', fillTakerAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
-        await assert.isSenderAccountHexAsync('takerAddress', takerAddress, this.web3Wrapper);
+        await assert.isSenderAddressHexAsync('takerAddress', takerAddress, this.web3Wrapper);
 
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
