@@ -115,20 +115,20 @@ export class TokenWrapper extends ContractWrapper {
     /**
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
      * Requires the fromAddress to have sufficient funds and to have approved an allowance of
-     * `amountInBaseUnits` for senderAccount.
+     * `amountInBaseUnits` for senderAddress.
      */
     public async transferFromAsync(tokenAddress: string, fromAddress: string, toAddress: string,
-                                   senderAccount: string, amountInBaseUnits: BigNumber.BigNumber):
+                                   senderAddress: string, amountInBaseUnits: BigNumber.BigNumber):
                                    Promise<void> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('fromAddress', fromAddress);
         assert.isETHAddressHex('toAddress', toAddress);
-        await assert.isSenderAddressHexAsync('senderAccount', senderAccount, this.web3Wrapper);
+        await assert.isSenderAddressHexAsync('senderAddress', senderAddress, this.web3Wrapper);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);
 
-        const fromAddressAllowance = await this.getAllowanceAsync(tokenAddress, fromAddress, senderAccount);
+        const fromAddressAllowance = await this.getAllowanceAsync(tokenAddress, fromAddress, senderAddress);
         if (fromAddressAllowance.lessThan(amountInBaseUnits)) {
             throw new Error(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
         }
@@ -139,7 +139,7 @@ export class TokenWrapper extends ContractWrapper {
         }
 
         await tokenContract.transferFrom(fromAddress, toAddress, amountInBaseUnits, {
-            from: senderAccount,
+            from: senderAddress,
         });
     }
     private async getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {

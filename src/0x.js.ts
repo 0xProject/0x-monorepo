@@ -161,9 +161,9 @@ export class ZeroEx {
      * Signs an orderHash and returns it's elliptic curve signature
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
-    public async signOrderHashAsync(orderHashHex: string, senderAccount: string): Promise<ECSignature> {
+    public async signOrderHashAsync(orderHashHex: string, senderAddress: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
-        await assert.isSenderAddressHexAsync('senderAccount', senderAccount, this.web3Wrapper);
+        await assert.isSenderAddressHexAsync('senderAddress', senderAddress, this.web3Wrapper);
 
         let msgHashHex;
         const nodeVersion = await this.web3Wrapper.getNodeVersionAsync();
@@ -177,7 +177,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const signature = await this.web3Wrapper.signTransactionAsync(senderAccount, msgHashHex);
+        const signature = await this.web3Wrapper.signTransactionAsync(senderAddress, msgHashHex);
 
         let signatureData;
         const [nodeVersionNumber] = findVersions(nodeVersion);
@@ -207,7 +207,7 @@ export class ZeroEx {
             r: ethUtil.bufferToHex(r),
             s: ethUtil.bufferToHex(s),
         };
-        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, senderAccount);
+        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, senderAddress);
         if (!isValidSignature) {
             throw new Error(ZeroExError.INVALID_SIGNATURE);
         }
