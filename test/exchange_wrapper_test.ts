@@ -358,7 +358,7 @@ describe('ExchangeWrapper', () => {
                 return expect(zeroEx.exchange.cancelOrderAsync(expiredSignedOrder, cancelAmount))
                     .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
             });
-            it.only('should throw when order is already cancelled or filled', async () => {
+            it('should throw when order is already cancelled or filled', async () => {
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
                 return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount))
                     .to.be.rejectedWith(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
