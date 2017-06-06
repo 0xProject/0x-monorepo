@@ -115,16 +115,16 @@ export class ExchangeWrapper extends ContractWrapper {
      * false forgoes this check and causes the smart contract to throw instead.
      */
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
-                                shouldCheckTransfer: boolean, senderAccount: string): Promise<void> {
+                                shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder',
                                    SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
                                    signedOrderSchema);
         assert.isBigNumber('fillTakerAmount', fillTakerAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
-        await assert.isSenderAccountHexAsync('senderAccount', senderAccount, this.web3Wrapper);
+        await assert.isSenderAccountHexAsync('takerAddress', takerAddress, this.web3Wrapper);
 
         const exchangeInstance = await this.getExchangeContractAsync();
-        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, senderAccount);
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -150,7 +150,7 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
             {
-                from: senderAccount,
+                from: takerAddress,
             },
         );
         const response: ContractResponse = await exchangeInstance.fill(
@@ -162,7 +162,7 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
             {
-                from: senderAccount,
+                from: takerAddress,
                 gas,
             },
         );
