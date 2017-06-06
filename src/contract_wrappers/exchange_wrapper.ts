@@ -42,6 +42,24 @@ export class ExchangeWrapper extends ContractWrapper {
     private exchangeContractIfExists?: ExchangeContract;
     private exchangeLogEventObjs: ContractEventObj[];
     private tokenWrapper: TokenWrapper;
+    private static getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
+        const orderAddresses: OrderAddresses = [
+            order.maker,
+            order.taker,
+            order.makerTokenAddress,
+            order.takerTokenAddress,
+            order.feeRecipient,
+        ];
+        const orderValues: OrderValues = [
+            order.makerTokenAmount,
+            order.takerTokenAmount,
+            order.makerFee,
+            order.takerFee,
+            order.expirationUnixTimestampSec,
+            order.salt,
+        ];
+        return [orderAddresses, orderValues];
+    }
     constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
         this.tokenWrapper = tokenWrapper;
@@ -126,21 +144,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
-        const orderAddresses: OrderAddresses = [
-            signedOrder.maker,
-            signedOrder.taker,
-            signedOrder.makerTokenAddress,
-            signedOrder.takerTokenAddress,
-            signedOrder.feeRecipient,
-        ];
-        const orderValues: OrderValues = [
-            signedOrder.makerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerFee,
-            signedOrder.takerFee,
-            signedOrder.expirationUnixTimestampSec,
-            signedOrder.salt,
-        ];
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
         const gas = await exchangeInstance.fill.estimateGas(
             orderAddresses,
             orderValues,
@@ -181,21 +185,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateCancelOrderAndThrowIfInvalidAsync(order, cancelAmount);
 
-        const orderAddresses: OrderAddresses = [
-            order.maker,
-            order.taker,
-            order.makerTokenAddress,
-            order.takerTokenAddress,
-            order.feeRecipient,
-        ];
-        const orderValues: OrderValues = [
-            order.makerTokenAmount,
-            order.takerTokenAmount,
-            order.makerFee,
-            order.takerFee,
-            order.expirationUnixTimestampSec,
-            order.salt,
-        ];
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
         const gas = await exchangeInstance.cancel.estimateGas(
             orderAddresses,
             orderValues,
@@ -241,6 +231,16 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this.exchangeLogEventObjs.push(logEventObj);
     }
+
+    /**
+     * Get order hash
+     */
+    public async getOrderHashAsync(order: Order): Promise<string> {
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
+        const exchangeInstance = await this.getExchangeContractAsync();
+        const orderHash = await exchangeInstance.getOrderHash.call(orderAddresses, orderValues);
+        return orderHash;
+    }
     private async stopWatchingExchangeLogEventsAsync() {
         const stopWatchingPromises = _.map(this.exchangeLogEventObjs, logEventObj => {
             return promisify(logEventObj.stopWatching, logEventObj)();
@@ -277,12 +277,16 @@ export class ExchangeWrapper extends ContractWrapper {
         if (cancelAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
         }
+        const orderHash = await this.getOrderHashAsync(order);
+        const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash);
+        if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
+            throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
+        }
         const currentUnixTimestampSec = Date.now() / 1000;
         if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
         }
     }
-
     /**
      * This method does not currently validate the edge-case where the makerToken or takerToken is also the token used
      * to pay fees  (ZRX). It is possible for them to have enough for fees and the transfer but not both.
