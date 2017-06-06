@@ -38,7 +38,7 @@ export class TokenWrapper extends ContractWrapper {
      */
     public async setAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string,
                                    amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
-        await assert.isSenderAddressHexAsync('ownerAddress', ownerAddress, this.web3Wrapper);
+        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this.web3Wrapper);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
@@ -97,7 +97,7 @@ export class TokenWrapper extends ContractWrapper {
     public async transferAsync(tokenAddress: string, fromAddress: string, toAddress: string,
                                amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isSenderAddressHexAsync('fromAddress', fromAddress, this.web3Wrapper);
+        await assert.isSenderAddressAsync('fromAddress', fromAddress, this.web3Wrapper);
         assert.isETHAddressHex('toAddress', toAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
@@ -123,7 +123,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('fromAddress', fromAddress);
         assert.isETHAddressHex('toAddress', toAddress);
-        await assert.isSenderAddressHexAsync('senderAddress', senderAddress, this.web3Wrapper);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this.web3Wrapper);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this.getTokenContractAsync(tokenAddress);

@@ -163,7 +163,7 @@ export class ZeroEx {
      */
     public async signOrderHashAsync(orderHashHex: string, signerAddress: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
-        await assert.isSenderAddressHexAsync('signerAddress', signerAddress, this.web3Wrapper);
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, this.web3Wrapper);
 
         let msgHashHex;
         const nodeVersion = await this.web3Wrapper.getNodeVersionAsync();

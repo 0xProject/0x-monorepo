@@ -13,20 +13,20 @@ describe('Assertion library', () => {
         it('throws when address is invalid', async () => {
             const address = '0xdeadbeef';
             const varName = 'address';
-            return expect(assert.isSenderAddressHexAsync(varName, address, (zeroEx as any).web3Wrapper))
+            return expect(assert.isSenderAddressAsync(varName, address, (zeroEx as any).web3Wrapper))
                 .to.be.rejectedWith(`Expected ${varName} to be of type ETHAddressHex, encountered: ${address}`);
         });
         it('throws when address is unavailable', async () => {
             const validUnrelatedAddress = '0x8b0292b11a196601eddce54b665cafeca0347d42';
             const varName = 'address';
-            return expect(assert.isSenderAddressHexAsync(varName, validUnrelatedAddress, (zeroEx as any).web3Wrapper))
+            return expect(assert.isSenderAddressAsync(varName, validUnrelatedAddress, (zeroEx as any).web3Wrapper))
                 .to.be.rejectedWith(`Specified ${varName} ${validUnrelatedAddress} \
                 isn't available through the supplied web3 instance`);
         });
         it('doesn\'t throw if address is available', async () => {
             const availableAddress = (await zeroEx.getAvailableAddressesAsync())[0];
             const varName = 'address';
-            return expect(assert.isSenderAddressHexAsync(varName, availableAddress, (zeroEx as any).web3Wrapper))
+            return expect(assert.isSenderAddressAsync(varName, availableAddress, (zeroEx as any).web3Wrapper))
                 .to.become(undefined);
         });
     });
