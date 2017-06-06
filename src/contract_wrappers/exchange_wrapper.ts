@@ -176,7 +176,7 @@ export class ExchangeWrapper extends ContractWrapper {
             SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
             signedOrderSchema);
         assert.isBigNumber('cancelAmount', cancelAmount);
-        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, order.maker);
+        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker', order.maker);
 
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateCancelOrderAndThrowIfInvalidAsync(order, cancelAmount);
