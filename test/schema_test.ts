@@ -1,9 +1,10 @@
 import 'mocha';
+import * as _ from 'lodash';
 import * as chai from 'chai';
 import * as BigNumber from 'bignumber.js';
+import promisify = require('es6-promisify');
 import {numberSchema} from '../src/schemas/order_schemas';
 import {SchemaValidator} from '../src/utils/schema_validator';
-import promisify = require('es6-promisify');
 
 chai.config.includeStack = true;
 const expect = chai.expect;
@@ -13,29 +14,33 @@ describe('Schema', () => {
     describe('#numberSchema', () => {
         describe('number regex', () => {
             it('should validate valid numbers', () => {
-                expect(validator.validate('42' as any, numberSchema).errors).to.be.lengthOf(0);
-                expect(validator.validate('0' as any, numberSchema).errors).to.be.lengthOf(0);
-                expect(validator.validate('1.3' as any, numberSchema).errors).to.be.lengthOf(0);
-                expect(validator.validate('0.2' as any, numberSchema).errors).to.be.lengthOf(0);
-                expect(validator.validate('00.00' as any, numberSchema).errors).to.be.lengthOf(0);
+                const testCases = ['42', '0', '1.3', '0.2', '00.00'];
+                _.forEach(testCases, (testCase: string) => {
+                    expect(validator.validate(testCase as any, numberSchema).errors).to.be.lengthOf(0);
+                });
             });
             it('should fail for invalid numbers', () => {
-                expect(validator.validate('.3' as any, numberSchema).errors).to.be.lengthOf(1);
-                expect(validator.validate('1.' as any, numberSchema).errors).to.be.lengthOf(1);
-                expect(validator.validate('abacaba' as any, numberSchema).errors).to.be.lengthOf(1);
-                expect(validator.validate('и' as any, numberSchema).errors).to.be.lengthOf(1);
-                expect(validator.validate('1..0' as any, numberSchema).errors).to.be.lengthOf(1);
+                const testCases = ['.3', '1.', 'abacaba', 'и', '1..0'];
+                _.forEach(testCases, (testCase: string) => {
+                    expect(validator.validate(testCase as any, numberSchema).errors).to.be.lengthOf(1);
+                });
             });
         });
     });
     describe('BigNumber serialization', () => {
-        it.only('should correctly serialize BigNumbers', async () => {
-            expect(SchemaValidator.convertToJSONSchemaCompatibleObject(new BigNumber('42'))).to.be.equal('42');
-            expect(SchemaValidator.convertToJSONSchemaCompatibleObject(new BigNumber('0'))).to.be.equal('0');
-            expect(SchemaValidator.convertToJSONSchemaCompatibleObject(new BigNumber('1.3'))).to.be.equal('1.3');
-            expect(SchemaValidator.convertToJSONSchemaCompatibleObject(new BigNumber('0.2'))).to.be.equal('0.2');
-            expect(SchemaValidator.convertToJSONSchemaCompatibleObject(new BigNumber('00.00'))).to.be.equal('0');
-            expect(SchemaValidator.convertToJSONSchemaCompatibleObject(new BigNumber('.3'))).to.be.equal('0.3');
+        it.only('should correctly serialize BigNumbers', () => {
+            const testCases = {
+                '42': '42',
+                '0': '0',
+                '1.3': '1.3',
+                '0.2': '0.2',
+                '00.00': '0',
+                '.3': '0.3',
+            };
+            _.forEach(testCases, (serialized: string, input: string) => {
+                expect(SchemaValidator.convertToJSONSchemaCompatibleObject(new BigNumber(input)))
+                    .to.be.equal(serialized);
+            });
         });
     });
 });
