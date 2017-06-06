@@ -164,7 +164,6 @@ export class ZeroEx {
     public async signOrderHashAsync(orderHashHex: string, senderAccount: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
         await assert.isSenderAccountHexAsync('senderAccount', senderAccount, this.web3Wrapper);
-        const makerAddress = senderAccount;
 
         let msgHashHex;
         const nodeVersion = await this.web3Wrapper.getNodeVersionAsync();
@@ -178,7 +177,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const signature = await this.web3Wrapper.signTransactionAsync(makerAddress, msgHashHex);
+        const signature = await this.web3Wrapper.signTransactionAsync(senderAccount, msgHashHex);
 
         let signatureData;
         const [nodeVersionNumber] = findVersions(nodeVersion);
@@ -208,7 +207,7 @@ export class ZeroEx {
             r: ethUtil.bufferToHex(r),
             s: ethUtil.bufferToHex(s),
         };
-        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, makerAddress);
+        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, senderAccount);
         if (!isValidSignature) {
             throw new Error(ZeroExError.INVALID_SIGNATURE);
         }
