@@ -89,6 +89,17 @@ describe('TokenWrapper', () => {
                 token.address, fromAddress, toAddress, senderAddress, transferAmount,
             )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
         });
+        it('[regression] should fail to transfer tokens if set allowance for toAddress instead of senderAddress',
+            async () => {
+            const fromAddress = coinbase;
+            const transferAmount = new BigNumber(42);
+
+            await zeroEx.token.setAllowanceAsync(token.address, fromAddress, toAddress, transferAmount);
+
+            return expect(zeroEx.token.transferFromAsync(
+                token.address, fromAddress, toAddress, senderAddress, transferAmount,
+            )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
+        });
         it('should fail to transfer tokens if fromAddress has insufficient balance', async () => {
             const fromAddress = addressWithoutFunds;
             const transferAmount = new BigNumber(42);
