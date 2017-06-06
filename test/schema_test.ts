@@ -28,7 +28,7 @@ describe('Schema', () => {
         });
     });
     describe('BigNumber serialization', () => {
-        it.only('should correctly serialize BigNumbers', () => {
+        it('should correctly serialize BigNumbers', () => {
             const testCases = {
                 '42': '42',
                 '0': '0',
