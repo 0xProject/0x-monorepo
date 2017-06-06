@@ -121,6 +121,8 @@ export enum ExchangeContractErrCodes {
 
 export const ExchangeContractErrs = strEnum([
     'ORDER_FILL_EXPIRED',
+    'ORDER_CANCEL_EXPIRED',
+    'ORDER_CANCEL_AMOUNT_ZERO',
     'ORDER_REMAINING_FILL_AMOUNT_ZERO',
     'ORDER_FILL_ROUNDING_ERROR',
     'FILL_BALANCE_ALLOWANCE_ERROR',

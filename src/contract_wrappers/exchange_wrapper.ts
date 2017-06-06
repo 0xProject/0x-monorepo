@@ -274,7 +274,13 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     private async validateCancelOrderAndThrowIfInvalidAsync(order: Order,
                                                             cancelAmount: BigNumber.BigNumber): Promise<void> {
-        // TODO
+        if (cancelAmount.eq(0)) {
+            throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
+        }
+        const currentUnixTimestampSec = Date.now() / 1000;
+        if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+            throw new Error(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
+        }
     }
 
     /**

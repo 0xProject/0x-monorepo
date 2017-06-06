@@ -332,6 +332,7 @@ describe('ExchangeWrapper', () => {
         const fillableAmount = new BigNumber(5);
         let signedOrder: SignedOrder;
         let orderHashHex: string;
+        const cancelAmount = new BigNumber(3);
         before(async () => {
             [coinbase, makerAddress, takerAddress] = userAddresses;
             const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
@@ -342,9 +343,24 @@ describe('ExchangeWrapper', () => {
             );
             orderHashHex = await zeroEx.getOrderHashHexAsync(signedOrder);
         });
+        describe('failed cancels', () => {
+            it('should throw when cancel amount is zero', async () => {
+                const zeroCancelAmount = new BigNumber(0);
+                return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, zeroCancelAmount))
+                    .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
+            });
+            it('should throw when order is expired', async () => {
+                const expirationInPast = new BigNumber(42);
+                const expiredSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount, expirationInPast,
+                );
+                orderHashHex = await zeroEx.getOrderHashHexAsync(expiredSignedOrder);
+                return expect(zeroEx.exchange.cancelOrderAsync(expiredSignedOrder, cancelAmount))
+                    .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
+            });
+        });
         describe('successful cancels', () => {
             it('should cancel an order', async () => {
-                const cancelAmount = new BigNumber(5);
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmount);
                 const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
                 expect(cancelledAmount).to.be.bignumber.equal(cancelAmount);
