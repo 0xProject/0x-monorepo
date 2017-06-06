@@ -54,7 +54,7 @@ export class FillScenarios {
     public async createPartiallyFilledSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
                                                        takerAddress: string, fillableAmount: BigNumber.BigNumber,
                                                        partialFillAmount: BigNumber.BigNumber) {
-        const prevSenderAccount = await this.zeroEx.getAvailableAccountsAsync();
+        const prevSenderAccount = await this.zeroEx.getAvailableAddressesAsync();
         const [makerAddress] = this.userAddresses;
         const signedOrder = await this.createAsymmetricFillableSignedOrderAsync(
             makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,

@@ -24,7 +24,7 @@ describe('Assertion library', () => {
                 isn't available through the supplied web3 instance`);
         });
         it('doesn\'t throw if account is available', async () => {
-            const availableAccount = (await zeroEx.getAvailableAccountsAsync())[0];
+            const availableAccount = (await zeroEx.getAvailableAddressesAsync())[0];
             const varName = 'account';
             return expect(assert.isSenderAddressHexAsync(varName, availableAccount, (zeroEx as any).web3Wrapper))
                 .to.become(undefined);

@@ -17,14 +17,14 @@ export class Web3Wrapper {
     public isAddress(address: string): boolean {
         return this.web3.isAddress(address);
     }
-    public getDefaultAccount(): string {
+    public getDefaultAddress(): string {
         return this.web3.eth.defaultAccount;
     }
-    public setDefaultAccount(address: string): void {
+    public setDefaultAddress(address: string): void {
         this.web3.eth.defaultAccount = address;
     }
     public async isSenderAddressAvailableAsync(senderAddress: string): Promise<boolean> {
-        const addresses = await this.getAvailableAccountsAsync();
+        const addresses = await this.getAvailableAddressesAsync();
         return _.includes(addresses, senderAddress);
     }
     public async getNodeVersionAsync(): Promise<string> {
@@ -61,7 +61,7 @@ export class Web3Wrapper {
         const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
         return timestamp;
     }
-    public async getAvailableAccountsAsync(): Promise<string[]> {
+    public async getAvailableAddressesAsync(): Promise<string[]> {
         const addresses: string[] = await promisify(this.web3.eth.getAccounts)();
         return addresses;
     }

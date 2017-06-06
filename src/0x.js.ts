@@ -122,11 +122,11 @@ export class ZeroEx {
         this.token.invalidateContractInstances();
     }
     /**
-     * Get accounts via the supplied web3 instance available for sending transactions.
+     * Get addresses via the supplied web3 instance available for sending transactions.
      */
-    public async getAvailableAccountsAsync(): Promise<string[]> {
-        const availableAccounts = await this.web3Wrapper.getAvailableAccountsAsync();
-        return availableAccounts;
+    public async getAvailableAddressesAsync(): Promise<string[]> {
+        const availableAddresses = await this.web3Wrapper.getAvailableAddressesAsync();
+        return availableAddresses;
     }
     /**
      * Computes the orderHash for a given order and returns it as a hex encoded string.
