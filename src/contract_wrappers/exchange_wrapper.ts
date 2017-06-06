@@ -297,7 +297,7 @@ export class ExchangeWrapper extends ContractWrapper {
     private async isRoundingErrorAsync(takerTokenAmount: BigNumber.BigNumber,
                                        fillTakerAmount: BigNumber.BigNumber,
                                        makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
-        await assert.isAnyAddressAvailableAsync(this.web3Wrapper);
+        await assert.isUserAddressAvailableAsync(this.web3Wrapper);
         const exchangeInstance = await this.getExchangeContractAsync();
         const isRoundingError = await exchangeInstance.isRoundingError.call(
             takerTokenAmount, fillTakerAmount, makerTokenAmount,
