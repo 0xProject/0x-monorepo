@@ -1,14 +1,14 @@
 import * as _ from 'lodash';
 import 'mocha';
 import * as chai from 'chai';
-import {ChaiSetup} from './chai_setup';
+import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {tokenSchema} from '../src/schemas/token_schema';
 
-ChaiSetup.configure();
+chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 

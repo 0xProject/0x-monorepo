@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as chai from 'chai';
-import {ChaiSetup} from './chai_setup';
+import {chaiSetup} from './utils/chai_setup';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
@@ -9,7 +9,7 @@ import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 import {Order} from '../src/types';
 
-ChaiSetup.configure();
+chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ZeroEx library', () => {
