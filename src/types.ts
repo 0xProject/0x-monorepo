@@ -82,7 +82,7 @@ export interface ExchangeContract {
     };
     getOrderHash: {
         call: (orderAddresses: OrderAddresses, orderValues: OrderValues) => string;
-    }
+    };
 }
 
 export interface TokenContract {
