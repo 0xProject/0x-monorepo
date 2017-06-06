@@ -122,7 +122,7 @@ export class ZeroEx {
         this.token.invalidateContractInstances();
     }
     /**
-     * Gets accounts available for sending transactions.
+     * Get accounts via the supplied web3 instance available for sending transactions.
      */
     public async getAvailableAccountsAsync(): Promise<string[]> {
         const availableAccounts = await this.web3Wrapper.getAvailableAccountsAsync();
