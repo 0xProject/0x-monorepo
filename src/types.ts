@@ -47,7 +47,7 @@ export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
 export interface ExchangeContract {
     isValidSignature: {
         call: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
-               txOpts: TxOpts) => Promise<boolean>;
+               txOpts?: TxOpts) => Promise<boolean>;
     };
     LogFill: CreateContractEvent;
     LogCancel: CreateContractEvent;
@@ -60,7 +60,7 @@ export interface ExchangeContract {
     };
     isRoundingError: {
         call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmount: BigNumber.BigNumber,
-               makerTokenAmount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
+               makerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     };
     fill: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,

@@ -122,17 +122,11 @@ export class ZeroEx {
         this.token.invalidateContractInstances();
     }
     /**
-     * Sets default account for sending transactions.
+     * Get addresses via the supplied web3 instance available for sending transactions.
      */
-    public setTransactionSenderAccount(account: string): void {
-        this.web3Wrapper.setDefaultAccount(account);
-    }
-    /**
-     * Get the default account set for sending transactions.
-     */
-    public async getTransactionSenderAccountIfExistsAsync(): Promise<string|undefined> {
-        const senderAccountIfExists = await this.web3Wrapper.getSenderAddressIfExistsAsync();
-        return senderAccountIfExists;
+    public async getAvailableAddressesAsync(): Promise<string[]> {
+        const availableAddresses = await this.web3Wrapper.getAvailableAddressesAsync();
+        return availableAddresses;
     }
     /**
      * Computes the orderHash for a given order and returns it as a hex encoded string.
@@ -167,10 +161,9 @@ export class ZeroEx {
      * Signs an orderHash and returns it's elliptic curve signature
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
-    public async signOrderHashAsync(orderHashHex: string): Promise<ECSignature> {
+    public async signOrderHashAsync(orderHashHex: string, signerAddress: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
-
-        const makerAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, this.web3Wrapper);
 
         let msgHashHex;
         const nodeVersion = await this.web3Wrapper.getNodeVersionAsync();
@@ -184,7 +177,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const signature = await this.web3Wrapper.signTransactionAsync(makerAddress, msgHashHex);
+        const signature = await this.web3Wrapper.signTransactionAsync(signerAddress, msgHashHex);
 
         let signatureData;
         const [nodeVersionNumber] = findVersions(nodeVersion);
@@ -214,7 +207,7 @@ export class ZeroEx {
             r: ethUtil.bufferToHex(r),
             s: ethUtil.bufferToHex(s),
         };
-        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, makerAddress);
+        const isValidSignature = ZeroEx.isValidSignature(orderHashHex, ecSignature, signerAddress);
         if (!isValidSignature) {
             throw new Error(ZeroExError.INVALID_SIGNATURE);
         }

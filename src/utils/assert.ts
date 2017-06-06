@@ -26,10 +26,20 @@ export const assert = {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },
-    async isSenderAddressAvailableAsync(web3Wrapper: Web3Wrapper, senderAddress: string) {
-        const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailableAsync(senderAddress);
-        assert.assert(isSenderAddressAvailable, 'Specified senderAddress isn\'t available through the \
-                                                 supplied web3 instance');
+    async isSenderAddressAsync(variableName: string, senderAddressHex: string,
+                               web3Wrapper: Web3Wrapper): Promise<void> {
+        assert.isETHAddressHex(variableName, senderAddressHex);
+        await assert.isSenderAddressAvailableAsync(web3Wrapper, variableName, senderAddressHex);
+    },
+    async isSenderAddressAvailableAsync(web3Wrapper: Web3Wrapper, variableName: string,
+                                        senderAddressHex: string): Promise<void> {
+        const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailableAsync(senderAddressHex);
+        assert.assert(isSenderAddressAvailable, `Specified ${variableName} ${senderAddressHex} isn't available \ 
+                                                 through the supplied web3 instance`);
+    },
+    async isUserAddressAvailableAsync(web3Wrapper: Web3Wrapper): Promise<void> {
+        const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        this.assert(!_.isEmpty(availableAddresses), 'No addresses were available on the provided web3 instance');
     },
     isNumber(variableName: string, value: number): void {
         this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));

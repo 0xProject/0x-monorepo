@@ -57,7 +57,6 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
-        const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeContractAsync();
 
         const isValidSignature = await exchangeInstance.isValidSignature.call(
@@ -66,9 +65,6 @@ export class ExchangeWrapper extends ContractWrapper {
             ecSignature.v,
             ecSignature.r,
             ecSignature.s,
-            {
-                from: senderAddress,
-            },
         );
         return isValidSignature;
     }
@@ -119,16 +115,16 @@ export class ExchangeWrapper extends ContractWrapper {
      * false forgoes this check and causes the smart contract to throw instead.
      */
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
-                                shouldCheckTransfer: boolean): Promise<void> {
+                                shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder',
                                    SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
                                    signedOrderSchema);
         assert.isBigNumber('fillTakerAmount', fillTakerAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
 
-        const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const exchangeInstance = await this.getExchangeContractAsync();
-        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, senderAddress);
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
         const orderAddresses: OrderAddresses = [
             signedOrder.maker,
@@ -154,7 +150,7 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
             {
-                from: senderAddress,
+                from: takerAddress,
             },
         );
         const response: ContractResponse = await exchangeInstance.fill(
@@ -166,7 +162,7 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
             {
-                from: senderAddress,
+                from: takerAddress,
                 gas,
             },
         );
@@ -301,12 +297,10 @@ export class ExchangeWrapper extends ContractWrapper {
     private async isRoundingErrorAsync(takerTokenAmount: BigNumber.BigNumber,
                                        fillTakerAmount: BigNumber.BigNumber,
                                        makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
+        await assert.isUserAddressAvailableAsync(this.web3Wrapper);
         const exchangeInstance = await this.getExchangeContractAsync();
-        const senderAddress = await this.web3Wrapper.getSenderAddressOrThrowAsync();
         const isRoundingError = await exchangeInstance.isRoundingError.call(
-            takerTokenAmount, fillTakerAmount, makerTokenAmount, {
-                from: senderAddress,
-            },
+            takerTokenAmount, fillTakerAmount, makerTokenAmount,
         );
         return isRoundingError;
     }

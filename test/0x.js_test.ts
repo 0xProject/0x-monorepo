@@ -188,6 +188,13 @@ describe('ZeroEx library', () => {
     });
     describe('#signOrderHashAsync', () => {
         let stubs: Sinon.SinonStub[] = [];
+        let makerAddress: string;
+        const web3 = web3Factory.create();
+        const zeroEx = new ZeroEx(web3);
+        before(async () => {
+            const availableAddreses = await zeroEx.getAvailableAddressesAsync();
+            makerAddress = availableAddreses[0];
+        });
         afterEach(() => {
             // clean up any stubs after the test has completed
             _.each(stubs, s => s.restore());
@@ -200,10 +207,7 @@ describe('ZeroEx library', () => {
                 r: '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
                 s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
             };
-
-            const web3 = web3Factory.create();
-            const zeroEx = new ZeroEx(web3);
-            const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
+            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
         it ('should return the correct ECSignature on Parity > V1.6.6', async () => {
@@ -216,9 +220,6 @@ describe('ZeroEx library', () => {
                 r: '0x22109d11d79cb8bf96ed88625e1cd9558800c4073332a9a02857499883ee5ce3',
                 s: '0x050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb02',
             };
-
-            const web3 = web3Factory.create();
-            const zeroEx = new ZeroEx(web3);
             stubs = [
                 Sinon.stub((zeroEx as any).web3Wrapper, 'getNodeVersionAsync')
                     .returns(Promise.resolve(newParityNodeVersion)),
@@ -227,7 +228,7 @@ describe('ZeroEx library', () => {
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
-            const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
+            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
         it ('should return the correct ECSignature on Parity < V1.6.6', async () => {
@@ -240,9 +241,6 @@ describe('ZeroEx library', () => {
                 r: '0xc80bedc6756722672753413efdd749b5adbd4fd552595f59c13427407ee9aee0',
                 s: '0x2dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960',
             };
-
-            const web3 = web3Factory.create();
-            const zeroEx = new ZeroEx(web3);
             stubs = [
                 Sinon.stub((zeroEx as any).web3Wrapper, 'getNodeVersionAsync')
                     .returns(Promise.resolve(newParityNodeVersion)),
@@ -251,7 +249,7 @@ describe('ZeroEx library', () => {
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
-            const ecSignature = await zeroEx.signOrderHashAsync(orderHash);
+            const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
     });
