@@ -1,9 +1,8 @@
 import 'mocha';
-import * as _ from 'lodash';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
-import * as dirtyChai from 'dirty-chai';
+import {chaiSetup} from './utils/chai_setup';
 import ChaiBigNumber = require('chai-bignumber');
 import * as chaiAsPromised from 'chai-as-promised';
 import promisify = require('es6-promisify');
@@ -22,10 +21,7 @@ import {
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 
-chai.config.includeStack = true;
-chai.use(dirtyChai);
-chai.use(ChaiBigNumber());
-chai.use(chaiAsPromised);
+chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 

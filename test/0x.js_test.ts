@@ -1,18 +1,15 @@
 import * as _ from 'lodash';
 import * as chai from 'chai';
+import {chaiSetup} from './utils/chai_setup';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
-import ChaiBigNumber = require('chai-bignumber');
-import * as dirtyChai from 'dirty-chai';
 import * as Sinon from 'sinon';
 import {ZeroEx} from '../src/0x.js';
 import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
-import {Order, DoneCallback} from '../src/types';
+import {Order} from '../src/types';
 
-chai.config.includeStack = true;
-chai.use(ChaiBigNumber());
-chai.use(dirtyChai);
+chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ZeroEx library', () => {
