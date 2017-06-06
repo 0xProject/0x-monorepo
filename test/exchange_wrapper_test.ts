@@ -333,7 +333,7 @@ describe('ExchangeWrapper', () => {
         let signedOrder: SignedOrder;
         let orderHashHex: string;
         const cancelAmount = new BigNumber(3);
-        before(async () => {
+        beforeEach(async () => {
             [coinbase, makerAddress, takerAddress] = userAddresses;
             const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
             makerTokenAddress = makerToken.address;
