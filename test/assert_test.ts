@@ -20,8 +20,9 @@ describe('Assertion library', () => {
             const validUnrelatedAddress = '0x8b0292b11a196601eddce54b665cafeca0347d42';
             const varName = 'address';
             return expect(assert.isSenderAddressAsync(varName, validUnrelatedAddress, (zeroEx as any).web3Wrapper))
-                .to.be.rejectedWith(`Specified ${varName} ${validUnrelatedAddress} \
-                isn't available through the supplied web3 instance`);
+                .to.be.rejectedWith(
+                    `Specified ${varName} ${validUnrelatedAddress} isn't available through the supplied web3 instance`,
+                );
         });
         it('doesn\'t throw if address is available', async () => {
             const availableAddress = (await zeroEx.getAvailableAddressesAsync())[0];
