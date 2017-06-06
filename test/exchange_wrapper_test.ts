@@ -152,8 +152,9 @@ describe('ExchangeWrapper', () => {
                 const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
+                const nonExistentSenderAddress = userAddresses[6];
                 return expect(zeroEx.exchange.fillOrderAsync(
-                    signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
+                    signedOrder, fillTakerAmount, shouldCheckTransfer, nonExistentSenderAddress,
                 )).to.be.rejectedWith(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
             });
             it('should throw when order is expired', async () => {
