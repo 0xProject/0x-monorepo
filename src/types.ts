@@ -145,7 +145,7 @@ export const ExchangeContractErrs = strEnum([
     'INSUFFICIENT_MAKER_FEE_BALANCE',
     'INSUFFICIENT_MAKER_FEE_ALLOWANCE',
     'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
-    'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH'
+    'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH',
 
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
