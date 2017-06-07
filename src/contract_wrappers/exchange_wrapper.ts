@@ -200,34 +200,10 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async cancelOrderAsync(
         order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
-        assert.doesConformToSchema('order',
-            SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
-            orderSchema);
-        assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
-        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker', order.maker);
-
-        const exchangeInstance = await this.getExchangeContractAsync();
-        await this.validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
-
-        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
-        const gas = await exchangeInstance.cancel.estimateGas(
-            orderAddresses,
-            orderValues,
+        await this.batchCancelOrderAsync([{
+            order,
             takerTokenCancelAmount,
-            {
-                from: order.maker,
-            },
-        );
-        const response: ContractResponse = await exchangeInstance.cancel(
-            orderAddresses,
-            orderValues,
-            takerTokenCancelAmount,
-            {
-                from: order.maker,
-                gas,
-            },
-        );
-        this.throwErrorLogsAsErrors(response.logs);
+        }]);
     }
     /**
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.

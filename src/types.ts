@@ -233,3 +233,8 @@ export interface OrderCancellationRequest {
     order: Order|SignedOrder;
     takerTokenCancelAmount: BigNumber.BigNumber;
 }
+
+export interface OrderFillRequest {
+    signedOrder: SignedOrder;
+    takerTokenFillAmount: BigNumber.BigNumber;
+}
