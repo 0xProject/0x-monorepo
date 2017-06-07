@@ -151,7 +151,7 @@ describe('ZeroEx library', () => {
             expect(baseUnitAmount).to.be.bignumber.equal(expectedUnitAmount);
         });
     });
-    describe('#getOrderHashAsync', () => {
+    describe('#getOrderHashHexAsync', () => {
         const exchangeContractAddress = constants.NULL_ADDRESS;
         const expectedOrderHash = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
         const order: Order = {
