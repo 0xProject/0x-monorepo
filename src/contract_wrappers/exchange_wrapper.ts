@@ -144,7 +144,9 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
-        assert.assert(!_.isEmpty(orderFillRequests), 'Cannot fill an empty batch');
+        if (_.isEmpty(orderFillRequests)) {
+            return;
+        }
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
         _.forEach(orderFillRequests,

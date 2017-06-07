@@ -348,10 +348,10 @@ describe('ExchangeWrapper', () => {
                     },
                 ];
             });
-            describe('failed batch fills', () => {
-
-            });
             describe('successful batch fills', () => {
+                it('should no-op for an empty batch', async () => {
+                    await zeroEx.exchange.batchFillOrderAsync([], shouldCheckTransfer, takerAddress);
+                });
                 it('should successfully fill multiple orders', async () => {
                     await zeroEx.exchange.batchFillOrderAsync(orderFillBatch, shouldCheckTransfer, takerAddress);
                     const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
