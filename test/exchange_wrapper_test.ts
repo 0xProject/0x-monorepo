@@ -121,22 +121,22 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('fill order', () => {
+        let makerTokenAddress: string;
+        let takerTokenAddress: string;
+        let coinbase: string;
+        let makerAddress: string;
+        let takerAddress: string;
+        let feeRecipient: string;
+        const fillTakerAmount = new BigNumber(5);
+        const shouldCheckTransfer = false;
+        before(async () => {
+            [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
+            tokens = await zeroEx.tokenRegistry.getTokensAsync();
+            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            makerTokenAddress = makerToken.address;
+            takerTokenAddress = takerToken.address;
+        });
         describe('#fillOrderAsync', () => {
-            let makerTokenAddress: string;
-            let takerTokenAddress: string;
-            let coinbase: string;
-            let makerAddress: string;
-            let takerAddress: string;
-            let feeRecipient: string;
-            const fillTakerAmount = new BigNumber(5);
-            const shouldCheckTransfer = false;
-            before(async () => {
-                [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
-                tokens = await zeroEx.tokenRegistry.getTokensAsync();
-                const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
-                makerTokenAddress = makerToken.address;
-                takerTokenAddress = takerToken.address;
-            });
             describe('failed fills', () => {
                 it('should throw when the fill amount is zero', async () => {
                     const fillableAmount = new BigNumber(5);
