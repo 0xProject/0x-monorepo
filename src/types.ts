@@ -74,6 +74,12 @@ export interface ExchangeContract extends ContractInstance {
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
                       txOpts?: TxOpts) => number;
     };
+    batchCancel: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelAmount: BigNumber.BigNumber[],
+         txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelAmount: BigNumber.BigNumber[],
+                      txOpts?: TxOpts) => number;
+    };
     filled: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
