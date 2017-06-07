@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 import * as BN from 'bn.js';
-import * as ethUtil from 'ethereumjs-util';
 import * as ethABI from 'ethereumjs-abi';
-import {SolidityTypes, Order} from '../types';
+import * as ethUtil from 'ethereumjs-util';
+import {Order, SignedOrder, SolidityTypes} from '../types';
+import * as BigNumber from 'bignumber.js';
 
 export const utils = {
     /**
@@ -25,7 +26,10 @@ export const utils = {
         const isValid = /^0x[0-9A-F]{64}$/i.test(orderHashHex);
         return isValid;
     },
-    getOrderHashHex(order: Order, exchangeContractAddr: string) {
+    spawnSwitchErr(name: string, value: any) {
+        return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
+    },
+    getOrderHashHex(order: Order|SignedOrder, exchangeContractAddr: string): string {
         const orderParts = [
             {value: exchangeContractAddr, type: SolidityTypes.address},
             {value: order.maker, type: SolidityTypes.address},
@@ -46,7 +50,7 @@ export const utils = {
         const hashHex = ethUtil.bufferToHex(hashBuff);
         return hashHex;
     },
-    spawnSwitchErr(name: string, value: any) {
-        return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
+    getCurrentUnixTimestamp(): BigNumber.BigNumber {
+        return new BigNumber(Date.now() / 1000);
     },
 };

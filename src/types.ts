@@ -65,9 +65,15 @@ export interface ExchangeContract extends ContractInstance {
     };
     fill: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-         shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts): ContractResponse;
+         shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-                      shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts) => number;
+                      shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts) => number;
+    };
+    cancel: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
+         txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
+                      txOpts?: TxOpts) => number;
     };
     fillOrKill: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
@@ -81,6 +87,9 @@ export interface ExchangeContract extends ContractInstance {
     cancelled: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
+    getOrderHash: {
+        call: (orderAddresses: OrderAddresses, orderValues: OrderValues) => string;
+    };
 }
 
 export interface TokenContract extends ContractInstance {
@@ -90,10 +99,10 @@ export interface TokenContract extends ContractInstance {
     allowance: {
         call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
     };
-    transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
+    transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     transferFrom: (fromAddress: string, toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
-                   txOpts: TxOpts) => Promise<boolean>;
-    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => void;
+                   txOpts?: TxOpts) => Promise<boolean>;
+    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => void;
 }
 
 export interface TokenRegistryContract extends ContractInstance {
@@ -122,6 +131,9 @@ export enum ExchangeContractErrCodes {
 
 export const ExchangeContractErrs = strEnum([
     'ORDER_FILL_EXPIRED',
+    'ORDER_CANCEL_EXPIRED',
+    'ORDER_CANCEL_AMOUNT_ZERO',
+    'ORDER_ALREADY_CANCELLED_OR_FILLED',
     'ORDER_REMAINING_FILL_AMOUNT_ZERO',
     'ORDER_FILL_ROUNDING_ERROR',
     'FILL_BALANCE_ALLOWANCE_ERROR',
