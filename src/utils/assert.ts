@@ -42,12 +42,6 @@ export const assert = {
         const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
         this.assert(!_.isEmpty(availableAddresses), 'No addresses were available on the provided web3 instance');
     },
-    isSameLength(variableName1: string, value1: any[], variableName2: string, value2: any[]) {
-        const length1 = value1.length;
-        const length2 = value2.length;
-        this.assert(length1 === length2, `${variableName1} and ${variableName2} length mismatch. \
-${length1} != ${length2}`);
-    },
     isNumber(variableName: string, value: number): void {
         this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));
     },
