@@ -134,37 +134,59 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
-        assert.doesConformToSchema('signedOrder',
-                                   SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
-                                   signedOrderSchema);
-        assert.isBigNumber('fillTakerAmount', fillTakerAmount);
+        await this.batchFillOrderAsync([signedOrder], [fillTakerAmount], shouldCheckTransfer, takerAddress);
+    }
+    /**
+     * Batched version of fillOrderAsync. Executes fills atomically in a single transaction.
+     */
+    public async batchFillOrderAsync(signedOrders: SignedOrder[], fillTakerAmounts: BigNumber.BigNumber[],
+                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+        assert.isSameLength('signedOrders', signedOrders, 'fillTakerAmounts', fillTakerAmounts);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
-
+        // _.zip doesn't type check if values have different types :'(
+        const ordersAndAmounts = _.zip<any>(signedOrders, fillTakerAmounts);
+        _.forEach(ordersAndAmounts,
+            async ([signedOrder, fillTakerAmount]: [SignedOrder, BigNumber.BigNumber]) => {
+            assert.doesConformToSchema('signedOrder',
+                SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object), signedOrderSchema);
+            assert.isBigNumber('fillTakerAmount', fillTakerAmount);
+            await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
+        });
         const exchangeInstance = await this.getExchangeContractAsync();
-        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
-        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
-        const gas = await exchangeInstance.fill.estimateGas(
-            orderAddresses,
-            orderValues,
-            fillTakerAmount,
+        const orderAddressesValuesAndSignatureArray = _.map(signedOrders, signedOrder => {
+            return [
+                ...ExchangeWrapper.getOrderAddressesAndValues(signedOrder),
+                signedOrder.ecSignature.v,
+                signedOrder.ecSignature.r,
+                signedOrder.ecSignature.s,
+            ];
+        });
+        // _.unzip doesn't type check if values have different types :'(
+        const [orderAddressesArray, orderValuesArray, vArray, rArray, sArray] = _.unzip<any>(
+            orderAddressesValuesAndSignatureArray,
+        );
+        const gas = await exchangeInstance.batchFill.estimateGas(
+            orderAddressesArray,
+            orderValuesArray,
+            fillTakerAmounts,
             shouldCheckTransfer,
-            signedOrder.ecSignature.v,
-            signedOrder.ecSignature.r,
-            signedOrder.ecSignature.s,
+            vArray,
+            rArray,
+            sArray,
             {
                 from: takerAddress,
             },
         );
-        const response: ContractResponse = await exchangeInstance.fill(
-            orderAddresses,
-            orderValues,
-            fillTakerAmount,
+        const response: ContractResponse = await exchangeInstance.batchFill(
+            orderAddressesArray,
+            orderValuesArray,
+            fillTakerAmounts,
             shouldCheckTransfer,
-            signedOrder.ecSignature.v,
-            signedOrder.ecSignature.r,
-            signedOrder.ecSignature.s,
+            vArray,
+            rArray,
+            sArray,
             {
                 from: takerAddress,
                 gas,
