@@ -44,7 +44,6 @@ export interface ContractEventObj {
 }
 export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
                                    subscriptionOpts: SubscriptionOpts) => ContractEventObj;
-
 export interface ExchangeContract extends ContractInstance {
     isValidSignature: {
         call: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
