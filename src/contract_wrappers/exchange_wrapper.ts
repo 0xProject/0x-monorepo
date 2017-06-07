@@ -197,7 +197,8 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
      */
-    public async cancelOrderAsync(order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
+    public async cancelOrderAsync(
+        order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
         assert.doesConformToSchema('order',
             SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
             orderSchema);
