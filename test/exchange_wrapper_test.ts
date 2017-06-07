@@ -395,21 +395,17 @@ describe('ExchangeWrapper', () => {
                 ];
             });
             describe('failed batch cancels', () => {
-                it('should throw when orders are empty', async () => {
-                    return expect(zeroEx.exchange.batchCancelOrderAsync([]))
-                        .to.be.rejectedWith('Can not cancel an empty batch');
-                });
-                it.only('should throw when orders have different makers', async () => {
-                    const signedOrderWithADifferentMaker = await fillScenarios.createFillableSignedOrderAsync(
+                it('should throw when orders have different makers', async () => {
+                    const signedOrderWithDifferentMaker = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, takerAddress, takerAddress, fillableAmount,
                     );
                     return expect(zeroEx.exchange.batchCancelOrderAsync([
                         cancelBatch[0],
                         {
-                            order: signedOrderWithADifferentMaker,
+                            order: signedOrderWithDifferentMaker,
                             takerTokenCancelAmount: cancelAmount,
                         },
-                    ])).to.be.rejectedWith('Can not cancel orders from multiple makers in a single batch');
+                    ])).to.be.rejectedWith(ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
                 });
             });
             describe('successful batch cancels', () => {

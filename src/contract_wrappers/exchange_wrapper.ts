@@ -18,7 +18,8 @@ import {
     CreateContractEvent,
     ContractEventObj,
     EventCallback,
-    ContractResponse, OrderCancellationRequest,
+    ContractResponse,
+    OrderCancellationRequest,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -187,16 +188,18 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async batchCancelOrderAsync(cancellationRequestsBatch: OrderCancellationRequest[]): Promise<void> {
         const makers = _.map(cancellationRequestsBatch, cancellationRequest => cancellationRequest.order.maker);
-        assert.assert(!_.isEmpty(cancellationRequestsBatch), 'Can not cancel an empty batch');
-        assert.assert(_.uniq(makers).length === 1, 'Can not cancel orders from multiple makers in a single batch');
+        if (_.isEmpty(cancellationRequestsBatch)) {
+            return;
+        }
+        assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
+        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'maker', maker);
         _.forEach(cancellationRequestsBatch,
-            async (cancellationRequest: OrderCancellationRequest) => {
-            assert.doesConformToSchema('order',
+            async (cancellationRequest: OrderCancellationRequest, i: number) => {
+            assert.doesConformToSchema(`orderCancellationRequests[${i}].order`,
                 SchemaValidator.convertToJSONSchemaCompatibleObject(cancellationRequest.order as object), orderSchema);
-            assert.isBigNumber('takerTokenCancelAmount', cancellationRequest.takerTokenCancelAmount);
-            await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker',
-                cancellationRequest.order.maker);
+            assert.isBigNumber(`orderCancellationRequests[${i}].takerTokenCancelAmount`,
+                cancellationRequest.takerTokenCancelAmount);
             await this.validateCancelOrderAndThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount);
         });
