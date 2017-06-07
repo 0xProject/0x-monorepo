@@ -142,6 +142,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async batchFillOrderAsync(signedOrders: SignedOrder[], fillTakerAmounts: BigNumber.BigNumber[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.isSameLength('signedOrders', signedOrders, 'fillTakerAmounts', fillTakerAmounts);
+        assert.assert(!_.isEmpty(signedOrders), 'Can not cancel an empty batch');
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
         // _.zip doesn't type check if values have different types :'(
