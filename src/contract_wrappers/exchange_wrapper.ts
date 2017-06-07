@@ -228,6 +228,51 @@ export class ExchangeWrapper extends ContractWrapper {
         this.throwErrorLogsAsErrors(response.logs);
     }
     /**
+     * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
+     */
+    public async batchCancelOrderAsync(
+        orders: Array<Order|SignedOrder>, takerTokenCancelAmounts: BigNumber.BigNumber[]): Promise<void> {
+        const makers = _.map(orders, order => order.maker);
+        assert.isSameLength('orders', orders, 'takerTokenCancelAmounts', takerTokenCancelAmounts);
+        assert.assert(_.isEmpty(orders), 'Can not cancel an empty batch');
+        assert.assert(_.uniq(makers).length === 1, 'Can not cancel orders from multiple makers in a single batch');
+        const maker = makers[0];
+        // _.zip doesn't type check if values have different types :'(
+        const ordersAndTakerTokenCancelAmounts = _.zip<any>(orders, takerTokenCancelAmounts);
+        _.forEach(ordersAndTakerTokenCancelAmounts,
+            async ([order, takerTokenCancelAmount]: [Order|SignedOrder, BigNumber.BigNumber]) => {
+            assert.doesConformToSchema('order',
+                SchemaValidator.convertToJSONSchemaCompatibleObject(order as object), orderSchema);
+            assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
+            await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker', order.maker);
+            await this.validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
+        });
+        const exchangeInstance = await this.getExchangeContractAsync();
+        const orderAddressesAndValues = _.map(orders, order => {
+            return ExchangeWrapper.getOrderAddressesAndValues(order);
+        });
+        // _.unzip doesn't type check if values have different types :'(
+        const [orderAddresses, orderValues] = _.unzip<any>(orderAddressesAndValues);
+        const gas = await exchangeInstance.batchCancel.estimateGas(
+            orderAddresses,
+            orderValues,
+            takerTokenCancelAmounts,
+            {
+                from: maker,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.batchCancel(
+            orderAddresses,
+            orderValues,
+            takerTokenCancelAmounts,
+            {
+                from: maker,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
      * Subscribe to an event type emitted by the Exchange smart contract
      */
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
