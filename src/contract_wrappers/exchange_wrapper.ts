@@ -178,12 +178,11 @@ export class ExchangeWrapper extends ContractWrapper {
      * the fill order is abandoned.
      */
     public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
-                                      shouldCheckTransfer: boolean, takerAddress: string) {
+                                      takerAddress: string) {
         assert.doesConformToSchema('signedOrder',
                             SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
                             signedOrderSchema);
         assert.isBigNumber('fillTakerAmount', fillTakerAmount);
-        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
 
         const exchangeInstance = await this.getExchangeContractAsync();
