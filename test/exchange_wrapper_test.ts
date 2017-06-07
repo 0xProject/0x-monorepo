@@ -158,7 +158,7 @@ describe('ExchangeWrapper', () => {
                 )).to.be.rejectedWith(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
             });
             it('should throw when order is expired', async () => {
-                const expirationInPast = new BigNumber(42);
+                const expirationInPast = new BigNumber(1496826058);
                 const fillableAmount = new BigNumber(5);
                 const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount, expirationInPast,
@@ -350,7 +350,7 @@ describe('ExchangeWrapper', () => {
                     .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
             });
             it('should throw when order is expired', async () => {
-                const expirationInPast = new BigNumber(42);
+                const expirationInPast = new BigNumber(1496826058);
                 const expiredSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount, expirationInPast,
                 );

@@ -44,7 +44,10 @@ export interface ContractEventObj {
 }
 export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
                                    subscriptionOpts: SubscriptionOpts) => ContractEventObj;
-export interface ExchangeContract {
+export interface ContractInstance {
+    address: string;
+}
+export interface ExchangeContract extends ContractInstance {
     isValidSignature: {
         call: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
                txOpts?: TxOpts) => Promise<boolean>;
@@ -85,7 +88,7 @@ export interface ExchangeContract {
     };
 }
 
-export interface TokenContract {
+export interface TokenContract extends ContractInstance {
     balanceOf: {
         call: (address: string) => Promise<BigNumber.BigNumber>;
     };
@@ -98,7 +101,7 @@ export interface TokenContract {
     approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => void;
 }
 
-export interface TokenRegistryContract {
+export interface TokenRegistryContract extends ContractInstance {
     getTokenMetaData: {
         call: (address: string) => Promise<TokenMetadata>;
     };

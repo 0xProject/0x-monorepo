@@ -1,5 +1,12 @@
 import * as _ from 'lodash';
 import * as BN from 'bn.js';
+import * as ethABI from 'ethereumjs-abi';
+import * as ethUtil from 'ethereumjs-util';
+import {orderSchema} from '../schemas/order_schemas';
+import {SchemaValidator} from './schema_validator';
+import {Order, SolidityTypes} from '../types';
+import {assert} from './assert';
+import * as BigNumber from 'bignumber.js';
 
 export const utils = {
     /**
@@ -24,5 +31,33 @@ export const utils = {
     },
     spawnSwitchErr(name: string, value: any) {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
+    },
+    getOrderHashHex(order: Order, exchangeContractAddr: string): string {
+        assert.doesConformToSchema('order',
+            SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
+            orderSchema);
+
+        const orderParts = [
+            {value: exchangeContractAddr, type: SolidityTypes.address},
+            {value: order.maker, type: SolidityTypes.address},
+            {value: order.taker, type: SolidityTypes.address},
+            {value: order.makerTokenAddress, type: SolidityTypes.address},
+            {value: order.takerTokenAddress, type: SolidityTypes.address},
+            {value: order.feeRecipient, type: SolidityTypes.address},
+            {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.uint256},
+        ];
+        const types = _.map(orderParts, o => o.type);
+        const values = _.map(orderParts, o => o.value);
+        const hashBuff = ethABI.soliditySHA3(types, values);
+        const hashHex = ethUtil.bufferToHex(hashBuff);
+        return hashHex;
+    },
+    getCurrentUnixTimestamp(): BigNumber.BigNumber {
+        return new BigNumber(Date.now() / 1000);
     },
 };

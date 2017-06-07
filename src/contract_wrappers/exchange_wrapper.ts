@@ -25,7 +25,7 @@ import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
-import {signedOrderSchema} from '../schemas/order_schemas';
+import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
@@ -173,23 +173,23 @@ export class ExchangeWrapper extends ContractWrapper {
         this.throwErrorLogsAsErrors(response.logs);
     }
     /**
-     * Cancels the order.
+     * Cancel a given fill amount of an order. Cancellations are cumulative.
      */
-    public async cancelOrderAsync(order: Order, cancelAmount: BigNumber.BigNumber): Promise<void> {
+    public async cancelOrderAsync(order: Order, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
         assert.doesConformToSchema('order',
             SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
-            signedOrderSchema);
-        assert.isBigNumber('cancelAmount', cancelAmount);
+            orderSchema);
+        assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
         await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker', order.maker);
 
         const exchangeInstance = await this.getExchangeContractAsync();
-        await this.validateCancelOrderAndThrowIfInvalidAsync(order, cancelAmount);
+        await this.validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
 
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
         const gas = await exchangeInstance.cancel.estimateGas(
             orderAddresses,
             orderValues,
-            cancelAmount,
+            takerTokenCancelAmount,
             {
                 from: order.maker,
             },
@@ -197,7 +197,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const response: ContractResponse = await exchangeInstance.cancel(
             orderAddresses,
             orderValues,
-            cancelAmount,
+            takerTokenCancelAmount,
             {
                 from: order.maker,
                 gas,
@@ -231,14 +231,13 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this.exchangeLogEventObjs.push(logEventObj);
     }
-
     /**
-     * Get order hash
+     * Computes the orderHash for a given order and returns it as a hex encoded string.
      */
     public async getOrderHashAsync(order: Order): Promise<string> {
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
         const exchangeInstance = await this.getExchangeContractAsync();
-        const orderHash = await exchangeInstance.getOrderHash.call(orderAddresses, orderValues);
+        const orderHash = utils.getOrderHashHex(order, exchangeInstance.address);
         return orderHash;
     }
     private async stopWatchingExchangeLogEventsAsync() {
@@ -257,7 +256,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
             throw new Error(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
         }
-        const currentUnixTimestampSec = Date.now() / 1000;
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
         if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.ORDER_FILL_EXPIRED);
         }
@@ -272,9 +271,9 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
         }
     }
-    private async validateCancelOrderAndThrowIfInvalidAsync(order: Order,
-                                                            cancelAmount: BigNumber.BigNumber): Promise<void> {
-        if (cancelAmount.eq(0)) {
+    private async validateCancelOrderAndThrowIfInvalidAsync(
+        order: Order, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
+        if (takerTokenCancelAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
         }
         const orderHash = await this.getOrderHashAsync(order);
@@ -282,7 +281,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
         }
-        const currentUnixTimestampSec = Date.now() / 1000;
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
         if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
         }
