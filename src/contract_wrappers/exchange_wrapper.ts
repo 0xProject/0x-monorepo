@@ -175,7 +175,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
      */
-    public async cancelOrderAsync(order: Order, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
+    public async cancelOrderAsync(order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
         assert.doesConformToSchema('order',
             SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
             orderSchema);
@@ -234,7 +234,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Computes the orderHash for a given order and returns it as a hex encoded string.
      */
-    public async getOrderHashAsync(order: Order): Promise<string> {
+    public async getOrderHashAsync(order: Order|SignedOrder): Promise<string> {
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
         const exchangeInstance = await this.getExchangeContractAsync();
         const orderHash = utils.getOrderHashHex(order, exchangeInstance.address);
