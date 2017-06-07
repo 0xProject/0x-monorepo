@@ -127,6 +127,7 @@ describe('ExchangeWrapper', () => {
         let makerAddress: string;
         let takerAddress: string;
         let feeRecipient: string;
+        const fillableAmount = new BigNumber(5);
         const fillTakerAmount = new BigNumber(5);
         const shouldCheckTransfer = false;
         before(async () => {
@@ -139,7 +140,6 @@ describe('ExchangeWrapper', () => {
         describe('#fillOrderAsync', () => {
             describe('failed fills', () => {
                 it('should throw when the fill amount is zero', async () => {
-                    const fillableAmount = new BigNumber(5);
                     const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                     );
@@ -149,7 +149,6 @@ describe('ExchangeWrapper', () => {
                     )).to.be.rejectedWith(ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO);
                 });
                 it('should throw when sender is not a taker', async () => {
-                    const fillableAmount = new BigNumber(5);
                     const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                     );
@@ -160,7 +159,6 @@ describe('ExchangeWrapper', () => {
                 });
                 it('should throw when order is expired', async () => {
                     const expirationInPast = new BigNumber(1496826058); // 7th Jun 2017
-                    const fillableAmount = new BigNumber(5);
                     const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
                         fillableAmount, expirationInPast,
@@ -170,7 +168,6 @@ describe('ExchangeWrapper', () => {
                     )).to.be.rejectedWith(ExchangeContractErrs.ORDER_FILL_EXPIRED);
                 });
                 describe('should throw when not enough balance or allowance to fulfill the order', () => {
-                    const fillableAmount = new BigNumber(5);
                     const balanceToSubtractFromMaker = new BigNumber(3);
                     const lackingAllowance = new BigNumber(3);
                     let signedOrder: SignedOrder;
@@ -225,7 +222,6 @@ describe('ExchangeWrapper', () => {
                     )).to.be.rejectedWith(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
                 });
                 describe('should throw when not enough balance or allowance to pay fees', () => {
-                    const fillableAmount = new BigNumber(5);
                     const makerFee = new BigNumber(2);
                     const takerFee = new BigNumber(2);
                     let signedOrder: SignedOrder;
@@ -273,7 +269,6 @@ describe('ExchangeWrapper', () => {
             });
             describe('successful fills', () => {
                 it('should fill a valid order', async () => {
-                    const fillableAmount = new BigNumber(5);
                     const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                     );
@@ -297,7 +292,6 @@ describe('ExchangeWrapper', () => {
                         .to.be.bignumber.equal(fillableAmount.minus(fillTakerAmount));
                 });
                 it('should partially fill the valid order', async () => {
-                    const fillableAmount = new BigNumber(5);
                     const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                     );
@@ -314,7 +308,6 @@ describe('ExchangeWrapper', () => {
                         .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
                 });
                 it('should fill the valid orders with fees', async () => {
-                    const fillableAmount = new BigNumber(5);
                     const makerFee = new BigNumber(1);
                     const takerFee = new BigNumber(2);
                     const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
@@ -326,6 +319,22 @@ describe('ExchangeWrapper', () => {
                     expect(await zeroEx.token.getBalanceAsync(zrxTokenAddress, feeRecipient))
                         .to.be.bignumber.equal(makerFee.plus(takerFee));
                 });
+            });
+        });
+        describe('#batchFillOrderAsync', () => {
+            let anotherSignedOrder: SignedOrder;
+            let anotherOrderHashHex: string;
+            beforeEach(async () => {
+                anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                anotherOrderHashHex = await zeroEx.getOrderHashHexAsync(anotherSignedOrder);
+            });
+            describe('failed batch fills', () => {
+
+            });
+            describe('successful batch fills', () => {
+
             });
         });
     });
