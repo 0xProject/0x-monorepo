@@ -74,6 +74,12 @@ export interface ExchangeContract extends ContractInstance {
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
                       txOpts?: TxOpts) => number;
     };
+    fillOrKill: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
+         v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
+                      v: number, r: string, s: string, txOpts?: TxOpts) => number;
+    };
     filled: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
@@ -139,7 +145,7 @@ export const ExchangeContractErrs = strEnum([
     'INSUFFICIENT_MAKER_FEE_BALANCE',
     'INSUFFICIENT_MAKER_FEE_ALLOWANCE',
     'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
-
+    'INSUFFICIENT_REMAINING_FILL_AMOUNT',
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 

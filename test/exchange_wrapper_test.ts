@@ -120,6 +120,81 @@ describe('ExchangeWrapper', () => {
             expect(isValid).to.be.true();
         });
     });
+    describe('#fillOrKillOrderAsync', () => {
+        let makerTokenAddress: string;
+        let takerTokenAddress: string;
+        let coinbase: string;
+        let makerAddress: string;
+        let takerAddress: string;
+        let feeRecipient: string;
+        const fillTakerAmount = new BigNumber(5);
+        before(async () => {
+            [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
+            tokens = await zeroEx.tokenRegistry.getTokensAsync();
+            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            makerTokenAddress = makerToken.address;
+            takerTokenAddress = takerToken.address;
+        });
+        describe('failed fillOrKill', () => {
+            it('should throw if remaining fillAmount is less then the desired fillAmount', async () => {
+                const fillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                const tooLargeFillAmount = new BigNumber(7);
+                const fillAmountDifference = tooLargeFillAmount.minus(fillableAmount);
+                await zeroEx.token.transferAsync(takerTokenAddress, coinbase, takerAddress, fillAmountDifference);
+                await zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, tooLargeFillAmount);
+                await zeroEx.token.transferAsync(makerTokenAddress, coinbase, makerAddress, fillAmountDifference);
+                await zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, tooLargeFillAmount);
+
+                return expect(zeroEx.exchange.fillOrKillOrderAsync(
+                    signedOrder, tooLargeFillAmount, takerAddress,
+                )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
+            });
+        });
+        describe('successful fills', () => {
+            it('should fill a valid order', async () => {
+                const fillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(fillableAmount);
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(0);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(0);
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(fillableAmount);
+                await zeroEx.exchange.fillOrKillOrderAsync(signedOrder, fillTakerAmount, takerAddress);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(fillableAmount.minus(fillTakerAmount));
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(fillTakerAmount);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(fillTakerAmount);
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(fillableAmount.minus(fillTakerAmount));
+            });
+            it('should partially fill a valid order', async () => {
+                const fillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                const partialFillAmount = new BigNumber(3);
+                await zeroEx.exchange.fillOrKillOrderAsync(signedOrder, partialFillAmount, takerAddress);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(partialFillAmount);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(partialFillAmount);
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
+            });
+        });
+    });
     describe('#fillOrderAsync', () => {
         let makerTokenAddress: string;
         let takerTokenAddress: string;
@@ -210,7 +285,7 @@ describe('ExchangeWrapper', () => {
                     )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_MAKER_ALLOWANCE);
                 });
             });
-            it('should throw when there a rounding error would have occurred', async () => {
+            it('should throw when a rounding error would have occurred', async () => {
                 const makerAmount = new BigNumber(3);
                 const takerAmount = new BigNumber(5);
                 const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
@@ -308,6 +383,29 @@ describe('ExchangeWrapper', () => {
                     .to.be.bignumber.equal(partialFillAmount);
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                     .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
+            });
+            it('should fill up to remaining amount if desired fillAmount greater than available amount', async () => {
+                const fillableAmount = new BigNumber(5);
+                const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                const tooLargeFillAmount = new BigNumber(7);
+                const fillAmountDifference = tooLargeFillAmount.minus(fillableAmount);
+                await zeroEx.token.transferAsync(takerTokenAddress, coinbase, takerAddress, fillAmountDifference);
+                await zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, tooLargeFillAmount);
+                await zeroEx.token.transferAsync(makerTokenAddress, coinbase, makerAddress, fillAmountDifference);
+                await zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, tooLargeFillAmount);
+
+                await zeroEx.exchange.fillOrderAsync(signedOrder, tooLargeFillAmount, shouldCheckTransfer,
+                                                     takerAddress);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(fillAmountDifference);
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
+                    .to.be.bignumber.equal(fillableAmount);
+                expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(fillableAmount);
+                expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
+                    .to.be.bignumber.equal(fillAmountDifference);
             });
             it('should fill the valid orders with fees', async () => {
                 const fillableAmount = new BigNumber(5);

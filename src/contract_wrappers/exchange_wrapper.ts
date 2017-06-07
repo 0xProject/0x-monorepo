@@ -145,6 +145,7 @@ export class ExchangeWrapper extends ContractWrapper {
         await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
+
         const gas = await exchangeInstance.fill.estimateGas(
             orderAddresses,
             orderValues,
@@ -173,9 +174,60 @@ export class ExchangeWrapper extends ContractWrapper {
         this.throwErrorLogsAsErrors(response.logs);
     }
     /**
+     * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
+     * the fill order is abandoned.
+     */
+    public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
+                                      takerAddress: string) {
+        assert.doesConformToSchema('signedOrder',
+                            SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
+                            signedOrderSchema);
+        assert.isBigNumber('fillTakerAmount', fillTakerAmount);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
+
+        // Check that fillValue available >= fillTakerAmount
+        const orderHashHex = await this.getOrderHashHexAsync(signedOrder);
+        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
+        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
+        if (remainingTakerAmount < fillTakerAmount) {
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
+        }
+
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
+
+        const gas = await exchangeInstance.fillOrKill.estimateGas(
+            orderAddresses,
+            orderValues,
+            fillTakerAmount,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.fillOrKill(
+            orderAddresses,
+            orderValues,
+            fillTakerAmount,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
      */
-    public async cancelOrderAsync(order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
+    public async cancelOrderAsync(order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber):
+        Promise<void> {
         assert.doesConformToSchema('order',
             SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
             orderSchema);
@@ -231,11 +283,10 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this.exchangeLogEventObjs.push(logEventObj);
     }
-    private async getOrderHashAsync(order: Order|SignedOrder): Promise<string> {
-        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
+    private async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         const exchangeInstance = await this.getExchangeContractAsync();
-        const orderHash = utils.getOrderHashHex(order, exchangeInstance.address);
-        return orderHash;
+        const orderHashHex = utils.getOrderHashHex(order, exchangeInstance.address);
+        return orderHashHex;
     }
     private async stopWatchingExchangeLogEventsAsync() {
         const stopWatchingPromises = _.map(this.exchangeLogEventObjs, logEventObj => {
@@ -273,7 +324,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (takerTokenCancelAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
         }
-        const orderHash = await this.getOrderHashAsync(order);
+        const orderHash = await this.getOrderHashHexAsync(order);
         const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash);
         if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
@@ -289,8 +340,8 @@ export class ExchangeWrapper extends ContractWrapper {
      * Handling the edge-cases that arise when this happens would require making sure that the user has sufficient
      * funds to pay both the fees and the transfer amount. We decided to punt on this for now as the contracts
      * will throw for these edge-cases.
-     * TODO: Throw errors before calling the smart contract for these edge-cases
-     * TODO: in order to minimize the callers gas costs.
+     * TODO: Throw errors before calling the smart contract for these edge-cases in order to minimize
+     * the callers gas costs.
      */
     private async validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                                                fillTakerAmount: BigNumber.BigNumber,
