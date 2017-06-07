@@ -414,7 +414,7 @@ describe('ExchangeWrapper', () => {
                     return expect(zeroEx.exchange.batchCancelOrderAsync([]))
                         .to.be.rejectedWith('Can not cancel an empty batch');
                 });
-                it.only('should throw when orders have different makers', async () => {
+                it('should throw when orders have different makers', async () => {
                     const signedOrderWithADifferentMaker = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, takerAddress, takerAddress, fillableAmount,
                     );
