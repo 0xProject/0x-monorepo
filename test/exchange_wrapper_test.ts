@@ -16,7 +16,7 @@ import {
     ExchangeEvents,
     ContractEvent,
     DoneCallback,
-    ExchangeContractErrs,
+    ExchangeContractErrs, OrderCancellationRequest,
 } from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
@@ -120,7 +120,7 @@ describe('ExchangeWrapper', () => {
             expect(isValid).to.be.true();
         });
     });
-    describe('fill order', () => {
+    describe('fill order(s)', () => {
         let makerTokenAddress: string;
         let takerTokenAddress: string;
         let coinbase: string;
@@ -392,34 +392,44 @@ describe('ExchangeWrapper', () => {
         describe('#batchCancelOrderAsync', () => {
             let anotherSignedOrder: SignedOrder;
             let anotherOrderHashHex: string;
+            let cancelBatch: OrderCancellationRequest[];
             beforeEach(async () => {
                 anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 anotherOrderHashHex = await zeroEx.getOrderHashHexAsync(anotherSignedOrder);
+                cancelBatch = [
+                    {
+                        order: signedOrder,
+                        takerTokenCancelAmount: cancelAmount,
+                    },
+                    {
+                        order: anotherSignedOrder,
+                        takerTokenCancelAmount: cancelAmount,
+                    },
+                ];
             });
             describe('failed batch cancels', () => {
-                it('should throw when length of orders and cancelAmounts mismatch', async () => {
-                    return expect(zeroEx.exchange.batchCancelOrderAsync([signedOrder], []))
-                        .to.be.rejectedWith('orders and takerTokenCancelAmounts length mismatch. 1 != 0');
-                });
                 it('should throw when orders are empty', async () => {
-                    return expect(zeroEx.exchange.batchCancelOrderAsync([], []))
+                    return expect(zeroEx.exchange.batchCancelOrderAsync([]))
                         .to.be.rejectedWith('Can not cancel an empty batch');
                 });
                 it.only('should throw when orders have different makers', async () => {
                     const signedOrderWithADifferentMaker = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, takerAddress, takerAddress, fillableAmount,
                     );
-                    return expect(zeroEx.exchange.batchCancelOrderAsync(
-                        [signedOrder, signedOrderWithADifferentMaker], [cancelAmount, cancelAmount]))
-                        .to.be.rejectedWith('Can not cancel orders from multiple makers in a single batch');
+                    return expect(zeroEx.exchange.batchCancelOrderAsync([
+                        cancelBatch[0],
+                        {
+                            order: signedOrderWithADifferentMaker,
+                            takerTokenCancelAmount: cancelAmount,
+                        },
+                    ])).to.be.rejectedWith('Can not cancel orders from multiple makers in a single batch');
                 });
             });
             describe('successful batch cancels', () => {
                 it('should cancel a batch of orders', async () => {
-                    await zeroEx.exchange.batchCancelOrderAsync(
-                        [signedOrder, anotherSignedOrder], [cancelAmount, cancelAmount]);
+                    await zeroEx.exchange.batchCancelOrderAsync(cancelBatch);
                     const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
                     const anotherCancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(
                         anotherOrderHashHex);

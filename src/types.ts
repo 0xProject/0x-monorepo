@@ -228,3 +228,8 @@ export interface SubscriptionOpts {
 }
 
 export type DoneCallback = (err?: Error) => void;
+
+export interface OrderCancellationRequest {
+    order: Order|SignedOrder;
+    takerTokenCancelAmount: BigNumber.BigNumber;
+}
