@@ -16,7 +16,9 @@ import {
     ExchangeEvents,
     ContractEvent,
     DoneCallback,
-    ExchangeContractErrs, OrderCancellationRequest,
+    ExchangeContractErrs,
+    OrderCancellationRequest,
+    OrderFillRequest,
 } from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
@@ -132,7 +134,6 @@ describe('ExchangeWrapper', () => {
         const shouldCheckTransfer = false;
         before(async () => {
             [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
-            tokens = await zeroEx.tokenRegistry.getTokensAsync();
             const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
@@ -322,19 +323,42 @@ describe('ExchangeWrapper', () => {
             });
         });
         describe('#batchFillOrderAsync', () => {
+            let signedOrder: SignedOrder;
+            let signedOrderHashHex: string;
             let anotherSignedOrder: SignedOrder;
             let anotherOrderHashHex: string;
+            let orderFillBatch: OrderFillRequest[];
             beforeEach(async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                signedOrderHashHex = await zeroEx.getOrderHashHexAsync(signedOrder);
                 anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 anotherOrderHashHex = await zeroEx.getOrderHashHexAsync(anotherSignedOrder);
+                orderFillBatch = [
+                    {
+                        signedOrder,
+                        takerTokenFillAmount: fillTakerAmount,
+                    },
+                    {
+                        signedOrder: anotherSignedOrder,
+                        takerTokenFillAmount: fillTakerAmount,
+                    },
+                ];
             });
             describe('failed batch fills', () => {
 
             });
             describe('successful batch fills', () => {
-
+                it('should successfully fill multiple orders', async () => {
+                    await zeroEx.exchange.batchFillOrderAsync(orderFillBatch, shouldCheckTransfer, takerAddress);
+                    const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
+                    const anotherFilledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(anotherOrderHashHex);
+                    expect(filledAmount).to.be.bignumber.equal(fillTakerAmount);
+                    expect(anotherFilledAmount).to.be.bignumber.equal(fillTakerAmount);
+                });
             });
         });
     });
