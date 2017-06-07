@@ -147,7 +147,6 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.assert(!_.isEmpty(orderFillRequests), 'Cannot fill an empty batch');
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
-        // _.zip doesn't type check if values have different types :'(
         _.forEach(orderFillRequests,
             async (orderFillRequest: OrderFillRequest) => {
             assert.doesConformToSchema('signedOrder',
