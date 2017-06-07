@@ -253,10 +253,7 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this.exchangeLogEventObjs.push(logEventObj);
     }
-    /**
-     * Computes the orderHash for a given order and returns it as a hex encoded string.
-     */
-    public async getOrderHashAsync(order: Order|SignedOrder): Promise<string> {
+    private async getOrderHashAsync(order: Order|SignedOrder): Promise<string> {
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
         const exchangeInstance = await this.getExchangeContractAsync();
         const orderHash = utils.getOrderHashHex(order, exchangeInstance.address);

@@ -2,10 +2,7 @@ import * as _ from 'lodash';
 import * as BN from 'bn.js';
 import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
-import {orderSchema} from '../schemas/order_schemas';
-import {SchemaValidator} from './schema_validator';
 import {Order, SignedOrder, SolidityTypes} from '../types';
-import {assert} from './assert';
 import * as BigNumber from 'bignumber.js';
 
 export const utils = {
@@ -33,10 +30,6 @@ export const utils = {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },
     getOrderHashHex(order: Order|SignedOrder, exchangeContractAddr: string): string {
-        assert.doesConformToSchema('order',
-            SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
-            orderSchema);
-
         const orderParts = [
             {value: exchangeContractAddr, type: SolidityTypes.address},
             {value: order.maker, type: SolidityTypes.address},
