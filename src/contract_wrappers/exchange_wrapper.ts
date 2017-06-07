@@ -292,11 +292,11 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this.exchangeLogEventObjs.push(logEventObj);
     }
-    private async getOrderHashAsync(order: Order|SignedOrder): Promise<string> {
+    private async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
         const exchangeInstance = await this.getExchangeContractAsync();
-        const orderHash = utils.getOrderHashHex(order, exchangeInstance.address);
-        return orderHash;
+        const orderHashHex = utils.getOrderHashHex(order, exchangeInstance.address);
+        return orderHashHex;
     }
     private async stopWatchingExchangeLogEventsAsync() {
         const stopWatchingPromises = _.map(this.exchangeLogEventObjs, logEventObj => {
@@ -334,7 +334,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (takerTokenCancelAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
         }
-        const orderHash = await this.getOrderHashAsync(order);
+        const orderHash = await this.getOrderHashHexAsync(order);
         const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash);
         if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);

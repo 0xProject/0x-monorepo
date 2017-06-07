@@ -134,8 +134,8 @@ export class ZeroEx {
                                    orderSchema);
 
         const exchangeContractAddr = await this.getExchangeAddressAsync();
-        const orderHash = utils.getOrderHashHex(order, exchangeContractAddr);
-        return orderHash;
+        const orderHashHex = utils.getOrderHashHex(order, exchangeContractAddr);
+        return orderHashHex;
     }
     /**
      * Signs an orderHash and returns it's elliptic curve signature
