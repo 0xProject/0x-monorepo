@@ -18,7 +18,7 @@ import {
     CreateContractEvent,
     ContractEventObj,
     EventCallback,
-    ContractResponse, OrderCancellationRequest,
+    ContractResponse, OrderCancellationRequest, OrderFillRequest,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -125,53 +125,57 @@ export class ExchangeWrapper extends ContractWrapper {
         return cancelledAmountInBaseUnits;
     }
     /**
-     * Fills a signed order with a fillAmount denominated in baseUnits of the taker token.
+     * Fills a signed order with a takerTokenFillAmount denominated in baseUnits of the taker token.
      * Since the order in which transactions are included in the next block is indeterminate, race-conditions
      * could arise where a users balance or allowance changes before the fillOrder executes. Because of this,
      * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if while
      * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
      * false forgoes this check and causes the smart contract to throw instead.
      */
-    public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
+    public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
-        await this.batchFillOrderAsync([signedOrder], [fillTakerAmount], shouldCheckTransfer, takerAddress);
+        await this.batchFillOrderAsync([{
+            signedOrder,
+            takerTokenFillAmount,
+        }], shouldCheckTransfer, takerAddress);
     }
     /**
      * Batched version of fillOrderAsync. Executes fills atomically in a single transaction.
      */
-    public async batchFillOrderAsync(signedOrders: SignedOrder[], fillTakerAmounts: BigNumber.BigNumber[],
+    public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
-        assert.isSameLength('signedOrders', signedOrders, 'fillTakerAmounts', fillTakerAmounts);
-        assert.assert(!_.isEmpty(signedOrders), 'Can not cancel an empty batch');
+        assert.assert(!_.isEmpty(orderFillRequests), 'Cannot fill an empty batch');
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
         // _.zip doesn't type check if values have different types :'(
-        const ordersAndAmounts = _.zip<any>(signedOrders, fillTakerAmounts);
-        _.forEach(ordersAndAmounts,
-            async ([signedOrder, fillTakerAmount]: [SignedOrder, BigNumber.BigNumber]) => {
+        _.forEach(orderFillRequests,
+            async (orderFillRequest: OrderFillRequest) => {
             assert.doesConformToSchema('signedOrder',
-                SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object), signedOrderSchema);
-            assert.isBigNumber('fillTakerAmount', fillTakerAmount);
-            await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
+                SchemaValidator.convertToJSONSchemaCompatibleObject(orderFillRequest.signedOrder as object),
+                signedOrderSchema);
+            assert.isBigNumber('takerTokenFillAmount', orderFillRequest.takerTokenFillAmount);
+            await this.validateFillOrderAndThrowIfInvalidAsync(
+                orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
         });
         const exchangeInstance = await this.getExchangeContractAsync();
 
-        const orderAddressesValuesAndSignatureArray = _.map(signedOrders, signedOrder => {
+        const orderAddressesValuesAmountsAndSignatureArray = _.map(orderFillRequests, orderFillRequest => {
             return [
-                ...ExchangeWrapper.getOrderAddressesAndValues(signedOrder),
-                signedOrder.ecSignature.v,
-                signedOrder.ecSignature.r,
-                signedOrder.ecSignature.s,
+                ...ExchangeWrapper.getOrderAddressesAndValues(orderFillRequest.signedOrder),
+                orderFillRequest.takerTokenFillAmount,
+                orderFillRequest.signedOrder.ecSignature.v,
+                orderFillRequest.signedOrder.ecSignature.r,
+                orderFillRequest.signedOrder.ecSignature.s,
             ];
         });
         // _.unzip doesn't type check if values have different types :'(
-        const [orderAddressesArray, orderValuesArray, vArray, rArray, sArray] = _.unzip<any>(
-            orderAddressesValuesAndSignatureArray,
+        const [orderAddressesArray, orderValuesArray, takerTokenFillAmountArray, vArray, rArray, sArray] = _.unzip<any>(
+            orderAddressesValuesAmountsAndSignatureArray,
         );
         const gas = await exchangeInstance.batchFill.estimateGas(
             orderAddressesArray,
             orderValuesArray,
-            fillTakerAmounts,
+            takerTokenFillAmountArray,
             shouldCheckTransfer,
             vArray,
             rArray,
@@ -183,7 +187,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const response: ContractResponse = await exchangeInstance.batchFill(
             orderAddressesArray,
             orderValuesArray,
-            fillTakerAmounts,
+            takerTokenFillAmountArray,
             shouldCheckTransfer,
             vArray,
             rArray,
