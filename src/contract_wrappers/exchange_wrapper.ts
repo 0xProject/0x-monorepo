@@ -234,7 +234,7 @@ export class ExchangeWrapper extends ContractWrapper {
         orders: Array<Order|SignedOrder>, takerTokenCancelAmounts: BigNumber.BigNumber[]): Promise<void> {
         const makers = _.map(orders, order => order.maker);
         assert.isSameLength('orders', orders, 'takerTokenCancelAmounts', takerTokenCancelAmounts);
-        assert.assert(_.isEmpty(orders), 'Can not cancel an empty batch');
+        assert.assert(!_.isEmpty(orders), 'Can not cancel an empty batch');
         assert.assert(_.uniq(makers).length === 1, 'Can not cancel orders from multiple makers in a single batch');
         const maker = makers[0];
         // _.zip doesn't type check if values have different types :'(
