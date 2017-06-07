@@ -14,8 +14,7 @@ import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
-import {ECSignature, ZeroExError} from './types';
-import {Order, SignedOrder} from './types';
+import {ECSignature, ZeroExError, Order, SignedOrder} from './types';
 import * as ExchangeArtifacts from './artifacts/Exchange.json';
 
 // Customize our BigNumber instances
