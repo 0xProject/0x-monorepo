@@ -47,7 +47,9 @@ declare module 'ethereumjs-util' {
 }
 
 // truffle-contract declarations
-declare interface ContractInstance {}
+declare interface ContractInstance {
+    address: string;
+}
 declare interface ContractFactory {
     setProvider: (providerObj: any) => void;
     deployed: () => ContractInstance;

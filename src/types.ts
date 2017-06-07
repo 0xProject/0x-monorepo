@@ -44,7 +44,7 @@ export interface ContractEventObj {
 }
 export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
                                    subscriptionOpts: SubscriptionOpts) => ContractEventObj;
-export interface ExchangeContract {
+export interface ExchangeContract extends ContractInstance {
     isValidSignature: {
         call: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
                txOpts?: TxOpts) => Promise<boolean>;
@@ -64,9 +64,15 @@ export interface ExchangeContract {
     };
     fill: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-         shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts): ContractResponse;
+         shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-                      shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts) => number;
+                      shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts) => number;
+    };
+    cancel: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
+         txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
+                      txOpts?: TxOpts) => number;
     };
     filled: {
         call: (orderHash: string) => BigNumber.BigNumber;
@@ -74,22 +80,25 @@ export interface ExchangeContract {
     cancelled: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
+    getOrderHash: {
+        call: (orderAddresses: OrderAddresses, orderValues: OrderValues) => string;
+    };
 }
 
-export interface TokenContract {
+export interface TokenContract extends ContractInstance {
     balanceOf: {
         call: (address: string) => Promise<BigNumber.BigNumber>;
     };
     allowance: {
         call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
     };
-    transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => Promise<boolean>;
+    transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     transferFrom: (fromAddress: string, toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
-                   txOpts: TxOpts) => Promise<boolean>;
-    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => void;
+                   txOpts?: TxOpts) => Promise<boolean>;
+    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => void;
 }
 
-export interface TokenRegistryContract {
+export interface TokenRegistryContract extends ContractInstance {
     getTokenMetaData: {
         call: (address: string) => Promise<TokenMetadata>;
     };
@@ -115,6 +124,9 @@ export enum ExchangeContractErrCodes {
 
 export const ExchangeContractErrs = strEnum([
     'ORDER_FILL_EXPIRED',
+    'ORDER_CANCEL_EXPIRED',
+    'ORDER_CANCEL_AMOUNT_ZERO',
+    'ORDER_ALREADY_CANCELLED_OR_FILLED',
     'ORDER_REMAINING_FILL_AMOUNT_ZERO',
     'ORDER_FILL_ROUNDING_ERROR',
     'FILL_BALANCE_ALLOWANCE_ERROR',

@@ -9,9 +9,9 @@ import {
     ExchangeContractErrs,
     OrderValues,
     OrderAddresses,
+    Order,
     SignedOrder,
     ContractEvent,
-    ZeroExError,
     ExchangeEvents,
     SubscriptionOpts,
     IndexFilterValues,
@@ -25,7 +25,7 @@ import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
-import {signedOrderSchema} from '../schemas/order_schemas';
+import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
@@ -42,6 +42,24 @@ export class ExchangeWrapper extends ContractWrapper {
     private exchangeContractIfExists?: ExchangeContract;
     private exchangeLogEventObjs: ContractEventObj[];
     private tokenWrapper: TokenWrapper;
+    private static getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
+        const orderAddresses: OrderAddresses = [
+            order.maker,
+            order.taker,
+            order.makerTokenAddress,
+            order.takerTokenAddress,
+            order.feeRecipient,
+        ];
+        const orderValues: OrderValues = [
+            order.makerTokenAmount,
+            order.takerTokenAmount,
+            order.makerFee,
+            order.takerFee,
+            order.expirationUnixTimestampSec,
+            order.salt,
+        ];
+        return [orderAddresses, orderValues];
+    }
     constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
         this.tokenWrapper = tokenWrapper;
@@ -126,21 +144,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
-        const orderAddresses: OrderAddresses = [
-            signedOrder.maker,
-            signedOrder.taker,
-            signedOrder.makerTokenAddress,
-            signedOrder.takerTokenAddress,
-            signedOrder.feeRecipient,
-        ];
-        const orderValues: OrderValues = [
-            signedOrder.makerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerFee,
-            signedOrder.takerFee,
-            signedOrder.expirationUnixTimestampSec,
-            signedOrder.salt,
-        ];
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
         const gas = await exchangeInstance.fill.estimateGas(
             orderAddresses,
             orderValues,
@@ -163,6 +167,39 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.s,
             {
                 from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
+     * Cancel a given fill amount of an order. Cancellations are cumulative.
+     */
+    public async cancelOrderAsync(order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
+        assert.doesConformToSchema('order',
+            SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
+            orderSchema);
+        assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
+        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker', order.maker);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        await this.validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
+
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
+        const gas = await exchangeInstance.cancel.estimateGas(
+            orderAddresses,
+            orderValues,
+            takerTokenCancelAmount,
+            {
+                from: order.maker,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.cancel(
+            orderAddresses,
+            orderValues,
+            takerTokenCancelAmount,
+            {
+                from: order.maker,
                 gas,
             },
         );
@@ -194,6 +231,12 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this.exchangeLogEventObjs.push(logEventObj);
     }
+    private async getOrderHashAsync(order: Order|SignedOrder): Promise<string> {
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
+        const exchangeInstance = await this.getExchangeContractAsync();
+        const orderHash = utils.getOrderHashHex(order, exchangeInstance.address);
+        return orderHash;
+    }
     private async stopWatchingExchangeLogEventsAsync() {
         const stopWatchingPromises = _.map(this.exchangeLogEventObjs, logEventObj => {
             return promisify(logEventObj.stopWatching, logEventObj)();
@@ -210,7 +253,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
             throw new Error(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
         }
-        const currentUnixTimestampSec = Date.now() / 1000;
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
         if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.ORDER_FILL_EXPIRED);
         }
@@ -225,7 +268,21 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
         }
     }
-
+    private async validateCancelOrderAndThrowIfInvalidAsync(
+        order: Order, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
+        if (takerTokenCancelAmount.eq(0)) {
+            throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
+        }
+        const orderHash = await this.getOrderHashAsync(order);
+        const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash);
+        if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
+            throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
+        }
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
+        if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+            throw new Error(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
+        }
+    }
     /**
      * This method does not currently validate the edge-case where the makerToken or takerToken is also the token used
      * to pay fees  (ZRX). It is possible for them to have enough for fees and the transfer but not both.

@@ -4,13 +4,13 @@ import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
 import ChaiBigNumber = require('chai-bignumber');
-import * as chaiAsPromised from 'chai-as-promised';
 import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src/0x.js';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {
     Token,
+    Order,
     SignedOrder,
     SubscriptionOpts,
     ExchangeEvents,
@@ -158,7 +158,7 @@ describe('ExchangeWrapper', () => {
                 )).to.be.rejectedWith(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
             });
             it('should throw when order is expired', async () => {
-                const expirationInPast = new BigNumber(42);
+                const expirationInPast = new BigNumber(1496826058); // 7th Jun 2017
                 const fillableAmount = new BigNumber(5);
                 const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount, expirationInPast,
@@ -320,6 +320,55 @@ describe('ExchangeWrapper', () => {
                 await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress);
                 expect(await zeroEx.token.getBalanceAsync(zrxTokenAddress, feeRecipient))
                     .to.be.bignumber.equal(makerFee.plus(takerFee));
+            });
+        });
+    });
+    describe('#cancelOrderAsync', () => {
+        let makerTokenAddress: string;
+        let takerTokenAddress: string;
+        let coinbase: string;
+        let makerAddress: string;
+        let takerAddress: string;
+        const fillableAmount = new BigNumber(5);
+        let signedOrder: SignedOrder;
+        let orderHashHex: string;
+        const cancelAmount = new BigNumber(3);
+        beforeEach(async () => {
+            [coinbase, makerAddress, takerAddress] = userAddresses;
+            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            makerTokenAddress = makerToken.address;
+            takerTokenAddress = takerToken.address;
+            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            orderHashHex = await zeroEx.getOrderHashHexAsync(signedOrder);
+        });
+        describe('failed cancels', () => {
+            it('should throw when cancel amount is zero', async () => {
+                const zeroCancelAmount = new BigNumber(0);
+                return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, zeroCancelAmount))
+                    .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
+            });
+            it('should throw when order is expired', async () => {
+                const expirationInPast = new BigNumber(1496826058); // 7th Jun 2017
+                const expiredSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount, expirationInPast,
+                );
+                orderHashHex = await zeroEx.getOrderHashHexAsync(expiredSignedOrder);
+                return expect(zeroEx.exchange.cancelOrderAsync(expiredSignedOrder, cancelAmount))
+                    .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
+            });
+            it('should throw when order is already cancelled or filled', async () => {
+                await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
+                return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount))
+                    .to.be.rejectedWith(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
+            });
+        });
+        describe('successful cancels', () => {
+            it('should cancel an order', async () => {
+                await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmount);
+                const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
+                expect(cancelledAmount).to.be.bignumber.equal(cancelAmount);
             });
         });
     });
