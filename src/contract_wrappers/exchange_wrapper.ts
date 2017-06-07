@@ -189,7 +189,7 @@ export class ExchangeWrapper extends ContractWrapper {
         await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
         // Check that fillValue available >= fillTakerAmount
-        const orderHashHex = utils.getOrderHashHex(signedOrder, exchangeInstance.address);
+        const orderHashHex = await this.getOrderHashHexAsync(signedOrder);
         const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
         const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
         if (remainingTakerAmount < fillTakerAmount) {
@@ -209,28 +209,19 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: takerAddress,
             },
         );
-        try {
-            const response: ContractResponse = await exchangeInstance.fillOrKill(
-                orderAddresses,
-                orderValues,
-                fillTakerAmount,
-                signedOrder.ecSignature.v,
-                signedOrder.ecSignature.r,
-                signedOrder.ecSignature.s,
-                {
-                    from: takerAddress,
-                    gas,
-                },
-            );
-            this.throwErrorLogsAsErrors(response.logs);
-        } catch (err) {
-            // There is a potential race condition where when the cancellation is broadcasted, a sufficient
-            // fillAmount is available, but by the time the transaction gets mined, it no longer is. Instead of
-            // throwing an invalid jump exception, we would rather give the user a more helpful error message.
-            if (_.includes(err, constants.INVALID_JUMP_IDENTIFIER)) {
-                throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
-            }
-        }
+        const response: ContractResponse = await exchangeInstance.fillOrKill(
+            orderAddresses,
+            orderValues,
+            fillTakerAmount,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
     }
     /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
@@ -293,7 +284,6 @@ export class ExchangeWrapper extends ContractWrapper {
         this.exchangeLogEventObjs.push(logEventObj);
     }
     private async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
-        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
         const exchangeInstance = await this.getExchangeContractAsync();
         const orderHashHex = utils.getOrderHashHex(order, exchangeInstance.address);
         return orderHashHex;
