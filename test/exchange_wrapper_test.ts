@@ -128,7 +128,6 @@ describe('ExchangeWrapper', () => {
         let takerAddress: string;
         let feeRecipient: string;
         const fillTakerAmount = new BigNumber(5);
-        const shouldCheckTransfer = false;
         before(async () => {
             [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
             tokens = await zeroEx.tokenRegistry.getTokensAsync();
@@ -150,7 +149,7 @@ describe('ExchangeWrapper', () => {
                 await zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, tooLargeFillAmount);
 
                 return expect(zeroEx.exchange.fillOrKillOrderAsync(
-                    signedOrder, tooLargeFillAmount, shouldCheckTransfer, takerAddress,
+                    signedOrder, tooLargeFillAmount, takerAddress,
                 )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
             });
         });
@@ -168,8 +167,7 @@ describe('ExchangeWrapper', () => {
                     .to.be.bignumber.equal(0);
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                     .to.be.bignumber.equal(fillableAmount);
-                await zeroEx.exchange.fillOrKillOrderAsync(signedOrder, fillTakerAmount,
-                                                           shouldCheckTransfer, takerAddress);
+                await zeroEx.exchange.fillOrKillOrderAsync(signedOrder, fillTakerAmount, takerAddress);
                 expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
                     .to.be.bignumber.equal(fillableAmount.minus(fillTakerAmount));
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
@@ -185,8 +183,7 @@ describe('ExchangeWrapper', () => {
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
                 const partialFillAmount = new BigNumber(3);
-                await zeroEx.exchange.fillOrderAsync(signedOrder, partialFillAmount,
-                                                     shouldCheckTransfer, takerAddress);
+                await zeroEx.exchange.fillOrKillOrderAsync(signedOrder, partialFillAmount, takerAddress);
                 expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
                     .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
                 expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
