@@ -44,7 +44,8 @@ export interface ContractEventObj {
 }
 export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
                                    subscriptionOpts: SubscriptionOpts) => ContractEventObj;
-export interface ExchangeContract {
+
+export interface ExchangeContract extends ContractInstance {
     isValidSignature: {
         call: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
                txOpts?: TxOpts) => Promise<boolean>;
@@ -68,6 +69,12 @@ export interface ExchangeContract {
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
                       shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts: TxOpts) => number;
     };
+    fillOrKill: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
+         v: number, r: string, s: string, txOpts: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
+                      v: number, r: string, s: string, txOpts: TxOpts) => number;
+    };
     filled: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
@@ -76,7 +83,7 @@ export interface ExchangeContract {
     };
 }
 
-export interface TokenContract {
+export interface TokenContract extends ContractInstance {
     balanceOf: {
         call: (address: string) => Promise<BigNumber.BigNumber>;
     };
@@ -89,7 +96,7 @@ export interface TokenContract {
     approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts: TxOpts) => void;
 }
 
-export interface TokenRegistryContract {
+export interface TokenRegistryContract extends ContractInstance {
     getTokenMetaData: {
         call: (address: string) => Promise<TokenMetadata>;
     };
@@ -127,7 +134,7 @@ export const ExchangeContractErrs = strEnum([
     'INSUFFICIENT_MAKER_FEE_BALANCE',
     'INSUFFICIENT_MAKER_FEE_ALLOWANCE',
     'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
-
+    'INSUFFICIENT_REMAINING_FILL_AMOUNT',
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 

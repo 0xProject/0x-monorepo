@@ -1,5 +1,8 @@
 import * as _ from 'lodash';
 import * as BN from 'bn.js';
+import * as ethUtil from 'ethereumjs-util';
+import * as ethABI from 'ethereumjs-abi';
+import {SolidityTypes, Order} from '../types';
 
 export const utils = {
     /**
@@ -21,6 +24,27 @@ export const utils = {
     isValidOrderHash(orderHashHex: string) {
         const isValid = /^0x[0-9A-F]{64}$/i.test(orderHashHex);
         return isValid;
+    },
+    getOrderHashHex(order: Order, exchangeContractAddr: string) {
+        const orderParts = [
+            {value: exchangeContractAddr, type: SolidityTypes.address},
+            {value: order.maker, type: SolidityTypes.address},
+            {value: order.taker, type: SolidityTypes.address},
+            {value: order.makerTokenAddress, type: SolidityTypes.address},
+            {value: order.takerTokenAddress, type: SolidityTypes.address},
+            {value: order.feeRecipient, type: SolidityTypes.address},
+            {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.uint256},
+            {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.uint256},
+        ];
+        const types = _.map(orderParts, o => o.type);
+        const values = _.map(orderParts, o => o.value);
+        const hashBuff = ethABI.soliditySHA3(types, values);
+        const hashHex = ethUtil.bufferToHex(hashBuff);
+        return hashHex;
     },
     spawnSwitchErr(name: string, value: any) {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);

@@ -7,6 +7,7 @@ import {
     ExchangeContract,
     ExchangeContractErrCodes,
     ExchangeContractErrs,
+    Order,
     OrderValues,
     OrderAddresses,
     SignedOrder,
@@ -126,21 +127,9 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
-        const orderAddresses: OrderAddresses = [
-            signedOrder.maker,
-            signedOrder.taker,
-            signedOrder.makerTokenAddress,
-            signedOrder.takerTokenAddress,
-            signedOrder.feeRecipient,
-        ];
-        const orderValues: OrderValues = [
-            signedOrder.makerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerFee,
-            signedOrder.takerFee,
-            signedOrder.expirationUnixTimestampSec,
-            signedOrder.salt,
-        ];
+        const orderAddresses = this.getOrderAddresses(signedOrder);
+        const orderValues = this.getOrderValues(signedOrder);
+
         const gas = await exchangeInstance.fill.estimateGas(
             orderAddresses,
             orderValues,
@@ -167,6 +156,67 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
+     * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
+     * the fill order is abandoned.
+     */
+    public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
+                                      shouldCheckTransfer: boolean, takerAddress: string) {
+        assert.doesConformToSchema('signedOrder',
+                            SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
+                            signedOrderSchema);
+        assert.isBigNumber('fillTakerAmount', fillTakerAmount);
+        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
+
+        // Check that fillValue available >= fillTakerAmount
+        const orderHashHex = utils.getOrderHashHex(signedOrder, exchangeInstance.address);
+        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
+        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
+        if (remainingTakerAmount < fillTakerAmount) {
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
+        }
+
+        const orderAddresses = this.getOrderAddresses(signedOrder);
+        const orderValues = this.getOrderValues(signedOrder);
+
+        const gas = await exchangeInstance.fillOrKill.estimateGas(
+            orderAddresses,
+            orderValues,
+            fillTakerAmount,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+            },
+        );
+        try {
+            const response: ContractResponse = await exchangeInstance.fillOrKill(
+                orderAddresses,
+                orderValues,
+                fillTakerAmount,
+                signedOrder.ecSignature.v,
+                signedOrder.ecSignature.r,
+                signedOrder.ecSignature.s,
+                {
+                    from: takerAddress,
+                    gas,
+                },
+            );
+            this.throwErrorLogsAsErrors(response.logs);
+        } catch (err) {
+            // There is a potential race condition where when the cancellation is broadcasted, a sufficient
+            // fillAmount is available, but by the time the transaction gets mined, it no longer is. Instead of
+            // throwing an invalid jump exception, we would rather give the user a more helpful error message.
+            if (_.includes(err, constants.INVALID_JUMP_IDENTIFIER)) {
+                throw new Error(ZeroExError.INSUFFICIENT_REMAINING_FILL_AMOUNT);
+            }
+        }
     }
     /**
      * Subscribe to an event type emitted by the Exchange smart contract
@@ -232,8 +282,8 @@ export class ExchangeWrapper extends ContractWrapper {
      * Handling the edge-cases that arise when this happens would require making sure that the user has sufficient
      * funds to pay both the fees and the transfer amount. We decided to punt on this for now as the contracts
      * will throw for these edge-cases.
-     * TODO: Throw errors before calling the smart contract for these edge-cases
-     * TODO: in order to minimize the callers gas costs.
+     * TODO: Throw errors before calling the smart contract for these edge-cases in order to minimize
+     * the callers gas costs.
      */
     private async validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                                                fillTakerAmount: BigNumber.BigNumber,
@@ -315,5 +365,26 @@ export class ExchangeWrapper extends ContractWrapper {
     private async getZRXTokenAddressAsync(): Promise<string> {
         const exchangeInstance = await this.getExchangeContractAsync();
         return exchangeInstance.ZRX.call();
+    }
+    private getOrderAddresses(order: Order|SignedOrder) {
+        const orderAddresses: OrderAddresses = [
+            order.maker,
+            order.taker,
+            order.makerTokenAddress,
+            order.takerTokenAddress,
+            order.feeRecipient,
+        ];
+        return orderAddresses;
+    }
+    private getOrderValues(order: Order|SignedOrder) {
+        const orderValues: OrderValues = [
+            order.makerTokenAmount,
+            order.takerTokenAmount,
+            order.makerFee,
+            order.takerFee,
+            order.expirationUnixTimestampSec,
+            order.salt,
+        ];
+        return orderValues;
     }
 }
