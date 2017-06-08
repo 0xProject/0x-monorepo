@@ -181,7 +181,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         if (_.isEmpty(orderFillRequests)) {
-            return;
+            return; // no-op
         }
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
@@ -205,10 +205,11 @@ export class ExchangeWrapper extends ContractWrapper {
                 orderFillRequest.signedOrder.ecSignature.s,
             ];
         });
-        // _.unzip doesn't type check if values have different types :'(
+        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
         const [orderAddressesArray, orderValuesArray, takerTokenFillAmountArray, vArray, rArray, sArray] = _.unzip<any>(
             orderAddressesValuesAmountsAndSignatureArray,
         );
+
         const gas = await exchangeInstance.batchFill.estimateGas(
             orderAddressesArray,
             orderValuesArray,
