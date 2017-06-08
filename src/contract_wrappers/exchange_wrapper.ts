@@ -28,6 +28,7 @@ import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
+import {signedOrdersSchema} from '../schemas/signed_orders_schema';
 import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
 import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
@@ -172,6 +173,9 @@ export class ExchangeWrapper extends ContractWrapper {
                                         ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        assert.doesConformToSchema(
+            'signedOrders', SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrders), signedOrdersSchema
+        );
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
         _.forEach(signedOrders,
             async (signedOrder: SignedOrder, i: number) => {
