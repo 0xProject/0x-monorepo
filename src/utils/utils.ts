@@ -4,7 +4,6 @@ import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
 import {Order, SignedOrder, SolidityTypes} from '../types';
 import * as BigNumber from 'bignumber.js';
-import {ECSignature} from '../types';
 
 export const utils = {
     /**
