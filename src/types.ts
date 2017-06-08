@@ -171,7 +171,7 @@ export const ExchangeContractErrs = strEnum([
     'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
     'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH',
     'INSUFFICIENT_REMAINING_FILL_AMOUNT',
-    'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO',
+    'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED',
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 

@@ -161,15 +161,15 @@ export class ExchangeWrapper extends ContractWrapper {
         this.throwErrorLogsAsErrors(response.logs);
     }
     /**
-     * Sequentially and atomically fills signedOrders up to takerTokenFillAmount.
-     * If fill amount is reached - it succeeds and doesn't fill the rest of the orders.
-     * If fill amount is not reached - it just fills all the orders.
+     * Sequentially and atomically fills signedOrders up to the specified takerTokenFillAmount.
+     * If the fill amount is reached - it succeeds and does not fill the rest of the orders.
+     * If fill amount is not reached - it fills as much of the fill amount as possible and succeeds.
      */
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
-        assert.assert(_.uniq(takerTokenAddresses).length <= 1,
-            ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO);
+        assert.hashAtMostOneUniqueValue(takerTokenAddresses,
+                                        ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
@@ -433,7 +433,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
-        assert.assert(_.uniq(makers).length <= 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
+        assert.hashAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
         _.forEach(orderCancellationRequests,

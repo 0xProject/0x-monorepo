@@ -42,6 +42,9 @@ export const assert = {
         const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
         this.assert(!_.isEmpty(availableAddresses), 'No addresses were available on the provided web3 instance');
     },
+    hashAtMostOneUniqueValue(value: any[], errMsg: string): void {
+        this.assert(_.uniq(value).length <= 1, errMsg);
+    },
     isNumber(variableName: string, value: number): void {
         this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));
     },
