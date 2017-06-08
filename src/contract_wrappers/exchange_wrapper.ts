@@ -303,15 +303,15 @@ export class ExchangeWrapper extends ContractWrapper {
               _.unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
 
         const gas = await exchangeInstance.batchFillOrKill.estimateGas(
-         orderAddresses,
-         orderValues,
-         fillTakerAmounts,
-         vParams,
-         rParams,
-         sParams,
-         {
-             from: takerAddress,
-         },
+            orderAddresses,
+            orderValues,
+            fillTakerAmounts,
+            vParams,
+            rParams,
+            sParams,
+            {
+                from: takerAddress,
+            },
         );
         const response: ContractResponse = await exchangeInstance.batchFillOrKill(
             orderAddresses,
@@ -320,10 +320,10 @@ export class ExchangeWrapper extends ContractWrapper {
             vParams,
             rParams,
             sParams,
-         {
-             from: takerAddress,
-             gas,
-         },
+            {
+                from: takerAddress,
+                gas,
+            },
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
