@@ -33,7 +33,7 @@ export class ZeroEx {
     private web3Wrapper: Web3Wrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
-     * by signing `data` with the private key corresponding to the `signerAddressHex` address.
+     * by signing `dataHex` with the private key corresponding to the `signerAddressHex` address.
      */
     public static isValidSignature(dataHex: string, signature: ECSignature, signerAddressHex: string): boolean {
         assert.isHexString('dataHex', dataHex);
@@ -83,11 +83,11 @@ export class ZeroEx {
      * E.g: If a currency has 18 decimal places, 1e18 or one quintillion of the currency is equivalent
      * to 1 unit.
      */
-    public static toUnitAmount(amount: BigNumber.BigNumber, decimals: number): BigNumber.BigNumber {
+    public static toUnitAmount(amount: BigNumber.BigNumber, numDecimals: number): BigNumber.BigNumber {
         assert.isBigNumber('amount', amount);
-        assert.isNumber('decimals', decimals);
+        assert.isNumber('numDecimals', numDecimals);
 
-        const aUnit = new BigNumber(10).pow(decimals);
+        const aUnit = new BigNumber(10).pow(numDecimals);
         const unit = amount.div(aUnit);
         return unit;
     }
@@ -96,11 +96,11 @@ export class ZeroEx {
      * is the amount expressed in the smallest denomination.
      * E.g: 1 unit of a token with 18 decimal places is expressed in baseUnits as 1000000000000000000
      */
-    public static toBaseUnitAmount(amount: BigNumber.BigNumber, decimals: number): BigNumber.BigNumber {
+    public static toBaseUnitAmount(amount: BigNumber.BigNumber, numDecimals: number): BigNumber.BigNumber {
         assert.isBigNumber('amount', amount);
-        assert.isNumber('decimals', decimals);
+        assert.isNumber('numDecimals', numDecimals);
 
-        const unit = new BigNumber(10).pow(decimals);
+        const unit = new BigNumber(10).pow(numDecimals);
         const baseUnitAmount = amount.times(unit);
         return baseUnitAmount;
     }
@@ -138,7 +138,7 @@ export class ZeroEx {
         return orderHashHex;
     }
     /**
-     * Signs an orderHash and returns it's elliptic curve signature
+     * Signs an orderHash and returns it's elliptic curve signature.
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
     public async signOrderHashAsync(orderHashHex: string, signerAddress: string): Promise<ECSignature> {
