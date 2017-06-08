@@ -74,6 +74,12 @@ export interface ExchangeContract extends ContractInstance {
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
                       txOpts?: TxOpts) => number;
     };
+    batchCancel: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelAmount: BigNumber.BigNumber[],
+         txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelAmount: BigNumber.BigNumber[],
+                      txOpts?: TxOpts) => number;
+    };
     fillOrKill: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
          v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
@@ -151,6 +157,7 @@ export const ExchangeContractErrs = strEnum([
     'INSUFFICIENT_MAKER_FEE_BALANCE',
     'INSUFFICIENT_MAKER_FEE_ALLOWANCE',
     'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
+    'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH',
     'INSUFFICIENT_REMAINING_FILL_AMOUNT',
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
@@ -232,4 +239,9 @@ export type DoneCallback = (err?: Error) => void;
 export interface OrderFillOrKillRequest {
     signedOrder: SignedOrder;
     fillTakerAmount: BigNumber.BigNumber;
+}
+
+export interface OrderCancellationRequest {
+    order: Order|SignedOrder;
+    takerTokenCancelAmount: BigNumber.BigNumber;
 }
