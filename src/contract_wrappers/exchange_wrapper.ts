@@ -10,6 +10,7 @@ import {
     OrderValues,
     OrderAddresses,
     Order,
+    OrderFillOrKillRequest,
     SignedOrder,
     ContractEvent,
     ExchangeEvents,
@@ -27,6 +28,7 @@ import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
+import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
 import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
 import {constants} from '../utils/constants';
@@ -70,23 +72,6 @@ export class ExchangeWrapper extends ContractWrapper {
     public async invalidateContractInstanceAsync(): Promise<void> {
         await this.stopWatchingExchangeLogEventsAsync();
         delete this.exchangeContractIfExists;
-    }
-    private async isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
-                                                         signerAddressHex: string): Promise<boolean> {
-        assert.isHexString('dataHex', dataHex);
-        assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
-        assert.isETHAddressHex('signerAddressHex', signerAddressHex);
-
-        const exchangeInstance = await this.getExchangeContractAsync();
-
-        const isValidSignature = await exchangeInstance.isValidSignature.call(
-            signerAddressHex,
-            dataHex,
-            ecSignature.v,
-            ecSignature.r,
-            ecSignature.s,
-        );
-        return isValidSignature;
     }
     /**
      * Returns the unavailable takerAmount of an order. Unavailable amount is defined as the total
@@ -255,13 +240,8 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
-        // Check that fillValue available >= fillTakerAmount
-        const orderHashHex = await this.getOrderHashHexAsync(signedOrder);
-        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
-        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
-        if (remainingTakerAmount < fillTakerAmount) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
-        }
+        await this.validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder, exchangeInstance.address,
+                                                                 fillTakerAmount);
 
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
 
@@ -283,6 +263,63 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
+     * Batch version of fillOrKill. Allows a taker to specify a batch of orders that will either be atomically
+     * filled (each to the specified fillAmount) or aborted.
+     */
+    public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
+                                      takerAddress: string) {
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+        assert.doesConformToSchema('orderFillOrKillRequests',
+            SchemaValidator.convertToJSONSchemaCompatibleObject(orderFillOrKillRequests),
+            orderFillOrKillRequestsSchema,
+        );
+        const exchangeInstance = await this.getExchangeContractAsync();
+        _.each(orderFillOrKillRequests, request => {
+            this.validateFillOrKillOrderAndThrowIfInvalidAsync(request.signedOrder,
+                                                               exchangeInstance.address,
+                                                               request.fillTakerAmount);
+        });
+
+        const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillOrKillRequests, request => {
+            return [
+                ...ExchangeWrapper.getOrderAddressesAndValues(request.signedOrder),
+                request.fillTakerAmount,
+                request.signedOrder.ecSignature.v,
+                request.signedOrder.ecSignature.r,
+                request.signedOrder.ecSignature.s,
+            ];
+        });
+
+        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
+        const [orderAddresses, orderValues, fillTakerAmounts, vParams, rParams, sParams] =
+              _.unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
+
+        const gas = await exchangeInstance.batchFillOrKill.estimateGas(
+            orderAddresses,
+            orderValues,
+            fillTakerAmounts,
+            vParams,
+            rParams,
+            sParams,
+            {
+                from: takerAddress,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.batchFillOrKill(
+            orderAddresses,
+            orderValues,
+            fillTakerAmounts,
+            vParams,
+            rParams,
+            sParams,
             {
                 from: takerAddress,
                 gas,
@@ -403,6 +440,23 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this.exchangeLogEventObjs.push(logEventObj);
     }
+    private async isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
+                                                         signerAddressHex: string): Promise<boolean> {
+        assert.isHexString('dataHex', dataHex);
+        assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
+        assert.isETHAddressHex('signerAddressHex', signerAddressHex);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+
+        const isValidSignature = await exchangeInstance.isValidSignature.call(
+            signerAddressHex,
+            dataHex,
+            ecSignature.v,
+            ecSignature.r,
+            ecSignature.s,
+        );
+        return isValidSignature;
+    }
     private async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         const exchangeInstance = await this.getExchangeContractAsync();
         const orderHashHex = utils.getOrderHashHex(order, exchangeInstance.address);
@@ -458,6 +512,17 @@ export class ExchangeWrapper extends ContractWrapper {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
         if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
+        }
+    }
+    private async validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                                exchangeAddress: string,
+                                                                fillTakerAmount: BigNumber.BigNumber) {
+        // Check that fillValue available >= fillTakerAmount
+        const orderHashHex = utils.getOrderHashHex(signedOrder, exchangeAddress);
+        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
+        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
+        if (remainingTakerAmount < fillTakerAmount) {
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
         }
     }
     /**

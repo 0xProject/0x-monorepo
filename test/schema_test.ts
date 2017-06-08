@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as chai from 'chai';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
-import {numberSchema} from '../src/schemas/order_schemas';
+import {numberSchema} from '../src/schemas/basic_type_schemas';
 import {SchemaValidator} from '../src/utils/schema_validator';
 
 chai.config.includeStack = true;
