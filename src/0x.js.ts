@@ -33,7 +33,7 @@ export class ZeroEx {
     private web3Wrapper: Web3Wrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
-     * by signing `data` with the private key corresponding to the `signerAddressHex` address.
+     * by signing `dataHex` with the private key corresponding to the `signerAddressHex` address.
      */
     public static isValidSignature(dataHex: string, signature: ECSignature, signerAddressHex: string): boolean {
         assert.isHexString('dataHex', dataHex);
@@ -138,7 +138,7 @@ export class ZeroEx {
         return orderHashHex;
     }
     /**
-     * Signs an orderHash and returns it's elliptic curve signature
+     * Signs an orderHash and returns it's elliptic curve signature.
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      */
     public async signOrderHashAsync(orderHashHex: string, signerAddress: string): Promise<ECSignature> {
