@@ -591,4 +591,26 @@ describe('ExchangeWrapper', () => {
             })();
         });
     });
+    describe('#getOrderHashHexUsingContractCallAsync', () => {
+        let makerTokenAddress: string;
+        let takerTokenAddress: string;
+        let makerAddress: string;
+        let takerAddress: string;
+        const fillableAmount = new BigNumber(5);
+        before(async () => {
+            [, makerAddress, takerAddress] = userAddresses;
+            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            makerTokenAddress = makerToken.address;
+            takerTokenAddress = takerToken.address;
+        });
+        it('get\'s the same hash as the local function', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
+            const orderHashFromContract = await (zeroEx.exchange as any)
+                .getOrderHashHexUsingContractCallAsync(signedOrder);
+            expect(orderHash).to.equal(orderHashFromContract);
+        });
+    });
 });
