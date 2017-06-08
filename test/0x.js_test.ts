@@ -6,8 +6,9 @@ import * as BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
 import {ZeroEx} from '../src/0x.js';
 import {constants} from './utils/constants';
-import {web3Factory} from './utils/web3_factory';
 import {Order} from '../src/types';
+import {ECSignature} from '../src/types';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -51,60 +52,33 @@ describe('ZeroEx library', () => {
             s: '0x2d887fd3b17bfdce3481f10bea41f45ba9f709d39ce8325427b57afcfc994cee',
         };
         const address = '0x9b2055d370f73ec7d8a03e965129118dc8f5bf83';
-        describe('should throw if passed a malformed signature', () => {
-            it('malformed v', () => {
-                const malformedSignature = {
-                    v: 34,
-                    r: signature.r,
-                    s: signature.s,
-                };
-                expect(() => ZeroEx.isValidSignature(data, malformedSignature, address)).to.throw();
-            });
-            it('r lacks 0x prefix', () => {
-                const malformedR = signature.r.replace('0x', '');
-                const malformedSignature = {
-                    v: signature.v,
-                    r: malformedR,
-                    s: signature.s,
-                };
-                expect(() => ZeroEx.isValidSignature(data, malformedSignature, address)).to.throw();
-            });
-            it('r is too short', () => {
-                const malformedR = signature.r.substr(10);
-                const malformedSignature = {
-                    v: signature.v,
-                    r: malformedR,
-                    s: signature.s.replace('0', 'z'),
-                };
-                expect(() => ZeroEx.isValidSignature(data, malformedSignature, address)).to.throw();
-            });
-            it('s is not hex', () => {
-                const malformedS = signature.s.replace('0', 'z');
-                const malformedSignature = {
-                    v: signature.v,
-                    r: signature.r,
-                    s: malformedS,
-                };
-                expect(() => ZeroEx.isValidSignature(data, malformedSignature, address)).to.throw();
-            });
+        const web3 = web3Factory.create();
+        const zeroEx = new ZeroEx(web3);
+        it('should return false if the data doesn\'t pertain to the signature & address', async () => {
+            expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();
+            return expect(
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync('0x0', signature, address),
+            ).to.become(false);
         });
-        it('should return false if the data doesn\'t pertain to the signature & address', () => {
-            const isValid = ZeroEx.isValidSignature('0x0', signature, address);
-            expect(isValid).to.be.false();
-        });
-        it('should return false if the address doesn\'t pertain to the signature & data', () => {
+        it('should return false if the address doesn\'t pertain to the signature & data', async () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
-            const isValid = ZeroEx.isValidSignature(data, signature, validUnrelatedAddress);
-            expect(isValid).to.be.false();
+            expect(ZeroEx.isValidSignature(data, signature, validUnrelatedAddress)).to.be.false();
+            return expect(
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, signature, validUnrelatedAddress)
+            ).to.become(false);
         });
-        it('should return false if the signature doesn\'t pertain to the data & address', () => {
+        it('should return false if the signature doesn\'t pertain to the data & address', async () => {
             const wrongSignature = _.assign({}, signature, {v: 28});
-            const isValid = ZeroEx.isValidSignature(data, wrongSignature, address);
-            expect(isValid).to.be.false();
+            expect(ZeroEx.isValidSignature(data, wrongSignature, address)).to.be.false();
+            return expect(
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, wrongSignature, address)
+            ).to.become(false);
         });
-        it('should return true if the signature does pertain to the data & address', () => {
-            const isValid = ZeroEx.isValidSignature(data, signature, address);
-            expect(isValid).to.be.true();
+        it('should return true if the signature does pertain to the data & address', async () => {
+            expect(ZeroEx.isValidSignature(data, signature, address)).to.be.true();
+            return expect(
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, signature, address)
+            ).to.become(true);
         });
     });
     describe('#generateSalt', () => {
