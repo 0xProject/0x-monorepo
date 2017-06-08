@@ -43,15 +43,15 @@ describe('ZeroEx library', () => {
         });
     });
     describe('#isValidSignature', () => {
-        // This test data was borrowed from the JSON RPC documentation
-        // Source: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign
-        const data = '0xdeadbeaf';
+        // The Exchange smart contract `isValidSignature` method only validates orderHashes and assumes
+        // the length of the data is exactly 32 bytes. Thus for these tests, we use data of this size.
+        const dataHex = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
         const signature = {
             v: 27,
-            r: '0xa3f20717a250c2b0b729b7e5becbff67fdaef7e0699da4de7ca5895b02a170a1',
-            s: '0x2d887fd3b17bfdce3481f10bea41f45ba9f709d39ce8325427b57afcfc994cee',
+            r: '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
+            s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
         };
-        const address = '0x9b2055d370f73ec7d8a03e965129118dc8f5bf83';
+        const address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
         const web3 = web3Factory.create();
         const zeroEx = new ZeroEx(web3);
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
@@ -62,23 +62,25 @@ describe('ZeroEx library', () => {
         });
         it('should return false if the address doesn\'t pertain to the signature & data', async () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
-            expect(ZeroEx.isValidSignature(data, signature, validUnrelatedAddress)).to.be.false();
+            expect(ZeroEx.isValidSignature(dataHex, signature, validUnrelatedAddress)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, signature, validUnrelatedAddress),
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(dataHex, signature,
+                                                                                validUnrelatedAddress),
             ).to.become(false);
         });
-        it('should return false if the signature doesn\'t pertain to the data & address', async () => {
+        it('should return false if the signature doesn\'t pertain to the dataHex & address', async () => {
             const wrongSignature = _.assign({}, signature, {v: 28});
-            expect(ZeroEx.isValidSignature(data, wrongSignature, address)).to.be.false();
+            expect(ZeroEx.isValidSignature(dataHex, wrongSignature, address)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, wrongSignature, address),
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(dataHex, wrongSignature, address),
             ).to.become(false);
         });
-        it('should return true if the signature does pertain to the data & address', async () => {
-            expect(ZeroEx.isValidSignature(data, signature, address)).to.be.true();
-            return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, signature, address),
-            ).to.become(true);
+        it('should return true if the signature does pertain to the dataHex & address', async () => {
+            const isValidSignatureLocal = ZeroEx.isValidSignature(dataHex, signature, address);
+            expect(isValidSignatureLocal).to.be.true();
+            const isValidSignatureOnContract = await (zeroEx.exchange as any)
+                .isValidSignatureUsingContractCallAsync(dataHex, signature, address);
+            return expect(isValidSignatureOnContract).to.be.true();
         });
     });
     describe('#generateSalt', () => {
