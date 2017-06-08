@@ -71,13 +71,15 @@ export class FillScenarios {
         feeRecepient: string, expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
         await this.zeroEx.token.transferAsync(makerTokenAddress, this.coinbase, makerAddress, makerFillableAmount);
         const oldMakerAllowance = await this.zeroEx.token.getProxyAllowanceAsync(makerTokenAddress, makerAddress);
+        const newMakerAllowance = oldMakerAllowance.plus(makerFillableAmount);
         await this.zeroEx.token.setProxyAllowanceAsync(
-            makerTokenAddress, makerAddress, oldMakerAllowance.plus(makerFillableAmount),
+            makerTokenAddress, makerAddress, newMakerAllowance,
         );
         await this.zeroEx.token.transferAsync(takerTokenAddress, this.coinbase, takerAddress, takerFillableAmount);
         const oldTakerAllowance = await this.zeroEx.token.getProxyAllowanceAsync(takerTokenAddress, takerAddress);
+        const newTakerAllowance = oldTakerAllowance.plus(takerFillableAmount);
         await this.zeroEx.token.setProxyAllowanceAsync(
-            takerTokenAddress, takerAddress, oldTakerAllowance.plus(takerFillableAmount),
+            takerTokenAddress, takerAddress, newTakerAllowance,
         );
 
         if (!makerFee.isZero()) {
