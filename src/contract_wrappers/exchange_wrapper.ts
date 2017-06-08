@@ -134,10 +134,44 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
-        await this.batchFillOrderAsync([{
-            signedOrder,
+        assert.doesConformToSchema('signedOrder',
+            SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
+            signedOrderSchema);
+        assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
+        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, takerTokenFillAmount, takerAddress);
+
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
+
+        const gas = await exchangeInstance.fill.estimateGas(
+            orderAddresses,
+            orderValues,
             takerTokenFillAmount,
-        }], shouldCheckTransfer, takerAddress);
+            shouldCheckTransfer,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.fill(
+            orderAddresses,
+            orderValues,
+            takerTokenFillAmount,
+            shouldCheckTransfer,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
     }
     /**
      * Batched version of fillOrderAsync. Executes fills atomically in a single transaction.
