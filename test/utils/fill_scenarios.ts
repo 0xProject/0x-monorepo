@@ -72,19 +72,29 @@ export class FillScenarios {
         await this.zeroEx.token.transferAsync(makerTokenAddress, this.coinbase, makerAddress, makerFillableAmount);
         const oldMakerAllowance = await this.zeroEx.token.getProxyAllowanceAsync(makerTokenAddress, makerAddress);
         await this.zeroEx.token.setProxyAllowanceAsync(
-            makerTokenAddress, makerAddress, oldMakerAllowance.plus(makerFillableAmount));
+            makerTokenAddress, makerAddress, oldMakerAllowance.plus(makerFillableAmount),
+        );
         await this.zeroEx.token.transferAsync(takerTokenAddress, this.coinbase, takerAddress, takerFillableAmount);
         const oldTakerAllowance = await this.zeroEx.token.getProxyAllowanceAsync(takerTokenAddress, takerAddress);
         await this.zeroEx.token.setProxyAllowanceAsync(
-            takerTokenAddress, takerAddress, oldTakerAllowance.plus(takerFillableAmount));
+            takerTokenAddress, takerAddress, oldTakerAllowance.plus(takerFillableAmount),
+        );
 
         if (!makerFee.isZero()) {
             await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinbase, makerAddress, makerFee);
-            await this.zeroEx.token.setProxyAllowanceAsync(this.zrxTokenAddress, makerAddress, makerFee);
+            const oldMakerFeeAllowance =
+                await this.zeroEx.token.getProxyAllowanceAsync(this.zrxTokenAddress, makerAddress);
+            await this.zeroEx.token.setProxyAllowanceAsync(
+                this.zrxTokenAddress, makerAddress, oldMakerFeeAllowance.plus(makerFee),
+            );
         }
         if (!takerFee.isZero()) {
             await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinbase, takerAddress, takerFee);
-            await this.zeroEx.token.setProxyAllowanceAsync(this.zrxTokenAddress, takerAddress, takerFee);
+            const oldTakerFeeAllowance =
+                await this.zeroEx.token.getProxyAllowanceAsync(this.zrxTokenAddress, takerAddress);
+            await this.zeroEx.token.setProxyAllowanceAsync(
+                this.zrxTokenAddress, takerAddress, oldTakerFeeAllowance.plus(takerFee),
+            );
         }
 
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx,

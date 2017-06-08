@@ -229,9 +229,9 @@ describe('ExchangeWrapper', () => {
                     const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                     );
-                    const nonExistentSenderAddress = userAddresses[6];
+                    const nonTakerAddress = userAddresses[6];
                     return expect(zeroEx.exchange.fillOrderAsync(
-                        signedOrder, fillTakerAmount, shouldCheckTransfer, nonExistentSenderAddress,
+                        signedOrder, fillTakerAmount, shouldCheckTransfer, nonTakerAddress,
                     )).to.be.rejectedWith(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
                 });
                 it('should throw when order is expired', async () => {
@@ -520,7 +520,7 @@ describe('ExchangeWrapper', () => {
                             order: signedOrderWithDifferentMaker,
                             takerTokenCancelAmount: cancelAmount,
                         },
-                    ])).to.be.rejectedWith('Can not cancel orders from multiple makers in a single batch');
+                    ])).to.be.rejectedWith(ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
                 });
             });
             describe('successful batch cancels', () => {
