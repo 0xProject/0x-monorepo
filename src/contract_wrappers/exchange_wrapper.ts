@@ -28,6 +28,7 @@ import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
+import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
 import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
 import {constants} from '../utils/constants';
@@ -276,12 +277,12 @@ export class ExchangeWrapper extends ContractWrapper {
     public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
                                       takerAddress: string) {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+        assert.doesConformToSchema('orderFillOrKillRequests',
+            SchemaValidator.convertToJSONSchemaCompatibleObject(orderFillOrKillRequests),
+            orderFillOrKillRequestsSchema,
+        );
         const exchangeInstance = await this.getExchangeContractAsync();
         _.each(orderFillOrKillRequests, request => {
-            assert.doesConformToSchema('signedOrder',
-                              SchemaValidator.convertToJSONSchemaCompatibleObject(request.signedOrder as object),
-                              signedOrderSchema);
-            assert.isBigNumber('fillTakerAmount', request.fillTakerAmount);
             this.validateFillOrKillOrderAndThrowIfInvalidAsync(request.signedOrder,
                                                                exchangeInstance.address,
                                                                request.fillTakerAmount);
