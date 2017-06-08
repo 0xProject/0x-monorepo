@@ -296,7 +296,7 @@ export class ExchangeWrapper extends ContractWrapper {
             SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
             orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
-        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker', order.maker);
+        await assert.isSenderAddressAsync('order.maker', order.maker, this.web3Wrapper);
 
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
@@ -332,7 +332,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
-        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'maker', maker);
+        await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
         _.forEach(orderCancellationRequests,
             async (cancellationRequest: OrderCancellationRequest, i: number) => {
             assert.doesConformToSchema(`orderCancellationRequests[${i}].order`,
