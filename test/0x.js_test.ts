@@ -64,20 +64,20 @@ describe('ZeroEx library', () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
             expect(ZeroEx.isValidSignature(data, signature, validUnrelatedAddress)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, signature, validUnrelatedAddress)
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, signature, validUnrelatedAddress),
             ).to.become(false);
         });
         it('should return false if the signature doesn\'t pertain to the data & address', async () => {
             const wrongSignature = _.assign({}, signature, {v: 28});
             expect(ZeroEx.isValidSignature(data, wrongSignature, address)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, wrongSignature, address)
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, wrongSignature, address),
             ).to.become(false);
         });
         it('should return true if the signature does pertain to the data & address', async () => {
             expect(ZeroEx.isValidSignature(data, signature, address)).to.be.true();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, signature, address)
+                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(data, signature, address),
             ).to.become(true);
         });
     });
