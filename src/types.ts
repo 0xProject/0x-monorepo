@@ -69,9 +69,9 @@ export interface ExchangeContract extends ContractInstance {
                       shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts) => number;
     };
     batchFill: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmount: BigNumber.BigNumber[],
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
          shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmount: BigNumber.BigNumber[],
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
                       shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
     };
     cancel: {
