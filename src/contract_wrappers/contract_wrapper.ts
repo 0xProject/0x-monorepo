@@ -5,7 +5,7 @@ import {ZeroExError} from '../types';
 import {utils} from '../utils/utils';
 
 export class ContractWrapper {
-    public web3Wrapper: Web3Wrapper;
+    protected web3Wrapper: Web3Wrapper;
     constructor(web3Wrapper: Web3Wrapper) {
         this.web3Wrapper = web3Wrapper;
     }
