@@ -51,7 +51,7 @@ describe('ExchangeWrapper', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('#isValidSignatureAsync', () => {
+    describe('#isValidSignatureUsingContractCallAsync', () => {
         // The Exchange smart contract `isValidSignature` method only validates orderHashes and assumes
         // the length of the data is exactly 32 bytes. Thus for these tests, we use data of this size.
         const dataHex = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
@@ -68,8 +68,9 @@ describe('ExchangeWrapper', () => {
                     r: signature.r,
                     s: signature.s,
                 };
-                return expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
-                    .to.be.rejected();
+                return expect((zeroEx.exchange as any)
+                    .isValidSignatureUsingContractCallAsync(dataHex, malformedSignature, address),
+                ).to.be.rejected();
             });
             it('r lacks 0x prefix', async () => {
                 const malformedR = signature.r.replace('0x', '');
@@ -78,8 +79,9 @@ describe('ExchangeWrapper', () => {
                     r: malformedR,
                     s: signature.s,
                 };
-                return expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
-                    .to.be.rejected();
+                return expect((zeroEx.exchange as any)
+                    .isValidSignatureUsingContractCallAsync(dataHex, malformedSignature, address),
+                ).to.be.rejected();
             });
             it('r is too short', async () => {
                 const malformedR = signature.r.substr(10);
@@ -88,8 +90,9 @@ describe('ExchangeWrapper', () => {
                     r: malformedR,
                     s: signature.s.replace('0', 'z'),
                 };
-                return expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
-                    .to.be.rejected();
+                return expect((zeroEx.exchange as any)
+                    .isValidSignatureUsingContractCallAsync(dataHex, malformedSignature, address),
+                ).to.be.rejected();
             });
             it('s is not hex', async () => {
                 const malformedS = signature.s.replace('0', 'z');
@@ -98,26 +101,31 @@ describe('ExchangeWrapper', () => {
                     r: signature.r,
                     s: malformedS,
                 };
-                return expect(zeroEx.exchange.isValidSignatureAsync(dataHex, malformedSignature, address))
-                    .to.be.rejected();
+                return expect((zeroEx.exchange as any)
+                    .isValidSignatureUsingContractCallAsync(dataHex, malformedSignature, address),
+                ).to.be.rejected();
             });
         });
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
-            const isValid = await zeroEx.exchange.isValidSignatureAsync('0x0', signature, address);
+            const isValid = await (zeroEx.exchange as any)
+                .isValidSignatureUsingContractCallAsync('0x0', signature, address);
             expect(isValid).to.be.false();
         });
         it('should return false if the address doesn\'t pertain to the signature & dataHex', async () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
-            const isValid = await zeroEx.exchange.isValidSignatureAsync(dataHex, signature, validUnrelatedAddress);
+            const isValid = await (zeroEx.exchange as any)
+                .isValidSignatureUsingContractCallAsync(dataHex, signature, validUnrelatedAddress);
             expect(isValid).to.be.false();
         });
         it('should return false if the signature doesn\'t pertain to the dataHex & address', async () => {
             const wrongSignature = {...signature, v: 28};
-            const isValid = await zeroEx.exchange.isValidSignatureAsync(dataHex, wrongSignature, address);
+            const isValid = await (zeroEx.exchange as any)
+                .isValidSignatureUsingContractCallAsync(dataHex, wrongSignature, address);
             expect(isValid).to.be.false();
         });
         it('should return true if the signature does pertain to the dataHex & address', async () => {
-            const isValid = await zeroEx.exchange.isValidSignatureAsync(dataHex, signature, address);
+            const isValid = await (zeroEx.exchange as any)
+                .isValidSignatureUsingContractCallAsync(dataHex, signature, address);
             expect(isValid).to.be.true();
         });
     });

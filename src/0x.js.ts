@@ -40,19 +40,7 @@ export class ZeroEx {
         assert.doesConformToSchema('signature', signature, ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
-        const dataBuff = ethUtil.toBuffer(dataHex);
-        const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
-        try {
-            const pubKey = ethUtil.ecrecover(
-                msgHashBuff,
-                signature.v,
-                ethUtil.toBuffer(signature.r),
-                ethUtil.toBuffer(signature.s));
-            const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
-            return retrievedAddress === signerAddressHex;
-        } catch (err) {
-            return false;
-        }
+        return utils.isValidSignature(dataHex, signature, signerAddressHex);
     }
     /**
      * Generates pseudo-random 256 bit salt.

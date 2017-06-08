@@ -4,6 +4,7 @@ import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
 import {Order, SignedOrder, SolidityTypes} from '../types';
 import * as BigNumber from 'bignumber.js';
+import {ECSignature} from '../types';
 
 export const utils = {
     /**
@@ -49,6 +50,21 @@ export const utils = {
         const hashBuff = ethABI.soliditySHA3(types, values);
         const hashHex = ethUtil.bufferToHex(hashBuff);
         return hashHex;
+    },
+    isValidSignature(dataHex: string, signature: ECSignature, signerAddressHex: string): boolean {
+        const dataBuff = ethUtil.toBuffer(dataHex);
+        const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
+        try {
+            const pubKey = ethUtil.ecrecover(
+                msgHashBuff,
+                signature.v,
+                ethUtil.toBuffer(signature.r),
+                ethUtil.toBuffer(signature.s));
+            const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
+            return retrievedAddress === signerAddressHex;
+        } catch (err) {
+            return false;
+        }
     },
     getCurrentUnixTimestamp(): BigNumber.BigNumber {
         return new BigNumber(Date.now() / 1000);

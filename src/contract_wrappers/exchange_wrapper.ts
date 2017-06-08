@@ -70,8 +70,8 @@ export class ExchangeWrapper extends ContractWrapper {
         await this.stopWatchingExchangeLogEventsAsync();
         delete this.exchangeContractIfExists;
     }
-    public async isValidSignatureAsync(dataHex: string, ecSignature: ECSignature,
-                                       signerAddressHex: string): Promise<boolean> {
+    private async isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
+                                                         signerAddressHex: string): Promise<boolean> {
         assert.isHexString('dataHex', dataHex);
         assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
