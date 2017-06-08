@@ -16,7 +16,8 @@ import {
     ExchangeEvents,
     ContractEvent,
     DoneCallback,
-    ExchangeContractErrs, OrderCancellationRequest,
+    ExchangeContractErrs,
+    OrderCancellationRequest,
 } from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
