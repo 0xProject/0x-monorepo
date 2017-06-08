@@ -263,21 +263,24 @@ export class ExchangeWrapper extends ContractWrapper {
      * All orders must be from the same maker.
      */
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
-        const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         if (_.isEmpty(orderCancellationRequests)) {
-            return;
+            return; // no-op
         }
+        const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
         await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'maker', maker);
         _.forEach(orderCancellationRequests,
             async (cancellationRequest: OrderCancellationRequest, i: number) => {
             assert.doesConformToSchema(`orderCancellationRequests[${i}].order`,
-                SchemaValidator.convertToJSONSchemaCompatibleObject(cancellationRequest.order as object), orderSchema);
+                SchemaValidator.convertToJSONSchemaCompatibleObject(cancellationRequest.order as object), orderSchema,
+            );
             assert.isBigNumber(`orderCancellationRequests[${i}].takerTokenCancelAmount`,
-                cancellationRequest.takerTokenCancelAmount);
+                cancellationRequest.takerTokenCancelAmount,
+            );
             await this.validateCancelOrderAndThrowIfInvalidAsync(
-                cancellationRequest.order, cancellationRequest.takerTokenCancelAmount);
+                cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
+            );
         });
         const exchangeInstance = await this.getExchangeContractAsync();
         const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {
@@ -286,7 +289,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 cancellationRequest.takerTokenCancelAmount,
             ];
         });
-        // _.unzip doesn't type check if values have different types :'(
+        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
         const [orderAddresses, orderValues, takerTokenCancelAmounts] =
             _.unzip<any>(orderAddressesValuesAndTakerTokenCancelAmounts);
         const gas = await exchangeInstance.batchCancel.estimateGas(
