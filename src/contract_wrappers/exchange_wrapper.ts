@@ -260,16 +260,17 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
+     * All orders must be from the same maker.
      */
-    public async batchCancelOrderAsync(cancellationRequestsBatch: OrderCancellationRequest[]): Promise<void> {
-        const makers = _.map(cancellationRequestsBatch, cancellationRequest => cancellationRequest.order.maker);
-        if (_.isEmpty(cancellationRequestsBatch)) {
+    public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
+        const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
+        if (_.isEmpty(orderCancellationRequests)) {
             return;
         }
         assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
         await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'maker', maker);
-        _.forEach(cancellationRequestsBatch,
+        _.forEach(orderCancellationRequests,
             async (cancellationRequest: OrderCancellationRequest, i: number) => {
             assert.doesConformToSchema(`orderCancellationRequests[${i}].order`,
                 SchemaValidator.convertToJSONSchemaCompatibleObject(cancellationRequest.order as object), orderSchema);
@@ -279,7 +280,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount);
         });
         const exchangeInstance = await this.getExchangeContractAsync();
-        const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(cancellationRequestsBatch, cancellationRequest => {
+        const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {
             return [
                 ...ExchangeWrapper.getOrderAddressesAndValues(cancellationRequest.order),
                 cancellationRequest.takerTokenCancelAmount,
