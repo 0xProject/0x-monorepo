@@ -18,7 +18,9 @@ import {
     CreateContractEvent,
     ContractEventObj,
     EventCallback,
-    ContractResponse, OrderCancellationRequest, OrderFillRequest,
+    ContractResponse,
+    OrderCancellationRequest,
+    OrderFillRequest,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -235,41 +237,121 @@ export class ExchangeWrapper extends ContractWrapper {
         this.throwErrorLogsAsErrors(response.logs);
     }
     /**
+     * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
+     * the fill order is abandoned.
+     */
+    public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
+                                      takerAddress: string) {
+        assert.doesConformToSchema('signedOrder',
+                            SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
+                            signedOrderSchema);
+        assert.isBigNumber('fillTakerAmount', fillTakerAmount);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
+
+        // Check that fillValue available >= fillTakerAmount
+        const orderHashHex = await this.getOrderHashHexAsync(signedOrder);
+        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
+        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
+        if (remainingTakerAmount < fillTakerAmount) {
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
+        }
+
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
+
+        const gas = await exchangeInstance.fillOrKill.estimateGas(
+            orderAddresses,
+            orderValues,
+            fillTakerAmount,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.fillOrKill(
+            orderAddresses,
+            orderValues,
+            fillTakerAmount,
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
      */
     public async cancelOrderAsync(
         order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
-        await this.batchCancelOrderAsync([{
-            order,
+        assert.doesConformToSchema('order',
+            SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
+            orderSchema);
+        assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
+        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker', order.maker);
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        await this.validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
+
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
+        const gas = await exchangeInstance.cancel.estimateGas(
+            orderAddresses,
+            orderValues,
             takerTokenCancelAmount,
-        }]);
+            {
+                from: order.maker,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.cancel(
+            orderAddresses,
+            orderValues,
+            takerTokenCancelAmount,
+            {
+                from: order.maker,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
     }
     /**
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
+     * All orders must be from the same maker.
      */
-    public async batchCancelOrderAsync(cancellationRequestsBatch: OrderCancellationRequest[]): Promise<void> {
-        const makers = _.map(cancellationRequestsBatch, cancellationRequest => cancellationRequest.order.maker);
-        assert.assert(!_.isEmpty(cancellationRequestsBatch), 'Can not cancel an empty batch');
-        assert.assert(_.uniq(makers).length === 1, 'Can not cancel orders from multiple makers in a single batch');
+    public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
+        if (_.isEmpty(orderCancellationRequests)) {
+            return; // no-op
+        }
+        const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
+        assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
-        _.forEach(cancellationRequestsBatch,
-            async (cancellationRequest: OrderCancellationRequest) => {
-            assert.doesConformToSchema('order',
-                SchemaValidator.convertToJSONSchemaCompatibleObject(cancellationRequest.order as object), orderSchema);
-            assert.isBigNumber('takerTokenCancelAmount', cancellationRequest.takerTokenCancelAmount);
-            await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker',
-                cancellationRequest.order.maker);
+        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'maker', maker);
+        _.forEach(orderCancellationRequests,
+            async (cancellationRequest: OrderCancellationRequest, i: number) => {
+            assert.doesConformToSchema(`orderCancellationRequests[${i}].order`,
+                SchemaValidator.convertToJSONSchemaCompatibleObject(cancellationRequest.order as object), orderSchema,
+            );
+            assert.isBigNumber(`orderCancellationRequests[${i}].takerTokenCancelAmount`,
+                cancellationRequest.takerTokenCancelAmount,
+            );
             await this.validateCancelOrderAndThrowIfInvalidAsync(
-                cancellationRequest.order, cancellationRequest.takerTokenCancelAmount);
+                cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
+            );
         });
         const exchangeInstance = await this.getExchangeContractAsync();
-        const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(cancellationRequestsBatch, cancellationRequest => {
+        const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {
             return [
                 ...ExchangeWrapper.getOrderAddressesAndValues(cancellationRequest.order),
                 cancellationRequest.takerTokenCancelAmount,
             ];
         });
-        // _.unzip doesn't type check if values have different types :'(
+        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
         const [orderAddresses, orderValues, takerTokenCancelAmounts] =
             _.unzip<any>(orderAddressesValuesAndTakerTokenCancelAmounts);
         const gas = await exchangeInstance.batchCancel.estimateGas(
@@ -317,11 +399,10 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this.exchangeLogEventObjs.push(logEventObj);
     }
-    private async getOrderHashAsync(order: Order|SignedOrder): Promise<string> {
-        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
+    private async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         const exchangeInstance = await this.getExchangeContractAsync();
-        const orderHash = utils.getOrderHashHex(order, exchangeInstance.address);
-        return orderHash;
+        const orderHashHex = utils.getOrderHashHex(order, exchangeInstance.address);
+        return orderHashHex;
     }
     private async stopWatchingExchangeLogEventsAsync() {
         const stopWatchingPromises = _.map(this.exchangeLogEventObjs, logEventObj => {
@@ -359,7 +440,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (takerTokenCancelAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
         }
-        const orderHash = await this.getOrderHashAsync(order);
+        const orderHash = await this.getOrderHashHexAsync(order);
         const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash);
         if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
@@ -375,8 +456,8 @@ export class ExchangeWrapper extends ContractWrapper {
      * Handling the edge-cases that arise when this happens would require making sure that the user has sufficient
      * funds to pay both the fees and the transfer amount. We decided to punt on this for now as the contracts
      * will throw for these edge-cases.
-     * TODO: Throw errors before calling the smart contract for these edge-cases
-     * TODO: in order to minimize the callers gas costs.
+     * TODO: Throw errors before calling the smart contract for these edge-cases in order to minimize
+     * the callers gas costs.
      */
     private async validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                                                fillTakerAmount: BigNumber.BigNumber,
