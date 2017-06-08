@@ -80,6 +80,12 @@ export interface ExchangeContract extends ContractInstance {
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
                       v: number, r: string, s: string, txOpts?: TxOpts) => number;
     };
+    batchFillOrKill: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillValuesT: BigNumber.BigNumber[],
+         v: number[], r: string[], s: string[], txOpts: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillValuesT: BigNumber.BigNumber[],
+                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+    };
     filled: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
@@ -222,3 +228,8 @@ export interface SubscriptionOpts {
 }
 
 export type DoneCallback = (err?: Error) => void;
+
+export interface OrderFillOrKillRequest {
+    signedOrder: SignedOrder;
+    fillTakerAmount: BigNumber.BigNumber;
+}

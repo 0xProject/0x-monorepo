@@ -10,6 +10,7 @@ import {
     OrderValues,
     OrderAddresses,
     Order,
+    OrderFillOrKillRequest,
     SignedOrder,
     ContractEvent,
     ExchangeEvents,
@@ -188,13 +189,8 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
 
-        // Check that fillValue available >= fillTakerAmount
-        const orderHashHex = await this.getOrderHashHexAsync(signedOrder);
-        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
-        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
-        if (remainingTakerAmount < fillTakerAmount) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
-        }
+        await this.validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder, exchangeInstance.address,
+                                                                 fillTakerAmount);
 
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
 
@@ -220,6 +216,62 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: takerAddress,
                 gas,
             },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
+     * Batch version of fillOrKill. Allows a taker to specify a batch of orders that will either be atomically
+     * filled to the desired fillAmount or aborted.
+     */
+    public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
+                                      takerAddress: string) {
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+        const exchangeInstance = await this.getExchangeContractAsync();
+        _.each(orderFillOrKillRequests, request => {
+            assert.doesConformToSchema('signedOrder',
+                              SchemaValidator.convertToJSONSchemaCompatibleObject(request.signedOrder as object),
+                              signedOrderSchema);
+            assert.isBigNumber('fillTakerAmount', request.fillTakerAmount);
+            this.validateFillOrKillOrderAndThrowIfInvalidAsync(request.signedOrder,
+                                                               exchangeInstance.address,
+                                                               request.fillTakerAmount);
+        });
+
+        const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillOrKillRequests, request => {
+            return [
+                ...ExchangeWrapper.getOrderAddressesAndValues(request.signedOrder),
+                request.fillTakerAmount,
+                request.signedOrder.ecSignature.v,
+                request.signedOrder.ecSignature.r,
+                request.signedOrder.ecSignature.s,
+            ];
+        });
+
+        const [orderAddresses, orderValues, fillTakerAmounts, vParams, rParams, sParams] =
+              _.unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
+
+        const gas = await exchangeInstance.batchFillOrKill.estimateGas(
+         orderAddresses,
+         orderValues,
+         fillTakerAmounts,
+         vParams,
+         rParams,
+         sParams,
+         {
+             from: takerAddress,
+         },
+        );
+        const response: ContractResponse = await exchangeInstance.batchFillOrKill(
+            orderAddresses,
+            orderValues,
+            fillTakerAmounts,
+            vParams,
+            rParams,
+            sParams,
+         {
+             from: takerAddress,
+             gas,
+         },
         );
         this.throwErrorLogsAsErrors(response.logs);
     }
@@ -332,6 +384,17 @@ export class ExchangeWrapper extends ContractWrapper {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
         if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
+        }
+    }
+    private async validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                                exchangeAddress: string,
+                                                                fillTakerAmount: BigNumber.BigNumber) {
+        // Check that fillValue available >= fillTakerAmount
+        const orderHashHex = utils.getOrderHashHex(signedOrder, exchangeAddress);
+        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
+        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
+        if (remainingTakerAmount < fillTakerAmount) {
+            throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
         }
     }
     /**
