@@ -51,21 +51,6 @@ export const utils = {
         const hashHex = ethUtil.bufferToHex(hashBuff);
         return hashHex;
     },
-    isValidSignature(dataHex: string, signature: ECSignature, signerAddressHex: string): boolean {
-        const dataBuff = ethUtil.toBuffer(dataHex);
-        const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
-        try {
-            const pubKey = ethUtil.ecrecover(
-                msgHashBuff,
-                signature.v,
-                ethUtil.toBuffer(signature.r),
-                ethUtil.toBuffer(signature.s));
-            const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
-            return retrievedAddress === signerAddressHex;
-        } catch (err) {
-            return false;
-        }
-    },
     getCurrentUnixTimestamp(): BigNumber.BigNumber {
         return new BigNumber(Date.now() / 1000);
     },
