@@ -176,6 +176,72 @@ export class ExchangeWrapper extends ContractWrapper {
         this.throwErrorLogsAsErrors(response.logs);
     }
     /**
+     * Sequentially and atomically fills signedOrders up to takerTokenFillAmount.
+     * If fill amount is reached - it succeeds and doesn't fill the rest of the orders.
+     * If fill amount is not reached - it just fills all the orders.
+     */
+    public async fillOrderUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
+                                    shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+        const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
+        assert.assert(_.uniq(takerTokenAddresses).length === 1,
+            ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO);
+        assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
+        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+        _.forEach(signedOrders,
+            async (signedOrder: SignedOrder, i: number) => {
+                assert.doesConformToSchema(`signedOrder[${i}]`,
+                    SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
+                    signedOrderSchema);
+                await this.validateFillOrderAndThrowIfInvalidAsync(
+                    signedOrder, takerTokenFillAmount, takerAddress);
+            });
+        if (_.isEmpty(signedOrders)) {
+            return; // no-op
+        }
+
+        const orderAddressesValuesAndSignatureArray = _.map(signedOrders, signedOrder => {
+            return [
+                ...ExchangeWrapper.getOrderAddressesAndValues(signedOrder),
+                signedOrder.ecSignature.v,
+                signedOrder.ecSignature.r,
+                signedOrder.ecSignature.s,
+            ];
+        });
+        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
+        const [orderAddressesArray, orderValuesArray, vArray, rArray, sArray] = _.unzip<any>(
+            orderAddressesValuesAndSignatureArray,
+        );
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        const gas = await exchangeInstance.fillUpTo.estimateGas(
+            orderAddressesArray,
+            orderValuesArray,
+            takerTokenFillAmount,
+            shouldCheckTransfer,
+            vArray,
+            rArray,
+            sArray,
+            {
+                from: takerAddress,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.fillUpTo(
+            orderAddressesArray,
+            orderValuesArray,
+            takerTokenFillAmount,
+            shouldCheckTransfer,
+            vArray,
+            rArray,
+            sArray,
+            {
+                from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
      * Batch version of fillOrderAsync.
      * Executes multiple fills atomically in a single transaction.
      * If shouldCheckTransfer is set to true, it will continue filling subsequent orders even when earlier ones fail.

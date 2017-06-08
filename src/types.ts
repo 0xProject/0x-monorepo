@@ -74,6 +74,12 @@ export interface ExchangeContract extends ContractInstance {
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
                       shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
     };
+    fillUpTo: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmount: BigNumber.BigNumber,
+         shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmount: BigNumber.BigNumber,
+                      shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+    };
     cancel: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
          txOpts?: TxOpts): ContractResponse;
@@ -159,6 +165,7 @@ export const ExchangeContractErrs = strEnum([
     'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
     'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH',
     'INSUFFICIENT_REMAINING_FILL_AMOUNT',
+    'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO',
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 
