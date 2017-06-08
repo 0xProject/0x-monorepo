@@ -29,10 +29,6 @@ export const assert = {
     async isSenderAddressAsync(variableName: string, senderAddressHex: string,
                                web3Wrapper: Web3Wrapper): Promise<void> {
         assert.isETHAddressHex(variableName, senderAddressHex);
-        await assert.isSenderAddressAvailableAsync(web3Wrapper, variableName, senderAddressHex);
-    },
-    async isSenderAddressAvailableAsync(web3Wrapper: Web3Wrapper, variableName: string,
-                                        senderAddressHex: string): Promise<void> {
         const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailableAsync(senderAddressHex);
         assert.assert(isSenderAddressAvailable,
             `Specified ${variableName} ${senderAddressHex} isn't available through the supplied web3 instance`,
