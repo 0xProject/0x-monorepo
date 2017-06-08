@@ -298,6 +298,7 @@ export class ExchangeWrapper extends ContractWrapper {
             ];
         });
 
+        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
         const [orderAddresses, orderValues, fillTakerAmounts, vParams, rParams, sParams] =
               _.unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
 
