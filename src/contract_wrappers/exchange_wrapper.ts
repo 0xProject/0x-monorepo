@@ -394,6 +394,12 @@ export class ExchangeWrapper extends ContractWrapper {
         const orderHashHex = utils.getOrderHashHex(order, exchangeInstance.address);
         return orderHashHex;
     }
+    private async getOrderHashHexUsingContractCallAsync(order: Order|SignedOrder): Promise<string> {
+        const exchangeInstance = await this.getExchangeContractAsync();
+        const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(order);
+        const orderHashHex = await exchangeInstance.getOrderHash.call(orderAddresses, orderValues);
+        return orderHashHex;
+    }
     private async stopWatchingExchangeLogEventsAsync() {
         const stopWatchingPromises = _.map(this.exchangeLogEventObjs, logEventObj => {
             return promisify(logEventObj.stopWatching, logEventObj)();
