@@ -86,16 +86,18 @@ export class FillScenarios {
             await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinbase, makerAddress, makerFee);
             const oldMakerFeeAllowance =
                 await this.zeroEx.token.getProxyAllowanceAsync(this.zrxTokenAddress, makerAddress);
+            const newMakerFeeAllowance = oldMakerFeeAllowance.plus(makerFee);
             await this.zeroEx.token.setProxyAllowanceAsync(
-                this.zrxTokenAddress, makerAddress, oldMakerFeeAllowance.plus(makerFee),
+                this.zrxTokenAddress, makerAddress, newMakerFeeAllowance,
             );
         }
         if (!takerFee.isZero()) {
             await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinbase, takerAddress, takerFee);
             const oldTakerFeeAllowance =
                 await this.zeroEx.token.getProxyAllowanceAsync(this.zrxTokenAddress, takerAddress);
+            const newTakerFeeAllowance = oldTakerFeeAllowance.plus(takerFee);
             await this.zeroEx.token.setProxyAllowanceAsync(
-                this.zrxTokenAddress, takerAddress, oldTakerFeeAllowance.plus(takerFee),
+                this.zrxTokenAddress, takerAddress, newTakerFeeAllowance,
             );
         }
 
