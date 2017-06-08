@@ -20,6 +20,7 @@ import {
     EventCallback,
     ContractResponse,
     OrderCancellationRequest,
+    OrderFillRequest,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -126,31 +127,31 @@ export class ExchangeWrapper extends ContractWrapper {
         return cancelledAmountInBaseUnits;
     }
     /**
-     * Fills a signed order with a fillAmount denominated in baseUnits of the taker token.
+     * Fills a signed order with an amount denominated in baseUnits of the taker token.
      * Since the order in which transactions are included in the next block is indeterminate, race-conditions
      * could arise where a users balance or allowance changes before the fillOrder executes. Because of this,
      * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if while
      * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
      * false forgoes this check and causes the smart contract to throw instead.
      */
-    public async fillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
+    public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder',
                                    SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
                                    signedOrderSchema);
-        assert.isBigNumber('fillTakerAmount', fillTakerAmount);
+        assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
 
         const exchangeInstance = await this.getExchangeContractAsync();
-        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerAmount, takerAddress);
+        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, takerTokenFillAmount, takerAddress);
 
         const [orderAddresses, orderValues] = ExchangeWrapper.getOrderAddressesAndValues(signedOrder);
 
         const gas = await exchangeInstance.fill.estimateGas(
             orderAddresses,
             orderValues,
-            fillTakerAmount,
+            takerTokenFillAmount,
             shouldCheckTransfer,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
@@ -162,11 +163,76 @@ export class ExchangeWrapper extends ContractWrapper {
         const response: ContractResponse = await exchangeInstance.fill(
             orderAddresses,
             orderValues,
-            fillTakerAmount,
+            takerTokenFillAmount,
             shouldCheckTransfer,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
+     * Batch version of fillOrderAsync.
+     * Executes multiple fills atomically in a single transaction.
+     * If shouldCheckTransfer is set to true, it will continue filling subsequent orders even when earlier ones fail.
+     * When shouldCheckTransfer is set to false, if any fill fails, the entire batch fails.
+     */
+    public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
+                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+        _.forEach(orderFillRequests,
+            async (orderFillRequest: OrderFillRequest, i: number) => {
+            assert.doesConformToSchema(`orderFillRequests[${i}].signedOrder`,
+                SchemaValidator.convertToJSONSchemaCompatibleObject(orderFillRequest.signedOrder as object),
+                signedOrderSchema);
+            assert.isBigNumber(`orderFillRequests[${i}].takerTokenFillAmount`, orderFillRequest.takerTokenFillAmount);
+            await this.validateFillOrderAndThrowIfInvalidAsync(
+                orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
+        });
+        if (_.isEmpty(orderFillRequests)) {
+            return; // no-op
+        }
+
+        const orderAddressesValuesAmountsAndSignatureArray = _.map(orderFillRequests, orderFillRequest => {
+            return [
+                ...ExchangeWrapper.getOrderAddressesAndValues(orderFillRequest.signedOrder),
+                orderFillRequest.takerTokenFillAmount,
+                orderFillRequest.signedOrder.ecSignature.v,
+                orderFillRequest.signedOrder.ecSignature.r,
+                orderFillRequest.signedOrder.ecSignature.s,
+            ];
+        });
+        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
+        const [orderAddressesArray, orderValuesArray, takerTokenFillAmountArray, vArray, rArray, sArray] = _.unzip<any>(
+            orderAddressesValuesAmountsAndSignatureArray,
+        );
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        const gas = await exchangeInstance.batchFill.estimateGas(
+            orderAddressesArray,
+            orderValuesArray,
+            takerTokenFillAmountArray,
+            shouldCheckTransfer,
+            vArray,
+            rArray,
+            sArray,
+            {
+                from: takerAddress,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.batchFill(
+            orderAddressesArray,
+            orderValuesArray,
+            takerTokenFillAmountArray,
+            shouldCheckTransfer,
+            vArray,
+            rArray,
+            sArray,
             {
                 from: takerAddress,
                 gas,
@@ -233,7 +299,7 @@ export class ExchangeWrapper extends ContractWrapper {
             SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
             orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
-        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'order.maker', order.maker);
+        await assert.isSenderAddressAsync('order.maker', order.maker, this.web3Wrapper);
 
         const exchangeInstance = await this.getExchangeContractAsync();
         await this.validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
@@ -269,7 +335,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
-        await assert.isSenderAddressAvailableAsync(this.web3Wrapper, 'maker', maker);
+        await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
         _.forEach(orderCancellationRequests,
             async (cancellationRequest: OrderCancellationRequest, i: number) => {
             assert.doesConformToSchema(`orderCancellationRequests[${i}].order`,
