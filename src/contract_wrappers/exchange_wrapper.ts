@@ -272,7 +272,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Batch version of fillOrKill. Allows a taker to specify a batch of orders that will either be atomically
-     * filled to the desired fillAmount or aborted.
+     * filled (each to the specified fillAmount) or aborted.
      */
     public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
                                       takerAddress: string) {
