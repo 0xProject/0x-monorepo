@@ -180,10 +180,10 @@ export class ExchangeWrapper extends ContractWrapper {
      * If fill amount is reached - it succeeds and doesn't fill the rest of the orders.
      * If fill amount is not reached - it just fills all the orders.
      */
-    public async fillOrderUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
-                                    shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+    public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
+                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
-        assert.assert(_.uniq(takerTokenAddresses).length === 1,
+        assert.assert(_.uniq(takerTokenAddresses).length <= 1,
             ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
@@ -395,11 +395,8 @@ export class ExchangeWrapper extends ContractWrapper {
      * All orders must be from the same maker.
      */
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
-        if (_.isEmpty(orderCancellationRequests)) {
-            return; // no-op
-        }
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
-        assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
+        assert.assert(_.uniq(makers).length <= 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
         _.forEach(orderCancellationRequests,
@@ -414,6 +411,9 @@ export class ExchangeWrapper extends ContractWrapper {
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
         });
+        if (_.isEmpty(orderCancellationRequests)) {
+            return; // no-op
+        }
         const exchangeInstance = await this.getExchangeContractAsync();
         const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {
             return [

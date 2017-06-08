@@ -367,6 +367,40 @@ describe('ExchangeWrapper', () => {
                 });
             });
         });
+        describe('#fillOrdersUpTo', () => {
+            let signedOrder: SignedOrder;
+            let signedOrderHashHex: string;
+            let anotherSignedOrder: SignedOrder;
+            let anotherOrderHashHex: string;
+            let signedOrders: SignedOrder[];
+            const fillUpToAmount = fillableAmount.plus(fillableAmount).minus(1);
+            beforeEach(async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                signedOrderHashHex = await zeroEx.getOrderHashHexAsync(signedOrder);
+                anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                );
+                anotherOrderHashHex = await zeroEx.getOrderHashHexAsync(anotherSignedOrder);
+                signedOrders = [signedOrder, anotherSignedOrder];
+            });
+            describe('successful batch fills', () => {
+                it('should no-op for an empty batch', async () => {
+                    await zeroEx.exchange.fillOrdersUpToAsync([], fillUpToAmount, shouldCheckTransfer, takerAddress);
+                });
+                it('should successfully fill up to specified amount', async () => {
+                    await zeroEx.exchange.fillOrdersUpToAsync(
+                        signedOrders, fillUpToAmount, shouldCheckTransfer, takerAddress,
+                    );
+                    const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
+                    const anotherFilledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(anotherOrderHashHex);
+                    expect(filledAmount).to.be.bignumber.equal(fillableAmount);
+                    const remainingFillAmount = fillUpToAmount.minus(filledAmount);
+                    expect(anotherFilledAmount).to.be.bignumber.equal(remainingFillAmount);
+                });
+            });
+        });
     });
     describe('cancel order(s)', () => {
         let makerTokenAddress: string;
