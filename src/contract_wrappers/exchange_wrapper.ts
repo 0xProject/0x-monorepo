@@ -433,7 +433,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
-        assert.hashAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
+        assert.hashAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
         _.forEach(orderCancellationRequests,
