@@ -28,6 +28,8 @@ import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
+import {orderFillRequestsSchema} from '../schemas/order_fill_requests_schema';
+import {orderCancellationRequestsSchema} from '../schemas/order_cancel_schema';
 import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
 import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {SchemaValidator} from '../utils/schema_validator';
@@ -170,12 +172,10 @@ export class ExchangeWrapper extends ContractWrapper {
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
-        _.forEach(orderFillRequests,
-            async (orderFillRequest: OrderFillRequest, i: number) => {
-            assert.doesConformToSchema(`orderFillRequests[${i}].signedOrder`,
-                SchemaValidator.convertToJSONSchemaCompatibleObject(orderFillRequest.signedOrder as object),
-                signedOrderSchema);
-            assert.isBigNumber(`orderFillRequests[${i}].takerTokenFillAmount`, orderFillRequest.takerTokenFillAmount);
+        assert.doesConformToSchema('orderFillRequests',
+                                   SchemaValidator.convertToJSONSchemaCompatibleObject(orderFillRequests as object),
+                                   orderFillRequestsSchema);
+        _.forEach(orderFillRequests, async (orderFillRequest: OrderFillRequest) => {
             await this.validateFillOrderAndThrowIfInvalidAsync(
                 orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
         });
@@ -333,8 +333,8 @@ export class ExchangeWrapper extends ContractWrapper {
     public async cancelOrderAsync(
         order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
         assert.doesConformToSchema('order',
-            SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
-            orderSchema);
+                                   SchemaValidator.convertToJSONSchemaCompatibleObject(order),
+                                   orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this.web3Wrapper);
 
@@ -373,14 +373,10 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
-        _.forEach(orderCancellationRequests,
-            async (cancellationRequest: OrderCancellationRequest, i: number) => {
-            assert.doesConformToSchema(`orderCancellationRequests[${i}].order`,
-                SchemaValidator.convertToJSONSchemaCompatibleObject(cancellationRequest.order as object), orderSchema,
-            );
-            assert.isBigNumber(`orderCancellationRequests[${i}].takerTokenCancelAmount`,
-                cancellationRequest.takerTokenCancelAmount,
-            );
+        assert.doesConformToSchema('orderCancellationRequests',
+                                   SchemaValidator.convertToJSONSchemaCompatibleObject(orderCancellationRequests),
+                                   orderCancellationRequestsSchema);
+        _.forEach(orderCancellationRequests, async (cancellationRequest: OrderCancellationRequest) => {
             await this.validateCancelOrderAndThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
