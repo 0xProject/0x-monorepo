@@ -6,6 +6,7 @@ import promisify = require('es6-promisify');
 import {constants} from './utils/constants';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {tokenSchema} from '../src/schemas/token_schema';
+import {orderSchema} from '../src/schemas/order_schemas';
 import {addressSchema, numberSchema} from '../src/schemas/basic_type_schemas';
 import {ecSignatureParameterSchema, ecSignatureSchema} from '../src/schemas/ec_signature_schema';
 
@@ -120,6 +121,41 @@ describe('Schema', () => {
                 },
             ];
             validateAgainstSchema(testCases, tokenSchema, true);
+        });
+    });
+    describe('#orderSchema', () => {
+        const order = {
+            maker: constants.NULL_ADDRESS,
+            taker: constants.NULL_ADDRESS,
+            makerFee: 1,
+            takerFee: 2,
+            makerTokenAmount: 1,
+            takerTokenAmount: 2,
+            makerTokenAddress: constants.NULL_ADDRESS,
+            takerTokenAddress: constants.NULL_ADDRESS,
+            salt: 256,
+            feeRecipient: constants.NULL_ADDRESS,
+            expirationUnixTimestampSec: 42,
+        };
+        it('should validate valid order', () => {
+            const testCases = [
+                order,
+            ];
+            validateAgainstSchema(testCases, orderSchema);
+        });
+        it('should fail for invalid order', () => {
+            const testCases = [
+                {
+                    ...order,
+                    salt: undefined,
+                },
+                {
+                    ...order,
+                    salt: 'salt',
+                },
+                'order',
+            ];
+            validateAgainstSchema(testCases, orderSchema, true);
         });
     });
     describe('BigNumber serialization', () => {
