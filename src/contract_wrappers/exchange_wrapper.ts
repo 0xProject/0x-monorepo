@@ -366,7 +366,7 @@ export class ExchangeWrapper extends ContractWrapper {
             await this.validateCancelOrderAndThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
-        });
+        }
         const exchangeInstance = await this.getExchangeContractAsync();
         const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {
             return [
