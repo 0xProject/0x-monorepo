@@ -14,7 +14,7 @@ const expect = chai.expect;
 
 describe('Schema', () => {
     const validator = new SchemaValidator();
-    const batchTestSchema = (testCases: any[], schema: any, shouldFail = false) => {
+    const validateAgainstSchema = (testCases: any[], schema: any, shouldFail = false) => {
         _.forEach(testCases, (testCase: any) => {
             expect(validator.validate(testCase, schema).errors).to.be.lengthOf(shouldFail ? 1 : 0);
         });
@@ -22,21 +22,21 @@ describe('Schema', () => {
     describe('#numberSchema', () => {
         it('should validate valid numbers', () => {
             const testCases = ['42', '0', '1.3', '0.2', '00.00'];
-            batchTestSchema(testCases, numberSchema);
+            validateAgainstSchema(testCases, numberSchema);
         });
         it('should fail for invalid numbers', () => {
             const testCases = ['.3', '1.', 'abacaba', 'и', '1..0'];
-            batchTestSchema(testCases, numberSchema, true);
+            validateAgainstSchema(testCases, numberSchema, true);
         });
     });
     describe('#addressSchema', () => {
         it('should validate valid addresses', () => {
             const testCases = ['0x8b0292B11a196601eD2ce54B665CaFEca0347D42', constants.NULL_ADDRESS];
-            batchTestSchema(testCases, addressSchema);
+            validateAgainstSchema(testCases, addressSchema);
         });
         it('should fail for invalid addresses', () => {
             const testCases = ['0x', '0', '0x00', '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42'];
-            batchTestSchema(testCases, addressSchema, true);
+            validateAgainstSchema(testCases, addressSchema, true);
         });
     });
     describe('#ecSignatureParameterSchema', () => {
@@ -45,7 +45,7 @@ describe('Schema', () => {
                 '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
                 '0X40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
             ];
-            batchTestSchema(testCases, ecSignatureParameterSchema);
+            validateAgainstSchema(testCases, ecSignatureParameterSchema);
         });
         it('should fail for invalid parameters', () => {
             const testCases = [
@@ -53,7 +53,7 @@ describe('Schema', () => {
                 '0xzzzz9190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254', // invalid characters
                 '40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',   // no 0x
             ];
-            batchTestSchema(testCases, ecSignatureParameterSchema, true);
+            validateAgainstSchema(testCases, ecSignatureParameterSchema, true);
         });
     });
     describe('#ecSignatureSchema', () => {
@@ -70,7 +70,7 @@ describe('Schema', () => {
                     v: 28,
                 },
             ];
-            batchTestSchema(testCases, ecSignatureSchema);
+            validateAgainstSchema(testCases, ecSignatureSchema);
         });
         it('should fail for invalid signature', () => {
             const v = 27;
@@ -81,7 +81,7 @@ describe('Schema', () => {
                 {v},
                 {r, s, v: 31},
             ];
-            batchTestSchema(testCases, ecSignatureSchema, true);
+            validateAgainstSchema(testCases, ecSignatureSchema, true);
         });
     });
     describe('#tokenSchema', () => {
@@ -96,7 +96,7 @@ describe('Schema', () => {
             const testCases = [
                 token,
             ];
-            batchTestSchema(testCases, tokenSchema);
+            validateAgainstSchema(testCases, tokenSchema);
         });
         it('should fail for invalid token', () => {
             const testCases = [
@@ -115,7 +115,7 @@ describe('Schema', () => {
                     url: 'not an url',
                 },
             ];
-            batchTestSchema(testCases, tokenSchema, true);
+            validateAgainstSchema(testCases, tokenSchema, true);
         });
     });
     describe('BigNumber serialization', () => {
