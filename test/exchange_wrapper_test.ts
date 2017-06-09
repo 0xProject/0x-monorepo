@@ -626,13 +626,13 @@ describe('ExchangeWrapper', () => {
                     fromBlock: 0,
                     toBlock: 'latest',
                 };
-                const fillTakerAmountInBaseUnits = new BigNumber(1);
                 await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
                                                      indexFilterValues, (err: Error, event: ContractEvent) => {
                     expect(err).to.be.null();
-                    expect(event.args.filledValueT).to.be.bignumber.equal(fillTakerAmountInBaseUnits);
+                    expect(event).to.not.be.undefined();
                     done();
                 });
+                const fillTakerAmountInBaseUnits = new BigNumber(1);
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
                 );
@@ -644,13 +644,13 @@ describe('ExchangeWrapper', () => {
                     fromBlock: 0,
                     toBlock: 'latest',
                 };
-                const cancelTakerAmountInBaseUnits = new BigNumber(1);
                 await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogCancel, subscriptionOpts,
                     indexFilterValues, (err: Error, event: ContractEvent) => {
                         expect(err).to.be.null();
-                        expect(event.args.cancelledValueT).to.be.bignumber.equal(cancelTakerAmountInBaseUnits);
+                        expect(event).to.not.be.undefined();
                         done();
                     });
+                const cancelTakerAmountInBaseUnits = new BigNumber(1);
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerAmountInBaseUnits);
             })();
         });
