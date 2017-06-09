@@ -282,10 +282,10 @@ export class ExchangeWrapper extends ContractWrapper {
             orderFillOrKillRequestsSchema,
         );
         const exchangeInstance = await this.getExchangeContractAsync();
-        _.each(orderFillOrKillRequests, async request => {
+        for (const request of orderFillOrKillRequests) {
             await this.validateFillOrKillOrderAndThrowIfInvalidAsync(request.signedOrder, exchangeInstance.address,
                                                                      request.fillTakerAmount);
-        });
+        }
 
         const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillOrKillRequests, request => {
             return [
