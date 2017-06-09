@@ -28,6 +28,8 @@ import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
+import {orderFillRequestsSchema} from '../schemas/order_fill_requests_schema';
+import {orderCancellationRequestsSchema} from '../schemas/order_cancel_schema';
 import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
 import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {constants} from '../utils/constants';
@@ -167,14 +169,11 @@ export class ExchangeWrapper extends ContractWrapper {
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
-        _.forEach(orderFillRequests,
-            async (orderFillRequest: OrderFillRequest, i: number) => {
-            assert.doesConformToSchema(`orderFillRequests[${i}].signedOrder`, orderFillRequest.signedOrder,
-                                       signedOrderSchema);
-            assert.isBigNumber(`orderFillRequests[${i}].takerTokenFillAmount`, orderFillRequest.takerTokenFillAmount);
+        assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
+        for (const orderFillrequest of orderFillRequests) {
             await this.validateFillOrderAndThrowIfInvalidAsync(
                 orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
-        });
+        }
         if (_.isEmpty(orderFillRequests)) {
             return; // no-op
         }
@@ -362,12 +361,8 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
-        _.forEach(orderCancellationRequests,
-            async (cancellationRequest: OrderCancellationRequest, i: number) => {
-            assert.doesConformToSchema(`orderCancellationRequests[${i}].order`, cancellationRequest.order, orderSchema);
-            assert.isBigNumber(`orderCancellationRequests[${i}].takerTokenCancelAmount`,
-                cancellationRequest.takerTokenCancelAmount,
-            );
+        assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests, orderCancellationRequestsSchema);
+        for (const cancellationRequest of orderCancellationRequests) {
             await this.validateCancelOrderAndThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
