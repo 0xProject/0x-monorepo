@@ -339,11 +339,10 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
         assert.doesConformToSchema('orderFillOrKillRequests', orderFillOrKillRequests, orderFillOrKillRequestsSchema);
         const exchangeInstance = await this.getExchangeContractAsync();
-        _.each(orderFillOrKillRequests, request => {
-            this.validateFillOrKillOrderAndThrowIfInvalidAsync(request.signedOrder,
-                                                               exchangeInstance.address,
-                                                               request.fillTakerAmount);
-        });
+        for (const request of orderFillOrKillRequests) {
+            await this.validateFillOrKillOrderAndThrowIfInvalidAsync(request.signedOrder, exchangeInstance.address,
+                                                                     request.fillTakerAmount);
+        }
 
         const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillOrKillRequests, request => {
             return [
