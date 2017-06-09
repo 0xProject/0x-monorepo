@@ -626,16 +626,32 @@ describe('ExchangeWrapper', () => {
                     fromBlock: 0,
                     toBlock: 'latest',
                 };
+                const fillTakerAmountInBaseUnits = new BigNumber(1);
                 await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
                                                      indexFilterValues, (err: Error, event: ContractEvent) => {
                     expect(err).to.be.null();
-                    expect(event).to.not.be.undefined();
+                    expect(event.args.filledValueT).to.be.bignumber.equal(fillTakerAmountInBaseUnits);
                     done();
                 });
-                const fillTakerAmountInBaseUnits = new BigNumber(1);
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
                 );
+            })();
+        });
+        it.only('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
+            (async () => {
+                const subscriptionOpts: SubscriptionOpts = {
+                    fromBlock: 0,
+                    toBlock: 'latest',
+                };
+                const cancelTakerAmountInBaseUnits = new BigNumber(1);
+                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogCancel, subscriptionOpts,
+                    indexFilterValues, (err: Error, event: ContractEvent) => {
+                        expect(err).to.be.null();
+                        expect(event.args.cancelledValueT).to.be.bignumber.equal(cancelTakerAmountInBaseUnits);
+                        done();
+                    });
+                await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerAmountInBaseUnits);
             })();
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
