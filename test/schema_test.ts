@@ -38,8 +38,7 @@ describe('Schema', () => {
                 '.3': '0.3',
             };
             _.forEach(testCases, (serialized: string, input: string) => {
-                expect(SchemaValidator.convertToJSONSchemaCompatibleObject(new BigNumber(input)))
-                    .to.be.equal(serialized);
+                expect(JSON.parse(JSON.stringify(new BigNumber(input)))).to.be.equal(serialized);
             });
         });
     });
