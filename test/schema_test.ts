@@ -192,7 +192,7 @@ describe('Schema', () => {
                 const orderFillOrKillRequests = [
                     {
                         signedOrder,
-                        fillTakerAmount: 5,
+                        fillTakerAmount: '5',
                     },
                 ];
                 it('should validate valid order fill or kill requests', () => {
@@ -217,7 +217,7 @@ describe('Schema', () => {
                 const orderCancellationRequests = [
                     {
                         order,
-                        takerTokenCancelAmount: 5,
+                        takerTokenCancelAmount: '5',
                     },
                 ];
                 it('should validate valid order cancellation requests', () => {
@@ -242,7 +242,7 @@ describe('Schema', () => {
                 const orderFillRequests = [
                     {
                         signedOrder,
-                        takerTokenFillAmount: 5,
+                        takerTokenFillAmount: '5',
                     },
                 ];
                 it('should validate valid order fill requests', () => {
