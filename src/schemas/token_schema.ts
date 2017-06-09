@@ -6,8 +6,15 @@ export const tokenSchema = {
         decimals: {type: 'number'},
         address: {$ref: '/addressSchema'},
         url: {
-            type: 'string',
-            format: 'uri',
+            oneOf: [
+                {
+                    type: 'string',
+                    format: 'uri',
+                },
+                {
+                    enum: [''],
+                },
+            ],
         },
     },
     required: ['name', 'symbol', 'decimals', 'address', 'url'],
