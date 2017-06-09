@@ -638,7 +638,7 @@ describe('ExchangeWrapper', () => {
                 );
             })();
         });
-        it.only('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
+        it('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
             (async () => {
                 const subscriptionOpts: SubscriptionOpts = {
                     fromBlock: 0,
