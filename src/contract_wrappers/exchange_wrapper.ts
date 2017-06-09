@@ -28,6 +28,7 @@ import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
 import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
+import {signedOrdersSchema} from '../schemas/signed_orders_schema';
 import {orderFillRequestsSchema} from '../schemas/order_fill_requests_schema';
 import {orderCancellationRequestsSchema} from '../schemas/order_cancel_schema';
 import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
@@ -155,6 +156,72 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
+            {
+                from: takerAddress,
+                gas,
+            },
+        );
+        this.throwErrorLogsAsErrors(response.logs);
+    }
+    /**
+     * Sequentially and atomically fills signedOrders up to the specified takerTokenFillAmount.
+     * If the fill amount is reached - it succeeds and does not fill the rest of the orders.
+     * If fill amount is not reached - it fills as much of the fill amount as possible and succeeds.
+     */
+    public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
+                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+        const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
+        assert.hasAtMostOneUniqueValue(takerTokenAddresses,
+                                        ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
+        assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
+        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        assert.doesConformToSchema(
+            'signedOrders', SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrders), signedOrdersSchema
+        );
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
+        _.forEach(signedOrders,
+            async (signedOrder: SignedOrder, i: number) => {
+                await this.validateFillOrderAndThrowIfInvalidAsync(
+                    signedOrder, takerTokenFillAmount, takerAddress);
+            });
+        if (_.isEmpty(signedOrders)) {
+            return; // no-op
+        }
+
+        const orderAddressesValuesAndSignatureArray = _.map(signedOrders, signedOrder => {
+            return [
+                ...ExchangeWrapper.getOrderAddressesAndValues(signedOrder),
+                signedOrder.ecSignature.v,
+                signedOrder.ecSignature.r,
+                signedOrder.ecSignature.s,
+            ];
+        });
+        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
+        const [orderAddressesArray, orderValuesArray, vArray, rArray, sArray] = _.unzip<any>(
+            orderAddressesValuesAndSignatureArray,
+        );
+
+        const exchangeInstance = await this.getExchangeContractAsync();
+        const gas = await exchangeInstance.fillUpTo.estimateGas(
+            orderAddressesArray,
+            orderValuesArray,
+            takerTokenFillAmount,
+            shouldCheckTransfer,
+            vArray,
+            rArray,
+            sArray,
+            {
+                from: takerAddress,
+            },
+        );
+        const response: ContractResponse = await exchangeInstance.fillUpTo(
+            orderAddressesArray,
+            orderValuesArray,
+            takerTokenFillAmount,
+            shouldCheckTransfer,
+            vArray,
+            rArray,
+            sArray,
             {
                 from: takerAddress,
                 gas,
@@ -366,11 +433,8 @@ export class ExchangeWrapper extends ContractWrapper {
      * All orders must be from the same maker.
      */
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
-        if (_.isEmpty(orderCancellationRequests)) {
-            return; // no-op
-        }
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
-        assert.assert(_.uniq(makers).length === 1, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
+        assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
         assert.doesConformToSchema('orderCancellationRequests',
@@ -381,6 +445,9 @@ export class ExchangeWrapper extends ContractWrapper {
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
         });
+        if (_.isEmpty(orderCancellationRequests)) {
+            return; // no-op
+        }
         const exchangeInstance = await this.getExchangeContractAsync();
         const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {
             return [
