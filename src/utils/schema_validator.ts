@@ -7,13 +7,6 @@ import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_reque
 
 export class SchemaValidator {
     private validator: Validator;
-    // In order to validate a complex JS object using jsonschema, we must replace any complex
-    // sub-types (e.g BigNumber) with a simpler string representation. Since BigNumber and other
-    // complex types implement the `toString` method, we can stringify the object and
-    // then parse it. The resultant object can then be checked using jsonschema.
-    static convertToJSONSchemaCompatibleObject(obj: any): any {
-        return JSON.parse(JSON.stringify(obj));
-    }
     constructor() {
         this.validator = new Validator();
         this.validator.addSchema(tokenSchema, tokenSchema.id);
@@ -25,8 +18,12 @@ export class SchemaValidator {
         this.validator.addSchema(ecSignatureParameter, ecSignatureParameter.id);
         this.validator.addSchema(orderFillOrKillRequestsSchema, orderFillOrKillRequestsSchema.id);
     }
+    // In order to validate a complex JS object using jsonschema, we must replace any complex
+    // sub-types (e.g BigNumber) with a simpler string representation. Since BigNumber and other
+    // complex types implement the `toString` method, we can stringify the object and
+    // then parse it. The resultant object can then be checked using jsonschema.
     public validate(instance: any, schema: Schema): ValidatorResult {
-        const jsonSchemaCompatibleObject = SchemaValidator.convertToJSONSchemaCompatibleObject(instance);
+        const jsonSchemaCompatibleObject = JSON.parse(JSON.stringify(instance));
         return this.validator.validate(jsonSchemaCompatibleObject, schema);
     }
 }

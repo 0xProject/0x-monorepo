@@ -426,7 +426,7 @@ export class ExchangeWrapper extends ContractWrapper {
             await this.validateCancelOrderAndThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
-        };
+        }
         if (_.isEmpty(orderCancellationRequests)) {
             return; // no-op
         }
