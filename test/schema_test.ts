@@ -6,8 +6,9 @@ import promisify = require('es6-promisify');
 import {constants} from './utils/constants';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {tokenSchema} from '../src/schemas/token_schema';
-import {orderSchema} from '../src/schemas/order_schemas';
+import {orderSchema, signedOrderSchema} from '../src/schemas/order_schemas';
 import {addressSchema, numberSchema} from '../src/schemas/basic_type_schemas';
+import {orderFillOrKillRequestsSchema} from '../src/schemas/order_fill_or_kill_requests_schema';
 import {ecSignatureParameterSchema, ecSignatureSchema} from '../src/schemas/ec_signature_schema';
 
 chai.config.includeStack = true;
@@ -127,15 +128,15 @@ describe('Schema', () => {
         const order = {
             maker: constants.NULL_ADDRESS,
             taker: constants.NULL_ADDRESS,
-            makerFee: 1,
-            takerFee: 2,
-            makerTokenAmount: 1,
-            takerTokenAmount: 2,
+            makerFee: '1',
+            takerFee: '2',
+            makerTokenAmount: '1',
+            takerTokenAmount: '2',
             makerTokenAddress: constants.NULL_ADDRESS,
             takerTokenAddress: constants.NULL_ADDRESS,
-            salt: 256,
+            salt: '256',
             feeRecipient: constants.NULL_ADDRESS,
-            expirationUnixTimestampSec: 42,
+            expirationUnixTimestampSec: '42',
         };
         describe('#orderSchema', () => {
             it('should validate valid order', () => {
@@ -169,20 +170,45 @@ describe('Schema', () => {
                 },
             };
             describe('#signedOrderSchema', () => {
-                it('should validate valid order', () => {
+                it('should validate valid signed order', () => {
                     const testCases = [
                         signedOrder,
                     ];
-                    validateAgainstSchema(testCases, orderSchema);
+                    validateAgainstSchema(testCases, signedOrderSchema);
                 });
-                it('should fail for invalid order', () => {
+                it('should fail for invalid signed order', () => {
                     const testCases = [
                         {
                             ...signedOrder,
                             ecSignature: undefined,
                         },
                     ];
-                    validateAgainstSchema(testCases, orderSchema, true);
+                    validateAgainstSchema(testCases, signedOrderSchema, true);
+                });
+            });
+            describe('#orderFillOrKillRequestsSchema', () => {
+                const orderFillOrKillRequests = [
+                    {
+                        signedOrder,
+                        fillTakerAmount: 5,
+                    },
+                ];
+                it('should validate valid order fill or kill requests', () => {
+                    const testCases = [
+                        orderFillOrKillRequests,
+                    ];
+                    validateAgainstSchema(testCases, orderFillOrKillRequestsSchema);
+                });
+                it('should fail for invalid order fill or kill requests', () => {
+                    const testCases = [
+                        [
+                            {
+                                ...orderFillOrKillRequests[0],
+                                fillTakerAmount: undefined,
+                            },
+                        ],
+                    ];
+                    validateAgainstSchema(testCases, orderFillOrKillRequestsSchema, true);
                 });
             });
         });
