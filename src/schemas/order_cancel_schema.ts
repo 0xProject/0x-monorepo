@@ -4,7 +4,7 @@ export const orderCancellationRequestsSchema = {
     items: {
         properties: {
             order: {$ref: '/orderSchema'},
-            takerTokenCancelAmount: {type: '/numberSchema'},
+            takerTokenCancelAmount: {$ref: '/numberSchema'},
         },
         required: ['order', 'takerTokenCancelAmount'],
         type: 'object',
