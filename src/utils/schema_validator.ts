@@ -1,5 +1,5 @@
 import {Validator, ValidatorResult} from 'jsonschema';
-import {ecSignatureSchema, ecSignatureParameter} from '../schemas/ec_signature_schema';
+import {ecSignatureSchema, ecSignatureParameterSchema} from '../schemas/ec_signature_schema';
 import {orderSchema, signedOrderSchema} from '../schemas/order_schemas';
 import {addressSchema, numberSchema} from '../schemas/basic_type_schemas';
 import {tokenSchema} from '../schemas/token_schema';
@@ -15,7 +15,7 @@ export class SchemaValidator {
         this.validator.addSchema(addressSchema, addressSchema.id);
         this.validator.addSchema(ecSignatureSchema, ecSignatureSchema.id);
         this.validator.addSchema(signedOrderSchema, signedOrderSchema.id);
-        this.validator.addSchema(ecSignatureParameter, ecSignatureParameter.id);
+        this.validator.addSchema(ecSignatureParameterSchema, ecSignatureParameterSchema.id);
         this.validator.addSchema(orderFillOrKillRequestsSchema, orderFillOrKillRequestsSchema.id);
     }
     // In order to validate a complex JS object using jsonschema, we must replace any complex

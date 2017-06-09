@@ -1,4 +1,4 @@
-export const ecSignatureParameter = {
+export const ecSignatureParameterSchema = {
     id: '/ecSignatureParameter',
     type: 'string',
     pattern: '^0[xX][0-9A-Fa-f]{64}$',
