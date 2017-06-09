@@ -6,6 +6,7 @@ import promisify = require('es6-promisify');
 import {constants} from './utils/constants';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {addressSchema, numberSchema} from '../src/schemas/basic_type_schemas';
+import {ecSignatureParameter} from '../src/schemas/ec_signature_schema';
 
 chai.config.includeStack = true;
 const expect = chai.expect;
@@ -40,6 +41,25 @@ describe('Schema', () => {
                 batchTestSchema(testCases, addressSchema, true);
             });
         });
+    });
+    describe('#ecSignatureParameter', () => {
+       describe('parameter regex', () => {
+           it('should validate valid parameters', () => {
+               const testCases = [
+                   '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
+                   '0X40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
+               ];
+               batchTestSchema(testCases, ecSignatureParameter);
+           });
+           it('should fail for invalid parameters', () => {
+               const testCases = [
+                   '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3',  // shorter
+                   '0xzzzz9190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254', // invalid characters
+                   '40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',   // no 0x
+               ];
+               batchTestSchema(testCases, ecSignatureParameter, true);
+           });
+       });
     });
     describe('BigNumber serialization', () => {
         it('should correctly serialize BigNumbers', () => {
