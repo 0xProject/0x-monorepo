@@ -11,7 +11,7 @@ export class SchemaValidator {
     // sub-types (e.g BigNumber) with a simpler string representation. Since BigNumber and other
     // complex types implement the `toString` method, we can stringify the object and
     // then parse it. The resultant object can then be checked using jsonschema.
-    public static convertToJSONSchemaCompatibleObject(obj: any): any {
+    private static convertToJSONSchemaCompatibleObject(obj: any): any {
         return JSON.parse(JSON.stringify(obj));
     }
     constructor() {
@@ -25,7 +25,8 @@ export class SchemaValidator {
         this.validator.addSchema(ecSignatureParameter, ecSignatureParameter.id);
         this.validator.addSchema(orderFillOrKillRequestsSchema, orderFillOrKillRequestsSchema.id);
     }
-    public validate(instance: object, schema: Schema): ValidatorResult {
-        return this.validator.validate(instance, schema);
+    public validate(instance: any, schema: Schema): ValidatorResult {
+        const jsonSchemaCompatibleObject = SchemaValidator.convertToJSONSchemaCompatibleObject(instance);
+        return this.validator.validate(jsonSchemaCompatibleObject, schema);
     }
 }
