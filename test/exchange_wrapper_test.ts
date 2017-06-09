@@ -421,7 +421,7 @@ describe('ExchangeWrapper', () => {
                     const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
                     const anotherFilledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(anotherOrderHashHex);
                     expect(filledAmount).to.be.bignumber.equal(fillableAmount);
-                    const remainingFillAmount = fillUpToAmount.minus(filledAmount);
+                    const remainingFillAmount = fillableAmount.minus(1);
                     expect(anotherFilledAmount).to.be.bignumber.equal(remainingFillAmount);
                 });
             });

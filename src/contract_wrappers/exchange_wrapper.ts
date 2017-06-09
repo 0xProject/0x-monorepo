@@ -169,7 +169,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
-        assert.hashAtMostOneUniqueValue(takerTokenAddresses,
+        assert.hasAtMostOneUniqueValue(takerTokenAddresses,
                                         ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
@@ -179,9 +179,6 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
         _.forEach(signedOrders,
             async (signedOrder: SignedOrder, i: number) => {
-                assert.doesConformToSchema(`signedOrder[${i}]`,
-                    SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrder as object),
-                    signedOrderSchema);
                 await this.validateFillOrderAndThrowIfInvalidAsync(
                     signedOrder, takerTokenFillAmount, takerAddress);
             });
@@ -437,7 +434,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
-        assert.hashAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
+        assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this.web3Wrapper);
         _.forEach(orderCancellationRequests,
