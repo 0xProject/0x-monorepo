@@ -34,7 +34,8 @@ describe('Schema', () => {
         });
         it('should fail for invalid numbers', () => {
             const testCases = ['.3', '1.', 'abacaba', 'и', '1..0'];
-            validateAgainstSchema(testCases, numberSchema, true);
+            const shouldFail = true;
+            validateAgainstSchema(testCases, numberSchema, shouldFail);
         });
     });
     describe('#addressSchema', () => {
@@ -44,7 +45,8 @@ describe('Schema', () => {
         });
         it('should fail for invalid addresses', () => {
             const testCases = ['0x', '0', '0x00', '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42'];
-            validateAgainstSchema(testCases, addressSchema, true);
+            const shouldFail = true;
+            validateAgainstSchema(testCases, addressSchema, shouldFail);
         });
     });
     describe('#ecSignatureParameterSchema', () => {
@@ -61,7 +63,8 @@ describe('Schema', () => {
                 '0xzzzz9190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254', // invalid characters
                 '40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',   // no 0x
             ];
-            validateAgainstSchema(testCases, ecSignatureParameterSchema, true);
+            const shouldFail = true;
+            validateAgainstSchema(testCases, ecSignatureParameterSchema, shouldFail);
         });
     });
     describe('#ecSignatureSchema', () => {
@@ -89,7 +92,8 @@ describe('Schema', () => {
                 {v},
                 {r, s, v: 31},
             ];
-            validateAgainstSchema(testCases, ecSignatureSchema, true);
+            const shouldFail = true;
+            validateAgainstSchema(testCases, ecSignatureSchema, shouldFail);
         });
     });
     describe('#tokenSchema', () => {
@@ -123,7 +127,8 @@ describe('Schema', () => {
                     url: 'not an url',
                 },
             ];
-            validateAgainstSchema(testCases, tokenSchema, true);
+            const shouldFail = true;
+            validateAgainstSchema(testCases, tokenSchema, shouldFail);
         });
     });
     describe('order including schemas', () => {
@@ -159,7 +164,8 @@ describe('Schema', () => {
                     },
                     'order',
                 ];
-                validateAgainstSchema(testCases, orderSchema, true);
+                const shouldFail = true;
+                validateAgainstSchema(testCases, orderSchema, shouldFail);
             });
         });
         describe('signed order including schemas', () => {
@@ -185,7 +191,8 @@ describe('Schema', () => {
                             ecSignature: undefined,
                         },
                     ];
-                    validateAgainstSchema(testCases, signedOrderSchema, true);
+                    const shouldFail = true;
+                    validateAgainstSchema(testCases, signedOrderSchema, shouldFail);
                 });
             });
             describe('#orderFillOrKillRequestsSchema', () => {
@@ -210,7 +217,8 @@ describe('Schema', () => {
                             },
                         ],
                     ];
-                    validateAgainstSchema(testCases, orderFillOrKillRequestsSchema, true);
+                    const shouldFail = true;
+                    validateAgainstSchema(testCases, orderFillOrKillRequestsSchema, shouldFail);
                 });
             });
             describe('#orderCancellationRequestsSchema', () => {
@@ -235,7 +243,8 @@ describe('Schema', () => {
                             },
                         ],
                     ];
-                    validateAgainstSchema(testCases, orderCancellationRequestsSchema, true);
+                    const shouldFail = true;
+                    validateAgainstSchema(testCases, orderCancellationRequestsSchema, shouldFail);
                 });
             });
             describe('#orderFillRequestsSchema', () => {
@@ -260,7 +269,8 @@ describe('Schema', () => {
                             },
                         ],
                     ];
-                    validateAgainstSchema(testCases, orderFillRequestsSchema, true);
+                    const shouldFail = true;
+                    validateAgainstSchema(testCases, orderFillRequestsSchema, shouldFail);
                 });
             });
         });
