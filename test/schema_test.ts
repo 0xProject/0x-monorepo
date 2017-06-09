@@ -10,6 +10,7 @@ import {orderSchema, signedOrderSchema} from '../src/schemas/order_schemas';
 import {addressSchema, numberSchema} from '../src/schemas/basic_type_schemas';
 import {orderFillOrKillRequestsSchema} from '../src/schemas/order_fill_or_kill_requests_schema';
 import {ecSignatureParameterSchema, ecSignatureSchema} from '../src/schemas/ec_signature_schema';
+import {orderCancellationRequestsSchema} from '../src/schemas/order_cancel_schema';
 
 chai.config.includeStack = true;
 const expect = chai.expect;
@@ -209,6 +210,31 @@ describe('Schema', () => {
                         ],
                     ];
                     validateAgainstSchema(testCases, orderFillOrKillRequestsSchema, true);
+                });
+            });
+            describe('#orderCancellationRequestsSchema', () => {
+                const orderCancellationRequests = [
+                    {
+                        order,
+                        takerTokenCancelAmount: 5,
+                    },
+                ];
+                it('should validate valid order cancellation requests', () => {
+                    const testCases = [
+                        orderCancellationRequests,
+                    ];
+                    validateAgainstSchema(testCases, orderCancellationRequestsSchema);
+                });
+                it('should fail for invalid order cancellation requests', () => {
+                    const testCases = [
+                        [
+                            {
+                                ...orderCancellationRequests[0],
+                                takerTokenCancelAmount: undefined,
+                            },
+                        ],
+                    ];
+                    validateAgainstSchema(testCases, orderCancellationRequestsSchema, true);
                 });
             });
         });
