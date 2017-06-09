@@ -242,7 +242,7 @@ describe('Schema', () => {
                 const orderFillRequests = [
                     {
                         signedOrder,
-                        takerTokenCancelAmount: 5,
+                        takerTokenFillAmount: 5,
                     },
                 ];
                 it('should validate valid order fill requests', () => {
