@@ -531,6 +531,7 @@ describe('ExchangeWrapper', () => {
         let fillableAmount: BigNumber.BigNumber;
         let partialFillAmount: BigNumber.BigNumber;
         let signedOrder: SignedOrder;
+        let orderHash: string;
         before(() => {
             takerAddress = userAddresses[1];
             const [makerToken, takerToken] = tokens;
@@ -543,6 +544,7 @@ describe('ExchangeWrapper', () => {
             signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
             );
+            orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
         });
         describe('#getUnavailableTakerAmountAsync', () => {
             it ('should throw if passed an invalid orderHash', async () => {
@@ -554,7 +556,6 @@ describe('ExchangeWrapper', () => {
                 expect(unavailableValueT).to.be.bignumber.equal(0);
             });
             it ('should return the unavailableValueT for a valid and partially filled orderHash', async () => {
-                const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
                 const unavailableValueT = await zeroEx.exchange.getUnavailableTakerAmountAsync(orderHash);
                 expect(unavailableValueT).to.be.bignumber.equal(partialFillAmount);
             });
@@ -569,7 +570,6 @@ describe('ExchangeWrapper', () => {
                 expect(filledValueT).to.be.bignumber.equal(0);
             });
             it ('should return the filledValueT for a valid and partially filled orderHash', async () => {
-                const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
                 const filledValueT = await zeroEx.exchange.getFilledTakerAmountAsync(orderHash);
                 expect(filledValueT).to.be.bignumber.equal(partialFillAmount);
             });
@@ -584,9 +584,14 @@ describe('ExchangeWrapper', () => {
                 expect(cancelledValueT).to.be.bignumber.equal(0);
             });
             it ('should return the cancelledValueT for a valid and partially filled orderHash', async () => {
-                const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
                 const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHash);
                 expect(cancelledValueT).to.be.bignumber.equal(0);
+            });
+            it ('should return the cancelledValueT for a valid and cancelled orderHash', async () => {
+                const cancelAmount = fillableAmount.minus(partialFillAmount);
+                await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmount);
+                const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHash);
+                expect(cancelledValueT).to.be.bignumber.equal(cancelAmount);
             });
         });
     });
