@@ -170,7 +170,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
         assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
-        for (const orderFillrequest of orderFillRequests) {
+        for (const orderFillRequest of orderFillRequests) {
             await this.validateFillOrderAndThrowIfInvalidAsync(
                 orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
         }
