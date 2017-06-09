@@ -158,6 +158,41 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, orderSchema, true);
         });
     });
+    describe('#signedOrderSchema', () => {
+        const signedOrder = {
+            maker: constants.NULL_ADDRESS,
+            taker: constants.NULL_ADDRESS,
+            makerFee: 1,
+            takerFee: 2,
+            makerTokenAmount: 1,
+            takerTokenAmount: 2,
+            makerTokenAddress: constants.NULL_ADDRESS,
+            takerTokenAddress: constants.NULL_ADDRESS,
+            salt: 256,
+            feeRecipient: constants.NULL_ADDRESS,
+            expirationUnixTimestampSec: 42,
+            ecSignature: {
+                v: 27,
+                r: '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
+                s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
+            },
+        };
+        it('should validate valid order', () => {
+            const testCases = [
+                signedOrder,
+            ];
+            validateAgainstSchema(testCases, orderSchema);
+        });
+        it('should fail for invalid order', () => {
+            const testCases = [
+                {
+                    ...signedOrder,
+                    ecSignature: undefined,
+                },
+            ];
+            validateAgainstSchema(testCases, orderSchema, true);
+        });
+    });
     describe('BigNumber serialization', () => {
         it('should correctly serialize BigNumbers', () => {
             const testCases = {
