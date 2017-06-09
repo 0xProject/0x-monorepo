@@ -16,7 +16,11 @@ describe('Schema', () => {
     const validator = new SchemaValidator();
     const validateAgainstSchema = (testCases: any[], schema: any, shouldFail = false) => {
         _.forEach(testCases, (testCase: any) => {
-            expect(validator.validate(testCase, schema).errors).to.be.lengthOf(shouldFail ? 1 : 0);
+            if (shouldFail) {
+                expect(validator.validate(testCase, schema).errors).to.be.lengthOf.at.least(1);
+            } else {
+                expect(validator.validate(testCase, schema).errors).to.be.lengthOf(0);
+            }
         });
     };
     describe('#numberSchema', () => {
