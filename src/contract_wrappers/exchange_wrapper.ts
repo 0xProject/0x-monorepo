@@ -172,15 +172,12 @@ export class ExchangeWrapper extends ContractWrapper {
                                         ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
-        assert.doesConformToSchema(
-            'signedOrders', SchemaValidator.convertToJSONSchemaCompatibleObject(signedOrders), signedOrdersSchema
-        );
+        assert.doesConformToSchema('signedOrders', signedOrders, signedOrdersSchema);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
-        _.forEach(signedOrders,
-            async (signedOrder: SignedOrder, i: number) => {
-                await this.validateFillOrderAndThrowIfInvalidAsync(
-                    signedOrder, takerTokenFillAmount, takerAddress);
-            });
+        for (const signedOrder of signedOrders) {
+            await this.validateFillOrderAndThrowIfInvalidAsync(
+                signedOrder, takerTokenFillAmount, takerAddress);
+        }
         if (_.isEmpty(signedOrders)) {
             return; // no-op
         }
