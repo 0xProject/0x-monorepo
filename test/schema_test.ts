@@ -5,6 +5,7 @@ import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {constants} from './utils/constants';
 import {SchemaValidator} from '../src/utils/schema_validator';
+import {tokenSchema} from '../src/schemas/token_schema';
 import {addressSchema, numberSchema} from '../src/schemas/basic_type_schemas';
 import {ecSignatureParameterSchema, ecSignatureSchema} from '../src/schemas/ec_signature_schema';
 
@@ -38,7 +39,7 @@ describe('Schema', () => {
             batchTestSchema(testCases, addressSchema, true);
         });
     });
-    describe('#ecSignatureParameter', () => {
+    describe('#ecSignatureParameterSchema', () => {
         it('should validate valid parameters', () => {
             const testCases = [
                 '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
@@ -55,7 +56,7 @@ describe('Schema', () => {
             batchTestSchema(testCases, ecSignatureParameterSchema, true);
         });
     });
-    describe('#ecSignature', () => {
+    describe('#ecSignatureSchema', () => {
         it('should validate valid signature', () => {
             const signature = {
                 v: 27,
@@ -81,6 +82,40 @@ describe('Schema', () => {
                 {r, s, v: 31},
             ];
             batchTestSchema(testCases, ecSignatureSchema, true);
+        });
+    });
+    describe('#tokenSchema', () => {
+        const token = {
+            name: 'Zero Ex',
+            symbol: 'ZRX',
+            decimals: 100500,
+            address: '0x8b0292B11a196601eD2ce54B665CaFEca0347D42',
+            url: 'https://0xproject.com',
+        };
+        it('should validate valid token', () => {
+            const testCases = [
+                token,
+            ];
+            batchTestSchema(testCases, tokenSchema);
+        });
+        it('should fail for invalid token', () => {
+            const testCases = [
+                {
+                    ...token,
+                    address: null,
+                },
+                {
+                    ...token,
+                    decimals: undefined,
+                },
+                [],
+                4,
+                {
+                    ...token,
+                    url: 'not an url',
+                },
+            ];
+            batchTestSchema(testCases, tokenSchema, true);
         });
     });
     describe('BigNumber serialization', () => {

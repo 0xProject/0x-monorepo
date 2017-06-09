@@ -4,8 +4,11 @@ export const tokenSchema = {
         name: {type: 'string'},
         symbol: {type: 'string'},
         decimals: {type: 'number'},
-        address: {type: 'string'},
-        url: {type: 'string'},
+        address: {$ref: '/addressSchema'},
+        url: {
+            type: 'string',
+            format: 'uri',
+        },
     },
     required: ['name', 'symbol', 'decimals', 'address', 'url'],
     type: 'object',
