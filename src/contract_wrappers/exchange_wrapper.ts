@@ -30,7 +30,6 @@ import * as ExchangeArtifacts from '../artifacts/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
 import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
-import {SchemaValidator} from '../utils/schema_validator';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 
