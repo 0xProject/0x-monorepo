@@ -643,6 +643,22 @@ describe('ExchangeWrapper', () => {
                 );
             })();
         });
+        it('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
+            (async () => {
+                const subscriptionOpts: SubscriptionOpts = {
+                    fromBlock: 0,
+                    toBlock: 'latest',
+                };
+                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogCancel, subscriptionOpts,
+                    indexFilterValues, (err: Error, event: ContractEvent) => {
+                        expect(err).to.be.null();
+                        expect(event).to.not.be.undefined();
+                        done();
+                    });
+                const cancelTakerAmountInBaseUnits = new BigNumber(1);
+                await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerAmountInBaseUnits);
+            })();
+        });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
                 const subscriptionOpts: SubscriptionOpts = {
