@@ -13,6 +13,10 @@ export class TokenRegistryWrapper extends ContractWrapper {
     public invalidateContractInstance(): void {
         delete this.tokenRegistryContractIfExists;
     }
+    /**
+     * Retrieves all the tokens currently listed in the Token Registry smart contract
+     * @return An array of JS objects that conform to the Token interface.
+     */
     public async getTokensAsync(): Promise<Token[]> {
         const tokenRegistryContract = await this.getTokenRegistryContractAsync();
 

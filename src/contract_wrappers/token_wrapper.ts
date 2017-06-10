@@ -20,7 +20,9 @@ export class TokenWrapper extends ContractWrapper {
         this.tokenContractsByAddress = {};
     }
     /**
-     * Returns an owner's ERC20 token balance.
+     * Retrieves an owner's ERC20 token balance.
+     * @param tokenAddress The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param ownerAddress The hex encoded user Ethereum address whose balance you would like to check.
      */
     public async getBalanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
@@ -36,6 +38,10 @@ export class TokenWrapper extends ContractWrapper {
     /**
      * Sets the spender's allowance to a specified number of baseUnits on behalf of the owner address.
      * Equivalent to the ERC20 spec method `approve`.
+     * @param tokenAddress The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param ownerAddress The hex encoded user Ethereum address who would like to set an allowance for spenderAddress
+     * @param spenderAddress The hex encoded user Ethereum address who will be able to spend the set allowance.
+     * @param amountInBaseUnits The allowance amount you would like to set.
      */
     public async setAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string,
                                    amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
@@ -57,6 +63,10 @@ export class TokenWrapper extends ContractWrapper {
     }
     /**
      * Retrieves the owners allowance in baseUnits set to the spender's address.
+     * @param tokenAddress The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param ownerAddress The hex encoded user Ethereum address whose allowance to spenderAddress
+     * you would like to retrieve.
+     * @param spenderAddress The hex encoded user Ethereum address who can spend the allowance you are fetching.
      */
     public async getAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
@@ -71,6 +81,8 @@ export class TokenWrapper extends ContractWrapper {
     }
     /**
      * Retrieves the owner's allowance in baseUnits set to the 0x proxy contract.
+     * @param tokenAddress The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param ownerAddress The hex encoded user Ethereum address whose proxy contract allowance we are retrieving.
      */
     public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
@@ -83,6 +95,9 @@ export class TokenWrapper extends ContractWrapper {
     /**
      * Sets the 0x proxy contract's allowance to a specified number of a tokens' baseUnits on behalf
      * of an owner address.
+     * @param tokenAddress The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param ownerAddress The hex encoded user Ethereum address who is setting an allowance for the Proxy contract.
+     * @param amountInBaseUnits The allowance amount specified in baseUnits.
      */
     public async setProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
                                         amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
@@ -95,6 +110,10 @@ export class TokenWrapper extends ContractWrapper {
     }
     /**
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
+     * @param tokenAddress The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param fromAddress The hex encoded user Ethereum address that will send the funds.
+     * @param toAddress The hex encoded user Ethereum address that will receive the funds.
+     * @param amountInBaseUnits The amount (specified in baseUnits) of the token to transfer.
      */
     public async transferAsync(tokenAddress: string, fromAddress: string, toAddress: string,
                                amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
@@ -118,6 +137,12 @@ export class TokenWrapper extends ContractWrapper {
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
      * Requires the fromAddress to have sufficient funds and to have approved an allowance of
      * `amountInBaseUnits` for senderAddress.
+     * @param tokenAddress The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param fromAddress The hex encoded user Ethereum address that will send the funds.
+     * @param toAddress The hex encoded user Ethereum address that will receive the funds.
+     * @param senderAddress The hex encoded user Ethereum address whose funds are being sent. The senderAddress
+     * must have set an allowance to the fromAddress before this call.
+     * @param amountInBaseUnits The amount (specified in baseUnits) of the token to transfer.
      */
     public async transferFromAsync(tokenAddress: string, fromAddress: string, toAddress: string,
                                    senderAddress: string, amountInBaseUnits: BigNumber.BigNumber):
