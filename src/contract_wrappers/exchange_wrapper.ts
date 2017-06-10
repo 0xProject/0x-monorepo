@@ -79,8 +79,9 @@ export class ExchangeWrapper extends ContractWrapper {
      * Returns the unavailable takerAmount of an order. Unavailable amount is defined as the total
      * amount that has been filled or cancelled. The remaining takerAmount can be calculated by
      * subtracting the unavailable amount from the total order takerAmount.
-     * @param orderHashHex The hex encoded orderHash for which you would like to retrieve the unavailable takerAmount.
-     * @return The amount of the order (in taker tokens) that has either been filled or canceled.
+     * @param   orderHashHex    The hex encoded orderHash for which you would like to retrieve the
+     *                          unavailable takerAmount.
+     * @return  The amount of the order (in taker tokens) that has either been filled or canceled.
      */
     public async getUnavailableTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
         assert.isValidOrderHash('orderHashHex', orderHashHex);
@@ -93,8 +94,8 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Retrieve the takerAmount of an order that has already been filled.
-     * @param orderHashHex The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
-     * @return The amount of the order (in taker tokens) that has already been filled.
+     * @param   orderHashHex    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
+     * @return  The amount of the order (in taker tokens) that has already been filled.
      */
     public async getFilledTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
         assert.isValidOrderHash('orderHashHex', orderHashHex);
@@ -107,8 +108,9 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Retrieve the takerAmount of an order that has been cancelled.
-     * @param orderHashHex The hex encoded orderHash for which you would like to retrieve the cancelled takerAmount.
-     * @return The amount of the order (in taker tokens) that has been cancelled.
+     * @param   orderHashHex    The hex encoded orderHash for which you would like to retrieve the
+     *                          cancelled takerAmount.
+     * @return  The amount of the order (in taker tokens) that has been cancelled.
      */
     public async getCanceledTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
         assert.isValidOrderHash('orderHashHex', orderHashHex);
@@ -126,12 +128,12 @@ export class ExchangeWrapper extends ContractWrapper {
      * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if while
      * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
      * false forgoes this check and causes the smart contract to throw (using all the gas supplied) instead.
-     * @param signedOrder A JS object that conforms to the SignedOrder interface.
-     * @param takerTokenFillAmount The amount of the order (in taker tokens baseUnits) that you wish to fill.
-     * @param shouldCheckTransfer Whether or not you wish for the contract call to throw if upon
-     * execution the tokens cannot be transferred.
-     * @param takerAddress The user Ethereum address who would like to fill this order. Must be available via the
-     * supplied Web3.Provider passed to 0x.js.
+     * @param   signedOrder             A JS object that conforms to the SignedOrder interface.
+     * @param   takerTokenFillAmount    The amount of the order (in taker tokens baseUnits) that you wish to fill.
+     * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
+     *                                  execution the tokens cannot be transferred.
+     * @param   takerAddress            The user Ethereum address who would like to fill this order.
+     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
     public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
@@ -176,13 +178,15 @@ export class ExchangeWrapper extends ContractWrapper {
      * Sequentially and atomically fills signedOrders up to the specified takerTokenFillAmount.
      * If the fill amount is reached - it succeeds and does not fill the rest of the orders.
      * If fill amount is not reached - it fills as much of the fill amount as possible and succeeds.
-     * @param signedOrders The array of signedOrders that you would like to fill until takerTokenFillAmount is reached.
-     * @param takerTokenFillAmount The total amount of the takerTokens you would like to fill.
-     * @param shouldCheckTransfer Whether or not you wish for the contract call to throw if upon
-     * execution any of the tokens cannot be transferred. If set to false, the call will continue to fill subsequent
-     * signedOrders even when some cannot be filled.
-     * @param takerAddress The user Ethereum address who would like to fill these orders. Must be available via the
-     * supplied Web3.Provider passed to 0x.js.
+     * @param   signedOrders            The array of signedOrders that you would like to fill until
+     *                                  takerTokenFillAmount is reached.
+     * @param   takerTokenFillAmount    The total amount of the takerTokens you would like to fill.
+     * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
+     *                                  execution any of the tokens cannot be transferred. If set to false,
+     *                                  the call will continue to fill subsequent signedOrders even when
+     *                                  some cannot be filled.
+     * @param   takerAddress            The user Ethereum address who would like to fill these orders.
+     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
@@ -247,12 +251,13 @@ export class ExchangeWrapper extends ContractWrapper {
      * Executes multiple fills atomically in a single transaction.
      * If shouldCheckTransfer is set to true, it will continue filling subsequent orders even when earlier ones fail.
      * When shouldCheckTransfer is set to false, if any fill fails, the entire batch fails.
-     * @param orderFillRequests An array of JS objects that conform to the OrderFillRequest interface.
-     * @param shouldCheckTransfer Whether or not you wish for the contract call to throw if upon
-     * execution any of the tokens cannot be transferred. If set to false, the call will continue to fill subsequent
-     * signedOrders even when some cannot be filled.
-     * @param takerAddress The user Ethereum address who would like to fill these orders. Must be available via the
-     * supplied Web3.Provider passed to 0x.js.
+     * @param   orderFillRequests       An array of JS objects that conform to the OrderFillRequest interface.
+     * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
+     *                                  execution any of the tokens cannot be transferred. If set to false,
+     *                                  the call will continue to fill subsequent signedOrders even when some
+     *                                  cannot be filled.
+     * @param   takerAddress            The user Ethereum address who would like to fill these orders.
+     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
     public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
@@ -312,10 +317,11 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
      * the fill order is abandoned.
-     * @param signedOrder A JS object that conforms to the SignedOrder interface. The signedOrder you wish to fill.
-     * @param takerTokenFillAmount The total amount of the takerTokens you would like to fill.
-     * @param takerAddress The user Ethereum address who would like to fill this order. Must be available via the
-     * supplied Web3.Provider passed to 0x.js.
+     * @param   signedOrder             A JS object that conforms to the SignedOrder interface. The
+     *                                  signedOrder you wish to fill.
+     * @param   takerTokenFillAmount    The total amount of the takerTokens you would like to fill.
+     * @param   takerAddress            The user Ethereum address who would like to fill this order.
+     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
     public async fillOrKillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
                                       takerAddress: string): Promise<void> {
@@ -359,9 +365,9 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Batch version of fillOrKill. Allows a taker to specify a batch of orders that will either be atomically
      * filled (each to the specified fillAmount) or aborted.
-     * @param orderFillOrKillRequests An array of JS objects that conform to the OrderFillOrKillRequest interface.
-     * @param takerAddress The user Ethereum address who would like to fill there orders. Must be available via the
-     * supplied Web3.Provider passed to 0x.js.
+     * @param   orderFillOrKillRequests     An array of JS objects that conform to the OrderFillOrKillRequest interface.
+     * @param   takerAddress                The user Ethereum address who would like to fill there orders.
+     *                                      Must be available via the supplied Web3.Provider passed to 0x.js.
      */
     public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
                                       takerAddress: string): Promise<void> {
@@ -414,6 +420,9 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
+     * @param   order                   A JS object that conforms to the Order or SignedOrder interface.
+     *                                  The order you would like to cancel.
+     * @param   takerTokenCancelAmount  The amount (specified in taker tokens) that you would like to cancel.
      */
     public async cancelOrderAsync(
         order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
@@ -447,7 +456,8 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
      * All orders must be from the same maker.
-     * @param orderCancellationRequests An array of JS objects that conform to the OrderCancellationRequest interface.
+     * @param   orderCancellationRequests   An array of JS objects that conform to the OrderCancellationRequest
+     *                                      interface.
      */
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
@@ -495,11 +505,11 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Subscribe to an event type emitted by the Exchange smart contract
-     * @param eventName The exchange contract event you would like to subscribe to.
-     * @param subscriptionOpts Subscriptions options that let you configure the subscription.
-     * @param indexFilterValues A JS object where the keys are indexed args returned by the event and
-     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param callback The callback that will be called everytime a matching event is found.
+     * @param   eventName           The exchange contract event you would like to subscribe to.
+     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
+     * @param   indexFilterValues   A JS object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param   callback            The callback that will be called everytime a matching event is found.
      */
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
                                 indexFilterValues: IndexFilterValues, callback: EventCallback):

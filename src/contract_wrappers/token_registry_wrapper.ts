@@ -15,7 +15,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
     }
     /**
      * Retrieves all the tokens currently listed in the Token Registry smart contract
-     * @return An array of JS objects that conform to the Token interface.
+     * @return  An array of JS objects that conform to the Token interface.
      */
     public async getTokensAsync(): Promise<Token[]> {
         const tokenRegistryContract = await this.getTokenRegistryContractAsync();
