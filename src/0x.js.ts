@@ -128,8 +128,7 @@ export class ZeroEx {
      * Computes the orderHash for a given order and returns it as a hex encoded string.
      */
     public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
-        assert.doesConformToSchema('order', SchemaValidator.convertToJSONSchemaCompatibleObject(order as object),
-                                   orderSchema);
+        assert.doesConformToSchema('order', order, orderSchema);
 
         const exchangeContractAddr = await this.getExchangeAddressAsync();
         const orderHashHex = utils.getOrderHashHex(order, exchangeContractAddr);
