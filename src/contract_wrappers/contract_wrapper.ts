@@ -9,7 +9,7 @@ export class ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper) {
         this.web3Wrapper = web3Wrapper;
     }
-    protected async instantiateContractIfExistsAsync(artifact: Artifact, address?: string): Promise<ContractInstance> {
+    protected async _instantiateContractIfExistsAsync(artifact: Artifact, address?: string): Promise<ContractInstance> {
         const c = await contract(artifact);
         const providerObj = this.web3Wrapper.getCurrentProvider();
         c.setProvider(providerObj);

@@ -19,8 +19,8 @@ describe('ZeroEx library', () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3);
             // Instantiate the contract instances with the current provider
-            await (zeroEx.exchange as any).getExchangeContractAsync();
-            await (zeroEx.tokenRegistry as any).getTokenRegistryContractAsync();
+            await (zeroEx.exchange as any)._getExchangeContractAsync();
+            await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
             expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.undefined();
             expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.undefined();
 
@@ -57,14 +57,14 @@ describe('ZeroEx library', () => {
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
             expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync('0x0', signature, address),
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync('0x0', signature, address),
             ).to.become(false);
         });
         it('should return false if the address doesn\'t pertain to the signature & data', async () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
             expect(ZeroEx.isValidSignature(dataHex, signature, validUnrelatedAddress)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(dataHex, signature,
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, signature,
                                                                                 validUnrelatedAddress),
             ).to.become(false);
         });
@@ -72,14 +72,14 @@ describe('ZeroEx library', () => {
             const wrongSignature = _.assign({}, signature, {v: 28});
             expect(ZeroEx.isValidSignature(dataHex, wrongSignature, address)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(dataHex, wrongSignature, address),
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, wrongSignature, address),
             ).to.become(false);
         });
         it('should return true if the signature does pertain to the dataHex & address', async () => {
             const isValidSignatureLocal = ZeroEx.isValidSignature(dataHex, signature, address);
             expect(isValidSignatureLocal).to.be.true();
             const isValidSignatureOnContract = await (zeroEx.exchange as any)
-                .isValidSignatureUsingContractCallAsync(dataHex, signature, address);
+                ._isValidSignatureUsingContractCallAsync(dataHex, signature, address);
             return expect(isValidSignatureOnContract).to.be.true();
         });
     });

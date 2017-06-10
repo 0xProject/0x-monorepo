@@ -618,7 +618,7 @@ describe('ExchangeWrapper', () => {
             );
         });
         afterEach(async () => {
-            await (zeroEx.exchange as any).stopWatchingExchangeLogEventsAsync();
+            await (zeroEx.exchange as any)._stopWatchingExchangeLogEventsAsync();
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
         // Since we need to await the receipt of the event in the `subscribeAsync` callback,
@@ -705,7 +705,7 @@ describe('ExchangeWrapper', () => {
             );
             const orderHash = await zeroEx.getOrderHashHexAsync(signedOrder);
             const orderHashFromContract = await (zeroEx.exchange as any)
-                .getOrderHashHexUsingContractCallAsync(signedOrder);
+                ._getOrderHashHexUsingContractCallAsync(signedOrder);
             expect(orderHash).to.equal(orderHashFromContract);
         });
     });

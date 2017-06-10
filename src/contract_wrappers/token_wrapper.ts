@@ -11,13 +11,13 @@ import {TokenContract, ZeroExError} from '../types';
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
 
 export class TokenWrapper extends ContractWrapper {
-    private tokenContractsByAddress: {[address: string]: TokenContract};
+    private _tokenContractsByAddress: {[address: string]: TokenContract};
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
-        this.tokenContractsByAddress = {};
+        this._tokenContractsByAddress = {};
     }
     public invalidateContractInstances() {
-        this.tokenContractsByAddress = {};
+        this._tokenContractsByAddress = {};
     }
     /**
      * Retrieves an owner's ERC20 token balance.
@@ -29,7 +29,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isUserAddressAvailableAsync(this.web3Wrapper);
 
-        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let balance = await tokenContract.balanceOf.call(ownerAddress);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         balance = new BigNumber(balance);
@@ -51,7 +51,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
-        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(tokenAddress);
         // Hack: for some reason default estimated gas amount causes `base fee exceeds gas limit` exception
         // on testrpc. Probably related to https://github.com/ethereumjs/testrpc/issues/294
         // TODO: Debug issue in testrpc and submit a PR, then remove this hack
@@ -74,7 +74,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isUserAddressAvailableAsync(this.web3Wrapper);
 
-        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, spenderAddress);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
@@ -89,7 +89,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
-        const proxyAddress = await this.getProxyAddressAsync();
+        const proxyAddress = await this._getProxyAddressAsync();
         const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress);
         return allowanceInBaseUnits;
     }
@@ -107,7 +107,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
-        const proxyAddress = await this.getProxyAddressAsync();
+        const proxyAddress = await this._getProxyAddressAsync();
         await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
     }
     /**
@@ -124,7 +124,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('toAddress', toAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
-        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(tokenAddress);
 
         const fromAddressBalance = await this.getBalanceAsync(tokenAddress, fromAddress);
         if (fromAddressBalance.lessThan(amountInBaseUnits)) {
@@ -155,7 +155,7 @@ export class TokenWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('senderAddress', senderAddress, this.web3Wrapper);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
-        const tokenContract = await this.getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(tokenAddress);
 
         const fromAddressAllowance = await this.getAllowanceAsync(tokenAddress, fromAddress, senderAddress);
         if (fromAddressAllowance.lessThan(amountInBaseUnits)) {
@@ -171,17 +171,17 @@ export class TokenWrapper extends ContractWrapper {
             from: senderAddress,
         });
     }
-    private async getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
-        let tokenContract = this.tokenContractsByAddress[tokenAddress];
+    private async _getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
+        let tokenContract = this._tokenContractsByAddress[tokenAddress];
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        const contractInstance = await this.instantiateContractIfExistsAsync((TokenArtifacts as any), tokenAddress);
+        const contractInstance = await this._instantiateContractIfExistsAsync((TokenArtifacts as any), tokenAddress);
         tokenContract = contractInstance as TokenContract;
-        this.tokenContractsByAddress[tokenAddress] = tokenContract;
+        this._tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
     }
-    private async getProxyAddressAsync() {
+    private async _getProxyAddressAsync() {
         const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
         const proxyNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
                                        undefined :

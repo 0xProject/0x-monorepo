@@ -33,7 +33,7 @@ export class ZeroEx {
     public exchange: ExchangeWrapper;
     public tokenRegistry: TokenRegistryWrapper;
     public token: TokenWrapper;
-    private web3Wrapper: Web3Wrapper;
+    private _web3Wrapper: Web3Wrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `dataHex` with the private key corresponding to the `signerAddressHex` address.
@@ -128,10 +128,10 @@ export class ZeroEx {
      * @return  An instance of the 0x.js ZeroEx class.
      */
     constructor(web3: Web3) {
-        this.web3Wrapper = new Web3Wrapper(web3);
-        this.token = new TokenWrapper(this.web3Wrapper);
-        this.exchange = new ExchangeWrapper(this.web3Wrapper, this.token);
-        this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
+        this._web3Wrapper = new Web3Wrapper(web3);
+        this.token = new TokenWrapper(this._web3Wrapper);
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
     }
     /**
      * Sets a new provider for the web3 instance used by 0x.js. Updating the provider will stop all
@@ -139,7 +139,7 @@ export class ZeroEx {
      * @param   provider    The Web3.Provider you would like the 0x.js library to use from now on.
      */
     public async setProviderAsync(provider: Web3.Provider) {
-        this.web3Wrapper.setProvider(provider);
+        this._web3Wrapper.setProvider(provider);
         await this.exchange.invalidateContractInstanceAsync();
         this.tokenRegistry.invalidateContractInstance();
         this.token.invalidateContractInstances();
@@ -149,7 +149,7 @@ export class ZeroEx {
      * @return  An array of Ethereum addresses available.
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
-        const availableAddresses = await this.web3Wrapper.getAvailableAddressesAsync();
+        const availableAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
         return availableAddresses;
     }
     /**
@@ -160,7 +160,7 @@ export class ZeroEx {
     public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         assert.doesConformToSchema('order', order, orderSchema);
 
-        const exchangeContractAddr = await this.getExchangeAddressAsync();
+        const exchangeContractAddr = await this._getExchangeAddressAsync();
         const orderHashHex = utils.getOrderHashHex(order, exchangeContractAddr);
         return orderHashHex;
     }
@@ -174,10 +174,10 @@ export class ZeroEx {
      */
     public async signOrderHashAsync(orderHashHex: string, signerAddress: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
-        await assert.isSenderAddressAsync('signerAddress', signerAddress, this.web3Wrapper);
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, this._web3Wrapper);
 
         let msgHashHex;
-        const nodeVersion = await this.web3Wrapper.getNodeVersionAsync();
+        const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
         const isParityNode = utils.isParityNode(nodeVersion);
         if (isParityNode) {
             // Parity node adds the personalMessage prefix itself
@@ -188,7 +188,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const signature = await this.web3Wrapper.signTransactionAsync(signerAddress, msgHashHex);
+        const signature = await this._web3Wrapper.signTransactionAsync(signerAddress, msgHashHex);
 
         let signatureData;
         const [nodeVersionNumber] = findVersions(nodeVersion);
@@ -224,8 +224,8 @@ export class ZeroEx {
         }
         return ecSignature;
     }
-    private async getExchangeAddressAsync() {
-        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+    private async _getExchangeAddressAsync() {
+        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         const exchangeNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
                                        undefined :
                                        (ExchangeArtifacts as any).networks[networkIdIfExists];
