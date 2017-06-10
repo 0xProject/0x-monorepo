@@ -35,6 +35,7 @@ import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_reque
 import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
+import {decorators} from '../utils/decorators';
 
 export class ExchangeWrapper extends ContractWrapper {
     private exchangeContractErrCodesToMsg = {
@@ -121,6 +122,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
      * false forgoes this check and causes the smart contract to throw instead.
      */
+    @decorators.contractCallErrorHandler
     public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
@@ -165,6 +167,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * If the fill amount is reached - it succeeds and does not fill the rest of the orders.
      * If fill amount is not reached - it fills as much of the fill amount as possible and succeeds.
      */
+    @decorators.contractCallErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
@@ -229,6 +232,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * If shouldCheckTransfer is set to true, it will continue filling subsequent orders even when earlier ones fail.
      * When shouldCheckTransfer is set to false, if any fill fails, the entire batch fails.
      */
+    @decorators.contractCallErrorHandler
     public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
@@ -288,6 +292,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
      * the fill order is abandoned.
      */
+    @decorators.contractCallErrorHandler
     public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
                                       takerAddress: string) {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
@@ -331,6 +336,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Batch version of fillOrKill. Allows a taker to specify a batch of orders that will either be atomically
      * filled (each to the specified fillAmount) or aborted.
      */
+    @decorators.contractCallErrorHandler
     public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
                                       takerAddress: string) {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
@@ -383,6 +389,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
      */
+    @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
         order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
         assert.doesConformToSchema('order', order, orderSchema);
@@ -416,6 +423,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
      * All orders must be from the same maker.
      */
+    @decorators.contractCallErrorHandler
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);

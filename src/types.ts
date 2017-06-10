@@ -18,6 +18,8 @@ export const ZeroExError = strEnum([
     'ZRX_NOT_IN_TOKEN_REGISTRY',
     'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     'INSUFFICIENT_BALANCE_FOR_TRANSFER',
+    'INVALID_JUMP',
+    'OUT_OF_GAS',
 ]);
 export type ZeroExError = keyof typeof ZeroExError;
 
@@ -263,3 +265,5 @@ export interface OrderFillRequest {
     signedOrder: SignedOrder;
     takerTokenFillAmount: BigNumber.BigNumber;
 }
+
+export type AsyncMethod = (...args: any[]) => Promise<any>;
