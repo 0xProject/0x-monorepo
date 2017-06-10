@@ -23,6 +23,11 @@ import {orderSchema} from './schemas/order_schemas';
 bigNumberConfigs.configure();
 
 export class ZeroEx {
+    /**
+     * When creating an order without a specified taker or feeRecipient you must supply the Solidity
+     * address null type (as opposed to Javascripts `null`, `undefined` or empty string). We expose
+     * this constant for your convenience.
+     */
     public static NULL_ADDRESS = constants.NULL_ADDRESS;
 
     public exchange: ExchangeWrapper;
@@ -32,6 +37,10 @@ export class ZeroEx {
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `dataHex` with the private key corresponding to the `signerAddressHex` address.
+     * @param   dataHex          The hex encoded data signed by the supplied signature.
+     * @param   signature        A JS object containing the elliptic curve signature parameters.
+     * @param   signerAddressHex The hex encoded address that signed the dataHex, producing the supplied signature.
+     * @return  Whether the signature is valid for the supplied signerAddressHex and dataHex.
      */
     public static isValidSignature(dataHex: string, signature: ECSignature, signerAddressHex: string): boolean {
         assert.isHexString('dataHex', dataHex);
@@ -53,9 +62,10 @@ export class ZeroEx {
         }
     }
     /**
-     * Generates pseudo-random 256 bit salt.
-     * The salt is used to ensure that the 0x order generated has a unique orderHash that does
-     * not collide with any other outstanding orders.
+     * Generates a pseudo-random 256-bit salt.
+     * The salt can be included in an 0x order, ensuring that the order generates a unique orderHash
+     * and will not collide with other outstanding orders that are identical in all other parameters.
+     * @return  A pseudo-random 256-bit number that can be used as a salt.
      */
     public static generatePseudoRandomSalt(): BigNumber.BigNumber {
         // BigNumber.random returns a pseudo-random number between 0 & 1 with a passed in number of decimal places.
@@ -68,6 +78,9 @@ export class ZeroEx {
     /**
      * Checks if the supplied hex encoded order hash is valid.
      * Note: Valid means it has the expected format, not that an order with the orderHash exists.
+     * Use this method when processing orderHashes submitted as user input.
+     * @param   orderHashHex    Hex encoded orderHash.
+     * @return  Whether the supplied orderHashHex has the expected format.
      */
     public static isValidOrderHash(orderHashHex: string): boolean {
         // Since this method can be called to check if any arbitrary string conforms to an orderHash's
@@ -80,12 +93,15 @@ export class ZeroEx {
      * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
      * E.g: If a currency has 18 decimal places, 1e18 or one quintillion of the currency is equivalent
      * to 1 unit.
+     * @param   amount      The amount in baseUnits that you would like converted to units.
+     * @param   decimals    The number of decimal places the unit amount has.
+     * @return  The amount in units.
      */
-    public static toUnitAmount(amount: BigNumber.BigNumber, numDecimals: number): BigNumber.BigNumber {
+    public static toUnitAmount(amount: BigNumber.BigNumber, decimals: number): BigNumber.BigNumber {
         assert.isBigNumber('amount', amount);
-        assert.isNumber('numDecimals', numDecimals);
+        assert.isNumber('decimals', decimals);
 
-        const aUnit = new BigNumber(10).pow(numDecimals);
+        const aUnit = new BigNumber(10).pow(decimals);
         const unit = amount.div(aUnit);
         return unit;
     }
@@ -93,15 +109,24 @@ export class ZeroEx {
      * A baseUnit is defined as the smallest denomination of a token. An amount expressed in baseUnits
      * is the amount expressed in the smallest denomination.
      * E.g: 1 unit of a token with 18 decimal places is expressed in baseUnits as 1000000000000000000
+     * @param   amount      The amount of units that you would like converted to baseUnits.
+     * @param   decimals    The number of decimal places the unit amount has.
+     * @return  The amount in baseUnits.
      */
-    public static toBaseUnitAmount(amount: BigNumber.BigNumber, numDecimals: number): BigNumber.BigNumber {
+    public static toBaseUnitAmount(amount: BigNumber.BigNumber, decimals: number): BigNumber.BigNumber {
         assert.isBigNumber('amount', amount);
-        assert.isNumber('numDecimals', numDecimals);
+        assert.isNumber('decimals', decimals);
 
-        const unit = new BigNumber(10).pow(numDecimals);
+        const unit = new BigNumber(10).pow(decimals);
         const baseUnitAmount = amount.times(unit);
         return baseUnitAmount;
     }
+    /**
+     * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
+     * @param   web3    The Web3.js instance you would like the 0x.js library to use for interacting with
+     *                  the Ethereum network.
+     * @return  An instance of the 0x.js ZeroEx class.
+     */
     constructor(web3: Web3) {
         this.web3Wrapper = new Web3Wrapper(web3);
         this.token = new TokenWrapper(this.web3Wrapper);
@@ -109,7 +134,9 @@ export class ZeroEx {
         this.tokenRegistry = new TokenRegistryWrapper(this.web3Wrapper);
     }
     /**
-     * Sets a new provider for the web3 instance used by 0x.js
+     * Sets a new provider for the web3 instance used by 0x.js. Updating the provider will stop all
+     * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
+     * @param   provider    The Web3.Provider you would like the 0x.js library to use from now on.
      */
     public async setProviderAsync(provider: Web3.Provider) {
         this.web3Wrapper.setProvider(provider);
@@ -118,14 +145,17 @@ export class ZeroEx {
         this.token.invalidateContractInstances();
     }
     /**
-     * Get addresses via the supplied web3 instance available for sending transactions.
+     * Get addresses available throught the supplied web3 instance available for sending transactions.
+     * @return  An array of Ethereum addresses available.
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
         const availableAddresses = await this.web3Wrapper.getAvailableAddressesAsync();
         return availableAddresses;
     }
     /**
-     * Computes the orderHash for a given order and returns it as a hex encoded string.
+     * Computes the orderHash for a supplied order.
+     * @param   order   A JS object that conforms to the Order or SignedOrder interface definitions.
+     * @return  The resulting orderHash from hashing the supplied order.
      */
     public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         assert.doesConformToSchema('order', order, orderSchema);
@@ -137,6 +167,10 @@ export class ZeroEx {
     /**
      * Signs an orderHash and returns it's elliptic curve signature.
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
+     * @param   orderHashHex    Hex encoded orderHash to sign.
+     * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
+     *          must be available via the Web3.Provider supplied to 0x.js.
+     * @return  A JS object containing the Elliptic curve signature parameters generated by signing the orderHashHex.
      */
     public async signOrderHashAsync(orderHashHex: string, signerAddress: string): Promise<ECSignature> {
         assert.isHexString('orderHashHex', orderHashHex);
