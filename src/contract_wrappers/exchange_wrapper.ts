@@ -79,44 +79,44 @@ export class ExchangeWrapper extends ContractWrapper {
      * Returns the unavailable takerAmount of an order. Unavailable amount is defined as the total
      * amount that has been filled or cancelled. The remaining takerAmount can be calculated by
      * subtracting the unavailable amount from the total order takerAmount.
-     * @param   orderHashHex    The hex encoded orderHash for which you would like to retrieve the
-     *                          unavailable takerAmount.
+     * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the
+     *                       unavailable takerAmount.
      * @return  The amount of the order (in taker tokens) that has either been filled or canceled.
      */
-    public async getUnavailableTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
-        assert.isValidOrderHash('orderHashHex', orderHashHex);
+    public async getUnavailableTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+        assert.isValidOrderHash('orderHash', orderHash);
 
         const exchangeContract = await this.getExchangeContractAsync();
-        let unavailableAmountInBaseUnits = await exchangeContract.getUnavailableValueT.call(orderHashHex);
+        let unavailableAmountInBaseUnits = await exchangeContract.getUnavailableValueT.call(orderHash);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         unavailableAmountInBaseUnits = new BigNumber(unavailableAmountInBaseUnits);
         return unavailableAmountInBaseUnits;
     }
     /**
      * Retrieve the takerAmount of an order that has already been filled.
-     * @param   orderHashHex    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
+     * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
      * @return  The amount of the order (in taker tokens) that has already been filled.
      */
-    public async getFilledTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
-        assert.isValidOrderHash('orderHashHex', orderHashHex);
+    public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+        assert.isValidOrderHash('orderHash', orderHash);
 
         const exchangeContract = await this.getExchangeContractAsync();
-        let fillAmountInBaseUnits = await exchangeContract.filled.call(orderHashHex);
+        let fillAmountInBaseUnits = await exchangeContract.filled.call(orderHash);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         fillAmountInBaseUnits = new BigNumber(fillAmountInBaseUnits);
         return fillAmountInBaseUnits;
     }
     /**
      * Retrieve the takerAmount of an order that has been cancelled.
-     * @param   orderHashHex    The hex encoded orderHash for which you would like to retrieve the
-     *                          cancelled takerAmount.
+     * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the
+     *                       cancelled takerAmount.
      * @return  The amount of the order (in taker tokens) that has been cancelled.
      */
-    public async getCanceledTakerAmountAsync(orderHashHex: string): Promise<BigNumber.BigNumber> {
-        assert.isValidOrderHash('orderHashHex', orderHashHex);
+    public async getCanceledTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+        assert.isValidOrderHash('orderHash', orderHash);
 
         const exchangeContract = await this.getExchangeContractAsync();
-        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.call(orderHashHex);
+        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.call(orderHash);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         cancelledAmountInBaseUnits = new BigNumber(cancelledAmountInBaseUnits);
         return cancelledAmountInBaseUnits;
