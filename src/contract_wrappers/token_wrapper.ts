@@ -27,7 +27,7 @@ export class TokenWrapper extends ContractWrapper {
     public async getBalanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isUserAddressAvailableAsync(this.web3Wrapper);
+        await assert.isUserAddressAvailableAsync(this._web3Wrapper);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let balance = await tokenContract.balanceOf.call(ownerAddress);
@@ -46,7 +46,7 @@ export class TokenWrapper extends ContractWrapper {
      */
     public async setAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string,
                                    amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
-        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this.web3Wrapper);
+        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
@@ -55,7 +55,7 @@ export class TokenWrapper extends ContractWrapper {
         // Hack: for some reason default estimated gas amount causes `base fee exceeds gas limit` exception
         // on testrpc. Probably related to https://github.com/ethereumjs/testrpc/issues/294
         // TODO: Debug issue in testrpc and submit a PR, then remove this hack
-        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         const gas = networkIdIfExists === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
         await tokenContract.approve(spenderAddress, amountInBaseUnits, {
             from: ownerAddress,
@@ -72,7 +72,7 @@ export class TokenWrapper extends ContractWrapper {
     public async getAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isUserAddressAvailableAsync(this.web3Wrapper);
+        await assert.isUserAddressAvailableAsync(this._web3Wrapper);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, spenderAddress);
@@ -120,7 +120,7 @@ export class TokenWrapper extends ContractWrapper {
     public async transferAsync(tokenAddress: string, fromAddress: string, toAddress: string,
                                amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isSenderAddressAsync('fromAddress', fromAddress, this.web3Wrapper);
+        await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
         assert.isETHAddressHex('toAddress', toAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
@@ -152,7 +152,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('fromAddress', fromAddress);
         assert.isETHAddressHex('toAddress', toAddress);
-        await assert.isSenderAddressAsync('senderAddress', senderAddress, this.web3Wrapper);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
@@ -182,7 +182,7 @@ export class TokenWrapper extends ContractWrapper {
         return tokenContract;
     }
     private async _getProxyAddressAsync() {
-        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         const proxyNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
                                        undefined :
                                        (ProxyArtifacts as any).networks[networkIdIfExists];
