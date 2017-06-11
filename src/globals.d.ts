@@ -1,3 +1,5 @@
+/// <reference types='chai-typescript-typings' />
+/// <reference types='chai-as-promised-typescript-typings' />
 declare module 'chai-bignumber';
 declare module 'dirty-chai';
 declare module 'bn.js';
