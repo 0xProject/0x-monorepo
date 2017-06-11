@@ -6,19 +6,19 @@ import {ContractWrapper} from './contract_wrapper';
 import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
 
 export class TokenRegistryWrapper extends ContractWrapper {
-    private tokenRegistryContractIfExists?: TokenRegistryContract;
+    private _tokenRegistryContractIfExists?: TokenRegistryContract;
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
     }
     public invalidateContractInstance(): void {
-        delete this.tokenRegistryContractIfExists;
+        delete this._tokenRegistryContractIfExists;
     }
     /**
      * Retrieves all the tokens currently listed in the Token Registry smart contract
      * @return  An array of JS objects that conform to the Token interface.
      */
     public async getTokensAsync(): Promise<Token[]> {
-        const tokenRegistryContract = await this.getTokenRegistryContractAsync();
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
 
         const addresses = await tokenRegistryContract.getTokenAddresses.call();
         const tokenMetadataPromises: Array<Promise<TokenMetadata>> = _.map(
@@ -37,12 +37,12 @@ export class TokenRegistryWrapper extends ContractWrapper {
         });
         return tokens;
     }
-    private async getTokenRegistryContractAsync(): Promise<TokenRegistryContract> {
-        if (!_.isUndefined(this.tokenRegistryContractIfExists)) {
-            return this.tokenRegistryContractIfExists;
+    private async _getTokenRegistryContractAsync(): Promise<TokenRegistryContract> {
+        if (!_.isUndefined(this._tokenRegistryContractIfExists)) {
+            return this._tokenRegistryContractIfExists;
         }
-        const contractInstance = await this.instantiateContractIfExistsAsync((TokenRegistryArtifacts as any));
-        this.tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
-        return this.tokenRegistryContractIfExists;
+        const contractInstance = await this._instantiateContractIfExistsAsync((TokenRegistryArtifacts as any));
+        this._tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
+        return this._tokenRegistryContractIfExists;
     }
 }

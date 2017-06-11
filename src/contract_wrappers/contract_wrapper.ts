@@ -5,16 +5,16 @@ import {ZeroExError} from '../types';
 import {utils} from '../utils/utils';
 
 export class ContractWrapper {
-    protected web3Wrapper: Web3Wrapper;
+    protected _web3Wrapper: Web3Wrapper;
     constructor(web3Wrapper: Web3Wrapper) {
-        this.web3Wrapper = web3Wrapper;
+        this._web3Wrapper = web3Wrapper;
     }
-    protected async instantiateContractIfExistsAsync(artifact: Artifact, address?: string): Promise<ContractInstance> {
+    protected async _instantiateContractIfExistsAsync(artifact: Artifact, address?: string): Promise<ContractInstance> {
         const c = await contract(artifact);
-        const providerObj = this.web3Wrapper.getCurrentProvider();
+        const providerObj = this._web3Wrapper.getCurrentProvider();
         c.setProvider(providerObj);
 
-        const networkIdIfExists = await this.web3Wrapper.getNetworkIdIfExistsAsync();
+        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         const artifactNetworkConfigs = _.isUndefined(networkIdIfExists) ?
                                        undefined :
                                        artifact.networks[networkIdIfExists];
@@ -26,7 +26,7 @@ export class ContractWrapper {
         }
 
         if (!_.isUndefined(contractAddress)) {
-            const doesContractExist = await this.web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
+            const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
             if (!doesContractExist) {
                 throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
             }

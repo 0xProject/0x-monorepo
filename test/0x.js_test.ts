@@ -19,10 +19,10 @@ describe('ZeroEx library', () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3);
             // Instantiate the contract instances with the current provider
-            await (zeroEx.exchange as any).getExchangeContractAsync();
-            await (zeroEx.tokenRegistry as any).getTokenRegistryContractAsync();
-            expect((zeroEx.exchange as any).exchangeContractIfExists).to.not.be.undefined();
-            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.not.be.undefined();
+            await (zeroEx.exchange as any)._getExchangeContractAsync();
+            await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
+            expect((zeroEx.exchange as any)._exchangeContractIfExists).to.not.be.undefined();
+            expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.not.be.undefined();
 
             const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
@@ -30,15 +30,15 @@ describe('ZeroEx library', () => {
             await zeroEx.setProviderAsync(newProvider);
 
             // Check that contractInstances with old provider are removed after provider update
-            expect((zeroEx.exchange as any).exchangeContractIfExists).to.be.undefined();
-            expect((zeroEx.tokenRegistry as any).tokenRegistryContractIfExists).to.be.undefined();
+            expect((zeroEx.exchange as any)._exchangeContractIfExists).to.be.undefined();
+            expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
             // Check that all nested web3 instances return the updated provider
-            const nestedWeb3WrapperProvider = (zeroEx as any).web3Wrapper.getCurrentProvider();
+            const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getCurrentProvider();
             expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
-            const exchangeWeb3WrapperProvider = (zeroEx.exchange as any).web3Wrapper.getCurrentProvider();
+            const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getCurrentProvider();
             expect((exchangeWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
-            const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any).web3Wrapper.getCurrentProvider();
+            const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getCurrentProvider();
             expect((tokenRegistryWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
         });
     });
@@ -57,14 +57,14 @@ describe('ZeroEx library', () => {
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
             expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync('0x0', signature, address),
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync('0x0', signature, address),
             ).to.become(false);
         });
         it('should return false if the address doesn\'t pertain to the signature & data', async () => {
             const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
             expect(ZeroEx.isValidSignature(dataHex, signature, validUnrelatedAddress)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(dataHex, signature,
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, signature,
                                                                                 validUnrelatedAddress),
             ).to.become(false);
         });
@@ -72,14 +72,14 @@ describe('ZeroEx library', () => {
             const wrongSignature = _.assign({}, signature, {v: 28});
             expect(ZeroEx.isValidSignature(dataHex, wrongSignature, address)).to.be.false();
             return expect(
-                (zeroEx.exchange as any).isValidSignatureUsingContractCallAsync(dataHex, wrongSignature, address),
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, wrongSignature, address),
             ).to.become(false);
         });
         it('should return true if the signature does pertain to the dataHex & address', async () => {
             const isValidSignatureLocal = ZeroEx.isValidSignature(dataHex, signature, address);
             expect(isValidSignatureLocal).to.be.true();
             const isValidSignatureOnContract = await (zeroEx.exchange as any)
-                .isValidSignatureUsingContractCallAsync(dataHex, signature, address);
+                ._isValidSignatureUsingContractCallAsync(dataHex, signature, address);
             return expect(isValidSignatureOnContract).to.be.true();
         });
     });
@@ -154,7 +154,7 @@ describe('ZeroEx library', () => {
             const zeroEx = new ZeroEx(web3);
 
             stubs = [
-                Sinon.stub((zeroEx as any), 'getExchangeAddressAsync')
+                Sinon.stub((zeroEx as any), '_getExchangeAddressAsync')
                     .returns(Promise.resolve(exchangeContractAddress)),
             ];
 
@@ -197,9 +197,9 @@ describe('ZeroEx library', () => {
                 s: '0x050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb02',
             };
             stubs = [
-                Sinon.stub((zeroEx as any).web3Wrapper, 'getNodeVersionAsync')
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'getNodeVersionAsync')
                     .returns(Promise.resolve(newParityNodeVersion)),
-                Sinon.stub((zeroEx as any).web3Wrapper, 'signTransactionAsync')
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync')
                     .returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
@@ -218,9 +218,9 @@ describe('ZeroEx library', () => {
                 s: '0x2dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960',
             };
             stubs = [
-                Sinon.stub((zeroEx as any).web3Wrapper, 'getNodeVersionAsync')
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'getNodeVersionAsync')
                     .returns(Promise.resolve(newParityNodeVersion)),
-                Sinon.stub((zeroEx as any).web3Wrapper, 'signTransactionAsync')
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync')
                     .returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
