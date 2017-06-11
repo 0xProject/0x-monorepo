@@ -267,3 +267,11 @@ export interface OrderFillRequest {
 }
 
 export type AsyncMethod = (...args: any[]) => Promise<any>;
+
+export interface ContractInstance {
+    address: string;
+}
+
+export interface Artifact {
+    networks: {[networkId: number]: any};
+}

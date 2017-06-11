@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import contract = require('truffle-contract');
 import {Web3Wrapper} from '../web3_wrapper';
-import {ZeroExError} from '../types';
+import {ZeroExError, Artifact, ContractInstance} from '../types';
 import {utils} from '../utils/utils';
 
 export class ContractWrapper {
