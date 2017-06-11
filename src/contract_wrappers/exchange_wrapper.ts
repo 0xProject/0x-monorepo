@@ -35,6 +35,7 @@ import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_reque
 import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
+import {decorators} from '../utils/decorators';
 
 export class ExchangeWrapper extends ContractWrapper {
     private exchangeContractErrCodesToMsg = {
@@ -135,6 +136,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
+    @decorators.contractCallErrorHandler
     public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
                                 shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
@@ -188,6 +190,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress            The user Ethereum address who would like to fill these orders.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
+    @decorators.contractCallErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
@@ -259,6 +262,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress            The user Ethereum address who would like to fill these orders.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
+    @decorators.contractCallErrorHandler
     public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
@@ -323,6 +327,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
+    @decorators.contractCallErrorHandler
     public async fillOrKillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
                                       takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
@@ -369,6 +374,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress                The user Ethereum address who would like to fill there orders.
      *                                      Must be available via the supplied Web3.Provider passed to 0x.js.
      */
+    @decorators.contractCallErrorHandler
     public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
                                       takerAddress: string): Promise<void> {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this.web3Wrapper);
@@ -424,6 +430,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  The order you would like to cancel.
      * @param   takerTokenCancelAmount  The amount (specified in taker tokens) that you would like to cancel.
      */
+    @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
         order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
         assert.doesConformToSchema('order', order, orderSchema);
@@ -459,6 +466,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderCancellationRequests   An array of JS objects that conform to the OrderCancellationRequest
      *                                      interface.
      */
+    @decorators.contractCallErrorHandler
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);

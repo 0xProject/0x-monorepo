@@ -7,6 +7,7 @@
     "sourceMap": true,
     "declaration": true,
     "noImplicitAny": true,
+    "experimentalDecorators": true,
     "strictNullChecks": true
   },
   "include": [
