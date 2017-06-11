@@ -37,6 +37,7 @@
     "artifacts": "Proxy Exchange TokenRegistry Token Mintable EtherToken",
     "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
   },
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/0xProject/0x.js"
