@@ -7,10 +7,10 @@ const path = require('path');
 const production = process.env.NODE_ENV === 'production';
 
 let entry = {
-    '0x': './src/index.ts',
+    'index': './src/index.ts',
 };
 if (production) {
-    entry = _.assign({}, entry, {'0x.min': './src/index.ts'});
+    entry = _.assign({}, entry, {'index.min': './src/index.ts'});
 }
 
 module.exports = {
