@@ -1,6 +1,5 @@
 import * as BigNumber from 'bignumber.js';
-import {ZeroEx} from '../../src/0x';
-import {Token, SignedOrder} from '../../src/types';
+import {ZeroEx, Token, SignedOrder} from '../../src';
 import {orderFactory} from '../utils/order_factory';
 import {constants} from './constants';
 

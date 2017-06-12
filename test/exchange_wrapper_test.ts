@@ -19,7 +19,7 @@ import {
     ExchangeContractErrs,
     OrderCancellationRequest,
     OrderFillRequest,
-} from '../src/types';
+} from '../src';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 

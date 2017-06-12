@@ -3,7 +3,7 @@ import 'mocha';
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
-import {ZeroEx} from '../src/0x';
+import {ZeroEx} from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {tokenSchema} from '../src/schemas/token_schema';

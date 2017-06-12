@@ -9,8 +9,8 @@
     "tokens",
     "exchange"
   ],
-  "main": "lib/src/0x.js",
-  "types": "lib/src/0x.d.ts",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
     "build": "run-p build:*:prod",
