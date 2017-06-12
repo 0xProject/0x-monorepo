@@ -21,4 +21,5 @@ export {
     OrderFillOrKillRequest,
     OrderCancellationRequest,
     OrderFillRequest,
+    DoneCallback,
 } from './types';
