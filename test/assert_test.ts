@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import 'mocha';
-import {ZeroEx} from '../src/0x';
+import {ZeroEx} from '../src';
 import {assert} from '../src/utils/assert';
 import {web3Factory} from './utils/web3_factory';
 
