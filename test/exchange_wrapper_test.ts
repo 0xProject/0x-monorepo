@@ -6,9 +6,9 @@ import {chaiSetup} from './utils/chai_setup';
 import ChaiBigNumber = require('chai-bignumber');
 import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
-import {ZeroEx} from '../src/0x';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {
+    ZeroEx,
     Token,
     Order,
     SignedOrder,
