@@ -5,7 +5,7 @@ import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
-import {ZeroEx} from '../src/0x.js';
+import {ZeroEx} from '../src/0x';
 import {ZeroExError, Token} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 
