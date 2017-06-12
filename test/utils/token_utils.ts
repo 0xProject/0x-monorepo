@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {Token, ZeroExError} from '../../src/types';
+import {Token, ZeroExError} from '../../src';
 
 const PROTOCOL_TOKEN_SYMBOL = 'ZRX';
 

@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {SignedOrder} from '../../src/types';
-import {ZeroEx} from '../../src/0x';
+import {ZeroEx, SignedOrder} from '../../src';
 
 export const orderFactory = {
     async createSignedOrderAsync(
