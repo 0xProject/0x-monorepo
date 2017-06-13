@@ -22,6 +22,7 @@ import {
 } from '../src';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
+import {assert} from '../src/utils/assert';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -707,6 +708,12 @@ describe('ExchangeWrapper', () => {
             const orderHashFromContract = await (zeroEx.exchange as any)
                 ._getOrderHashHexUsingContractCallAsync(signedOrder);
             expect(orderHash).to.equal(orderHashFromContract);
+        });
+    });
+    describe('#getContractAddressAsync', () => {
+        it('returns the exchange contract address', async () => {
+            const exchangeAddress = await zeroEx.exchange.getContractAddressAsync();
+            assert.isETHAddressHex('exchangeAddress', exchangeAddress);
         });
     });
 });

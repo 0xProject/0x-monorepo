@@ -543,6 +543,15 @@ export class ExchangeWrapper extends ContractWrapper {
         logEventObj.watch(callback);
         this._exchangeLogEventObjs.push(logEventObj);
     }
+    /**
+     * Returns the ethereum address of the current exchange contract
+     * on the network that the provided web3 instance is connected to
+     * @return  The ethereum address of the current exchange contract.
+     */
+    public async getContractAddressAsync(): Promise<string> {
+       const exchangeContract = await this._getExchangeContractAsync();
+       return exchangeContract.address;
+    }
     private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
                                                           signerAddressHex: string): Promise<boolean> {
         assert.isHexString('dataHex', dataHex);
