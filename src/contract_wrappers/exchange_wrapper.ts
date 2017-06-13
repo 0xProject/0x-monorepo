@@ -14,12 +14,11 @@ import {
     SignedOrder,
     ContractEvent,
     ExchangeEvents,
-    ZeroExEvent,
+    EventEmitter,
     SubscriptionOpts,
     IndexFilterValues,
     CreateContractEvent,
     ContractEventObj,
-    EventCallback,
     ContractResponse,
     OrderCancellationRequest,
     OrderFillRequest,
@@ -48,7 +47,7 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FILL_BALANCE_ALLOWANCE_ERROR,
     };
     private _exchangeContractIfExists?: ExchangeContract;
-    private _exchangeLogEventObjs: ZeroExEvent[];
+    private _exchangeLogEventEmitters: EventEmitter[];
     private _tokenWrapper: TokenWrapper;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
@@ -71,7 +70,7 @@ export class ExchangeWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
-        this._exchangeLogEventObjs = [];
+        this._exchangeLogEventEmitters = [];
     }
     public async invalidateContractInstanceAsync(): Promise<void> {
         await this.stopWatchingAllEventsAsync();
@@ -518,11 +517,11 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues   A JS object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @return                      ZeroExEvent object
+     * @return                      EventEmitter object
      */
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
                                 indexFilterValues: IndexFilterValues):
-                                Promise<ZeroExEvent> {
+                                Promise<EventEmitter> {
         const exchangeContract = await this._getExchangeContractAsync();
         let createLogEvent: CreateContractEvent;
         switch (eventName) {
@@ -540,9 +539,9 @@ export class ExchangeWrapper extends ContractWrapper {
         }
 
         const logEventObj: ContractEventObj = createLogEvent(indexFilterValues, subscriptionOpts);
-        const zeroExEvent = this._wrapEventAsZeroExEvent(logEventObj);
-        this._exchangeLogEventObjs.push(zeroExEvent);
-        return zeroExEvent;
+        const eventEmitter = this._wrapEventEmitter(logEventObj);
+        this._exchangeLogEventEmitters.push(eventEmitter);
+        return eventEmitter;
     }
     /**
      * Returns the ethereum address of the current exchange contract
@@ -557,11 +556,12 @@ export class ExchangeWrapper extends ContractWrapper {
      * Stops watching for all exchange events
      */
     public async stopWatchingAllEventsAsync(): Promise<void> {
-        const stopWatchingPromises = _.map(this._exchangeLogEventObjs, logEventObj => logEventObj.stopWatchingAsync());
+        const stopWatchingPromises = _.map(this._exchangeLogEventEmitters,
+                                           logEventObj => logEventObj.stopWatchingAsync());
         await Promise.all(stopWatchingPromises);
-        this._exchangeLogEventObjs = [];
+        this._exchangeLogEventEmitters = [];
     }
-    private _wrapEventAsZeroExEvent(event: ContractEventObj): ZeroExEvent {
+    private _wrapEventEmitter(event: ContractEventObj): EventEmitter {
         const zeroExEvent = {
             watch: event.watch.bind(event),
             stopWatchingAsync: async () => {

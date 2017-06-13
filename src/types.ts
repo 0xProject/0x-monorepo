@@ -276,7 +276,7 @@ export interface Artifact {
     networks: {[networkId: number]: any};
 }
 
-export interface ZeroExEvent {
+export interface EventEmitter {
     watch: (eventCallback: EventCallback) => void;
     stopWatchingAsync: () => Promise<void>;
 }
