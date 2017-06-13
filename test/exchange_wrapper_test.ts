@@ -633,7 +633,7 @@ describe('ExchangeWrapper', () => {
                     toBlock: 'latest',
                 };
                 const zeroExEvent = await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
-                                                                   indexFilterValues);
+                                                                         indexFilterValues);
                 zeroExEvent.watch((err: Error, event: ContractEvent) => {
                     expect(err).to.be.null();
                     expect(event).to.not.be.undefined();
@@ -693,7 +693,7 @@ describe('ExchangeWrapper', () => {
                 );
             })();
         });
-        it('Should be able to stop watching', (done: DoneCallback) => {
+        it('Should stop watch for events when stopWatchingAsync called on the eventEmitter', (done: DoneCallback) => {
             (async () => {
                 const subscriptionOpts: SubscriptionOpts = {
                     fromBlock: 0,
