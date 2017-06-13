@@ -563,7 +563,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     private _wrapEventAsZeroExEvent(event: ContractEventObj): ZeroExEvent {
         const zeroExEvent = {
-            watch: event.watch,
+            watch: event.watch.bind(event),
             stopWatchingAsync: async () => {
                 await promisify(event.stopWatching, event)();
             },
