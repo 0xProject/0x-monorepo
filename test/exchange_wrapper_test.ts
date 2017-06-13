@@ -693,6 +693,26 @@ describe('ExchangeWrapper', () => {
                 );
             })();
         });
+        it('Should be able to stop watching', (done: DoneCallback) => {
+            (async () => {
+                const subscriptionOpts: SubscriptionOpts = {
+                    fromBlock: 0,
+                    toBlock: 'latest',
+                };
+                const eventSubscriptionToBeStopped = await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues,
+                );
+                eventSubscriptionToBeStopped.watch((err: Error, event: ContractEvent) => {
+                    done(new Error('Expected this subscription to have been stopped'));
+                });
+                await eventSubscriptionToBeStopped.stopWatchingAsync();
+                const fillTakerAmountInBaseUnits = new BigNumber(1);
+                await zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
+                );
+                done();
+            })();
+        });
     });
     describe('#getOrderHashHexUsingContractCallAsync', () => {
         let makerTokenAddress: string;
