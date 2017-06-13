@@ -14,11 +14,11 @@ import {
     SignedOrder,
     ContractEvent,
     ExchangeEvents,
+    EventEmitter,
     SubscriptionOpts,
     IndexFilterValues,
     CreateContractEvent,
     ContractEventObj,
-    EventCallback,
     ContractResponse,
     OrderCancellationRequest,
     OrderFillRequest,
@@ -47,7 +47,7 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FILL_BALANCE_ALLOWANCE_ERROR,
     };
     private _exchangeContractIfExists?: ExchangeContract;
-    private _exchangeLogEventObjs: ContractEventObj[];
+    private _exchangeLogEventEmitters: EventEmitter[];
     private _tokenWrapper: TokenWrapper;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
@@ -70,10 +70,10 @@ export class ExchangeWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
-        this._exchangeLogEventObjs = [];
+        this._exchangeLogEventEmitters = [];
     }
     public async invalidateContractInstanceAsync(): Promise<void> {
-        await this._stopWatchingExchangeLogEventsAsync();
+        await this.stopWatchingAllEventsAsync();
         delete this._exchangeContractIfExists;
     }
     /**
@@ -517,11 +517,11 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues   A JS object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            The callback that will be called everytime a matching event is found.
+     * @return                      EventEmitter object
      */
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
-                                indexFilterValues: IndexFilterValues, callback: EventCallback):
-                                Promise<void> {
+                                indexFilterValues: IndexFilterValues):
+                                Promise<EventEmitter> {
         const exchangeContract = await this._getExchangeContractAsync();
         let createLogEvent: CreateContractEvent;
         switch (eventName) {
@@ -535,13 +535,13 @@ export class ExchangeWrapper extends ContractWrapper {
                 createLogEvent = exchangeContract.LogCancel;
                 break;
             default:
-                utils.spawnSwitchErr('ExchangeEvents', eventName);
-                return;
+                throw utils.spawnSwitchErr('ExchangeEvents', eventName);
         }
 
         const logEventObj: ContractEventObj = createLogEvent(indexFilterValues, subscriptionOpts);
-        logEventObj.watch(callback);
-        this._exchangeLogEventObjs.push(logEventObj);
+        const eventEmitter = this._wrapEventEmitter(logEventObj);
+        this._exchangeLogEventEmitters.push(eventEmitter);
+        return eventEmitter;
     }
     /**
      * Returns the ethereum address of the current exchange contract
@@ -551,6 +551,24 @@ export class ExchangeWrapper extends ContractWrapper {
     public async getContractAddressAsync(): Promise<string> {
        const exchangeContract = await this._getExchangeContractAsync();
        return exchangeContract.address;
+    }
+    /**
+     * Stops watching for all exchange events
+     */
+    public async stopWatchingAllEventsAsync(): Promise<void> {
+        const stopWatchingPromises = _.map(this._exchangeLogEventEmitters,
+                                           logEventObj => logEventObj.stopWatchingAsync());
+        await Promise.all(stopWatchingPromises);
+        this._exchangeLogEventEmitters = [];
+    }
+    private _wrapEventEmitter(event: ContractEventObj): EventEmitter {
+        const zeroExEvent = {
+            watch: event.watch.bind(event),
+            stopWatchingAsync: async () => {
+                await promisify(event.stopWatching, event)();
+            },
+        };
+        return zeroExEvent;
     }
     private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
                                                           signerAddressHex: string): Promise<boolean> {
@@ -579,13 +597,6 @@ export class ExchangeWrapper extends ContractWrapper {
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
         const orderHashHex = await exchangeInstance.getOrderHash.call(orderAddresses, orderValues);
         return orderHashHex;
-    }
-    private async _stopWatchingExchangeLogEventsAsync() {
-        const stopWatchingPromises = _.map(this._exchangeLogEventObjs, logEventObj => {
-            return promisify(logEventObj.stopWatching, logEventObj)();
-        });
-        await Promise.all(stopWatchingPromises);
-        this._exchangeLogEventObjs = [];
     }
     private async _validateFillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                            fillTakerAmount: BigNumber.BigNumber,

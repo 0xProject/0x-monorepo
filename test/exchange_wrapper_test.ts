@@ -619,7 +619,7 @@ describe('ExchangeWrapper', () => {
             );
         });
         afterEach(async () => {
-            await (zeroEx.exchange as any)._stopWatchingExchangeLogEventsAsync();
+            await zeroEx.exchange.stopWatchingAllEventsAsync();
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
         // Since we need to await the receipt of the event in the `subscribeAsync` callback,
@@ -632,8 +632,9 @@ describe('ExchangeWrapper', () => {
                     fromBlock: 0,
                     toBlock: 'latest',
                 };
-                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
-                                                     indexFilterValues, (err: Error, event: ContractEvent) => {
+                const zeroExEvent = await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
+                                                                         indexFilterValues);
+                zeroExEvent.watch((err: Error, event: ContractEvent) => {
                     expect(err).to.be.null();
                     expect(event).to.not.be.undefined();
                     done();
@@ -650,12 +651,13 @@ describe('ExchangeWrapper', () => {
                     fromBlock: 0,
                     toBlock: 'latest',
                 };
-                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogCancel, subscriptionOpts,
-                    indexFilterValues, (err: Error, event: ContractEvent) => {
+                const zeroExEvent = await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogCancel, subscriptionOpts,
+                                                                         indexFilterValues);
+                zeroExEvent.watch((err: Error, event: ContractEvent) => {
                         expect(err).to.be.null();
                         expect(event).to.not.be.undefined();
                         done();
-                    });
+                });
                 const cancelTakerAmountInBaseUnits = new BigNumber(1);
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerAmountInBaseUnits);
             })();
@@ -666,16 +668,20 @@ describe('ExchangeWrapper', () => {
                     fromBlock: 0,
                     toBlock: 'latest',
                 };
-                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
-                                                     indexFilterValues, (err: Error, event: ContractEvent) => {
+                const eventSubscriptionToBeCancelled = await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues,
+                );
+                eventSubscriptionToBeCancelled.watch((err: Error, event: ContractEvent) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 });
 
                 const newProvider = web3Factory.getRpcProvider();
                 await zeroEx.setProviderAsync(newProvider);
 
-                await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
-                                                     indexFilterValues, (err: Error, event: ContractEvent) => {
+                const eventSubscriptionToStay = await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues,
+                );
+                eventSubscriptionToStay.watch((err: Error, event: ContractEvent) => {
                     expect(err).to.be.null();
                     expect(event).to.not.be.undefined();
                     done();
@@ -685,6 +691,26 @@ describe('ExchangeWrapper', () => {
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
                 );
+            })();
+        });
+        it('Should stop watch for events when stopWatchingAsync called on the eventEmitter', (done: DoneCallback) => {
+            (async () => {
+                const subscriptionOpts: SubscriptionOpts = {
+                    fromBlock: 0,
+                    toBlock: 'latest',
+                };
+                const eventSubscriptionToBeStopped = await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues,
+                );
+                eventSubscriptionToBeStopped.watch((err: Error, event: ContractEvent) => {
+                    done(new Error('Expected this subscription to have been stopped'));
+                });
+                await eventSubscriptionToBeStopped.stopWatchingAsync();
+                const fillTakerAmountInBaseUnits = new BigNumber(1);
+                await zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
+                );
+                done();
             })();
         });
     });

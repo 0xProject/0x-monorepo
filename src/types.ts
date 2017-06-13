@@ -275,3 +275,8 @@ export interface ContractInstance {
 export interface Artifact {
     networks: {[networkId: number]: any};
 }
+
+export interface EventEmitter {
+    watch: (eventCallback: EventCallback) => void;
+    stopWatchingAsync: () => Promise<void>;
+}

@@ -22,4 +22,5 @@ export {
     OrderCancellationRequest,
     OrderFillRequest,
     DoneCallback,
+    EventEmitter,
 } from './types';
