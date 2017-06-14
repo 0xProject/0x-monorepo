@@ -44,7 +44,7 @@ export interface ContractEventObj {
     watch: (eventWatch: EventCallback) => void;
     stopWatching: () => void;
 }
-export type CreateContractEvent = (indexFilterValues: IndexFilterValues,
+export type CreateContractEvent = (indexFilterValues: IndexedFilterValues,
                                    subscriptionOpts: SubscriptionOpts) => ContractEventObj;
 export interface ExchangeContract extends ContractInstance {
     isValidSignature: {
@@ -238,7 +238,7 @@ export const ExchangeEvents = strEnum([
 ]);
 export type ExchangeEvents = keyof typeof ExchangeEvents;
 
-export interface IndexFilterValues {
+export interface IndexedFilterValues {
     [index: string]: any;
 }
 
@@ -276,7 +276,7 @@ export interface Artifact {
     networks: {[networkId: number]: any};
 }
 
-export interface EventEmitter {
+export interface ContractEventEmitter {
     watch: (eventCallback: EventCallback) => void;
     stopWatchingAsync: () => Promise<void>;
 }

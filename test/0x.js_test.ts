@@ -4,7 +4,7 @@ import {chaiSetup} from './utils/chai_setup';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
-import {ZeroEx, Order, ECSignature} from '../src';
+import {ZeroEx, Order} from '../src';
 import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 

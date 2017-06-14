@@ -14,9 +14,9 @@ import {
     SignedOrder,
     ContractEvent,
     ExchangeEvents,
-    EventEmitter,
+    ContractEventEmitter,
     SubscriptionOpts,
-    IndexFilterValues,
+    IndexedFilterValues,
     CreateContractEvent,
     ContractEventObj,
     ContractResponse,
@@ -47,7 +47,7 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FILL_BALANCE_ALLOWANCE_ERROR,
     };
     private _exchangeContractIfExists?: ExchangeContract;
-    private _exchangeLogEventEmitters: EventEmitter[];
+    private _exchangeLogEventEmitters: ContractEventEmitter[];
     private _tokenWrapper: TokenWrapper;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
@@ -517,11 +517,11 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues   A JS object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @return                      EventEmitter object
+     * @return                      ContractEventEmitter object
      */
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
-                                indexFilterValues: IndexFilterValues):
-                                Promise<EventEmitter> {
+                                indexFilterValues: IndexedFilterValues):
+                                Promise<ContractEventEmitter> {
         const exchangeContract = await this._getExchangeContractAsync();
         let createLogEvent: CreateContractEvent;
         switch (eventName) {
@@ -561,7 +561,7 @@ export class ExchangeWrapper extends ContractWrapper {
         await Promise.all(stopWatchingPromises);
         this._exchangeLogEventEmitters = [];
     }
-    private _wrapEventEmitter(event: ContractEventObj): EventEmitter {
+    private _wrapEventEmitter(event: ContractEventObj): ContractEventEmitter {
         const zeroExEvent = {
             watch: event.watch.bind(event),
             stopWatchingAsync: async () => {

@@ -10,16 +10,15 @@ import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {
     ZeroEx,
     Token,
-    Order,
     SignedOrder,
     SubscriptionOpts,
     ExchangeEvents,
     ContractEvent,
-    DoneCallback,
     ExchangeContractErrs,
     OrderCancellationRequest,
     OrderFillRequest,
 } from '../src';
+import {DoneCallback} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 import {assert} from '../src/utils/assert';
