@@ -1,7 +1,7 @@
 /**
  * This is to generate the umd bundle only
  */
-const lodash = require('lodash');
+const _ = require('lodash');
 const webpack = require('webpack');
 const path = require('path');
 const production = process.env.NODE_ENV === 'production';
