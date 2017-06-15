@@ -190,8 +190,37 @@ export interface ContractEvent {
     address: string;
     type: string;
     event: string;
-    args: any;
+    args: EventArgs;
 }
+
+export interface LogFillArgs {
+    maker: string;
+    taker: string;
+    feeRecipient: string;
+    tokenM: string;
+    tokenT: string;
+    filledValueM: BigNumber.BigNumber;
+    filledValueT: BigNumber.BigNumber;
+    feeMPaid: BigNumber.BigNumber;
+    feeTPaid: BigNumber.BigNumber;
+    tokens: string;
+    orderHash: string;
+}
+export interface LogCancelArgs {
+    maker: string;
+    feeRecipient: string;
+    tokenM: string;
+    tokenT: string;
+    cancelledValueM: BigNumber.BigNumber;
+    cancelledValueT: BigNumber.BigNumber;
+    tokens: string;
+    orderHash: string;
+}
+export interface LogErrorArgs {
+    errorId: BigNumber.BigNumber;
+    orderHash: string;
+}
+export type EventArgs = LogFillArgs|LogCancelArgs|LogErrorArgs;
 
 export interface Order {
     maker: string;
