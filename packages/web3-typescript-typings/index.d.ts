@@ -31,7 +31,7 @@ declare module 'web3' {
         };
 
         public setProvider(provider: Web3.Provider): void;
-        public currentProvider(): any;
+        public currentProvider: Web3.Provider;
         public fromWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
         public toWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
         public isAddress(address: string): boolean;
