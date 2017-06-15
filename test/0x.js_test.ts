@@ -164,7 +164,7 @@ describe('ZeroEx library', () => {
         let stubs: Sinon.SinonStub[] = [];
         let makerAddress: string;
         const web3 = web3Factory.create();
-        const zeroEx = new ZeroEx(web3);
+        const zeroEx = new ZeroEx(web3.currentProvider);
         before(async () => {
             const availableAddreses = await zeroEx.getAvailableAddressesAsync();
             makerAddress = availableAddreses[0];
