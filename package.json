@@ -15,7 +15,7 @@
     "prebuild": "npm run clean",
     "build": "run-p build:*:prod",
     "prepublish": "run-p build:umd:prod build:commonjs:dev",
-    "postpublish": "publish-release --assets _bundles/index.js _bundles/index.min.js",
+    "postpublish": "publish-release --assets _bundles/index.js,_bundles/index.min.js",
     "lint": "tslint src/*.ts test/*.ts",
     "test": "run-s clean test:commonjs",
     "test:umd": "./scripts/test_umd.sh",
