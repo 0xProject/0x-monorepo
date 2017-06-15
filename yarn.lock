@@ -4467,9 +4467,9 @@ web3-provider-engine@~8.1.0:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-typescript-typings@0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.0.8.tgz#96997eeaf670fbaaf28d8814a1c27dce1a07df66"
+web3-typescript-typings@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.0.9.tgz#f0c9e9bfcf0effaf16f3498b3d3883686451428b"
   dependencies:
     bignumber.js "^4.0.2"
 

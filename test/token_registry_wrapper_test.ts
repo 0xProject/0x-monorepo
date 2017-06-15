@@ -18,7 +18,7 @@ describe('TokenRegistryWrapper', () => {
     let zeroEx: ZeroEx;
     before(async () => {
         const web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3);
+        zeroEx = new ZeroEx(web3.currentProvider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

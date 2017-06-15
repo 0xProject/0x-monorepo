@@ -82,7 +82,7 @@
     "typedoc": "^0.7.1",
     "typescript": "^2.3.3",
     "web3-provider-engine": "^13.0.1",
-    "web3-typescript-typings": "0.0.8",
+    "web3-typescript-typings": "^0.0.9",
     "webpack": "^2.6.0"
   },
   "dependencies": {

@@ -14,7 +14,7 @@ import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
-import {ECSignature, ZeroExError, Order, SignedOrder} from './types';
+import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
 import * as ExchangeArtifacts from './artifacts/Exchange.json';
 import {orderSchema} from './schemas/order_schemas';
 
@@ -122,12 +122,12 @@ export class ZeroEx {
     }
     /**
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
-     * @param   web3    The Web3.js instance you would like the 0x.js library to use for interacting with
-     *                  the Ethereum network.
+     * @param   provider    The Web3.js Provider instance you would like the 0x.js library to use for interacting with
+     *                      the Ethereum network.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(web3: Web3) {
-        this._web3Wrapper = new Web3Wrapper(web3);
+    constructor(provider: Web3Provider) {
+        this._web3Wrapper = new Web3Wrapper(provider);
         this.token = new TokenWrapper(this._web3Wrapper);
         this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
@@ -135,9 +135,9 @@ export class ZeroEx {
     /**
      * Sets a new provider for the web3 instance used by 0x.js. Updating the provider will stop all
      * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
-     * @param   provider    The Web3.Provider you would like the 0x.js library to use from now on.
+     * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
      */
-    public async setProviderAsync(provider: Web3.Provider) {
+    public async setProviderAsync(provider: Web3Provider) {
         this._web3Wrapper.setProvider(provider);
         await this.exchange.invalidateContractInstanceAsync();
         this.tokenRegistry.invalidateContractInstance();
