@@ -39,7 +39,7 @@ describe('ExchangeWrapper', () => {
     let fillScenarios: FillScenarios;
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3);
+        zeroEx = new ZeroEx(web3.currentProvider);
         userAddresses = await promisify(web3.eth.getAccounts)();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);

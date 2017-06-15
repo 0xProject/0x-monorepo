@@ -23,4 +23,5 @@ export {
     LogCancelArgs,
     LogFillArgs,
     EventArgs,
+    Web3Provider,
 } from './types';

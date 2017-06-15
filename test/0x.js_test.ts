@@ -15,7 +15,7 @@ describe('ZeroEx library', () => {
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             const web3 = web3Factory.create();
-            const zeroEx = new ZeroEx(web3);
+            const zeroEx = new ZeroEx(web3.currentProvider);
             // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any)._getExchangeContractAsync();
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
@@ -51,7 +51,7 @@ describe('ZeroEx library', () => {
         };
         const address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
         const web3 = web3Factory.create();
-        const zeroEx = new ZeroEx(web3);
+        const zeroEx = new ZeroEx(web3.currentProvider);
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
             expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();
             return expect(
@@ -149,7 +149,7 @@ describe('ZeroEx library', () => {
         });
         it('calculates the order hash', async () => {
             const web3 = web3Factory.create();
-            const zeroEx = new ZeroEx(web3);
+            const zeroEx = new ZeroEx(web3.currentProvider);
 
             stubs = [
                 Sinon.stub((zeroEx as any), '_getExchangeAddressAsync')
@@ -164,7 +164,7 @@ describe('ZeroEx library', () => {
         let stubs: Sinon.SinonStub[] = [];
         let makerAddress: string;
         const web3 = web3Factory.create();
-        const zeroEx = new ZeroEx(web3);
+        const zeroEx = new ZeroEx(web3.currentProvider);
         before(async () => {
             const availableAddreses = await zeroEx.getAvailableAddressesAsync();
             makerAddress = availableAddreses[0];
