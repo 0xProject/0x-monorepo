@@ -5,6 +5,9 @@ import {assert} from '../utils/assert';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
 
+/**
+ * This class includes all the functionality related to interacting with the 0x Token Registry smart contract.
+ */
 export class TokenRegistryWrapper extends ContractWrapper {
     private _tokenRegistryContractIfExists?: TokenRegistryContract;
     constructor(web3Wrapper: Web3Wrapper) {
@@ -15,7 +18,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
     }
     /**
      * Retrieves all the tokens currently listed in the Token Registry smart contract
-     * @return  An array of JS objects that conform to the Token interface.
+     * @return  An array of objects that conform to the Token interface.
      */
     public async getTokensAsync(): Promise<Token[]> {
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();

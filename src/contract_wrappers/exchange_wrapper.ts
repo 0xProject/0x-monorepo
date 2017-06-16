@@ -37,6 +37,10 @@ import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
 
+/**
+ * This class includes all the functionality related to calling methods and subscribing to
+ * events of the 0x Exchange smart contract.
+ */
 export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractErrCodesToMsg = {
         [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.ORDER_FILL_EXPIRED,
@@ -129,7 +133,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if while
      * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
      * false forgoes this check and causes the smart contract to throw (using all the gas supplied) instead.
-     * @param   signedOrder             A JS object that conforms to the SignedOrder interface.
+     * @param   signedOrder             An object that conforms to the SignedOrder interface.
      * @param   takerTokenFillAmount    The amount of the order (in taker tokens baseUnits) that you wish to fill.
      * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
      *                                  execution the tokens cannot be transferred.
@@ -254,7 +258,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Executes multiple fills atomically in a single transaction.
      * If shouldCheckTransfer is set to true, it will continue filling subsequent orders even when earlier ones fail.
      * When shouldCheckTransfer is set to false, if any fill fails, the entire batch fails.
-     * @param   orderFillRequests       An array of JS objects that conform to the OrderFillRequest interface.
+     * @param   orderFillRequests       An array of objects that conform to the OrderFillRequest interface.
      * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
      *                                  execution any of the tokens cannot be transferred. If set to false,
      *                                  the call will continue to fill subsequent signedOrders even when some
@@ -321,7 +325,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
      * the fill order is abandoned.
-     * @param   signedOrder             A JS object that conforms to the SignedOrder interface. The
+     * @param   signedOrder             An object that conforms to the SignedOrder interface. The
      *                                  signedOrder you wish to fill.
      * @param   takerTokenFillAmount    The total amount of the takerTokens you would like to fill.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
@@ -370,7 +374,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Batch version of fillOrKill. Allows a taker to specify a batch of orders that will either be atomically
      * filled (each to the specified fillAmount) or aborted.
-     * @param   orderFillOrKillRequests     An array of JS objects that conform to the OrderFillOrKillRequest interface.
+     * @param   orderFillOrKillRequests     An array of objects that conform to the OrderFillOrKillRequest interface.
      * @param   takerAddress                The user Ethereum address who would like to fill there orders.
      *                                      Must be available via the supplied Web3.Provider passed to 0x.js.
      */
@@ -426,7 +430,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
-     * @param   order                   A JS object that conforms to the Order or SignedOrder interface.
+     * @param   order                   An object that conforms to the Order or SignedOrder interface.
      *                                  The order you would like to cancel.
      * @param   takerTokenCancelAmount  The amount (specified in taker tokens) that you would like to cancel.
      */
@@ -463,7 +467,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
      * All orders must be from the same maker.
-     * @param   orderCancellationRequests   An array of JS objects that conform to the OrderCancellationRequest
+     * @param   orderCancellationRequests   An array of objects that conform to the OrderCancellationRequest
      *                                      interface.
      */
     @decorators.contractCallErrorHandler
@@ -515,7 +519,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Subscribe to an event type emitted by the Exchange smart contract
      * @param   eventName           The exchange contract event you would like to subscribe to.
      * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
-     * @param   indexFilterValues   A JS object where the keys are indexed args returned by the event and
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
      * @return                      ContractEventEmitter object
      */

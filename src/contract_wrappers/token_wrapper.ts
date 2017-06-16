@@ -10,6 +10,11 @@ import {TokenContract, ZeroExError} from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
 
+/**
+ * This class includes all the functionality related to interacting with ERC20 token contracts.
+ * All ERC20 method calls are supported, along with some convenience methods for getting/setting allowances
+ * to the 0x Proxy smart contract.
+ */
 export class TokenWrapper extends ContractWrapper {
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     constructor(web3Wrapper: Web3Wrapper) {
@@ -138,12 +143,13 @@ export class TokenWrapper extends ContractWrapper {
     /**
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
      * Requires the fromAddress to have sufficient funds and to have approved an allowance of
-     * `amountInBaseUnits` for senderAddress.
+     * `amountInBaseUnits` to `senderAddress`.
      * @param   tokenAddress        The hex encoded contract Ethereum address where the ERC20 token is deployed.
-     * @param   fromAddress         The hex encoded user Ethereum address that will send the funds.
+     * @param   fromAddress         The hex encoded user Ethereum address whose funds are being sent.
      * @param   toAddress           The hex encoded user Ethereum address that will receive the funds.
-     * @param   senderAddress       The hex encoded user Ethereum address whose funds are being sent. The senderAddress
-     *                              must have set an allowance to the fromAddress before this call.
+     * @param   senderAddress       The hex encoded user Ethereum address whose initiates the fund transfer. The
+     *                              `fromAddress` must have set an allowance to the `senderAddress`
+     *                              before this call.
      * @param   amountInBaseUnits   The amount (specified in baseUnits) of the token to transfer.
      */
     public async transferFromAsync(tokenAddress: string, fromAddress: string, toAddress: string,
