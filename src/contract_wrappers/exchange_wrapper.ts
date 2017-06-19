@@ -22,6 +22,7 @@ import {
     ContractResponse,
     OrderCancellationRequest,
     OrderFillRequest,
+    LogErrorContractEventArgs,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -712,7 +713,7 @@ export class ExchangeWrapper extends ContractWrapper {
     private _throwErrorLogsAsErrors(logs: ContractEvent[]): void {
         const errEvent = _.find(logs, {event: 'LogError'});
         if (!_.isUndefined(errEvent)) {
-            const errCode = errEvent.args.errorId.toNumber();
+            const errCode = (errEvent.args as LogErrorContractEventArgs).errorId.toNumber()
             const errMessage = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
         }

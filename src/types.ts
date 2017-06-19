@@ -191,8 +191,37 @@ export interface ContractEvent {
     address: string;
     type: string;
     event: string;
-    args: any;
+    args: ContractEventArgs;
 }
+
+export interface LogFillArgs {
+    maker: string;
+    taker: string;
+    feeRecipient: string;
+    tokenM: string;
+    tokenT: string;
+    filledValueM: BigNumber.BigNumber;
+    filledValueT: BigNumber.BigNumber;
+    feeMPaid: BigNumber.BigNumber;
+    feeTPaid: BigNumber.BigNumber;
+    tokens: string;
+    orderHash: string;
+}
+export interface LogCancelArgs {
+    maker: string;
+    feeRecipient: string;
+    tokenM: string;
+    tokenT: string;
+    cancelledValueM: BigNumber.BigNumber;
+    cancelledValueT: BigNumber.BigNumber;
+    tokens: string;
+    orderHash: string;
+}
+export interface LogErrorContractEventArgs {
+    errorId: BigNumber.BigNumber;
+    orderHash: string;
+}
+export type ContractEventArgs = LogFillArgs|LogCancelArgs|LogErrorContractEventArgs;
 
 export interface Order {
     maker: string;
