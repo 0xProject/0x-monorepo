@@ -38,7 +38,8 @@ export class ZeroEx {
      */
     public exchange: ExchangeWrapper;
     /**
-     * An instance of the TokenRegistryWrapper class containing methods for interacting with the 0x TokenRegistry smart contract.
+     * An instance of the TokenRegistryWrapper class containing methods for interacting with the 0x
+     * TokenRegistry smart contract.
      */
     public tokenRegistry: TokenRegistryWrapper;
     /**
