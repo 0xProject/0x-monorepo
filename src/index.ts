@@ -19,9 +19,9 @@ export {
     OrderCancellationRequest,
     OrderFillRequest,
     ContractEventEmitter,
-    LogErrorArgs,
+    LogErrorContractEventArgs,
     LogCancelArgs,
     LogFillArgs,
-    EventArgs,
+    ContractEventArgs,
     Web3Provider,
 } from './types';

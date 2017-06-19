@@ -191,7 +191,7 @@ export interface ContractEvent {
     address: string;
     type: string;
     event: string;
-    args: EventArgs;
+    args: ContractEventArgs;
 }
 
 export interface LogFillArgs {
@@ -217,11 +217,11 @@ export interface LogCancelArgs {
     tokens: string;
     orderHash: string;
 }
-export interface LogErrorArgs {
+export interface LogErrorContractEventArgs {
     errorId: BigNumber.BigNumber;
     orderHash: string;
 }
-export type EventArgs = LogFillArgs|LogCancelArgs|LogErrorArgs;
+export type ContractEventArgs = LogFillArgs|LogCancelArgs|LogErrorContractEventArgs;
 
 export interface Order {
     maker: string;
