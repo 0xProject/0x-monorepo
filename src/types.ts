@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Web3 from 'web3';
 
 // Utility function to create a K:V from a list of strings
 // Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
@@ -190,8 +191,37 @@ export interface ContractEvent {
     address: string;
     type: string;
     event: string;
-    args: any;
+    args: ContractEventArgs;
 }
+
+export interface LogFillArgs {
+    maker: string;
+    taker: string;
+    feeRecipient: string;
+    tokenM: string;
+    tokenT: string;
+    filledValueM: BigNumber.BigNumber;
+    filledValueT: BigNumber.BigNumber;
+    feeMPaid: BigNumber.BigNumber;
+    feeTPaid: BigNumber.BigNumber;
+    tokens: string;
+    orderHash: string;
+}
+export interface LogCancelArgs {
+    maker: string;
+    feeRecipient: string;
+    tokenM: string;
+    tokenT: string;
+    cancelledValueM: BigNumber.BigNumber;
+    cancelledValueT: BigNumber.BigNumber;
+    tokens: string;
+    orderHash: string;
+}
+export interface LogErrorContractEventArgs {
+    errorId: BigNumber.BigNumber;
+    orderHash: string;
+}
+export type ContractEventArgs = LogFillArgs|LogCancelArgs|LogErrorContractEventArgs;
 
 export interface Order {
     maker: string;
@@ -280,3 +310,9 @@ export interface ContractEventEmitter {
     watch: (eventCallback: EventCallback) => void;
     stopWatchingAsync: () => Promise<void>;
 }
+/**
+ * We re-export the `Web3.Provider` type specified in the Web3 Typescript typings
+ * since it is the type of the `provider` argument to the `ZeroEx` constructor.
+ * It is however a `Web3` library type, not a native `0x.js` type.
+ */
+export type Web3Provider = Web3.Provider;

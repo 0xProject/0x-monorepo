@@ -1,6 +1,6 @@
 {
   "name": "@0xproject/0x.js",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "A javascript library for interacting with the 0x protocol",
   "keywords": [
     "0x.js",
@@ -15,10 +15,12 @@
     "prebuild": "npm run clean",
     "build": "run-p build:*:prod",
     "prepublish": "run-p build:umd:prod build:commonjs:dev",
+    "postpublish": "publish-release --assets _bundles/index.js,_bundles/index.min.js",
     "lint": "tslint src/*.ts test/*.ts",
     "test": "run-s clean test:commonjs",
     "test:umd": "./scripts/test_umd.sh",
     "test:coverage": "nyc npm run test --all",
+    "report_test_coverage": "nyc report --reporter=text-lcov | coveralls",
     "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
     "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
     "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json docs/index.json .",
@@ -27,7 +29,7 @@
     "clean": "shx rm -rf _bundles lib test_temp",
     "build:dev": "npm run clean && run-p build:*:dev",
     "build:umd:dev": "webpack",
-    "build:umd:prod": "webpack -p",
+    "build:umd:prod": "NODE_ENV=production webpack",
     "build:commonjs:dev": "tsc; copyfiles -u 2 ./src/artifacts/*.json ../0x.js/lib/src/artifacts;",
     "test:commonjs": "run-s build:commonjs:dev run_mocha",
     "pretest:umd": "run-s clean build:*:dev",
@@ -62,6 +64,7 @@
     "chai-bignumber": "git+ssh://git@github.com:0xProject/chai-bignumber.git",
     "chai-typescript-typings": "^0.0.0",
     "copyfiles": "^1.2.0",
+    "coveralls": "^2.13.1",
     "dirty-chai": "^1.2.2",
     "ethereumjs-testrpc": "3.0.5",
     "json-loader": "^0.5.4",
@@ -78,8 +81,8 @@
     "tslint-config-0xproject": "^0.0.2",
     "typedoc": "^0.7.1",
     "typescript": "^2.3.3",
-    "web3-provider-engine": "https://github.com/0xProject/provider-engine.git",
-    "web3-typescript-typings": "0.0.8",
+    "web3-provider-engine": "^13.0.1",
+    "web3-typescript-typings": "^0.0.9",
     "webpack": "^2.6.0"
   },
   "dependencies": {
@@ -91,6 +94,7 @@
     "find-versions": "^2.0.0",
     "jsonschema": "^1.1.1",
     "lodash": "^4.17.4",
+    "publish-release": "^1.3.3",
     "truffle-contract": "^2.0.1",
     "web3": "^0.19.0"
   }

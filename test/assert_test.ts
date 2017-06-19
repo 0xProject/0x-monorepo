@@ -8,7 +8,7 @@ const expect = chai.expect;
 
 describe('Assertion library', () => {
     const web3 = web3Factory.create();
-    const zeroEx = new ZeroEx(web3);
+    const zeroEx = new ZeroEx(web3.currentProvider);
     describe('#isSenderAddressHexAsync', () => {
         it('throws when address is invalid', async () => {
             const address = '0xdeadbeef';
