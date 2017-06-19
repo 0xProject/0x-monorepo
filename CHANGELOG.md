@@ -1,7 +1,10 @@
 # CHANGELOG
 
+v0.6.1 - _Jul. 19, 2017_
+------------------------
+    * Improve documentation
 v0.6.0 - _Jul. 19, 2017_
--------------
+------------------------
     * Made `ZeroEx` class accept `Web3Provider` instance instead of `Web3` instance
     * Added types for contract event arguments
 v0.5.2 - _Jul. 15, 2017_
