@@ -131,9 +131,9 @@ export class ExchangeWrapper extends ContractWrapper {
      * Fills a signed order with an amount denominated in baseUnits of the taker token.
      * Since the order in which transactions are included in the next block is indeterminate, race-conditions
      * could arise where a users balance or allowance changes before the fillOrder executes. Because of this,
-     * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if while
-     * executing, the parties do not have sufficient balances/allowances, preserving gas costs. Setting it to
-     * false forgoes this check and causes the smart contract to throw (using all the gas supplied) instead.
+     * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if the parties
+     * do not have sufficient balances/allowances, preserving gas costs. Setting it to false forgoes this check
+     * and causes the smart contract to throw (using all the gas supplied) instead.
      * @param   signedOrder             An object that conforms to the SignedOrder interface.
      * @param   takerTokenFillAmount    The amount of the order (in taker tokens baseUnits) that you wish to fill.
      * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
