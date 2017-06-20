@@ -938,9 +938,9 @@ chai-as-promised@^6.0.0:
   dependencies:
     check-error "^1.0.2"
 
-"chai-bignumber@git+ssh://git@github.com:0xProject/chai-bignumber.git":
+chai-bignumber@0xProject/chai-bignumber:
   version "2.0.0"
-  resolved "git+ssh://git@github.com/0xProject/chai-bignumber.git#9ef233f3e2ca3ab250b66149390c833c117c27e7"
+  resolved "https://codeload.github.com/0xProject/chai-bignumber/tar.gz/9ef233f3e2ca3ab250b66149390c833c117c27e7"
 
 chai-typescript-typings@^0.0.0:
   version "0.0.0"
