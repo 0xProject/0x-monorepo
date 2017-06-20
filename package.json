@@ -1,5 +1,5 @@
 {
-  "name": "@0xproject/0x.js",
+  "name": "0x.js",
   "version": "0.6.1",
   "description": "A javascript library for interacting with the 0x protocol",
   "keywords": [
