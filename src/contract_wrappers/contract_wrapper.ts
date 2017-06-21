@@ -1,4 +1,5 @@
-import * as _ from 'lodash';
+import includes from 'lodash/includes';
+import isUndefined from 'lodash/isUndefined';
 import contract = require('truffle-contract');
 import {Web3Wrapper} from '../web3_wrapper';
 import {ZeroExError, Artifact, ContractInstance} from '../types';
@@ -15,17 +16,17 @@ export class ContractWrapper {
         c.setProvider(providerObj);
 
         const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const artifactNetworkConfigs = _.isUndefined(networkIdIfExists) ?
+        const artifactNetworkConfigs = isUndefined(networkIdIfExists) ?
                                        undefined :
                                        artifact.networks[networkIdIfExists];
         let contractAddress;
-        if (!_.isUndefined(address)) {
+        if (!isUndefined(address)) {
             contractAddress = address;
-        } else if (!_.isUndefined(artifactNetworkConfigs)) {
+        } else if (!isUndefined(artifactNetworkConfigs)) {
             contractAddress = artifactNetworkConfigs.address;
         }
 
-        if (!_.isUndefined(contractAddress)) {
+        if (!isUndefined(contractAddress)) {
             const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
             if (!doesContractExist) {
                 throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
@@ -33,11 +34,11 @@ export class ContractWrapper {
         }
 
         try {
-            const contractInstance = _.isUndefined(address) ? await c.deployed() : await c.at(address);
+            const contractInstance = isUndefined(address) ? await c.deployed() : await c.at(address);
             return contractInstance;
         } catch (err) {
             const errMsg = `${err}`;
-            if (_.includes(errMsg, 'not been deployed to detected network')) {
+            if (includes(errMsg, 'not been deployed to detected network')) {
                 throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
             } else {
                 utils.consoleLog(`Notice: Error encountered: ${err} ${err.stack}`);

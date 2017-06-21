@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import isUndefined from 'lodash/isUndefined';
 import * as BigNumber from 'bignumber.js';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
@@ -179,7 +179,7 @@ export class TokenWrapper extends ContractWrapper {
     }
     private async _getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
         let tokenContract = this._tokenContractsByAddress[tokenAddress];
-        if (!_.isUndefined(tokenContract)) {
+        if (!isUndefined(tokenContract)) {
             return tokenContract;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync((TokenArtifacts as any), tokenAddress);
@@ -189,10 +189,10 @@ export class TokenWrapper extends ContractWrapper {
     }
     private async _getProxyAddressAsync() {
         const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const proxyNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
+        const proxyNetworkConfigsIfExists = isUndefined(networkIdIfExists) ?
                                        undefined :
                                        (ProxyArtifacts as any).networks[networkIdIfExists];
-        if (_.isUndefined(proxyNetworkConfigsIfExists)) {
+        if (isUndefined(proxyNetworkConfigsIfExists)) {
             throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
         }
         const proxyAddress = proxyNetworkConfigsIfExists.address;

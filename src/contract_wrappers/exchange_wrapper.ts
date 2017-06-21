@@ -1,4 +1,8 @@
-import * as _ from 'lodash';
+import map from 'lodash/map';
+import isEmpty from 'lodash/isEmpty';
+import find from 'lodash/find';
+import isUndefined from 'lodash/isUndefined';
+import unzip from 'lodash/unzip';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {Web3Wrapper} from '../web3_wrapper';
@@ -198,7 +202,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
-        const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
+        const takerTokenAddresses = map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
                                         ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
@@ -209,11 +213,11 @@ export class ExchangeWrapper extends ContractWrapper {
             await this._validateFillOrderAndThrowIfInvalidAsync(
                 signedOrder, takerTokenFillAmount, takerAddress);
         }
-        if (_.isEmpty(signedOrders)) {
+        if (isEmpty(signedOrders)) {
             return; // no-op
         }
 
-        const orderAddressesValuesAndSignatureArray = _.map(signedOrders, signedOrder => {
+        const orderAddressesValuesAndSignatureArray = map(signedOrders, signedOrder => {
             return [
                 ...ExchangeWrapper._getOrderAddressesAndValues(signedOrder),
                 signedOrder.ecSignature.v,
@@ -221,8 +225,8 @@ export class ExchangeWrapper extends ContractWrapper {
                 signedOrder.ecSignature.s,
             ];
         });
-        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
-        const [orderAddressesArray, orderValuesArray, vArray, rArray, sArray] = _.unzip<any>(
+        // We use unzip<any> because unzip doesn't type check if values have different types :'(
+        const [orderAddressesArray, orderValuesArray, vArray, rArray, sArray] = unzip<any>(
             orderAddressesValuesAndSignatureArray,
         );
 
@@ -277,11 +281,11 @@ export class ExchangeWrapper extends ContractWrapper {
             await this._validateFillOrderAndThrowIfInvalidAsync(
                 orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
         }
-        if (_.isEmpty(orderFillRequests)) {
+        if (isEmpty(orderFillRequests)) {
             return; // no-op
         }
 
-        const orderAddressesValuesAmountsAndSignatureArray = _.map(orderFillRequests, orderFillRequest => {
+        const orderAddressesValuesAmountsAndSignatureArray = map(orderFillRequests, orderFillRequest => {
             return [
                 ...ExchangeWrapper._getOrderAddressesAndValues(orderFillRequest.signedOrder),
                 orderFillRequest.takerTokenFillAmount,
@@ -290,8 +294,8 @@ export class ExchangeWrapper extends ContractWrapper {
                 orderFillRequest.signedOrder.ecSignature.s,
             ];
         });
-        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
-        const [orderAddressesArray, orderValuesArray, takerTokenFillAmountArray, vArray, rArray, sArray] = _.unzip<any>(
+        // We use unzip<any> because unzip doesn't type check if values have different types :'(
+        const [orderAddressesArray, orderValuesArray, takerTokenFillAmountArray, vArray, rArray, sArray] = unzip<any>(
             orderAddressesValuesAmountsAndSignatureArray,
         );
 
@@ -390,7 +394,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                                                      request.fillTakerAmount);
         }
 
-        const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillOrKillRequests, request => {
+        const orderAddressesValuesAndTakerTokenFillAmounts = map(orderFillOrKillRequests, request => {
             return [
                 ...ExchangeWrapper._getOrderAddressesAndValues(request.signedOrder),
                 request.fillTakerAmount,
@@ -400,9 +404,9 @@ export class ExchangeWrapper extends ContractWrapper {
             ];
         });
 
-        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
+        // We use unzip<any> because unzip doesn't type check if values have different types :'(
         const [orderAddresses, orderValues, fillTakerAmounts, vParams, rParams, sParams] =
-              _.unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
+              unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
 
         const gas = await exchangeInstance.batchFillOrKill.estimateGas(
             orderAddresses,
@@ -473,7 +477,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     @decorators.contractCallErrorHandler
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
-        const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
+        const makers = map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
@@ -484,19 +488,19 @@ export class ExchangeWrapper extends ContractWrapper {
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
         }
-        if (_.isEmpty(orderCancellationRequests)) {
+        if (isEmpty(orderCancellationRequests)) {
             return; // no-op
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {
+        const orderAddressesValuesAndTakerTokenCancelAmounts = map(orderCancellationRequests, cancellationRequest => {
             return [
                 ...ExchangeWrapper._getOrderAddressesAndValues(cancellationRequest.order),
                 cancellationRequest.takerTokenCancelAmount,
             ];
         });
-        // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
+        // We use unzip<any> because unzip doesn't type check if values have different types :'(
         const [orderAddresses, orderValues, takerTokenCancelAmounts] =
-            _.unzip<any>(orderAddressesValuesAndTakerTokenCancelAmounts);
+            unzip<any>(orderAddressesValuesAndTakerTokenCancelAmounts);
         const gas = await exchangeInstance.batchCancel.estimateGas(
             orderAddresses,
             orderValues,
@@ -561,7 +565,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Stops watching for all exchange events
      */
     public async stopWatchingAllEventsAsync(): Promise<void> {
-        const stopWatchingPromises = _.map(this._exchangeLogEventEmitters,
+        const stopWatchingPromises = map(this._exchangeLogEventEmitters,
                                            logEventObj => logEventObj.stopWatchingAsync());
         await Promise.all(stopWatchingPromises);
         this._exchangeLogEventEmitters = [];
@@ -715,8 +719,8 @@ export class ExchangeWrapper extends ContractWrapper {
         }
     }
     private _throwErrorLogsAsErrors(logs: ContractEvent[]): void {
-        const errEvent = _.find(logs, {event: 'LogError'});
-        if (!_.isUndefined(errEvent)) {
+        const errEvent = find(logs, {event: 'LogError'});
+        if (!isUndefined(errEvent)) {
             const errCode = (errEvent.args as LogErrorContractEventArgs).errorId.toNumber();
             const errMessage = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
@@ -733,7 +737,7 @@ export class ExchangeWrapper extends ContractWrapper {
         return isRoundingError;
     }
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
-        if (!_.isUndefined(this._exchangeContractIfExists)) {
+        if (!isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync((ExchangeArtifacts as any));

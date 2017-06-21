@@ -1,4 +1,5 @@
-import * as _ from 'lodash';
+import each from 'lodash/each';
+import assign from 'lodash/assign';
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import 'mocha';
@@ -67,7 +68,7 @@ describe('ZeroEx library', () => {
             ).to.become(false);
         });
         it('should return false if the signature doesn\'t pertain to the dataHex & address', async () => {
-            const wrongSignature = _.assign({}, signature, {v: 28});
+            const wrongSignature = assign({}, signature, {v: 28});
             expect(ZeroEx.isValidSignature(dataHex, wrongSignature, address)).to.be.false();
             return expect(
                 (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, wrongSignature, address),
@@ -144,7 +145,7 @@ describe('ZeroEx library', () => {
         let stubs: Sinon.SinonStub[] = [];
         afterEach(() => {
             // clean up any stubs after the test has completed
-            _.each(stubs, s => s.restore());
+            each(stubs, s => s.restore());
             stubs = [];
         });
         it('calculates the order hash', async () => {
@@ -171,7 +172,7 @@ describe('ZeroEx library', () => {
         });
         afterEach(() => {
             // clean up any stubs after the test has completed
-            _.each(stubs, s => s.restore());
+            each(stubs, s => s.restore());
             stubs = [];
         });
         it ('Should return the correct ECSignature on TestPRC nodeVersion', async () => {

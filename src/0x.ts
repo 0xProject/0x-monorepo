@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import isUndefined from 'lodash/isUndefined';
 import * as BigNumber from 'bignumber.js';
 import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
@@ -239,10 +239,10 @@ export class ZeroEx {
     }
     private async _getExchangeAddressAsync() {
         const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const exchangeNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
+        const exchangeNetworkConfigsIfExists = isUndefined(networkIdIfExists) ?
                                        undefined :
                                        (ExchangeArtifacts as any).networks[networkIdIfExists];
-        if (_.isUndefined(exchangeNetworkConfigsIfExists)) {
+        if (isUndefined(exchangeNetworkConfigsIfExists)) {
             throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
         }
         const exchangeAddress = exchangeNetworkConfigsIfExists.address;

@@ -1,4 +1,5 @@
-import * as _ from 'lodash';
+import map from 'lodash/map';
+import includes from 'lodash/includes';
 import * as BN from 'bn.js';
 import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
@@ -20,7 +21,7 @@ export const utils = {
         console.log(message);
     },
     isParityNode(nodeVersion: string): boolean {
-        return _.includes(nodeVersion, 'Parity');
+        return includes(nodeVersion, 'Parity');
     },
     isValidOrderHash(orderHashHex: string): boolean {
         const isValid = /^0x[0-9A-F]{64}$/i.test(orderHashHex);
@@ -44,8 +45,8 @@ export const utils = {
             {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.uint256},
             {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.uint256},
         ];
-        const types = _.map(orderParts, o => o.type);
-        const values = _.map(orderParts, o => o.value);
+        const types = map(orderParts, o => o.type);
+        const values = map(orderParts, o => o.value);
         const hashBuff = ethABI.soliditySHA3(types, values);
         const hashHex = ethUtil.bufferToHex(hashBuff);
         return hashHex;

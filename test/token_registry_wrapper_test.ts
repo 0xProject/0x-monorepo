@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import each from 'lodash/each';
 import 'mocha';
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
@@ -32,7 +32,7 @@ describe('TokenRegistryWrapper', () => {
             expect(tokens).to.have.lengthOf(TOKEN_REGISTRY_SIZE_AFTER_MIGRATION);
 
             const schemaValidator = new SchemaValidator();
-            _.each(tokens, token => {
+            each(tokens, token => {
                 const validationResult = schemaValidator.validate(token, tokenSchema);
                 expect(validationResult.errors).to.have.lengthOf(0);
             });
