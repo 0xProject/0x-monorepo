@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import includes = require('lodash/includes');
 import {constants} from './constants';
 import {AsyncMethod, ZeroExError} from '../types';
 
@@ -20,10 +20,10 @@ export const decorators = {
                 const result = await originalMethod.apply(this, args);
                 return result;
             } catch (error) {
-                if (_.includes(error.message, constants.INVALID_JUMP_PATTERN)) {
+                if (includes(error.message, constants.INVALID_JUMP_PATTERN)) {
                     throw new Error(ZeroExError.INVALID_JUMP);
                 }
-                if (_.includes(error.message, constants.OUT_OF_GAS_PATTERN)) {
+                if (includes(error.message, constants.OUT_OF_GAS_PATTERN)) {
                     throw new Error(ZeroExError.OUT_OF_GAS);
                 }
                 throw error;

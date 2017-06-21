@@ -1,5 +1,5 @@
 import 'mocha';
-import * as _ from 'lodash';
+import forEach = require('lodash/forEach');
 import * as chai from 'chai';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
@@ -19,7 +19,7 @@ const expect = chai.expect;
 describe('Schema', () => {
     const validator = new SchemaValidator();
     const validateAgainstSchema = (testCases: any[], schema: any, shouldFail = false) => {
-        _.forEach(testCases, (testCase: any) => {
+        forEach(testCases, (testCase: any) => {
             if (shouldFail) {
                 expect(validator.validate(testCase, schema).errors).to.be.lengthOf.at.least(1);
             } else {
@@ -285,7 +285,7 @@ describe('Schema', () => {
                 '00.00': '0',
                 '.3': '0.3',
             };
-            _.forEach(testCases, (serialized: string, input: string) => {
+            forEach(testCases, (serialized: string, input: string) => {
                 expect(JSON.parse(JSON.stringify(new BigNumber(input)))).to.be.equal(serialized);
             });
         });

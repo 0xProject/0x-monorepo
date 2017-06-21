@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import includes = require('lodash/includes');
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
@@ -17,7 +17,7 @@ export class Web3Wrapper {
     }
     public async isSenderAddressAvailableAsync(senderAddress: string): Promise<boolean> {
         const addresses = await this.getAvailableAddressesAsync();
-        return _.includes(addresses, senderAddress);
+        return includes(addresses, senderAddress);
     }
     public async getNodeVersionAsync(): Promise<string> {
         const nodeVersion = await promisify(this.web3.version.getNode)();

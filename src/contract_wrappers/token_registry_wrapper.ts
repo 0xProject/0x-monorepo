@@ -1,4 +1,5 @@
-import * as _ from 'lodash';
+import map = require('lodash/map');
+import isUndefined = require('lodash/isUndefined');
 import {Web3Wrapper} from '../web3_wrapper';
 import {Token, TokenRegistryContract, TokenMetadata} from '../types';
 import {assert} from '../utils/assert';
@@ -24,12 +25,12 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
 
         const addresses = await tokenRegistryContract.getTokenAddresses.call();
-        const tokenMetadataPromises: Array<Promise<TokenMetadata>> = _.map(
+        const tokenMetadataPromises: Array<Promise<TokenMetadata>> = map(
             addresses,
             (address: string) => (tokenRegistryContract.getTokenMetaData.call(address)),
         );
         const tokensMetadata = await Promise.all(tokenMetadataPromises);
-        const tokens = _.map(tokensMetadata, metadata => {
+        const tokens = map(tokensMetadata, metadata => {
             return {
                 address: metadata[0],
                 name: metadata[1],
@@ -41,7 +42,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         return tokens;
     }
     private async _getTokenRegistryContractAsync(): Promise<TokenRegistryContract> {
-        if (!_.isUndefined(this._tokenRegistryContractIfExists)) {
+        if (!isUndefined(this._tokenRegistryContractIfExists)) {
             return this._tokenRegistryContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync((TokenRegistryArtifacts as any));
