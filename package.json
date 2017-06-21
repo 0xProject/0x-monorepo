@@ -95,7 +95,7 @@
     "jsonschema": "^1.1.1",
     "lodash": "^4.17.4",
     "publish-release": "^1.3.3",
-    "truffle-contract": "^2.0.1",
+    "truffle-contract": "0xproject/truffle-contract#temporary",
     "web3": "^0.19.0"
   }
 }
