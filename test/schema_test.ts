@@ -1,5 +1,5 @@
 import 'mocha';
-import forEach from 'lodash/forEach';
+import forEach = require('lodash/forEach');
 import * as chai from 'chai';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');

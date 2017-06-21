@@ -1,5 +1,5 @@
-import assign from 'lodash/assign';
-import isUndefined from 'lodash/isUndefined';
+import assign = require('lodash/assign');
+import isUndefined = require('lodash/isUndefined');
 import * as BigNumber from 'bignumber.js';
 import {ZeroEx, SignedOrder} from '../../src';
 

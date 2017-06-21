@@ -1,4 +1,4 @@
-import reduce from 'lodash/reduce';
+import reduce = require('lodash/reduce');
 import * as Web3 from 'web3';
 
 // Utility function to create a K:V from a list of strings

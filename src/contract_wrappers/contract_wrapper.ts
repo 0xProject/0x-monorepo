@@ -1,5 +1,5 @@
-import includes from 'lodash/includes';
-import isUndefined from 'lodash/isUndefined';
+import includes = require('lodash/includes');
+import isUndefined = require('lodash/isUndefined');
 import contract = require('truffle-contract');
 import {Web3Wrapper} from '../web3_wrapper';
 import {ZeroExError, Artifact, ContractInstance} from '../types';

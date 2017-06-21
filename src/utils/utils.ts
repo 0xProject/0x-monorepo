@@ -1,5 +1,5 @@
-import map from 'lodash/map';
-import includes from 'lodash/includes';
+import map = require('lodash/map');
+import includes = require('lodash/includes');
 import * as BN from 'bn.js';
 import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';

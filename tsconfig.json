@@ -8,7 +8,6 @@
     "declaration": true,
     "noImplicitAny": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
     "strictNullChecks": true
   },
   "include": [

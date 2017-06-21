@@ -1,4 +1,4 @@
-import includes from 'lodash/includes';
+import includes = require('lodash/includes');
 import {constants} from './constants';
 import {AsyncMethod, ZeroExError} from '../types';
 

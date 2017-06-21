@@ -1,10 +1,10 @@
-import uniq from 'lodash/uniq';
-import isEmpty from 'lodash/isEmpty';
-import isObject from 'lodash/isObject';
-import isFinite from 'lodash/isFinite';
-import isString from 'lodash/isString';
-import isBoolean from 'lodash/isBoolean';
-import isUndefined from 'lodash/isUndefined';
+import uniq = require('lodash/uniq');
+import isEmpty = require('lodash/isEmpty');
+import isObject = require('lodash/isObject');
+import isFinite = require('lodash/isFinite');
+import isString = require('lodash/isString');
+import isBoolean = require('lodash/isBoolean');
+import isUndefined = require('lodash/isUndefined');
 import * as BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';

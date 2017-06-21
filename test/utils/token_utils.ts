@@ -1,6 +1,6 @@
-import find from 'lodash/find';
-import filter from 'lodash/filter';
-import isUndefined from 'lodash/isUndefined';
+import find = require('lodash/find');
+import filter = require('lodash/filter');
+import isUndefined = require('lodash/isUndefined');
 import {Token, ZeroExError} from '../../src';
 
 const PROTOCOL_TOKEN_SYMBOL = 'ZRX';

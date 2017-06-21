@@ -1,8 +1,8 @@
-import map from 'lodash/map';
-import isEmpty from 'lodash/isEmpty';
-import find from 'lodash/find';
-import isUndefined from 'lodash/isUndefined';
-import unzip from 'lodash/unzip';
+import map = require('lodash/map');
+import isEmpty = require('lodash/isEmpty');
+import find = require('lodash/find');
+import isUndefined = require('lodash/isUndefined');
+import unzip = require('lodash/unzip');
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {Web3Wrapper} from '../web3_wrapper';

@@ -1,5 +1,5 @@
-import each from 'lodash/each';
-import assign from 'lodash/assign';
+import each = require('lodash/each');
+import assign = require('lodash/assign');
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import 'mocha';

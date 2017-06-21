@@ -1,4 +1,4 @@
-import isUndefined from 'lodash/isUndefined';
+import isUndefined = require('lodash/isUndefined');
 import * as BigNumber from 'bignumber.js';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';

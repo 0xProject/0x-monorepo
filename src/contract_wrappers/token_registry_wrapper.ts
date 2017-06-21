@@ -1,5 +1,5 @@
-import map from 'lodash/map';
-import isUndefined from 'lodash/isUndefined';
+import map = require('lodash/map');
+import isUndefined = require('lodash/isUndefined');
 import {Web3Wrapper} from '../web3_wrapper';
 import {Token, TokenRegistryContract, TokenMetadata} from '../types';
 import {assert} from '../utils/assert';
