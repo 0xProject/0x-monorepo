@@ -1,8 +1,12 @@
 # CHANGELOG
 
+v0.6.2 - _Jul. 21, 2017_
+------------------------
+    * Reduced bundle size
+    * Improved documentation
 v0.6.1 - _Jul. 19, 2017_
 ------------------------
-    * Improve documentation
+    * Improved documentation
 v0.6.0 - _Jul. 19, 2017_
 ------------------------
     * Made `ZeroEx` class accept `Web3Provider` instance instead of `Web3` instance
