@@ -344,6 +344,16 @@ describe('ExchangeWrapper', () => {
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                     );
                     const partialFillAmount = new BigNumber(3);
+                    const filledAmount = await zeroEx.exchange.fillOrderAsync(
+                        signedOrder, partialFillAmount, shouldCheckTransfer, takerAddress);
+                    expect(filledAmount).to.be.bignumber.equal(partialFillAmount);
+                });
+                it('should return the partially filled amount \
+                    if the fill amount specified is greater then the amount available', async () => {
+                    const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                    );
+                    const partialFillAmount = new BigNumber(3);
                     await zeroEx.exchange.fillOrderAsync(
                         signedOrder, partialFillAmount, shouldCheckTransfer, takerAddress);
                     const missingBalance = new BigNumber(1);
