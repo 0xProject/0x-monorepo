@@ -27,6 +27,7 @@ import {
     OrderCancellationRequest,
     OrderFillRequest,
     LogErrorContractEventArgs,
+    LogFillContractEventArgs,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -144,10 +145,11 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  execution the tokens cannot be transferred.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
+     * @return                          The amount of the order (in taker tokens baseUnits) that was filled.
      */
     @decorators.contractCallErrorHandler
     public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
-                                shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+                                shouldCheckTransfer: boolean, takerAddress: string): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
@@ -184,6 +186,9 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this._throwErrorLogsAsErrors(response.logs);
+        const logFillArgs = response.logs[0].args as LogFillContractEventArgs;
+        const filledAmount = new BigNumber(logFillArgs.filledValueT);
+        return filledAmount;
     }
     /**
      * Sequentially and atomically fills signedOrders up to the specified takerTokenFillAmount.

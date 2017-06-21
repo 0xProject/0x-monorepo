@@ -339,6 +339,24 @@ describe('ExchangeWrapper', () => {
                     expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                         .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
                 });
+                it('should return filled amount', async () => {
+                    const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                    );
+                    const partialFillAmount = new BigNumber(3);
+                    await zeroEx.exchange.fillOrderAsync(
+                        signedOrder, partialFillAmount, shouldCheckTransfer, takerAddress);
+                    const missingBalance = new BigNumber(1);
+                    const totalBalance = partialFillAmount.plus(missingBalance);
+                    await zeroEx.token.transferAsync(takerTokenAddress, coinbase, takerAddress, missingBalance);
+                    await zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, totalBalance);
+                    await zeroEx.token.transferAsync(makerTokenAddress, coinbase, makerAddress, missingBalance);
+                    await zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, totalBalance);
+                    const remainingFillAmount = fillableAmount.minus(partialFillAmount);
+                    const filledAmount = await zeroEx.exchange.fillOrderAsync(
+                        signedOrder, partialFillAmount, shouldCheckTransfer, takerAddress);
+                    expect(filledAmount).to.be.bignumber.equal(remainingFillAmount);
+                });
                 it('should fill the valid orders with fees', async () => {
                     const makerFee = new BigNumber(1);
                     const takerFee = new BigNumber(2);
