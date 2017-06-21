@@ -20,8 +20,8 @@ export {
     OrderFillRequest,
     ContractEventEmitter,
     LogErrorContractEventArgs,
-    LogCancelArgs,
-    LogFillArgs,
+    LogCancelContractEventArgs,
+    LogFillContractEventArgs,
     ContractEventArgs,
     Web3Provider,
 } from './types';

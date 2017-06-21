@@ -194,7 +194,7 @@ export interface ContractEvent {
     args: ContractEventArgs;
 }
 
-export interface LogFillArgs {
+export interface LogFillContractEventArgs {
     maker: string;
     taker: string;
     feeRecipient: string;
@@ -207,7 +207,7 @@ export interface LogFillArgs {
     tokens: string;
     orderHash: string;
 }
-export interface LogCancelArgs {
+export interface LogCancelContractEventArgs {
     maker: string;
     feeRecipient: string;
     tokenM: string;
@@ -221,7 +221,7 @@ export interface LogErrorContractEventArgs {
     errorId: BigNumber.BigNumber;
     orderHash: string;
 }
-export type ContractEventArgs = LogFillArgs|LogCancelArgs|LogErrorContractEventArgs;
+export type ContractEventArgs = LogFillContractEventArgs|LogCancelContractEventArgs|LogErrorContractEventArgs;
 
 export interface Order {
     maker: string;
