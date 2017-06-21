@@ -145,7 +145,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  execution the tokens cannot be transferred.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
-     * @return                          The amount of the order (in taker tokens baseUnits) that was filled.
+     * @return                          The amount of the order that was filled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
