@@ -1,5 +1,4 @@
-import includes = require('lodash/includes');
-import isUndefined = require('lodash/isUndefined');
+import * as _ from 'lodash';
 import contract = require('truffle-contract');
 import {Web3Wrapper} from '../web3_wrapper';
 import {ZeroExError, Artifact, ContractInstance} from '../types';
@@ -16,17 +15,17 @@ export class ContractWrapper {
         c.setProvider(providerObj);
 
         const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const artifactNetworkConfigs = isUndefined(networkIdIfExists) ?
+        const artifactNetworkConfigs = _.isUndefined(networkIdIfExists) ?
                                        undefined :
                                        artifact.networks[networkIdIfExists];
         let contractAddress;
-        if (!isUndefined(address)) {
+        if (!_.isUndefined(address)) {
             contractAddress = address;
-        } else if (!isUndefined(artifactNetworkConfigs)) {
+        } else if (!_.isUndefined(artifactNetworkConfigs)) {
             contractAddress = artifactNetworkConfigs.address;
         }
 
-        if (!isUndefined(contractAddress)) {
+        if (!_.isUndefined(contractAddress)) {
             const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
             if (!doesContractExist) {
                 throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
@@ -34,11 +33,11 @@ export class ContractWrapper {
         }
 
         try {
-            const contractInstance = isUndefined(address) ? await c.deployed() : await c.at(address);
+            const contractInstance = _.isUndefined(address) ? await c.deployed() : await c.at(address);
             return contractInstance;
         } catch (err) {
             const errMsg = `${err}`;
-            if (includes(errMsg, 'not been deployed to detected network')) {
+            if (_.includes(errMsg, 'not been deployed to detected network')) {
                 throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
             } else {
                 utils.consoleLog(`Notice: Error encountered: ${err} ${err.stack}`);
