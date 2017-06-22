@@ -1,5 +1,11 @@
 # CHANGELOG
 
+v0.7.2 - _Jul. 22, 2017_
+------------------------
+    * Add Kovan smart contract artifacts (#78)
+    * Return fillAmount from `fillOrderAsync` and `fillUpToAsync` (#72)
+    * Return cancelledAmount from `cancelOrderAsync` (#72)
+    * Renamed type `LogCancelArgs` to `LogCancelContractEventArgs` and `LogFillArgs` to `LogFillContractEventArgs`
 v0.6.2 - _Jul. 21, 2017_
 ------------------------
     * Reduced bundle size
