@@ -504,6 +504,10 @@ describe('ExchangeWrapper', () => {
                     const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
                     expect(cancelledAmount).to.be.bignumber.equal(cancelAmount);
                 });
+                it('should return cancelled amount', async () => {
+                    const cancelledAmount = await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmount);
+                    expect(cancelledAmount).to.be.bignumber.equal(cancelAmount);
+                });
             });
         });
         describe('#batchCancelOrderAsync', () => {
