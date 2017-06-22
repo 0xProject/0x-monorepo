@@ -86,3 +86,11 @@ declare module 'es6-promisify' {
 declare module 'ethereumjs-abi' {
     const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
 }
+
+declare class HDWalletProvider {
+    constructor(mnemonic: string, rpcUrl: string);
+}
+
+declare module 'truffle-hdwallet-provider' {
+    export = HDWalletProvider;
+}
