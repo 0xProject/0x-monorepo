@@ -1,10 +1,4 @@
-import uniq = require('lodash/uniq');
-import isEmpty = require('lodash/isEmpty');
-import isObject = require('lodash/isObject');
-import isFinite = require('lodash/isFinite');
-import isString = require('lodash/isString');
-import isBoolean = require('lodash/isBoolean');
-import isUndefined = require('lodash/isUndefined');
+import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
@@ -15,17 +9,17 @@ const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
 export const assert = {
     isBigNumber(variableName: string, value: BigNumber.BigNumber): void {
-        const isBigNumber = isObject(value) && value.isBigNumber;
+        const isBigNumber = _.isObject(value) && value.isBigNumber;
         this.assert(isBigNumber, this.typeAssertionMessage(variableName, 'BigNumber', value));
     },
     isUndefined(value: any, variableName?: string): void {
-        this.assert(isUndefined(value), this.typeAssertionMessage(variableName, 'undefined', value));
+        this.assert(_.isUndefined(value), this.typeAssertionMessage(variableName, 'undefined', value));
     },
     isString(variableName: string, value: string): void {
-        this.assert(isString(value), this.typeAssertionMessage(variableName, 'string', value));
+        this.assert(_.isString(value), this.typeAssertionMessage(variableName, 'string', value));
     },
     isHexString(variableName: string, value: string): void {
-        this.assert(isString(value) && HEX_REGEX.test(value),
+        this.assert(_.isString(value) && HEX_REGEX.test(value),
             this.typeAssertionMessage(variableName, 'HexString', value));
     },
     isETHAddressHex(variableName: string, value: string): void {
@@ -42,19 +36,19 @@ export const assert = {
     },
     async isUserAddressAvailableAsync(web3Wrapper: Web3Wrapper): Promise<void> {
         const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        this.assert(!isEmpty(availableAddresses), 'No addresses were available on the provided web3 instance');
+        this.assert(!_.isEmpty(availableAddresses), 'No addresses were available on the provided web3 instance');
     },
     hasAtMostOneUniqueValue(value: any[], errMsg: string): void {
-        this.assert(uniq(value).length <= 1, errMsg);
+        this.assert(_.uniq(value).length <= 1, errMsg);
     },
     isNumber(variableName: string, value: number): void {
-        this.assert(isFinite(value), this.typeAssertionMessage(variableName, 'number', value));
+        this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));
     },
     isValidOrderHash(variableName: string, value: string): void {
         this.assert(utils.isValidOrderHash(value), this.typeAssertionMessage(variableName, 'orderHash', value));
     },
     isBoolean(variableName: string, value: boolean): void {
-        this.assert(isBoolean(value), this.typeAssertionMessage(variableName, 'boolean', value));
+        this.assert(_.isBoolean(value), this.typeAssertionMessage(variableName, 'boolean', value));
     },
     doesConformToSchema(variableName: string, value: object, schema: Schema): void {
         const schemaValidator = new SchemaValidator();
