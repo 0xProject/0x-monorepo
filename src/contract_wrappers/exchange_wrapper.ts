@@ -23,6 +23,8 @@ import {
     OrderCancellationRequest,
     OrderFillRequest,
     LogErrorContractEventArgs,
+    LogFillContractEventArgs,
+    LogCancelContractEventArgs,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -140,10 +142,11 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  execution the tokens cannot be transferred.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
+     * @return                          The amount of the order that was filled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async fillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
-                                shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+                                shouldCheckTransfer: boolean, takerAddress: string): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
@@ -180,6 +183,9 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this._throwErrorLogsAsErrors(response.logs);
+        const logFillArgs = response.logs[0].args as LogFillContractEventArgs;
+        const filledAmount = new BigNumber(logFillArgs.filledValueT);
+        return filledAmount;
     }
     /**
      * Sequentially and atomically fills signedOrders up to the specified takerTokenFillAmount.
@@ -194,11 +200,12 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  some cannot be filled.
      * @param   takerAddress            The user Ethereum address who would like to fill these orders.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
+     * @return                          The amount of the orders that was filled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
-                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
-        const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
+                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<BigNumber.BigNumber> {
+        const takerTokenAddresses = _map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
                                         ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
@@ -209,8 +216,8 @@ export class ExchangeWrapper extends ContractWrapper {
             await this._validateFillOrderAndThrowIfInvalidAsync(
                 signedOrder, takerTokenFillAmount, takerAddress);
         }
-        if (_.isEmpty(signedOrders)) {
-            return; // no-op
+        if (_isEmpty(signedOrders)) {
+            return new BigNumber(0); // no-op
         }
 
         const orderAddressesValuesAndSignatureArray = _.map(signedOrders, signedOrder => {
@@ -253,6 +260,11 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this._throwErrorLogsAsErrors(response.logs);
+        let filledTakerTokenAmount = new BigNumber(0);
+        const filledAmounts = each(response.logs, log => {
+            filledTakerTokenAmount = filledTakerTokenAmount.plus((log.args as LogFillContractEventArgs).filledValueT);
+        });
+        return filledTakerTokenAmount;
     }
     /**
      * Batch version of fillOrderAsync.
@@ -434,10 +446,11 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   order                   An object that conforms to the Order or SignedOrder interface.
      *                                  The order you would like to cancel.
      * @param   takerTokenCancelAmount  The amount (specified in taker tokens) that you would like to cancel.
+     * @return                          The amount of the order that was cancelled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
-        order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
+        order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('order', order, orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
@@ -464,6 +477,9 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this._throwErrorLogsAsErrors(response.logs);
+        const logFillArgs = response.logs[0].args as LogCancelContractEventArgs;
+        const cancelledAmount = new BigNumber(logFillArgs.cancelledValueT);
+        return cancelledAmount;
     }
     /**
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
