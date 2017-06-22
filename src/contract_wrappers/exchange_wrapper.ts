@@ -28,6 +28,7 @@ import {
     OrderFillRequest,
     LogErrorContractEventArgs,
     LogFillContractEventArgs,
+    LogCancelContractEventArgs,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -443,10 +444,11 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   order                   An object that conforms to the Order or SignedOrder interface.
      *                                  The order you would like to cancel.
      * @param   takerTokenCancelAmount  The amount (specified in taker tokens) that you would like to cancel.
+     * @returns                         The amount of the order that was cancelled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
-        order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
+        order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('order', order, orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
@@ -473,6 +475,9 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this._throwErrorLogsAsErrors(response.logs);
+        const logFillArgs = response.logs[0].args as LogCancelContractEventArgs;
+        const cancelledAmount = new BigNumber(logFillArgs.cancelledValueT);
+        return cancelledAmount;
     }
     /**
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
