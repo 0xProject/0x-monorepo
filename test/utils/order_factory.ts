@@ -1,5 +1,4 @@
-import assign = require('lodash/assign');
-import isUndefined = require('lodash/isUndefined');
+import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import {ZeroEx, SignedOrder} from '../../src';
 
@@ -17,7 +16,7 @@ export const orderFactory = {
         feeRecipient: string,
         expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
         const defaultExpirationUnixTimestampSec = new BigNumber(2524604400); // Close to infinite
-        expirationUnixTimestampSec = isUndefined(expirationUnixTimestampSec) ?
+        expirationUnixTimestampSec = _.isUndefined(expirationUnixTimestampSec) ?
             defaultExpirationUnixTimestampSec :
             expirationUnixTimestampSec;
         const order = {
@@ -35,7 +34,7 @@ export const orderFactory = {
         };
         const orderHash = await zeroEx.getOrderHashHexAsync(order);
         const ecSignature = await zeroEx.signOrderHashAsync(orderHash, maker);
-        const signedOrder: SignedOrder = assign(order, {ecSignature});
+        const signedOrder: SignedOrder = _.assign(order, {ecSignature});
         return signedOrder;
     },
 };
