@@ -1,6 +1,7 @@
 import map = require('lodash/map');
 import isEmpty = require('lodash/isEmpty');
 import find = require('lodash/find');
+import each = require('lodash/each');
 import isUndefined = require('lodash/isUndefined');
 import unzip = require('lodash/unzip');
 import * as BigNumber from 'bignumber.js';
@@ -204,10 +205,11 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  some cannot be filled.
      * @param   takerAddress            The user Ethereum address who would like to fill these orders.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
+     * @return                          The amount of the orders that was filled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
-                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<BigNumber.BigNumber> {
         const takerTokenAddresses = map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
                                         ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
@@ -220,7 +222,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 signedOrder, takerTokenFillAmount, takerAddress);
         }
         if (isEmpty(signedOrders)) {
-            return; // no-op
+            return new BigNumber(0); // no-op
         }
 
         const orderAddressesValuesAndSignatureArray = map(signedOrders, signedOrder => {
@@ -263,6 +265,11 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this._throwErrorLogsAsErrors(response.logs);
+        let filledTakerTokenAmount = new BigNumber(0);
+        const filledAmounts = each(response.logs, log => {
+            filledTakerTokenAmount = filledTakerTokenAmount.plus((log.args as LogFillContractEventArgs).filledValueT);
+        });
+        return filledTakerTokenAmount;
     }
     /**
      * Batch version of fillOrderAsync.
@@ -444,7 +451,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   order                   An object that conforms to the Order or SignedOrder interface.
      *                                  The order you would like to cancel.
      * @param   takerTokenCancelAmount  The amount (specified in taker tokens) that you would like to cancel.
-     * @returns                         The amount of the order that was cancelled (in taker token baseUnits).
+     * @return                          The amount of the order that was cancelled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
