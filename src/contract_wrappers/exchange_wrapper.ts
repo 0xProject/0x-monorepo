@@ -205,7 +205,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<BigNumber.BigNumber> {
-        const takerTokenAddresses = _map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
+        const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
                                         ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
@@ -216,7 +216,7 @@ export class ExchangeWrapper extends ContractWrapper {
             await this._validateFillOrderAndThrowIfInvalidAsync(
                 signedOrder, takerTokenFillAmount, takerAddress);
         }
-        if (_isEmpty(signedOrders)) {
+        if (_.isEmpty(signedOrders)) {
             return new BigNumber(0); // no-op
         }
 
@@ -261,7 +261,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this._throwErrorLogsAsErrors(response.logs);
         let filledTakerTokenAmount = new BigNumber(0);
-        const filledAmounts = each(response.logs, log => {
+        const filledAmounts = _.each(response.logs, log => {
             filledTakerTokenAmount = filledTakerTokenAmount.plus((log.args as LogFillContractEventArgs).filledValueT);
         });
         return filledTakerTokenAmount;
