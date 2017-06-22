@@ -452,6 +452,12 @@ describe('ExchangeWrapper', () => {
                     const remainingFillAmount = fillableAmount.minus(1);
                     expect(anotherFilledAmount).to.be.bignumber.equal(remainingFillAmount);
                 });
+                it('should return filled amount', async () => {
+                    const filledTakerTokenAmount = await zeroEx.exchange.fillOrdersUpToAsync(
+                        signedOrders, fillUpToAmount, shouldCheckTransfer, takerAddress,
+                    );
+                    expect(filledTakerTokenAmount).to.be.bignumber.equal(fillUpToAmount);
+                });
             });
         });
     });
