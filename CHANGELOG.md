@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.7.2 - _Jul. 22, 2017_
+v0.7.0 - _Jul. 22, 2017_
 ------------------------
     * Add Kovan smart contract artifacts (#78)
     * Return fillAmount from `fillOrderAsync` and `fillUpToAsync` (#72)
