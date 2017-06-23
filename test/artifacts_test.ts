@@ -9,7 +9,7 @@ const TIMEOUT = 10000;
 
 describe('Artifacts', () => {
     describe('contracts are deployed on kovan', () => {
-        const kovanRpcUrl = constants.KOVAN_URL;
+        const kovanRpcUrl = constants.KOVAN_RPC_URL;
         const packageJSONContent = fs.readFileSync('package.json', 'utf-8');
         const packageJSON = JSON.parse(packageJSONContent);
         const mnemonic = packageJSON.config.mnemonic;
