@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as chai from 'chai';
 import * as BigNumber from 'bignumber.js';
@@ -6,6 +7,7 @@ import {chaiSetup} from './utils/chai_setup';
 import {ZeroEx, Order} from '../src';
 import {web3Factory} from './utils/web3_factory';
 import {FillScenarios} from './utils/fill_scenarios';
+import {constants} from './utils/constants';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -15,8 +17,10 @@ const TIMEOUT = 10000;
 
 describe('Artifacts', () => {
     describe('contracts are deployed on kovan', () => {
-        const kovanRpcUrl = 'https://kovan.0xproject.com';
-        const mnemonic = 'concert load couple harbor equip island argue ramp clarify fence smart topic';
+        const kovanRpcUrl = constants.KOVAN_URL;
+        const packageJSONContent = fs.readFileSync('package.json', 'utf-8');
+        const packageJSON = JSON.parse(packageJSONContent);
+        const mnemonic = packageJSON.config.mnemonic;
         const web3Provider = new HDWalletProvider(mnemonic, kovanRpcUrl);
         const zeroEx = new ZeroEx(web3Provider);
         it('token registry contract is deployed', async () => {
