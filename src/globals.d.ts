@@ -87,10 +87,10 @@ declare module 'ethereumjs-abi' {
     const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
 }
 
+// truffle-hdwallet-provider declarations
 declare class HDWalletProvider {
     constructor(mnemonic: string, rpcUrl: string);
 }
-
 declare module 'truffle-hdwallet-provider' {
     export = HDWalletProvider;
 }
