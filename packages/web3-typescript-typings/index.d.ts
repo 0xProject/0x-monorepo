@@ -57,7 +57,9 @@ declare module 'web3' {
             type: string;
         }
 
-        interface Contract {}
+        interface Contract {
+            at(address: string): ContractInstance;
+        }
 
         interface FilterObject {
             fromBlock: number|string;
@@ -71,6 +73,8 @@ declare module 'web3' {
             watch(callback: () => void): void;
             stopWatching(): void;
         }
+
+        interface ContractInstance {}
 
         interface Provider {}
     }
