@@ -28,6 +28,7 @@ export class TokenWrapper extends ContractWrapper {
      * Retrieves an owner's ERC20 token balance.
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress    The hex encoded user Ethereum address whose balance you would like to check.
+     * @return  The owner's ERC20 token balance in base units.
      */
     public async getBalanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
