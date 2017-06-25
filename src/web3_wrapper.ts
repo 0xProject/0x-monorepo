@@ -34,6 +34,10 @@ export class Web3Wrapper {
             return undefined;
         }
     }
+    public toWei(ethAmount: BigNumber.BigNumber): BigNumber.BigNumber {
+        const balanceWei = this.web3.toWei(ethAmount, 'ether');
+        return balanceWei;
+    }
     public async getBalanceInEthAsync(owner: string): Promise<BigNumber.BigNumber> {
         const balanceInWei = await promisify(this.web3.eth.getBalance)(owner);
         let balanceEth = this.web3.fromWei(balanceInWei, 'ether');

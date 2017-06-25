@@ -19,6 +19,8 @@ export const ZeroExError = strEnum([
     'ZRX_NOT_IN_TOKEN_REGISTRY',
     'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     'INSUFFICIENT_BALANCE_FOR_TRANSFER',
+    'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
+    'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWL',
     'INVALID_JUMP',
     'OUT_OF_GAS',
 ]);
@@ -140,6 +142,11 @@ export interface TokenRegistryContract extends ContractInstance {
     };
 }
 
+export interface EtherTokenContract extends ContractInstance {
+    deposit: (txOpts: TxOpts) => Promise<void>;
+    withdraw: (amount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<void>;
+}
+
 export const SolidityTypes = strEnum([
     'address',
     'uint256',
@@ -255,6 +262,7 @@ export interface Token {
 export interface TxOpts {
     from: string;
     gas?: number;
+    value?: BigNumber.BigNumber;
 }
 
 export interface TokenAddressBySymbol {
