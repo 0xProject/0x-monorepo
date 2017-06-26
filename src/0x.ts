@@ -12,6 +12,7 @@ import {utils} from './utils/utils';
 import {assert} from './utils/assert';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
+import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
@@ -46,6 +47,11 @@ export class ZeroEx {
      * An instance of the TokenWrapper class containing methods for interacting with any ERC20 token smart contract.
      */
     public token: TokenWrapper;
+    /**
+     * An instance of the EtherTokenWrapper class containing methods for interacting with the
+     * wrapped ETH ERC20 token smart contract.
+     */
+    public etherToken: EtherTokenWrapper;
     private _web3Wrapper: Web3Wrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
@@ -145,6 +151,7 @@ export class ZeroEx {
         this.token = new TokenWrapper(this._web3Wrapper);
         this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
     }
     /**
      * Sets a new provider for the web3 instance used by 0x.js. Updating the provider will stop all
