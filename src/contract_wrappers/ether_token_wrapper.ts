@@ -8,7 +8,7 @@ import * as EtherTokenArtifacts from '../artifacts/EtherToken.json';
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
- * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
+ * The caller can convert Ether into the equivalent number of wrapped Ether ERC20 tokens and back.
  */
 export class EtherTokenWrapper extends ContractWrapper {
     private _etherTokenContractIfExists?: EtherTokenContract;
@@ -18,11 +18,11 @@ export class EtherTokenWrapper extends ContractWrapper {
         this._tokenWrapper = tokenWrapper;
     }
     /**
-     * Deposit ETH into the Wrapped ETH smart contract and issues the equivalent number of wrapped ETH tokens
-     * to the depositor address. These wrapped ETH tokens can be used in 0x trades and are redeemable for 1-to-1
-     * for ETH.
-     * @param   amountInWei      Amount of ETH in Wei the caller wishes to deposit.
-     * @param   depositor   The hex encoded user Ethereum address that would like to make the deposit.
+     * Deposits Ether into the wrapped Ether smart contract and issues the equivalent number of wrapped Ether tokens
+     * to the depositor address. These wrapped Ether tokens can be used in 0x trades and are redeemable 1-to-1
+     * for Ether.
+     * @param   amountInWei     Amount of Ether denominated in wei the caller wishes to deposit.
+     * @param   depositor       The hex encoded user Ethereum address that would like to make the deposit.
      */
     public async depositAsync(amountInWei: BigNumber.BigNumber, depositor: string): Promise<void> {
         assert.isBigNumber('amountInWei', amountInWei);
@@ -38,10 +38,10 @@ export class EtherTokenWrapper extends ContractWrapper {
         });
     }
     /**
-     * Withdraw ETH to the withdrawer's address from the wrapped ETH smart contract in exchange for the
-     * equivalent number of wrapped ETH tokens.
-     * @param   amountInWei  Amount of ETH in Wei the caller wishes to withdraw.
-     * @param   withdrawer   The hex encoded user Ethereum address that would like to make the withdrawl.
+     * Withdraw Ether to the withdrawer's address from the wrapped Ether smart contract in return for the
+     * equivalent number of wrapped Ether tokens.
+     * @param   amountInWei  Amount of Ether denominated in wei the caller wishes to withdraw.
+     * @param   withdrawer   The hex encoded user Ethereum address that would like to make the withdrawal.
      */
     public async withdrawAsync(amountInWei: BigNumber.BigNumber, withdrawer: string): Promise<void> {
         assert.isBigNumber('amountInWei', amountInWei);
