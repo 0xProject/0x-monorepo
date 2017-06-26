@@ -12,7 +12,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 
-describe.only('EtherTokenWrapper', () => {
+describe('EtherTokenWrapper', () => {
     let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
