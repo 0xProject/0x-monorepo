@@ -1,6 +1,9 @@
 # CHANGELOG
 
-v0.7.0 - _Jul. 22, 2017_
+v0.7.1 - _Jun. 26, 2017_
+------------------------
+    * Add the ability to convert Ether to wrapped Ether tokens and back via `zeroEx.etherToken.depostAsync` and `zeroEx.etherToken.withdrawAsync` (#81)
+
 v0.7.0 - _Jun. 22, 2017_
 ------------------------
     * Add Kovan smart contract artifacts (#78)
