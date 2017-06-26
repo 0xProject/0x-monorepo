@@ -93,7 +93,7 @@ describe.only('EtherTokenWrapper', () => {
 
             return expect(
                 zeroEx.etherToken.withdrawAsync(overWETHBalance, addressWithETH),
-            ).to.be.rejectedWith(ZeroExError.INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWL);
+            ).to.be.rejectedWith(ZeroExError.INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL);
         });
     });
 });

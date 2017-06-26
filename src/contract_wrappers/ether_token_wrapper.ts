@@ -50,7 +50,7 @@ export class EtherTokenWrapper extends ContractWrapper {
 
         const wethContractAddress = await this.getContractAddressAsync();
         const WETHBalanceInBaseUnits = await this._tokenWrapper.getBalanceAsync(wethContractAddress, withdrawer);
-        assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWL);
+        assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL);
 
         const wethContract = await this._getEtherTokenContractAsync();
         await wethContract.withdraw(amountInWei, {
