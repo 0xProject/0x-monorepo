@@ -28,8 +28,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.isBigNumber('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
 
-        const ethBalance = await this._web3Wrapper.getBalanceInEthAsync(depositor);
-        const ethBalanceInWei = this._web3Wrapper.toWei(ethBalance);
+        const ethBalanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(depositor);
         assert.assert(ethBalanceInWei.gte(amountInWei), ZeroExError.INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT);
 
         const wethContract = await this._getEtherTokenContractAsync();

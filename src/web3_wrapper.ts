@@ -38,11 +38,10 @@ export class Web3Wrapper {
         const balanceWei = this.web3.toWei(ethAmount, 'ether');
         return balanceWei;
     }
-    public async getBalanceInEthAsync(owner: string): Promise<BigNumber.BigNumber> {
-        const balanceInWei = await promisify(this.web3.eth.getBalance)(owner);
-        let balanceEth = this.web3.fromWei(balanceInWei, 'ether');
-        balanceEth = new BigNumber(balanceEth);
-        return balanceEth;
+    public async getBalanceInWeiAsync(owner: string): Promise<BigNumber.BigNumber> {
+        let balanceInWei = await promisify(this.web3.eth.getBalance)(owner);
+        balanceInWei = new BigNumber(balanceInWei);
+        return balanceInWei;
     }
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
         const code = await promisify(this.web3.eth.getCode)(address);
