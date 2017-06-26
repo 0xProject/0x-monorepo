@@ -29,7 +29,7 @@ import {
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
-import * as ExchangeArtifacts from '../artifacts/Exchange.json';
+import * as ExchangeArtifacts from '../artifacts/exchange/Exchange.json';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {signedOrdersSchema} from '../schemas/signed_orders_schema';
 import {orderFillRequestsSchema} from '../schemas/order_fill_requests_schema';
