@@ -241,15 +241,4 @@ export class ZeroEx {
         }
         return ecSignature;
     }
-    private async _getExchangeAddressAsync() {
-        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const exchangeNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
-                                       undefined :
-                                       (ExchangeArtifacts as any).networks[networkIdIfExists];
-        if (_.isUndefined(exchangeNetworkConfigsIfExists)) {
-            throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
-        }
-        const exchangeAddress = exchangeNetworkConfigsIfExists.address;
-        return exchangeAddress;
-    }
 }

@@ -182,6 +182,7 @@ export const ExchangeContractErrs = strEnum([
     'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED',
     'INSUFFICIENT_REMAINING_FILL_AMOUNT',
     'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED',
+    'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 
