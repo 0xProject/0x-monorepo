@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.7.2 - _Jun. 26, 2017_
+------------------------
+    * Add the ability to use different Exchange contracts (#82)
+
 v0.7.1 - _Jun. 26, 2017_
 ------------------------
     * Add the ability to convert Ether to wrapped Ether tokens and back via `zeroEx.etherToken.depostAsync` and `zeroEx.etherToken.withdrawAsync` (#81)
