@@ -1,4 +1,4 @@
-import {Validator, ValidatorResult} from 'jsonschema';
+import {Validator, ValidatorResult,  Schema} from 'jsonschema';
 import {ecSignatureSchema, ecSignatureParameterSchema} from '../schemas/ec_signature_schema';
 import {orderSchema, signedOrderSchema} from '../schemas/order_schemas';
 import {addressSchema, numberSchema} from '../schemas/basic_type_schemas';

@@ -42,11 +42,7 @@
   version "2.2.41"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.41.tgz#e27cf0817153eb9f2713b2d3f6c68f1e1c3ca608"
 
-"@types/node@*":
-  version "7.0.23"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.23.tgz#ededfd92e61046c32fcad56ea7e1101733fad4a4"
-
-"@types/node@^8.0.1":
+"@types/node@*", "@types/node@^8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.1.tgz#89c271e0c3b9ebb6a3756dd601336970b6228b77"
 
@@ -4499,9 +4495,9 @@ web3-provider-engine@~8.1.0:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-typescript-typings@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.0.9.tgz#f0c9e9bfcf0effaf16f3498b3d3883686451428b"
+web3-typescript-typings@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.0.10.tgz#8108c80f252fedb5c1670a547da4554112dbd44d"
   dependencies:
     bignumber.js "^4.0.2"
 
