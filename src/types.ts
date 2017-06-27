@@ -240,6 +240,7 @@ export interface Order {
     makerTokenAddress: string;
     takerTokenAddress: string;
     salt: BigNumber.BigNumber;
+    exchangeContractAddress: string;
     feeRecipient: string;
     expirationUnixTimestampSec: BigNumber.BigNumber;
 }
@@ -325,3 +326,15 @@ export interface ContractEventEmitter {
  * It is however a `Web3` library type, not a native `0x.js` type.
  */
 export type Web3Provider = Web3.Provider;
+
+export interface ExchangeContractByAddress {
+    [address: string]: ExchangeContract;
+}
+
+export interface ContractArtifact {
+    networks: {
+        [networkId: number]: {
+            address: string;
+        };
+    };
+}

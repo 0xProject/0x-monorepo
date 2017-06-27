@@ -13,6 +13,7 @@ export const orderFactory = {
         makerTokenAddress: string,
         takerTokenAmount: BigNumber.BigNumber,
         takerTokenAddress: string,
+        exchangeContractAddress: string,
         feeRecipient: string,
         expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
         const defaultExpirationUnixTimestampSec = new BigNumber(2524604400); // Close to infinite
@@ -29,6 +30,7 @@ export const orderFactory = {
             makerTokenAddress,
             takerTokenAddress,
             salt: ZeroEx.generatePseudoRandomSalt(),
+            exchangeContractAddress,
             feeRecipient,
             expirationUnixTimestampSec,
         };

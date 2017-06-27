@@ -16,7 +16,6 @@ import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
-import * as ExchangeArtifacts from './artifacts/Exchange.json';
 import {orderSchema} from './schemas/order_schemas';
 
 // Customize our BigNumber instances
@@ -179,9 +178,7 @@ export class ZeroEx {
      */
     public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
         assert.doesConformToSchema('order', order, orderSchema);
-
-        const exchangeContractAddr = await this._getExchangeAddressAsync();
-        const orderHashHex = utils.getOrderHashHex(order, exchangeContractAddr);
+        const orderHashHex = utils.getOrderHashHex(order, order.exchangeContractAddress);
         return orderHashHex;
     }
     /**

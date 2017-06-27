@@ -16,10 +16,11 @@ describe('ZeroEx library', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3.currentProvider);
+            const [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressedAsync();
             // Instantiate the contract instances with the current provider
-            await (zeroEx.exchange as any)._getExchangeContractAsync();
+            await (zeroEx.exchange as any)._getExchangeContractAsync(exchangeContractAddress);
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
-            expect((zeroEx.exchange as any)._exchangeContractIfExists).to.not.be.undefined();
+            expect((zeroEx.exchange as any)._exchangeContractByAddress[exchangeContractAddress]).to.not.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.not.be.undefined();
 
             const newProvider = web3Factory.getRpcProvider();
@@ -28,7 +29,7 @@ describe('ZeroEx library', () => {
             await zeroEx.setProviderAsync(newProvider);
 
             // Check that contractInstances with old provider are removed after provider update
-            expect((zeroEx.exchange as any)._exchangeContractIfExists).to.be.undefined();
+            expect((zeroEx.exchange as any)._exchangeContractByAddress[exchangeContractAddress]).to.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
             // Check that all nested web3 instances return the updated provider
@@ -52,6 +53,10 @@ describe('ZeroEx library', () => {
         const address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
         const web3 = web3Factory.create();
         const zeroEx = new ZeroEx(web3.currentProvider);
+        let exchangeContractAddress: string;
+        before(async () => {
+            [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressedAsync();
+        });
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
             expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();
             return expect(
@@ -77,7 +82,7 @@ describe('ZeroEx library', () => {
             const isValidSignatureLocal = ZeroEx.isValidSignature(dataHex, signature, address);
             expect(isValidSignatureLocal).to.be.true();
             const isValidSignatureOnContract = await (zeroEx.exchange as any)
-                ._isValidSignatureUsingContractCallAsync(dataHex, signature, address);
+                ._isValidSignatureUsingContractCallAsync(dataHex, signature, address, exchangeContractAddress);
             return expect(isValidSignatureOnContract).to.be.true();
         });
     });
@@ -126,14 +131,15 @@ describe('ZeroEx library', () => {
         });
     });
     describe('#getOrderHashHexAsync', () => {
-        const exchangeContractAddress = constants.NULL_ADDRESS;
-        const expectedOrderHash = '0x103a5e97dab5dbeb8f385636f86a7d1e458a7ccbe1bd194727f0b2f85ab116c7';
+        const expectedOrderHash = '0x39da987067a3c9e5f1617694f1301326ba8c8b0498ebef5df4863bed394e3c83';
+        const exchangeContractAddress = '0xb69e673309512a9d726f87304c6984054f87a93b';
         const order: Order = {
             maker: constants.NULL_ADDRESS,
             taker: constants.NULL_ADDRESS,
             feeRecipient: constants.NULL_ADDRESS,
             makerTokenAddress: constants.NULL_ADDRESS,
             takerTokenAddress: constants.NULL_ADDRESS,
+            exchangeContractAddress,
             salt: new BigNumber(0),
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
