@@ -489,6 +489,9 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     @decorators.contractCallErrorHandler
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
+        if (_.isEmpty(orderCancellationRequests)) {
+            return; // no-op
+        }
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
         const maker = makers[0];
@@ -499,9 +502,6 @@ export class ExchangeWrapper extends ContractWrapper {
             await this._validateCancelOrderAndThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
-        }
-        if (_.isEmpty(orderCancellationRequests)) {
-            return; // no-op
         }
         const exchangeInstance = await this._getExchangeContractAsync();
         const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {

@@ -551,6 +551,14 @@ describe('ExchangeWrapper', () => {
                 });
             });
             describe('successful batch cancels', () => {
+                it('should no-op for empty batch cancel', async () => {
+                    await zeroEx.exchange.batchCancelOrderAsync([]);
+                    const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
+                    const anotherCancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(
+                        anotherOrderHashHex);
+                    expect(cancelledAmount).to.be.bignumber.equal(0);
+                    expect(anotherCancelledAmount).to.be.bignumber.equal(0);
+                });
                 it('should cancel a batch of orders', async () => {
                     await zeroEx.exchange.batchCancelOrderAsync(cancelBatch);
                     const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
