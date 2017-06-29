@@ -807,7 +807,8 @@ export class ExchangeWrapper extends ContractWrapper {
         return this._exchangeContractByAddress[exchangeContractAddress];
     }
     private _getExchangeArtifactsByAddressOrThrow(exchangeContractAddress: string): ContractArtifact {
-        for (const exchangeArtifact of _.values<ContractArtifact>(ExchangeArtifactsByName)) {
+        const exchangeArtifacts = _.values<ContractArtifact>(ExchangeArtifactsByName);
+        for (const exchangeArtifact of exchangeArtifacts) {
             const exchangeAddressesInAftifact = _.map(
                 _.values(exchangeArtifact.networks),
                 artifactsByNetwork => artifactsByNetwork.address,
