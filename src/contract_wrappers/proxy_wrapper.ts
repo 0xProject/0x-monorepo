@@ -22,7 +22,7 @@ export class ProxyWrapper extends ContractWrapper {
      */
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         const proxyContractInstance = await this._getTokenRegistryContractAsync();
-        const isAuthorized = await proxyContractInstance.authrized.call(exchangeContractAddress);
+        const isAuthorized = await proxyContractInstance.authorized.call(exchangeContractAddress);
         return isAuthorized;
     }
     private async _getTokenRegistryContractAsync(): Promise<ProxyContract> {
