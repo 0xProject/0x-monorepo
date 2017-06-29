@@ -27,7 +27,7 @@ describe('Artifacts', () => {
             await (zeroEx.token as any)._getProxyAddressAsync();
         }).timeout(TIMEOUT);
         it('exchange contract is deployed', async () => {
-            const exchangeContractAddresses = await zeroEx.exchange.getAvailableContractAddressedAsync();
+            const exchangeContractAddresses = await zeroEx.exchange.getAvailableContractAddressesAsync();
             expect(exchangeContractAddresses).to.have.lengthOf.above(0);
         }).timeout(TIMEOUT);
     });

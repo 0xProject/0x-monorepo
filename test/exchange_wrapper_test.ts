@@ -42,7 +42,7 @@ describe('ExchangeWrapper', () => {
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider);
-        [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressedAsync();
+        [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressesAsync();
         userAddresses = await promisify(web3.eth.getAccounts)();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);
@@ -813,7 +813,7 @@ describe('ExchangeWrapper', () => {
     });
     describe('#getAvailableContractAddressedAsync', () => {
         it('returns the exchange contract addresses', async () => {
-            const exchangeAddresses = await zeroEx.exchange.getAvailableContractAddressedAsync();
+            const exchangeAddresses = await zeroEx.exchange.getAvailableContractAddressesAsync();
             _.map(exchangeAddresses, exchangeAddress => {
                 assert.isETHAddressHex('exchangeAddress', exchangeAddress);
             });
