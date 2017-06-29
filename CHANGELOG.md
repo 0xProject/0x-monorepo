@@ -2,8 +2,8 @@
 
 v0.7.2 - _Jun. 26, 2017_
 ------------------------
-    * Add the ability to use different Exchange contracts (#82)
-    * Update contract artifacts to reflect (0xproject/contracts#59)
+    * Add the ability to call methods on different authorized versions of the Exchange smart contract (#82)
+    * Update contract artifacts to reflect changes to the smart contracts (0xproject/contracts#59)
 
 v0.7.1 - _Jun. 26, 2017_
 ------------------------
