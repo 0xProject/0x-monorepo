@@ -130,7 +130,7 @@ describe('ZeroEx library', () => {
             expect(baseUnitAmount).to.be.bignumber.equal(expectedUnitAmount);
         });
     });
-    describe('#getOrderHashHexAsync', () => {
+    describe('#getOrderHashHex', () => {
         const expectedOrderHash = '0x39da987067a3c9e5f1617694f1301326ba8c8b0498ebef5df4863bed394e3c83';
         const exchangeContractAddress = '0xb69e673309512a9d726f87304c6984054f87a93b';
         const order: Order = {
@@ -147,22 +147,11 @@ describe('ZeroEx library', () => {
             takerTokenAmount: new BigNumber(0),
             expirationUnixTimestampSec: new BigNumber(0),
         };
-        let stubs: Sinon.SinonStub[] = [];
-        afterEach(() => {
-            // clean up any stubs after the test has completed
-            _.each(stubs, s => s.restore());
-            stubs = [];
-        });
         it('calculates the order hash', async () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3.currentProvider);
 
-            stubs = [
-                Sinon.stub((zeroEx as any), '_getExchangeAddressAsync')
-                    .returns(Promise.resolve(exchangeContractAddress)),
-            ];
-
-            const orderHash = await zeroEx.getOrderHashHexAsync(order);
+            const orderHash = zeroEx.getOrderHashHex(order);
             expect(orderHash).to.be.equal(expectedOrderHash);
         });
     });

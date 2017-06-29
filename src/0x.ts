@@ -176,7 +176,7 @@ export class ZeroEx {
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
      * @return  The resulting orderHash from hashing the supplied order.
      */
-    public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
+    public getOrderHashHex(order: Order|SignedOrder): string {
         assert.doesConformToSchema('order', order, orderSchema);
         const orderHashHex = utils.getOrderHashHex(order, order.exchangeContractAddress);
         return orderHashHex;
