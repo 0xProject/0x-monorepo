@@ -609,9 +609,12 @@ export class ExchangeWrapper extends ContractWrapper {
         if (_.isUndefined(networkId)) {
             return [];
         } else {
+            const exchangeArtifacts = _.values(ExchangeArtifactsByName);
+            const networkSpecificExchangeArtifacts = _.compact(_.map(
+                exchangeArtifacts, exchangeArtifact => exchangeArtifact.networks[networkId]));
             const exchangeAddresses = _.map(
-                _.values(ExchangeArtifactsByName),
-                exchangeArtifact => exchangeArtifact.networks[networkId].address,
+                networkSpecificExchangeArtifacts,
+                networkSpecificExchangeArtifact => networkSpecificExchangeArtifact.address,
             );
             return exchangeAddresses;
         }
