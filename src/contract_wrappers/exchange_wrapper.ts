@@ -413,6 +413,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
                                       takerAddress: string): Promise<void> {
+        assert.doesConformToSchema('orderFillOrKillRequests', orderFillOrKillRequests, orderFillOrKillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillOrKillRequests,
             orderFillOrKillRequest => orderFillOrKillRequest.signedOrder.exchangeContractAddress,
@@ -420,7 +421,6 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
                                        ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        assert.doesConformToSchema('orderFillOrKillRequests', orderFillOrKillRequests, orderFillOrKillRequestsSchema);
         if (_.isEmpty(orderFillOrKillRequests)) {
             return; // no-op
         }
