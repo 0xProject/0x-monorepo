@@ -611,7 +611,7 @@ export class ExchangeWrapper extends ContractWrapper {
         } else {
             const exchangeAddresses = _.map(
                 _.values(ExchangeArtifactsByName),
-                exchangeArfifact => exchangeArfifact.networks[networkId].address,
+                exchangeArtifact => exchangeArtifact.networks[networkId].address,
             );
             return exchangeAddresses;
         }
