@@ -16,7 +16,7 @@ describe('ZeroEx library', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             const web3 = web3Factory.create();
             const zeroEx = new ZeroEx(web3.currentProvider);
-            const [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressedAsync();
+            const [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressesAsync();
             // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any)._getExchangeContractAsync(exchangeContractAddress);
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
@@ -55,7 +55,7 @@ describe('ZeroEx library', () => {
         const zeroEx = new ZeroEx(web3.currentProvider);
         let exchangeContractAddress: string;
         before(async () => {
-            [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressedAsync();
+            [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressesAsync();
         });
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
             expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();

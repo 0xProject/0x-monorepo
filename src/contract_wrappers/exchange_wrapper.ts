@@ -604,7 +604,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * on the network that the provided web3 instance is connected to
      * @return  The ethereum addresses of all available exchange contract.
      */
-    public async getAvailableContractAddressedAsync(): Promise<string[]> {
+    public async getAvailableContractAddressesAsync(): Promise<string[]> {
         const networkId = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         if (_.isUndefined(networkId)) {
             return [];
