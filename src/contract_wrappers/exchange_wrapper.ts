@@ -517,6 +517,8 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     @decorators.contractCallErrorHandler
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
+        assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
+                                   orderCancellationRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderCancellationRequests,
             orderCancellationRequest => orderCancellationRequest.order.exchangeContractAddress,
@@ -527,8 +529,6 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
-        assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
-                                   orderCancellationRequestsSchema);
         for (const cancellationRequest of orderCancellationRequests) {
             await this._validateCancelOrderAndThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
