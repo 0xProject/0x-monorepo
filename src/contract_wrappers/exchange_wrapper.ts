@@ -817,7 +817,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 return exchangeArtifact;
             }
         }
-        throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
+        throw new Error(ZeroExError.EXCHANGE_CONTRACT_DOES_NOT_EXIST);
     }
     private async _getZRXTokenAddressAsync(exchangeContractAddress: string): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddress);

@@ -12,6 +12,7 @@ function strEnum(values: string[]): {[key: string]: string} {
 
 export const ZeroExError = strEnum([
     'CONTRACT_DOES_NOT_EXIST',
+    'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
     'UNHANDLED_ERROR',
     'USER_HAS_NO_ASSOCIATED_ADDRESSES',
     'INVALID_SIGNATURE',
