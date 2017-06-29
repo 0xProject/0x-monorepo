@@ -32,6 +32,7 @@ import {
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
+import {ProxyWrapper} from './proxy_wrapper';
 import {ExchangeArtifactsByName} from '../exchange_artifacts_by_name';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {signedOrdersSchema} from '../schemas/signed_orders_schema';
@@ -59,6 +60,7 @@ export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractByAddress: ExchangeContractByAddress;
     private _exchangeLogEventEmitters: ContractEventEmitter[];
     private _tokenWrapper: TokenWrapper;
+    private _proxyWrapper: ProxyWrapper;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
             order.maker,
@@ -77,9 +79,10 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
+    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, proxyWrapper: ProxyWrapper) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
+        this._proxyWrapper = proxyWrapper;
         this._exchangeLogEventEmitters = [];
         this._exchangeContractByAddress = {};
     }
