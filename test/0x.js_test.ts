@@ -132,14 +132,14 @@ describe('ZeroEx library', () => {
     });
     describe('#getOrderHashHex', () => {
         const expectedOrderHash = '0x39da987067a3c9e5f1617694f1301326ba8c8b0498ebef5df4863bed394e3c83';
-        const exchangeContractAddress = '0xb69e673309512a9d726f87304c6984054f87a93b';
+        const fakeExchangeContractAddress = '0xb69e673309512a9d726f87304c6984054f87a93b';
         const order: Order = {
             maker: constants.NULL_ADDRESS,
             taker: constants.NULL_ADDRESS,
             feeRecipient: constants.NULL_ADDRESS,
             makerTokenAddress: constants.NULL_ADDRESS,
             takerTokenAddress: constants.NULL_ADDRESS,
-            exchangeContractAddress,
+            exchangeContractAddress: fakeExchangeContractAddress,
             salt: new BigNumber(0),
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
