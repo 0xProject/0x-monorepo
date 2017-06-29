@@ -148,6 +148,12 @@ export interface EtherTokenContract extends ContractInstance {
     withdraw: (amount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<void>;
 }
 
+export interface ProxyContract extends ContractInstance {
+    authrized: {
+        call: (address: string) => Promise<boolean>;
+    };
+}
+
 export const SolidityTypes = strEnum([
     'address',
     'uint256',
