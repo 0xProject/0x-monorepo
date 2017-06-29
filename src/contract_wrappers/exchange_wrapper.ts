@@ -809,11 +809,11 @@ export class ExchangeWrapper extends ContractWrapper {
     private _getExchangeArtifactsByAddressOrThrow(exchangeContractAddress: string): ContractArtifact {
         const exchangeArtifacts = _.values<ContractArtifact>(ExchangeArtifactsByName);
         for (const exchangeArtifact of exchangeArtifacts) {
-            const exchangeAddressesInAftifact = _.map(
+            const exchangeAddressesInArtifact = _.map(
                 _.values(exchangeArtifact.networks),
                 artifactsByNetwork => artifactsByNetwork.address,
             );
-            if (_.includes(exchangeAddressesInAftifact, exchangeContractAddress)) {
+            if (_.includes(exchangeAddressesInArtifact, exchangeContractAddress)) {
                 return exchangeArtifact;
             }
         }
