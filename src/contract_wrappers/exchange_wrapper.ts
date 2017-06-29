@@ -295,6 +295,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+        assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillRequests,
             orderFillRequest => orderFillRequest.signedOrder.exchangeContractAddress,
@@ -303,7 +304,6 @@ export class ExchangeWrapper extends ContractWrapper {
                                        ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
         for (const orderFillRequest of orderFillRequests) {
             await this._validateFillOrderAndThrowIfInvalidAsync(
                 orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
