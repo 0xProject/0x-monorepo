@@ -821,6 +821,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     private async _getZRXTokenAddressAsync(exchangeContractAddress: string): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddress);
-        return exchangeInstance.ZRX.call();
+        const ZRXtokenAddress = exchangeInstance.ZRX.call();
+        return ZRXtokenAddress;
     }
 }
