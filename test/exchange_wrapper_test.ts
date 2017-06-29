@@ -23,6 +23,7 @@ import {DoneCallback} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 import {assert} from '../src/utils/assert';
+import {ProxyWrapper} from '../src/contract_wrappers/proxy_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -817,6 +818,17 @@ describe('ExchangeWrapper', () => {
             _.map(exchangeAddresses, exchangeAddress => {
                 assert.isETHAddressHex('exchangeAddress', exchangeAddress);
             });
+        });
+    });
+    describe('#getProxyAuthorizedContractAddressesAsync', () => {
+        it('returns the Proxy authorized exchange contract addresses', async () => {
+            const exchangeAddresses = await zeroEx.exchange.getProxyAuthorizedContractAddressesAsync();
+            for (const exchangeAddress of exchangeAddresses) {
+                assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+                const proxyWrapper = (zeroEx as any)._proxyWrapper as ProxyWrapper;
+                const isAuthorized = await proxyWrapper.isAuthorizedAsync(exchangeAddress);
+                expect(isAuthorized).to.be.true();
+            }
         });
     });
 });
