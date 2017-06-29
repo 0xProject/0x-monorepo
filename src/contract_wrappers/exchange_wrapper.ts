@@ -623,6 +623,18 @@ export class ExchangeWrapper extends ContractWrapper {
         }
     }
     /**
+     * Returns the ethereum addresses of all available exchange contracts
+     * on the network that the provided web3 instance is connected to
+     * that are currently authorized on the Proxy contract
+     * @return  The ethereum addresses of all available and authorized exchange contract.
+     */
+    public async getProxyAuthorizedContractAddressesAsync(): Promise<string[]> {
+        const exchangeContractAddresses = await this.getAvailableContractAddressesAsync();
+        const proxyAuthorizedExchangeContractAddresses = _.filter(
+            exchangeContractAddresses, this._isExchangeContractAddressProxyAuthrizedAsync.bind(this));
+        return proxyAuthorizedExchangeContractAddresses;
+    }
+    /**
      * Stops watching for all exchange events
      */
     public async stopWatchingAllEventsAsync(): Promise<void> {
@@ -630,6 +642,10 @@ export class ExchangeWrapper extends ContractWrapper {
                                            logEventObj => logEventObj.stopWatchingAsync());
         await Promise.all(stopWatchingPromises);
         this._exchangeLogEventEmitters = [];
+    }
+    private async _isExchangeContractAddressProxyAuthrizedAsync(exchangeContractAddress: string): Promise<boolean> {
+        const isAuthorized = await this._proxyWrapper.isAuthorizedAsync(exchangeContractAddress);
+        return isAuthorized;
     }
     private _wrapEventEmitter(event: ContractEventObj): ContractEventEmitter {
         const zeroExEvent = {
