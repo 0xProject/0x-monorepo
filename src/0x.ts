@@ -52,7 +52,7 @@ export class ZeroEx {
      * wrapped ETH ERC20 token smart contract.
      */
     public etherToken: EtherTokenWrapper;
-    private _proxy: ProxyWrapper;
+    private _proxyWrapper: ProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
@@ -150,8 +150,8 @@ export class ZeroEx {
     constructor(provider: Web3Provider) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this.token = new TokenWrapper(this._web3Wrapper);
-        this._proxy = new ProxyWrapper(this._web3Wrapper);
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, this._proxy);
+        this._proxyWrapper = new ProxyWrapper(this._web3Wrapper);
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, this._proxyWrapper);
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
     }
@@ -165,7 +165,7 @@ export class ZeroEx {
         await this.exchange.invalidateContractInstanceAsync();
         this.tokenRegistry.invalidateContractInstance();
         this.token.invalidateContractInstances();
-        this._proxy.invalidateContractInstance();
+        this._proxyWrapper.invalidateContractInstance();
     }
     /**
      * Get user Ethereum addresses available through the supplied web3 instance available for sending transactions.
