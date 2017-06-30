@@ -833,9 +833,10 @@ export class ExchangeWrapper extends ContractWrapper {
     private _getExchangeArtifactsByAddressOrThrow(exchangeContractAddress: string): ContractArtifact {
         const exchangeArtifacts = _.values<ContractArtifact>(ExchangeArtifactsByName);
         for (const exchangeArtifact of exchangeArtifacts) {
+            const networkSpecificExchangeArtifactValues = _.values(exchangeArtifact.networks);
             const exchangeAddressesInArtifact = _.map(
-                _.values(exchangeArtifact.networks),
-                artifactsByNetwork => artifactsByNetwork.address,
+                networkSpecificExchangeArtifactValues,
+                networkSpecificExchangeArtifact => networkSpecificExchangeArtifact.address,
             );
             if (_.includes(exchangeAddressesInArtifact, exchangeContractAddress)) {
                 return exchangeArtifact;
