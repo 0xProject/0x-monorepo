@@ -9,9 +9,6 @@ import {ProxyContract} from '../types';
  */
 export class ProxyWrapper extends ContractWrapper {
     private _proxyContractIfExists?: ProxyContract;
-    constructor(web3Wrapper: Web3Wrapper) {
-        super(web3Wrapper);
-    }
     public invalidateContractInstance(): void {
         delete this._proxyContractIfExists;
     }
