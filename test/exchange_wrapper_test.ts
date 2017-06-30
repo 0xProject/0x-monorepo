@@ -812,7 +812,7 @@ describe('ExchangeWrapper', () => {
             expect(orderHash).to.equal(orderHashFromContract);
         });
     });
-    describe('#getAvailableContractAddressedAsync', () => {
+    describe('#getAvailableContractAddressesAsync', () => {
         it('returns the exchange contract addresses', async () => {
             const exchangeAddresses = await zeroEx.exchange.getAvailableContractAddressesAsync();
             _.map(exchangeAddresses, exchangeAddress => {
