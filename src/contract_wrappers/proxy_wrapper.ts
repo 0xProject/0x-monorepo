@@ -5,7 +5,7 @@ import * as ProxyArtifacts from '../artifacts/Proxy.json';
 import {ProxyContract} from '../types';
 
 /**
- * This class includes the functionality related to interacting with Proxy contract.
+ * This class includes the functionality related to interacting with the Proxy contract.
  */
 export class ProxyWrapper extends ContractWrapper {
     private _proxyContractIfExists?: ProxyContract;
