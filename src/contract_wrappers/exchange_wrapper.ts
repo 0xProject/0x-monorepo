@@ -630,8 +630,13 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async getProxyAuthorizedContractAddressesAsync(): Promise<string[]> {
         const exchangeContractAddresses = await this.getAvailableContractAddressesAsync();
-        const proxyAuthorizedExchangeContractAddresses = _.filter(
-            exchangeContractAddresses, this._isExchangeContractAddressProxyAuthrizedAsync.bind(this));
+        const proxyAuthorizedExchangeContractAddresses = [];
+        for (const exchangeContractAddress of exchangeContractAddresses) {
+            const isProxyAuthorized = await this._isExchangeContractAddressProxyAuthrizedAsync(exchangeContractAddress);
+            if (isProxyAuthorized) {
+                proxyAuthorizedExchangeContractAddresses.push(exchangeContractAddress);
+            }
+        }
         return proxyAuthorizedExchangeContractAddresses;
     }
     /**
