@@ -15,7 +15,7 @@ export class ProxyWrapper extends ContractWrapper {
     /**
      * Check if the Exchange contract address is authorized within the Proxy contract.
      * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to use.
-     * @return  If the exchangeContractAddress is authorized.
+     * @return  Whether the exchangeContractAddress is authorized.
      */
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         const proxyContractInstance = await this._getTokenRegistryContractAsync();
