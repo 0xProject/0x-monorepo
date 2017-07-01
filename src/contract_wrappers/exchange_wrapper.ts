@@ -25,6 +25,8 @@ import {
     LogErrorContractEventArgs,
     LogFillContractEventArgs,
     LogCancelContractEventArgs,
+    EventCallback,
+    ContractEventArg,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -583,13 +585,29 @@ export class ExchangeWrapper extends ContractWrapper {
         this._exchangeLogEventEmitters = [];
     }
     private _wrapEventEmitter(event: ContractEventObj): ContractEventEmitter {
+        const watch = (eventCallback: EventCallback) => {
+            const bignumberWrappingEventCallback = this._wrapEventCallback(eventCallback);
+            event.watch(bignumberWrappingEventCallback);
+        };
         const zeroExEvent = {
-            watch: event.watch.bind(event),
+            watch,
             stopWatchingAsync: async () => {
                 await promisify(event.stopWatching, event)();
             },
         };
         return zeroExEvent;
+    }
+    private _wrapEventCallback(eventCallback: EventCallback): EventCallback {
+        const bignumberWrappingEventCallback = (err: Error, event: ContractEvent) => {
+            if (_.isNull(err)) {
+                const wrapIfBigNumber = (value: ContractEventArg): ContractEventArg => {
+                    return value instanceof String ? value : new BigNumber(value);
+                };
+                event.args = _.mapValues(event.args, wrapIfBigNumber);
+            }
+            eventCallback(err, event);
+        };
+        return bignumberWrappingEventCallback;
     }
     private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
                                                           signerAddressHex: string): Promise<boolean> {

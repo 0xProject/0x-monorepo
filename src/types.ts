@@ -229,6 +229,7 @@ export interface LogErrorContractEventArgs {
     orderHash: string;
 }
 export type ContractEventArgs = LogFillContractEventArgs|LogCancelContractEventArgs|LogErrorContractEventArgs;
+export type ContractEventArg = string|BigNumber.BigNumber;
 
 export interface Order {
     maker: string;
