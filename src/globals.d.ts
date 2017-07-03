@@ -7,10 +7,6 @@ declare module 'request-promise-native';
 declare module 'web3-provider-engine';
 declare module 'web3-provider-engine/subproviders/rpc';
 
-declare interface Schema {
-    id: string;
-}
-
 // HACK: In order to merge the bignumber declaration added by chai-bignumber to the chai Assertion
 // interface we must use `namespace` as the Chai definitelyTyped definition does. Since we otherwise
 // disallow `namespace`, we disable tslint for the following.

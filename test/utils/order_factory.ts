@@ -13,6 +13,7 @@ export const orderFactory = {
         makerTokenAddress: string,
         takerTokenAmount: BigNumber.BigNumber,
         takerTokenAddress: string,
+        exchangeContractAddress: string,
         feeRecipient: string,
         expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
         const defaultExpirationUnixTimestampSec = new BigNumber(2524604400); // Close to infinite
@@ -29,10 +30,11 @@ export const orderFactory = {
             makerTokenAddress,
             takerTokenAddress,
             salt: ZeroEx.generatePseudoRandomSalt(),
+            exchangeContractAddress,
             feeRecipient,
             expirationUnixTimestampSec,
         };
-        const orderHash = await zeroEx.getOrderHashHexAsync(order);
+        const orderHash = zeroEx.getOrderHashHex(order);
         const ecSignature = await zeroEx.signOrderHashAsync(orderHash, maker);
         const signedOrder: SignedOrder = _.assign(order, {ecSignature});
         return signedOrder;

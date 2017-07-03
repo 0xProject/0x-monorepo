@@ -8,6 +8,7 @@ import {
     ExchangeContract,
     ExchangeContractErrCodes,
     ExchangeContractErrs,
+    ZeroExError,
     OrderValues,
     OrderAddresses,
     Order,
@@ -28,11 +29,14 @@ import {
     LogCancelContractEventArgs,
     EventCallback,
     ContractEventArg,
+    ExchangeContractByAddress,
+    ContractArtifact,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
 import {ContractWrapper} from './contract_wrapper';
-import * as ExchangeArtifacts from '../artifacts/Exchange.json';
+import {ProxyWrapper} from './proxy_wrapper';
+import {ExchangeArtifactsByName} from '../exchange_artifacts_by_name';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {signedOrdersSchema} from '../schemas/signed_orders_schema';
 import {orderFillRequestsSchema} from '../schemas/order_fill_requests_schema';
@@ -56,9 +60,10 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR,
         [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FILL_BALANCE_ALLOWANCE_ERROR,
     };
-    private _exchangeContractIfExists?: ExchangeContract;
+    private _exchangeContractByAddress: ExchangeContractByAddress;
     private _exchangeLogEventEmitters: ContractEventEmitter[];
     private _tokenWrapper: TokenWrapper;
+    private _proxyWrapper: ProxyWrapper;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
             order.maker,
@@ -77,27 +82,31 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
+    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, proxyWrapper: ProxyWrapper) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
+        this._proxyWrapper = proxyWrapper;
         this._exchangeLogEventEmitters = [];
+        this._exchangeContractByAddress = {};
     }
-    public async invalidateContractInstanceAsync(): Promise<void> {
+    public async invalidateContractInstancesAsync(): Promise<void> {
         await this.stopWatchingAllEventsAsync();
-        delete this._exchangeContractIfExists;
+        this._exchangeContractByAddress = {};
     }
     /**
      * Returns the unavailable takerAmount of an order. Unavailable amount is defined as the total
      * amount that has been filled or cancelled. The remaining takerAmount can be calculated by
      * subtracting the unavailable amount from the total order takerAmount.
-     * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the
-     *                       unavailable takerAmount.
+     * @param   orderHash               The hex encoded orderHash for which you would like to retrieve the
+     *                                  unavailable takerAmount.
+     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to use.
      * @return  The amount of the order (in taker tokens) that has either been filled or canceled.
      */
-    public async getUnavailableTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+    public async getUnavailableTakerAmountAsync(orderHash: string,
+                                                exchangeContractAddress: string): Promise<BigNumber.BigNumber> {
         assert.isValidOrderHash('orderHash', orderHash);
 
-        const exchangeContract = await this._getExchangeContractAsync();
+        const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
         let unavailableAmountInBaseUnits = await exchangeContract.getUnavailableValueT.call(orderHash);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         unavailableAmountInBaseUnits = new BigNumber(unavailableAmountInBaseUnits);
@@ -106,12 +115,14 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Retrieve the takerAmount of an order that has already been filled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
+     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to use.
      * @return  The amount of the order (in taker tokens) that has already been filled.
      */
-    public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+    public async getFilledTakerAmountAsync(orderHash: string,
+                                           exchangeContractAddress: string): Promise<BigNumber.BigNumber> {
         assert.isValidOrderHash('orderHash', orderHash);
 
-        const exchangeContract = await this._getExchangeContractAsync();
+        const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
         let fillAmountInBaseUnits = await exchangeContract.filled.call(orderHash);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         fillAmountInBaseUnits = new BigNumber(fillAmountInBaseUnits);
@@ -121,12 +132,14 @@ export class ExchangeWrapper extends ContractWrapper {
      * Retrieve the takerAmount of an order that has been cancelled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the
      *                       cancelled takerAmount.
+     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to use.
      * @return  The amount of the order (in taker tokens) that has been cancelled.
      */
-    public async getCanceledTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+    public async getCanceledTakerAmountAsync(orderHash: string,
+                                             exchangeContractAddress: string): Promise<BigNumber.BigNumber> {
         assert.isValidOrderHash('orderHash', orderHash);
 
-        const exchangeContract = await this._getExchangeContractAsync();
+        const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
         let cancelledAmountInBaseUnits = await exchangeContract.cancelled.call(orderHash);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         cancelledAmountInBaseUnits = new BigNumber(cancelledAmountInBaseUnits);
@@ -155,7 +168,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(signedOrder.exchangeContractAddress);
         await this._validateFillOrderAndThrowIfInvalidAsync(signedOrder, takerTokenFillAmount, takerAddress);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
@@ -208,12 +221,15 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<BigNumber.BigNumber> {
+        assert.doesConformToSchema('signedOrders', signedOrders, signedOrdersSchema);
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
-                                        ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
+                                       ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
+        const exchangeContractAddresses = _.map(signedOrders, signedOrder => signedOrder.exchangeContractAddress);
+        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
+                                       ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
-        assert.doesConformToSchema('signedOrders', signedOrders, signedOrdersSchema);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         for (const signedOrder of signedOrders) {
             await this._validateFillOrderAndThrowIfInvalidAsync(
@@ -236,7 +252,7 @@ export class ExchangeWrapper extends ContractWrapper {
             orderAddressesValuesAndSignatureArray,
         );
 
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddresses[0]);
         const gas = await exchangeInstance.fillUpTo.estimateGas(
             orderAddressesArray,
             orderValuesArray,
@@ -285,9 +301,15 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+        assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
+        const exchangeContractAddresses = _.map(
+            orderFillRequests,
+            orderFillRequest => orderFillRequest.signedOrder.exchangeContractAddress,
+        );
+        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
+                                       ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
         assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
         for (const orderFillRequest of orderFillRequests) {
             await this._validateFillOrderAndThrowIfInvalidAsync(
                 orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
@@ -310,7 +332,7 @@ export class ExchangeWrapper extends ContractWrapper {
             orderAddressesValuesAmountsAndSignatureArray,
         );
 
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddresses[0]);
         const gas = await exchangeInstance.batchFill.estimateGas(
             orderAddressesArray,
             orderValuesArray,
@@ -354,7 +376,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(signedOrder.exchangeContractAddress);
         await this._validateFillOrderAndThrowIfInvalidAsync(signedOrder, takerTokenFillAmount, takerAddress);
 
         await this._validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder, exchangeInstance.address,
@@ -397,9 +419,18 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
                                       takerAddress: string): Promise<void> {
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         assert.doesConformToSchema('orderFillOrKillRequests', orderFillOrKillRequests, orderFillOrKillRequestsSchema);
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeContractAddresses = _.map(
+            orderFillOrKillRequests,
+            orderFillOrKillRequest => orderFillOrKillRequest.signedOrder.exchangeContractAddress,
+        );
+        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
+                                       ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        if (_.isEmpty(orderFillOrKillRequests)) {
+            return; // no-op
+        }
+        const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddresses[0]);
         for (const request of orderFillOrKillRequests) {
             await this._validateFillOrKillOrderAndThrowIfInvalidAsync(request.signedOrder, exchangeInstance.address,
                                                                      request.fillTakerAmount);
@@ -458,7 +489,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
 
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(order.exchangeContractAddress);
         await this._validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
@@ -492,12 +523,18 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     @decorators.contractCallErrorHandler
     public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
+        assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
+                                   orderCancellationRequestsSchema);
+        const exchangeContractAddresses = _.map(
+            orderCancellationRequests,
+            orderCancellationRequest => orderCancellationRequest.order.exchangeContractAddress,
+        );
+        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
+                                       ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
-        assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
-                                   orderCancellationRequestsSchema);
         for (const cancellationRequest of orderCancellationRequests) {
             await this._validateCancelOrderAndThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
@@ -506,7 +543,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (_.isEmpty(orderCancellationRequests)) {
             return; // no-op
         }
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddresses[0]);
         const orderAddressesValuesAndTakerTokenCancelAmounts = _.map(orderCancellationRequests, cancellationRequest => {
             return [
                 ...ExchangeWrapper._getOrderAddressesAndValues(cancellationRequest.order),
@@ -537,16 +574,17 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Subscribe to an event type emitted by the Exchange smart contract
-     * @param   eventName           The exchange contract event you would like to subscribe to.
-     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param   eventName               The exchange contract event you would like to subscribe to.
+     * @param   subscriptionOpts        Subscriptions options that let you configure the subscription.
+     * @param   indexFilterValues       An object where the keys are indexed args returned by the event and
+     *                                  the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to use.
      * @return                      ContractEventEmitter object
      */
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
-                                indexFilterValues: IndexedFilterValues):
+                                indexFilterValues: IndexedFilterValues, exchangeContractAddress: string):
                                 Promise<ContractEventEmitter> {
-        const exchangeContract = await this._getExchangeContractAsync();
+        const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
         let createLogEvent: CreateContractEvent;
         switch (eventName) {
             case ExchangeEvents.LogFill:
@@ -568,13 +606,41 @@ export class ExchangeWrapper extends ContractWrapper {
         return eventEmitter;
     }
     /**
-     * Returns the ethereum address of the current exchange contract
+     * Returns the ethereum addresses of all available exchange contracts
      * on the network that the provided web3 instance is connected to
-     * @return  The ethereum address of the current exchange contract.
+     * @return  The ethereum addresses of all available exchange contracts.
      */
-    public async getContractAddressAsync(): Promise<string> {
-       const exchangeContract = await this._getExchangeContractAsync();
-       return exchangeContract.address;
+    public async getAvailableContractAddressesAsync(): Promise<string[]> {
+        const networkId = await this._web3Wrapper.getNetworkIdIfExistsAsync();
+        if (_.isUndefined(networkId)) {
+            return [];
+        } else {
+            const exchangeArtifacts = _.values(ExchangeArtifactsByName);
+            const networkSpecificExchangeArtifacts = _.compact(_.map(
+                exchangeArtifacts, exchangeArtifact => exchangeArtifact.networks[networkId]));
+            const exchangeAddresses = _.map(
+                networkSpecificExchangeArtifacts,
+                networkSpecificExchangeArtifact => networkSpecificExchangeArtifact.address,
+            );
+            return exchangeAddresses;
+        }
+    }
+    /**
+     * Returns the ethereum addresses of all available exchange contracts
+     * on the network that the provided web3 instance is connected to
+     * that are currently authorized on the Proxy contract
+     * @return  The ethereum addresses of all available and authorized exchange contract.
+     */
+    public async getProxyAuthorizedContractAddressesAsync(): Promise<string[]> {
+        const exchangeContractAddresses = await this.getAvailableContractAddressesAsync();
+        const proxyAuthorizedExchangeContractAddresses = [];
+        for (const exchangeContractAddress of exchangeContractAddresses) {
+            const isAuthorized = await this._isExchangeContractAddressProxyAuthorizedAsync(exchangeContractAddress);
+            if (isAuthorized) {
+                proxyAuthorizedExchangeContractAddresses.push(exchangeContractAddress);
+            }
+        }
+        return proxyAuthorizedExchangeContractAddresses;
     }
     /**
      * Stops watching for all exchange events
@@ -584,6 +650,10 @@ export class ExchangeWrapper extends ContractWrapper {
                                            logEventObj => logEventObj.stopWatchingAsync());
         await Promise.all(stopWatchingPromises);
         this._exchangeLogEventEmitters = [];
+    }
+    private async _isExchangeContractAddressProxyAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
+        const isAuthorized = await this._proxyWrapper.isAuthorizedAsync(exchangeContractAddress);
+        return isAuthorized;
     }
     private _wrapEventEmitter(event: ContractEventObj): ContractEventEmitter {
         const watch = (eventCallback: EventCallback) => {
@@ -617,12 +687,13 @@ export class ExchangeWrapper extends ContractWrapper {
         return bignumberWrappingEventCallback;
     }
     private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
-                                                          signerAddressHex: string): Promise<boolean> {
+                                                          signerAddressHex: string,
+                                                          exchangeContractAddress: string): Promise<boolean> {
         assert.isHexString('dataHex', dataHex);
         assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddress);
 
         const isValidSignature = await exchangeInstance.isValidSignature.call(
             signerAddressHex,
@@ -633,13 +704,8 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return isValidSignature;
     }
-    private async _getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const orderHashHex = utils.getOrderHashHex(order, exchangeInstance.address);
-        return orderHashHex;
-    }
     private async _getOrderHashHexUsingContractCallAsync(order: Order|SignedOrder): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(order.exchangeContractAddress);
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
         const orderHashHex = await exchangeInstance.getOrderHash.call(orderAddresses, orderValues);
         return orderHashHex;
@@ -657,12 +723,13 @@ export class ExchangeWrapper extends ContractWrapper {
         if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.ORDER_FILL_EXPIRED);
         }
-        const zrxTokenAddress = await this._getZRXTokenAddressAsync();
+        const zrxTokenAddress = await this._getZRXTokenAddressAsync(signedOrder.exchangeContractAddress);
         await this._validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder, fillTakerAmount,
                                                                senderAddress, zrxTokenAddress);
 
         const wouldRoundingErrorOccur = await this._isRoundingErrorAsync(
             signedOrder.takerTokenAmount, fillTakerAmount, signedOrder.makerTokenAmount,
+            signedOrder.exchangeContractAddress,
         );
         if (wouldRoundingErrorOccur) {
             throw new Error(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
@@ -673,8 +740,8 @@ export class ExchangeWrapper extends ContractWrapper {
         if (takerTokenCancelAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
         }
-        const orderHash = await this._getOrderHashHexAsync(order);
-        const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash);
+        const orderHash = utils.getOrderHashHex(order);
+        const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash, order.exchangeContractAddress);
         if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
         }
@@ -684,11 +751,11 @@ export class ExchangeWrapper extends ContractWrapper {
         }
     }
     private async _validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
-                                                                 exchangeAddress: string,
+                                                                 exchangeContractAddress: string,
                                                                  fillTakerAmount: BigNumber.BigNumber) {
         // Check that fillValue available >= fillTakerAmount
-        const orderHashHex = utils.getOrderHashHex(signedOrder, exchangeAddress);
-        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
+        const orderHashHex = utils.getOrderHashHex(signedOrder);
+        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex, exchangeContractAddress);
         const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
         if (remainingTakerAmount < fillTakerAmount) {
             throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
@@ -765,24 +832,41 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     private async _isRoundingErrorAsync(takerTokenAmount: BigNumber.BigNumber,
                                         fillTakerAmount: BigNumber.BigNumber,
-                                        makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
+                                        makerTokenAmount: BigNumber.BigNumber,
+                                        exchangeContractAddress: string): Promise<boolean> {
         await assert.isUserAddressAvailableAsync(this._web3Wrapper);
-        const exchangeInstance = await this._getExchangeContractAsync();
+        const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddress);
         const isRoundingError = await exchangeInstance.isRoundingError.call(
             takerTokenAmount, fillTakerAmount, makerTokenAmount,
         );
         return isRoundingError;
     }
-    private async _getExchangeContractAsync(): Promise<ExchangeContract> {
-        if (!_.isUndefined(this._exchangeContractIfExists)) {
-            return this._exchangeContractIfExists;
+    private async _getExchangeContractAsync(exchangeContractAddress: string): Promise<ExchangeContract> {
+        if (!_.isUndefined(this._exchangeContractByAddress[exchangeContractAddress])) {
+            return this._exchangeContractByAddress[exchangeContractAddress];
         }
+        const ExchangeArtifacts = this._getExchangeArtifactsByAddressOrThrow(exchangeContractAddress);
         const contractInstance = await this._instantiateContractIfExistsAsync((ExchangeArtifacts as any));
-        this._exchangeContractIfExists = contractInstance as ExchangeContract;
-        return this._exchangeContractIfExists;
+        this._exchangeContractByAddress[exchangeContractAddress] = contractInstance as ExchangeContract;
+        return this._exchangeContractByAddress[exchangeContractAddress];
     }
-    private async _getZRXTokenAddressAsync(): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        return exchangeInstance.ZRX.call();
+    private _getExchangeArtifactsByAddressOrThrow(exchangeContractAddress: string): ContractArtifact {
+        const exchangeArtifacts = _.values<ContractArtifact>(ExchangeArtifactsByName);
+        for (const exchangeArtifact of exchangeArtifacts) {
+            const networkSpecificExchangeArtifactValues = _.values(exchangeArtifact.networks);
+            const exchangeAddressesInArtifact = _.map(
+                networkSpecificExchangeArtifactValues,
+                networkSpecificExchangeArtifact => networkSpecificExchangeArtifact.address,
+            );
+            if (_.includes(exchangeAddressesInArtifact, exchangeContractAddress)) {
+                return exchangeArtifact;
+            }
+        }
+        throw new Error(ZeroExError.EXCHANGE_CONTRACT_DOES_NOT_EXIST);
+    }
+    private async _getZRXTokenAddressAsync(exchangeContractAddress: string): Promise<string> {
+        const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddress);
+        const ZRXtokenAddress = await exchangeInstance.ZRX.call();
+        return ZRXtokenAddress;
     }
 }

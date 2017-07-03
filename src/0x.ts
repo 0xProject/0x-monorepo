@@ -15,8 +15,8 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
+import {ProxyWrapper} from './contract_wrappers/proxy_wrapper';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
-import * as ExchangeArtifacts from './artifacts/Exchange.json';
 import {orderSchema} from './schemas/order_schemas';
 
 // Customize our BigNumber instances
@@ -52,6 +52,7 @@ export class ZeroEx {
      * wrapped ETH ERC20 token smart contract.
      */
     public etherToken: EtherTokenWrapper;
+    private _proxyWrapper: ProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
@@ -149,7 +150,8 @@ export class ZeroEx {
     constructor(provider: Web3Provider) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this.token = new TokenWrapper(this._web3Wrapper);
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
+        this._proxyWrapper = new ProxyWrapper(this._web3Wrapper);
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, this._proxyWrapper);
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
     }
@@ -160,9 +162,10 @@ export class ZeroEx {
      */
     public async setProviderAsync(provider: Web3Provider) {
         this._web3Wrapper.setProvider(provider);
-        await this.exchange.invalidateContractInstanceAsync();
+        await this.exchange.invalidateContractInstancesAsync();
         this.tokenRegistry.invalidateContractInstance();
         this.token.invalidateContractInstances();
+        this._proxyWrapper.invalidateContractInstance();
     }
     /**
      * Get user Ethereum addresses available through the supplied web3 instance available for sending transactions.
@@ -177,11 +180,9 @@ export class ZeroEx {
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
      * @return  The resulting orderHash from hashing the supplied order.
      */
-    public async getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
+    public getOrderHashHex(order: Order|SignedOrder): string {
         assert.doesConformToSchema('order', order, orderSchema);
-
-        const exchangeContractAddr = await this._getExchangeAddressAsync();
-        const orderHashHex = utils.getOrderHashHex(order, exchangeContractAddr);
+        const orderHashHex = utils.getOrderHashHex(order);
         return orderHashHex;
     }
     /**
@@ -199,8 +200,9 @@ export class ZeroEx {
         let msgHashHex;
         const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
         const isParityNode = utils.isParityNode(nodeVersion);
-        if (isParityNode) {
-            // Parity node adds the personalMessage prefix itself
+        const isTestRpc = utils.isTestRpc(nodeVersion);
+        if (isParityNode || isTestRpc) {
+            // Parity and TestRpc nodes add the personalMessage prefix itself
             msgHashHex = orderHash;
         } else {
             const orderHashBuff = ethUtil.toBuffer(orderHash);
@@ -243,16 +245,5 @@ export class ZeroEx {
             throw new Error(ZeroExError.INVALID_SIGNATURE);
         }
         return ecSignature;
-    }
-    private async _getExchangeAddressAsync() {
-        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const exchangeNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
-                                       undefined :
-                                       (ExchangeArtifacts as any).networks[networkIdIfExists];
-        if (_.isUndefined(exchangeNetworkConfigsIfExists)) {
-            throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
-        }
-        const exchangeAddress = exchangeNetworkConfigsIfExists.address;
-        return exchangeAddress;
     }
 }

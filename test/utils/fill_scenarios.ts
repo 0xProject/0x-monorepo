@@ -9,12 +9,15 @@ export class FillScenarios {
     private tokens: Token[];
     private coinbase: string;
     private zrxTokenAddress: string;
-    constructor(zeroEx: ZeroEx, userAddresses: string[], tokens: Token[], zrxTokenAddress: string) {
+    private exchangeContractAddress: string;
+    constructor(zeroEx: ZeroEx, userAddresses: string[],
+                tokens: Token[], zrxTokenAddress: string, exchangeContractAddress: string) {
         this.zeroEx = zeroEx;
         this.userAddresses = userAddresses;
         this.tokens = tokens;
         this.coinbase = userAddresses[0];
         this.zrxTokenAddress = zrxTokenAddress;
+        this.exchangeContractAddress = exchangeContractAddress;
     }
     public async createFillableSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
                                                 makerAddress: string, takerAddress: string,
@@ -103,7 +106,7 @@ export class FillScenarios {
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx,
             makerAddress, takerAddress, makerFee, takerFee,
             makerFillableAmount, makerTokenAddress, takerFillableAmount, takerTokenAddress,
-            feeRecepient, expirationUnixTimestampSec);
+            this.exchangeContractAddress, feeRecepient, expirationUnixTimestampSec);
         return signedOrder;
     }
 }
