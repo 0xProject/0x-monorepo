@@ -674,6 +674,7 @@ describe('ExchangeWrapper', () => {
                 zeroExEvent.watch((err: Error, event: ContractEvent) => {
                     expect(err).to.be.null();
                     expect(event).to.not.be.undefined();
+                    expect(event.event).to.be.equal('LogFill');
                     done();
                 });
                 const fillTakerAmountInBaseUnits = new BigNumber(1);
@@ -693,6 +694,7 @@ describe('ExchangeWrapper', () => {
                 zeroExEvent.watch((err: Error, event: ContractEvent) => {
                         expect(err).to.be.null();
                         expect(event).to.not.be.undefined();
+                        expect(event.event).to.be.equal('LogCancel');
                         done();
                 });
                 const cancelTakerAmountInBaseUnits = new BigNumber(1);
@@ -721,6 +723,7 @@ describe('ExchangeWrapper', () => {
                 eventSubscriptionToStay.watch((err: Error, event: ContractEvent) => {
                     expect(err).to.be.null();
                     expect(event).to.not.be.undefined();
+                    expect(event.event).to.be.equal('LogFill');
                     done();
                 });
 
