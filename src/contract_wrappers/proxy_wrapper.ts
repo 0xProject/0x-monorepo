@@ -23,7 +23,7 @@ export class ProxyWrapper extends ContractWrapper {
         return isAuthorized;
     }
     /**
-     * Get the list of all exchange addresses authorized by the Proxy contract.
+     * Get the list of all Exchange contract addresses authorized by the Proxy contract.
      * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to use.
      * @return  The list of authorized addresses.
      */
