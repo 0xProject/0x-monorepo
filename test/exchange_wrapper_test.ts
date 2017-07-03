@@ -780,8 +780,9 @@ describe('ExchangeWrapper', () => {
         });
         it('Should wrap all event args BigNumber instances in a newer version of BigNumber', (done: DoneCallback) => {
             (async () => {
-                const zeroExEvent = await zeroEx.exchange.subscribeAsync(ExchangeEvents.LogFill, subscriptionOpts,
-                                                                         indexFilterValues);
+                const zeroExEvent = await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues, exchangeContractAddress,
+                );
                 zeroExEvent.watch((err: Error, event: ContractEvent) => {
                     const args = event.args as LogFillContractEventArgs;
                     expect(args.filledValueM.isBigNumber).to.be.true();
