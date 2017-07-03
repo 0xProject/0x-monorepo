@@ -34,6 +34,7 @@ import {
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
+import {eventUtils} from '../utils/event_utils';
 import {ContractWrapper} from './contract_wrapper';
 import {ProxyWrapper} from './proxy_wrapper';
 import {ExchangeArtifactsByName} from '../exchange_artifacts_by_name';
@@ -601,7 +602,7 @@ export class ExchangeWrapper extends ContractWrapper {
         }
 
         const logEventObj: ContractEventObj = createLogEvent(indexFilterValues, subscriptionOpts);
-        const eventEmitter = this._wrapEventEmitter(logEventObj);
+        const eventEmitter = eventUtils.wrapEventEmitter(logEventObj);
         this._exchangeLogEventEmitters.push(eventEmitter);
         return eventEmitter;
     }
@@ -654,37 +655,6 @@ export class ExchangeWrapper extends ContractWrapper {
     private async _isExchangeContractAddressProxyAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         const isAuthorized = await this._proxyWrapper.isAuthorizedAsync(exchangeContractAddress);
         return isAuthorized;
-    }
-    private _wrapEventEmitter(event: ContractEventObj): ContractEventEmitter {
-        const watch = (eventCallback: EventCallback) => {
-            const bignumberWrappingEventCallback = this._getBigNumberWrappingEventCallback(eventCallback);
-            event.watch(bignumberWrappingEventCallback);
-        };
-        const zeroExEvent = {
-            watch,
-            stopWatchingAsync: async () => {
-                await promisify(event.stopWatching, event)();
-            },
-        };
-        return zeroExEvent;
-    }
-    private _getBigNumberWrappingEventCallback(eventCallback: EventCallback): EventCallback {
-        const bignumberWrappingEventCallback = (err: Error, event: ContractEvent) => {
-            if (_.isNull(err)) {
-                const wrapIfBigNumber = (value: ContractEventArg): ContractEventArg => {
-                    // HACK: The old version of BigNumber used by Web3@0.19.0 does not support the `isBigNumber`
-                    // and checking for a BigNumber instance using `instanceof` does not work either. We therefore
-                    // compare the constructor functions of the possible BigNumber instance and the BigNumber used by
-                    // Web3.
-                    const web3BigNumber = (Web3.prototype as any).BigNumber;
-                    const isWeb3BigNumber = web3BigNumber.toString() === value.constructor.toString();
-                    return isWeb3BigNumber ?  new BigNumber(value) : value;
-                };
-                event.args = _.mapValues(event.args, wrapIfBigNumber);
-            }
-            eventCallback(err, event);
-        };
-        return bignumberWrappingEventCallback;
     }
     private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
                                                           signerAddressHex: string,

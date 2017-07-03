@@ -122,6 +122,8 @@ export interface ExchangeContract extends ContractInstance {
 }
 
 export interface TokenContract extends ContractInstance {
+    Transfer: CreateContractEvent;
+    Approval: CreateContractEvent;
     balanceOf: {
         call: (address: string) => Promise<BigNumber.BigNumber>;
     };
@@ -236,7 +238,19 @@ export interface LogErrorContractEventArgs {
     errorId: BigNumber.BigNumber;
     orderHash: string;
 }
-export type ContractEventArgs = LogFillContractEventArgs|LogCancelContractEventArgs|LogErrorContractEventArgs;
+export type ExchangeContractEventArgs = LogFillContractEventArgs|LogCancelContractEventArgs|LogErrorContractEventArgs;
+export interface TransferContractEventArgs {
+    _from: string;
+    _to: string;
+    _value: BigNumber.BigNumber;
+}
+export interface ApprovalContractEventArgs {
+    _owner: string;
+    _spender: string;
+    _value: BigNumber.BigNumber;
+}
+export type TokenContractEventArgs = TransferContractEventArgs|ApprovalContractEventArgs;
+export type ContractEventArgs = ExchangeContractEventArgs|TokenContractEventArgs;
 export type ContractEventArg = string|BigNumber.BigNumber;
 
 export interface Order {
@@ -285,6 +299,12 @@ export const ExchangeEvents = strEnum([
     'LogError',
 ]);
 export type ExchangeEvents = keyof typeof ExchangeEvents;
+
+export const TokenEvents = strEnum([
+    'Transfer',
+    'Approval',
+]);
+export type TokenEvents = keyof typeof TokenEvents;
 
 export interface IndexedFilterValues {
     [index: string]: any;
