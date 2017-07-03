@@ -601,7 +601,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const bignumberWrappingEventCallback = (err: Error, event: ContractEvent) => {
             if (_.isNull(err)) {
                 const wrapIfBigNumber = (value: ContractEventArg): ContractEventArg => {
-                    return value instanceof String ? value : new BigNumber(value);
+                    return _.isString(value) ? value : new BigNumber(value);
                 };
                 event.args = _.mapValues(event.args, wrapIfBigNumber);
             }
