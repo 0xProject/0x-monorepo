@@ -32,9 +32,9 @@ export const utils = {
     spawnSwitchErr(name: string, value: any): Error {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },
-    getOrderHashHex(order: Order|SignedOrder, exchangeContractAddr: string): string {
+    getOrderHashHex(order: Order|SignedOrder): string {
         const orderParts = [
-            {value: exchangeContractAddr, type: SolidityTypes.address},
+            {value: order.exchangeContractAddress, type: SolidityTypes.address},
             {value: order.maker, type: SolidityTypes.address},
             {value: order.taker, type: SolidityTypes.address},
             {value: order.makerTokenAddress, type: SolidityTypes.address},

@@ -8,7 +8,6 @@ test:
         background: true
     - git clone git@github.com:0xProject/contracts.git ../contracts
     - cd ../contracts; git checkout cd04d7c; npm install && npm run migrate
-    - npm run update_contracts
     - npm run test:coverage
     - npm run report_test_coverage
     - npm run test:umd

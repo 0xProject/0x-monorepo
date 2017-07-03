@@ -12,6 +12,7 @@ function strEnum(values: string[]): {[key: string]: string} {
 
 export const ZeroExError = strEnum([
     'CONTRACT_DOES_NOT_EXIST',
+    'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
     'UNHANDLED_ERROR',
     'USER_HAS_NO_ASSOCIATED_ADDRESSES',
     'INVALID_SIGNATURE',
@@ -147,6 +148,12 @@ export interface EtherTokenContract extends ContractInstance {
     withdraw: (amount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<void>;
 }
 
+export interface ProxyContract extends ContractInstance {
+    authorized: {
+        call: (address: string) => Promise<boolean>;
+    };
+}
+
 export const SolidityTypes = strEnum([
     'address',
     'uint256',
@@ -182,6 +189,7 @@ export const ExchangeContractErrs = strEnum([
     'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED',
     'INSUFFICIENT_REMAINING_FILL_AMOUNT',
     'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED',
+    'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
 ]);
 export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
 
@@ -240,6 +248,7 @@ export interface Order {
     makerTokenAddress: string;
     takerTokenAddress: string;
     salt: BigNumber.BigNumber;
+    exchangeContractAddress: string;
     feeRecipient: string;
     expirationUnixTimestampSec: BigNumber.BigNumber;
 }
@@ -325,3 +334,15 @@ export interface ContractEventEmitter {
  * It is however a `Web3` library type, not a native `0x.js` type.
  */
 export type Web3Provider = Web3.Provider;
+
+export interface ExchangeContractByAddress {
+    [address: string]: ExchangeContract;
+}
+
+export interface ContractArtifact {
+    networks: {
+        [networkId: number]: {
+            address: string;
+        };
+    };
+}
