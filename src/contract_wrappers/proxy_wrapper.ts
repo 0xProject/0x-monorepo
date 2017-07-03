@@ -13,7 +13,7 @@ export class ProxyWrapper extends ContractWrapper {
         delete this._proxyContractIfExists;
     }
     /**
-     * Check if the Exchange contract address is authorized within the Proxy contract.
+     * Check if the Exchange contract address is authorized by the Proxy contract.
      * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to use.
      * @return  Whether the exchangeContractAddress is authorized.
      */
