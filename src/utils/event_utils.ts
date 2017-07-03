@@ -6,8 +6,8 @@ import promisify = require('es6-promisify');
 
 export const eventUtils = {
     /**
-     * Wrappes eventCallback function so that all the BigNumber arguments are wrapped in nwwer version of BigNumber
-     * @param eventCallback     event callback function to be wrapped
+     * Wraps eventCallback function so that all the BigNumber arguments are wrapped in a newer version of BigNumber.
+     * @param eventCallback     Event callback function to be wrapped
      * @return Wrapped event callback function
      */
     getBigNumberWrappingEventCallback(eventCallback: EventCallback): EventCallback {

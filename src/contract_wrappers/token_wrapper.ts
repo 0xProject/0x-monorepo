@@ -193,17 +193,16 @@ export class TokenWrapper extends ContractWrapper {
         });
     }
     /**
-     * Subscribe to an event type emitted by the Token smart contract
-     * @param   tokenAddress        The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * Subscribe to an event type emitted by the Token contract.
+     * @param   tokenAddress        The hex encoded address where the ERC20 token is deployed.
      * @param   eventName           The token contract event you would like to subscribe to.
      * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @return                      ContractEventEmitter object
+     * @return ContractEventEmitter object
      */
     public async subscribeAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
-                                indexFilterValues: IndexedFilterValues):
-                                Promise<ContractEventEmitter> {
+                                indexFilterValues: IndexedFilterValues): Promise<ContractEventEmitter> {
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let createLogEvent: CreateContractEvent;
         switch (eventName) {
