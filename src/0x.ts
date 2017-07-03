@@ -199,8 +199,9 @@ export class ZeroEx {
         let msgHashHex;
         const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
         const isParityNode = utils.isParityNode(nodeVersion);
-        if (isParityNode) {
-            // Parity node adds the personalMessage prefix itself
+        const isTestRpc = utils.isTestRpc(nodeVersion);
+        if (isParityNode || isTestRpc) {
+            // Parity and TestRpc nodes add the personalMessage prefix itself
             msgHashHex = orderHash;
         } else {
             const orderHashBuff = ethUtil.toBuffer(orderHash);
