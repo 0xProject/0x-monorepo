@@ -86,7 +86,7 @@ export class ExchangeWrapper extends ContractWrapper {
         this._exchangeLogEventEmitters = [];
         this._exchangeContractByAddress = {};
     }
-    public async invalidateContractInstanceAsync(): Promise<void> {
+    public async invalidateContractInstancesAsync(): Promise<void> {
         await this.stopWatchingAllEventsAsync();
         this._exchangeContractByAddress = {};
     }
