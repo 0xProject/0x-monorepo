@@ -14,7 +14,7 @@ export class ProxyWrapper extends ContractWrapper {
     }
     /**
      * Check if the Exchange contract address is authorized by the Proxy contract.
-     * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to use.
+     * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to call.
      * @return  Whether the exchangeContractAddress is authorized.
      */
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
@@ -24,7 +24,7 @@ export class ProxyWrapper extends ContractWrapper {
     }
     /**
      * Get the list of all Exchange contract addresses authorized by the Proxy contract.
-     * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to use.
+     * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to call.
      * @return  The list of authorized addresses.
      */
     public async getAuthorizedAddressesAsync(exchangeContractAddress: string): Promise<string[]> {
