@@ -310,7 +310,7 @@ export const TokenEvents = strEnum([
 export type TokenEvents = keyof typeof TokenEvents;
 
 export interface IndexedFilterValues {
-    [index: string]: any;
+    [index: string]: ContractEventArg;
 }
 
 export type BlockParam = 'latest'|'earliest'|'pending'|number;
