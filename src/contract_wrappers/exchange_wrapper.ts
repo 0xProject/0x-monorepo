@@ -99,7 +99,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * subtracting the unavailable amount from the total order takerAmount.
      * @param   orderHash               The hex encoded orderHash for which you would like to retrieve the
      *                                  unavailable takerAmount.
-     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to use.
+     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to call.
      * @return  The amount of the order (in taker tokens) that has either been filled or canceled.
      */
     public async getUnavailableTakerAmountAsync(orderHash: string,
@@ -115,7 +115,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Retrieve the takerAmount of an order that has already been filled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
-     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to use.
+     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to call.
      * @return  The amount of the order (in taker tokens) that has already been filled.
      */
     public async getFilledTakerAmountAsync(orderHash: string,
@@ -132,7 +132,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Retrieve the takerAmount of an order that has been cancelled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the
      *                       cancelled takerAmount.
-     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to use.
+     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to call.
      * @return  The amount of the order (in taker tokens) that has been cancelled.
      */
     public async getCanceledTakerAmountAsync(orderHash: string,
@@ -578,7 +578,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   subscriptionOpts        Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues       An object where the keys are indexed args returned by the event and
      *                                  the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to use.
+     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to call.
      * @return                      ContractEventEmitter object
      */
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
