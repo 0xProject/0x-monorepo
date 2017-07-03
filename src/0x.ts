@@ -182,7 +182,7 @@ export class ZeroEx {
      */
     public getOrderHashHex(order: Order|SignedOrder): string {
         assert.doesConformToSchema('order', order, orderSchema);
-        const orderHashHex = utils.getOrderHashHex(order, order.exchangeContractAddress);
+        const orderHashHex = utils.getOrderHashHex(order);
         return orderHashHex;
     }
     /**

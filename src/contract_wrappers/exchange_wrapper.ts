@@ -679,11 +679,6 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return isValidSignature;
     }
-    private async _getOrderHashHexAsync(order: Order|SignedOrder): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync(order.exchangeContractAddress);
-        const orderHashHex = utils.getOrderHashHex(order, exchangeInstance.address);
-        return orderHashHex;
-    }
     private async _getOrderHashHexUsingContractCallAsync(order: Order|SignedOrder): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync(order.exchangeContractAddress);
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
@@ -720,7 +715,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (takerTokenCancelAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
         }
-        const orderHash = await this._getOrderHashHexAsync(order);
+        const orderHash = utils.getOrderHashHex(order);
         const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash, order.exchangeContractAddress);
         if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
             throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
@@ -734,7 +729,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                                                  exchangeContractAddress: string,
                                                                  fillTakerAmount: BigNumber.BigNumber) {
         // Check that fillValue available >= fillTakerAmount
-        const orderHashHex = utils.getOrderHashHex(signedOrder, exchangeContractAddress);
+        const orderHashHex = utils.getOrderHashHex(signedOrder);
         const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex, exchangeContractAddress);
         const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
         if (remainingTakerAmount < fillTakerAmount) {
