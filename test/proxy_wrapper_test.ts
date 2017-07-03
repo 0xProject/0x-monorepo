@@ -15,8 +15,7 @@ describe('ProxyWrapper', () => {
     });
     describe('#isAuthorizedAsync', () => {
         it('should return false if the address is not authorized', async () => {
-            const proxyWrapper = (zeroEx as any)._proxyWrapper as ProxyWrapper;
-            const isAuthorized = await proxyWrapper.isAuthorizedAsync(ZeroEx.NULL_ADDRESS);
+            const isAuthorized = await zeroEx.proxy.isAuthorizedAsync(ZeroEx.NULL_ADDRESS);
             expect(isAuthorized).to.be.false();
         });
     });

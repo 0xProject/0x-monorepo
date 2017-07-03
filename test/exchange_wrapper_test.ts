@@ -828,8 +828,7 @@ describe('ExchangeWrapper', () => {
             const exchangeAddresses = await zeroEx.exchange.getProxyAuthorizedContractAddressesAsync();
             for (const exchangeAddress of exchangeAddresses) {
                 assert.isETHAddressHex('exchangeAddress', exchangeAddress);
-                const proxyWrapper = (zeroEx as any)._proxyWrapper as ProxyWrapper;
-                const isAuthorized = await proxyWrapper.isAuthorizedAsync(exchangeAddress);
+                const isAuthorized = await zeroEx.proxy.isAuthorizedAsync(exchangeAddress);
                 expect(isAuthorized).to.be.true();
             }
         });
