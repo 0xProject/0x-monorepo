@@ -657,7 +657,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     private _wrapEventEmitter(event: ContractEventObj): ContractEventEmitter {
         const watch = (eventCallback: EventCallback) => {
-            const bignumberWrappingEventCallback = this._wrapEventCallback(eventCallback);
+            const bignumberWrappingEventCallback = this._getBigNumberWrappingEventCallback(eventCallback);
             event.watch(bignumberWrappingEventCallback);
         };
         const zeroExEvent = {
@@ -668,7 +668,7 @@ export class ExchangeWrapper extends ContractWrapper {
         };
         return zeroExEvent;
     }
-    private _wrapEventCallback(eventCallback: EventCallback): EventCallback {
+    private _getBigNumberWrappingEventCallback(eventCallback: EventCallback): EventCallback {
         const bignumberWrappingEventCallback = (err: Error, event: ContractEvent) => {
             if (_.isNull(err)) {
                 const wrapIfBigNumber = (value: ContractEventArg): ContractEventArg => {
