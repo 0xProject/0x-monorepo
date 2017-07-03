@@ -5,6 +5,7 @@ v0.8.0 - TBD
     * Add the ability to call methods on different authorized versions of the Exchange smart contract (#82)
     * Update contract artifacts to reflect latest changes to the smart contracts (0xproject/contracts#59)
     * Add `zeroEx.proxy.isAuthorizedAsync` and `zeroEx.proxy.getAuthorizedAddressesAsync` (#89)
+    * Add `zeroEx.token.subscribeAsync` (#90)
 
 v0.7.1 - _Jun. 26, 2017_
 ------------------------
