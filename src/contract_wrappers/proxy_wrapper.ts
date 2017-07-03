@@ -22,6 +22,16 @@ export class ProxyWrapper extends ContractWrapper {
         const isAuthorized = await proxyContractInstance.authorized.call(exchangeContractAddress);
         return isAuthorized;
     }
+    /**
+     * Get the list of all exchange addresses authorized by the Proxy contract.
+     * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to use.
+     * @return  The list of authorized addresses.
+     */
+    public async getAuthorizedAddressesAsync(exchangeContractAddress: string): Promise<string[]> {
+        const proxyContractInstance = await this._getProxyContractAsync();
+        const authorizedAddresses = await proxyContractInstance.getAuthorizedAddresses.call();
+        return authorizedAddresses;
+    }
     private async _getProxyContractAsync(): Promise<ProxyContract> {
         if (!_.isUndefined(this._proxyContractIfExists)) {
             return this._proxyContractIfExists;

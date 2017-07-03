@@ -149,6 +149,9 @@ export interface EtherTokenContract extends ContractInstance {
 }
 
 export interface ProxyContract extends ContractInstance {
+    getAuthorizedAddresses: {
+        call: () => Promise<string[]>;
+    };
     authorized: {
         call: (address: string) => Promise<boolean>;
     };
