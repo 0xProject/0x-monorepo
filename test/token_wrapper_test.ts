@@ -273,7 +273,7 @@ describe('TokenWrapper', () => {
                     const args = event.args as TransferContractEventArgs;
                     expect(args._from).to.be.equal(coinbase);
                     expect(args._to).to.be.equal(addressWithoutFunds);
-                    expect(args._value).to.be.equal(transferAmount);
+                    expect(args._value).to.be.bignumber.equal(transferAmount);
                     done();
                 });
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
@@ -289,7 +289,7 @@ describe('TokenWrapper', () => {
                     const args = event.args as ApprovalContractEventArgs;
                     expect(args._owner).to.be.equal(coinbase);
                     expect(args._spender).to.be.equal(addressWithoutFunds);
-                    expect(args._value).to.be.equal(allowanceAmount);
+                    expect(args._value).to.be.bignumber.equal(allowanceAmount);
                     done();
                 });
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
