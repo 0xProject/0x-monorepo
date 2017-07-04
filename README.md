@@ -7,6 +7,7 @@
 This repository contains a Javascript library that makes it easy to build Relayers and other DApps that use the 0x protocol.
 
 [![CircleCI](https://circleci.com/gh/0xProject/0x.js.svg?style=svg&circle-token=61bf7cd8c9b4e11b132089dfcffdd1be277d1e0c)](https://circleci.com/gh/0xProject/0x.js)
+[![npm version](https://badge.fury.io/js/0x.js.svg)](https://badge.fury.io/js/0x.js)
 [![Coverage Status](https://coveralls.io/repos/github/0xProject/0x.js/badge.svg?branch=master&t=fp0cXD)](https://coveralls.io/github/0xProject/0x.js?branch=master)
 [![Slack Status](http://slack.0xProject.com/badge.svg)](http://slack.0xProject.com)
 [![Join the chat at https://gitter.im/0xProject/contracts](https://badges.gitter.im/0xProject/contracts.svg)](https://gitter.im/0xProject/contracts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
