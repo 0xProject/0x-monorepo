@@ -168,9 +168,9 @@ export class ZeroEx {
      */
     public async setProviderAsync(provider: Web3Provider) {
         this._web3Wrapper.setProvider(provider);
-        await this.exchange.invalidateContractInstancesAsync();
+        await (this.exchange as any)._invalidateContractInstancesAsync();
         this.tokenRegistry.invalidateContractInstance();
-        await this.token.invalidateContractInstancesAsync();
+        await (this.token as any)._invalidateContractInstancesAsync();
         this.proxy.invalidateContractInstance();
     }
     /**

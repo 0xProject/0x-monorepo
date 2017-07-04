@@ -36,10 +36,6 @@ export class TokenWrapper extends ContractWrapper {
         this._tokenContractsByAddress = {};
         this._tokenLogEventEmitters = [];
     }
-    public async invalidateContractInstancesAsync(): Promise<void> {
-        await this.stopWatchingAllEventsAsync();
-        this._tokenContractsByAddress = {};
-    }
     /**
      * Retrieves an owner's ERC20 token balance.
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC20 token is deployed.
@@ -235,6 +231,10 @@ export class TokenWrapper extends ContractWrapper {
                                            logEventObj => logEventObj.stopWatchingAsync());
         await Promise.all(stopWatchingPromises);
         this._tokenLogEventEmitters = [];
+    }
+    private async _invalidateContractInstancesAsync(): Promise<void> {
+        await this.stopWatchingAllEventsAsync();
+        this._tokenContractsByAddress = {};
     }
     private async _getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
         let tokenContract = this._tokenContractsByAddress[tokenAddress];

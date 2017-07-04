@@ -92,10 +92,6 @@ export class ExchangeWrapper extends ContractWrapper {
         this._exchangeLogEventEmitters = [];
         this._exchangeContractByAddress = {};
     }
-    public async invalidateContractInstancesAsync(): Promise<void> {
-        await this.stopWatchingAllEventsAsync();
-        this._exchangeContractByAddress = {};
-    }
     /**
      * Returns the unavailable takerAmount of an order. Unavailable amount is defined as the total
      * amount that has been filled or cancelled. The remaining takerAmount can be calculated by
@@ -657,6 +653,10 @@ export class ExchangeWrapper extends ContractWrapper {
                                            logEventObj => logEventObj.stopWatchingAsync());
         await Promise.all(stopWatchingPromises);
         this._exchangeLogEventEmitters = [];
+    }
+    private async _invalidateContractInstancesAsync(): Promise<void> {
+        await this.stopWatchingAllEventsAsync();
+        this._exchangeContractByAddress = {};
     }
     private async _isExchangeContractAddressProxyAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         const isAuthorized = await this._proxyWrapper.isAuthorizedAsync(exchangeContractAddress);
