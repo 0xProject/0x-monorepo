@@ -277,7 +277,7 @@ describe('TokenWrapper', () => {
                     done();
                 });
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
-            })();
+            })().catch(done);
         });
         it('Should receive the Approval event when an order is cancelled', (done: DoneCallback) => {
             (async () => {
@@ -294,7 +294,7 @@ describe('TokenWrapper', () => {
                         done();
                 });
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
-            })();
+            })().catch(done);
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
@@ -315,7 +315,7 @@ describe('TokenWrapper', () => {
                     done();
                 });
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
-            })();
+            })().catch(done);
         });
         it('Should stop watch for events when stopWatchingAsync called on the eventEmitter', (done: DoneCallback) => {
             (async () => {
@@ -327,7 +327,7 @@ describe('TokenWrapper', () => {
                 await eventSubscriptionToBeStopped.stopWatchingAsync();
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
                 done();
-            })();
+            })().catch(done);
         });
         it('Should wrap all event args BigNumber instances in a newer version of BigNumber', (done: DoneCallback) => {
             (async () => {
@@ -339,7 +339,7 @@ describe('TokenWrapper', () => {
                     done();
                 });
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
-            })();
+            })().catch(done);
         });
     });
 });

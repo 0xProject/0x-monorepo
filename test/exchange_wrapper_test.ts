@@ -721,7 +721,7 @@ describe('ExchangeWrapper', () => {
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
                 );
-            })();
+            })().catch(done);
         });
         it('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
             (async () => {
@@ -735,7 +735,7 @@ describe('ExchangeWrapper', () => {
                         done();
                 });
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerAmountInBaseUnits);
-            })();
+            })().catch(done);
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
@@ -761,7 +761,7 @@ describe('ExchangeWrapper', () => {
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
                 );
-            })();
+            })().catch(done);
         });
         it('Should stop watch for events when stopWatchingAsync called on the eventEmitter', (done: DoneCallback) => {
             (async () => {
@@ -776,7 +776,7 @@ describe('ExchangeWrapper', () => {
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
                 );
                 done();
-            })();
+            })().catch(done);
         });
         it('Should wrap all event args BigNumber instances in a newer version of BigNumber', (done: DoneCallback) => {
             (async () => {
@@ -794,7 +794,7 @@ describe('ExchangeWrapper', () => {
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldCheckTransfer, takerAddress,
                 );
-            })();
+            })().catch(done);
         });
     });
     describe('#getOrderHashHexUsingContractCallAsync', () => {
