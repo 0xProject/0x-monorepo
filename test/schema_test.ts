@@ -200,6 +200,7 @@ describe('Schema', () => {
             takerTokenAddress: constants.NULL_ADDRESS,
             salt: '256',
             feeRecipient: constants.NULL_ADDRESS,
+            exchangeContractAddress: constants.NULL_ADDRESS,
             expirationUnixTimestampSec: '42',
         };
         describe('#orderSchema', () => {
