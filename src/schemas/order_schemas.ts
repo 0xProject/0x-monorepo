@@ -16,10 +16,11 @@ export const orderSchema = {
         salt: {$ref: '/numberSchema'},
         feeRecipient: {$ref: '/addressSchema'},
         expirationUnixTimestampSec: {$ref: '/numberSchema'},
+        exchangeContractAddress: {$ref: '/addressSchema'},
     },
     required: [
         'maker', 'taker', 'makerFee', 'takerFee', 'makerTokenAmount', 'takerTokenAmount',
-        'salt', 'feeRecipient', 'expirationUnixTimestampSec',
+        'salt', 'feeRecipient', 'expirationUnixTimestampSec', 'exchangeContractAddress',
     ],
     type: 'object',
 };
