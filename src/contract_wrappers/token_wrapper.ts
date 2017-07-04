@@ -205,10 +205,6 @@ export class TokenWrapper extends ContractWrapper {
      */
     public async subscribeAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
                                 indexFilterValues: IndexedFilterValues): Promise<ContractEventEmitter> {
-        assert.isETHAddressHex('tokenAddress', tokenAddress);
-        // assert.isEventName('eventName', eventName);
-        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, subscriptionOptsSchema);
-        assert.doesConformToSchema('indexFilterValues', indexFilterValues, indexFilterValuesSchema);
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let createLogEvent: CreateContractEvent;
         switch (eventName) {

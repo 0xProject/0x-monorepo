@@ -13,6 +13,7 @@ import {
     TokenEvents,
     ContractEvent,
     TransferContractEventArgs,
+    ApprovalContractEventArgs,
 } from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {DoneCallback} from '../src/types';
@@ -269,11 +270,10 @@ describe('TokenWrapper', () => {
                 zeroExEvent.watch((err: Error, event: ContractEvent) => {
                     expect(err).to.be.null();
                     expect(event).to.not.be.undefined();
-                    expect(event.args as TransferContractEventArgs).to.be.deep.equal({
-                        _from: coinbase,
-                        _to: addressWithoutFunds,
-                        _value: transferAmount,
-                    });
+                    const args = event.args as TransferContractEventArgs;
+                    expect(args._from).to.be.equal(coinbase);
+                    expect(args._to).to.be.equal(addressWithoutFunds);
+                    expect(args._value).to.be.equal(transferAmount);
                     done();
                 });
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
@@ -284,14 +284,13 @@ describe('TokenWrapper', () => {
                 const zeroExEvent = await zeroEx.token.subscribeAsync(
                     tokenAddress, TokenEvents.Approval, subscriptionOpts, indexFilterValues);
                 zeroExEvent.watch((err: Error, event: ContractEvent) => {
-                        expect(err).to.be.null();
-                        expect(event).to.not.be.undefined();
-                        expect(event.args as TransferContractEventArgs).to.be.deep.equal({
-                            _owner: coinbase,
-                            _spender: addressWithoutFunds,
-                            _value: allowanceAmount,
-                        });
-                        done();
+                    expect(err).to.be.null();
+                    expect(event).to.not.be.undefined();
+                    const args = event.args as ApprovalContractEventArgs;
+                    expect(args._owner).to.be.equal(coinbase);
+                    expect(args._spender).to.be.equal(addressWithoutFunds);
+                    expect(args._value).to.be.equal(allowanceAmount);
+                    done();
                 });
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
