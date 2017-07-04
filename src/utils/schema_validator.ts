@@ -3,6 +3,8 @@ import {ecSignatureSchema, ecSignatureParameterSchema} from '../schemas/ec_signa
 import {orderSchema, signedOrderSchema} from '../schemas/order_schemas';
 import {addressSchema, numberSchema} from '../schemas/basic_type_schemas';
 import {tokenSchema} from '../schemas/token_schema';
+import {subscriptionOptsSchema, blockParamSchema} from '../schemas/subscription_opts_schema';
+import {indexFilterValuesSchema} from '../schemas/index_filter_values_schema';
 import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
 
 export class SchemaValidator {
@@ -13,8 +15,11 @@ export class SchemaValidator {
         this.validator.addSchema(orderSchema, orderSchema.id);
         this.validator.addSchema(numberSchema, numberSchema.id);
         this.validator.addSchema(addressSchema, addressSchema.id);
+        this.validator.addSchema(blockParamSchema, blockParamSchema.id);
         this.validator.addSchema(ecSignatureSchema, ecSignatureSchema.id);
         this.validator.addSchema(signedOrderSchema, signedOrderSchema.id);
+        this.validator.addSchema(subscriptionOptsSchema, subscriptionOptsSchema.id);
+        this.validator.addSchema(indexFilterValuesSchema, indexFilterValuesSchema.id);
         this.validator.addSchema(ecSignatureParameterSchema, ecSignatureParameterSchema.id);
         this.validator.addSchema(orderFillOrKillRequestsSchema, orderFillOrKillRequestsSchema.id);
     }
