@@ -13,9 +13,6 @@ export class TokenRegistryWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
     }
-    public invalidateContractInstance(): void {
-        delete this._tokenRegistryContractIfExists;
-    }
     /**
      * Retrieves all the tokens currently listed in the Token Registry smart contract
      * @return  An array of objects that conform to the Token interface.
@@ -39,6 +36,9 @@ export class TokenRegistryWrapper extends ContractWrapper {
             };
         });
         return tokens;
+    }
+    private _invalidateContractInstance(): void {
+        delete this._tokenRegistryContractIfExists;
     }
     private async _getTokenRegistryContractAsync(): Promise<TokenRegistryContract> {
         if (!_.isUndefined(this._tokenRegistryContractIfExists)) {

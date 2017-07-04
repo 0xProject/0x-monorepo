@@ -169,9 +169,9 @@ export class ZeroEx {
     public async setProviderAsync(provider: Web3Provider) {
         this._web3Wrapper.setProvider(provider);
         await (this.exchange as any)._invalidateContractInstancesAsync();
-        this.tokenRegistry.invalidateContractInstance();
+        (this.tokenRegistry as any)._invalidateContractInstance();
         await (this.token as any)._invalidateContractInstancesAsync();
-        this.proxy.invalidateContractInstance();
+        (this.proxy as any)._invalidateContractInstance();
     }
     /**
      * Get user Ethereum addresses available through the supplied web3 instance available for sending transactions.

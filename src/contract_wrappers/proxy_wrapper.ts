@@ -9,9 +9,6 @@ import {ProxyContract} from '../types';
  */
 export class ProxyWrapper extends ContractWrapper {
     private _proxyContractIfExists?: ProxyContract;
-    public invalidateContractInstance(): void {
-        delete this._proxyContractIfExists;
-    }
     /**
      * Check if the Exchange contract address is authorized by the Proxy contract.
      * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to call.
@@ -31,6 +28,9 @@ export class ProxyWrapper extends ContractWrapper {
         const proxyContractInstance = await this._getProxyContractAsync();
         const authorizedAddresses = await proxyContractInstance.getAuthorizedAddresses.call();
         return authorizedAddresses;
+    }
+    private _invalidateContractInstance(): void {
+        delete this._proxyContractIfExists;
     }
     private async _getProxyContractAsync(): Promise<ProxyContract> {
         if (!_.isUndefined(this._proxyContractIfExists)) {
