@@ -40,6 +40,8 @@ import {ProxyWrapper} from './proxy_wrapper';
 import {ExchangeArtifactsByName} from '../exchange_artifacts_by_name';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {signedOrdersSchema} from '../schemas/signed_orders_schema';
+import {subscriptionOptsSchema} from '../schemas/subscription_opts_schema';
+import {indexFilterValuesSchema} from '../schemas/index_filter_values_schema';
 import {orderFillRequestsSchema} from '../schemas/order_fill_requests_schema';
 import {orderCancellationRequestsSchema} from '../schemas/order_cancel_schema';
 import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
@@ -585,6 +587,10 @@ export class ExchangeWrapper extends ContractWrapper {
     public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
                                 indexFilterValues: IndexedFilterValues, exchangeContractAddress: string):
                                 Promise<ContractEventEmitter> {
+        assert.isETHAddressHex('exchangeContractAddress', exchangeContractAddress);
+        assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
+        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, subscriptionOptsSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, indexFilterValuesSchema);
         const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
         let createLogEvent: CreateContractEvent;
         switch (eventName) {
