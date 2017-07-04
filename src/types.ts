@@ -3,7 +3,10 @@ import * as Web3 from 'web3';
 
 // Utility function to create a K:V from a list of strings
 // Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
-function strEnum(values: string[]): {[key: string]: string} {
+export interface StringEnum {
+    [key: string]: string;
+}
+function strEnum(values: string[]): StringEnum {
     return _.reduce(values, (result, key) => {
         result[key] = key;
         return result;
