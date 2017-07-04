@@ -11,6 +11,7 @@ v0.8.0 - TBD
         * `zeroEx.exchange.invalidateContractInstancesAsync`
         * `zeroEx.proxy.invalidateContractInstance`
         * `zeroEx.tokenRegistry.invalidateContractInstance`
+    * Fix the bug when `zeroEx.setProviderAsync` didn't invalidate etherToken contract instance
 
 v0.7.1 - _Jun. 26, 2017_
 ------------------------

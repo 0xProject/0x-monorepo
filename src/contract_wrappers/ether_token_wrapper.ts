@@ -64,6 +64,9 @@ export class EtherTokenWrapper extends ContractWrapper {
         const wethContract = await this._getEtherTokenContractAsync();
         return wethContract.address;
     }
+    private _invalidateContractInstance(): void {
+        delete this._etherTokenContractIfExists;
+    }
     private async _getEtherTokenContractAsync(): Promise<EtherTokenContract> {
         if (!_.isUndefined(this._etherTokenContractIfExists)) {
             return this._etherTokenContractIfExists;
