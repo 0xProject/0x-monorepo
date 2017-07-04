@@ -24,6 +24,12 @@ export const orderSchema = {
     type: 'object',
 };
 
+export const orderHashSchema = {
+    id: '/orderHashSchema',
+    type: 'string',
+    pattern: '^0x[0-9a-fA-F]{64}$',
+};
+
 export const signedOrderSchema = {
     id: '/signedOrderSchema',
     allOf: [
