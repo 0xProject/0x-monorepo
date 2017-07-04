@@ -17,7 +17,8 @@ import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {ProxyWrapper} from './contract_wrappers/proxy_wrapper';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
-import {orderSchema} from './schemas/order_schemas';
+import {orderSchema, orderHashSchema} from './schemas/order_schemas';
+import {SchemaValidator} from './utils/schema_validator';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -110,7 +111,8 @@ export class ZeroEx {
         // Since this method can be called to check if any arbitrary string conforms to an orderHash's
         // format, we only assert that we were indeed passed a string.
         assert.isString('orderHash', orderHash);
-        const isValidOrderHash = utils.isValidOrderHash(orderHash);
+        const schemaValidator = new SchemaValidator();
+        const isValidOrderHash = schemaValidator.validate(orderHash, orderHashSchema).valid;
         return isValidOrderHash;
     }
     /**

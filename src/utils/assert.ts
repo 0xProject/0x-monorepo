@@ -45,13 +45,10 @@ export const assert = {
     isNumber(variableName: string, value: number): void {
         this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));
     },
-    isValidOrderHash(variableName: string, value: string): void {
-        this.assert(utils.isValidOrderHash(value), this.typeAssertionMessage(variableName, 'orderHash', value));
-    },
     isBoolean(variableName: string, value: boolean): void {
         this.assert(_.isBoolean(value), this.typeAssertionMessage(variableName, 'boolean', value));
     },
-    doesConformToSchema(variableName: string, value: object, schema: Schema): void {
+    doesConformToSchema(variableName: string, value: any, schema: Schema): void {
         const schemaValidator = new SchemaValidator();
         const validationResult = schemaValidator.validate(value, schema);
         const hasValidationErrors = validationResult.errors.length > 0;

@@ -25,10 +25,6 @@ export const utils = {
     isTestRpc(nodeVersion: string): boolean {
         return _.includes(nodeVersion, 'TestRPC');
     },
-    isValidOrderHash(orderHashHex: string): boolean {
-        const isValid = /^0x[0-9A-F]{64}$/i.test(orderHashHex);
-        return isValid;
-    },
     spawnSwitchErr(name: string, value: any): Error {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },

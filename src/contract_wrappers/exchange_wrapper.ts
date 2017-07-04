@@ -43,7 +43,7 @@ import {signedOrdersSchema} from '../schemas/signed_orders_schema';
 import {orderFillRequestsSchema} from '../schemas/order_fill_requests_schema';
 import {orderCancellationRequestsSchema} from '../schemas/order_cancel_schema';
 import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
-import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
+import {signedOrderSchema, orderSchema, orderHashSchema} from '../schemas/order_schemas';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
@@ -105,7 +105,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async getUnavailableTakerAmountAsync(orderHash: string,
                                                 exchangeContractAddress: string): Promise<BigNumber.BigNumber> {
-        assert.isValidOrderHash('orderHash', orderHash);
+        assert.doesConformToSchema('orderHash', orderHash, orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
         let unavailableAmountInBaseUnits = await exchangeContract.getUnavailableValueT.call(orderHash);
@@ -121,7 +121,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async getFilledTakerAmountAsync(orderHash: string,
                                            exchangeContractAddress: string): Promise<BigNumber.BigNumber> {
-        assert.isValidOrderHash('orderHash', orderHash);
+        assert.doesConformToSchema('orderHash', orderHash, orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
         let fillAmountInBaseUnits = await exchangeContract.filled.call(orderHash);
@@ -138,7 +138,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async getCanceledTakerAmountAsync(orderHash: string,
                                              exchangeContractAddress: string): Promise<BigNumber.BigNumber> {
-        assert.isValidOrderHash('orderHash', orderHash);
+        assert.doesConformToSchema('orderHash', orderHash, orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
         let cancelledAmountInBaseUnits = await exchangeContract.cancelled.call(orderHash);
