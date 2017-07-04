@@ -8,6 +8,8 @@ import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenArtifacts from '../artifacts/Token.json';
 import * as ProxyArtifacts from '../artifacts/Proxy.json';
+import {subscriptionOptsSchema} from '../schemas/subscription_opts_schema';
+import {indexFilterValuesSchema} from '../schemas/index_filter_values_schema';
 import {
     TokenContract,
     ZeroExError,
@@ -203,6 +205,10 @@ export class TokenWrapper extends ContractWrapper {
      */
     public async subscribeAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
                                 indexFilterValues: IndexedFilterValues): Promise<ContractEventEmitter> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        // assert.isEventName('eventName', eventName);
+        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, subscriptionOptsSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, indexFilterValuesSchema);
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let createLogEvent: CreateContractEvent;
         switch (eventName) {

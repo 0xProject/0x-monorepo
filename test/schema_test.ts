@@ -6,7 +6,7 @@ import promisify = require('es6-promisify');
 import {constants} from './utils/constants';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {tokenSchema} from '../src/schemas/token_schema';
-import {orderSchema, signedOrderSchema} from '../src/schemas/order_schemas';
+import {orderSchema, signedOrderSchema, orderHashSchema} from '../src/schemas/order_schemas';
 import {addressSchema, numberSchema} from '../src/schemas/basic_type_schemas';
 import {orderFillOrKillRequestsSchema} from '../src/schemas/order_fill_or_kill_requests_schema';
 import {ecSignatureParameterSchema, ecSignatureSchema} from '../src/schemas/ec_signature_schema';
@@ -95,6 +95,25 @@ describe('Schema', () => {
             ];
             const shouldFail = true;
             validateAgainstSchema(testCases, ecSignatureSchema, shouldFail);
+        });
+    });
+    describe('#orderHashSchema', () => {
+        it('should validate valid order hash', () => {
+            const testCases = [
+                '0x61a3ed31B43c8780e905a260a35faefEc527be7516aa11c0256729b5b351bc33',
+                '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
+            ];
+            validateAgainstSchema(testCases, orderHashSchema);
+        });
+        it('should fail for invalid order hash', () => {
+            const testCases = [
+                {},
+                '0x',
+                '0x8b0292B11a196601eD2ce54B665CaFEca0347D42',
+                '61a3ed31B43c8780e905a260a35faefEc527be7516aa11c0256729b5b351bc33',
+            ];
+            const shouldFail = true;
+            validateAgainstSchema(testCases, orderHashSchema, shouldFail);
         });
     });
     describe('#blockParamSchema', () => {
