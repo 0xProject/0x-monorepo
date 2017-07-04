@@ -12,6 +12,7 @@ import {orderFillOrKillRequestsSchema} from '../src/schemas/order_fill_or_kill_r
 import {ecSignatureParameterSchema, ecSignatureSchema} from '../src/schemas/ec_signature_schema';
 import {orderCancellationRequestsSchema} from '../src/schemas/order_cancel_schema';
 import {orderFillRequestsSchema} from '../src/schemas/order_fill_requests_schema';
+import {blockParamSchema, subscriptionOptsSchema} from '../src/schemas/subscription_opts_schema';
 
 chai.config.includeStack = true;
 const expect = chai.expect;
@@ -94,6 +95,43 @@ describe('Schema', () => {
             ];
             const shouldFail = true;
             validateAgainstSchema(testCases, ecSignatureSchema, shouldFail);
+        });
+    });
+    describe('#blockParamSchema', () => {
+        it('should validate valid block param', () => {
+            const testCases = [
+                42,
+                'latest',
+                'pending',
+                'earliest',
+            ];
+            validateAgainstSchema(testCases, blockParamSchema);
+        });
+        it('should fail for invalid block param', () => {
+            const testCases = [
+                {},
+                '42',
+                'pemding',
+            ];
+            const shouldFail = true;
+            validateAgainstSchema(testCases, blockParamSchema, shouldFail);
+        });
+    });
+    describe('#subscriptionOptsSchema', () => {
+        it('should validate valid subscription opts', () => {
+            const testCases = [
+                {fromBlock: 42, toBlock: 'latest'},
+            ];
+            validateAgainstSchema(testCases, subscriptionOptsSchema);
+        });
+        it('should fail for invalid subscription opts', () => {
+            const testCases = [
+                {},
+                {fromBlock: 42},
+                {fromBlock: 42, to: 43},
+            ];
+            const shouldFail = true;
+            validateAgainstSchema(testCases, subscriptionOptsSchema, shouldFail);
         });
     });
     describe('#tokenSchema', () => {
