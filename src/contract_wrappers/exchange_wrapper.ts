@@ -37,7 +37,6 @@ import {utils} from '../utils/utils';
 import {eventUtils} from '../utils/event_utils';
 import {ContractWrapper} from './contract_wrapper';
 import {ProxyWrapper} from './proxy_wrapper';
-import {ExchangeArtifactsByName} from '../exchange_artifacts_by_name';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {signedOrdersSchema} from '../schemas/signed_orders_schema';
 import {subscriptionOptsSchema} from '../schemas/subscription_opts_schema';
@@ -50,6 +49,7 @@ import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
+import {ExchangeArtifactsByName} from '../exchange_artifacts_by_name';
 
 /**
  * This class includes all the functionality related to calling methods and subscribing to
@@ -67,7 +67,6 @@ export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractByAddress: ExchangeContractByAddress;
     private _exchangeLogEventEmitters: ContractEventEmitter[];
     private _tokenWrapper: TokenWrapper;
-    private _proxyWrapper: ProxyWrapper;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
             order.maker,
@@ -86,10 +85,9 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, proxyWrapper: ProxyWrapper) {
+    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
-        this._proxyWrapper = proxyWrapper;
         this._exchangeLogEventEmitters = [];
         this._exchangeContractByAddress = {};
     }
@@ -610,43 +608,6 @@ export class ExchangeWrapper extends ContractWrapper {
         return eventEmitter;
     }
     /**
-     * Returns the ethereum addresses of all available exchange contracts
-     * on the network that the provided web3 instance is connected to
-     * @return  The ethereum addresses of all available exchange contracts.
-     */
-    public async getAvailableContractAddressesAsync(): Promise<string[]> {
-        const networkId = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        if (_.isUndefined(networkId)) {
-            return [];
-        } else {
-            const exchangeArtifacts = _.values(ExchangeArtifactsByName);
-            const networkSpecificExchangeArtifacts = _.compact(_.map(
-                exchangeArtifacts, exchangeArtifact => exchangeArtifact.networks[networkId]));
-            const exchangeAddresses = _.map(
-                networkSpecificExchangeArtifacts,
-                networkSpecificExchangeArtifact => networkSpecificExchangeArtifact.address,
-            );
-            return exchangeAddresses;
-        }
-    }
-    /**
-     * Returns the ethereum addresses of all available exchange contracts
-     * on the network that the provided web3 instance is connected to
-     * that are currently authorized on the Proxy contract
-     * @return  The ethereum addresses of all available and authorized exchange contract.
-     */
-    public async getProxyAuthorizedContractAddressesAsync(): Promise<string[]> {
-        const exchangeContractAddresses = await this.getAvailableContractAddressesAsync();
-        const proxyAuthorizedExchangeContractAddresses = [];
-        for (const exchangeContractAddress of exchangeContractAddresses) {
-            const isAuthorized = await this._isExchangeContractAddressProxyAuthorizedAsync(exchangeContractAddress);
-            if (isAuthorized) {
-                proxyAuthorizedExchangeContractAddresses.push(exchangeContractAddress);
-            }
-        }
-        return proxyAuthorizedExchangeContractAddresses;
-    }
-    /**
      * Stops watching for all exchange events
      */
     public async stopWatchingAllEventsAsync(): Promise<void> {
@@ -658,10 +619,6 @@ export class ExchangeWrapper extends ContractWrapper {
     private async _invalidateContractInstancesAsync(): Promise<void> {
         await this.stopWatchingAllEventsAsync();
         this._exchangeContractByAddress = {};
-    }
-    private async _isExchangeContractAddressProxyAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
-        const isAuthorized = await this._proxyWrapper.isAuthorizedAsync(exchangeContractAddress);
-        return isAuthorized;
     }
     private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
                                                           signerAddressHex: string,

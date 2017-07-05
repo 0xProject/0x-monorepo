@@ -44,7 +44,7 @@ describe('ExchangeWrapper', () => {
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider);
-        [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressesAsync();
+        [exchangeContractAddress] = await zeroEx.getAvailableExchangeContractAddressesAsync();
         userAddresses = await promisify(web3.eth.getAccounts)();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);
@@ -817,24 +817,6 @@ describe('ExchangeWrapper', () => {
             const orderHashFromContract = await (zeroEx.exchange as any)
                 ._getOrderHashHexUsingContractCallAsync(signedOrder);
             expect(orderHash).to.equal(orderHashFromContract);
-        });
-    });
-    describe('#getAvailableContractAddressesAsync', () => {
-        it('returns the exchange contract addresses', async () => {
-            const exchangeAddresses = await zeroEx.exchange.getAvailableContractAddressesAsync();
-            _.map(exchangeAddresses, exchangeAddress => {
-                assert.isETHAddressHex('exchangeAddress', exchangeAddress);
-            });
-        });
-    });
-    describe('#getProxyAuthorizedContractAddressesAsync', () => {
-        it('returns the Proxy authorized exchange contract addresses', async () => {
-            const exchangeAddresses = await zeroEx.exchange.getProxyAuthorizedContractAddressesAsync();
-            for (const exchangeAddress of exchangeAddresses) {
-                assert.isETHAddressHex('exchangeAddress', exchangeAddress);
-                const isAuthorized = await zeroEx.proxy.isAuthorizedAsync(exchangeAddress);
-                expect(isAuthorized).to.be.true();
-            }
         });
     });
 });
