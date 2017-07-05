@@ -71,42 +71,42 @@ export class FillScenarios {
         makerAddress: string, takerAddress: string,
         makerFillableAmount: BigNumber.BigNumber, takerFillableAmount: BigNumber.BigNumber,
         feeRecepient: string, expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
-        await this.zeroEx.token.transferAsync(makerTokenAddress, this.coinbase, makerAddress, makerFillableAmount);
-        const oldMakerAllowance = await this.zeroEx.token.getProxyAllowanceAsync(makerTokenAddress, makerAddress);
-        const newMakerAllowance = oldMakerAllowance.plus(makerFillableAmount);
-        await this.zeroEx.token.setProxyAllowanceAsync(
-            makerTokenAddress, makerAddress, newMakerAllowance,
-        );
-        await this.zeroEx.token.transferAsync(takerTokenAddress, this.coinbase, takerAddress, takerFillableAmount);
-        const oldTakerAllowance = await this.zeroEx.token.getProxyAllowanceAsync(takerTokenAddress, takerAddress);
-        const newTakerAllowance = oldTakerAllowance.plus(takerFillableAmount);
-        await this.zeroEx.token.setProxyAllowanceAsync(
-            takerTokenAddress, takerAddress, newTakerAllowance,
-        );
 
-        if (!makerFee.isZero()) {
-            await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinbase, makerAddress, makerFee);
-            const oldMakerFeeAllowance =
-                await this.zeroEx.token.getProxyAllowanceAsync(this.zrxTokenAddress, makerAddress);
-            const newMakerFeeAllowance = oldMakerFeeAllowance.plus(makerFee);
-            await this.zeroEx.token.setProxyAllowanceAsync(
-                this.zrxTokenAddress, makerAddress, newMakerFeeAllowance,
-            );
-        }
-        if (!takerFee.isZero()) {
-            await this.zeroEx.token.transferAsync(this.zrxTokenAddress, this.coinbase, takerAddress, takerFee);
-            const oldTakerFeeAllowance =
-                await this.zeroEx.token.getProxyAllowanceAsync(this.zrxTokenAddress, takerAddress);
-            const newTakerFeeAllowance = oldTakerFeeAllowance.plus(takerFee);
-            await this.zeroEx.token.setProxyAllowanceAsync(
-                this.zrxTokenAddress, takerAddress, newTakerFeeAllowance,
-            );
-        }
+        await Promise.all([
+            this.increaseBalanceAndAllowanceAsync(makerTokenAddress, makerAddress, makerFillableAmount),
+            this.increaseBalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount),
+        ]);
+        await Promise.all([
+            this.increaseBalanceAndAllowanceAsync(this.zrxTokenAddress, makerAddress, makerFee),
+            this.increaseBalanceAndAllowanceAsync(this.zrxTokenAddress, takerAddress, takerFee),
+        ]);
 
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx,
             makerAddress, takerAddress, makerFee, takerFee,
             makerFillableAmount, makerTokenAddress, takerFillableAmount, takerTokenAddress,
             this.exchangeContractAddress, feeRecepient, expirationUnixTimestampSec);
         return signedOrder;
+    }
+    private async increaseBalanceAndAllowanceAsync(
+        tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
+        if (amount.isZero()) {
+            return;
+        }
+        await Promise.all([
+            this.increaseBalanceAsync(tokenAddress, address, amount),
+            this.increaseAllowanceAsync(tokenAddress, address, amount),
+        ]);
+    }
+    private async increaseBalanceAsync(
+        tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
+        await this.zeroEx.token.transferAsync(tokenAddress, this.coinbase, address, amount);
+    }
+    private async increaseAllowanceAsync(
+        tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
+        const oldMakerAllowance = await this.zeroEx.token.getProxyAllowanceAsync(tokenAddress, address);
+        const newMakerAllowance = oldMakerAllowance.plus(amount);
+        await this.zeroEx.token.setProxyAllowanceAsync(
+            tokenAddress, address, newMakerAllowance,
+        );
     }
 }
