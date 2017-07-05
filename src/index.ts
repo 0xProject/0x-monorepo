@@ -12,6 +12,7 @@ export {
     ContractEvent,
     Token,
     ExchangeEvents,
+    TokenEvents,
     IndexedFilterValues,
     SubscriptionOpts,
     BlockParam,
@@ -22,6 +23,10 @@ export {
     LogErrorContractEventArgs,
     LogCancelContractEventArgs,
     LogFillContractEventArgs,
+    ExchangeContractEventArgs,
+    TransferContractEventArgs,
+    ApprovalContractEventArgs,
+    TokenContractEventArgs,
     ContractEventArgs,
     Web3Provider,
 } from './types';

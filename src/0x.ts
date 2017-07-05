@@ -17,7 +17,9 @@ import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {ProxyWrapper} from './contract_wrappers/proxy_wrapper';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
+import {orderHashSchema} from './schemas/order_hash_schema';
 import {orderSchema} from './schemas/order_schemas';
+import {SchemaValidator} from './utils/schema_validator';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -110,7 +112,8 @@ export class ZeroEx {
         // Since this method can be called to check if any arbitrary string conforms to an orderHash's
         // format, we only assert that we were indeed passed a string.
         assert.isString('orderHash', orderHash);
-        const isValidOrderHash = utils.isValidOrderHash(orderHash);
+        const schemaValidator = new SchemaValidator();
+        const isValidOrderHash = schemaValidator.validate(orderHash, orderHashSchema).valid;
         return isValidOrderHash;
     }
     /**
@@ -166,10 +169,11 @@ export class ZeroEx {
      */
     public async setProviderAsync(provider: Web3Provider) {
         this._web3Wrapper.setProvider(provider);
-        await this.exchange.invalidateContractInstancesAsync();
-        this.tokenRegistry.invalidateContractInstance();
-        this.token.invalidateContractInstances();
-        this.proxy.invalidateContractInstance();
+        await (this.exchange as any)._invalidateContractInstancesAsync();
+        (this.tokenRegistry as any)._invalidateContractInstance();
+        await (this.token as any)._invalidateContractInstancesAsync();
+        (this.proxy as any)._invalidateContractInstance();
+        (this.etherToken as any)._invalidateContractInstance();
     }
     /**
      * Get user Ethereum addresses available through the supplied web3 instance available for sending transactions.

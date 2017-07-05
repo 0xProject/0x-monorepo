@@ -3,7 +3,10 @@ import * as Web3 from 'web3';
 
 // Utility function to create a K:V from a list of strings
 // Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
-function strEnum(values: string[]): {[key: string]: string} {
+export interface StringEnum {
+    [key: string]: string;
+}
+function strEnum(values: string[]): StringEnum {
     return _.reduce(values, (result, key) => {
         result[key] = key;
         return result;
@@ -122,6 +125,8 @@ export interface ExchangeContract extends ContractInstance {
 }
 
 export interface TokenContract extends ContractInstance {
+    Transfer: CreateContractEvent;
+    Approval: CreateContractEvent;
     balanceOf: {
         call: (address: string) => Promise<BigNumber.BigNumber>;
     };
@@ -239,7 +244,19 @@ export interface LogErrorContractEventArgs {
     errorId: BigNumber.BigNumber;
     orderHash: string;
 }
-export type ContractEventArgs = LogFillContractEventArgs|LogCancelContractEventArgs|LogErrorContractEventArgs;
+export type ExchangeContractEventArgs = LogFillContractEventArgs|LogCancelContractEventArgs|LogErrorContractEventArgs;
+export interface TransferContractEventArgs {
+    _from: string;
+    _to: string;
+    _value: BigNumber.BigNumber;
+}
+export interface ApprovalContractEventArgs {
+    _owner: string;
+    _spender: string;
+    _value: BigNumber.BigNumber;
+}
+export type TokenContractEventArgs = TransferContractEventArgs|ApprovalContractEventArgs;
+export type ContractEventArgs = ExchangeContractEventArgs|TokenContractEventArgs;
 export type ContractEventArg = string|BigNumber.BigNumber;
 
 export interface Order {
@@ -289,8 +306,14 @@ export const ExchangeEvents = strEnum([
 ]);
 export type ExchangeEvents = keyof typeof ExchangeEvents;
 
+export const TokenEvents = strEnum([
+    'Transfer',
+    'Approval',
+]);
+export type TokenEvents = keyof typeof TokenEvents;
+
 export interface IndexedFilterValues {
-    [index: string]: any;
+    [index: string]: ContractEventArg;
 }
 
 export type BlockParam = 'latest'|'earliest'|'pending'|number;

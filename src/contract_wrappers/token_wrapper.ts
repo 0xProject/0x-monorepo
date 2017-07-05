@@ -2,11 +2,24 @@ import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
+import {utils} from '../utils/utils';
+import {eventUtils} from '../utils/event_utils';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenArtifacts from '../artifacts/Token.json';
 import * as ProxyArtifacts from '../artifacts/Proxy.json';
-import {TokenContract, ZeroExError} from '../types';
+import {subscriptionOptsSchema} from '../schemas/subscription_opts_schema';
+import {indexFilterValuesSchema} from '../schemas/index_filter_values_schema';
+import {
+    TokenContract,
+    ZeroExError,
+    TokenEvents,
+    IndexedFilterValues,
+    SubscriptionOpts,
+    CreateContractEvent,
+    ContractEventEmitter,
+    ContractEventObj,
+} from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
 
@@ -17,12 +30,11 @@ const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
  */
 export class TokenWrapper extends ContractWrapper {
     private _tokenContractsByAddress: {[address: string]: TokenContract};
+    private _tokenLogEventEmitters: ContractEventEmitter[];
     constructor(web3Wrapper: Web3Wrapper) {
         super(web3Wrapper);
         this._tokenContractsByAddress = {};
-    }
-    public invalidateContractInstances() {
-        this._tokenContractsByAddress = {};
+        this._tokenLogEventEmitters = [];
     }
     /**
      * Retrieves an owner's ERC20 token balance.
@@ -177,6 +189,52 @@ export class TokenWrapper extends ContractWrapper {
         await tokenContract.transferFrom(fromAddress, toAddress, amountInBaseUnits, {
             from: senderAddress,
         });
+    }
+    /**
+     * Subscribe to an event type emitted by the Token contract.
+     * @param   tokenAddress        The hex encoded address where the ERC20 token is deployed.
+     * @param   eventName           The token contract event you would like to subscribe to.
+     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @return ContractEventEmitter object
+     */
+    public async subscribeAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
+                                indexFilterValues: IndexedFilterValues): Promise<ContractEventEmitter> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
+        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, subscriptionOptsSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, indexFilterValuesSchema);
+        const tokenContract = await this._getTokenContractAsync(tokenAddress);
+        let createLogEvent: CreateContractEvent;
+        switch (eventName) {
+            case TokenEvents.Approval:
+                createLogEvent = tokenContract.Approval;
+                break;
+            case TokenEvents.Transfer:
+                createLogEvent = tokenContract.Transfer;
+                break;
+            default:
+                throw utils.spawnSwitchErr('TokenEvents', eventName);
+        }
+
+        const logEventObj: ContractEventObj = createLogEvent(indexFilterValues, subscriptionOpts);
+        const eventEmitter = eventUtils.wrapEventEmitter(logEventObj);
+        this._tokenLogEventEmitters.push(eventEmitter);
+        return eventEmitter;
+    }
+    /**
+     * Stops watching for all token events
+     */
+    public async stopWatchingAllEventsAsync(): Promise<void> {
+        const stopWatchingPromises = _.map(this._tokenLogEventEmitters,
+                                           logEventObj => logEventObj.stopWatchingAsync());
+        await Promise.all(stopWatchingPromises);
+        this._tokenLogEventEmitters = [];
+    }
+    private async _invalidateContractInstancesAsync(): Promise<void> {
+        await this.stopWatchingAllEventsAsync();
+        this._tokenContractsByAddress = {};
     }
     private async _getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
         let tokenContract = this._tokenContractsByAddress[tokenAddress];

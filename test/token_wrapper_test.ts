@@ -5,8 +5,18 @@ import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
-import {ZeroEx, ZeroExError, Token} from '../src';
+import {
+    ZeroEx,
+    ZeroExError,
+    Token,
+    SubscriptionOpts,
+    TokenEvents,
+    ContractEvent,
+    TransferContractEventArgs,
+    ApprovalContractEventArgs,
+} from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {DoneCallback} from '../src/types';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -229,6 +239,106 @@ describe('TokenWrapper', () => {
             const allowanceAfterSet = await zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress);
             const expectedAllowanceAfterAllowanceSet = amountInBaseUnits;
             return expect(allowanceAfterSet).to.be.bignumber.equal(expectedAllowanceAfterAllowanceSet);
+        });
+    });
+    describe('#subscribeAsync', () => {
+        const indexFilterValues = {};
+        const shouldCheckTransfer = false;
+        let tokenAddress: string;
+        const subscriptionOpts: SubscriptionOpts = {
+            fromBlock: 0,
+            toBlock: 'latest',
+        };
+        const transferAmount = new BigNumber(42);
+        const allowanceAmount = new BigNumber(42);
+        before(() => {
+            const token = tokens[0];
+            tokenAddress = token.address;
+        });
+        afterEach(async () => {
+            await zeroEx.token.stopWatchingAllEventsAsync();
+        });
+        // Hack: Mocha does not allow a test to be both async and have a `done` callback
+        // Since we need to await the receipt of the event in the `subscribeAsync` callback,
+        // we do need both. A hack is to make the top-level a sync fn w/ a done callback and then
+        // wrap the rest of the test in an async block
+        // Source: https://github.com/mochajs/mocha/issues/2407
+        it('Should receive the Transfer event when an order is filled', (done: DoneCallback) => {
+            (async () => {
+                const zeroExEvent = await zeroEx.token.subscribeAsync(
+                    tokenAddress, TokenEvents.Transfer, subscriptionOpts, indexFilterValues);
+                zeroExEvent.watch((err: Error, event: ContractEvent) => {
+                    expect(err).to.be.null();
+                    expect(event).to.not.be.undefined();
+                    const args = event.args as TransferContractEventArgs;
+                    expect(args._from).to.be.equal(coinbase);
+                    expect(args._to).to.be.equal(addressWithoutFunds);
+                    expect(args._value).to.be.bignumber.equal(transferAmount);
+                    done();
+                });
+                await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
+            })().catch(done);
+        });
+        it('Should receive the Approval event when an order is cancelled', (done: DoneCallback) => {
+            (async () => {
+                const zeroExEvent = await zeroEx.token.subscribeAsync(
+                    tokenAddress, TokenEvents.Approval, subscriptionOpts, indexFilterValues);
+                zeroExEvent.watch((err: Error, event: ContractEvent) => {
+                    expect(err).to.be.null();
+                    expect(event).to.not.be.undefined();
+                    const args = event.args as ApprovalContractEventArgs;
+                    expect(args._owner).to.be.equal(coinbase);
+                    expect(args._spender).to.be.equal(addressWithoutFunds);
+                    expect(args._value).to.be.bignumber.equal(allowanceAmount);
+                    done();
+                });
+                await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
+            })().catch(done);
+        });
+        it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
+            (async () => {
+                const eventSubscriptionToBeCancelled = await zeroEx.token.subscribeAsync(
+                    tokenAddress, TokenEvents.Transfer, subscriptionOpts, indexFilterValues);
+                eventSubscriptionToBeCancelled.watch((err: Error, event: ContractEvent) => {
+                    done(new Error('Expected this subscription to have been cancelled'));
+                });
+
+                const newProvider = web3Factory.getRpcProvider();
+                await zeroEx.setProviderAsync(newProvider);
+
+                const eventSubscriptionToStay = await zeroEx.token.subscribeAsync(
+                    tokenAddress, TokenEvents.Transfer, subscriptionOpts, indexFilterValues);
+                eventSubscriptionToStay.watch((err: Error, event: ContractEvent) => {
+                    expect(err).to.be.null();
+                    expect(event).to.not.be.undefined();
+                    done();
+                });
+                await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
+            })().catch(done);
+        });
+        it('Should stop watch for events when stopWatchingAsync called on the eventEmitter', (done: DoneCallback) => {
+            (async () => {
+                const eventSubscriptionToBeStopped = await zeroEx.token.subscribeAsync(
+                    tokenAddress, TokenEvents.Transfer, subscriptionOpts, indexFilterValues);
+                eventSubscriptionToBeStopped.watch((err: Error, event: ContractEvent) => {
+                    done(new Error('Expected this subscription to have been stopped'));
+                });
+                await eventSubscriptionToBeStopped.stopWatchingAsync();
+                await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
+                done();
+            })().catch(done);
+        });
+        it('Should wrap all event args BigNumber instances in a newer version of BigNumber', (done: DoneCallback) => {
+            (async () => {
+                const zeroExEvent = await zeroEx.token.subscribeAsync(
+                    tokenAddress, TokenEvents.Transfer, subscriptionOpts, indexFilterValues);
+                zeroExEvent.watch((err: Error, event: ContractEvent) => {
+                    const args = event.args as TransferContractEventArgs;
+                    expect(args._value.isBigNumber).to.be.true();
+                    done();
+                });
+                await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
+            })().catch(done);
         });
     });
 });

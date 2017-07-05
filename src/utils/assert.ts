@@ -5,6 +5,7 @@ import {Web3Wrapper} from '../web3_wrapper';
 import {Schema} from 'jsonschema';
 import {SchemaValidator} from './schema_validator';
 import {utils} from './utils';
+import {StringEnum} from '../types';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
@@ -27,6 +28,16 @@ export const assert = {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },
+    doesBelongToStringEnum(variableName: string, value: string, stringEnum: StringEnum): void {
+        const doesBelongToStringEnum = !_.isUndefined(stringEnum[value]);
+        const enumValues = _.keys(stringEnum);
+        const enumValuesAsStrings = _.map(enumValues, enumValue => `'${enumValue}'`);
+        const enumValuesAsString = enumValuesAsStrings.join(', ');
+        assert.assert(
+            doesBelongToStringEnum,
+            `Expected ${variableName} to be one of: ${enumValuesAsString}, encountered: ${value}`,
+        );
+    },
     async isSenderAddressAsync(variableName: string, senderAddressHex: string,
                                web3Wrapper: Web3Wrapper): Promise<void> {
         assert.isETHAddressHex(variableName, senderAddressHex);
@@ -45,13 +56,10 @@ export const assert = {
     isNumber(variableName: string, value: number): void {
         this.assert(_.isFinite(value), this.typeAssertionMessage(variableName, 'number', value));
     },
-    isValidOrderHash(variableName: string, value: string): void {
-        this.assert(utils.isValidOrderHash(value), this.typeAssertionMessage(variableName, 'orderHash', value));
-    },
     isBoolean(variableName: string, value: boolean): void {
         this.assert(_.isBoolean(value), this.typeAssertionMessage(variableName, 'boolean', value));
     },
-    doesConformToSchema(variableName: string, value: object, schema: Schema): void {
+    doesConformToSchema(variableName: string, value: any, schema: Schema): void {
         const schemaValidator = new SchemaValidator();
         const validationResult = schemaValidator.validate(value, schema);
         const hasValidationErrors = validationResult.errors.length > 0;
