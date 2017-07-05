@@ -1,13 +1,15 @@
 machine:
   node:
     version: 6.1.0
+  environment:
+      CONTRACTS_COMMIT_HASH: cd04d7c
 
 test:
   override:
-    - npm run testrpc:
+    - wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
+    - unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
+    - npm run testrpc -- --db testrpc_snapshot:
         background: true
-    - git clone git@github.com:0xProject/contracts.git ../contracts
-    - cd ../contracts; git checkout cd04d7c; npm install && npm run migrate
     - npm run test:coverage
     - npm run report_test_coverage
     - npm run test:umd
