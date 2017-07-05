@@ -10,7 +10,7 @@ export const eventUtils = {
      * @param eventCallback     Event callback function to be wrapped
      * @return Wrapped event callback function
      */
-    getBigNumberWrappingEventCallback(eventCallback: EventCallback): EventCallback {
+    _getBigNumberWrappingEventCallback(eventCallback: EventCallback): EventCallback {
         const bignumberWrappingEventCallback = (err: Error, event: ContractEvent) => {
             if (_.isNull(err)) {
                 const wrapIfBigNumber = (value: ContractEventArg): ContractEventArg => {
@@ -30,7 +30,7 @@ export const eventUtils = {
     },
     wrapEventEmitter(event: ContractEventObj): ContractEventEmitter {
         const watch = (eventCallback: EventCallback) => {
-            const bignumberWrappingEventCallback = eventUtils.getBigNumberWrappingEventCallback(eventCallback);
+            const bignumberWrappingEventCallback = eventUtils._getBigNumberWrappingEventCallback(eventCallback);
             event.watch(bignumberWrappingEventCallback);
         };
         const zeroExEvent = {
