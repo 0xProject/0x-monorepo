@@ -1,5 +1,10 @@
 # CHANGELOG
 
+v0.9.0 - TBD
+------------------------
+    * Move `zeroEx.exchange.getAvailableContractAddressesAsync` to `zeroEx.getAvailableExchangeContractAddressesAsync` (#94)
+    * Move `zeroEx.exchange.getProxyAuthorizedContractAddressesAsync` to `zeroEx.getProxyAuthorizedExchangeContractAddressesAsync` (#94)
+
 v0.8.0 - _Jul. 4, 2017_
 ------------------------
     * Add the ability to call methods on different authorized versions of the Exchange smart contract (#82)
