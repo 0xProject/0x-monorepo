@@ -16,6 +16,5 @@ export const subscriptionOptsSchema = {
         fromBlock: {$ref: '/blockParam'},
         toBlock: {$ref: '/blockParam'},
     },
-    required: ['fromBlock', 'toBlock'],
     type: 'object',
 };

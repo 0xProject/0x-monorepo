@@ -141,14 +141,14 @@ describe('Schema', () => {
         it('should validate valid subscription opts', () => {
             const testCases = [
                 {fromBlock: 42, toBlock: 'latest'},
+                {fromBlock: 42},
+                {},
             ];
             validateAgainstSchema(testCases, subscriptionOptsSchema);
         });
         it('should fail for invalid subscription opts', () => {
             const testCases = [
-                {},
-                {fromBlock: 42},
-                {fromBlock: 42, to: 43},
+                {fromBlock: '42'},
             ];
             const shouldFail = true;
             validateAgainstSchema(testCases, subscriptionOptsSchema, shouldFail);
