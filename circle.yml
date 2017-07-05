@@ -2,12 +2,12 @@ machine:
   node:
     version: 6.1.0
   environment:
-      CONTRACTS_COMMIT: cd04d7c
+      CONTRACTS_COMMIT_HASH: cd04d7c
 
 test:
   override:
-    - wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT}.zip
-    - unzip ${CONTRACTS_COMMIT}.zip -d testrpc_snapshot
+    - wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
+    - unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
     - npm run testrpc -- --db testrpc_snapshot:
         background: true
     - npm run test:coverage
