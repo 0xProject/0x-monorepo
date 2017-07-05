@@ -17,7 +17,8 @@ import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {ProxyWrapper} from './contract_wrappers/proxy_wrapper';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
-import {orderSchema, orderHashSchema} from './schemas/order_schemas';
+import {orderHashSchema} from './schemas/order_hash_schema';
+import {orderSchema} from './schemas/order_schemas';
 import {SchemaValidator} from './utils/schema_validator';
 
 // Customize our BigNumber instances
