@@ -31,7 +31,7 @@ export const assert = {
     doesBelongToStringEnum(variableName: string, value: string, stringEnum: StringEnum): void {
         const doesBelongToStringEnum = !_.isUndefined(stringEnum[value]);
         const enumValues = _.keys(stringEnum);
-        const enumValuesAsStrings = _.map(enumValues, enumValue => '\'' + enumValue + '\'');
+        const enumValuesAsStrings = _.map(enumValues, enumValue => `'${enumValue}'`);
         const enumValuesAsString = enumValuesAsStrings.join(', ');
         assert.assert(
             doesBelongToStringEnum,
