@@ -12,5 +12,5 @@ test:
         background: true
     - npm run test:coverage
     - npm run report_test_coverage
-    - npm run test:umd
+    - if [ $CIRCLE_BRANCH = "master" ]; then npm run test:umd; fi
     - npm run lint
