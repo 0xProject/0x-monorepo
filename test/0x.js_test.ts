@@ -33,7 +33,7 @@ describe('ZeroEx library', () => {
             expect((zeroEx.exchange as any)._exchangeContractByAddress[exchangeContractAddress]).to.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
-            // Check that all nested web3 instances return the updated provider
+            // Check that all nested web3 wrapper instances return the updated provider
             const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getCurrentProvider();
             expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
             const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getCurrentProvider();

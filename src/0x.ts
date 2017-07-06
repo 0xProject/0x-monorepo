@@ -164,7 +164,7 @@ export class ZeroEx {
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
     }
     /**
-     * Sets a new provider for the web3 instance used by 0x.js. Updating the provider will stop all
+     * Sets a new web3 provider for 0x.js. Updating the provider will stop all
      * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
      * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
      */
@@ -177,7 +177,7 @@ export class ZeroEx {
         (this.etherToken as any)._invalidateContractInstance();
     }
     /**
-     * Get user Ethereum addresses available through the supplied web3 instance available for sending transactions.
+     * Get user Ethereum addresses available through the supplied web3 provider available for sending transactions.
      * @return  An array of available user Ethereum addresses.
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
@@ -257,7 +257,8 @@ export class ZeroEx {
     }
     /**
      * Returns the ethereum addresses of all available exchange contracts
-     * on the network that the provided web3 instance is connected to
+     * supported by this library on the network that the supplied web3
+     * provider is connected to
      * @return  The ethereum addresses of all available exchange contracts.
      */
     public async getAvailableExchangeContractAddressesAsync(): Promise<string[]> {
@@ -277,8 +278,8 @@ export class ZeroEx {
     }
     /**
      * Returns the ethereum addresses of all available exchange contracts
-     * on the network that the provided web3 instance is connected to
-     * that are currently authorized on the Proxy contract
+     * supported by this library on the network that the supplied web3
+     * provider is connected to that are currently authorized by the Proxy contract
      * @return  The ethereum addresses of all available and authorized exchange contract.
      */
     public async getProxyAuthorizedExchangeContractAddressesAsync(): Promise<string[]> {

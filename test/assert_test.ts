@@ -21,7 +21,7 @@ describe('Assertion library', () => {
             const varName = 'address';
             return expect(assert.isSenderAddressAsync(varName, validUnrelatedAddress, (zeroEx as any)._web3Wrapper))
                 .to.be.rejectedWith(
-                    `Specified ${varName} ${validUnrelatedAddress} isn't available through the supplied web3 instance`,
+                    `Specified ${varName} ${validUnrelatedAddress} isn't available through the supplied web3 provider`,
                 );
         });
         it('doesn\'t throw if address is available', async () => {
