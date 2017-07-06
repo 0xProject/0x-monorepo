@@ -43,12 +43,12 @@ export const assert = {
         assert.isETHAddressHex(variableName, senderAddressHex);
         const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailableAsync(senderAddressHex);
         assert.assert(isSenderAddressAvailable,
-            `Specified ${variableName} ${senderAddressHex} isn't available through the supplied web3 instance`,
+            `Specified ${variableName} ${senderAddressHex} isn't available through the supplied web3 provider`,
         );
     },
     async isUserAddressAvailableAsync(web3Wrapper: Web3Wrapper): Promise<void> {
         const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        this.assert(!_.isEmpty(availableAddresses), 'No addresses were available on the provided web3 instance');
+        this.assert(!_.isEmpty(availableAddresses), 'No addresses were available on the provided web3 provider');
     },
     hasAtMostOneUniqueValue(value: any[], errMsg: string): void {
         this.assert(_.uniq(value).length <= 1, errMsg);

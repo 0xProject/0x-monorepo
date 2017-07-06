@@ -20,6 +20,7 @@ import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './type
 import {orderHashSchema} from './schemas/order_hash_schema';
 import {orderSchema} from './schemas/order_schemas';
 import {SchemaValidator} from './utils/schema_validator';
+import {ExchangeArtifactsByName} from './exchange_artifacts_by_name';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -158,12 +159,12 @@ export class ZeroEx {
         this._web3Wrapper = new Web3Wrapper(provider);
         this.token = new TokenWrapper(this._web3Wrapper);
         this.proxy = new ProxyWrapper(this._web3Wrapper);
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, this.proxy);
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
     }
     /**
-     * Sets a new provider for the web3 instance used by 0x.js. Updating the provider will stop all
+     * Sets a new web3 provider for 0x.js. Updating the provider will stop all
      * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
      * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
      */
@@ -176,7 +177,7 @@ export class ZeroEx {
         (this.etherToken as any)._invalidateContractInstance();
     }
     /**
-     * Get user Ethereum addresses available through the supplied web3 instance available for sending transactions.
+     * Get user Ethereum addresses available through the supplied web3 provider available for sending transactions.
      * @return  An array of available user Ethereum addresses.
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
@@ -253,5 +254,43 @@ export class ZeroEx {
             throw new Error(ZeroExError.INVALID_SIGNATURE);
         }
         return ecSignature;
+    }
+    /**
+     * Returns the ethereum addresses of all available exchange contracts
+     * supported by this library on the network that the supplied web3
+     * provider is connected to
+     * @return  The ethereum addresses of all available exchange contracts.
+     */
+    public async getAvailableExchangeContractAddressesAsync(): Promise<string[]> {
+        const networkId = await this._web3Wrapper.getNetworkIdIfExistsAsync();
+        if (_.isUndefined(networkId)) {
+            return [];
+        } else {
+            const exchangeArtifacts = _.values(ExchangeArtifactsByName);
+            const networkSpecificExchangeArtifacts = _.compact(_.map(
+                exchangeArtifacts, exchangeArtifact => exchangeArtifact.networks[networkId]));
+            const exchangeAddresses = _.map(
+                networkSpecificExchangeArtifacts,
+                networkSpecificExchangeArtifact => networkSpecificExchangeArtifact.address,
+            );
+            return exchangeAddresses;
+        }
+    }
+    /**
+     * Returns the ethereum addresses of all available exchange contracts
+     * supported by this library on the network that the supplied web3
+     * provider is connected to that are currently authorized by the Proxy contract
+     * @return  The ethereum addresses of all available and authorized exchange contract.
+     */
+    public async getProxyAuthorizedExchangeContractAddressesAsync(): Promise<string[]> {
+        const exchangeContractAddresses = await this.getAvailableExchangeContractAddressesAsync();
+        const proxyAuthorizedExchangeContractAddresses = [];
+        for (const exchangeContractAddress of exchangeContractAddresses) {
+            const isAuthorized = await this.proxy.isAuthorizedAsync(exchangeContractAddress);
+            if (isAuthorized) {
+                proxyAuthorizedExchangeContractAddresses.push(exchangeContractAddress);
+            }
+        }
+        return proxyAuthorizedExchangeContractAddresses;
     }
 }

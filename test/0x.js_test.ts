@@ -6,17 +6,18 @@ import * as BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
 import {ZeroEx, Order} from '../src';
 import {constants} from './utils/constants';
+import {assert} from '../src/utils/assert';
 import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ZeroEx library', () => {
+    const web3 = web3Factory.create();
+    const zeroEx = new ZeroEx(web3.currentProvider);
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
-            const web3 = web3Factory.create();
-            const zeroEx = new ZeroEx(web3.currentProvider);
-            const [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressesAsync();
+            const [exchangeContractAddress] = await zeroEx.getAvailableExchangeContractAddressesAsync();
             // Instantiate the contract instances with the current provider
             await (zeroEx.exchange as any)._getExchangeContractAsync(exchangeContractAddress);
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
@@ -32,7 +33,7 @@ describe('ZeroEx library', () => {
             expect((zeroEx.exchange as any)._exchangeContractByAddress[exchangeContractAddress]).to.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
-            // Check that all nested web3 instances return the updated provider
+            // Check that all nested web3 wrapper instances return the updated provider
             const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getCurrentProvider();
             expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
             const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getCurrentProvider();
@@ -51,11 +52,9 @@ describe('ZeroEx library', () => {
             s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
         };
         const address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-        const web3 = web3Factory.create();
-        const zeroEx = new ZeroEx(web3.currentProvider);
         let exchangeContractAddress: string;
         before(async () => {
-            [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressesAsync();
+            [exchangeContractAddress] = await zeroEx.getAvailableExchangeContractAddressesAsync();
         });
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
             expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();
@@ -148,9 +147,6 @@ describe('ZeroEx library', () => {
             expirationUnixTimestampSec: new BigNumber(0),
         };
         it('calculates the order hash', async () => {
-            const web3 = web3Factory.create();
-            const zeroEx = new ZeroEx(web3.currentProvider);
-
             const orderHash = zeroEx.getOrderHashHex(order);
             expect(orderHash).to.be.equal(expectedOrderHash);
         });
@@ -158,8 +154,6 @@ describe('ZeroEx library', () => {
     describe('#signOrderHashAsync', () => {
         let stubs: Sinon.SinonStub[] = [];
         let makerAddress: string;
-        const web3 = web3Factory.create();
-        const zeroEx = new ZeroEx(web3.currentProvider);
         before(async () => {
             const availableAddreses = await zeroEx.getAvailableAddressesAsync();
             makerAddress = availableAddreses[0];
@@ -220,6 +214,24 @@ describe('ZeroEx library', () => {
 
             const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
+        });
+    });
+    describe('#getAvailableExchangeContractAddressesAsync', () => {
+        it('returns the exchange contract addresses', async () => {
+            const exchangeAddresses = await zeroEx.getAvailableExchangeContractAddressesAsync();
+            _.map(exchangeAddresses, exchangeAddress => {
+                assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+            });
+        });
+    });
+    describe('#getProxyAuthorizedExchangeContractAddressesAsync', () => {
+        it('returns the Proxy authorized exchange contract addresses', async () => {
+            const exchangeAddresses = await zeroEx.getProxyAuthorizedExchangeContractAddressesAsync();
+            for (const exchangeAddress of exchangeAddresses) {
+                assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+                const isAuthorized = await zeroEx.proxy.isAuthorizedAsync(exchangeAddress);
+                expect(isAuthorized).to.be.true();
+            }
         });
     });
 });

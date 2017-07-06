@@ -13,7 +13,7 @@ describe('ProxyWrapper', () => {
     before(async () => {
         const web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider);
-        [exchangeContractAddress] = await zeroEx.exchange.getAvailableContractAddressesAsync();
+        [exchangeContractAddress] = await zeroEx.getAvailableExchangeContractAddressesAsync();
     });
     describe('#isAuthorizedAsync', () => {
         it('should return false if the address is not authorized', async () => {
