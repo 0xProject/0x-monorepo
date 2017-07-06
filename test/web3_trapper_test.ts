@@ -7,7 +7,7 @@ import {constants} from './utils/constants';
 chai.config.includeStack = true;
 const expect = chai.expect;
 
-describe.only('Web3Wrapper', () => {
+describe('Web3Wrapper', () => {
     const web3Provider = web3Factory.create().currentProvider;
     describe('#getNetworkIdIfExistsAsync', () => {
         it('caches network id requests', async () => {
