@@ -5,11 +5,13 @@ import promisify = require('es6-promisify');
 
 export class Web3Wrapper {
     private web3: Web3;
+    private networkIdIfExists?: number;
     constructor(provider: Web3.Provider) {
         this.web3 = new Web3();
         this.web3.setProvider(provider);
     }
     public setProvider(provider: Web3.Provider) {
+        this.networkIdIfExists = undefined;
         this.web3.setProvider(provider);
     }
     public isAddress(address: string): boolean {
@@ -27,11 +29,16 @@ export class Web3Wrapper {
         return this.web3.currentProvider;
     }
     public async getNetworkIdIfExistsAsync(): Promise<number|undefined> {
-        try {
-            const networkId = await this.getNetworkAsync();
-            return Number(networkId);
-        } catch (err) {
-            return undefined;
+        if (_.isUndefined(this.networkIdIfExists)) {
+            try {
+                const networkId = await this.getNetworkAsync();
+                this.networkIdIfExists = Number(networkId);
+                return this.networkIdIfExists;
+            } catch (err) {
+                return undefined;
+            }
+        } else {
+            return this.networkIdIfExists;
         }
     }
     public toWei(ethAmount: BigNumber.BigNumber): BigNumber.BigNumber {
