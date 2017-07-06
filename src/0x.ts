@@ -286,15 +286,11 @@ export class ZeroEx {
         const exchangeContractAddresses = await this.getAvailableExchangeContractAddressesAsync();
         const proxyAuthorizedExchangeContractAddresses = [];
         for (const exchangeContractAddress of exchangeContractAddresses) {
-            const isAuthorized = await this._isExchangeContractAddressProxyAuthorizedAsync(exchangeContractAddress);
+            const isAuthorized = await this.proxy.isAuthorizedAsync(exchangeContractAddress);
             if (isAuthorized) {
                 proxyAuthorizedExchangeContractAddresses.push(exchangeContractAddress);
             }
         }
         return proxyAuthorizedExchangeContractAddresses;
-    }
-    private async _isExchangeContractAddressProxyAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
-        const isAuthorized = await this.proxy.isAuthorizedAsync(exchangeContractAddress);
-        return isAuthorized;
     }
 }
