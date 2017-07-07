@@ -13,14 +13,14 @@
           "type": "uint256[6]"
         },
         {
-          "name": "cancelValueT",
+          "name": "canceltakerTokenAmount",
           "type": "uint256"
         }
       ],
-      "name": "cancel",
+      "name": "cancelOrder",
       "outputs": [
         {
-          "name": "cancelledValueT",
+          "name": "cancelledTakerTokenAmount",
           "type": "uint256"
         }
       ],
