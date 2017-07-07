@@ -105,10 +105,10 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderHash', orderHash, orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync(exchangeContractAddress);
-        let unavailableAmountInBaseUnits = await exchangeContract.getUnavailableValueT.call(orderHash);
+        let unavailableTakerTokenAmount = await exchangeContract.getUnavailableTakerTokenAmount.call(orderHash);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
-        unavailableAmountInBaseUnits = new BigNumber(unavailableAmountInBaseUnits);
-        return unavailableAmountInBaseUnits;
+        unavailableTakerTokenAmount = new BigNumber(unavailableTakerTokenAmount);
+        return unavailableTakerTokenAmount;
     }
     /**
      * Retrieve the takerAmount of an order that has already been filled.

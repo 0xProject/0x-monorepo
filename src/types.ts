@@ -64,7 +64,7 @@ export interface ExchangeContract extends ContractInstance {
     ZRX: {
         call: () => Promise<string>;
     };
-    getUnavailableValueT: {
+    getUnavailableTakerTokenAmount: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
     isRoundingError: {
