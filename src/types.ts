@@ -71,11 +71,14 @@ export interface ExchangeContract extends ContractInstance {
         call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmount: BigNumber.BigNumber,
                makerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     };
-    fill: {
-        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-         shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-                      shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts) => number;
+    fillOrder: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
+         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+         v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                      fillTakerTokenAmount: BigNumber.BigNumber,
+                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                      v: number, r: string, s: string, txOpts?: TxOpts) => number;
     };
     batchFill: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
