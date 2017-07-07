@@ -118,10 +118,11 @@ export interface ExchangeContract extends ContractInstance {
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
                       v: number, r: string, s: string, txOpts?: TxOpts) => number;
     };
-    batchFillOrKill: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillValuesT: BigNumber.BigNumber[],
+    batchFillOrKillOrders: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
          v: number[], r: string[], s: string[], txOpts: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillValuesT: BigNumber.BigNumber[],
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                      fillTakerTokenAmounts: BigNumber.BigNumber[],
                       v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
     };
     filled: {

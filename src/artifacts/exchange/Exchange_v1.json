@@ -313,7 +313,7 @@
           "type": "uint256[6][]"
         },
         {
-          "name": "fillValuesT",
+          "name": "fillTakerTokenAmounts",
           "type": "uint256[]"
         },
         {
@@ -329,7 +329,7 @@
           "type": "bytes32[]"
         }
       ],
-      "name": "batchFillOrKill",
+      "name": "batchFillOrKillOrders",
       "outputs": [
         {
           "name": "success",

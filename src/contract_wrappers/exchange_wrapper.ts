@@ -453,13 +453,13 @@ export class ExchangeWrapper extends ContractWrapper {
         });
 
         // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
-        const [orderAddresses, orderValues, fillTakerAmounts, vParams, rParams, sParams] =
+        const [orderAddresses, orderValues, fillTakerTokenAmounts, vParams, rParams, sParams] =
               _.unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
 
-        const gas = await exchangeInstance.batchFillOrKill.estimateGas(
+        const gas = await exchangeInstance.batchFillOrKillOrders.estimateGas(
             orderAddresses,
             orderValues,
-            fillTakerAmounts,
+            fillTakerTokenAmounts,
             vParams,
             rParams,
             sParams,
@@ -467,10 +467,10 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: takerAddress,
             },
         );
-        const response: ContractResponse = await exchangeInstance.batchFillOrKill(
+        const response: ContractResponse = await exchangeInstance.batchFillOrKillOrders(
             orderAddresses,
             orderValues,
-            fillTakerAmounts,
+            fillTakerTokenAmounts,
             vParams,
             rParams,
             sParams,
