@@ -116,6 +116,32 @@
       "type": "function"
     },
     {
+      "constant": true,
+      "inputs": [],
+      "name": "ZRX_TOKEN_CONTRACT",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "PROXY_CONTRACT",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
       "constant": false,
       "inputs": [
         {
