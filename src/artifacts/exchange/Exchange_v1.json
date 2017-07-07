@@ -609,47 +609,32 @@
             },
             {
               "indexed": false,
-              "name": "tokenM",
+              "name": "makerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "tokenT",
+              "name": "takerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "filledBy",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "valueM",
+              "name": "filledMakerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "valueT",
+              "name": "filledTakerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "feeM",
+              "name": "paidMakerFee",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "feeT",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "expiration",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "filledValueT",
+              "name": "paidTakerFee",
               "type": "uint256"
             },
             {
@@ -666,7 +651,7 @@
           "name": "LogFill",
           "type": "event"
         },
-        "0x4565177cd5184f550db0ab57b1d5bc808f8e8ba0adcb13fb257f1e7cf019a2b6": {
+        "0x67d66f160bc93d925d05dae1794c90d2d6d6688b29b84ff069398a9b04587131": {
           "anonymous": false,
           "inputs": [
             {
@@ -681,42 +666,22 @@
             },
             {
               "indexed": false,
-              "name": "tokenM",
+              "name": "makerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "tokenT",
+              "name": "takerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "valueM",
+              "name": "cancelledMakerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "valueT",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "feeM",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "feeT",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "expiration",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "cancelledValueT",
+              "name": "cancelledTakerTokenAmount",
               "type": "uint256"
             },
             {
@@ -749,119 +714,10 @@
           ],
           "name": "LogError",
           "type": "event"
-        },
-        "0x0d0b9391970d9a25552f37d436d2aae2925e2bfe1b2a923754bada030c498cb3": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "name": "maker",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "taker",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "name": "feeRecipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "tokenM",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "tokenT",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "filledValueM",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "filledValueT",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "feeMPaid",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "feeTPaid",
-              "type": "uint256"
-            },
-            {
-              "indexed": true,
-              "name": "tokens",
-              "type": "bytes32"
-            },
-            {
-              "indexed": false,
-              "name": "orderHash",
-              "type": "bytes32"
-            }
-          ],
-          "name": "LogFill",
-          "type": "event"
-        },
-        "0x67d66f160bc93d925d05dae1794c90d2d6d6688b29b84ff069398a9b04587131": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "name": "maker",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "name": "feeRecipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "tokenM",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "tokenT",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "cancelledValueM",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "name": "cancelledValueT",
-              "type": "uint256"
-            },
-            {
-              "indexed": true,
-              "name": "tokens",
-              "type": "bytes32"
-            },
-            {
-              "indexed": false,
-              "name": "orderHash",
-              "type": "bytes32"
-            }
-          ],
-          "name": "LogCancel",
-          "type": "event"
         }
       },
-      "updated_at": 1496294576952,
-      "address": "0xed97b186ee3bae12a3fe6a9fb55300b5630a1b4c"
+      "updated_at": 1499299724252,
+      "address": "0x63869171a246622ef8f9234879ce2c06cebd85f6"
     },
     "50": {
       "links": {},
@@ -886,12 +742,12 @@
             },
             {
               "indexed": false,
-              "name": "tokenM",
+              "name": "makerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "tokenT",
+              "name": "takerToken",
               "type": "address"
             },
             {
@@ -901,32 +757,32 @@
             },
             {
               "indexed": false,
-              "name": "valueM",
+              "name": "makerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "valueT",
+              "name": "takerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "feeM",
+              "name": "makerFee",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "feeT",
+              "name": "takerFee",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "expiration",
+              "name": "expirationTimestampInSec",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "filledValueT",
+              "name": "filledTakerTokenAmount",
               "type": "uint256"
             },
             {
@@ -958,42 +814,42 @@
             },
             {
               "indexed": false,
-              "name": "tokenM",
+              "name": "makerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "tokenT",
+              "name": "takerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "valueM",
+              "name": "makerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "valueT",
+              "name": "takerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "feeM",
+              "name": "makerFee",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "feeT",
+              "name": "takerFee",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "expiration",
+              "name": "expirationTimestampInSec",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "cancelledValueT",
+              "name": "cancelledtakerTokenAmount",
               "type": "uint256"
             },
             {
@@ -1047,32 +903,32 @@
             },
             {
               "indexed": false,
-              "name": "tokenM",
+              "name": "makerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "tokenT",
+              "name": "takerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "filledValueM",
+              "name": "filledMakerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "filledValueT",
+              "name": "filledTakerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "feeMPaid",
+              "name": "paidMakerFee",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "feeTPaid",
+              "name": "paidTakerFee",
               "type": "uint256"
             },
             {
@@ -1104,22 +960,22 @@
             },
             {
               "indexed": false,
-              "name": "tokenM",
+              "name": "makerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "tokenT",
+              "name": "takerToken",
               "type": "address"
             },
             {
               "indexed": false,
-              "name": "cancelledValueM",
+              "name": "cancelledMakerTokenAmount",
               "type": "uint256"
             },
             {
               "indexed": false,
-              "name": "cancelledValueT",
+              "name": "cancelledTakerTokenAmount",
               "type": "uint256"
             },
             {
