@@ -86,7 +86,7 @@
     "typescript": "^2.3.3",
     "web3-provider-engine": "^13.0.1",
     "web3-typescript-typings": "^0.0.10",
-    "webpack": "^2.6.0"
+    "webpack": "^3.1.0"
   },
   "dependencies": {
     "bignumber.js": "^4.0.2",
