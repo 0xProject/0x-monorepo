@@ -446,11 +446,11 @@
     {
       "inputs": [
         {
-          "name": "_zrx",
+          "name": "_ZRX_TOKEN_CONTRACT",
           "type": "address"
         },
         {
-          "name": "_proxy",
+          "name": "_PROXY_CONTRACT",
           "type": "address"
         }
       ],
