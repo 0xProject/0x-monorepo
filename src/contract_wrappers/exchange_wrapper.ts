@@ -549,20 +549,20 @@ export class ExchangeWrapper extends ContractWrapper {
             ];
         });
         // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
-        const [orderAddresses, orderValues, takerTokenCancelAmounts] =
+        const [orderAddresses, orderValues, cancelTakerTokenAmounts] =
             _.unzip<any>(orderAddressesValuesAndTakerTokenCancelAmounts);
-        const gas = await exchangeInstance.batchCancel.estimateGas(
+        const gas = await exchangeInstance.batchCancelOrders.estimateGas(
             orderAddresses,
             orderValues,
-            takerTokenCancelAmounts,
+            cancelTakerTokenAmounts,
             {
                 from: maker,
             },
         );
-        const response: ContractResponse = await exchangeInstance.batchCancel(
+        const response: ContractResponse = await exchangeInstance.batchCancelOrders(
             orderAddresses,
             orderValues,
-            takerTokenCancelAmounts,
+            cancelTakerTokenAmounts,
             {
                 from: maker,
                 gas,
