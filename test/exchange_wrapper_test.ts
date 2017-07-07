@@ -386,7 +386,7 @@ describe('ExchangeWrapper', () => {
                 });
             });
         });
-        describe('#batchFillOrderAsync', () => {
+        describe('#batchFillOrdersAsync', () => {
             let signedOrder: SignedOrder;
             let signedOrderHashHex: string;
             let anotherSignedOrder: SignedOrder;
@@ -414,10 +414,10 @@ describe('ExchangeWrapper', () => {
             });
             describe('successful batch fills', () => {
                 it('should no-op for an empty batch', async () => {
-                    await zeroEx.exchange.batchFillOrderAsync([], shouldCheckTransfer, takerAddress);
+                    await zeroEx.exchange.batchFillOrdersAsync([], shouldCheckTransfer, takerAddress);
                 });
                 it('should successfully fill multiple orders', async () => {
-                    await zeroEx.exchange.batchFillOrderAsync(orderFillBatch, shouldCheckTransfer, takerAddress);
+                    await zeroEx.exchange.batchFillOrdersAsync(orderFillBatch, shouldCheckTransfer, takerAddress);
                     const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(
                         signedOrderHashHex, exchangeContractAddress,
                     );
@@ -531,7 +531,7 @@ describe('ExchangeWrapper', () => {
                 });
             });
         });
-        describe('#batchCancelOrderAsync', () => {
+        describe('#batchCancelOrdersAsync', () => {
             let anotherSignedOrder: SignedOrder;
             let anotherOrderHashHex: string;
             let cancelBatch: OrderCancellationRequest[];
@@ -556,7 +556,7 @@ describe('ExchangeWrapper', () => {
                     const signedOrderWithDifferentMaker = await fillScenarios.createFillableSignedOrderAsync(
                         makerTokenAddress, takerTokenAddress, takerAddress, takerAddress, fillableAmount,
                     );
-                    return expect(zeroEx.exchange.batchCancelOrderAsync([
+                    return expect(zeroEx.exchange.batchCancelOrdersAsync([
                         cancelBatch[0],
                         {
                             order: signedOrderWithDifferentMaker,
@@ -567,7 +567,7 @@ describe('ExchangeWrapper', () => {
             });
             describe('successful batch cancels', () => {
                 it('should cancel a batch of orders', async () => {
-                    await zeroEx.exchange.batchCancelOrderAsync(cancelBatch);
+                    await zeroEx.exchange.batchCancelOrdersAsync(cancelBatch);
                     const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(
                         orderHashHex, exchangeContractAddress,
                     );
