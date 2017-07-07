@@ -225,16 +225,17 @@ export class ZeroEx {
         // v + r + s OR r + s + v, and different clients (even different versions of the same client)
         // return the signature params in different orders. In order to support all client implementations,
         // we parse the signature in both ways, and evaluate if either one is a valid signature.
-        const ecSignatureVRS = this.parseSignatureHexAsVRS(signature);
-        if (ecSignatureVRS.v === 27 || ecSignatureVRS.v === 28) {
+        const validVParamValues = [27, 28];
+        const ecSignatureVRS = signatureUtils.parseSignatureHexAsVRS(signature);
+        if (_.includes(validVParamValues, ecSignatureVRS.v)) {
             const isValidVRSSignature = ZeroEx.isValidSignature(orderHash, ecSignatureVRS, signerAddress);
             if (isValidVRSSignature) {
                 return ecSignatureVRS;
             }
         }
 
-        const ecSignatureRSV = this.parseSignatureHexAsRSV(signature);
-        if (ecSignatureRSV.v === 27 || ecSignatureRSV.v === 28) {
+        const ecSignatureRSV = signatureUtils.parseSignatureHexAsRSV(signature);
+        if (_.includes(validVParamValues, ecSignatureRSV.v)) {
             const isValidRSVSignature = ZeroEx.isValidSignature(orderHash, ecSignatureRSV, signerAddress);
             if (isValidRSVSignature) {
                 return ecSignatureRSV;
