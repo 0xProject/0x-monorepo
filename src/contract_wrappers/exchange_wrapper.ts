@@ -520,7 +520,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                      interface.
      */
     @decorators.contractCallErrorHandler
-    public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
+    public async batchCancelOrdersAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
                                    orderCancellationRequestsSchema);
         const exchangeContractAddresses = _.map(
