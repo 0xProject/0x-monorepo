@@ -234,22 +234,22 @@ export interface LogFillContractEventArgs {
     maker: string;
     taker: string;
     feeRecipient: string;
-    tokenM: string;
-    tokenT: string;
-    filledValueM: BigNumber.BigNumber;
-    filledValueT: BigNumber.BigNumber;
-    feeMPaid: BigNumber.BigNumber;
-    feeTPaid: BigNumber.BigNumber;
+    makerToken: string;
+    takerToken: string;
+    filledMakerTokenAmount: BigNumber.BigNumber;
+    filledTakerTokenAmount: BigNumber.BigNumber;
+    paidMakerFee: BigNumber.BigNumber;
+    paidTakerFee: BigNumber.BigNumber;
     tokens: string;
     orderHash: string;
 }
 export interface LogCancelContractEventArgs {
     maker: string;
     feeRecipient: string;
-    tokenM: string;
-    tokenT: string;
-    cancelledValueM: BigNumber.BigNumber;
-    cancelledValueT: BigNumber.BigNumber;
+    makerToken: string;
+    takerToken: string;
+    cancelledMakerTokenAmount: BigNumber.BigNumber;
+    cancelledTakerTokenAmount: BigNumber.BigNumber;
     tokens: string;
     orderHash: string;
 }

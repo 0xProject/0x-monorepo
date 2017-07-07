@@ -201,7 +201,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this._throwErrorLogsAsErrors(response.logs);
         const logFillArgs = response.logs[0].args as LogFillContractEventArgs;
-        const filledTakerTokenAmount = new BigNumber(logFillArgs.filledValueT);
+        const filledTakerTokenAmount = new BigNumber(logFillArgs.filledTakerTokenAmount);
         return filledTakerTokenAmount;
     }
     /**
@@ -283,7 +283,8 @@ export class ExchangeWrapper extends ContractWrapper {
         this._throwErrorLogsAsErrors(response.logs);
         let filledTakerTokenAmount = new BigNumber(0);
         _.each(response.logs, log => {
-            filledTakerTokenAmount = filledTakerTokenAmount.plus((log.args as LogFillContractEventArgs).filledValueT);
+            filledTakerTokenAmount = filledTakerTokenAmount.plus(
+                (log.args as LogFillContractEventArgs).filledTakerTokenAmount);
         });
         return filledTakerTokenAmount;
     }
@@ -518,7 +519,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this._throwErrorLogsAsErrors(response.logs);
         const logFillArgs = response.logs[0].args as LogCancelContractEventArgs;
-        const cancelledTakerTokenAmount = new BigNumber(logFillArgs.cancelledValueT);
+        const cancelledTakerTokenAmount = new BigNumber(logFillArgs.cancelledTakerTokenAmount);
         return cancelledTakerTokenAmount;
     }
     /**
