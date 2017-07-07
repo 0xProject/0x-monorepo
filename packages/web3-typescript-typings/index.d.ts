@@ -6,8 +6,8 @@ declare module 'web3' {
         public static providers: typeof providers;
 
         public version: {
-            getNetwork(): number;
-            getNode(): string;
+            getNetwork(cd: (err: Error, networkId: string) => void): void;
+            getNode(cd: (err: Error, nodeVersion: string) => void): void;
         };
 
         public eth: {
