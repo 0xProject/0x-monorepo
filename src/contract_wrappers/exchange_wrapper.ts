@@ -297,8 +297,8 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
     @decorators.contractCallErrorHandler
-    public async batchFillOrderAsync(orderFillRequests: OrderFillRequest[],
-                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+    public async batchFillOrdersAsync(orderFillRequests: OrderFillRequest[],
+                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
         assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillRequests,
@@ -520,7 +520,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                      interface.
      */
     @decorators.contractCallErrorHandler
-    public async batchCancelOrderAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
+    public async batchCancelOrdersAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
                                    orderCancellationRequestsSchema);
         const exchangeContractAddresses = _.map(

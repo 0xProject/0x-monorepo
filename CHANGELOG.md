@@ -5,6 +5,8 @@ v0.9.0 - TBD
     * Move `zeroEx.exchange.getAvailableContractAddressesAsync` to `zeroEx.getAvailableExchangeContractAddressesAsync` (#94)
     * Move `zeroEx.exchange.getProxyAuthorizedContractAddressesAsync` to `zeroEx.getProxyAuthorizedExchangeContractAddressesAsync` (#94)
     * Cache `net_version` requests and invalidate the cache on calls to `setProvider` (#95)
+    * Rename `zeroEx.exchange.batchCancelOrderAsync` to `zeroEx.exchange.batchCancelOrdersAsync`
+    * Rename `zeroEx.exchange.batchFillOrderAsync` to `zeroEx.exchange.batchFillOrdersAsync`
 
 v0.8.0 - _Jul. 4, 2017_
 ------------------------
