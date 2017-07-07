@@ -31,11 +31,11 @@
       "constant": true,
       "inputs": [
         {
-          "name": "numerator",
+          "name": "denominator",
           "type": "uint256"
         },
         {
-          "name": "denominator",
+          "name": "numerator",
           "type": "uint256"
         },
         {

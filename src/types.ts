@@ -68,8 +68,8 @@ export interface ExchangeContract extends ContractInstance {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
     isRoundingError: {
-        call: (numerator: BigNumber.BigNumber, denominator: BigNumber.BigNumber,
-               target: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
+        call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmount: BigNumber.BigNumber,
+               makerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     };
     fill: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,

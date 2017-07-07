@@ -662,7 +662,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                                                senderAddress, zrxTokenAddress);
 
         const wouldRoundingErrorOccur = await this._isRoundingErrorAsync(
-            fillTakerAmount, signedOrder.takerTokenAmount, signedOrder.makerTokenAmount,
+            signedOrder.takerTokenAmount, fillTakerAmount, signedOrder.makerTokenAmount,
             signedOrder.exchangeContractAddress,
         );
         if (wouldRoundingErrorOccur) {
@@ -764,14 +764,14 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(errMessage);
         }
     }
-    private async _isRoundingErrorAsync(numerator: BigNumber.BigNumber,
-                                        denominator: BigNumber.BigNumber,
-                                        target: BigNumber.BigNumber,
+    private async _isRoundingErrorAsync(takerTokenAmount: BigNumber.BigNumber,
+                                        fillTakerAmount: BigNumber.BigNumber,
+                                        makerTokenAmount: BigNumber.BigNumber,
                                         exchangeContractAddress: string): Promise<boolean> {
         await assert.isUserAddressAvailableAsync(this._web3Wrapper);
         const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddress);
         const isRoundingError = await exchangeInstance.isRoundingError.call(
-            numerator, denominator, target,
+            takerTokenAmount, fillTakerAmount, makerTokenAmount,
         );
         return isRoundingError;
     }
