@@ -11,7 +11,7 @@ export class Web3Wrapper {
         this.web3.setProvider(provider);
     }
     public setProvider(provider: Web3.Provider) {
-        this.networkIdIfExists = undefined;
+        delete this.networkIdIfExists;
         this.web3.setProvider(provider);
     }
     public isAddress(address: string): boolean {
@@ -29,16 +29,16 @@ export class Web3Wrapper {
         return this.web3.currentProvider;
     }
     public async getNetworkIdIfExistsAsync(): Promise<number|undefined> {
-        if (_.isUndefined(this.networkIdIfExists)) {
-            try {
-                const networkId = await this.getNetworkAsync();
-                this.networkIdIfExists = Number(networkId);
-                return this.networkIdIfExists;
-            } catch (err) {
-                return undefined;
-            }
-        } else {
+        if (!_.isUndefined(this.networkIdIfExists)) {
+          return this.networkIdIfExists;
+        }
+
+        try {
+            const networkId = await this.getNetworkAsync();
+            this.networkIdIfExists = Number(networkId);
             return this.networkIdIfExists;
+        } catch (err) {
+            return undefined;
         }
     }
     public toWei(ethAmount: BigNumber.BigNumber): BigNumber.BigNumber {
