@@ -153,11 +153,11 @@
           "type": "uint256[6][]"
         },
         {
-          "name": "fillValueT",
+          "name": "fillTakerTokenAmount",
           "type": "uint256"
         },
         {
-          "name": "shouldCheckTransfer",
+          "name": "shouldThrowOnInsufficientBalanceOrAllowance",
           "type": "bool"
         },
         {
@@ -173,32 +173,10 @@
           "type": "bytes32[]"
         }
       ],
-      "name": "fillUpTo",
+      "name": "fillOrdersUpTo",
       "outputs": [
         {
-          "name": "filledValueT",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "a",
-          "type": "uint256"
-        },
-        {
-          "name": "b",
-          "type": "uint256"
-        }
-      ],
-      "name": "min",
-      "outputs": [
-        {
-          "name": "min",
+          "name": "filledTakerTokenAmount",
           "type": "uint256"
         }
       ],

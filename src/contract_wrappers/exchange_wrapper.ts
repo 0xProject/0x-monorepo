@@ -207,7 +207,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * If fill amount is not reached - it fills as much of the fill amount as possible and succeeds.
      * @param   signedOrders            The array of signedOrders that you would like to fill until
      *                                  takerTokenFillAmount is reached.
-     * @param   takerTokenFillAmount    The total amount of the takerTokens you would like to fill.
+     * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
      * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
      *                                  execution any of the tokens cannot be transferred. If set to false,
      *                                  the call will continue to fill subsequent signedOrders even when
@@ -217,8 +217,9 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return                          The amount of the orders that was filled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
-    public async fillOrdersUpToAsync(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber.BigNumber,
-                                     shouldCheckTransfer: boolean, takerAddress: string): Promise<BigNumber.BigNumber> {
+    public async fillOrdersUpToAsync(signedOrders: SignedOrder[], fillTakerTokenAmount: BigNumber.BigNumber,
+                                     shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                                     takerAddress: string): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('signedOrders', signedOrders, signedOrdersSchema);
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
@@ -226,12 +227,12 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeContractAddresses = _.map(signedOrders, signedOrder => signedOrder.exchangeContractAddress);
         assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
                                        ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
-        assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
-        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         for (const signedOrder of signedOrders) {
             await this._validateFillOrderAndThrowIfInvalidAsync(
-                signedOrder, takerTokenFillAmount, takerAddress);
+                signedOrder, fillTakerTokenAmount, takerAddress);
         }
         if (_.isEmpty(signedOrders)) {
             return new BigNumber(0); // no-op
@@ -251,11 +252,11 @@ export class ExchangeWrapper extends ContractWrapper {
         );
 
         const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddresses[0]);
-        const gas = await exchangeInstance.fillUpTo.estimateGas(
+        const gas = await exchangeInstance.fillOrdersUpTo.estimateGas(
             orderAddressesArray,
             orderValuesArray,
-            takerTokenFillAmount,
-            shouldCheckTransfer,
+            fillTakerTokenAmount,
+            shouldThrowOnInsufficientBalanceOrAllowance,
             vArray,
             rArray,
             sArray,
@@ -263,11 +264,11 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: takerAddress,
             },
         );
-        const response: ContractResponse = await exchangeInstance.fillUpTo(
+        const response: ContractResponse = await exchangeInstance.fillOrdersUpTo(
             orderAddressesArray,
             orderValuesArray,
-            takerTokenFillAmount,
-            shouldCheckTransfer,
+            fillTakerTokenAmount,
+            shouldThrowOnInsufficientBalanceOrAllowance,
             vArray,
             rArray,
             sArray,
@@ -278,7 +279,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this._throwErrorLogsAsErrors(response.logs);
         let filledTakerTokenAmount = new BigNumber(0);
-        const filledAmounts = _.each(response.logs, log => {
+        _.each(response.logs, log => {
             filledTakerTokenAmount = filledTakerTokenAmount.plus((log.args as LogFillContractEventArgs).filledValueT);
         });
         return filledTakerTokenAmount;
