@@ -603,19 +603,19 @@ describe('ExchangeWrapper', () => {
             orderHash = zeroEx.getOrderHashHex(signedOrder);
         });
         describe('#getUnavailableTakerAmountAsync', () => {
-            it ('should throw if passed an invalid orderHash', async () => {
+            it('should throw if passed an invalid orderHash', async () => {
                 const invalidOrderHashHex = '0x123';
                 return expect(zeroEx.exchange.getUnavailableTakerAmountAsync(
                     invalidOrderHashHex, exchangeContractAddress,
                 )).to.be.rejected();
             });
-            it ('should return zero if passed a valid but non-existent orderHash', async () => {
+            it('should return zero if passed a valid but non-existent orderHash', async () => {
                 const unavailableValueT = await zeroEx.exchange.getUnavailableTakerAmountAsync(
                     NON_EXISTENT_ORDER_HASH, exchangeContractAddress,
                 );
                 expect(unavailableValueT).to.be.bignumber.equal(0);
             });
-            it ('should return the unavailableValueT for a valid and partially filled orderHash', async () => {
+            it('should return the unavailableValueT for a valid and partially filled orderHash', async () => {
                 const unavailableValueT = await zeroEx.exchange.getUnavailableTakerAmountAsync(
                     orderHash, exchangeContractAddress,
                 );
@@ -623,19 +623,19 @@ describe('ExchangeWrapper', () => {
             });
         });
         describe('#getFilledTakerAmountAsync', () => {
-            it ('should throw if passed an invalid orderHash', async () => {
+            it('should throw if passed an invalid orderHash', async () => {
                 const invalidOrderHashHex = '0x123';
                 return expect(zeroEx.exchange.getFilledTakerAmountAsync(
                     invalidOrderHashHex, exchangeContractAddress,
                 )).to.be.rejected();
             });
-            it ('should return zero if passed a valid but non-existent orderHash', async () => {
+            it('should return zero if passed a valid but non-existent orderHash', async () => {
                 const filledValueT = await zeroEx.exchange.getFilledTakerAmountAsync(
                     NON_EXISTENT_ORDER_HASH, exchangeContractAddress,
                 );
                 expect(filledValueT).to.be.bignumber.equal(0);
             });
-            it ('should return the filledValueT for a valid and partially filled orderHash', async () => {
+            it('should return the filledValueT for a valid and partially filled orderHash', async () => {
                 const filledValueT = await zeroEx.exchange.getFilledTakerAmountAsync(
                     orderHash, exchangeContractAddress,
                 );
@@ -643,25 +643,25 @@ describe('ExchangeWrapper', () => {
             });
         });
         describe('#getCanceledTakerAmountAsync', () => {
-            it ('should throw if passed an invalid orderHash', async () => {
+            it('should throw if passed an invalid orderHash', async () => {
                 const invalidOrderHashHex = '0x123';
                 return expect(zeroEx.exchange.getCanceledTakerAmountAsync(
                     invalidOrderHashHex, exchangeContractAddress,
                 )).to.be.rejected();
             });
-            it ('should return zero if passed a valid but non-existent orderHash', async () => {
+            it('should return zero if passed a valid but non-existent orderHash', async () => {
                 const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(
                     NON_EXISTENT_ORDER_HASH, exchangeContractAddress,
                 );
                 expect(cancelledValueT).to.be.bignumber.equal(0);
             });
-            it ('should return the cancelledValueT for a valid and partially filled orderHash', async () => {
+            it('should return the cancelledValueT for a valid and partially filled orderHash', async () => {
                 const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(
                     orderHash, exchangeContractAddress,
                 );
                 expect(cancelledValueT).to.be.bignumber.equal(0);
             });
-            it ('should return the cancelledValueT for a valid and cancelled orderHash', async () => {
+            it('should return the cancelledValueT for a valid and cancelled orderHash', async () => {
                 const cancelAmount = fillableAmount.minus(partialFillAmount);
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmount);
                 const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(
