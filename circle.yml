@@ -2,7 +2,7 @@ machine:
   node:
     version: 6.1.0
   environment:
-      CONTRACTS_COMMIT_HASH: 414e997
+      CONTRACTS_COMMIT_HASH: '414e997'
 
 test:
   override:
