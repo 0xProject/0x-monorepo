@@ -90,7 +90,7 @@ export class FillScenarios {
     private async increaseBalanceAndAllowanceAsync(
         tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
         if (amount.isZero()) {
-            return;
+            return; // noop
         }
         await Promise.all([
             this.increaseBalanceAsync(tokenAddress, address, amount),
