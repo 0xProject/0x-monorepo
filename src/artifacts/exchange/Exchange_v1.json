@@ -127,11 +127,11 @@
           "type": "uint256[6][]"
         },
         {
-          "name": "cancelValuesT",
+          "name": "cancelTakerTokenAmounts",
           "type": "uint256[]"
         }
       ],
-      "name": "batchCancel",
+      "name": "batchCancelOrders",
       "outputs": [
         {
           "name": "success",
