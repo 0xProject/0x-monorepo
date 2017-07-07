@@ -229,11 +229,11 @@
           "type": "uint256[6]"
         },
         {
-          "name": "fillValueT",
+          "name": "fillTakerTokenAmount",
           "type": "uint256"
         },
         {
-          "name": "shouldCheckTransfer",
+          "name": "shouldThrowOnInsufficientBalanceOrAllowance",
           "type": "bool"
         },
         {
@@ -249,10 +249,10 @@
           "type": "bytes32"
         }
       ],
-      "name": "fill",
+      "name": "fillOrder",
       "outputs": [
         {
-          "name": "filledValueT",
+          "name": "filledTakerTokenAmount",
           "type": "uint256"
         }
       ],
