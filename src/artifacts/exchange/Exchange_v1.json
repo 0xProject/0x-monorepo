@@ -271,11 +271,11 @@
           "type": "uint256[6][]"
         },
         {
-          "name": "fillValuesT",
+          "name": "fillTakerTokenAmounts",
           "type": "uint256[]"
         },
         {
-          "name": "shouldCheckTransfer",
+          "name": "shouldThrowOnInsufficientBalanceOrAllowance",
           "type": "bool"
         },
         {
@@ -291,7 +291,7 @@
           "type": "bytes32[]"
         }
       ],
-      "name": "batchFill",
+      "name": "batchFillOrders",
       "outputs": [
         {
           "name": "success",

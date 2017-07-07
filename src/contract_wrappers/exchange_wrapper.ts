@@ -292,17 +292,21 @@ export class ExchangeWrapper extends ContractWrapper {
      * Executes multiple fills atomically in a single transaction.
      * If shouldCheckTransfer is set to true, it will continue filling subsequent orders even when earlier ones fail.
      * When shouldCheckTransfer is set to false, if any fill fails, the entire batch fails.
-     * @param   orderFillRequests       An array of objects that conform to the OrderFillRequest interface.
-     * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
-     *                                  execution any of the tokens cannot be transferred. If set to false,
-     *                                  the call will continue to fill subsequent signedOrders even when some
-     *                                  cannot be filled.
-     * @param   takerAddress            The user Ethereum address who would like to fill these orders.
-     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
+     * @param   orderFillRequests                               An array of objects that conform to the
+     *                                                          OrderFillRequest interface.
+     * @param   shouldThrowOnInsufficientBalanceOrAllowance     Whether or not you wish for the contract call to throw
+     *                                                          if upon execution any of the tokens cannot be
+     *                                                          transferred. If set to false, the call will continue to
+     *                                                          fill subsequent signedOrders even when some
+     *                                                          cannot be filled.
+     * @param   takerAddress                                    The user Ethereum address who would like to fill
+     *                                                          these orders. Must be available via the supplied
+     *                                                          Web3.Provider passed to 0x.js.
      */
     @decorators.contractCallErrorHandler
     public async batchFillOrdersAsync(orderFillRequests: OrderFillRequest[],
-                                      shouldCheckTransfer: boolean, takerAddress: string): Promise<void> {
+                                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                                      takerAddress: string): Promise<void> {
         assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillRequests,
@@ -310,7 +314,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
                                        ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
-        assert.isBoolean('shouldCheckTransfer', shouldCheckTransfer);
+        assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         for (const orderFillRequest of orderFillRequests) {
             await this._validateFillOrderAndThrowIfInvalidAsync(
@@ -330,16 +334,16 @@ export class ExchangeWrapper extends ContractWrapper {
             ];
         });
         // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
-        const [orderAddressesArray, orderValuesArray, takerTokenFillAmountArray, vArray, rArray, sArray] = _.unzip<any>(
+        const [orderAddressesArray, orderValuesArray, fillTakerTokenAmounts, vArray, rArray, sArray] = _.unzip<any>(
             orderAddressesValuesAmountsAndSignatureArray,
         );
 
         const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddresses[0]);
-        const gas = await exchangeInstance.batchFill.estimateGas(
+        const gas = await exchangeInstance.batchFillOrders.estimateGas(
             orderAddressesArray,
             orderValuesArray,
-            takerTokenFillAmountArray,
-            shouldCheckTransfer,
+            fillTakerTokenAmounts,
+            shouldThrowOnInsufficientBalanceOrAllowance,
             vArray,
             rArray,
             sArray,
@@ -347,11 +351,11 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: takerAddress,
             },
         );
-        const response: ContractResponse = await exchangeInstance.batchFill(
+        const response: ContractResponse = await exchangeInstance.batchFillOrders(
             orderAddressesArray,
             orderValuesArray,
-            takerTokenFillAmountArray,
-            shouldCheckTransfer,
+            fillTakerTokenAmounts,
+            shouldThrowOnInsufficientBalanceOrAllowance,
             vArray,
             rArray,
             sArray,
