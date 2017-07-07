@@ -371,29 +371,29 @@ export class ExchangeWrapper extends ContractWrapper {
      * the fill order is abandoned.
      * @param   signedOrder             An object that conforms to the SignedOrder interface. The
      *                                  signedOrder you wish to fill.
-     * @param   takerTokenFillAmount    The total amount of the takerTokens you would like to fill.
+     * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
     @decorators.contractCallErrorHandler
-    public async fillOrKillOrderAsync(signedOrder: SignedOrder, takerTokenFillAmount: BigNumber.BigNumber,
+    public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber.BigNumber,
                                       takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
-        assert.isBigNumber('takerTokenFillAmount', takerTokenFillAmount);
+        assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync(signedOrder.exchangeContractAddress);
-        await this._validateFillOrderAndThrowIfInvalidAsync(signedOrder, takerTokenFillAmount, takerAddress);
+        await this._validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
 
         await this._validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder, exchangeInstance.address,
-                                                                 takerTokenFillAmount);
+                                                                 fillTakerTokenAmount);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
 
-        const gas = await exchangeInstance.fillOrKill.estimateGas(
+        const gas = await exchangeInstance.fillOrKillOrder.estimateGas(
             orderAddresses,
             orderValues,
-            takerTokenFillAmount,
+            fillTakerTokenAmount,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
@@ -401,10 +401,10 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: takerAddress,
             },
         );
-        const response: ContractResponse = await exchangeInstance.fillOrKill(
+        const response: ContractResponse = await exchangeInstance.fillOrKillOrder(
             orderAddresses,
             orderValues,
-            takerTokenFillAmount,
+            fillTakerTokenAmount,
             signedOrder.ecSignature.v,
             signedOrder.ecSignature.r,
             signedOrder.ecSignature.s,
