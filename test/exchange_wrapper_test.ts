@@ -785,10 +785,10 @@ describe('ExchangeWrapper', () => {
                 );
                 zeroExEvent.watch((err: Error, event: ContractEvent) => {
                     const args = event.args as LogFillContractEventArgs;
-                    expect(args.filledValueM.isBigNumber).to.be.true();
-                    expect(args.filledValueT.isBigNumber).to.be.true();
-                    expect(args.feeMPaid.isBigNumber).to.be.true();
-                    expect(args.feeTPaid.isBigNumber).to.be.true();
+                    expect(args.filledMakerTokenAmount.isBigNumber).to.be.true();
+                    expect(args.filledTakerTokenAmount.isBigNumber).to.be.true();
+                    expect(args.paidMakerFee.isBigNumber).to.be.true();
+                    expect(args.paidTakerFee.isBigNumber).to.be.true();
                     done();
                 });
                 await zeroEx.exchange.fillOrderAsync(

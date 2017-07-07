@@ -477,32 +477,32 @@
         },
         {
           "indexed": false,
-          "name": "tokenM",
+          "name": "makerToken",
           "type": "address"
         },
         {
           "indexed": false,
-          "name": "tokenT",
+          "name": "takerToken",
           "type": "address"
         },
         {
           "indexed": false,
-          "name": "filledValueM",
+          "name": "filledMakerTokenAmount",
           "type": "uint256"
         },
         {
           "indexed": false,
-          "name": "filledValueT",
+          "name": "filledTakerTokenAmount",
           "type": "uint256"
         },
         {
           "indexed": false,
-          "name": "feeMPaid",
+          "name": "paidMakerFee",
           "type": "uint256"
         },
         {
           "indexed": false,
-          "name": "feeTPaid",
+          "name": "paidTakerFee",
           "type": "uint256"
         },
         {
@@ -534,22 +534,22 @@
         },
         {
           "indexed": false,
-          "name": "tokenM",
+          "name": "makerToken",
           "type": "address"
         },
         {
           "indexed": false,
-          "name": "tokenT",
+          "name": "takerToken",
           "type": "address"
         },
         {
           "indexed": false,
-          "name": "cancelledValueM",
+          "name": "cancelledMakerTokenAmount",
           "type": "uint256"
         },
         {
           "indexed": false,
-          "name": "cancelledValueT",
+          "name": "cancelledTakerTokenAmount",
           "type": "uint256"
         },
         {
