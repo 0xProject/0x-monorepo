@@ -395,7 +395,7 @@
     {
       "constant": true,
       "inputs": [],
-      "name": "ZRX",
+      "name": "ZRX_TOKEN_CONTRACT",
       "outputs": [
         {
           "name": "",
