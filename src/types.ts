@@ -83,11 +83,14 @@ export interface ExchangeContract extends ContractInstance {
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
                       shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
     };
-    fillUpTo: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmount: BigNumber.BigNumber,
-         shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmount: BigNumber.BigNumber,
-                      shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+    fillOrdersUpTo: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmount: BigNumber.BigNumber,
+         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+         v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                      fillTakerTokenAmount: BigNumber.BigNumber,
+                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
     };
     cancelOrder: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, canceltakerTokenAmount: BigNumber.BigNumber,
