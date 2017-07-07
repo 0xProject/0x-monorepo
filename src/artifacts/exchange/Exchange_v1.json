@@ -342,7 +342,7 @@
     {
       "constant": true,
       "inputs": [],
-      "name": "PROXY",
+      "name": "PROXY_CONTRACT",
       "outputs": [
         {
           "name": "",
