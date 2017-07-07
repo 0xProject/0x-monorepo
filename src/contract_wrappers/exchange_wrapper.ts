@@ -773,14 +773,14 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(errMessage);
         }
     }
-    private async _isRoundingErrorAsync(takerTokenAmount: BigNumber.BigNumber,
-                                        fillTakerAmount: BigNumber.BigNumber,
+    private async _isRoundingErrorAsync(numerator: BigNumber.BigNumber,
+                                        demoninator: BigNumber.BigNumber,
                                         makerTokenAmount: BigNumber.BigNumber,
                                         exchangeContractAddress: string): Promise<boolean> {
         await assert.isUserAddressAvailableAsync(this._web3Wrapper);
         const exchangeInstance = await this._getExchangeContractAsync(exchangeContractAddress);
         const isRoundingError = await exchangeInstance.isRoundingError.call(
-            takerTokenAmount, fillTakerAmount, makerTokenAmount,
+            demoninator, numerator, makerTokenAmount,
         );
         return isRoundingError;
     }
