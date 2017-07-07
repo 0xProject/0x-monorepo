@@ -482,27 +482,27 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
-        order: Order|SignedOrder, takerTokenCancelAmount: BigNumber.BigNumber): Promise<BigNumber.BigNumber> {
+        order: Order|SignedOrder, canceltakerTokenAmount: BigNumber.BigNumber): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('order', order, orderSchema);
-        assert.isBigNumber('takerTokenCancelAmount', takerTokenCancelAmount);
+        assert.isBigNumber('takerTokenCancelAmount', canceltakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync(order.exchangeContractAddress);
-        await this._validateCancelOrderAndThrowIfInvalidAsync(order, takerTokenCancelAmount);
+        await this._validateCancelOrderAndThrowIfInvalidAsync(order, canceltakerTokenAmount);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
-        const gas = await exchangeInstance.cancel.estimateGas(
+        const gas = await exchangeInstance.cancelOrder.estimateGas(
             orderAddresses,
             orderValues,
-            takerTokenCancelAmount,
+            canceltakerTokenAmount,
             {
                 from: order.maker,
             },
         );
-        const response: ContractResponse = await exchangeInstance.cancel(
+        const response: ContractResponse = await exchangeInstance.cancelOrder(
             orderAddresses,
             orderValues,
-            takerTokenCancelAmount,
+            canceltakerTokenAmount,
             {
                 from: order.maker,
                 gas,
@@ -510,8 +510,8 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this._throwErrorLogsAsErrors(response.logs);
         const logFillArgs = response.logs[0].args as LogCancelContractEventArgs;
-        const cancelledAmount = new BigNumber(logFillArgs.cancelledValueT);
-        return cancelledAmount;
+        const cancelledTakerTokenAmount = new BigNumber(logFillArgs.cancelledValueT);
+        return cancelledTakerTokenAmount;
     }
     /**
      * Batch version of cancelOrderAsync. Atomically cancels multiple orders in a single transaction.
