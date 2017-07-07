@@ -80,11 +80,14 @@ export interface ExchangeContract extends ContractInstance {
                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                       v: number, r: string, s: string, txOpts?: TxOpts) => number;
     };
-    batchFill: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
-         shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
-                      shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+    batchFillOrders: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
+         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+         v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                      fillTakerTokenAmounts: BigNumber.BigNumber[],
+                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
     };
     fillOrdersUpTo: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmount: BigNumber.BigNumber,
