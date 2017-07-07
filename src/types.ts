@@ -61,7 +61,7 @@ export interface ExchangeContract extends ContractInstance {
     LogFill: CreateContractEvent;
     LogCancel: CreateContractEvent;
     LogError: CreateContractEvent;
-    ZRX: {
+    ZRX_TOKEN_CONTRACT: {
         call: () => Promise<string>;
     };
     getUnavailableValueT: {
