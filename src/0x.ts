@@ -221,39 +221,27 @@ export class ZeroEx {
 
         const signature = await this._web3Wrapper.signTransactionAsync(signerAddress, msgHashHex);
 
-        let signatureData;
-        const [nodeVersionNumber] = findVersions(nodeVersion);
-        // Parity v1.6.6 and earlier returns the signatureData as vrs instead of rsv as Geth does
-        // Later versions return rsv but for the time being we still want to support version < 1.6.6
-        // Date: May 23rd 2017
-        const latestParityVersionWithVRS = '1.6.6';
-        const isVersionBeforeParityFix = compareVersions(nodeVersionNumber, latestParityVersionWithVRS) <= 0;
-        if (isParityNode && isVersionBeforeParityFix) {
-            const signatureBuffer = ethUtil.toBuffer(signature);
-            let v = signatureBuffer[0];
-            if (v < 27) {
-                v += 27;
+        // HACK: There is no consensus on whether the signatureHex string should be formatted as
+        // v + r + s OR r + s + v, and different clients (even different versions of the same client)
+        // return the signature params in different orders. In order to support all client implementations,
+        // we parse the signature in both ways, and evaluate if either one is a valid signature.
+        const ecSignatureVRS = this.parseSignatureHexAsVRS(signature);
+        if (ecSignatureVRS.v === 27 || ecSignatureVRS.v === 28) {
+            const isValidVRSSignature = ZeroEx.isValidSignature(orderHash, ecSignatureVRS, signerAddress);
+            if (isValidVRSSignature) {
+                return ecSignatureVRS;
             }
-            signatureData = {
-                v,
-                r: signatureBuffer.slice(1, 33),
-                s: signatureBuffer.slice(33, 65),
-            };
-        } else {
-            signatureData = ethUtil.fromRpcSig(signature);
         }
 
-        const {v, r, s} = signatureData;
-        const ecSignature: ECSignature = {
-            v,
-            r: ethUtil.bufferToHex(r),
-            s: ethUtil.bufferToHex(s),
-        };
-        const isValidSignature = ZeroEx.isValidSignature(orderHash, ecSignature, signerAddress);
-        if (!isValidSignature) {
-            throw new Error(ZeroExError.INVALID_SIGNATURE);
+        const ecSignatureRSV = this.parseSignatureHexAsRSV(signature);
+        if (ecSignatureRSV.v === 27 || ecSignatureRSV.v === 28) {
+            const isValidRSVSignature = ZeroEx.isValidSignature(orderHash, ecSignatureRSV, signerAddress);
+            if (isValidRSVSignature) {
+                return ecSignatureRSV;
+            }
         }
-        return ecSignature;
+
+        throw new Error(ZeroExError.INVALID_SIGNATURE);
     }
     /**
      * Returns the ethereum addresses of all available exchange contracts
@@ -292,5 +280,29 @@ export class ZeroEx {
             }
         }
         return proxyAuthorizedExchangeContractAddresses;
+    }
+    private parseSignatureHexAsVRS(signatureHex: string): ECSignature {
+        const signatureBuffer = ethUtil.toBuffer(signatureHex);
+        let v = signatureBuffer[0];
+        if (v < 27) {
+            v += 27;
+        }
+        const r = signatureBuffer.slice(1, 33);
+        const s = signatureBuffer.slice(33, 65);
+        const ecSignature: ECSignature = {
+            v,
+            r: ethUtil.bufferToHex(r),
+            s: ethUtil.bufferToHex(s),
+        };
+        return ecSignature;
+    }
+    private parseSignatureHexAsRSV(signatureHex: string): ECSignature {
+        const {v, r, s} = ethUtil.fromRpcSig(signatureHex);
+        const ecSignature: ECSignature = {
+            v,
+            r: ethUtil.bufferToHex(r),
+            s: ethUtil.bufferToHex(s),
+        };
+        return ecSignature;
     }
 }
