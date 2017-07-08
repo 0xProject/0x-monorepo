@@ -163,7 +163,7 @@ describe('ZeroEx library', () => {
             _.each(stubs, s => s.restore());
             stubs = [];
         });
-        it('Should return the correct ECSignature on TestPRC nodeVersion', async () => {
+        it('Should return the correct ECSignature', async () => {
             const orderHash = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
             const expectedECSignature = {
                 v: 27,
@@ -173,8 +173,7 @@ describe('ZeroEx library', () => {
             const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
-        it('should return the correct ECSignature on Parity > V1.6.6', async () => {
-            const newParityNodeVersion = 'Parity//v1.6.7-beta-e128418-20170518/x86_64-macos/rustc1.17.0';
+        it('should return the correct ECSignature for signatureHex concatenated as R + S + V', async () => {
             const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
             // tslint:disable-next-line: max-line-length
             const signature = '0x22109d11d79cb8bf96ed88625e1cd9558800c4073332a9a02857499883ee5ce3050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb021b';
@@ -184,8 +183,6 @@ describe('ZeroEx library', () => {
                 s: '0x050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb02',
             };
             stubs = [
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'getNodeVersionAsync')
-                    .returns(Promise.resolve(newParityNodeVersion)),
                 Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync')
                     .returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
@@ -194,8 +191,7 @@ describe('ZeroEx library', () => {
             const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
         });
-        it('should return the correct ECSignature on Parity < V1.6.6', async () => {
-            const newParityNodeVersion = 'Parity//v1.6.6-beta-8c6e3f3-20170411/x86_64-macos/rustc1.16.0';
+        it('should return the correct ECSignature for signatureHex concatenated as V + R + S', async () => {
             const orderHash = '0xc793e33ffded933b76f2f48d9aa3339fc090399d5e7f5dec8d3660f5480793f7';
             // tslint:disable-next-line: max-line-length
             const signature = '0x1bc80bedc6756722672753413efdd749b5adbd4fd552595f59c13427407ee9aee02dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960';
@@ -205,8 +201,6 @@ describe('ZeroEx library', () => {
                 s: '0x2dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960',
             };
             stubs = [
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'getNodeVersionAsync')
-                    .returns(Promise.resolve(newParityNodeVersion)),
                 Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync')
                     .returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
