@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 6.1.0
+    version: 6.5.0
   environment:
       CONTRACTS_COMMIT_HASH: '414e997'
 
