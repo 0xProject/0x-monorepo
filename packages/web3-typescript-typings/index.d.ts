@@ -50,11 +50,11 @@ declare module 'web3' {
 
         interface FunctionDescription {
             type: "function" | "constructor" | "fallback";
-            name: string;
+            name?: string;
             inputs: Array<FunctionParameter>;
             outputs?: Array<FunctionParameter>;
-            constant: boolean;
-            payable: boolean;
+            constant?: boolean;
+            payable?: boolean;
         }
 
         interface EventParameter {
