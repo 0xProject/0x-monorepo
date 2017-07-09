@@ -77,7 +77,7 @@ declare module 'web3' {
         interface FilterResult {
             get(callback: () => void): void;
             watch<A>(callback: (error: string|null, result: SolidityEvent<A>) => void): void;
-            stopWatching(): void;
+            stopWatching(callback: () => void): void;
         }
 
         interface ContractInstance {}
