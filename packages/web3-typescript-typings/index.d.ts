@@ -68,9 +68,15 @@ declare module 'web3' {
             topics: string[];
         }
 
+        interface SolidityEvent<A> {
+            event: string
+            address: string
+            args: A
+        }
+
         interface FilterResult {
             get(callback: () => void): void;
-            watch(callback: () => void): void;
+            watch<A>(callback: (error: string|null, result: SolidityEvent<A>) => void): void;
             stopWatching(): void;
         }
 
