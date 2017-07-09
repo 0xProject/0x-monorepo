@@ -19,7 +19,7 @@ declare module 'web3' {
             sign(address: string, message: string, callback: (err: Error, signData: string) => void): string;
             getBlock(blockHash: string, callback: (err: Error, blockObj: any) => void): BigNumber.BigNumber;
             getBlockNumber(callback: (err: Error, blockNumber: number) => void): void;
-            contract(abi: Web3.AbiDefinition[]): Web3.Contract;
+            contract<A>(abi: Web3.ContractAbi): Web3.Contract<A>;
             getBalance(addressHexString: string,
                 callback?: (err: any, result: BigNumber.BigNumber) => void): BigNumber.BigNumber;
             getCode(addressHexString: string,
@@ -44,21 +44,39 @@ declare module 'web3' {
     }
 
     namespace Web3 {
-        interface AbiIOParameter {
+        type ContractAbi = Array<AbiDefinition>;
+
+        type AbiDefinition = FunctionDescription | EventDescription;
+
+        interface FunctionDescription {
+            type: "function" | "constructor" | "fallback";
+            name: string;
+            inputs: Array<FunctionParameter>;
+            outputs?: Array<FunctionParameter>;
+            constant: boolean;
+            payable: boolean;
+        }
+
+        interface EventParameter {
+            name: string;
+            type: string;
+            indexed: boolean;
+        }
+
+        interface EventDescription {
+            type: "event";
+            name: string;
+            inputs: Array<EventParameter>;
+            anonymous: boolean;
+        }
+
+        interface FunctionParameter {
             name: string;
             type: string;
         }
 
-        interface AbiDefinition {
-            constants: boolean;
-            inputs: AbiIOParameter[];
-            name: string;
-            outputs: AbiIOParameter[];
-            type: string;
-        }
-
-        interface Contract {
-            at(address: string): ContractInstance;
+        interface Contract<A> {
+            at(address: string): A;
         }
 
         interface FilterObject {
@@ -79,8 +97,6 @@ declare module 'web3' {
             watch<A>(callback: (error: string|null, result: SolidityEvent<A>) => void): void;
             stopWatching(callback: () => void): void;
         }
-
-        interface ContractInstance {}
 
         interface Provider {}
     }
