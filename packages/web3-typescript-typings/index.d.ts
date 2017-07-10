@@ -49,7 +49,7 @@ declare module 'web3' {
         type AbiDefinition = FunctionDescription|EventDescription;
 
         interface FunctionDescription {
-            type: "function"|"constructor"|"fallback";
+            type: 'function'|'constructor'|'fallback';
             name?: string;
             inputs: Array<FunctionParameter>;
             outputs?: Array<FunctionParameter>;
@@ -64,7 +64,7 @@ declare module 'web3' {
         }
 
         interface EventDescription {
-            type: "event";
+            type: 'event';
             name: string;
             inputs: Array<EventParameter>;
             anonymous: boolean;
