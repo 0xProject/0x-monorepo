@@ -46,10 +46,10 @@ declare module 'web3' {
     namespace Web3 {
         type ContractAbi = Array<AbiDefinition>;
 
-        type AbiDefinition = FunctionDescription | EventDescription;
+        type AbiDefinition = FunctionDescription|EventDescription;
 
         interface FunctionDescription {
-            type: "function" | "constructor" | "fallback";
+            type: "function"|"constructor"|"fallback";
             name?: string;
             inputs: Array<FunctionParameter>;
             outputs?: Array<FunctionParameter>;
