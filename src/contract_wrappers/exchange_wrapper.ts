@@ -57,12 +57,12 @@ import * as ExchangeArtifacts from '../artifacts/Exchange.json';
  */
 export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractErrCodesToMsg = {
-        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.ORDER_FILL_EXPIRED,
-        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: ExchangeContractErrs.ORDER_FILL_EXPIRED,
-        [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO,
-        [ExchangeContractErrCodes.ERROR_CANCEL_NO_VALUE]: ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO,
-        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR,
-        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FILL_BALANCE_ALLOWANCE_ERROR,
+        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
+        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
+        [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: ExchangeContractErrs.OrderRemainingFillAmountZero,
+        [ExchangeContractErrCodes.ERROR_CANCEL_NO_VALUE]: ExchangeContractErrs.OrderRemainingFillAmountZero,
+        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.OrderFillRoundingError,
+        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FillBalanceAllowanceError,
     };
     private _exchangeContractIfExists?: ExchangeContract;
     private _exchangeLogEventEmitters: ContractEventEmitter[];
@@ -220,7 +220,10 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrders', signedOrders, signedOrdersSchema);
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
-                                       ExchangeContractErrs.MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED);
+                                       ExchangeContractErrs.MultipleTakerTokensInFillUpToDisallowed);
+        const exchangeContractAddresses = _.map(signedOrders, signedOrder => signedOrder.exchangeContractAddress);
+        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
+                                       ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
@@ -300,6 +303,12 @@ export class ExchangeWrapper extends ContractWrapper {
                                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                       takerAddress: string): Promise<void> {
         assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
+        const exchangeContractAddresses = _.map(
+            orderFillRequests,
+            orderFillRequest => orderFillRequest.signedOrder.exchangeContractAddress,
+        );
+        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
+                                       ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         for (const orderFillRequest of orderFillRequests) {
@@ -416,7 +425,7 @@ export class ExchangeWrapper extends ContractWrapper {
             orderFillOrKillRequest => orderFillOrKillRequest.signedOrder.exchangeContractAddress,
         );
         assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
-                                       ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
+                                       ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         if (_.isEmpty(orderFillOrKillRequests)) {
             return; // no-op
@@ -520,9 +529,9 @@ export class ExchangeWrapper extends ContractWrapper {
             orderCancellationRequest => orderCancellationRequest.order.exchangeContractAddress,
         );
         assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
-                                       ExchangeContractErrs.BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS);
+                                       ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
-        assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED);
+        assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
         for (const cancellationRequest of orderCancellationRequests) {
@@ -648,14 +657,14 @@ export class ExchangeWrapper extends ContractWrapper {
                                                            fillTakerAmount: BigNumber.BigNumber,
                                                            senderAddress: string): Promise<void> {
         if (fillTakerAmount.eq(0)) {
-            throw new Error(ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO);
+            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
         }
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== senderAddress) {
-            throw new Error(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
+            throw new Error(ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker);
         }
         const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
         if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.ORDER_FILL_EXPIRED);
+            throw new Error(ExchangeContractErrs.OrderFillExpired);
         }
         const zrxTokenAddress = await this._getZRXTokenAddressAsync(signedOrder.exchangeContractAddress);
         await this._validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(signedOrder, fillTakerAmount,
@@ -665,22 +674,22 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.takerTokenAmount, fillTakerAmount, signedOrder.makerTokenAmount,
         );
         if (wouldRoundingErrorOccur) {
-            throw new Error(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
+            throw new Error(ExchangeContractErrs.OrderFillRoundingError);
         }
     }
     private async _validateCancelOrderAndThrowIfInvalidAsync(
         order: Order, takerTokenCancelAmount: BigNumber.BigNumber): Promise<void> {
         if (takerTokenCancelAmount.eq(0)) {
-            throw new Error(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
+            throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
         }
         const orderHash = utils.getOrderHashHex(order);
         const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash);
         if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
-            throw new Error(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
+            throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
         }
         const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
         if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
+            throw new Error(ExchangeContractErrs.OrderCancelExpired);
         }
     }
     private async _validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
@@ -690,7 +699,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
         const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
         if (remainingTakerAmount < fillTakerAmount) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
+            throw new Error(ExchangeContractErrs.InsufficientRemainingFillAmount);
         }
     }
     /**
@@ -721,16 +730,16 @@ export class ExchangeWrapper extends ContractWrapper {
         const fillMakerAmountInBaseUnits = fillTakerAmount.div(exchangeRate);
 
         if (fillTakerAmount.greaterThan(takerBalance)) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_TAKER_BALANCE);
+            throw new Error(ExchangeContractErrs.InsufficientTakerBalance);
         }
         if (fillTakerAmount.greaterThan(takerAllowance)) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_TAKER_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.InsufficientTakerAllowance);
         }
         if (fillMakerAmountInBaseUnits.greaterThan(makerBalance)) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_MAKER_BALANCE);
+            throw new Error(ExchangeContractErrs.InsufficientMakerBalance);
         }
         if (fillMakerAmountInBaseUnits.greaterThan(makerAllowance)) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_MAKER_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
         }
 
         const makerFeeBalance = await this._tokenWrapper.getBalanceAsync(zrxTokenAddress,
@@ -742,16 +751,16 @@ export class ExchangeWrapper extends ContractWrapper {
                                                                                  senderAddress);
 
         if (signedOrder.takerFee.greaterThan(takerFeeBalance)) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_TAKER_FEE_BALANCE);
+            throw new Error(ExchangeContractErrs.InsufficientTakerFeeBalance);
         }
         if (signedOrder.takerFee.greaterThan(takerFeeAllowance)) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_TAKER_FEE_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.InsufficientTakerFeeAllowance);
         }
         if (signedOrder.makerFee.greaterThan(makerFeeBalance)) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_MAKER_FEE_BALANCE);
+            throw new Error(ExchangeContractErrs.InsufficientMakerFeeBalance);
         }
         if (signedOrder.makerFee.greaterThan(makerFeeAllowance)) {
-            throw new Error(ExchangeContractErrs.INSUFFICIENT_MAKER_FEE_ALLOWANCE);
+            throw new Error(ExchangeContractErrs.InsufficientMakerFeeAllowance);
         }
     }
     private _throwErrorLogsAsErrors(logs: ContractEvent[]): void {
@@ -777,8 +786,27 @@ export class ExchangeWrapper extends ContractWrapper {
             return this._exchangeContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync((ExchangeArtifacts as any));
+<<<<<<< HEAD
         this._exchangeContractIfExists = contractInstance as ExchangeContract;
         return this._exchangeContractIfExists;
+=======
+        this._exchangeContractByAddress[exchangeContractAddress] = contractInstance as ExchangeContract;
+        return this._exchangeContractByAddress[exchangeContractAddress];
+    }
+    private _getExchangeArtifactsByAddressOrThrow(exchangeContractAddress: string): ContractArtifact {
+        const exchangeArtifacts = _.values<ContractArtifact>(ExchangeArtifactsByName);
+        for (const exchangeArtifact of exchangeArtifacts) {
+            const networkSpecificExchangeArtifactValues = _.values(exchangeArtifact.networks);
+            const exchangeAddressesInArtifact = _.map(
+                networkSpecificExchangeArtifactValues,
+                networkSpecificExchangeArtifact => networkSpecificExchangeArtifact.address,
+            );
+            if (_.includes(exchangeAddressesInArtifact, exchangeContractAddress)) {
+                return exchangeArtifact;
+            }
+        }
+        throw new Error(ZeroExError.ExchangeContractDoesNotExist);
+>>>>>>> Use PascalCase names as string enum keys
     }
     private async _getZRXTokenAddressAsync(exchangeContractAddress: string): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();

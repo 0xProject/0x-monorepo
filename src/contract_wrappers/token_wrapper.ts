@@ -146,7 +146,7 @@ export class TokenWrapper extends ContractWrapper {
 
         const fromAddressBalance = await this.getBalanceAsync(tokenAddress, fromAddress);
         if (fromAddressBalance.lessThan(amountInBaseUnits)) {
-            throw new Error(ZeroExError.INSUFFICIENT_BALANCE_FOR_TRANSFER);
+            throw new Error(ZeroExError.InsufficientBalanceForTransfer);
         }
 
         await tokenContract.transfer(toAddress, amountInBaseUnits, {
@@ -178,12 +178,12 @@ export class TokenWrapper extends ContractWrapper {
 
         const fromAddressAllowance = await this.getAllowanceAsync(tokenAddress, fromAddress, senderAddress);
         if (fromAddressAllowance.lessThan(amountInBaseUnits)) {
-            throw new Error(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
+            throw new Error(ZeroExError.InsufficientAllowanceForTransfer);
         }
 
         const fromAddressBalance = await this.getBalanceAsync(tokenAddress, fromAddress);
         if (fromAddressBalance.lessThan(amountInBaseUnits)) {
-            throw new Error(ZeroExError.INSUFFICIENT_BALANCE_FOR_TRANSFER);
+            throw new Error(ZeroExError.InsufficientBalanceForTransfer);
         }
 
         await tokenContract.transferFrom(fromAddress, toAddress, amountInBaseUnits, {
@@ -252,7 +252,7 @@ export class TokenWrapper extends ContractWrapper {
                                        undefined :
                                        (ProxyArtifacts as any).networks[networkIdIfExists];
         if (_.isUndefined(proxyNetworkConfigsIfExists)) {
-            throw new Error(ZeroExError.CONTRACT_NOT_DEPLOYED_ON_NETWORK);
+            throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
         }
         const proxyAddress = proxyNetworkConfigsIfExists.address;
         return proxyAddress;

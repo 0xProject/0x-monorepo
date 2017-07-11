@@ -29,7 +29,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
 
         const ethBalanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(depositor);
-        assert.assert(ethBalanceInWei.gte(amountInWei), ZeroExError.INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT);
+        assert.assert(ethBalanceInWei.gte(amountInWei), ZeroExError.InsufficientEthBalanceForDeposit);
 
         const wethContract = await this._getEtherTokenContractAsync();
         await wethContract.deposit({
@@ -49,7 +49,7 @@ export class EtherTokenWrapper extends ContractWrapper {
 
         const wethContractAddress = await this.getContractAddressAsync();
         const WETHBalanceInBaseUnits = await this._tokenWrapper.getBalanceAsync(wethContractAddress, withdrawer);
-        assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL);
+        assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.InsufficientWEthBalanceForWithdrawal);
 
         const wethContract = await this._getEtherTokenContractAsync();
         await wethContract.withdraw(amountInWei, {

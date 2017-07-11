@@ -4,7 +4,6 @@ import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
 import {SchemaValidator} from './schema_validator';
 import {utils} from './utils';
-import {StringEnum} from '../types';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
@@ -27,7 +26,7 @@ export const assert = {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },
-    doesBelongToStringEnum(variableName: string, value: string, stringEnum: StringEnum): void {
+    doesBelongToStringEnum(variableName: string, value: string, stringEnum: any): void {
         const doesBelongToStringEnum = !_.isUndefined(stringEnum[value]);
         const enumValues = _.keys(stringEnum);
         const enumValuesAsStrings = _.map(enumValues, enumValue => `'${enumValue}'`);

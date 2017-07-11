@@ -28,7 +28,7 @@ export class ContractWrapper {
         if (!_.isUndefined(contractAddress)) {
             const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
             if (!doesContractExist) {
-                throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
+                throw new Error(ZeroExError.ContractDoesNotExist);
             }
         }
 
@@ -38,10 +38,10 @@ export class ContractWrapper {
         } catch (err) {
             const errMsg = `${err}`;
             if (_.includes(errMsg, 'not been deployed to detected network')) {
-                throw new Error(ZeroExError.CONTRACT_DOES_NOT_EXIST);
+                throw new Error(ZeroExError.ContractDoesNotExist);
             } else {
                 utils.consoleLog(`Notice: Error encountered: ${err} ${err.stack}`);
-                throw new Error(ZeroExError.UNHANDLED_ERROR);
+                throw new Error(ZeroExError.UnhandledError);
             }
         }
     }

@@ -111,7 +111,7 @@ describe('ExchangeWrapper', () => {
 
                     return expect(zeroEx.exchange.fillOrKillOrderAsync(
                         signedOrder, tooLargeFillAmount, takerAddress,
-                    )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_REMAINING_FILL_AMOUNT);
+                    )).to.be.rejectedWith(ExchangeContractErrs.InsufficientRemainingFillAmount);
                 });
             });
             describe('successful fills', () => {
@@ -183,7 +183,7 @@ describe('ExchangeWrapper', () => {
                     const zeroFillAmount = new BigNumber(0);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, zeroFillAmount, shouldCheckTransfer, takerAddress,
-                    )).to.be.rejectedWith(ExchangeContractErrs.ORDER_REMAINING_FILL_AMOUNT_ZERO);
+                    )).to.be.rejectedWith(ExchangeContractErrs.OrderRemainingFillAmountZero);
                 });
                 it('should throw when sender is not a taker', async () => {
                     const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
@@ -192,7 +192,7 @@ describe('ExchangeWrapper', () => {
                     const nonTakerAddress = userAddresses[6];
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmount, shouldCheckTransfer, nonTakerAddress,
-                    )).to.be.rejectedWith(ExchangeContractErrs.TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER);
+                    )).to.be.rejectedWith(ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker);
                 });
                 it('should throw when order is expired', async () => {
                     const expirationInPast = new BigNumber(1496826058); // 7th Jun 2017
@@ -202,7 +202,7 @@ describe('ExchangeWrapper', () => {
                     );
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                    )).to.be.rejectedWith(ExchangeContractErrs.ORDER_FILL_EXPIRED);
+                    )).to.be.rejectedWith(ExchangeContractErrs.OrderFillExpired);
                 });
                 describe('should throw when not enough balance or allowance to fulfill the order', () => {
                     const balanceToSubtractFromMaker = new BigNumber(3);
@@ -219,7 +219,7 @@ describe('ExchangeWrapper', () => {
                         );
                         return expect(zeroEx.exchange.fillOrderAsync(
                             signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                        )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_TAKER_BALANCE);
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerBalance);
                     });
                     it('should throw when taker allowance is less than fill amount', async () => {
                         const newAllowanceWhichIsLessThanFillAmount = fillTakerAmount.minus(lackingAllowance);
@@ -227,7 +227,7 @@ describe('ExchangeWrapper', () => {
                             newAllowanceWhichIsLessThanFillAmount);
                         return expect(zeroEx.exchange.fillOrderAsync(
                             signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                        )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_TAKER_ALLOWANCE);
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerAllowance);
                     });
                     it('should throw when maker balance is less than maker fill amount', async () => {
                         await zeroEx.token.transferAsync(
@@ -235,7 +235,7 @@ describe('ExchangeWrapper', () => {
                         );
                         return expect(zeroEx.exchange.fillOrderAsync(
                             signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                        )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_MAKER_BALANCE);
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
                     });
                     it('should throw when maker allowance is less than maker fill amount', async () => {
                         const newAllowanceWhichIsLessThanFillAmount = fillTakerAmount.minus(lackingAllowance);
@@ -243,7 +243,7 @@ describe('ExchangeWrapper', () => {
                             newAllowanceWhichIsLessThanFillAmount);
                         return expect(zeroEx.exchange.fillOrderAsync(
                             signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                        )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_MAKER_ALLOWANCE);
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerAllowance);
                     });
                 });
                 it('should throw when there a rounding error would have occurred', async () => {
@@ -256,7 +256,7 @@ describe('ExchangeWrapper', () => {
                     const fillTakerAmountThatCausesRoundingError = new BigNumber(3);
                     return expect(zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmountThatCausesRoundingError, shouldCheckTransfer, takerAddress,
-                    )).to.be.rejectedWith(ExchangeContractErrs.ORDER_FILL_ROUNDING_ERROR);
+                    )).to.be.rejectedWith(ExchangeContractErrs.OrderFillRoundingError);
                 });
                 describe('should throw when not enough balance or allowance to pay fees', () => {
                     const makerFee = new BigNumber(2);
@@ -275,7 +275,7 @@ describe('ExchangeWrapper', () => {
                         );
                         return expect(zeroEx.exchange.fillOrderAsync(
                             signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                        )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_MAKER_FEE_BALANCE);
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerFeeBalance);
                     });
                     it('should throw when maker doesn\'t have enough allowance to pay fees', async () => {
                         const newAllowanceWhichIsLessThanFees = makerFee.minus(1);
@@ -283,7 +283,7 @@ describe('ExchangeWrapper', () => {
                             newAllowanceWhichIsLessThanFees);
                         return expect(zeroEx.exchange.fillOrderAsync(
                             signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                        )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_MAKER_FEE_ALLOWANCE);
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerFeeAllowance);
                     });
                     it('should throw when taker doesn\'t have enough balance to pay fees', async () => {
                         const balanceToSubtractFromTaker = new BigNumber(1);
@@ -292,7 +292,7 @@ describe('ExchangeWrapper', () => {
                         );
                         return expect(zeroEx.exchange.fillOrderAsync(
                             signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                        )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_TAKER_FEE_BALANCE);
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerFeeBalance);
                     });
                     it('should throw when taker doesn\'t have enough allowance to pay fees', async () => {
                         const newAllowanceWhichIsLessThanFees = makerFee.minus(1);
@@ -300,7 +300,7 @@ describe('ExchangeWrapper', () => {
                             newAllowanceWhichIsLessThanFees);
                         return expect(zeroEx.exchange.fillOrderAsync(
                             signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
-                        )).to.be.rejectedWith(ExchangeContractErrs.INSUFFICIENT_TAKER_FEE_ALLOWANCE);
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerFeeAllowance);
                     });
                 });
             });
@@ -491,7 +491,7 @@ describe('ExchangeWrapper', () => {
                 it('should throw when cancel amount is zero', async () => {
                     const zeroCancelAmount = new BigNumber(0);
                     return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, zeroCancelAmount))
-                        .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_AMOUNT_ZERO);
+                        .to.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
                 it('should throw when order is expired', async () => {
                     const expirationInPast = new BigNumber(1496826058); // 7th Jun 2017
@@ -501,12 +501,12 @@ describe('ExchangeWrapper', () => {
                     );
                     orderHashHex = ZeroEx.getOrderHashHex(expiredSignedOrder);
                     return expect(zeroEx.exchange.cancelOrderAsync(expiredSignedOrder, cancelAmount))
-                        .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
+                        .to.be.rejectedWith(ExchangeContractErrs.OrderCancelExpired);
                 });
                 it('should throw when order is already cancelled or filled', async () => {
                     await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
                     return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount))
-                        .to.be.rejectedWith(ExchangeContractErrs.ORDER_ALREADY_CANCELLED_OR_FILLED);
+                        .to.be.rejectedWith(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
                 });
             });
             describe('successful cancels', () => {
@@ -552,7 +552,7 @@ describe('ExchangeWrapper', () => {
                             order: signedOrderWithDifferentMaker,
                             takerTokenCancelAmount: cancelAmount,
                         },
-                    ])).to.be.rejectedWith(ExchangeContractErrs.MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH);
+                    ])).to.be.rejectedWith(ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed);
                 });
             });
             describe('successful batch cancels', () => {
