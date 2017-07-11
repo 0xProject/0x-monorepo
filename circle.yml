@@ -1,8 +1,15 @@
 machine:
   node:
-    version: 6.1.0
+    version: 6.5.0
   environment:
-      CONTRACTS_COMMIT_HASH: cd04d7c
+      CONTRACTS_COMMIT_HASH: '414e997'
+      PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+
+dependencies:
+  override:
+    - yarn
+  cache_directories:
+    - ~/.cache/yarn
 
 test:
   override:
@@ -10,7 +17,7 @@ test:
     - unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
     - npm run testrpc -- --db testrpc_snapshot:
         background: true
-    - npm run test:coverage
-    - npm run report_test_coverage
-    - if [ $CIRCLE_BRANCH = "master" ]; then npm run test:umd; fi
-    - npm run lint
+    - yarn test:coverage
+    - yarn report_test_coverage
+    - if [ $CIRCLE_BRANCH = "master" ]; then yarn test:umd; fi
+    - yarn lint

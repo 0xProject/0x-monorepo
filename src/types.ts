@@ -61,56 +61,69 @@ export interface ExchangeContract extends ContractInstance {
     LogFill: CreateContractEvent;
     LogCancel: CreateContractEvent;
     LogError: CreateContractEvent;
-    ZRX: {
+    ZRX_TOKEN_CONTRACT: {
         call: () => Promise<string>;
     };
-    getUnavailableValueT: {
+    getUnavailableTakerTokenAmount: {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
     isRoundingError: {
         call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmount: BigNumber.BigNumber,
                makerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     };
-    fill: {
-        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-         shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
-                      shouldCheckTransfer: boolean, v: number, r: string, s: string, txOpts?: TxOpts) => number;
-    };
-    batchFill: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
-         shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmounts: BigNumber.BigNumber[],
-                      shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
-    };
-    fillUpTo: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmount: BigNumber.BigNumber,
-         shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillAmount: BigNumber.BigNumber,
-                      shouldCheckTransfer: boolean, v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
-    };
-    cancel: {
-        (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
-         txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelAmount: BigNumber.BigNumber,
-                      txOpts?: TxOpts) => number;
-    };
-    batchCancel: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelAmount: BigNumber.BigNumber[],
-         txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelAmount: BigNumber.BigNumber[],
-                      txOpts?: TxOpts) => number;
-    };
-    fillOrKill: {
-        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
+    fillOrder: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
+         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
          v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues, fillAmount: BigNumber.BigNumber,
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                      fillTakerTokenAmount: BigNumber.BigNumber,
+                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                       v: number, r: string, s: string, txOpts?: TxOpts) => number;
     };
-    batchFillOrKill: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillValuesT: BigNumber.BigNumber[],
+    batchFillOrders: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
+         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+         v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                      fillTakerTokenAmounts: BigNumber.BigNumber[],
+                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+    };
+    fillOrdersUpTo: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmount: BigNumber.BigNumber,
+         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+         v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                      fillTakerTokenAmount: BigNumber.BigNumber,
+                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+    };
+    cancelOrder: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, canceltakerTokenAmount: BigNumber.BigNumber,
+         txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                      canceltakerTokenAmount: BigNumber.BigNumber,
+                      txOpts?: TxOpts) => number;
+    };
+    batchCancelOrders: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelTakerTokenAmounts: BigNumber.BigNumber[],
+         txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                      cancelTakerTokenAmounts: BigNumber.BigNumber[],
+                      txOpts?: TxOpts) => number;
+    };
+    fillOrKillOrder: {
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
+         v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
+        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                      fillTakerTokenAmount: BigNumber.BigNumber,
+                      v: number, r: string, s: string, txOpts?: TxOpts) => number;
+    };
+    batchFillOrKillOrders: {
+        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
          v: number[], r: string[], s: string[], txOpts: TxOpts): ContractResponse;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillValuesT: BigNumber.BigNumber[],
+        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                      fillTakerTokenAmounts: BigNumber.BigNumber[],
                       v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
     };
     filled: {
@@ -221,22 +234,22 @@ export interface LogFillContractEventArgs {
     maker: string;
     taker: string;
     feeRecipient: string;
-    tokenM: string;
-    tokenT: string;
-    filledValueM: BigNumber.BigNumber;
-    filledValueT: BigNumber.BigNumber;
-    feeMPaid: BigNumber.BigNumber;
-    feeTPaid: BigNumber.BigNumber;
+    makerToken: string;
+    takerToken: string;
+    filledMakerTokenAmount: BigNumber.BigNumber;
+    filledTakerTokenAmount: BigNumber.BigNumber;
+    paidMakerFee: BigNumber.BigNumber;
+    paidTakerFee: BigNumber.BigNumber;
     tokens: string;
     orderHash: string;
 }
 export interface LogCancelContractEventArgs {
     maker: string;
     feeRecipient: string;
-    tokenM: string;
-    tokenT: string;
-    cancelledValueM: BigNumber.BigNumber;
-    cancelledValueT: BigNumber.BigNumber;
+    makerToken: string;
+    takerToken: string;
+    cancelledMakerTokenAmount: BigNumber.BigNumber;
+    cancelledTakerTokenAmount: BigNumber.BigNumber;
     tokens: string;
     orderHash: string;
 }
