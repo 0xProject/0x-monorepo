@@ -494,17 +494,17 @@ export class ExchangeWrapper extends ContractWrapper {
     public async cancelOrderAsync(
         order: Order|SignedOrder, cancelTakerTokenAmount: BigNumber.BigNumber): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('order', order, orderSchema);
-        assert.isBigNumber('takerTokenCancelAmount', canceltakerTokenAmount);
+        assert.isBigNumber('takerTokenCancelAmount', cancelTakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync(order.exchangeContractAddress);
-        await this._validateCancelOrderAndThrowIfInvalidAsync(order, canceltakerTokenAmount);
+        await this._validateCancelOrderAndThrowIfInvalidAsync(order, cancelTakerTokenAmount);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
         const gas = await exchangeInstance.cancelOrder.estimateGas(
             orderAddresses,
             orderValues,
-            canceltakerTokenAmount,
+            cancelTakerTokenAmount,
             {
                 from: order.maker,
             },
@@ -512,7 +512,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const response: ContractResponse = await exchangeInstance.cancelOrder(
             orderAddresses,
             orderValues,
-            canceltakerTokenAmount,
+            cancelTakerTokenAmount,
             {
                 from: order.maker,
                 gas,
