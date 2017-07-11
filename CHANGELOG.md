@@ -2,8 +2,7 @@
 
 v0.9.0 - TBD
 ------------------------
-    * Move `zeroEx.exchange.getAvailableContractAddressesAsync` to `zeroEx.getAvailableExchangeContractAddressesAsync` (#94)
-    * Move `zeroEx.exchange.getProxyAuthorizedContractAddressesAsync` to `zeroEx.getProxyAuthorizedExchangeContractAddressesAsync` (#94)
+    * Remove the ability to call methods on multiple authorized Exchange smart contracts (#106)
     * Cache `net_version` requests and invalidate the cache on calls to `setProvider` (#95)
     * Rename `zeroEx.exchange.batchCancelOrderAsync` to `zeroEx.exchange.batchCancelOrdersAsync`
     * Rename `zeroEx.exchange.batchFillOrderAsync` to `zeroEx.exchange.batchFillOrdersAsync`
