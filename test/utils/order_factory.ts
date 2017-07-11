@@ -34,7 +34,7 @@ export const orderFactory = {
             feeRecipient,
             expirationUnixTimestampSec,
         };
-        const orderHash = zeroEx.getOrderHashHex(order);
+        const orderHash = ZeroEx.getOrderHashHex(order);
         const ecSignature = await zeroEx.signOrderHashAsync(orderHash, maker);
         const signedOrder: SignedOrder = _.assign(order, {ecSignature});
         return signedOrder;
