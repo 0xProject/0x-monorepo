@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
-import {Schema} from 'jsonschema';
 import {SchemaValidator} from './schema_validator';
 import {utils} from './utils';
 import {StringEnum} from '../types';

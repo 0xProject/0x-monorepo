@@ -1,4 +1,4 @@
-import {Validator, ValidatorResult,  Schema} from 'jsonschema';
+import {Validator, ValidatorResult, Schema as JSONSchema} from 'jsonschema';
 import {ecSignatureSchema, ecSignatureParameterSchema} from '../schemas/ec_signature_schema';
 import {orderHashSchema} from '../schemas/order_hash_schema';
 import {orderSchema, signedOrderSchema} from '../schemas/order_schemas';
@@ -12,18 +12,18 @@ export class SchemaValidator {
     private validator: Validator;
     constructor() {
         this.validator = new Validator();
-        this.validator.addSchema(tokenSchema, tokenSchema.id);
-        this.validator.addSchema(orderSchema, orderSchema.id);
-        this.validator.addSchema(numberSchema, numberSchema.id);
-        this.validator.addSchema(addressSchema, addressSchema.id);
-        this.validator.addSchema(orderHashSchema, orderHashSchema.id);
-        this.validator.addSchema(blockParamSchema, blockParamSchema.id);
-        this.validator.addSchema(ecSignatureSchema, ecSignatureSchema.id);
-        this.validator.addSchema(signedOrderSchema, signedOrderSchema.id);
-        this.validator.addSchema(subscriptionOptsSchema, subscriptionOptsSchema.id);
-        this.validator.addSchema(indexFilterValuesSchema, indexFilterValuesSchema.id);
-        this.validator.addSchema(ecSignatureParameterSchema, ecSignatureParameterSchema.id);
-        this.validator.addSchema(orderFillOrKillRequestsSchema, orderFillOrKillRequestsSchema.id);
+        this.validator.addSchema(tokenSchema as JSONSchema, tokenSchema.id);
+        this.validator.addSchema(orderSchema as JSONSchema, orderSchema.id);
+        this.validator.addSchema(numberSchema as JSONSchema, numberSchema.id);
+        this.validator.addSchema(addressSchema as JSONSchema, addressSchema.id);
+        this.validator.addSchema(orderHashSchema as JSONSchema, orderHashSchema.id);
+        this.validator.addSchema(blockParamSchema as JSONSchema, blockParamSchema.id);
+        this.validator.addSchema(ecSignatureSchema as JSONSchema, ecSignatureSchema.id);
+        this.validator.addSchema(signedOrderSchema as JSONSchema, signedOrderSchema.id);
+        this.validator.addSchema(subscriptionOptsSchema as JSONSchema, subscriptionOptsSchema.id);
+        this.validator.addSchema(indexFilterValuesSchema as JSONSchema, indexFilterValuesSchema.id);
+        this.validator.addSchema(ecSignatureParameterSchema as JSONSchema, ecSignatureParameterSchema.id);
+        this.validator.addSchema(orderFillOrKillRequestsSchema as JSONSchema, orderFillOrKillRequestsSchema.id);
     }
     // In order to validate a complex JS object using jsonschema, we must replace any complex
     // sub-types (e.g BigNumber) with a simpler string representation. Since BigNumber and other
