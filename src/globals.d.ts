@@ -27,6 +27,7 @@ declare namespace Chai {
 /* tslint:enable */
 
 // jsonschema declarations
+// Source: https://github.com/tdegrunt/jsonschema/blob/master/lib/index.d.ts
 declare interface Schema {
     id?: string;
     $schema?: string;
