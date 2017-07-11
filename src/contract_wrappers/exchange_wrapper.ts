@@ -208,16 +208,17 @@ export class ExchangeWrapper extends ContractWrapper {
      * Sequentially and atomically fills signedOrders up to the specified takerTokenFillAmount.
      * If the fill amount is reached - it succeeds and does not fill the rest of the orders.
      * If fill amount is not reached - it fills as much of the fill amount as possible and succeeds.
-     * @param   signedOrders            The array of signedOrders that you would like to fill until
-     *                                  takerTokenFillAmount is reached.
-     * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
-     * @param   shouldCheckTransfer     Whether or not you wish for the contract call to throw if upon
-     *                                  execution any of the tokens cannot be transferred. If set to false,
-     *                                  the call will continue to fill subsequent signedOrders even when
-     *                                  some cannot be filled.
-     * @param   takerAddress            The user Ethereum address who would like to fill these orders.
-     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
-     * @return                          The amount of the orders that was filled (in taker token baseUnits).
+     * @param   signedOrders                                The array of signedOrders that you would like to fill until
+     *                                                      takerTokenFillAmount is reached.
+     * @param   fillTakerTokenAmount                        The total amount of the takerTokens you would like to fill.
+     * @param   shouldThrowOnInsufficientBalanceOrAllowance Whether or not you wish for the contract call to throw if
+     *                                                      upon execution any of the tokens cannot be transferred.
+     *                                                      If set to false, the call will continue to fill subsequent
+     *                                                      signedOrders even when some cannot be filled.
+     * @param   takerAddress                                The user Ethereum address who would like to fill these
+     *                                                      orders. Must be available via the supplied Web3.Provider
+     *                                                      passed to 0x.js.
+     * @return The amount of the orders that was filled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], fillTakerTokenAmount: BigNumber.BigNumber,
