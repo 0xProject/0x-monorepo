@@ -487,12 +487,12 @@ export class ExchangeWrapper extends ContractWrapper {
      * Cancel a given fill amount of an order. Cancellations are cumulative.
      * @param   order                   An object that conforms to the Order or SignedOrder interface.
      *                                  The order you would like to cancel.
-     * @param   takerTokenCancelAmount  The amount (specified in taker tokens) that you would like to cancel.
+     * @param   cancelTakerTokenAmount  The amount (specified in taker tokens) that you would like to cancel.
      * @return                          The amount of the order that was cancelled (in taker token baseUnits).
      */
     @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
-        order: Order|SignedOrder, canceltakerTokenAmount: BigNumber.BigNumber): Promise<BigNumber.BigNumber> {
+        order: Order|SignedOrder, cancelTakerTokenAmount: BigNumber.BigNumber): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('order', order, orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', canceltakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
