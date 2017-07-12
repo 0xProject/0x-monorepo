@@ -66,7 +66,7 @@ describe('EtherTokenWrapper', () => {
 
             return expect(
                 zeroEx.etherToken.depositAsync(overETHBalanceinWei, addressWithETH),
-            ).to.be.rejectedWith(ZeroExError.INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT);
+            ).to.be.rejectedWith(ZeroExError.InsufficientEthBalanceForDeposit);
         });
     });
     describe('#withdrawAsync', () => {
@@ -100,7 +100,7 @@ describe('EtherTokenWrapper', () => {
 
             return expect(
                 zeroEx.etherToken.withdrawAsync(overWETHBalance, addressWithETH),
-            ).to.be.rejectedWith(ZeroExError.INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL);
+            ).to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
         });
     });
 });

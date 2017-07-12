@@ -30,18 +30,18 @@ export const utils = {
     },
     getOrderHashHex(order: Order|SignedOrder): string {
         const orderParts = [
-            {value: order.exchangeContractAddress, type: SolidityTypes.address},
-            {value: order.maker, type: SolidityTypes.address},
-            {value: order.taker, type: SolidityTypes.address},
-            {value: order.makerTokenAddress, type: SolidityTypes.address},
-            {value: order.takerTokenAddress, type: SolidityTypes.address},
-            {value: order.feeRecipient, type: SolidityTypes.address},
-            {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.uint256},
-            {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.uint256},
+            {value: order.exchangeContractAddress, type: SolidityTypes.Address},
+            {value: order.maker, type: SolidityTypes.Address},
+            {value: order.taker, type: SolidityTypes.Address},
+            {value: order.makerTokenAddress, type: SolidityTypes.Address},
+            {value: order.takerTokenAddress, type: SolidityTypes.Address},
+            {value: order.feeRecipient, type: SolidityTypes.Address},
+            {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.Uint256},
+            {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.Uint256},
+            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.Uint256},
+            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.Uint256},
+            {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.Uint256},
+            {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.Uint256},
         ];
         const types = _.map(orderParts, o => o.type);
         const values = _.map(orderParts, o => o.value);

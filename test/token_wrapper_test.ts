@@ -64,7 +64,7 @@ describe('TokenWrapper', () => {
             const toAddress = coinbase;
             return expect(zeroEx.token.transferAsync(
                 token.address, fromAddress, toAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_BALANCE_FOR_TRANSFER);
+            )).to.be.rejectedWith(ZeroExError.InsufficientBalanceForTransfer);
         });
         it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
@@ -72,7 +72,7 @@ describe('TokenWrapper', () => {
             const toAddress = coinbase;
             return expect(zeroEx.token.transferAsync(
                 nonExistentTokenAddress, fromAddress, toAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.CONTRACT_DOES_NOT_EXIST);
+            )).to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
         });
     });
     describe('#transferFromAsync', () => {
@@ -97,7 +97,7 @@ describe('TokenWrapper', () => {
 
             return expect(zeroEx.token.transferFromAsync(
                 token.address, fromAddress, toAddress, senderAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
+            )).to.be.rejectedWith(ZeroExError.InsufficientAllowanceForTransfer);
         });
         it('[regression] should fail to transfer tokens if set allowance for toAddress instead of senderAddress',
             async () => {
@@ -108,7 +108,7 @@ describe('TokenWrapper', () => {
 
             return expect(zeroEx.token.transferFromAsync(
                 token.address, fromAddress, toAddress, senderAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_ALLOWANCE_FOR_TRANSFER);
+            )).to.be.rejectedWith(ZeroExError.InsufficientAllowanceForTransfer);
         });
         it('should fail to transfer tokens if fromAddress has insufficient balance', async () => {
             const fromAddress = addressWithoutFunds;
@@ -124,7 +124,7 @@ describe('TokenWrapper', () => {
 
             return expect(zeroEx.token.transferFromAsync(
                 token.address, fromAddress, toAddress, senderAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.INSUFFICIENT_BALANCE_FOR_TRANSFER);
+            )).to.be.rejectedWith(ZeroExError.InsufficientBalanceForTransfer);
         });
         it('should successfully transfer tokens', async () => {
             const fromAddress = coinbase;
@@ -145,7 +145,7 @@ describe('TokenWrapper', () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             return expect(zeroEx.token.transferFromAsync(
                 nonExistentTokenAddress, fromAddress, toAddress, senderAddress, new BigNumber(42),
-            )).to.be.rejectedWith(ZeroExError.CONTRACT_DOES_NOT_EXIST);
+            )).to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
         });
     });
     describe('#getBalanceAsync', () => {
@@ -160,7 +160,7 @@ describe('TokenWrapper', () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             const ownerAddress = coinbase;
             return expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress))
-                .to.be.rejectedWith(ZeroExError.CONTRACT_DOES_NOT_EXIST);
+                .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
         });
         it('should return a balance of 0 for a non-existent owner address', async () => {
             const token = tokens[0];

@@ -1,34 +1,21 @@
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-// Utility function to create a K:V from a list of strings
-// Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
-export interface StringEnum {
-    [key: string]: string;
+export enum ZeroExError {
+    ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
+    ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
+    UnhandledError = 'UNHANDLED_ERROR',
+    UserHasNoAssociatedAddress = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
+    InvalidSignature = 'INVALID_SIGNATURE',
+    ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
+    InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
+    InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
+    InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
+    InsufficientWEthBalanceForWithdrawal = 'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL',
+    InvalidJump = 'INVALID_JUMP',
+    OutOfGas = 'OUT_OF_GAS',
 }
-function strEnum(values: string[]): StringEnum {
-    return _.reduce(values, (result, key) => {
-        result[key] = key;
-        return result;
-    }, Object.create(null));
-}
-
-export const ZeroExError = strEnum([
-    'CONTRACT_DOES_NOT_EXIST',
-    'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
-    'UNHANDLED_ERROR',
-    'USER_HAS_NO_ASSOCIATED_ADDRESSES',
-    'INVALID_SIGNATURE',
-    'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
-    'ZRX_NOT_IN_TOKEN_REGISTRY',
-    'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
-    'INSUFFICIENT_BALANCE_FOR_TRANSFER',
-    'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
-    'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL',
-    'INVALID_JUMP',
-    'OUT_OF_GAS',
-]);
-export type ZeroExError = keyof typeof ZeroExError;
 
 /**
  * Elliptic Curve signature
@@ -175,11 +162,10 @@ export interface ProxyContract extends ContractInstance {
     };
 }
 
-export const SolidityTypes = strEnum([
-    'address',
-    'uint256',
-]);
-export type SolidityTypes = keyof typeof SolidityTypes;
+export enum SolidityTypes {
+    Address = 'address',
+    Uint256 = 'uint256',
+}
 
 export enum ExchangeContractErrCodes {
     ERROR_FILL_EXPIRED, // Order has already expired
@@ -190,29 +176,28 @@ export enum ExchangeContractErrCodes {
     ERROR_CANCEL_NO_VALUE, // Order has already been fully filled or cancelled
 }
 
-export const ExchangeContractErrs = strEnum([
-    'ORDER_FILL_EXPIRED',
-    'ORDER_CANCEL_EXPIRED',
-    'ORDER_CANCEL_AMOUNT_ZERO',
-    'ORDER_ALREADY_CANCELLED_OR_FILLED',
-    'ORDER_REMAINING_FILL_AMOUNT_ZERO',
-    'ORDER_FILL_ROUNDING_ERROR',
-    'FILL_BALANCE_ALLOWANCE_ERROR',
-    'INSUFFICIENT_TAKER_BALANCE',
-    'INSUFFICIENT_TAKER_ALLOWANCE',
-    'INSUFFICIENT_MAKER_BALANCE',
-    'INSUFFICIENT_MAKER_ALLOWANCE',
-    'INSUFFICIENT_TAKER_FEE_BALANCE',
-    'INSUFFICIENT_TAKER_FEE_ALLOWANCE',
-    'INSUFFICIENT_MAKER_FEE_BALANCE',
-    'INSUFFICIENT_MAKER_FEE_ALLOWANCE',
-    'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
-    'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED',
-    'INSUFFICIENT_REMAINING_FILL_AMOUNT',
-    'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED',
-    'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
-]);
-export type ExchangeContractErrs = keyof typeof ExchangeContractErrs;
+export enum ExchangeContractErrs {
+    OrderFillExpired = 'ORDER_FILL_EXPIRED',
+    OrderCancelExpired = 'ORDER_CANCEL_EXPIRED',
+    OrderCancelAmountZero = 'ORDER_CANCEL_AMOUNT_ZERO',
+    OrderAlreadyCancelledOrFilled = 'ORDER_ALREADY_CANCELLED_OR_FILLED',
+    OrderRemainingFillAmountZero = 'ORDER_REMAINING_FILL_AMOUNT_ZERO',
+    OrderFillRoundingError = 'ORDER_FILL_ROUNDING_ERROR',
+    FillBalanceAllowanceError = 'FILL_BALANCE_ALLOWANCE_ERROR',
+    InsufficientTakerBalance = 'INSUFFICIENT_TAKER_BALANCE',
+    InsufficientTakerAllowance = 'INSUFFICIENT_TAKER_ALLOWANCE',
+    InsufficientMakerBalance = 'INSUFFICIENT_MAKER_BALANCE',
+    InsufficientMakerAllowance = 'INSUFFICIENT_MAKER_ALLOWANCE',
+    InsufficientTakerFeeBalance = 'INSUFFICIENT_TAKER_FEE_BALANCE',
+    InsufficientTakerFeeAllowance = 'INSUFFICIENT_TAKER_FEE_ALLOWANCE',
+    InsufficientMakerFeeBalance = 'INSUFFICIENT_MAKER_FEE_BALANCE',
+    InsufficientMakerFeeAllowance = 'INSUFFICIENT_MAKER_FEE_ALLOWANCE',
+    TransactionSenderIsNotFillOrderTaker = 'TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER',
+    MultipleMakersInSingleCancelBatchDisallowed = 'MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED',
+    InsufficientRemainingFillAmount = 'INSUFFICIENT_REMAINING_FILL_AMOUNT',
+    MultipleTakerTokensInFillUpToDisallowed = 'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED',
+    BatchOrdersMustHaveSameExchangeAddress = 'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
+}
 
 export interface ContractResponse {
     logs: ContractEvent[];
@@ -312,18 +297,16 @@ export interface TokenAddressBySymbol {
     [symbol: string]: string;
 }
 
-export const ExchangeEvents = strEnum([
-    'LogFill',
-    'LogCancel',
-    'LogError',
-]);
-export type ExchangeEvents = keyof typeof ExchangeEvents;
+export enum ExchangeEvents {
+    LogFill = 'LogFill',
+    LogCancel = 'LogCancel',
+    LogError = 'LogError',
+}
 
-export const TokenEvents = strEnum([
-    'Transfer',
-    'Approval',
-]);
-export type TokenEvents = keyof typeof TokenEvents;
+export enum TokenEvents {
+    Transfer = 'Transfer',
+    Approval = 'Approval',
+}
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;

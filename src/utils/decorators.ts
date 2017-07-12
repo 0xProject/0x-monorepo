@@ -21,10 +21,10 @@ export const decorators = {
                 return result;
             } catch (error) {
                 if (_.includes(error.message, constants.INVALID_JUMP_PATTERN)) {
-                    throw new Error(ZeroExError.INVALID_JUMP);
+                    throw new Error(ZeroExError.InvalidJump);
                 }
                 if (_.includes(error.message, constants.OUT_OF_GAS_PATTERN)) {
-                    throw new Error(ZeroExError.OUT_OF_GAS);
+                    throw new Error(ZeroExError.OutOfGas);
                 }
                 throw error;
             }

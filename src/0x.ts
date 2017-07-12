@@ -242,6 +242,6 @@ export class ZeroEx {
             }
         }
 
-        throw new Error(ZeroExError.INVALID_SIGNATURE);
+        throw new Error(ZeroExError.InvalidSignature);
     }
 }
