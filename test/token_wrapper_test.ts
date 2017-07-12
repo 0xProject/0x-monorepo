@@ -66,7 +66,7 @@ describe('TokenWrapper', () => {
                 token.address, fromAddress, toAddress, transferAmount,
             )).to.be.rejectedWith(ZeroExError.InsufficientBalanceForTransfer);
         });
-        it('should throw a ContractDoesNotExist error for a non-existent token contract', async () => {
+        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             const fromAddress = coinbase;
             const toAddress = coinbase;
@@ -140,7 +140,7 @@ describe('TokenWrapper', () => {
             const postBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });
-        it('should throw a ContractDoesNotExist error for a non-existent token contract', async () => {
+        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const fromAddress = coinbase;
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             return expect(zeroEx.token.transferFromAsync(
@@ -156,7 +156,7 @@ describe('TokenWrapper', () => {
             const expectedBalance = new BigNumber('100000000000000000000000000');
             return expect(balance).to.be.bignumber.equal(expectedBalance);
         });
-        it('should throw a ContractDoesNotExist error for a non-existent token contract', async () => {
+        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             const ownerAddress = coinbase;
             return expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress))
