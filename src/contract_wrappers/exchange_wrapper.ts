@@ -609,7 +609,9 @@ export class ExchangeWrapper extends ContractWrapper {
         this._exchangeLogEventEmitters = [];
     }
     /**
-     * Returns the Ethereum address of the Exchange contract being used.
+     * Retrieves the Ethereum address of the Exchange contract deployed on the network
+     * that the user-passed web3 provider is connected to.
+     * @returns The Ethereum address of the Exchange contract being used.
      */
     public async getContractAddressAsync(): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
