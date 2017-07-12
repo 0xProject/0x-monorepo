@@ -17,11 +17,10 @@ describe('ZeroEx library', () => {
     const zeroEx = new ZeroEx(web3.currentProvider);
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
-            const [exchangeContractAddress] = await zeroEx.getAvailableExchangeContractAddressesAsync();
             // Instantiate the contract instances with the current provider
-            await (zeroEx.exchange as any)._getExchangeContractAsync(exchangeContractAddress);
+            await (zeroEx.exchange as any)._getExchangeContractAsync();
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
-            expect((zeroEx.exchange as any)._exchangeContractByAddress[exchangeContractAddress]).to.not.be.undefined();
+            expect((zeroEx.exchange as any)._exchangeContractIfExists).to.not.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.not.be.undefined();
 
             const newProvider = web3Factory.getRpcProvider();
@@ -30,7 +29,7 @@ describe('ZeroEx library', () => {
             await zeroEx.setProviderAsync(newProvider);
 
             // Check that contractInstances with old provider are removed after provider update
-            expect((zeroEx.exchange as any)._exchangeContractByAddress[exchangeContractAddress]).to.be.undefined();
+            expect((zeroEx.exchange as any)._exchangeContractIfExists).to.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
             // Check that all nested web3 wrapper instances return the updated provider
@@ -52,10 +51,6 @@ describe('ZeroEx library', () => {
             s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
         };
         const address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-        let exchangeContractAddress: string;
-        before(async () => {
-            [exchangeContractAddress] = await zeroEx.getAvailableExchangeContractAddressesAsync();
-        });
         it('should return false if the data doesn\'t pertain to the signature & address', async () => {
             expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();
             return expect(
@@ -81,7 +76,7 @@ describe('ZeroEx library', () => {
             const isValidSignatureLocal = ZeroEx.isValidSignature(dataHex, signature, address);
             expect(isValidSignatureLocal).to.be.true();
             const isValidSignatureOnContract = await (zeroEx.exchange as any)
-                ._isValidSignatureUsingContractCallAsync(dataHex, signature, address, exchangeContractAddress);
+                ._isValidSignatureUsingContractCallAsync(dataHex, signature, address);
             return expect(isValidSignatureOnContract).to.be.true();
         });
     });
@@ -208,24 +203,6 @@ describe('ZeroEx library', () => {
 
             const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
-        });
-    });
-    describe('#getAvailableExchangeContractAddressesAsync', () => {
-        it('returns the exchange contract addresses', async () => {
-            const exchangeAddresses = await zeroEx.getAvailableExchangeContractAddressesAsync();
-            _.map(exchangeAddresses, exchangeAddress => {
-                assert.isETHAddressHex('exchangeAddress', exchangeAddress);
-            });
-        });
-    });
-    describe('#getProxyAuthorizedExchangeContractAddressesAsync', () => {
-        it('returns the Proxy authorized exchange contract addresses', async () => {
-            const exchangeAddresses = await zeroEx.getProxyAuthorizedExchangeContractAddressesAsync();
-            for (const exchangeAddress of exchangeAddresses) {
-                assert.isETHAddressHex('exchangeAddress', exchangeAddress);
-                const isAuthorized = await zeroEx.proxy.isAuthorizedAsync(exchangeAddress);
-                expect(isAuthorized).to.be.true();
-            }
         });
     });
 });
