@@ -142,7 +142,7 @@ describe('ZeroEx library', () => {
             expirationUnixTimestampSec: new BigNumber(0),
         };
         it('calculates the order hash', async () => {
-            const orderHash = zeroEx.getOrderHashHex(order);
+            const orderHash = ZeroEx.getOrderHashHex(order);
             expect(orderHash).to.be.equal(expectedOrderHash);
         });
     });

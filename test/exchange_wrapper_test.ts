@@ -396,11 +396,11 @@ describe('ExchangeWrapper', () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
-                signedOrderHashHex = zeroEx.getOrderHashHex(signedOrder);
+                signedOrderHashHex = ZeroEx.getOrderHashHex(signedOrder);
                 anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
-                anotherOrderHashHex = zeroEx.getOrderHashHex(anotherSignedOrder);
+                anotherOrderHashHex = ZeroEx.getOrderHashHex(anotherSignedOrder);
                 orderFillBatch = [
                     {
                         signedOrder,
@@ -436,11 +436,11 @@ describe('ExchangeWrapper', () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
-                signedOrderHashHex = zeroEx.getOrderHashHex(signedOrder);
+                signedOrderHashHex = ZeroEx.getOrderHashHex(signedOrder);
                 anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
-                anotherOrderHashHex = zeroEx.getOrderHashHex(anotherSignedOrder);
+                anotherOrderHashHex = ZeroEx.getOrderHashHex(anotherSignedOrder);
                 signedOrders = [signedOrder, anotherSignedOrder];
             });
             describe('successful batch fills', () => {
@@ -484,7 +484,7 @@ describe('ExchangeWrapper', () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
             );
-            orderHashHex = zeroEx.getOrderHashHex(signedOrder);
+            orderHashHex = ZeroEx.getOrderHashHex(signedOrder);
         });
         describe('#cancelOrderAsync', () => {
             describe('failed cancels', () => {
@@ -499,7 +499,7 @@ describe('ExchangeWrapper', () => {
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
                         fillableAmount, expirationInPast,
                     );
-                    orderHashHex = zeroEx.getOrderHashHex(expiredSignedOrder);
+                    orderHashHex = ZeroEx.getOrderHashHex(expiredSignedOrder);
                     return expect(zeroEx.exchange.cancelOrderAsync(expiredSignedOrder, cancelAmount))
                         .to.be.rejectedWith(ExchangeContractErrs.ORDER_CANCEL_EXPIRED);
                 });
@@ -529,7 +529,7 @@ describe('ExchangeWrapper', () => {
                 anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 );
-                anotherOrderHashHex = zeroEx.getOrderHashHex(anotherSignedOrder);
+                anotherOrderHashHex = ZeroEx.getOrderHashHex(anotherSignedOrder);
                 cancelBatch = [
                     {
                         order: signedOrder,
@@ -588,7 +588,7 @@ describe('ExchangeWrapper', () => {
             signedOrder = await fillScenarios.createPartiallyFilledSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, takerAddress, fillableAmount, partialFillAmount,
             );
-            orderHash = zeroEx.getOrderHashHex(signedOrder);
+            orderHash = ZeroEx.getOrderHashHex(signedOrder);
         });
         describe('#getUnavailableTakerAmountAsync', () => {
             it('should throw if passed an invalid orderHash', async () => {
@@ -782,7 +782,7 @@ describe('ExchangeWrapper', () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
             );
-            const orderHash = zeroEx.getOrderHashHex(signedOrder);
+            const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             const orderHashFromContract = await (zeroEx.exchange as any)
                 ._getOrderHashHexUsingContractCallAsync(signedOrder);
             expect(orderHash).to.equal(orderHashFromContract);

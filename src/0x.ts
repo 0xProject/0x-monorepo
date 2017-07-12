@@ -150,6 +150,16 @@ export class ZeroEx {
         return baseUnitAmount;
     }
     /**
+     * Computes the orderHash for a supplied order.
+     * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
+     * @return  The resulting orderHash from hashing the supplied order.
+     */
+    public static getOrderHashHex(order: Order|SignedOrder): string {
+        assert.doesConformToSchema('order', order, orderSchema);
+        const orderHashHex = utils.getOrderHashHex(order);
+        return orderHashHex;
+    }
+    /**
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
      * @param   provider    The Web3.js Provider instance you would like the 0x.js library to use for interacting with
      *                      the Ethereum network.
@@ -183,16 +193,6 @@ export class ZeroEx {
     public async getAvailableAddressesAsync(): Promise<string[]> {
         const availableAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
         return availableAddresses;
-    }
-    /**
-     * Computes the orderHash for a supplied order.
-     * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
-     * @return  The resulting orderHash from hashing the supplied order.
-     */
-    public getOrderHashHex(order: Order|SignedOrder): string {
-        assert.doesConformToSchema('order', order, orderSchema);
-        const orderHashHex = utils.getOrderHashHex(order);
-        return orderHashHex;
     }
     /**
      * Signs an orderHash and returns it's elliptic curve signature.
