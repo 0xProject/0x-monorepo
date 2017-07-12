@@ -26,7 +26,8 @@ export const assert = {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
     },
-    doesBelongToStringEnum(variableName: string, value: string, stringEnum: any): void {
+    doesBelongToStringEnum(variableName: string, value: string,
+                           stringEnum: any /* There is no base type for every string enum */): void {
         const doesBelongToStringEnum = !_.isUndefined(stringEnum[value]);
         const enumValues = _.keys(stringEnum);
         const enumValuesAsStrings = _.map(enumValues, enumValue => `'${enumValue}'`);
