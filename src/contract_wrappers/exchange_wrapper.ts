@@ -786,27 +786,8 @@ export class ExchangeWrapper extends ContractWrapper {
             return this._exchangeContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync((ExchangeArtifacts as any));
-<<<<<<< HEAD
         this._exchangeContractIfExists = contractInstance as ExchangeContract;
         return this._exchangeContractIfExists;
-=======
-        this._exchangeContractByAddress[exchangeContractAddress] = contractInstance as ExchangeContract;
-        return this._exchangeContractByAddress[exchangeContractAddress];
-    }
-    private _getExchangeArtifactsByAddressOrThrow(exchangeContractAddress: string): ContractArtifact {
-        const exchangeArtifacts = _.values<ContractArtifact>(ExchangeArtifactsByName);
-        for (const exchangeArtifact of exchangeArtifacts) {
-            const networkSpecificExchangeArtifactValues = _.values(exchangeArtifact.networks);
-            const exchangeAddressesInArtifact = _.map(
-                networkSpecificExchangeArtifactValues,
-                networkSpecificExchangeArtifact => networkSpecificExchangeArtifact.address,
-            );
-            if (_.includes(exchangeAddressesInArtifact, exchangeContractAddress)) {
-                return exchangeArtifact;
-            }
-        }
-        throw new Error(ZeroExError.ExchangeContractDoesNotExist);
->>>>>>> Use PascalCase names as string enum keys
     }
     private async _getZRXTokenAddressAsync(exchangeContractAddress: string): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
