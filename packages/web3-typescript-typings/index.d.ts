@@ -35,6 +35,7 @@ declare module 'web3' {
         public fromWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
         public toWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
         public isAddress(address: string): boolean;
+        public sha3(value: string, options?: Web3.Sha3Options): string;
     }
 
     namespace providers {
@@ -99,6 +100,10 @@ declare module 'web3' {
         }
 
         interface Provider {}
+
+        interface Sha3Options {
+            encoding: string
+        }
     }
     /* tslint:disable */
     export = Web3;
