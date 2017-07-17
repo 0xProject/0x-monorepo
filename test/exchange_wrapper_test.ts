@@ -303,6 +303,21 @@ describe('ExchangeWrapper', () => {
                         )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerFeeAllowance);
                     });
                 });
+                it('should throw when maker has balance to cover fees or transfer but not both', async () => {
+                    const makerFee = new BigNumber(1);
+                    const takerFee = new BigNumber(1);
+                    const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                        zrxTokenAddress, takerTokenAddress, makerFee, takerFee,
+                        makerAddress, takerAddress, fillableAmount, feeRecipient,
+                    );
+                    const balanceToSubtractFromMaker = new BigNumber(1);
+                    await zeroEx.token.transferAsync(
+                        zrxTokenAddress, makerAddress, coinbase, balanceToSubtractFromMaker,
+                    );
+                    return expect(
+                        zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress),
+                    ).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
+                });
             });
             describe('successful fills', () => {
                 it('should fill a valid order', async () => {
