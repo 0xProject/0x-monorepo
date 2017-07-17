@@ -35,7 +35,7 @@ import {
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
 import {eventUtils} from '../utils/event_utils';
-import {orderValidationUtils} from '../utils/order_validation_utils';
+import {OrderValidationUtils} from '../utils/order_validation_utils';
 import {ContractWrapper} from './contract_wrapper';
 import {ProxyWrapper} from './proxy_wrapper';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
@@ -668,7 +668,7 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(ExchangeContractErrs.OrderFillExpired);
         }
         const zrxTokenAddress = await this._getZRXTokenAddressAsync(signedOrder.exchangeContractAddress);
-        await orderValidationUtils.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(
+        await OrderValidationUtils.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(
             this._tokenWrapper, signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
         );
 
