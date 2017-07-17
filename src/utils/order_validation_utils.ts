@@ -1,4 +1,5 @@
 import {ExchangeContractErrs, SignedOrder} from '../types';
+import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 
 export const orderValidationUtils = {
     /**
@@ -11,15 +12,14 @@ export const orderValidationUtils = {
      * the callers gas costs.
      */
     async validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(
-        signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber, senderAddress: string, zrxTokenAddress: string,
-    ): Promise<void> {
-
-        const makerBalance = await this._tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress,
+        tokenWrapper: TokenWrapper, signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
+        senderAddress: string, zrxTokenAddress: string): Promise<void> {
+        const makerBalance = await tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress,
                                                                      signedOrder.maker);
-        const takerBalance = await this._tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
-        const makerAllowance = await this._tokenWrapper.getProxyAllowanceAsync(signedOrder.makerTokenAddress,
+        const takerBalance = await tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
+        const makerAllowance = await tokenWrapper.getProxyAllowanceAsync(signedOrder.makerTokenAddress,
                                                                               signedOrder.maker);
-        const takerAllowance = await this._tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress,
+        const takerAllowance = await tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress,
                                                                               senderAddress);
 
         // exchangeRate is the price of one maker token denominated in taker tokens
@@ -42,12 +42,12 @@ export const orderValidationUtils = {
             throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
         }
 
-        const makerFeeBalance = await this._tokenWrapper.getBalanceAsync(zrxTokenAddress,
+        const makerFeeBalance = await tokenWrapper.getBalanceAsync(zrxTokenAddress,
                                                                         signedOrder.maker);
-        const takerFeeBalance = await this._tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
-        const makerFeeAllowance = await this._tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress,
+        const takerFeeBalance = await tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
+        const makerFeeAllowance = await tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress,
                                                                                  signedOrder.maker);
-        const takerFeeAllowance = await this._tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress,
+        const takerFeeAllowance = await tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress,
                                                                                  senderAddress);
 
         if (signedOrder.takerFee.greaterThan(takerFeeBalance)) {

@@ -669,7 +669,7 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const zrxTokenAddress = await this._getZRXTokenAddressAsync(signedOrder.exchangeContractAddress);
         await orderValidationUtils.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(
-            signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
+            this._tokenWrapper, signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
         );
 
         const wouldRoundingErrorOccur = await this._isRoundingErrorAsync(
