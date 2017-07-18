@@ -5,6 +5,8 @@ declare module 'web3' {
     class Web3 {
         public static providers: typeof providers;
 
+        public constructor(provider?: Web3.Provider);
+
         public version: {
             getNetwork(cd: (err: Error, networkId: string) => void): void;
             getNode(cd: (err: Error, nodeVersion: string) => void): void;
