@@ -7,31 +7,9 @@ declare module 'web3' {
 
         public constructor(provider?: Web3.Provider);
 
-        public version: {
-            getNetwork(cd: (err: Error, networkId: string) => void): void;
-            getNode(cd: (err: Error, nodeVersion: string) => void): void;
-        };
-
-        public eth: {
-            coinbase: string;
-            defaultAccount: string;
-            compile: {
-                solidity(sourceString: string, cb?: (err: any, result: any) => void): object,
-            };
-            blockNumber: number;
-            sign(address: string, message: string, callback: (err: Error, signData: string) => void): string;
-            getBlock(blockHash: string, callback: (err: Error, blockObj: any) => void): BigNumber.BigNumber;
-            getBlockNumber(callback: (err: Error, blockNumber: number) => void): void;
-            contract<A>(abi: Web3.ContractAbi): Web3.Contract<A>;
-            getBalance(addressHexString: string,
-                callback?: (err: any, result: BigNumber.BigNumber) => void): BigNumber.BigNumber;
-            getCode(addressHexString: string,
-                callback?: (err: any, code: string) => void): string;
-            filter(value: string|Web3.FilterObject): Web3.FilterResult;
-            getAccounts(callback: (err: Error, value: any) => void): string[];
-            sendTransaction(txData: any, callback: (err: Error, value: any) => void): void;
-            getTransactionReceipt(txHash: string, callback: (err: Error, receipt: any) => void): void;
-        };
+        public version: Web3.VersionApi;
+        public eth: Web3.EthApi;
+        public personal: Web3.PersonalApi | undefined;
 
         public setProvider(provider: Web3.Provider): void;
         public currentProvider: Web3.Provider;
@@ -106,6 +84,39 @@ declare module 'web3' {
 
         interface Sha3Options {
             encoding: string;
+        }
+
+        interface EthApi {
+          coinbase: string;
+          defaultAccount: string;
+          compile: {
+            solidity(sourceString: string, cb?: (err: any, result: any) => void): object,
+          };
+          blockNumber: number;
+          sign(address: string, message: string, callback: (err: Error, signData: string) => void): string;
+          getBlock(blockHash: string, callback: (err: Error, blockObj: any) => void): BigNumber.BigNumber;
+          getBlockNumber(callback: (err: Error, blockNumber: number) => void): void;
+          contract<A>(abi: Web3.ContractAbi): Web3.Contract<A>;
+          getBalance(addressHexString: string,
+                     callback?: (err: any, result: BigNumber.BigNumber) => void): BigNumber.BigNumber;
+          getCode(addressHexString: string,
+                  callback?: (err: any, code: string) => void): string;
+          filter(value: string|Web3.FilterObject): Web3.FilterResult;
+          getAccounts(callback: (err: Error, value: any) => void): string[];
+          sendTransaction(txData: any, callback: (err: Error, value: any) => void): void;
+          getTransactionReceipt(txHash: string, callback: (err: Error, receipt: any) => void): void;
+        }
+
+        interface VersionApi {
+          getNetwork(cd: (err: Error, networkId: string) => void): void;
+          getNode(cd: (err: Error, nodeVersion: string) => void): void;
+        }
+
+        interface PersonalApi {
+          listAccounts: string[] | undefined;
+          newAccount(password?: string): string;
+          unlockAccount(address: string, password?: string, duration?: number): boolean
+          lockAccount(address: string): boolean
         }
     }
     /* tslint:disable */
