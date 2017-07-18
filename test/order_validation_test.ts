@@ -174,7 +174,7 @@ describe('OrderValidationUtils', () => {
             const makerFee = new BigNumber(2);
             const takerFee = new BigNumber(2);
             let signedOrder: SignedOrder;
-            before(async () => {
+            beforeEach(async () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
                     makerTokenAddress, zrxTokenAddress, makerFee, takerFee,
                     makerAddress, takerAddress, fillableAmount, feeRecipient,
