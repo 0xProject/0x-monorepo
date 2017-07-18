@@ -15,7 +15,8 @@ declare module 'web3' {
             defaultAccount: string;
             compile: {
                 solidity(sourceString: string, cb?: (err: any, result: any) => void): object,
-            }
+            };
+            blockNumber: number;
             sign(address: string, message: string, callback: (err: Error, signData: string) => void): string;
             getBlock(blockHash: string, callback: (err: Error, blockObj: any) => void): BigNumber.BigNumber;
             getBlockNumber(callback: (err: Error, blockNumber: number) => void): void;
