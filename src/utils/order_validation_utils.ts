@@ -16,14 +16,9 @@ export class OrderValidationUtils {
         tokenWrapper: TokenWrapper, signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
         zrxTokenAddress: string,
     ): Promise<void> {
-        const makerBalance = await tokenWrapper.getBalanceAsync(
-            signedOrder.makerTokenAddress, signedOrder.maker);
+        const makerBalance = await tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress, signedOrder.maker);
         const makerAllowance = await tokenWrapper.getProxyAllowanceAsync(
             signedOrder.makerTokenAddress, signedOrder.maker);
-        const makerZRXBalance = await tokenWrapper.getBalanceAsync(
-            zrxTokenAddress, signedOrder.maker);
-        const makerZRXAllowance = await tokenWrapper.getProxyAllowanceAsync(
-            zrxTokenAddress, signedOrder.maker);
 
         const isMakerTokenZRX = signedOrder.makerTokenAddress === zrxTokenAddress;
         // exchangeRate is the price of one maker token denominated in taker tokens
@@ -39,6 +34,9 @@ export class OrderValidationUtils {
                 throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
             }
         } else {
+            const makerZRXBalance = await tokenWrapper.getBalanceAsync(zrxTokenAddress, signedOrder.maker);
+            const makerZRXAllowance = await tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress, signedOrder.maker);
+
             if (fillMakerAmount.greaterThan(makerBalance)) {
                 throw new Error(ExchangeContractErrs.InsufficientMakerBalance);
             }
@@ -58,11 +56,7 @@ export class OrderValidationUtils {
         senderAddress: string, zrxTokenAddress: string,
     ): Promise<void> {
         const takerBalance = await tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
-        const takerAllowance = await tokenWrapper.getProxyAllowanceAsync(
-            signedOrder.takerTokenAddress, senderAddress);
-        const takerZRXBalance = await tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
-        const takerZRXAllowance = await tokenWrapper.getProxyAllowanceAsync(
-            zrxTokenAddress, senderAddress);
+        const takerAllowance = await tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress, senderAddress);
 
         const isTakerTokenZRX = signedOrder.takerTokenAddress === zrxTokenAddress;
 
@@ -75,6 +69,9 @@ export class OrderValidationUtils {
                 throw new Error(ExchangeContractErrs.InsufficientTakerAllowance);
             }
         } else {
+            const takerZRXBalance = await tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
+            const takerZRXAllowance = await tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress, senderAddress);
+
             if (fillTakerAmount.greaterThan(takerBalance)) {
                 throw new Error(ExchangeContractErrs.InsufficientTakerBalance);
             }

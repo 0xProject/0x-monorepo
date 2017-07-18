@@ -303,20 +303,65 @@ describe('ExchangeWrapper', () => {
                         )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerFeeAllowance);
                     });
                 });
-                it('should throw when maker has balance to cover fees or transfer but not both', async () => {
-                    const makerFee = new BigNumber(1);
-                    const takerFee = new BigNumber(1);
-                    const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
-                        zrxTokenAddress, takerTokenAddress, makerFee, takerFee,
-                        makerAddress, takerAddress, fillableAmount, feeRecipient,
-                    );
-                    const balanceToSubtractFromMaker = new BigNumber(1);
-                    await zeroEx.token.transferAsync(
-                        zrxTokenAddress, makerAddress, coinbase, balanceToSubtractFromMaker,
-                    );
-                    return expect(
-                        zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress),
-                    ).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
+                describe('should throw on insufficient balance or allowance when makerToken is ZRX',
+                () => {
+                    const makerFee = new BigNumber(2);
+                    const takerFee = new BigNumber(2);
+                    let signedOrder: SignedOrder;
+                    beforeEach(async () => {
+                        signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                            zrxTokenAddress, takerTokenAddress, makerFee, takerFee,
+                            makerAddress, takerAddress, fillableAmount, feeRecipient,
+                        );
+                    });
+                    it('should throw on insufficient balance when makerToken is ZRX', async () => {
+                        const balanceToSubtractFromMaker = new BigNumber(1);
+                        await zeroEx.token.transferAsync(
+                            zrxTokenAddress, makerAddress, coinbase, balanceToSubtractFromMaker,
+                        );
+                        return expect(zeroEx.exchange.fillOrderAsync(
+                            signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
+                    });
+                    it('should throw on insufficient allowance when makerToken is ZRX', async () => {
+                        const oldAllowance = await zeroEx.token.getProxyAllowanceAsync(zrxTokenAddress, makerAddress);
+                        const newAllowanceWhichIsInsufficient = oldAllowance.minus(1);
+                        await zeroEx.token.setProxyAllowanceAsync(
+                            zrxTokenAddress, makerAddress, newAllowanceWhichIsInsufficient);
+                        return expect(zeroEx.exchange.fillOrderAsync(
+                            signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerAllowance);
+                    });
+                });
+                describe('should throw on insufficient balance or allowance when takerToken is ZRX',
+                () => {
+                    const makerFee = new BigNumber(2);
+                    const takerFee = new BigNumber(2);
+                    let signedOrder: SignedOrder;
+                    before(async () => {
+                        signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                            makerTokenAddress, zrxTokenAddress, makerFee, takerFee,
+                            makerAddress, takerAddress, fillableAmount, feeRecipient,
+                        );
+                    });
+                    it('should throw on insufficient balance when takerToken is ZRX', async () => {
+                        const balanceToSubtractFromTaker = new BigNumber(1);
+                        await zeroEx.token.transferAsync(
+                            zrxTokenAddress, takerAddress, coinbase, balanceToSubtractFromTaker,
+                        );
+                        return expect(zeroEx.exchange.fillOrderAsync(
+                            signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerBalance);
+                    });
+                    it('should throw on insufficient allowance when takerToken is ZRX', async () => {
+                        const oldAllowance = await zeroEx.token.getProxyAllowanceAsync(zrxTokenAddress, takerAddress);
+                        const newAllowanceWhichIsInsufficient = oldAllowance.minus(1);
+                        await zeroEx.token.setProxyAllowanceAsync(
+                            zrxTokenAddress, takerAddress, newAllowanceWhichIsInsufficient);
+                        return expect(zeroEx.exchange.fillOrderAsync(
+                            signedOrder, fillTakerAmount, shouldCheckTransfer, takerAddress,
+                        )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerAllowance);
+                    });
                 });
             });
             describe('successful fills', () => {
