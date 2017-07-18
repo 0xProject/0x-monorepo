@@ -103,7 +103,7 @@ declare module 'web3' {
         interface Provider {}
 
         interface Sha3Options {
-            encoding: string
+            encoding: string;
         }
     }
     /* tslint:disable */
