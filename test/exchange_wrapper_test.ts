@@ -1,5 +1,4 @@
 import 'mocha';
-import * as _ from 'lodash';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';

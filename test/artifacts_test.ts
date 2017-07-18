@@ -3,7 +3,6 @@ import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import HDWalletProvider = require('truffle-hdwallet-provider');
 import {ZeroEx} from '../src';
-import {web3Factory} from './utils/web3_factory';
 import {constants} from './utils/constants';
 
 chaiSetup.configure();

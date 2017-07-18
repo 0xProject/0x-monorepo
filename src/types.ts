@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 export enum ZeroExError {

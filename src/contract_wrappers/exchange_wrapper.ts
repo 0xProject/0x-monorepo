@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
-import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
 import {
     ECSignature,
@@ -27,17 +26,12 @@ import {
     LogErrorContractEventArgs,
     LogFillContractEventArgs,
     LogCancelContractEventArgs,
-    EventCallback,
-    ContractEventArg,
-    ExchangeContractByAddress,
-    ContractArtifact,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
 import {eventUtils} from '../utils/event_utils';
 import {OrderValidationUtils} from '../utils/order_validation_utils';
 import {ContractWrapper} from './contract_wrapper';
-import {ProxyWrapper} from './proxy_wrapper';
 import {ecSignatureSchema} from '../schemas/ec_signature_schema';
 import {signedOrdersSchema} from '../schemas/signed_orders_schema';
 import {subscriptionOptsSchema} from '../schemas/subscription_opts_schema';

@@ -3,7 +3,6 @@ import * as BigNumber from 'bignumber.js';
 import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
 import contract = require('truffle-contract');
-import * as Web3 from 'web3';
 import findVersions = require('find-versions');
 import compareVersions = require('compare-versions');
 import {Web3Wrapper} from './web3_wrapper';

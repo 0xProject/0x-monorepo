@@ -6,7 +6,6 @@ import * as BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
 import {ZeroEx, Order} from '../src';
 import {constants} from './utils/constants';
-import {assert} from '../src/utils/assert';
 import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
