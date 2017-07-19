@@ -1,8 +1,8 @@
 import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
+import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx, SignedOrder, Token, ExchangeContractErrs} from '../src';
 import {TokenUtils} from './utils/token_utils';
