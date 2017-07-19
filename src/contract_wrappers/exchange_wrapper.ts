@@ -61,6 +61,7 @@ export class ExchangeWrapper extends ContractWrapper {
     };
     private _exchangeContractIfExists?: ExchangeContract;
     private _exchangeLogEventEmitters: ContractEventEmitter[];
+    private _orderValidationUtils: OrderValidationUtils;
     private _tokenWrapper: TokenWrapper;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
@@ -83,6 +84,7 @@ export class ExchangeWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
+        this._orderValidationUtils = new OrderValidationUtils(tokenWrapper);
         this._exchangeLogEventEmitters = [];
     }
     /**
@@ -662,8 +664,8 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(ExchangeContractErrs.OrderFillExpired);
         }
         const zrxTokenAddress = await this._getZRXTokenAddressAsync(signedOrder.exchangeContractAddress);
-        await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
-            this._tokenWrapper, signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
+        await this._orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
         );
 
         const wouldRoundingErrorOccur = await this._isRoundingErrorAsync(

@@ -2,22 +2,25 @@ import {ExchangeContractErrs, SignedOrder} from '../types';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 
 export class OrderValidationUtils {
-    public static async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
-        tokenWrapper: TokenWrapper, signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
-        senderAddress: string, zrxTokenAddress: string): Promise<void> {
-        await OrderValidationUtils.validateFillOrderMakerBalancesAllowancesThrowIfInvalidAsync(
-            tokenWrapper, signedOrder, fillTakerAmount, zrxTokenAddress,
+    private tokenWrapper: TokenWrapper;
+    constructor(tokenWrapper: TokenWrapper) {
+        this.tokenWrapper = tokenWrapper;
+    }
+    public async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+        signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber, senderAddress: string, zrxTokenAddress: string,
+    ): Promise<void> {
+        await this.validateFillOrderMakerBalancesAllowancesThrowIfInvalidAsync(
+            signedOrder, fillTakerAmount, zrxTokenAddress,
         );
-        await OrderValidationUtils.validateFillOrderTakerBalancesAllowancesThrowIfInvalidAsync(
-            tokenWrapper, signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
+        await this.validateFillOrderTakerBalancesAllowancesThrowIfInvalidAsync(
+            signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
         );
     }
-    private static async validateFillOrderMakerBalancesAllowancesThrowIfInvalidAsync(
-        tokenWrapper: TokenWrapper, signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
-        zrxTokenAddress: string,
+    private async validateFillOrderMakerBalancesAllowancesThrowIfInvalidAsync(
+        signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber, zrxTokenAddress: string,
     ): Promise<void> {
-        const makerBalance = await tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress, signedOrder.maker);
-        const makerAllowance = await tokenWrapper.getProxyAllowanceAsync(
+        const makerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.makerTokenAddress, signedOrder.maker);
+        const makerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
             signedOrder.makerTokenAddress, signedOrder.maker);
 
         const isMakerTokenZRX = signedOrder.makerTokenAddress === zrxTokenAddress;
@@ -34,8 +37,9 @@ export class OrderValidationUtils {
                 throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
             }
         } else {
-            const makerZRXBalance = await tokenWrapper.getBalanceAsync(zrxTokenAddress, signedOrder.maker);
-            const makerZRXAllowance = await tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress, signedOrder.maker);
+            const makerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, signedOrder.maker);
+            const makerZRXAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
+                zrxTokenAddress, signedOrder.maker);
 
             if (fillMakerAmount.greaterThan(makerBalance)) {
                 throw new Error(ExchangeContractErrs.InsufficientMakerBalance);
@@ -51,12 +55,12 @@ export class OrderValidationUtils {
             }
         }
     }
-    private static async validateFillOrderTakerBalancesAllowancesThrowIfInvalidAsync(
-        tokenWrapper: TokenWrapper, signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
-        senderAddress: string, zrxTokenAddress: string,
+    private async validateFillOrderTakerBalancesAllowancesThrowIfInvalidAsync(
+        signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber, senderAddress: string, zrxTokenAddress: string,
     ): Promise<void> {
-        const takerBalance = await tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
-        const takerAllowance = await tokenWrapper.getProxyAllowanceAsync(signedOrder.takerTokenAddress, senderAddress);
+        const takerBalance = await this.tokenWrapper.getBalanceAsync(signedOrder.takerTokenAddress, senderAddress);
+        const takerAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
+            signedOrder.takerTokenAddress, senderAddress);
 
         const isTakerTokenZRX = signedOrder.takerTokenAddress === zrxTokenAddress;
 
@@ -69,8 +73,8 @@ export class OrderValidationUtils {
                 throw new Error(ExchangeContractErrs.InsufficientTakerAllowance);
             }
         } else {
-            const takerZRXBalance = await tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
-            const takerZRXAllowance = await tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress, senderAddress);
+            const takerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
+            const takerZRXAllowance = await this.tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress, senderAddress);
 
             if (fillTakerAmount.greaterThan(takerBalance)) {
                 throw new Error(ExchangeContractErrs.InsufficientTakerBalance);
