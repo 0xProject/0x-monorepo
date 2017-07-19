@@ -2,17 +2,17 @@ import {ExchangeContractErrs, SignedOrder} from '../types';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 
 export class OrderValidationUtils {
-    public static async validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(
+    public static async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
         tokenWrapper: TokenWrapper, signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
         senderAddress: string, zrxTokenAddress: string): Promise<void> {
-        await OrderValidationUtils.validateFillOrderMakerBalancesAndAllowancesAndThrowIfInvalidAsync(
+        await OrderValidationUtils.validateFillOrderMakerBalancesAllowancesThrowIfInvalidAsync(
             tokenWrapper, signedOrder, fillTakerAmount, zrxTokenAddress,
         );
-        await OrderValidationUtils.validateFillOrderTakerBalancesAndAllowancesAndThrowIfInvalidAsync(
+        await OrderValidationUtils.validateFillOrderTakerBalancesAllowancesThrowIfInvalidAsync(
             tokenWrapper, signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
         );
     }
-    private static async validateFillOrderMakerBalancesAndAllowancesAndThrowIfInvalidAsync(
+    private static async validateFillOrderMakerBalancesAllowancesThrowIfInvalidAsync(
         tokenWrapper: TokenWrapper, signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
         zrxTokenAddress: string,
     ): Promise<void> {
@@ -51,7 +51,7 @@ export class OrderValidationUtils {
             }
         }
     }
-    private static async validateFillOrderTakerBalancesAndAllowancesAndThrowIfInvalidAsync(
+    private static async validateFillOrderTakerBalancesAllowancesThrowIfInvalidAsync(
         tokenWrapper: TokenWrapper, signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber,
         senderAddress: string, zrxTokenAddress: string,
     ): Promise<void> {

@@ -662,7 +662,7 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(ExchangeContractErrs.OrderFillExpired);
         }
         const zrxTokenAddress = await this._getZRXTokenAddressAsync(signedOrder.exchangeContractAddress);
-        await OrderValidationUtils.validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync(
+        await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
             this._tokenWrapper, signedOrder, fillTakerAmount, senderAddress, zrxTokenAddress,
         );
 
