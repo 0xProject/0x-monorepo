@@ -140,7 +140,7 @@ describe('OrderValidationUtils', () => {
             });
         });
         describe('should throw on insufficient balance or allowance when makerToken is ZRX',
-        () => {
+            () => {
             const makerFee = new BigNumber(2);
             const takerFee = new BigNumber(2);
             let signedOrder: SignedOrder;
@@ -170,7 +170,7 @@ describe('OrderValidationUtils', () => {
             });
         });
         describe('should throw on insufficient balance or allowance when takerToken is ZRX',
-        () => {
+            () => {
             const makerFee = new BigNumber(2);
             const takerFee = new BigNumber(2);
             let signedOrder: SignedOrder;
