@@ -28,25 +28,19 @@ export class OrderValidationUtils {
         const exchangeRate = signedOrder.takerTokenAmount.div(signedOrder.makerTokenAmount);
         const fillMakerAmount = fillTakerAmount.div(exchangeRate);
 
-        if (isMakerTokenZRX) {
-            const requiredMakerAmount = fillMakerAmount.plus(signedOrder.makerFee);
-            if (requiredMakerAmount.greaterThan(makerBalance)) {
-                throw new Error(ExchangeContractErrs.InsufficientMakerBalance);
-            }
-            if (requiredMakerAmount.greaterThan(makerAllowance)) {
-                throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
-            }
-        } else {
+        const requiredMakerAmount = isMakerTokenZRX ? fillMakerAmount.plus(signedOrder.makerFee) : fillMakerAmount;
+        if (requiredMakerAmount.greaterThan(makerBalance)) {
+            throw new Error(ExchangeContractErrs.InsufficientMakerBalance);
+        }
+        if (requiredMakerAmount.greaterThan(makerAllowance)) {
+            throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
+        }
+
+        if (!isMakerTokenZRX) {
             const makerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, signedOrder.maker);
             const makerZRXAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
                 zrxTokenAddress, signedOrder.maker);
 
-            if (fillMakerAmount.greaterThan(makerBalance)) {
-                throw new Error(ExchangeContractErrs.InsufficientMakerBalance);
-            }
-            if (fillMakerAmount.greaterThan(makerAllowance)) {
-                throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
-            }
             if (signedOrder.makerFee.greaterThan(makerZRXBalance)) {
                 throw new Error(ExchangeContractErrs.InsufficientMakerFeeBalance);
             }
@@ -64,24 +58,18 @@ export class OrderValidationUtils {
 
         const isTakerTokenZRX = signedOrder.takerTokenAddress === zrxTokenAddress;
 
-        if (isTakerTokenZRX) {
-            const requiredTakerAmount = fillTakerAmount.plus(signedOrder.takerFee);
-            if (requiredTakerAmount.greaterThan(takerBalance)) {
-                throw new Error(ExchangeContractErrs.InsufficientTakerBalance);
-            }
-            if (requiredTakerAmount.greaterThan(takerAllowance)) {
-                throw new Error(ExchangeContractErrs.InsufficientTakerAllowance);
-            }
-        } else {
+        const requiredTakerAmount = isTakerTokenZRX ? fillTakerAmount.plus(signedOrder.takerFee) : fillTakerAmount;
+        if (requiredTakerAmount.greaterThan(takerBalance)) {
+            throw new Error(ExchangeContractErrs.InsufficientTakerBalance);
+        }
+        if (requiredTakerAmount.greaterThan(takerAllowance)) {
+            throw new Error(ExchangeContractErrs.InsufficientTakerAllowance);
+        }
+
+        if (!isTakerTokenZRX) {
             const takerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
             const takerZRXAllowance = await this.tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress, senderAddress);
 
-            if (fillTakerAmount.greaterThan(takerBalance)) {
-                throw new Error(ExchangeContractErrs.InsufficientTakerBalance);
-            }
-            if (fillTakerAmount.greaterThan(takerAllowance)) {
-                throw new Error(ExchangeContractErrs.InsufficientTakerAllowance);
-            }
             if (signedOrder.takerFee.greaterThan(takerZRXBalance)) {
                 throw new Error(ExchangeContractErrs.InsufficientTakerFeeBalance);
             }
