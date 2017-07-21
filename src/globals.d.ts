@@ -81,17 +81,6 @@ declare module '*.json' {
     /* tslint:enable */
 }
 
-declare module 'ethereumjs-util' {
-    const toBuffer: (dataHex: string) => Buffer;
-    const hashPersonalMessage: (msg: Buffer) => Buffer;
-    const bufferToHex: (buff: Buffer) => string;
-    const ecrecover: (msgHashBuff: Buffer, v: number, r: Buffer, s: Buffer) => string;
-    const pubToAddress: (pubKey: string) => Buffer;
-    const isValidAddress: (address: string) => boolean;
-    const bufferToInt: (buffer: Buffer) => number;
-    const fromRpcSig: (signature: string) => {v: number, r: Buffer, s: Buffer};
-}
-
 // truffle-contract declarations
 declare interface ContractInstance {
     address: string;
