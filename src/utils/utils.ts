@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
-import * as BN from 'bn.js';
 import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
 import {Order, SignedOrder, SolidityTypes} from '../types';
 import * as BigNumber from 'bignumber.js';
+import BN = require('bn.js');
 
 export const utils = {
     /**
