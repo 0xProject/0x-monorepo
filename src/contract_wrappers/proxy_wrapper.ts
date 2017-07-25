@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import {Web3Wrapper} from '../web3_wrapper';
 import {ContractWrapper} from './contract_wrapper';
 import * as ProxyArtifacts from '../artifacts/Proxy.json';
 import {ProxyContract} from '../types';
