@@ -90,7 +90,7 @@ declare module 'web3' {
 
         interface FilterResult {
             get(callback: () => void): void;
-            watch<A>(callback: (error: string|null, result: SolidityEvent<A>) => void): void;
+            watch<A>(callback: (err: Error, result: SolidityEvent<A>) => void): void;
             stopWatching(callback: () => void): void;
         }
 
@@ -118,7 +118,7 @@ declare module 'web3' {
             getSyncing(cd: (err: Error, syncing: Web3.SyncingResult) => void): void;
             isSyncing(cb: (err: Error, isSyncing: boolean, syncingState: Web3.SyncingState) => void): Web3.IsSyncing;
             compile: {
-                solidity(sourceString: string, cb?: (err: any, result: any) => void): object,
+                solidity(sourceString: string, cb?: (err: Error, result: any) => void): object,
             }
 
             getBlock(hashStringOrBlockNumber: string|Web3.BlockParam): Web3.BlockWithoutTransactionData;
@@ -151,15 +151,15 @@ declare module 'web3' {
 
             // TODO block param
             getBalance(addressHexString: string): BigNumber.BigNumber;
-            getBalance(addressHexString: string, callback: (err: any, result: BigNumber.BigNumber) => void): void;
+            getBalance(addressHexString: string, callback: (err: Error, result: BigNumber.BigNumber) => void): void;
 
             // TODO block param
             getStorageAt(address: string, position: number): string;
-            getStorageAt(address: string, position: number, callback: (err: any, storage: string) => void): void;
+            getStorageAt(address: string, position: number, callback: (err: Error, storage: string) => void): void;
 
             // TODO block param
             getCode(addressHexString: string): string;
-            getCode(addressHexString: string, callback: (err: any, code: string) => void): void;
+            getCode(addressHexString: string, callback: (err: Error, code: string) => void): void;
 
             filter(value: string|Web3.FilterObject): Web3.FilterResult;
 
