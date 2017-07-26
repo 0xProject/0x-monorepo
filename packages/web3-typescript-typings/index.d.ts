@@ -203,8 +203,9 @@ declare module 'web3' {
         interface PersonalApi {
           listAccounts: string[] | undefined;
           newAccount(password?: string): string;
-          unlockAccount(address: string, password?: string, duration?: number): boolean
-          lockAccount(address: string): boolean
+          unlockAccount(address: string, password?: string, duration?: number): boolean;
+          lockAccount(address: string): boolean;
+          sign(message: string, account: string, password: string): string;
         }
 
         interface NetApi {
