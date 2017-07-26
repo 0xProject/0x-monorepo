@@ -2,11 +2,14 @@
 
 v0.9.0 - TBD
 ------------------------
+    * Migrated to the new version of smart contracts (#101)
     * Removed the ability to call methods on multiple authorized Exchange smart contracts (#106)
     * Made `zeroEx.getOrderHashHex` a static method (#107)
     * Cached `net_version` requests and invalidate the cache on calls to `setProvider` (#95)
     * Renamed `zeroEx.exchange.batchCancelOrderAsync` to `zeroEx.exchange.batchCancelOrdersAsync`
     * Renamed `zeroEx.exchange.batchFillOrderAsync` to `zeroEx.exchange.batchFillOrdersAsync`
+    * Updated to typescript v2.4
+    * Fixed an issue with incorrect balance/allowance validation when ZRX is one of the tokens traded
 
 v0.8.0 - _Jul. 4, 2017_
 ------------------------
