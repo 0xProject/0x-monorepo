@@ -2,33 +2,32 @@ declare module 'web3' {
 
     import * as BigNumber from 'bignumber.js';
 
-    type MixedData = string|number|object|Array<any>|BigNumber.BigNumber;
+    type MixedData = string|number|object|any[]|BigNumber.BigNumber;
 
     class Web3 {
         public static providers: typeof providers;
-
-        public constructor(provider?: Web3.Provider);
+        public currentProvider: Web3.Provider;
 
         public eth: Web3.EthApi;
         public personal: Web3.PersonalApi | undefined;
         public version: Web3.VersionApi;
         public net: Web3.NetApi;
 
+        public constructor(provider?: Web3.Provider);
+
         public isConnected(): boolean;
         public setProvider(provider: Web3.Provider): void;
-        public currentProvider: Web3.Provider;
         public reset(keepIsSyncing: boolean): void;
-        public sha3(data: string, options?: Web3.Sha3Options): string;
         public toHex(data: MixedData): string;
         public toAscii(hex: string): string;
         public fromAscii(ascii: string, padding?: number): string;
         public toDecimal(hex: string): number;
-        public fromDecimal(number: number|string): string;
-        public fromWei(number: number|string, unit: Web3.Unit): string;
-        public fromWei(number: BigNumber.BigNumber, unit: Web3.Unit): BigNumber.BigNumber;
+        public fromDecimal(value: number|string): string;
+        public fromWei(value: number|string, unit: Web3.Unit): string;
+        public fromWei(value: BigNumber.BigNumber, unit: Web3.Unit): BigNumber.BigNumber;
         public toWei(amount: number|string, unit: Web3.Unit): string;
         public toWei(amount: BigNumber.BigNumber, unit: Web3.Unit): BigNumber.BigNumber;
-        public toBigNumber(number: number|string): BigNumber.BigNumber;
+        public toBigNumber(value: number|string): BigNumber.BigNumber;
         public isAddress(address: string): boolean;
         public sha3(value: string, options?: Web3.Sha3Options): string;
     }
@@ -40,15 +39,15 @@ declare module 'web3' {
     }
 
     namespace Web3 {
-        type ContractAbi = Array<AbiDefinition>;
+        type ContractAbi = AbiDefinition[];
 
         type AbiDefinition = FunctionDescription|EventDescription;
 
         interface FunctionDescription {
             type: 'function'|'constructor'|'fallback';
             name?: string;
-            inputs: Array<FunctionParameter>;
-            outputs?: Array<FunctionParameter>;
+            inputs: FunctionParameter[];
+            outputs?: FunctionParameter[];
             constant?: boolean;
             payable?: boolean;
         }
@@ -62,7 +61,7 @@ declare module 'web3' {
         interface EventDescription {
             type: 'event';
             name: string;
-            inputs: Array<EventParameter>;
+            inputs: EventParameter[];
             anonymous: boolean;
         }
 
@@ -103,23 +102,23 @@ declare module 'web3' {
         interface EthApi {
             coinbase: string;
             mining: boolean;
-            getMining(cd: (err: Error, mining: boolean) => void): void;
             hashrate: number;
-            getHashrate(cd: (err: Error, hashrate: number) => void): void;
             gasPrice: BigNumber.BigNumber;
-            getGasPrice(cd: (err: Error, gasPrice: BigNumber.BigNumber) => void): void;
-            accounts: Array<string>;
-            getAccounts(cd: (err: Error, accounts: Array<string>) => void): void;
+            accounts: string[];
             blockNumber: number;
-            getBlockNumber(callback: (err: Error, blockNumber: number) => void): void;
             defaultAccount: string;
             defaultBlock: Web3.BlockParam;
             syncing: Web3.SyncingResult;
-            getSyncing(cd: (err: Error, syncing: Web3.SyncingResult) => void): void;
-            isSyncing(cb: (err: Error, isSyncing: boolean, syncingState: Web3.SyncingState) => void): Web3.IsSyncing;
             compile: {
                 solidity(sourceString: string, cb?: (err: Error, result: any) => void): object,
-            }
+            };
+            getMining(cd: (err: Error, mining: boolean) => void): void;
+            getHashrate(cd: (err: Error, hashrate: number) => void): void;
+            getGasPrice(cd: (err: Error, gasPrice: BigNumber.BigNumber) => void): void;
+            getAccounts(cd: (err: Error, accounts: string[]) => void): void;
+            getBlockNumber(callback: (err: Error, blockNumber: number) => void): void;
+            getSyncing(cd: (err: Error, syncing: Web3.SyncingResult) => void): void;
+            isSyncing(cb: (err: Error, isSyncing: boolean, syncingState: Web3.SyncingState) => void): Web3.IsSyncing;
 
             getBlock(hashStringOrBlockNumber: string|Web3.BlockParam): Web3.BlockWithoutTransactionData;
             getBlock(hashStringOrBlockNumber: string|Web3.BlockParam,
@@ -134,7 +133,8 @@ declare module 'web3' {
                                      callback: (err: Error, blockTransactionCount: number) => void): void;
 
             // TODO returnTransactionObjects
-            getUncle(hashStringOrBlockNumber: string|Web3.BlockParam, uncleNumber: number): Web3.BlockWithoutTransactionData;
+            getUncle(hashStringOrBlockNumber: string|Web3.BlockParam,
+                     uncleNumber: number): Web3.BlockWithoutTransactionData;
             getUncle(hashStringOrBlockNumber: string|Web3.BlockParam, uncleNumber: number,
                      callback: (err: Error, uncle: Web3.BlockWithoutTransactionData) => void): void;
 
@@ -143,9 +143,9 @@ declare module 'web3' {
                            callback: (err: Error, transaction: Web3.Transaction) => void): void;
 
             getTransactionFromBlock(hashStringOrBlockNumber: string|Web3.BlockParam,
-                    indexNumber: number): Web3.Transaction;
+                                    indexNumber: number): Web3.Transaction;
             getTransactionFromBlock(hashStringOrBlockNumber: string|Web3.BlockParam, indexNumber: number,
-                    callback: (err: Error, transaction: Web3.Transaction) => void): void;
+                                    callback: (err: Error, transaction: Web3.Transaction) => void): void;
 
             contract(abi: Web3.AbiDefinition[]): Web3.Contract<any>;
 
@@ -191,12 +191,12 @@ declare module 'web3' {
         interface VersionApi {
             api: string;
             network: string;
-            getNetwork(cd: (err: Error, networkId: string) => void): void;
             node: string;
-            getNode(cd: (err: Error, nodeVersion: string) => void): void;
             ethereum: string;
-            getEthereum(cd: (err: Error, ethereum: string) => void): void;
             whisper: string;
+            getNetwork(cd: (err: Error, networkId: string) => void): void;
+            getNode(cd: (err: Error, nodeVersion: string) => void): void;
+            getEthereum(cd: (err: Error, ethereum: string) => void): void;
             getWhisper(cd: (err: Error, whisper: string) => void): void;
         }
 
@@ -210,8 +210,8 @@ declare module 'web3' {
 
         interface NetApi {
             listening: boolean;
-            getListening(cd: (err: Error, listening: boolean) => void): void;
             peerCount: boolean;
+            getListening(cd: (err: Error, listening: boolean) => void): void;
             getPeerCount(cd: (err: Error, peerCount: number) => void): void;
         }
 
@@ -249,13 +249,13 @@ declare module 'web3' {
             gasLimit: number;
             gasUser: number;
             timestamp: number;
-            uncles: Array<string>;
+            uncles: string[];
         }
         interface BlockWithoutTransactionData extends AbstractBlock {
-            transactions: Array<string>;
+            transactions: string[];
         }
         interface BlockWithTransactionData extends AbstractBlock {
-            transactions: Array<Transaction>;
+            transactions: Transaction[];
         }
 
         interface Transaction {
@@ -299,7 +299,7 @@ declare module 'web3' {
             cumulativeGasUsed: number;
             gasUsed: number;
             contractAddress: string|null;
-            logs: Array<LogEntry>;
+            logs: LogEntry[];
         }
 
         interface LogEntry {
