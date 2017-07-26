@@ -296,10 +296,19 @@ declare module 'web3' {
             cumulativeGasUsed: number;
             gasUsed: number;
             contractAddress: string|null;
-            logs: Array<Log>;
+            logs: Array<LogEntry>;
         }
 
-        interface Log {}
+        interface LogEntry {
+            logIndex: number|null;
+            transactionIndex: number;
+            transactionHash: string;
+            blockHash: string|null;
+            blockNumber: number|null;
+            address: string;
+            data: string;
+            topics: string[];
+        }
     }
     /* tslint:disable */
     export = Web3;
