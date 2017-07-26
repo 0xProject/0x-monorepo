@@ -8,8 +8,8 @@ v0.9.0 - _Jul. 26, 2017_
     * Cached `net_version` requests and invalidate the cache on calls to `setProvider` (#95)
     * Renamed `zeroEx.exchange.batchCancelOrderAsync` to `zeroEx.exchange.batchCancelOrdersAsync`
     * Renamed `zeroEx.exchange.batchFillOrderAsync` to `zeroEx.exchange.batchFillOrdersAsync`
-    * Updated to typescript v2.4
-    * Fixed an issue with incorrect balance/allowance validation when ZRX is one of the tokens traded
+    * Updated to typescript v2.4 (#104)
+    * Fixed an issue with incorrect balance/allowance validation when ZRX is one of the tokens traded (#109)
 
 v0.8.0 - _Jul. 4, 2017_
 ------------------------
