@@ -121,22 +121,22 @@ declare module 'web3' {
                 solidity(sourceString: string, cb?: (err: any, result: any) => void): object,
             }
 
-            getBlock(hashStringOrBlockNumber: string|Web3.BlockParam): Web3.Block;
+            getBlock(hashStringOrBlockNumber: string|Web3.BlockParam): Web3.BlockWithoutTransactionData;
             getBlock(hashStringOrBlockNumber: string|Web3.BlockParam,
-                     callback: (err: Error, blockObj: Web3.Block) => void): void;
+                     callback: (err: Error, blockObj: Web3.BlockWithoutTransactionData) => void): void;
             getBlock(hashStringOrBlockNumber: string|Web3.BlockParam,
-                     returnTransactionObjects: true): Web3.BlockWithTransactions;
+                     returnTransactionObjects: true): Web3.BlockWithTransactionData;
             getBlock(hashStringOrBlockNumber: string|Web3.BlockParam, returnTransactionObjects: true,
-                     callback: (err: Error, blockObj: Web3.BlockWithTransactions) => void): void;
+                     callback: (err: Error, blockObj: Web3.BlockWithTransactionData) => void): void;
 
             getBlockTransactionCount(hashStringOrBlockNumber: string|Web3.BlockParam): number;
             getBlockTransactionCount(hashStringOrBlockNumber: string|Web3.BlockParam,
                                      callback: (err: Error, blockTransactionCount: number) => void): void;
 
             // TODO returnTransactionObjects
-            getUncle(hashStringOrBlockNumber: string|Web3.BlockParam, uncleNumber: number): Web3.Block;
+            getUncle(hashStringOrBlockNumber: string|Web3.BlockParam, uncleNumber: number): Web3.BlockWithoutTransactionData;
             getUncle(hashStringOrBlockNumber: string|Web3.BlockParam, uncleNumber: number,
-                     callback: (err: Error, uncle: Web3.Block) => void): void;
+                     callback: (err: Error, uncle: Web3.BlockWithoutTransactionData) => void): void;
 
             getTransaction(transactionHash: string): Web3.Transaction;
             getTransaction(transactionHash: string,
@@ -232,7 +232,7 @@ declare module 'web3' {
             stopWatching(): void;
         }
 
-        interface Block {
+        interface AbstractBlock {
             number: number|null;
             hash: string|null;
             parentHash: string;
@@ -251,8 +251,11 @@ declare module 'web3' {
             timestamp: number;
             uncles: Array<string>;
         }
-        interface BlockWithTransactions extends Block {
+        interface BlockWithoutTransactionData extends AbstractBlock {
             transactions: Array<string>;
+        }
+        interface BlockWithTransactionData extends AbstractBlock {
+            transactions: Array<Transaction>;
         }
 
         interface Transaction {
