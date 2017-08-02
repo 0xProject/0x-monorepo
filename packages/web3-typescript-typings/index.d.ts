@@ -34,7 +34,7 @@ declare module 'web3' {
 
     namespace providers {
         class HttpProvider implements Web3.Provider {
-            constructor(url?: string);
+            constructor(url?: string, timeout?: number, username?: string, password?: string);
         }
     }
 
