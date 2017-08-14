@@ -562,7 +562,7 @@
       ],
       "name": "LogError",
       "type": "event"
-    }
+  },
     {
       "constant": true,
       "inputs": [],
