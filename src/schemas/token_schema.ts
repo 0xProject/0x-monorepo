@@ -5,18 +5,7 @@ export const tokenSchema = {
         symbol: {type: 'string'},
         decimals: {type: 'number'},
         address: {$ref: '/addressSchema'},
-        url: {
-            oneOf: [
-                {
-                    type: 'string',
-                    format: 'uri',
-                },
-                {
-                    enum: [''],
-                },
-            ],
-        },
     },
-    required: ['name', 'symbol', 'decimals', 'address', 'url'],
+    required: ['name', 'symbol', 'decimals', 'address'],
     type: 'object',
 };

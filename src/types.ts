@@ -275,15 +275,14 @@ export interface SignedOrder extends Order {
     ecSignature: ECSignature;
 }
 
-//                          [address, name, symbol, projectUrl, decimals, ipfsHash, swarmHash]
-export type TokenMetadata = [string, string, string, string, BigNumber.BigNumber, string, string];
+//                          [address, name, symbol, decimals, ipfsHash, swarmHash]
+export type TokenMetadata = [string, string, string, BigNumber.BigNumber, string, string];
 
 export interface Token {
     name: string;
     address: string;
     symbol: string;
     decimals: number;
-    url: string;
 }
 
 export interface TxOpts {

@@ -180,10 +180,6 @@ describe('Schema', () => {
                 },
                 [],
                 4,
-                {
-                    ...token,
-                    url: 'not an url',
-                },
             ];
             const shouldFail = true;
             validateAgainstSchema(testCases, tokenSchema, shouldFail);
