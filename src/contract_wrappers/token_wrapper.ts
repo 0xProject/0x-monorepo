@@ -89,7 +89,6 @@ export class TokenWrapper extends ContractWrapper {
     public async getAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string) {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isUserAddressAvailableAsync(this._web3Wrapper);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, spenderAddress);

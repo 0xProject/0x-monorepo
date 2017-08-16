@@ -176,7 +176,6 @@ describe('TokenWrapper', () => {
             before(async () => {
                 const hasAddresses = false;
                 const web3WithoutAccounts = web3Factory.create(hasAddresses);
-                web3WithoutAccounts.eth.getAccounts(console.log);
                 zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider);
             });
             it('should return balance even when called with Web3 provider instance without addresses', async () => {
@@ -208,25 +207,49 @@ describe('TokenWrapper', () => {
         });
     });
     describe('#getAllowanceAsync', () => {
-        it('should get the proxy allowance', async () => {
-            const token = tokens[0];
-            const ownerAddress = coinbase;
-            const spenderAddress = addressWithoutFunds;
+        describe('With web3 provider with accounts', () => {
+            it('should get the proxy allowance', async () => {
+                const token = tokens[0];
+                const ownerAddress = coinbase;
+                const spenderAddress = addressWithoutFunds;
 
-            const amountInBaseUnits = new BigNumber(50);
-            await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
+                const amountInBaseUnits = new BigNumber(50);
+                await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
 
-            const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
-            const expectedAllowance = amountInBaseUnits;
-            return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+                const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
+                const expectedAllowance = amountInBaseUnits;
+                return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+            });
+            it('should return 0 if no allowance set yet', async () => {
+                const token = tokens[0];
+                const ownerAddress = coinbase;
+                const spenderAddress = addressWithoutFunds;
+                const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
+                const expectedAllowance = new BigNumber(0);
+                return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+            });
         });
-        it('should return 0 if no allowance set yet', async () => {
-            const token = tokens[0];
-            const ownerAddress = coinbase;
-            const spenderAddress = addressWithoutFunds;
-            const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
-            const expectedAllowance = new BigNumber(0);
-            return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+        describe('With web3 provider without accounts', () => {
+            let zeroExWithoutAccounts: ZeroEx;
+            before(async () => {
+                const hasAddresses = false;
+                const web3WithoutAccounts = web3Factory.create(hasAddresses);
+                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider);
+            });
+            it('should get the proxy allowance', async () => {
+                const token = tokens[0];
+                const ownerAddress = coinbase;
+                const spenderAddress = addressWithoutFunds;
+
+                const amountInBaseUnits = new BigNumber(50);
+                await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
+
+                const allowance = await zeroExWithoutAccounts.token.getAllowanceAsync(
+                    token.address, ownerAddress, spenderAddress,
+                );
+                const expectedAllowance = amountInBaseUnits;
+                return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+            });
         });
     });
     describe('#getProxyAllowanceAsync', () => {
