@@ -16,7 +16,7 @@ export const web3Factory = {
         web3.setProvider(provider);
         return web3;
     },
-    getRpcProvider(hasAddresses: boolean): Web3.Provider {
+    getRpcProvider(hasAddresses: boolean = true): Web3.Provider {
         const provider = new ProviderEngine();
         const rpcUrl = `http://${constants.RPC_HOST}:${constants.RPC_PORT}`;
         if (!hasAddresses) {
