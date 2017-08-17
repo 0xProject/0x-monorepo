@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.9.1 - _Aug. 16, 2017_
+------------------------
+    * Fixed the bug causing `zeroEx.token.getBalanceAsync()` to fail if no addresses available (#120)
+
 v0.9.0 - _Jul. 26, 2017_
 ------------------------
     * Migrated to the new version of smart contracts (#101)
