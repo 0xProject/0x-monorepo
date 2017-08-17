@@ -149,25 +149,42 @@ describe('TokenWrapper', () => {
         });
     });
     describe('#getBalanceAsync', () => {
-        it('should return the balance for an existing ERC20 token', async () => {
-            const token = tokens[0];
-            const ownerAddress = coinbase;
-            const balance = await zeroEx.token.getBalanceAsync(token.address, ownerAddress);
-            const expectedBalance = new BigNumber('100000000000000000000000000');
-            return expect(balance).to.be.bignumber.equal(expectedBalance);
+        describe('With web3 provider with accounts', () => {
+            it('should return the balance for an existing ERC20 token', async () => {
+                const token = tokens[0];
+                const ownerAddress = coinbase;
+                const balance = await zeroEx.token.getBalanceAsync(token.address, ownerAddress);
+                const expectedBalance = new BigNumber('100000000000000000000000000');
+                return expect(balance).to.be.bignumber.equal(expectedBalance);
+            });
+            it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
+                const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
+                const ownerAddress = coinbase;
+                return expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress))
+                    .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+            });
+            it('should return a balance of 0 for a non-existent owner address', async () => {
+                const token = tokens[0];
+                const nonExistentOwner = '0x198C6Ad858F213Fb31b6FE809E25040E6B964593';
+                const balance = await zeroEx.token.getBalanceAsync(token.address, nonExistentOwner);
+                const expectedBalance = new BigNumber(0);
+                return expect(balance).to.be.bignumber.equal(expectedBalance);
+            });
         });
-        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-            const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-            const ownerAddress = coinbase;
-            return expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress))
-                .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
-        });
-        it('should return a balance of 0 for a non-existent owner address', async () => {
-            const token = tokens[0];
-            const nonExistentOwner = '0x198C6Ad858F213Fb31b6FE809E25040E6B964593';
-            const balance = await zeroEx.token.getBalanceAsync(token.address, nonExistentOwner);
-            const expectedBalance = new BigNumber(0);
-            return expect(balance).to.be.bignumber.equal(expectedBalance);
+        describe('With web3 provider without accounts', () => {
+            let zeroExWithoutAccounts: ZeroEx;
+            before(async () => {
+                const hasAddresses = false;
+                const web3WithoutAccounts = web3Factory.create(hasAddresses);
+                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider);
+            });
+            it('should return balance even when called with Web3 provider instance without addresses', async () => {
+                    const token = tokens[0];
+                    const ownerAddress = coinbase;
+                    const balance = await zeroExWithoutAccounts.token.getBalanceAsync(token.address, ownerAddress);
+                    const expectedBalance = new BigNumber('100000000000000000000000000');
+                    return expect(balance).to.be.bignumber.equal(expectedBalance);
+            });
         });
     });
     describe('#setAllowanceAsync', () => {
@@ -190,25 +207,49 @@ describe('TokenWrapper', () => {
         });
     });
     describe('#getAllowanceAsync', () => {
-        it('should get the proxy allowance', async () => {
-            const token = tokens[0];
-            const ownerAddress = coinbase;
-            const spenderAddress = addressWithoutFunds;
+        describe('With web3 provider with accounts', () => {
+            it('should get the proxy allowance', async () => {
+                const token = tokens[0];
+                const ownerAddress = coinbase;
+                const spenderAddress = addressWithoutFunds;
 
-            const amountInBaseUnits = new BigNumber(50);
-            await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
+                const amountInBaseUnits = new BigNumber(50);
+                await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
 
-            const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
-            const expectedAllowance = amountInBaseUnits;
-            return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+                const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
+                const expectedAllowance = amountInBaseUnits;
+                return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+            });
+            it('should return 0 if no allowance set yet', async () => {
+                const token = tokens[0];
+                const ownerAddress = coinbase;
+                const spenderAddress = addressWithoutFunds;
+                const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
+                const expectedAllowance = new BigNumber(0);
+                return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+            });
         });
-        it('should return 0 if no allowance set yet', async () => {
-            const token = tokens[0];
-            const ownerAddress = coinbase;
-            const spenderAddress = addressWithoutFunds;
-            const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
-            const expectedAllowance = new BigNumber(0);
-            return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+        describe('With web3 provider without accounts', () => {
+            let zeroExWithoutAccounts: ZeroEx;
+            before(async () => {
+                const hasAddresses = false;
+                const web3WithoutAccounts = web3Factory.create(hasAddresses);
+                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider);
+            });
+            it('should get the proxy allowance', async () => {
+                const token = tokens[0];
+                const ownerAddress = coinbase;
+                const spenderAddress = addressWithoutFunds;
+
+                const amountInBaseUnits = new BigNumber(50);
+                await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
+
+                const allowance = await zeroExWithoutAccounts.token.getAllowanceAsync(
+                    token.address, ownerAddress, spenderAddress,
+                );
+                const expectedAllowance = amountInBaseUnits;
+                return expect(allowance).to.be.bignumber.equal(expectedAllowance);
+            });
         });
     });
     describe('#getProxyAllowanceAsync', () => {
