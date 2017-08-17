@@ -368,3 +368,8 @@ export interface ContractArtifact {
         };
     };
 }
+
+export interface JSONRPCPayload {
+    params: any[];
+    method: string;
+}

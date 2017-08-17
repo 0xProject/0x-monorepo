@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
-import Web3 = require('web3');
+import * as Web3 from 'web3';
+import {JSONRPCPayload} from '../types';
 
 /*
  * This class implements the web3-provider-engine subprovider interface and returns
@@ -7,7 +7,7 @@ import Web3 = require('web3');
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class EmptyWalletSubProvider {
-    public handleRequest(payload: any, next: () => void, end: (err: Error|null, result: any) => void) {
+    public handleRequest(payload: JSONRPCPayload, next: () => void, end: (err: Error|null, result: any) => void) {
         switch (payload.method) {
             case 'eth_accounts':
                 end(null, []);
