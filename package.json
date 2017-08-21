@@ -36,7 +36,7 @@
     "test:commonjs": "run-s build:commonjs:dev run_mocha",
     "pretest:umd": "run-s clean build:*:dev",
     "substitute_umd_bundle": "npm run remove_src_files_not_used_by_tests; shx mv _bundles/* lib/src",
-    "remove_src_files_not_used_by_tests": "find ./lib/src \\( -path ./lib/src/utils -o -path ./lib/src/schemas -o -path \"./lib/src/types.*\" \\) -prune -o -type f -print | xargs rm",
+    "remove_src_files_not_used_by_tests": "find ./lib/src \\( -path ./lib/src/utils -o -path ./lib/src/subproviders -o -path ./lib/src/schemas -o -path \"./lib/src/types.*\" \\) -prune -o -type f -print | xargs rm",
     "run_mocha": "mocha lib/test/**/*_test.js --timeout 4000 --bail"
   },
   "config": {
