@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.9.4 - _Aug 21, 2017_
+------------------------
+    * Added good error message when checksummed address is submitted (#124)
+
 v0.9.3 - _Aug 22, 2017_
 ------------------------
     * Update contract artifacts to include latest Kovan and Mainnet deploys.
