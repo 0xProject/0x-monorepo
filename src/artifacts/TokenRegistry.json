@@ -2,6 +2,23 @@
   "contract_name": "TokenRegistry",
   "abi": [
     {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "name": "_index",
+          "type": "uint256"
+        }
+      ],
+      "name": "removeToken",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
       "constant": true,
       "inputs": [
         {
@@ -16,23 +33,6 @@
           "type": "address"
         }
       ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "name": "_ipfsHash",
-          "type": "bytes"
-        }
-      ],
-      "name": "setTokenIpfsHash",
-      "outputs": [],
       "payable": false,
       "type": "function"
     },
@@ -62,11 +62,11 @@
           "type": "address"
         },
         {
-          "name": "_index",
-          "type": "uint256"
+          "name": "_swarmHash",
+          "type": "bytes"
         }
       ],
-      "name": "removeToken",
+      "name": "setTokenSwarmHash",
       "outputs": [],
       "payable": false,
       "type": "function"
@@ -267,23 +267,6 @@
       "type": "function"
     },
     {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "name": "_swarmHash",
-          "type": "bytes"
-        }
-      ],
-      "name": "setTokenSwarmHash",
-      "outputs": [],
-      "payable": false,
-      "type": "function"
-    },
-    {
       "constant": true,
       "inputs": [],
       "name": "getTokenAddresses",
@@ -293,6 +276,23 @@
           "type": "address[]"
         }
       ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "name": "_ipfsHash",
+          "type": "bytes"
+        }
+      ],
+      "name": "setTokenIpfsHash",
+      "outputs": [],
       "payable": false,
       "type": "function"
     },
@@ -696,7 +696,7 @@
         }
       },
       "updated_at": 1502391794385,
-      "address": "0x0b1ba0af832d7c05fd64161e0db78e85978e8082"
+      "address": "0xf7c37d12f3355d052ef9ca60131118af615f5653"
     },
     "42": {
       "links": {},
