@@ -42,11 +42,15 @@ describe('Schema', () => {
     });
     describe('#addressSchema', () => {
         it('should validate valid addresses', () => {
-            const testCases = ['0x8b0292B11a196601eD2ce54B665CaFEca0347D42', constants.NULL_ADDRESS];
+            const testCases = ['0x8b0292b11a196601ed2ce54b665cafeca0347d42', constants.NULL_ADDRESS];
             validateAgainstSchema(testCases, addressSchema);
         });
         it('should fail for invalid addresses', () => {
-            const testCases = ['0x', '0', '0x00', '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42'];
+            const testCases = [
+                '0x',
+                '0',
+                '0x00',
+                '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42', '0x8b0292B11a196601eD2ce54B665CaFEca0347D42'];
             const shouldFail = true;
             validateAgainstSchema(testCases, addressSchema, shouldFail);
         });
@@ -159,7 +163,7 @@ describe('Schema', () => {
             name: 'Zero Ex',
             symbol: 'ZRX',
             decimals: 100500,
-            address: '0x8b0292B11a196601eD2ce54B665CaFEca0347D42',
+            address: '0x8b0292b11a196601ed2ce54b665cafeca0347d42',
             url: 'https://0xproject.com',
         };
         it('should validate valid token', () => {
