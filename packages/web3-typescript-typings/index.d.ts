@@ -29,6 +29,7 @@ declare module 'web3' {
         public toWei(amount: BigNumber.BigNumber, unit: Web3.Unit): BigNumber.BigNumber;
         public toBigNumber(value: number|string): BigNumber.BigNumber;
         public isAddress(address: string): boolean;
+        public isChecksumAddress(address: string): boolean;
         public sha3(value: string, options?: Web3.Sha3Options): string;
     }
 
