@@ -54,7 +54,7 @@ export interface ExchangeContract extends ContractInstance {
         call: (orderHash: string) => BigNumber.BigNumber;
     };
     isRoundingError: {
-        call: (takerTokenAmount: BigNumber.BigNumber, fillTakerAmount: BigNumber.BigNumber,
+        call: (fillTakerAmount: BigNumber.BigNumber, takerTokenAmount: BigNumber.BigNumber,
                makerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     };
     fillOrder: {
@@ -85,10 +85,10 @@ export interface ExchangeContract extends ContractInstance {
                       v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
     };
     cancelOrder: {
-        (orderAddresses: OrderAddresses, orderValues: OrderValues, canceltakerTokenAmount: BigNumber.BigNumber,
+        (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelTakerTokenAmount: BigNumber.BigNumber,
          txOpts?: TxOpts): ContractResponse;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
-                      canceltakerTokenAmount: BigNumber.BigNumber,
+                      cancelTakerTokenAmount: BigNumber.BigNumber,
                       txOpts?: TxOpts) => number;
     };
     batchCancelOrders: {
@@ -275,15 +275,14 @@ export interface SignedOrder extends Order {
     ecSignature: ECSignature;
 }
 
-//                          [address, name, symbol, projectUrl, decimals, ipfsHash, swarmHash]
-export type TokenMetadata = [string, string, string, string, BigNumber.BigNumber, string, string];
+//                          [address, name, symbol, decimals, ipfsHash, swarmHash]
+export type TokenMetadata = [string, string, string, BigNumber.BigNumber, string, string];
 
 export interface Token {
     name: string;
     address: string;
     symbol: string;
     decimals: number;
-    url: string;
 }
 
 export interface TxOpts {

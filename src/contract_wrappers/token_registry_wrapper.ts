@@ -30,8 +30,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
                 address: metadata[0],
                 name: metadata[1],
                 symbol: metadata[2],
-                url: metadata[3],
-                decimals: metadata[4].toNumber(),
+                decimals: metadata[3].toNumber(),
             };
         });
         return tokens;

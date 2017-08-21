@@ -669,7 +669,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
 
         const wouldRoundingErrorOccur = await this._isRoundingErrorAsync(
-            signedOrder.takerTokenAmount, fillTakerAmount, signedOrder.makerTokenAmount,
+            fillTakerAmount, signedOrder.takerTokenAmount, signedOrder.makerTokenAmount,
         );
         if (wouldRoundingErrorOccur) {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
@@ -713,7 +713,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                         makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
         const exchangeInstance = await this._getExchangeContractAsync();
         const isRoundingError = await exchangeInstance.isRoundingError.call(
-            demoninator, numerator, makerTokenAmount,
+            numerator, demoninator, makerTokenAmount,
         );
         return isRoundingError;
     }
