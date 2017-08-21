@@ -2,7 +2,7 @@ machine:
   node:
     version: 6.5.0
   environment:
-      CONTRACTS_COMMIT_HASH: '70454b2'
+      CONTRACTS_COMMIT_HASH: '35053f9'
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
 
 dependencies:
