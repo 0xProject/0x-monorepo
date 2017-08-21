@@ -1,5 +1,10 @@
 # CHANGELOG
 
+v0.9.2 - _Aug 21, 2017_
+------------------------
+
+    * Update contract artifacts to include latest Kovan and Mainnet deploys.
+
 v0.9.1 - _Aug. 16, 2017_
 ------------------------
     * Fixed the bug causing `zeroEx.token.getBalanceAsync()` to fail if no addresses available (#120)
