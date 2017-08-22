@@ -61,8 +61,8 @@ export class FillScenarios {
             makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
             fillableAmount, fillableAmount,
         );
-        const shouldCheckTransfer = false;
-        await this.zeroEx.exchange.fillOrderAsync(signedOrder, partialFillAmount, shouldCheckTransfer, takerAddress);
+        const shouldThrowOnInsufficientBalanceOrAllowance = false;
+        await this.zeroEx.exchange.fillOrderAsync(signedOrder, partialFillAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress);
         return signedOrder;
     }
     private async createAsymmetricFillableSignedOrderWithFeesAsync(
