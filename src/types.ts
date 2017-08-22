@@ -152,7 +152,7 @@ export interface EtherTokenContract extends ContractInstance {
     withdraw: (amount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<void>;
 }
 
-export interface ProxyContract extends ContractInstance {
+export interface TokenTransferProxyContract extends ContractInstance {
     getAuthorizedAddresses: {
         call: () => Promise<string[]>;
     };

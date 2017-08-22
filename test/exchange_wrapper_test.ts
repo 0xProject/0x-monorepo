@@ -23,7 +23,7 @@ import {DoneCallback} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 import {assert} from '../src/utils/assert';
-import {ProxyWrapper} from '../src/contract_wrappers/proxy_wrapper';
+import {TokenTransferProxyWrapper} from '../src/contract_wrappers/token_transfer_proxy_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
