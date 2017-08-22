@@ -1,0 +1,41 @@
+import * as _ from 'lodash';
+import {ContractWrapper} from './contract_wrapper';
+import * as TokenTransferProxyArtifacts from '../artifacts/TokenTransferProxy.json';
+import {TokenTransferProxyContract} from '../types';
+
+/**
+ * This class includes the functionality related to interacting with the TokenTransferProxy contract.
+ */
+export class TokenTransferProxyWrapper extends ContractWrapper {
+    private _tokenTransferProxyContractIfExists?: TokenTransferProxyContract;
+    /**
+     * Check if the Exchange contract address is authorized by the TokenTransferProxy contract.
+     * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to call.
+     * @return  Whether the exchangeContractAddress is authorized.
+     */
+    public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
+        const tokenTransferProxyContractInstance = await this._getTokenTransferProxyContractAsync();
+        const isAuthorized = await tokenTransferProxyContractInstance.authorized.call(exchangeContractAddress);
+        return isAuthorized;
+    }
+    /**
+     * Get the list of all Exchange contract addresses authorized by the TokenTransferProxy contract.
+     * @return  The list of authorized addresses.
+     */
+    public async getAuthorizedAddressesAsync(): Promise<string[]> {
+        const tokenTransferProxyContractInstance = await this._getTokenTransferProxyContractAsync();
+        const authorizedAddresses = await tokenTransferProxyContractInstance.getAuthorizedAddresses.call();
+        return authorizedAddresses;
+    }
+    private _invalidateContractInstance(): void {
+        delete this._tokenTransferProxyContractIfExists;
+    }
+    private async _getTokenTransferProxyContractAsync(): Promise<TokenTransferProxyContract> {
+        if (!_.isUndefined(this._tokenTransferProxyContractIfExists)) {
+            return this._tokenTransferProxyContractIfExists;
+        }
+        const contractInstance = await this._instantiateContractIfExistsAsync((TokenTransferProxyArtifacts as any));
+        this._tokenTransferProxyContractIfExists = contractInstance as TokenTransferProxyContract;
+        return this._tokenTransferProxyContractIfExists;
+    }
+}

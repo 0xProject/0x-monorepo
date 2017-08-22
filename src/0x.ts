@@ -15,7 +15,7 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
-import {ProxyWrapper} from './contract_wrappers/proxy_wrapper';
+import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
 import {orderHashSchema} from './schemas/order_hash_schema';
 import {orderSchema} from './schemas/order_schemas';
@@ -55,10 +55,10 @@ export class ZeroEx {
      */
     public etherToken: EtherTokenWrapper;
     /**
-     * An instance of the ProxyWrapper class containing methods for interacting with the
-     * proxy smart contract.
+     * An instance of the TokenTransferProxyWrapper class containing methods for interacting with the
+     * tokenTransferProxy smart contract.
      */
-    public proxy: ProxyWrapper;
+    public proxy: TokenTransferProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
@@ -167,7 +167,7 @@ export class ZeroEx {
     constructor(provider: Web3Provider) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this.token = new TokenWrapper(this._web3Wrapper);
-        this.proxy = new ProxyWrapper(this._web3Wrapper);
+        this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper);
         this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);

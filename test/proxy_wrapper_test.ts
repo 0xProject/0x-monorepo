@@ -2,12 +2,12 @@ import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx} from '../src';
-import {ProxyWrapper} from '../src/contract_wrappers/proxy_wrapper';
+import {TokenTransferProxyWrapper} from '../src/contract_wrappers/token_transfer_proxy_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe('ProxyWrapper', () => {
+describe('TokenTransferProxyWrapper', () => {
     let zeroEx: ZeroEx;
     before(async () => {
         const web3 = web3Factory.create();
