@@ -1,7 +1,7 @@
 export const addressSchema = {
     id: '/addressSchema',
     type: 'string',
-    pattern: '^0[xX][0-9A-Fa-f]{40}$',
+    pattern: '^0x[0-9a-f]{40}$',
 };
 
 export const numberSchema = {

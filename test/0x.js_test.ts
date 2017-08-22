@@ -57,7 +57,7 @@ describe('ZeroEx library', () => {
             ).to.become(false);
         });
         it('should return false if the address doesn\'t pertain to the signature & data', async () => {
-            const validUnrelatedAddress = '0x8b0292B11a196601eD2ce54B665CaFEca0347D42';
+            const validUnrelatedAddress = '0x8b0292b11a196601ed2ce54b665cafeca0347d42';
             expect(ZeroEx.isValidSignature(dataHex, signature, validUnrelatedAddress)).to.be.false();
             return expect(
                 (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, signature,

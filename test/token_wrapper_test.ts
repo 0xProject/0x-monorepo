@@ -165,7 +165,7 @@ describe('TokenWrapper', () => {
             });
             it('should return a balance of 0 for a non-existent owner address', async () => {
                 const token = tokens[0];
-                const nonExistentOwner = '0x198C6Ad858F213Fb31b6FE809E25040E6B964593';
+                const nonExistentOwner = '0x198c6ad858f213fb31b6fe809e25040e6b964593';
                 const balance = await zeroEx.token.getBalanceAsync(token.address, nonExistentOwner);
                 const expectedBalance = new BigNumber(0);
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
