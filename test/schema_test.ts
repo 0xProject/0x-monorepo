@@ -50,7 +50,9 @@ describe('Schema', () => {
                 '0x',
                 '0',
                 '0x00',
-                '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42', '0x8b0292B11a196601eD2ce54B665CaFEca0347D42'];
+                '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42',
+                '0x8b0292B11a196601eD2ce54B665CaFEca0347D42',
+            ];
             const shouldFail = true;
             validateAgainstSchema(testCases, addressSchema, shouldFail);
         });
