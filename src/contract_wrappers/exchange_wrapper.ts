@@ -137,8 +137,9 @@ export class ExchangeWrapper extends ContractWrapper {
      * Fills a signed order with an amount denominated in baseUnits of the taker token.
      * Since the order in which transactions are included in the next block is indeterminate, race-conditions
      * could arise where a users balance or allowance changes before the fillOrder executes. Because of this,
-     * we allow you to specify `shouldCheckTransfer`. If true, the smart contract will not throw if the parties
-     * do not have sufficient balances/allowances, preserving gas costs. Setting it to false forgoes this check
+     * we allow you to specify `shouldThrowOnInsufficientBalanceOrAllowance`.
+     * If false, the smart contract will not throw if the parties
+     * do not have sufficient balances/allowances, preserving gas costs. Setting it to true forgoes this check
      * and causes the smart contract to throw (using all the gas supplied) instead.
      * @param   signedOrder                                 An object that conforms to the SignedOrder interface.
      * @param   fillTakerTokenAmount                        The amount of the order (in taker tokens baseUnits) that
@@ -282,8 +283,9 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Batch version of fillOrderAsync.
      * Executes multiple fills atomically in a single transaction.
-     * If shouldCheckTransfer is set to true, it will continue filling subsequent orders even when earlier ones fail.
-     * When shouldCheckTransfer is set to false, if any fill fails, the entire batch fails.
+     * If shouldThrowOnInsufficientBalanceOrAllowance is set to true, it will continue filling subsequent orders even
+     * when earlier ones fail.
+     * When shouldThrowOnInsufficientBalanceOrAllowance is set to false, if any fill fails, the entire batch fails.
      * @param   orderFillRequests                               An array of objects that conform to the
      *                                                          OrderFillRequest interface.
      * @param   shouldThrowOnInsufficientBalanceOrAllowance     Whether or not you wish for the contract call to throw
