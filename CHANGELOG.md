@@ -1,11 +1,6 @@
 # CHANGELOG
 
-<<<<<<< HEAD
-v0.9.4 - _Aug 21, 2017_
-=======
-
 v0.9.4 - _Aug 22, 2017_
->>>>>>> Change CHANGELOG text
 ------------------------
     * Add clear error message when checksummed address is passed to a public method (#124)
 
