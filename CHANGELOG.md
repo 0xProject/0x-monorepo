@@ -1,8 +1,12 @@
 # CHANGELOG
 
+v0.9.3 - _Aug 22, 2017_
+------------------------
+    * Update contract artifacts to include latest Kovan and Mainnet deploys.
+
 v0.9.2 - _Aug 21, 2017_
 ------------------------
-
+    * *This version was unpublished because of a publishing issue.*
     * Update contract artifacts to include latest Kovan and Mainnet deploys.
 
 v0.9.1 - _Aug. 16, 2017_
