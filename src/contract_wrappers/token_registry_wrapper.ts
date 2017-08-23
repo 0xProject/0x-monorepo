@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
+import {assert} from '../utils/assert';
 import {Token, TokenRegistryContract, TokenMetadata} from '../types';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
@@ -33,6 +34,8 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * @return  An object that conforms to the Token interface or undefined if token not found.
      */
     public async getTokenMetadataIfExistsAsync(address: string): Promise<Token|undefined> {
+        assert.isETHAddressHex('address', address);
+
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenMetaData.call(address);
         if (metadata[0] === constants.NULL_ADDRESS) {
