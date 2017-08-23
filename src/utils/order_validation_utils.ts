@@ -58,7 +58,6 @@ export class OrderValidationUtils {
         if (cancelTakerTokenAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
         }
-        const orderHash = utils.getOrderHashHex(order);
         if (order.takerTokenAmount.minus(unavailableTakerTokenAmount).eq(0)) {
             throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
         }
