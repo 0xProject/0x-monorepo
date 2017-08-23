@@ -21,13 +21,22 @@ export class TokenRegistryWrapper extends ContractWrapper {
     public async getTokensAsync(): Promise<Token[]> {
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
 
-        const addresses = await tokenRegistryContract.getTokenAddresses.call();
+        const addresses = await this.getTokenAddressesAsync();
         const tokenPromises: Array<Promise<Token|undefined>> = _.map(
             addresses,
             (address: string) => (this.getTokenIfExistsAsync(address)),
         );
         const tokens = await Promise.all(tokenPromises);
         return tokens as Token[];
+    }
+    /**
+     * Retrieves all the addresses of the tokens currently listed in the Token Registry smart contract
+     * @return  An array of token addresses.
+     */
+    public async getTokenAddressesAsync(): Promise<string[]> {
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const addresses = await tokenRegistryContract.getTokenAddresses.call();
+        return addresses;
     }
     /**
      * Retrieves a token by address currently listed in the Token Registry smart contract
