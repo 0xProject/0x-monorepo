@@ -49,8 +49,8 @@ describe('TokenRegistryWrapper', () => {
             expect(validationResult.errors).to.have.lengthOf(0);
         });
         it('should return return undefined when passed a token address not in the tokenRegistry', async () => {
-            const unregisteredTokenAddress = '0x5409ED021D9299bf6814279A6A1411A7e866A631';
             const tokenIfExists = await zeroEx.tokenRegistry.getTokenMetadataIfExistsAsync(unregisteredTokenAddress);
+            const unregisteredTokenAddress = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
             expect(tokenIfExists).to.be.undefined();
         });
     });
