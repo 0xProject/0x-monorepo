@@ -62,6 +62,15 @@ describe('OrderValidation', () => {
             const zeroFillAmount = new BigNumber(0);
             return expect(zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(
                 signedOrder, zeroFillAmount, takerAddress,
+            )).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+        });
+        it('should throw when the order is fully filled or cancelled', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
+            return expect(zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(
+                signedOrder, fillableAmount, takerAddress,
             )).to.be.rejectedWith(ExchangeContractErrs.OrderRemainingFillAmountZero);
         });
         it('should throw when sender is not a taker', async () => {

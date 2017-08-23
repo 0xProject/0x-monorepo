@@ -16,6 +16,11 @@ export class OrderValidationUtils {
                                                       takerAddress: string,
                                                       zrxTokenAddress: string): Promise<void> {
         if (fillTakerTokenAmount.eq(0)) {
+            throw new Error(ExchangeContractErrs.OrderFillAmountZero);
+        }
+        const orderHash = utils.getOrderHashHex(signedOrder);
+        const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
+        if (signedOrder.makerTokenAmount.eq(unavailableTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
         }
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== takerAddress) {
