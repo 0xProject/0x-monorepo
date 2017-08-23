@@ -2,11 +2,10 @@
 
 v0.10.0 - _TBD_
 ------------------------
-    * Added `zeroEx.exchange.validateFillOrderAndThrowIfInvalidAsync` (#128)
-    * Added `zeroEx.exchange.validateFillOrKillOrderAndThrowIfInvalidAsync` (#128)
-    * Added `zeroEx.exchange.validateCancelOrderAndThrowIfInvalidAsync` (#128)
-    * Added `zeroEx.exchange.isRoundingError` (#128)
-    * Add `zeroEx.proxy.getContractAddressAsync` to public interface (#130)
+    * Added `zeroEx.exchange.validateFillOrderThrowIfInvalidAsync` (#128)
+    * Added `zeroEx.exchange.validateFillOrKillOrderThrowIfInvalidAsync` (#128)
+    * Added `zeroEx.exchange.validateCancelOrderThrowIfInvalidAsync` (#128)
+    * Added `zeroEx.exchange.isRoundingErrorAsync` (#128)
     * Add clear error message when checksummed address is passed to a public method (#124)
     * Fixes the description of `shouldThrowOnInsufficientBalanceOrAllowance` in docs (#127)
 
