@@ -284,7 +284,7 @@ describe('TokenWrapper', () => {
     });
     describe('#subscribeAsync', () => {
         const indexFilterValues = {};
-        const shouldCheckTransfer = false;
+        const shouldThrowOnInsufficientBalanceOrAllowance = true;
         let tokenAddress: string;
         const subscriptionOpts: SubscriptionOpts = {
             fromBlock: 0,

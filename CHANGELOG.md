@@ -1,8 +1,9 @@
 # CHANGELOG
 
-v0.9.4 - _Aug 22, 2017_
+v0.9.4 - _TBD_
 ------------------------
     * Add clear error message when checksummed address is passed to a public method (#124)
+    * Fixes the description of `shouldThrowOnInsufficientBalanceOrAllowance` in docs (#127)
 
 v0.9.3 - _Aug 22, 2017_
 ------------------------
