@@ -645,7 +645,7 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
     /**
-     * Checks if order cancel will succeed and throws an error otherwise.
+     * Checks if cancelling a given order will succeed and throws an informative error if it won't.
      * @param   order                   An object that conforms to the Order or SignedOrder interface.
      *                                  The order you would like to cancel.
      * @param   cancelTakerTokenAmount  The amount (specified in taker tokens) that you would like to cancel.
@@ -660,7 +660,7 @@ export class ExchangeWrapper extends ContractWrapper {
             order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
     }
     /**
-     * Checks if fillOrKill order will succeed and throws an error otherwise.
+     * Checks if calling fillOrKill on a given order will succeed and throws an informative error if it won't.
      * @param   signedOrder             An object that conforms to the SignedOrder interface. The
      *                                  signedOrder you wish to fill.
      * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
@@ -678,11 +678,13 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
     /**
-     * Checks if rounding error will be > 0.1%
-     * when computing makerTokenAmount by doing `(fillTakerTokenAmount * makerTokenAmount) / takerTokenAmount`
+     * Checks if rounding error will be > 0.1% when computing makerTokenAmount by doing:
+     * `(fillTakerTokenAmount * makerTokenAmount) / takerTokenAmount`.
+     * 0x Protocol does not accept any trades that result in large rounding errors. This means that tokens with few or
+     * no decimals can only be filled in quantities and ratios that avoid large rounding errors.
      * @param   fillTakerTokenAmount   The amount of the order (in taker tokens baseUnits) that you wish to fill.
      * @param   takerTokenAmount       The order size on the taker side
-     * @param   makerTokenAmount       The order size on the maker size
+     * @param   makerTokenAmount       The order size on the maker side
      */
     public async isRoundingErrorAsync(fillTakerTokenAmount: BigNumber.BigNumber,
                                       takerTokenAmount: BigNumber.BigNumber,
