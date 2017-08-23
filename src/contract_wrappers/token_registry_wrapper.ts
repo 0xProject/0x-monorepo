@@ -24,7 +24,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const addresses = await tokenRegistryContract.getTokenAddresses.call();
         const tokenPromises: Array<Promise<Token|undefined>> = _.map(
             addresses,
-            (address: string) => (this.getTokenMetadataIfExistsAsync(address)),
+            (address: string) => (this.getTokenIfExistsAsync(address)),
         );
         const tokens = await Promise.all(tokenPromises);
         return tokens as Token[];
@@ -33,7 +33,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * Retrieves a token by address currently listed in the Token Registry smart contract
      * @return  An object that conforms to the Token interface or undefined if token not found.
      */
-    public async getTokenMetadataIfExistsAsync(address: string): Promise<Token|undefined> {
+    public async getTokenIfExistsAsync(address: string): Promise<Token|undefined> {
         assert.isETHAddressHex('address', address);
 
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
