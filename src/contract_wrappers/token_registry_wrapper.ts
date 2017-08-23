@@ -47,6 +47,44 @@ export class TokenRegistryWrapper extends ContractWrapper {
 
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenMetaData.call(address);
+        const token = this._getTokenByMetadata(metadata);
+        return token;
+    }
+    public async getTokenAddressBySymbolIfExistsAsync(symbol: string): Promise<string|undefined> {
+        assert.isString('symbol', symbol);
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const addressIfExists = await tokenRegistryContract.getTokenAddressBySymbol.call(symbol);
+        if (addressIfExists === constants.NULL_ADDRESS) {
+            return undefined;
+        } else {
+            return addressIfExists;
+        }
+    }
+    public async getTokenAddressByNameIfExistsAsync(symbol: string): Promise<string|undefined> {
+        assert.isString('name', name);
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const addressIfExists = await tokenRegistryContract.getTokenAddressByName.call(name);
+        if (addressIfExists === constants.NULL_ADDRESS) {
+            return undefined;
+        } else {
+            return addressIfExists;
+        }
+    }
+    public async getTokenBySymbolIfExistsAsync(symbol: string): Promise<Token|undefined> {
+        assert.isString('symbol', symbol);
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const metadata = await tokenRegistryContract.getTokenBySymbol.call(symbol);
+        const token = this._getTokenByMetadata(metadata);
+        return token;
+    }
+    public async getTokenByNameIfExistsAsync(name: string): Promise<Token|undefined> {
+        assert.isString('name', name);
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const metadata = await tokenRegistryContract.getTokenByName.call(name);
+        const token = this._getTokenByMetadata(metadata);
+        return token;
+    }
+    private _getTokenByMetadata(metadata: TokenMetadata): Token|undefined {
         if (metadata[0] === constants.NULL_ADDRESS) {
             return undefined;
         }
