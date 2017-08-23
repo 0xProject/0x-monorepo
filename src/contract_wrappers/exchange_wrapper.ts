@@ -84,7 +84,7 @@ export class ExchangeWrapper extends ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
-        this._orderValidationUtils = new OrderValidationUtils(tokenWrapper);
+        this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
         this._exchangeLogEventEmitters = [];
     }
     /**
@@ -640,27 +640,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        if (fillTakerTokenAmount.eq(0)) {
-            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
-        }
-        if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== takerAddress) {
-            throw new Error(ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker);
-        }
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
-        if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.OrderFillExpired);
-        }
-        const zrxTokenAddress = await this._getZRXTokenAddressAsync(signedOrder.exchangeContractAddress);
-        await this._orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
-            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress,
-        );
-
-        const wouldRoundingErrorOccur = await this._isRoundingErrorAsync(
-            fillTakerTokenAmount, signedOrder.takerTokenAmount, signedOrder.makerTokenAmount,
-        );
-        if (wouldRoundingErrorOccur) {
-            throw new Error(ExchangeContractErrs.OrderFillRoundingError);
-        }
+        const zrxTokenAddress = await this._getZRXTokenAddressAsync();
+        await this._orderValidationUtils.validateFillOrderAndThrowIfInvalidAsync(
+            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
     /**
      * Checks if order cancel will succeed and throws an error otherwise.
@@ -672,18 +654,10 @@ export class ExchangeWrapper extends ContractWrapper {
         order: Order, cancelTakerTokenAmount: BigNumber.BigNumber): Promise<void> {
         assert.doesConformToSchema('order', order, orderSchema);
         assert.isBigNumber('cancelTakerTokenAmount', cancelTakerTokenAmount);
-        if (cancelTakerTokenAmount.eq(0)) {
-            throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
-        }
         const orderHash = utils.getOrderHashHex(order);
-        const unavailableAmount = await this.getUnavailableTakerAmountAsync(orderHash);
-        if (order.takerTokenAmount.minus(unavailableAmount).eq(0)) {
-            throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
-        }
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
-        if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.OrderCancelExpired);
-        }
+        const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
+        await this._orderValidationUtils.validateCancelOrderAndThrowIfInvalidAsync(
+            order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
     }
     /**
      * Checks if fillOrKill order will succeed and throws an error otherwise.
@@ -696,14 +670,24 @@ export class ExchangeWrapper extends ContractWrapper {
     public async validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                                fillTakerTokenAmount: BigNumber.BigNumber,
                                                                takerAddress: string): Promise<void> {
-        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
-        // Check that fillValue available >= fillTakerAmount
-        const orderHashHex = utils.getOrderHashHex(signedOrder);
-        const unavailableTakerAmount = await this.getUnavailableTakerAmountAsync(orderHashHex);
-        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
-        if (remainingTakerAmount < fillTakerTokenAmount) {
-            throw new Error(ExchangeContractErrs.InsufficientRemainingFillAmount);
-        }
+        assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
+        assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        const zrxTokenAddress = await this._getZRXTokenAddressAsync();
+        await this._orderValidationUtils.validateFillOrKillOrderAndThrowIfInvalidAsync(
+            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+    }
+    public async isRoundingErrorAsync(numerator: BigNumber.BigNumber,
+                                      demoninator: BigNumber.BigNumber,
+                                      makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
+        assert.isBigNumber('numerator', numerator);
+        assert.isBigNumber('demoninator', demoninator);
+        assert.isBigNumber('makerTokenAmount', makerTokenAmount);
+        const exchangeInstance = await this._getExchangeContractAsync();
+        const isRoundingError = await exchangeInstance.isRoundingError.call(
+            numerator, demoninator, makerTokenAmount,
+        );
+        return isRoundingError;
     }
     private async _invalidateContractInstancesAsync(): Promise<void> {
         await this.stopWatchingAllEventsAsync();
@@ -740,15 +724,6 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(errMessage);
         }
     }
-    private async _isRoundingErrorAsync(numerator: BigNumber.BigNumber,
-                                        demoninator: BigNumber.BigNumber,
-                                        makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const isRoundingError = await exchangeInstance.isRoundingError.call(
-            numerator, demoninator, makerTokenAmount,
-        );
-        return isRoundingError;
-    }
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
@@ -757,7 +732,7 @@ export class ExchangeWrapper extends ContractWrapper {
         this._exchangeContractIfExists = contractInstance as ExchangeContract;
         return this._exchangeContractIfExists;
     }
-    private async _getZRXTokenAddressAsync(exchangeContractAddress: string): Promise<string> {
+    private async _getZRXTokenAddressAsync(): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
         const ZRXtokenAddress = await exchangeInstance.ZRX_TOKEN_CONTRACT.call();
         return ZRXtokenAddress;
