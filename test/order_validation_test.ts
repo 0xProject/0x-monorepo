@@ -13,7 +13,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 
-describe('OrderValidationUtils', () => {
+describe('OrderValidation', () => {
     let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
@@ -50,6 +50,100 @@ describe('OrderValidationUtils', () => {
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
+    });
+    describe('validateFillOrderAndThrowIfInvalidAsync', () => {
+        it('should throw when the fill amount is zero', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            const zeroFillAmount = new BigNumber(0);
+            return expect(zeroEx.exchange.validateFillOrderAndThrowIfInvalidAsync(
+                signedOrder, zeroFillAmount, takerAddress,
+            )).to.be.rejectedWith(ExchangeContractErrs.OrderRemainingFillAmountZero);
+        });
+        it('should throw when sender is not a taker', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            const nonTakerAddress = userAddresses[6];
+            return expect(zeroEx.exchange.validateFillOrderAndThrowIfInvalidAsync(
+                signedOrder, fillTakerAmount, nonTakerAddress,
+            )).to.be.rejectedWith(ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker);
+        });
+        it('should throw when order is expired', async () => {
+            const expirationInPast = new BigNumber(1496826058); // 7th Jun 2017
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+                fillableAmount, expirationInPast,
+            );
+            return expect(zeroEx.exchange.validateFillOrderAndThrowIfInvalidAsync(
+                signedOrder, fillTakerAmount, takerAddress,
+            )).to.be.rejectedWith(ExchangeContractErrs.OrderFillExpired);
+        });
+        it('should throw when there a rounding error would have occurred', async () => {
+            const makerAmount = new BigNumber(3);
+            const takerAmount = new BigNumber(5);
+            const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+                makerAmount, takerAmount,
+            );
+            const fillTakerAmountThatCausesRoundingError = new BigNumber(3);
+            return expect(zeroEx.exchange.validateFillOrderAndThrowIfInvalidAsync(
+                signedOrder, fillTakerAmountThatCausesRoundingError, takerAddress,
+            )).to.be.rejectedWith(ExchangeContractErrs.OrderFillRoundingError);
+        });
+    });
+    describe('#validateFillOrKillOrderAndThrowIfInvalidAsync', () => {
+        it('should throw if remaining fillAmount is less then the desired fillAmount', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            const tooLargeFillAmount = new BigNumber(7);
+            const fillAmountDifference = tooLargeFillAmount.minus(fillableAmount);
+            await zeroEx.token.transferAsync(takerTokenAddress, coinbase, takerAddress, fillAmountDifference);
+            await zeroEx.token.setProxyAllowanceAsync(takerTokenAddress, takerAddress, tooLargeFillAmount);
+            await zeroEx.token.transferAsync(makerTokenAddress, coinbase, makerAddress, fillAmountDifference);
+            await zeroEx.token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, tooLargeFillAmount);
+
+            return expect(zeroEx.exchange.validateFillOrKillOrderAndThrowIfInvalidAsync(
+                signedOrder, tooLargeFillAmount, takerAddress,
+            )).to.be.rejectedWith(ExchangeContractErrs.InsufficientRemainingFillAmount);
+        });
+    });
+    describe('validateCancelOrderAndThrowIfInvalidAsync', () => {
+        let signedOrder: SignedOrder;
+        let orderHashHex: string;
+        const cancelAmount = new BigNumber(3);
+        beforeEach(async () => {
+            [coinbase, makerAddress, takerAddress] = userAddresses;
+            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            makerTokenAddress = makerToken.address;
+            takerTokenAddress = takerToken.address;
+            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            orderHashHex = ZeroEx.getOrderHashHex(signedOrder);
+        });
+        it('should throw when cancel amount is zero', async () => {
+            const zeroCancelAmount = new BigNumber(0);
+            return expect(zeroEx.exchange.validateCancelOrderAndThrowIfInvalidAsync(signedOrder, zeroCancelAmount))
+                .to.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
+        });
+        it('should throw when order is expired', async () => {
+            const expirationInPast = new BigNumber(1496826058); // 7th Jun 2017
+            const expiredSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+                fillableAmount, expirationInPast,
+            );
+            orderHashHex = ZeroEx.getOrderHashHex(expiredSignedOrder);
+            return expect(zeroEx.exchange.validateCancelOrderAndThrowIfInvalidAsync(expiredSignedOrder, cancelAmount))
+                .to.be.rejectedWith(ExchangeContractErrs.OrderCancelExpired);
+        });
+        it('should throw when order is already cancelled or filled', async () => {
+            await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
+            return expect(zeroEx.exchange.validateCancelOrderAndThrowIfInvalidAsync(signedOrder, fillableAmount))
+                .to.be.rejectedWith(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
+        });
     });
     describe('#validateFillOrderBalancesAndAllowancesAndThrowIfInvalidAsync', () => {
         describe('should throw when not enough balance or allowance to fulfill the order', () => {
