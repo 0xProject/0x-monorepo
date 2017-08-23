@@ -60,7 +60,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
             return addressIfExists;
         }
     }
-    public async getTokenAddressByNameIfExistsAsync(symbol: string): Promise<string|undefined> {
+    public async getTokenAddressByNameIfExistsAsync(name: string): Promise<string|undefined> {
         assert.isString('name', name);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const addressIfExists = await tokenRegistryContract.getTokenAddressByName.call(name);
