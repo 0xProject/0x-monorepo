@@ -677,15 +677,22 @@ export class ExchangeWrapper extends ContractWrapper {
         await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
-    public async isRoundingErrorAsync(numerator: BigNumber.BigNumber,
-                                      demoninator: BigNumber.BigNumber,
+    /**
+     * Checks if rounding error will be > 0.1%
+     * when computing makerTokenAmount by doing `(fillTakerTokenAmount * makerTokenAmount) / takerTokenAmount`
+     * @param   fillTakerTokenAmount   The amount of the order (in taker tokens baseUnits) that you wish to fill.
+     * @param   takerTokenAmount       The order size on the taker side
+     * @param   makerTokenAmount       The order size on the maker size
+     */
+    public async isRoundingErrorAsync(fillTakerTokenAmount: BigNumber.BigNumber,
+                                      takerTokenAmount: BigNumber.BigNumber,
                                       makerTokenAmount: BigNumber.BigNumber): Promise<boolean> {
-        assert.isBigNumber('numerator', numerator);
-        assert.isBigNumber('demoninator', demoninator);
+        assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isBigNumber('takerTokenAmount', takerTokenAmount);
         assert.isBigNumber('makerTokenAmount', makerTokenAmount);
         const exchangeInstance = await this._getExchangeContractAsync();
         const isRoundingError = await exchangeInstance.isRoundingError.call(
-            numerator, demoninator, makerTokenAmount,
+            fillTakerTokenAmount, takerTokenAmount, makerTokenAmount,
         );
         return isRoundingError;
     }
