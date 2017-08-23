@@ -58,7 +58,7 @@ export class OrderValidationUtils {
         if (cancelTakerTokenAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
         }
-        if (order.takerTokenAmount.minus(unavailableTakerTokenAmount).eq(0)) {
+        if (order.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
         }
         const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
