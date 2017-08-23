@@ -27,6 +27,16 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         const authorizedAddresses = await tokenTransferProxyContractInstance.getAuthorizedAddresses.call();
         return authorizedAddresses;
     }
+    /**
+     * Retrieves the Ethereum address of the TokenTransferProxy contract deployed on the network
+     * that the user-passed web3 provider is connected to.
+     * @returns The Ethereum address of the TokenTransferProxy contract being used.
+     */
+    public async getContractAddressAsync(): Promise<string> {
+        const proxyInstance = await this._getTokenTransferProxyContractAsync();
+        const proxyAddress = proxyInstance.address;
+        return proxyAddress;
+    }
     private _invalidateContractInstance(): void {
         delete this._tokenTransferProxyContractIfExists;
     }
