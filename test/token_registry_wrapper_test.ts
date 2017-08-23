@@ -38,4 +38,20 @@ describe('TokenRegistryWrapper', () => {
             });
         });
     });
+    describe('#getTokenMetadataIfExistsAsync', () => {
+        it('should return the token added to the tokenRegistry during the migration', async () => {
+            const tokens = await zeroEx.tokenRegistry.getTokensAsync();
+            const aToken = tokens[0];
+
+            const token = await zeroEx.tokenRegistry.getTokenMetadataIfExistsAsync(aToken.address);
+            const schemaValidator = new SchemaValidator();
+            const validationResult = schemaValidator.validate(token, tokenSchema);
+            expect(validationResult.errors).to.have.lengthOf(0);
+        });
+        it('should return return undefined when passed a token address not in the tokenRegistry', async () => {
+            const unregisteredTokenAddress = '0x5409ED021D9299bf6814279A6A1411A7e866A631';
+            const tokenIfExists = await zeroEx.tokenRegistry.getTokenMetadataIfExistsAsync(unregisteredTokenAddress);
+            expect(tokenIfExists).to.be.undefined();
+        });
+    });
 });

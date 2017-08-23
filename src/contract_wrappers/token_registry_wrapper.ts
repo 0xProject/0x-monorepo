@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
 import {Token, TokenRegistryContract, TokenMetadata} from '../types';
+import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
 
@@ -20,20 +21,30 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
 
         const addresses = await tokenRegistryContract.getTokenAddresses.call();
-        const tokenMetadataPromises: Array<Promise<TokenMetadata>> = _.map(
+        const tokenPromises: Array<Promise<Token|undefined>> = _.map(
             addresses,
-            (address: string) => (tokenRegistryContract.getTokenMetaData.call(address)),
+            (address: string) => (this.getTokenMetadataIfExistsAsync(address)),
         );
-        const tokensMetadata = await Promise.all(tokenMetadataPromises);
-        const tokens = _.map(tokensMetadata, metadata => {
-            return {
-                address: metadata[0],
-                name: metadata[1],
-                symbol: metadata[2],
-                decimals: metadata[3].toNumber(),
-            };
-        });
-        return tokens;
+        const tokens = await Promise.all(tokenPromises);
+        return tokens as Token[];
+    }
+    /**
+     * Retrieves a token by address currently listed in the Token Registry smart contract
+     * @return  An object that conforms to the Token interface or undefined if token not found.
+     */
+    public async getTokenMetadataIfExistsAsync(address: string): Promise<Token|undefined> {
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const metadata = await tokenRegistryContract.getTokenMetaData.call(address);
+        if (metadata[0] === constants.NULL_ADDRESS) {
+            return undefined;
+        }
+        const token = {
+            address: metadata[0],
+            name: metadata[1],
+            symbol: metadata[2],
+            decimals: metadata[3].toNumber(),
+        };
+        return token;
     }
     private _invalidateContractInstance(): void {
         delete this._tokenRegistryContractIfExists;
