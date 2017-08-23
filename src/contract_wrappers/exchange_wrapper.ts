@@ -623,7 +623,8 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async getContractAddressAsync(): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
-        return exchangeInstance.address;
+        const exchangeAddress = exchangeInstance.address;
+        return exchangeAddress;
     }
     private async _invalidateContractInstancesAsync(): Promise<void> {
         await this.stopWatchingAllEventsAsync();

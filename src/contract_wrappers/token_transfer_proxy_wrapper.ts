@@ -34,7 +34,8 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      */
     public async getContractAddressAsync(): Promise<string> {
         const proxyInstance = await this._getTokenTransferProxyContractAsync();
-        return proxyInstance.address;
+        const proxyAddress = proxyInstance.address;
+        return proxyAddress;
     }
     private _invalidateContractInstance(): void {
         delete this._tokenTransferProxyContractIfExists;
