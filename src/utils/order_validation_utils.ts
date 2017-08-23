@@ -11,10 +11,10 @@ export class OrderValidationUtils {
         this.tokenWrapper = tokenWrapper;
         this.exchangeWrapper = exchangeWrapper;
     }
-    public async validateFillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
-                                                         fillTakerTokenAmount: BigNumber.BigNumber,
-                                                         takerAddress: string,
-                                                         zrxTokenAddress: string): Promise<void> {
+    public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                      fillTakerTokenAmount: BigNumber.BigNumber,
+                                                      takerAddress: string,
+                                                      zrxTokenAddress: string): Promise<void> {
         if (fillTakerTokenAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
         }
@@ -36,11 +36,11 @@ export class OrderValidationUtils {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
         }
     }
-    public async validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
-                                                               fillTakerTokenAmount: BigNumber.BigNumber,
-                                                               takerAddress: string,
-                                                               zrxTokenAddress: string): Promise<void> {
-        await this.validateFillOrderAndThrowIfInvalidAsync(
+    public async validateFillOrKillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                            fillTakerTokenAmount: BigNumber.BigNumber,
+                                                            takerAddress: string,
+                                                            zrxTokenAddress: string): Promise<void> {
+        await this.validateFillOrderThrowIfInvalidAsync(
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
         // Check that fillValue available >= fillTakerAmount
         const orderHashHex = utils.getOrderHashHex(signedOrder);
@@ -50,9 +50,9 @@ export class OrderValidationUtils {
             throw new Error(ExchangeContractErrs.InsufficientRemainingFillAmount);
         }
     }
-    public async validateCancelOrderAndThrowIfInvalidAsync(order: Order,
-                                                           cancelTakerTokenAmount: BigNumber.BigNumber,
-                                                           unavailableTakerTokenAmount: BigNumber.BigNumber,
+    public async validateCancelOrderThrowIfInvalidAsync(order: Order,
+                                                        cancelTakerTokenAmount: BigNumber.BigNumber,
+                                                        unavailableTakerTokenAmount: BigNumber.BigNumber,
     ): Promise<void> {
         if (cancelTakerTokenAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderCancelAmountZero);

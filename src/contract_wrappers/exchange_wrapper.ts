@@ -161,7 +161,7 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
-        await this.validateFillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
+        await this.validateFillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
 
@@ -226,7 +226,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         for (const signedOrder of signedOrders) {
-            await this.validateFillOrderAndThrowIfInvalidAsync(
+            await this.validateFillOrderThrowIfInvalidAsync(
                 signedOrder, fillTakerTokenAmount, takerAddress);
         }
         if (_.isEmpty(signedOrders)) {
@@ -311,7 +311,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         for (const orderFillRequest of orderFillRequests) {
-            await this.validateFillOrderAndThrowIfInvalidAsync(
+            await this.validateFillOrderThrowIfInvalidAsync(
                 orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress);
         }
         if (_.isEmpty(orderFillRequests)) {
@@ -378,7 +378,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        await this.validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
+        await this.validateFillOrKillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
 
@@ -430,7 +430,7 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const exchangeInstance = await this._getExchangeContractAsync();
         for (const request of orderFillOrKillRequests) {
-            await this.validateFillOrKillOrderAndThrowIfInvalidAsync(
+            await this.validateFillOrKillOrderThrowIfInvalidAsync(
                 request.signedOrder, request.fillTakerAmount, takerAddress);
         }
 
@@ -488,7 +488,7 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
-        await this.validateCancelOrderAndThrowIfInvalidAsync(order, cancelTakerTokenAmount);
+        await this.validateCancelOrderThrowIfInvalidAsync(order, cancelTakerTokenAmount);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
         const gas = await exchangeInstance.cancelOrder.estimateGas(
@@ -534,7 +534,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
         for (const cancellationRequest of orderCancellationRequests) {
-            await this.validateCancelOrderAndThrowIfInvalidAsync(
+            await this.validateCancelOrderThrowIfInvalidAsync(
                 cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
             );
         }
@@ -634,14 +634,14 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
-    public async validateFillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
-                                                         fillTakerTokenAmount: BigNumber.BigNumber,
-                                                         takerAddress: string): Promise<void> {
+    public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                      fillTakerTokenAmount: BigNumber.BigNumber,
+                                                      takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = await this._getZRXTokenAddressAsync();
-        await this._orderValidationUtils.validateFillOrderAndThrowIfInvalidAsync(
+        await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
     /**
@@ -650,13 +650,13 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  The order you would like to cancel.
      * @param   cancelTakerTokenAmount  The amount (specified in taker tokens) that you would like to cancel.
      */
-    public async validateCancelOrderAndThrowIfInvalidAsync(
+    public async validateCancelOrderThrowIfInvalidAsync(
         order: Order, cancelTakerTokenAmount: BigNumber.BigNumber): Promise<void> {
         assert.doesConformToSchema('order', order, orderSchema);
         assert.isBigNumber('cancelTakerTokenAmount', cancelTakerTokenAmount);
         const orderHash = utils.getOrderHashHex(order);
         const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
-        await this._orderValidationUtils.validateCancelOrderAndThrowIfInvalidAsync(
+        await this._orderValidationUtils.validateCancelOrderThrowIfInvalidAsync(
             order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
     }
     /**
@@ -667,14 +667,14 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
-    public async validateFillOrKillOrderAndThrowIfInvalidAsync(signedOrder: SignedOrder,
-                                                               fillTakerTokenAmount: BigNumber.BigNumber,
-                                                               takerAddress: string): Promise<void> {
+    public async validateFillOrKillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                            fillTakerTokenAmount: BigNumber.BigNumber,
+                                                            takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = await this._getZRXTokenAddressAsync();
-        await this._orderValidationUtils.validateFillOrKillOrderAndThrowIfInvalidAsync(
+        await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
     public async isRoundingErrorAsync(numerator: BigNumber.BigNumber,
