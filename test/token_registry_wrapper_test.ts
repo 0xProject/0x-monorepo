@@ -7,6 +7,7 @@ import {ZeroEx} from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {tokenSchema} from '../src/schemas/token_schema';
+import {addressSchema} from '../src/schemas/basic_type_schemas';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -35,6 +36,19 @@ describe('TokenRegistryWrapper', () => {
             _.each(tokens, token => {
                 const validationResult = schemaValidator.validate(token, tokenSchema);
                 expect(validationResult.errors).to.have.lengthOf(0);
+            });
+        });
+    });
+    describe('#getTokenAddressesAsync', () => {
+        it('should return all the token addresses added to the tokenRegistry during the migration', async () => {
+            const tokenAddresses = await zeroEx.tokenRegistry.getTokenAddressesAsync();
+            expect(tokenAddresses).to.have.lengthOf(TOKEN_REGISTRY_SIZE_AFTER_MIGRATION);
+
+            const schemaValidator = new SchemaValidator();
+            _.each(tokenAddresses, tokenAddress => {
+                const validationResult = schemaValidator.validate(tokenAddress, addressSchema);
+                expect(validationResult.errors).to.have.lengthOf(0);
+                expect(tokenAddress).to.not.be.equal(ZeroEx.NULL_ADDRESS);
             });
         });
     });
