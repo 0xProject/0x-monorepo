@@ -41,7 +41,8 @@ export class OrderValidationUtils {
                                                             takerAddress: string,
                                                             zrxTokenAddress: string): Promise<void> {
         await this.validateFillOrderThrowIfInvalidAsync(
-            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress,
+        );
         // Check that fillValue available >= fillTakerAmount
         const orderHashHex = utils.getOrderHashHex(signedOrder);
         const unavailableTakerAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHashHex);
