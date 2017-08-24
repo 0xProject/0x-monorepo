@@ -29,6 +29,7 @@ const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
  * to the 0x Proxy smart contract.
  */
 export class TokenWrapper extends ContractWrapper {
+    public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1);
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenLogEventEmitters: ContractEventEmitter[];
     constructor(web3Wrapper: Web3Wrapper) {
@@ -80,6 +81,20 @@ export class TokenWrapper extends ContractWrapper {
         });
     }
     /**
+     * Sets the spender's allowance to an unlimited number of baseUnits on behalf of the owner address.
+     * Equivalent to the ERC20 spec method `approve`.
+     * @param   tokenAddress        The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param   ownerAddress        The hex encoded user Ethereum address who would like to set an allowance
+     *                              for spenderAddress.
+     * @param   spenderAddress      The hex encoded user Ethereum address who will be able to spend the set allowance.
+     */
+    public async setUnlimitedAllowanceAsync(tokenAddress: string, ownerAddress: string,
+                                            spenderAddress: string): Promise<void> {
+        await this.setAllowanceAsync(
+            tokenAddress, ownerAddress, spenderAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        );
+    }
+    /**
      * Retrieves the owners allowance in baseUnits set to the spender's address.
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress    The hex encoded user Ethereum address whose allowance to spenderAddress
@@ -125,6 +140,16 @@ export class TokenWrapper extends ContractWrapper {
 
         const proxyAddress = await this._getProxyAddressAsync();
         await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
+    }
+    /**
+     * Sets the 0x proxy contract's allowance to a unlimited number of a tokens' baseUnits on behalf
+     * of an owner address.
+     * @param   tokenAddress        The hex encoded contract Ethereum address where the ERC20 token is deployed.
+     * @param   ownerAddress        The hex encoded user Ethereum address who is setting an allowance
+     *                              for the Proxy contract.
+     */
+    public async setUnlimitedProxyAllowanceAsync(tokenAddress: string, ownerAddress: string): Promise<void> {
+        await this.setProxyAllowanceAsync(tokenAddress, ownerAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
     }
     /**
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
