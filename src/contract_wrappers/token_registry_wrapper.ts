@@ -56,9 +56,8 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const addressIfExists = await tokenRegistryContract.getTokenAddressBySymbol.call(symbol);
         if (addressIfExists === constants.NULL_ADDRESS) {
             return undefined;
-        } else {
-            return addressIfExists;
         }
+        return addressIfExists;
     }
     public async getTokenAddressByNameIfExistsAsync(name: string): Promise<string|undefined> {
         assert.isString('name', name);
@@ -66,9 +65,8 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const addressIfExists = await tokenRegistryContract.getTokenAddressByName.call(name);
         if (addressIfExists === constants.NULL_ADDRESS) {
             return undefined;
-        } else {
-            return addressIfExists;
         }
+        return addressIfExists;
     }
     public async getTokenBySymbolIfExistsAsync(symbol: string): Promise<Token|undefined> {
         assert.isString('symbol', symbol);
