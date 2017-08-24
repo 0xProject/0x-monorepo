@@ -1,10 +1,75 @@
-import {ExchangeContractErrs, SignedOrder} from '../types';
+import {ExchangeContractErrs, SignedOrder, Order} from '../types';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
+import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
+import {utils} from '../utils/utils';
+import {constants} from '../utils/constants';
 
 export class OrderValidationUtils {
     private tokenWrapper: TokenWrapper;
-    constructor(tokenWrapper: TokenWrapper) {
+    private exchangeWrapper: ExchangeWrapper;
+    constructor(tokenWrapper: TokenWrapper, exchangeWrapper: ExchangeWrapper) {
         this.tokenWrapper = tokenWrapper;
+        this.exchangeWrapper = exchangeWrapper;
+    }
+    public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                      fillTakerTokenAmount: BigNumber.BigNumber,
+                                                      takerAddress: string,
+                                                      zrxTokenAddress: string): Promise<void> {
+        if (fillTakerTokenAmount.eq(0)) {
+            throw new Error(ExchangeContractErrs.OrderFillAmountZero);
+        }
+        const orderHash = utils.getOrderHashHex(signedOrder);
+        const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
+        if (signedOrder.makerTokenAmount.eq(unavailableTakerTokenAmount)) {
+            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
+        }
+        if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== takerAddress) {
+            throw new Error(ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker);
+        }
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
+        if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+            throw new Error(ExchangeContractErrs.OrderFillExpired);
+        }
+        await this.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress,
+        );
+
+        const wouldRoundingErrorOccur = await this.exchangeWrapper.isRoundingErrorAsync(
+            fillTakerTokenAmount, signedOrder.takerTokenAmount, signedOrder.makerTokenAmount,
+        );
+        if (wouldRoundingErrorOccur) {
+            throw new Error(ExchangeContractErrs.OrderFillRoundingError);
+        }
+    }
+    public async validateFillOrKillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
+                                                            fillTakerTokenAmount: BigNumber.BigNumber,
+                                                            takerAddress: string,
+                                                            zrxTokenAddress: string): Promise<void> {
+        await this.validateFillOrderThrowIfInvalidAsync(
+            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress,
+        );
+        // Check that fillValue available >= fillTakerAmount
+        const orderHashHex = utils.getOrderHashHex(signedOrder);
+        const unavailableTakerAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHashHex);
+        const remainingTakerAmount = signedOrder.takerTokenAmount.minus(unavailableTakerAmount);
+        if (remainingTakerAmount < fillTakerTokenAmount) {
+            throw new Error(ExchangeContractErrs.InsufficientRemainingFillAmount);
+        }
+    }
+    public async validateCancelOrderThrowIfInvalidAsync(order: Order,
+                                                        cancelTakerTokenAmount: BigNumber.BigNumber,
+                                                        unavailableTakerTokenAmount: BigNumber.BigNumber,
+    ): Promise<void> {
+        if (cancelTakerTokenAmount.eq(0)) {
+            throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
+        }
+        if (order.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
+            throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
+        }
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
+        if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+            throw new Error(ExchangeContractErrs.OrderCancelExpired);
+        }
     }
     public async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
         signedOrder: SignedOrder, fillTakerAmount: BigNumber.BigNumber, senderAddress: string, zrxTokenAddress: string,
