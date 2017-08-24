@@ -3,10 +3,11 @@ import 'mocha';
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
-import {ZeroEx} from '../src';
+import {ZeroEx, Token} from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {SchemaValidator} from '../src/utils/schema_validator';
 import {tokenSchema} from '../src/schemas/token_schema';
+import {addressSchema} from '../src/schemas/basic_type_schemas';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -16,9 +17,25 @@ const TOKEN_REGISTRY_SIZE_AFTER_MIGRATION = 7;
 
 describe('TokenRegistryWrapper', () => {
     let zeroEx: ZeroEx;
+    let tokens: Token[];
+    const tokenAddressBySymbol: {[symbol: string]: string} = {};
+    const tokenAddressByName: {[symbol: string]: string} = {};
+    const tokenBySymbol: {[symbol: string]: Token} = {};
+    const tokenByName: {[symbol: string]: Token} = {};
+    const registeredSymbol = 'ZRX';
+    const registeredName = '0x Protocol Token';
+    const unregisteredSymbol = 'MAL';
+    const unregisteredName = 'Malicious Token';
     before(async () => {
         const web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider);
+        tokens = await zeroEx.tokenRegistry.getTokensAsync();
+        _.map(tokens, token => {
+            tokenAddressBySymbol[token.symbol] = token.address;
+            tokenAddressByName[token.name] = token.address;
+            tokenBySymbol[token.symbol] = token;
+            tokenByName[token.name] = token;
+        });
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -28,7 +45,6 @@ describe('TokenRegistryWrapper', () => {
     });
     describe('#getTokensAsync', () => {
         it('should return all the tokens added to the tokenRegistry during the migration', async () => {
-            const tokens = await zeroEx.tokenRegistry.getTokensAsync();
             expect(tokens).to.have.lengthOf(TOKEN_REGISTRY_SIZE_AFTER_MIGRATION);
 
             const schemaValidator = new SchemaValidator();
@@ -38,9 +54,61 @@ describe('TokenRegistryWrapper', () => {
             });
         });
     });
+    describe('#getTokenAddressesAsync', () => {
+        it('should return all the token addresses added to the tokenRegistry during the migration', async () => {
+            const tokenAddresses = await zeroEx.tokenRegistry.getTokenAddressesAsync();
+            expect(tokenAddresses).to.have.lengthOf(TOKEN_REGISTRY_SIZE_AFTER_MIGRATION);
+
+            const schemaValidator = new SchemaValidator();
+            _.each(tokenAddresses, tokenAddress => {
+                const validationResult = schemaValidator.validate(tokenAddress, addressSchema);
+                expect(validationResult.errors).to.have.lengthOf(0);
+                expect(tokenAddress).to.not.be.equal(ZeroEx.NULL_ADDRESS);
+            });
+        });
+    });
+    describe('#getTokenAddressBySymbol', () => {
+        it('should return correct address for a token in the registry', async () => {
+            const tokenAddress = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(registeredSymbol);
+            expect(tokenAddress).to.be.equal(tokenAddressBySymbol[registeredSymbol]);
+        });
+        it('should return undefined for a token out of registry', async () => {
+            const tokenAddress = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(unregisteredSymbol);
+            expect(tokenAddress).to.be.undefined();
+        });
+    });
+    describe('#getTokenAddressByName', () => {
+        it('should return correct address for a token in the registry', async () => {
+            const tokenAddress = await zeroEx.tokenRegistry.getTokenAddressByNameIfExistsAsync(registeredName);
+            expect(tokenAddress).to.be.equal(tokenAddressByName[registeredName]);
+        });
+        it('should return undefined for a token out of registry', async () => {
+            const tokenAddress = await zeroEx.tokenRegistry.getTokenAddressByNameIfExistsAsync(unregisteredName);
+            expect(tokenAddress).to.be.undefined();
+        });
+    });
+    describe('#getTokenBySymbol', () => {
+        it('should return correct token for a token in the registry', async () => {
+            const token = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(registeredSymbol);
+            expect(token).to.be.deep.equal(tokenBySymbol[registeredSymbol]);
+        });
+        it('should return undefined for a token out of registry', async () => {
+            const token = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(unregisteredSymbol);
+            expect(token).to.be.undefined();
+        });
+    });
+    describe('#getTokenByName', () => {
+        it('should return correct token for a token in the registry', async () => {
+            const token = await zeroEx.tokenRegistry.getTokenByNameIfExistsAsync(registeredName);
+            expect(token).to.be.deep.equal(tokenByName[registeredName]);
+        });
+        it('should return undefined for a token out of registry', async () => {
+            const token = await zeroEx.tokenRegistry.getTokenByNameIfExistsAsync(unregisteredName);
+            expect(token).to.be.undefined();
+        });
+    });
     describe('#getTokenIfExistsAsync', () => {
         it('should return the token added to the tokenRegistry during the migration', async () => {
-            const tokens = await zeroEx.tokenRegistry.getTokensAsync();
             const aToken = tokens[0];
 
             const token = await zeroEx.tokenRegistry.getTokenIfExistsAsync(aToken.address);

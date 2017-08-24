@@ -21,13 +21,22 @@ export class TokenRegistryWrapper extends ContractWrapper {
     public async getTokensAsync(): Promise<Token[]> {
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
 
-        const addresses = await tokenRegistryContract.getTokenAddresses.call();
+        const addresses = await this.getTokenAddressesAsync();
         const tokenPromises: Array<Promise<Token|undefined>> = _.map(
             addresses,
             (address: string) => (this.getTokenIfExistsAsync(address)),
         );
         const tokens = await Promise.all(tokenPromises);
         return tokens as Token[];
+    }
+    /**
+     * Retrieves all the addresses of the tokens currently listed in the Token Registry smart contract
+     * @return  An array of token addresses.
+     */
+    public async getTokenAddressesAsync(): Promise<string[]> {
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const addresses = await tokenRegistryContract.getTokenAddresses.call();
+        return addresses;
     }
     /**
      * Retrieves a token by address currently listed in the Token Registry smart contract
@@ -38,6 +47,42 @@ export class TokenRegistryWrapper extends ContractWrapper {
 
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenMetaData.call(address);
+        const token = this._createTokenFromMetadata(metadata);
+        return token;
+    }
+    public async getTokenAddressBySymbolIfExistsAsync(symbol: string): Promise<string|undefined> {
+        assert.isString('symbol', symbol);
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const addressIfExists = await tokenRegistryContract.getTokenAddressBySymbol.call(symbol);
+        if (addressIfExists === constants.NULL_ADDRESS) {
+            return undefined;
+        }
+        return addressIfExists;
+    }
+    public async getTokenAddressByNameIfExistsAsync(name: string): Promise<string|undefined> {
+        assert.isString('name', name);
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const addressIfExists = await tokenRegistryContract.getTokenAddressByName.call(name);
+        if (addressIfExists === constants.NULL_ADDRESS) {
+            return undefined;
+        }
+        return addressIfExists;
+    }
+    public async getTokenBySymbolIfExistsAsync(symbol: string): Promise<Token|undefined> {
+        assert.isString('symbol', symbol);
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const metadata = await tokenRegistryContract.getTokenBySymbol.call(symbol);
+        const token = this._createTokenFromMetadata(metadata);
+        return token;
+    }
+    public async getTokenByNameIfExistsAsync(name: string): Promise<Token|undefined> {
+        assert.isString('name', name);
+        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
+        const metadata = await tokenRegistryContract.getTokenByName.call(name);
+        const token = this._createTokenFromMetadata(metadata);
+        return token;
+    }
+    private _createTokenFromMetadata(metadata: TokenMetadata): Token|undefined {
         if (metadata[0] === constants.NULL_ADDRESS) {
             return undefined;
         }

@@ -145,6 +145,18 @@ export interface TokenRegistryContract extends ContractInstance {
     getTokenAddresses: {
         call: () => Promise<string[]>;
     };
+    getTokenAddressBySymbol: {
+        call: (symbol: string) => Promise<string>;
+    };
+    getTokenAddressByName: {
+        call: (name: string) => Promise<string>;
+    };
+    getTokenBySymbol: {
+        call: (symbol: string) => Promise<TokenMetadata>;
+    };
+    getTokenByName: {
+        call: (name: string) => Promise<TokenMetadata>;
+    };
 }
 
 export interface EtherTokenContract extends ContractInstance {
