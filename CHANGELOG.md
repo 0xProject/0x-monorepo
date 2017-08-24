@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.11.0 - _TBD_
+v0.11.0 - _August 24, 2017_
 ------------------------
     * Added `zeroEx.token.setUnlimitedProxyAllowanceAsync` (#137)
     * Added `zeroEx.token.setUnlimitedAllowanceAsync` (#137)
