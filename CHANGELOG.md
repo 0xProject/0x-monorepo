@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.10.2 - _Aug 24, 2017_
+v0.10.3 - _Aug 24, 2017_
 ------------------------
     * Hot fixed checksummed addresses in artifacts
 
