@@ -206,6 +206,17 @@ describe('TokenWrapper', () => {
             return expect(allowanceAfterSet).to.be.bignumber.equal(expectedAllowanceAfterAllowanceSet);
         });
     });
+    describe('#setUnlimitedAllowanceAsync', () => {
+        it('should set the unlimited spender\'s allowance', async () => {
+            const token = tokens[0];
+            const ownerAddress = coinbase;
+            const spenderAddress = addressWithoutFunds;
+
+            await zeroEx.token.setUnlimitedAllowanceAsync(token.address, ownerAddress, spenderAddress);
+            const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
+            return expect(allowance).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+    });
     describe('#getAllowanceAsync', () => {
         describe('With web3 provider with accounts', () => {
             it('should get the proxy allowance', async () => {
@@ -280,6 +291,16 @@ describe('TokenWrapper', () => {
             const allowanceAfterSet = await zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress);
             const expectedAllowanceAfterAllowanceSet = amountInBaseUnits;
             return expect(allowanceAfterSet).to.be.bignumber.equal(expectedAllowanceAfterAllowanceSet);
+        });
+    });
+    describe('#setUnlimitedProxyAllowanceAsync', () => {
+        it('should set the unlimited proxy allowance', async () => {
+            const token = tokens[0];
+            const ownerAddress = coinbase;
+
+            await zeroEx.token.setUnlimitedProxyAllowanceAsync(token.address, ownerAddress);
+            const allowance = await zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress);
+            return expect(allowance).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
     });
     describe('#subscribeAsync', () => {
