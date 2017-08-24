@@ -252,7 +252,7 @@ export class TokenWrapper extends ContractWrapper {
         if (_.isUndefined(proxyNetworkConfigsIfExists)) {
             throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
         }
-        const proxyAddress = proxyNetworkConfigsIfExists.address;
+        const proxyAddress = proxyNetworkConfigsIfExists.address.toLowerCase();
         return proxyAddress;
     }
 }
