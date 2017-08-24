@@ -22,7 +22,7 @@ export class ContractWrapper {
         if (!_.isUndefined(address)) {
             contractAddress = address;
         } else if (!_.isUndefined(artifactNetworkConfigs)) {
-            contractAddress = artifactNetworkConfigs.address;
+            contractAddress = artifactNetworkConfigs.address.toLowerCase();
         }
 
         if (!_.isUndefined(contractAddress)) {
