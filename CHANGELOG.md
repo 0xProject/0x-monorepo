@@ -1,8 +1,8 @@
 # CHANGELOG
 
-v0.10.3 - _Aug 24, 2017_
+v0.10.4 - _Aug 24, 2017_
 ------------------------
-    * Hot fixed checksummed addresses in artifacts
+    * Fixed the bug when checksummed addressed pulled from artifacts caused a failure (#135)
 
 v0.10.1 - _Aug 24, 2017_
 ------------------------
