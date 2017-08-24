@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.10.2 - _Aug 24, 2017_
+------------------------
+    * Hot fixed checksummed addresses in artifacts
+
 v0.10.1 - _Aug 24, 2017_
 ------------------------
     * Added `zeroEx.exchange.validateFillOrderThrowIfInvalidAsync` (#128)
