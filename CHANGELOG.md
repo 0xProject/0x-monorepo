@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.10.0 - _Aug 24, 2017_
+v0.10.1 - _Aug 24, 2017_
 ------------------------
     * Added `zeroEx.exchange.validateFillOrderThrowIfInvalidAsync` (#128)
     * Added `zeroEx.exchange.validateFillOrKillOrderThrowIfInvalidAsync` (#128)
