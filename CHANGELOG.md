@@ -2,7 +2,7 @@
 
 v0.10.4 - _Aug 24, 2017_
 ------------------------
-    * Fixed the bug when checksummed addressed pulled from artifacts caused a failure (#135)
+    * Fixed a bug where checksummed addresses were being pulled from artifacts and not lower-cased. (#135)
 
 v0.10.1 - _Aug 24, 2017_
 ------------------------
