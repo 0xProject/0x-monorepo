@@ -83,6 +83,8 @@ export class TokenWrapper extends ContractWrapper {
     /**
      * Sets the spender's allowance to an unlimited number of baseUnits on behalf of the owner address.
      * Equivalent to the ERC20 spec method `approve`.
+     * Setting an unlimited allowance will lower the gas cost for filling orders involving tokens that forego updating
+     * allowances set to the max amount (e.g ZRX, WETH)
      * @param   tokenAddress        The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress        The hex encoded user Ethereum address who would like to set an allowance
      *                              for spenderAddress.
@@ -144,6 +146,8 @@ export class TokenWrapper extends ContractWrapper {
     /**
      * Sets the 0x proxy contract's allowance to a unlimited number of a tokens' baseUnits on behalf
      * of an owner address.
+     * Setting an unlimited allowance will lower the gas cost for filling orders involving tokens that forego updating
+     * allowances set to the max amount (e.g ZRX, WETH)
      * @param   tokenAddress        The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress        The hex encoded user Ethereum address who is setting an allowance
      *                              for the Proxy contract.
