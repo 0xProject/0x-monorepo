@@ -1,5 +1,11 @@
 # CHANGELOG
 
+v0.11.0 - _TBD_
+------------------------
+    * Added `zeroEx.token.setUnlimitedProxyAllowanceAsync` (#137)
+    * Added `zeroEx.token.setUnlimitedAllowanceAsync` (#137)
+    * Added `zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS` (#137)
+
 v0.10.4 - _Aug 24, 2017_
 ------------------------
     * Fixed a bug where checksummed addresses were being pulled from artifacts and not lower-cased. (#135)

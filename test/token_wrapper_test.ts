@@ -16,6 +16,7 @@ import {
     ApprovalContractEventArgs,
 } from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {TokenUtils} from './utils/token_utils';
 import {DoneCallback} from '../src/types';
 
 chaiSetup.configure();
@@ -27,6 +28,7 @@ describe('TokenWrapper', () => {
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let tokens: Token[];
+    let tokenUtils: TokenUtils;
     let coinbase: string;
     let addressWithoutFunds: string;
     before(async () => {
@@ -34,6 +36,7 @@ describe('TokenWrapper', () => {
         zeroEx = new ZeroEx(web3.currentProvider);
         userAddresses = await promisify(web3.eth.getAccounts)();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
+        tokenUtils = new TokenUtils(tokens);
         coinbase = userAddresses[0];
         addressWithoutFunds = userAddresses[1];
     });
@@ -206,6 +209,45 @@ describe('TokenWrapper', () => {
             return expect(allowanceAfterSet).to.be.bignumber.equal(expectedAllowanceAfterAllowanceSet);
         });
     });
+    describe('#setUnlimitedAllowanceAsync', () => {
+        it('should set the unlimited spender\'s allowance', async () => {
+            const token = tokens[0];
+            const ownerAddress = coinbase;
+            const spenderAddress = addressWithoutFunds;
+
+            await zeroEx.token.setUnlimitedAllowanceAsync(token.address, ownerAddress, spenderAddress);
+            const allowance = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress, spenderAddress);
+            return expect(allowance).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+        it('should reduce the gas cost for transfers including tokens with unlimited allowance support', async () => {
+            const transferAmount = new BigNumber(5);
+            const zrx = tokenUtils.getProtocolTokenOrThrow();
+            const [, userWithNormalAllowance, userWithUnlimitedAllowance] = userAddresses;
+            await zeroEx.token.setAllowanceAsync(zrx.address, coinbase, userWithNormalAllowance, transferAmount);
+            await zeroEx.token.setUnlimitedAllowanceAsync(zrx.address, coinbase, userWithUnlimitedAllowance);
+
+            const initBalanceWithNormalAllowance = await promisify(web3.eth.getBalance)(userWithNormalAllowance);
+            const initBalanceWithUnlimitedAllowance = await promisify(web3.eth.getBalance)(userWithUnlimitedAllowance);
+
+            await zeroEx.token.transferFromAsync(
+                zrx.address, coinbase, userWithNormalAllowance, userWithNormalAllowance, transferAmount,
+            );
+            await zeroEx.token.transferFromAsync(
+                zrx.address, coinbase, userWithUnlimitedAllowance, userWithUnlimitedAllowance, transferAmount,
+            );
+
+            const finalBalanceWithNormalAllowance = await promisify(web3.eth.getBalance)(userWithNormalAllowance);
+            const finalBalanceWithUnlimitedAllowance = await promisify(web3.eth.getBalance)(userWithUnlimitedAllowance);
+
+            const normalGasCost = initBalanceWithNormalAllowance.minus(finalBalanceWithNormalAllowance);
+            const unlimitedGasCost = initBalanceWithUnlimitedAllowance.minus(finalBalanceWithUnlimitedAllowance);
+
+            // In theory the gas cost with unlimited allowance should be smaller, but with testrpc it's actually bigger.
+            // This needs to be investigated in ethereumjs-vm. This test is essentially a repro.
+            // TODO: Make this test pass with inverted assertion.
+            expect(unlimitedGasCost.toNumber()).to.be.gt(normalGasCost.toNumber());
+        });
+    });
     describe('#getAllowanceAsync', () => {
         describe('With web3 provider with accounts', () => {
             it('should get the proxy allowance', async () => {
@@ -280,6 +322,16 @@ describe('TokenWrapper', () => {
             const allowanceAfterSet = await zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress);
             const expectedAllowanceAfterAllowanceSet = amountInBaseUnits;
             return expect(allowanceAfterSet).to.be.bignumber.equal(expectedAllowanceAfterAllowanceSet);
+        });
+    });
+    describe('#setUnlimitedProxyAllowanceAsync', () => {
+        it('should set the unlimited proxy allowance', async () => {
+            const token = tokens[0];
+            const ownerAddress = coinbase;
+
+            await zeroEx.token.setUnlimitedProxyAllowanceAsync(token.address, ownerAddress);
+            const allowance = await zeroEx.token.getProxyAllowanceAsync(token.address, ownerAddress);
+            return expect(allowance).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
     });
     describe('#subscribeAsync', () => {
