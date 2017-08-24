@@ -29,7 +29,7 @@ const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
  * to the 0x Proxy smart contract.
  */
 export class TokenWrapper extends ContractWrapper {
-    public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1);
+    public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenLogEventEmitters: ContractEventEmitter[];
     constructor(web3Wrapper: Web3Wrapper) {
