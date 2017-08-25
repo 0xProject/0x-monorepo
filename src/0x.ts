@@ -16,7 +16,7 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
-import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
+import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider, ZeroExConfig} from './types';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -159,11 +159,12 @@ export class ZeroEx {
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
      * @param   provider    The Web3.js Provider instance you would like the 0x.js library to use for interacting with
      *                      the Ethereum network.
-     * @param   gasPrice    The gas price to use for sending transactions. Defaults to 21 GWei.
+     * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Web3Provider, gasPrice?: BigNumber.BigNumber) {
+    constructor(provider: Web3Provider, config?: ZeroExConfig) {
         this._web3Wrapper = new Web3Wrapper(provider);
+        const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
         this.token = new TokenWrapper(this._web3Wrapper, gasPrice);
         this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper, gasPrice);
         this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, gasPrice);
