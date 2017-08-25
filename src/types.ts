@@ -387,5 +387,5 @@ export interface JSONRPCPayload {
 }
 
 export interface ZeroExConfig {
-    gasPrice?: BigNumber.BigNumber;
+    gasPrice?: BigNumber.BigNumber; // Gas price to use with every transaction
 }
