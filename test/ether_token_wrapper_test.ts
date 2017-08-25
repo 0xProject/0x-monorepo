@@ -27,9 +27,12 @@ describe('EtherTokenWrapper', () => {
     let depositWeiAmount: BigNumber.BigNumber;
     let decimalPlaces: number;
     const gasPrice = new BigNumber(1);
+    const zeroExConfig = {
+        gasPrice,
+    };
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider, gasPrice);
+        zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
         userAddresses = await promisify(web3.eth.getAccounts)();
         addressWithETH = userAddresses[0];
         wethContractAddress = await zeroEx.etherToken.getContractAddressAsync();
