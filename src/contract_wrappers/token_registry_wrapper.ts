@@ -11,7 +11,7 @@ import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
  */
 export class TokenRegistryWrapper extends ContractWrapper {
     private _tokenRegistryContractIfExists?: TokenRegistryContract;
-    constructor(web3Wrapper: Web3Wrapper, gasPrice: BigNumber.BigNumber) {
+    constructor(web3Wrapper: Web3Wrapper, gasPrice?: BigNumber.BigNumber) {
         super(web3Wrapper, gasPrice);
     }
     /**

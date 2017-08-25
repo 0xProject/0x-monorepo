@@ -6,8 +6,8 @@ import {utils} from '../utils/utils';
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
-    private _gasPrice: BigNumber.BigNumber;
-    constructor(web3Wrapper: Web3Wrapper, gasPrice: BigNumber.BigNumber) {
+    private _gasPrice?: BigNumber.BigNumber;
+    constructor(web3Wrapper: Web3Wrapper, gasPrice?: BigNumber.BigNumber) {
         this._web3Wrapper = web3Wrapper;
         this._gasPrice = gasPrice;
     }

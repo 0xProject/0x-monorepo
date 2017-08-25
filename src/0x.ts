@@ -164,9 +164,6 @@ export class ZeroEx {
      */
     constructor(provider: Web3Provider, gasPrice?: BigNumber.BigNumber) {
         this._web3Wrapper = new Web3Wrapper(provider);
-        if (_.isUndefined(gasPrice)) {
-            gasPrice = this._web3Wrapper.toWei(new BigNumber(21), 'gwei');
-        }
         this.token = new TokenWrapper(this._web3Wrapper, gasPrice);
         this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper, gasPrice);
         this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, gasPrice);

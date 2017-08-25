@@ -31,7 +31,7 @@ export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenLogEventEmitters: ContractEventEmitter[];
-    constructor(web3Wrapper: Web3Wrapper, gasPrice: BigNumber.BigNumber) {
+    constructor(web3Wrapper: Web3Wrapper, gasPrice?: BigNumber.BigNumber) {
         super(web3Wrapper, gasPrice);
         this._tokenContractsByAddress = {};
         this._tokenLogEventEmitters = [];
