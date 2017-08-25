@@ -385,3 +385,7 @@ export interface JSONRPCPayload {
     params: any[];
     method: string;
 }
+
+export interface ZeroExConfig {
+    gasPrice?: BigNumber.BigNumber;
+}
