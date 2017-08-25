@@ -13,8 +13,8 @@ import * as EtherTokenArtifacts from '../artifacts/EtherToken.json';
 export class EtherTokenWrapper extends ContractWrapper {
     private _etherTokenContractIfExists?: EtherTokenContract;
     private _tokenWrapper: TokenWrapper;
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, gasPrice: BigNumber.BigNumber) {
+        super(web3Wrapper, gasPrice);
         this._tokenWrapper = tokenWrapper;
     }
     /**

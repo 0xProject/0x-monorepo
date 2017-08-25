@@ -6,11 +6,16 @@ import {utils} from '../utils/utils';
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
-    constructor(web3Wrapper: Web3Wrapper) {
+    private _gasPrice: BigNumber.BigNumber;
+    constructor(web3Wrapper: Web3Wrapper, gasPrice: BigNumber.BigNumber) {
         this._web3Wrapper = web3Wrapper;
+        this._gasPrice = gasPrice;
     }
     protected async _instantiateContractIfExistsAsync(artifact: Artifact, address?: string): Promise<ContractInstance> {
         const c = await contract(artifact);
+        c.defaults({
+            gasPrice: this._gasPrice,
+        });
         const providerObj = this._web3Wrapper.getCurrentProvider();
         c.setProvider(providerObj);
 

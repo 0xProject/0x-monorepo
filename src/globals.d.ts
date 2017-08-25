@@ -39,6 +39,8 @@ declare interface ContractInstance {
 declare interface ContractFactory {
     setProvider: (providerObj: any) => void;
     deployed: () => ContractInstance;
+    // Both any's are Web3.CallData, but I was unable to import it in this file
+    defaults: (config: any) => any;
     at: (address: string) => ContractInstance;
 }
 declare interface Artifact {

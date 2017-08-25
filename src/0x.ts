@@ -159,15 +159,19 @@ export class ZeroEx {
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
      * @param   provider    The Web3.js Provider instance you would like the 0x.js library to use for interacting with
      *                      the Ethereum network.
+     * @param   gasPrice    The gas price to use for sending transactions. Defaults to 21 GWei.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Web3Provider) {
+    constructor(provider: Web3Provider, gasPrice?: BigNumber.BigNumber) {
         this._web3Wrapper = new Web3Wrapper(provider);
-        this.token = new TokenWrapper(this._web3Wrapper);
-        this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper);
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
+        if (_.isUndefined(gasPrice)) {
+            gasPrice = this._web3Wrapper.toWei(new BigNumber(21), 'gwei');
+        }
+        this.token = new TokenWrapper(this._web3Wrapper, gasPrice);
+        this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper, gasPrice);
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, gasPrice);
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, gasPrice);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, gasPrice);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
