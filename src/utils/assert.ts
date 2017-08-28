@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
-import {SchemaValidator} from './schema_validator';
+import {SchemaValidator, Schema} from '0x-json-schemas';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 

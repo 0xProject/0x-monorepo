@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
+import {SchemaValidator, schemas} from '0x-json-schemas';
 import promisify = require('es6-promisify');
 import {Web3Wrapper} from '../web3_wrapper';
 import {
@@ -32,15 +33,6 @@ import {utils} from '../utils/utils';
 import {eventUtils} from '../utils/event_utils';
 import {OrderValidationUtils} from '../utils/order_validation_utils';
 import {ContractWrapper} from './contract_wrapper';
-import {ecSignatureSchema} from '../schemas/ec_signature_schema';
-import {signedOrdersSchema} from '../schemas/signed_orders_schema';
-import {subscriptionOptsSchema} from '../schemas/subscription_opts_schema';
-import {indexFilterValuesSchema} from '../schemas/index_filter_values_schema';
-import {orderFillRequestsSchema} from '../schemas/order_fill_requests_schema';
-import {orderCancellationRequestsSchema} from '../schemas/order_cancel_schema';
-import {orderFillOrKillRequestsSchema} from '../schemas/order_fill_or_kill_requests_schema';
-import {orderHashSchema} from '../schemas/order_hash_schema';
-import {signedOrderSchema, orderSchema} from '../schemas/order_schemas';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
@@ -96,7 +88,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  The amount of the order (in taker tokens) that has either been filled or canceled.
      */
     public async getUnavailableTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
-        assert.doesConformToSchema('orderHash', orderHash, orderHashSchema);
+        assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync();
         let unavailableTakerTokenAmount = await exchangeContract.getUnavailableTakerTokenAmount.call(orderHash);
@@ -110,7 +102,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  The amount of the order (in taker tokens) that has already been filled.
      */
     public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
-        assert.doesConformToSchema('orderHash', orderHash, orderHashSchema);
+        assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync();
         let fillAmountInBaseUnits = await exchangeContract.filled.call(orderHash);
@@ -125,7 +117,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  The amount of the order (in taker tokens) that has been cancelled.
      */
     public async getCanceledTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
-        assert.doesConformToSchema('orderHash', orderHash, orderHashSchema);
+        assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync();
         let cancelledAmountInBaseUnits = await exchangeContract.cancelled.call(orderHash);
@@ -155,7 +147,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber.BigNumber,
                                 shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                 takerAddress: string): Promise<BigNumber.BigNumber> {
-        assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
@@ -215,7 +207,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], fillTakerTokenAmount: BigNumber.BigNumber,
                                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                      takerAddress: string): Promise<BigNumber.BigNumber> {
-        assert.doesConformToSchema('signedOrders', signedOrders, signedOrdersSchema);
+        assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
                                        ExchangeContractErrs.MultipleTakerTokensInFillUpToDisallowed);
@@ -301,7 +293,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async batchFillOrdersAsync(orderFillRequests: OrderFillRequest[],
                                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                       takerAddress: string): Promise<void> {
-        assert.doesConformToSchema('orderFillRequests', orderFillRequests, orderFillRequestsSchema);
+        assert.doesConformToSchema('orderFillRequests', orderFillRequests, schemas.orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillRequests,
             orderFillRequest => orderFillRequest.signedOrder.exchangeContractAddress,
@@ -372,7 +364,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber.BigNumber,
                                       takerAddress: string): Promise<void> {
-        assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
@@ -417,7 +409,8 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
                                       takerAddress: string): Promise<void> {
-        assert.doesConformToSchema('orderFillOrKillRequests', orderFillOrKillRequests, orderFillOrKillRequestsSchema);
+        assert.doesConformToSchema('orderFillOrKillRequests', orderFillOrKillRequests,
+                                   schemas.orderFillOrKillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillOrKillRequests,
             orderFillOrKillRequest => orderFillOrKillRequest.signedOrder.exchangeContractAddress,
@@ -483,7 +476,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
         order: Order|SignedOrder, cancelTakerTokenAmount: BigNumber.BigNumber): Promise<BigNumber.BigNumber> {
-        assert.doesConformToSchema('order', order, orderSchema);
+        assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', cancelTakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
 
@@ -522,7 +515,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async batchCancelOrdersAsync(orderCancellationRequests: OrderCancellationRequest[]): Promise<void> {
         assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
-                                   orderCancellationRequestsSchema);
+                                   schemas.orderCancellationRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderCancellationRequests,
             orderCancellationRequest => orderCancellationRequest.order.exchangeContractAddress,
@@ -584,8 +577,8 @@ export class ExchangeWrapper extends ContractWrapper {
                                 Promise<ContractEventEmitter> {
         assert.isETHAddressHex('exchangeContractAddress', exchangeContractAddress);
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
-        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, subscriptionOptsSchema);
-        assert.doesConformToSchema('indexFilterValues', indexFilterValues, indexFilterValuesSchema);
+        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const exchangeContract = await this._getExchangeContractAsync();
         let createLogEvent: CreateContractEvent;
         switch (eventName) {
@@ -637,7 +630,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                       fillTakerTokenAmount: BigNumber.BigNumber,
                                                       takerAddress: string): Promise<void> {
-        assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = await this._getZRXTokenAddressAsync();
@@ -652,7 +645,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async validateCancelOrderThrowIfInvalidAsync(
         order: Order, cancelTakerTokenAmount: BigNumber.BigNumber): Promise<void> {
-        assert.doesConformToSchema('order', order, orderSchema);
+        assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isBigNumber('cancelTakerTokenAmount', cancelTakerTokenAmount);
         const orderHash = utils.getOrderHashHex(order);
         const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
@@ -670,7 +663,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async validateFillOrKillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                             fillTakerTokenAmount: BigNumber.BigNumber,
                                                             takerAddress: string): Promise<void> {
-        assert.doesConformToSchema('signedOrder', signedOrder, signedOrderSchema);
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = await this._getZRXTokenAddressAsync();
@@ -705,7 +698,7 @@ export class ExchangeWrapper extends ContractWrapper {
     private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
                                                           signerAddressHex: string): Promise<boolean> {
         assert.isHexString('dataHex', dataHex);
-        assert.doesConformToSchema('ecSignature', ecSignature, ecSignatureSchema);
+        assert.doesConformToSchema('ecSignature', ecSignature, schemas.ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
 
         const exchangeInstance = await this._getExchangeContractAsync();

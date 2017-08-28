@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
+import {SchemaValidator, schemas} from '0x-json-schemas';
 import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
 import contract = require('truffle-contract');
@@ -13,13 +14,9 @@ import {assert} from './utils/assert';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
-import {ecSignatureSchema} from './schemas/ec_signature_schema';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
-import {orderHashSchema} from './schemas/order_hash_schema';
-import {orderSchema} from './schemas/order_schemas';
-import {SchemaValidator} from './utils/schema_validator';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -70,7 +67,7 @@ export class ZeroEx {
      */
     public static isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {
         assert.isHexString('data', data);
-        assert.doesConformToSchema('signature', signature, ecSignatureSchema);
+        assert.doesConformToSchema('signature', signature, schemas.ecSignatureSchema);
         assert.isETHAddressHex('signerAddress', signerAddress);
 
         const dataBuff = ethUtil.toBuffer(data);
@@ -113,7 +110,7 @@ export class ZeroEx {
         // format, we only assert that we were indeed passed a string.
         assert.isString('orderHash', orderHash);
         const schemaValidator = new SchemaValidator();
-        const isValidOrderHash = schemaValidator.validate(orderHash, orderHashSchema).valid;
+        const isValidOrderHash = schemaValidator.validate(orderHash, schemas.orderHashSchema).valid;
         return isValidOrderHash;
     }
     /**
@@ -154,7 +151,7 @@ export class ZeroEx {
      * @return  The resulting orderHash from hashing the supplied order.
      */
     public static getOrderHashHex(order: Order|SignedOrder): string {
-        assert.doesConformToSchema('order', order, orderSchema);
+        assert.doesConformToSchema('order', order, schemas.orderSchema);
         const orderHashHex = utils.getOrderHashHex(order);
         return orderHashHex;
     }
