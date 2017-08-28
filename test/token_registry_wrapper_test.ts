@@ -1,13 +1,11 @@
 import * as _ from 'lodash';
 import 'mocha';
 import * as chai from 'chai';
+import {SchemaValidator, schemas} from '0x-json-schemas';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx, Token} from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import {SchemaValidator} from '../src/utils/schema_validator';
-import {tokenSchema} from '../src/schemas/token_schema';
-import {addressSchema} from '../src/schemas/basic_type_schemas';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -49,7 +47,7 @@ describe('TokenRegistryWrapper', () => {
 
             const schemaValidator = new SchemaValidator();
             _.each(tokens, token => {
-                const validationResult = schemaValidator.validate(token, tokenSchema);
+                const validationResult = schemaValidator.validate(token, schemas.tokenSchema);
                 expect(validationResult.errors).to.have.lengthOf(0);
             });
         });
@@ -61,7 +59,7 @@ describe('TokenRegistryWrapper', () => {
 
             const schemaValidator = new SchemaValidator();
             _.each(tokenAddresses, tokenAddress => {
-                const validationResult = schemaValidator.validate(tokenAddress, addressSchema);
+                const validationResult = schemaValidator.validate(tokenAddress, schemas.addressSchema);
                 expect(validationResult.errors).to.have.lengthOf(0);
                 expect(tokenAddress).to.not.be.equal(ZeroEx.NULL_ADDRESS);
             });
@@ -113,7 +111,7 @@ describe('TokenRegistryWrapper', () => {
 
             const token = await zeroEx.tokenRegistry.getTokenIfExistsAsync(aToken.address);
             const schemaValidator = new SchemaValidator();
-            const validationResult = schemaValidator.validate(token, tokenSchema);
+            const validationResult = schemaValidator.validate(token, schemas.tokenSchema);
             expect(validationResult.errors).to.have.lengthOf(0);
         });
         it('should return return undefined when passed a token address not in the tokenRegistry', async () => {

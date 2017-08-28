@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
+import {SchemaValidator, schemas} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -8,8 +9,6 @@ import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import * as TokenArtifacts from '../artifacts/Token.json';
 import * as TokenTransferProxyArtifacts from '../artifacts/TokenTransferProxy.json';
-import {subscriptionOptsSchema} from '../schemas/subscription_opts_schema';
-import {indexFilterValuesSchema} from '../schemas/index_filter_values_schema';
 import {
     TokenContract,
     ZeroExError,
@@ -230,8 +229,8 @@ export class TokenWrapper extends ContractWrapper {
                                 indexFilterValues: IndexedFilterValues): Promise<ContractEventEmitter> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
-        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, subscriptionOptsSchema);
-        assert.doesConformToSchema('indexFilterValues', indexFilterValues, indexFilterValuesSchema);
+        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
         let createLogEvent: CreateContractEvent;
         switch (eventName) {
