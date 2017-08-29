@@ -163,6 +163,10 @@ export class ZeroEx {
      * @return  An instance of the 0x.js ZeroEx class.
      */
     constructor(provider: Web3Provider, config?: ZeroExConfig) {
+        if (_.isUndefined(provider.sendAsync)) {
+            // We assume, that this is a provider from beta web3
+            provider.sendAsync = provider.send;
+        }
         this._web3Wrapper = new Web3Wrapper(provider);
         const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
         this.token = new TokenWrapper(this._web3Wrapper, gasPrice);
