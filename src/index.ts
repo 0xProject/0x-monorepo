@@ -29,4 +29,5 @@ export {
     TokenContractEventArgs,
     ContractEventArgs,
     Web3Provider,
+    ZeroExConfig,
 } from './types';

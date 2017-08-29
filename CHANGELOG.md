@@ -1,5 +1,9 @@
 # CHANGELOG
 
+vTBD - _TBD_
+    * Added the optional `zeroExConfig`  parameter to the constructor of `ZeroEx` (#139)
+    * Added the ability to specify `gasPrice` when instantiating `ZeroEx` (#139)
+
 v0.11.0 - _August 24, 2017_
 ------------------------
     * Added `zeroEx.token.setUnlimitedProxyAllowanceAsync` (#137)

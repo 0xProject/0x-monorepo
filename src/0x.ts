@@ -16,7 +16,7 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
-import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider} from './types';
+import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider, ZeroExConfig} from './types';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -159,15 +159,17 @@ export class ZeroEx {
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
      * @param   provider    The Web3.js Provider instance you would like the 0x.js library to use for interacting with
      *                      the Ethereum network.
+     * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Web3Provider) {
+    constructor(provider: Web3Provider, config?: ZeroExConfig) {
         this._web3Wrapper = new Web3Wrapper(provider);
-        this.token = new TokenWrapper(this._web3Wrapper);
-        this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper);
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
+        const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
+        this.token = new TokenWrapper(this._web3Wrapper, gasPrice);
+        this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper, gasPrice);
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, gasPrice);
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, gasPrice);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, gasPrice);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
