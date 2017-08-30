@@ -166,8 +166,8 @@ export class ZeroEx {
         assert.isWeb3Provider('provider', provider);
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
-            // so it only has `send` method, instead of `send and `sendAsync` in web3@0.x.x
-            // That's why we reassign the send method.
+            // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
+            // We re-assign the send method so that Web3@1.0 providers work with 0x.js
             (provider as any).sendAsync = (provider as any).send;
         }
         this._web3Wrapper = new Web3Wrapper(provider);
