@@ -163,6 +163,7 @@ export class ZeroEx {
      * @return  An instance of the 0x.js ZeroEx class.
      */
     constructor(provider: Web3Provider, config?: ZeroExConfig) {
+        assert.isWeb3Provider('provider', provider);
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has `send` method, instead of `send and `sendAsync` in web3@0.x.x
