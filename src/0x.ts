@@ -163,6 +163,13 @@ export class ZeroEx {
      * @return  An instance of the 0x.js ZeroEx class.
      */
     constructor(provider: Web3Provider, config?: ZeroExConfig) {
+        assert.isWeb3Provider('provider', provider);
+        if (_.isUndefined((provider as any).sendAsync)) {
+            // Web3@1.0 provider doesn't support synchronous http requests,
+            // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
+            // We re-assign the send method so that Web3@1.0 providers work with 0x.js
+            (provider as any).sendAsync = (provider as any).send;
+        }
         this._web3Wrapper = new Web3Wrapper(provider);
         const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
         this.token = new TokenWrapper(this._web3Wrapper, gasPrice);

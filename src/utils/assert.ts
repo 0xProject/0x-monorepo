@@ -61,6 +61,10 @@ export const assert = {
     isBoolean(variableName: string, value: boolean): void {
         this.assert(_.isBoolean(value), this.typeAssertionMessage(variableName, 'boolean', value));
     },
+    isWeb3Provider(variableName: string, value: Web3.Provider): void {
+        const isWeb3Provider = _.isFunction((value as any).send) || _.isFunction((value as any).sendAsync);
+        this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Web3.Provider', value));
+    },
     doesConformToSchema(variableName: string, value: any, schema: Schema): void {
         const schemaValidator = new SchemaValidator();
         const validationResult = schemaValidator.validate(value, schema);
