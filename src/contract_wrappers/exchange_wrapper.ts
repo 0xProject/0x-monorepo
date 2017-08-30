@@ -150,13 +150,18 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
+        // this is already being done in validateFillOrderThrowIfInvalidAsync
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
+        // we can chain this with gas cost estimate and parallelize the resulting promise with validateFillOrderThrowIfInvalidAsync below
         const exchangeInstance = await this._getExchangeContractAsync();
+
+        // we can do this optionally
         await this.validateFillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
 
+        // can we do this optionally as well? we can have the caller pass in custom gas and gasPrice
         const gas = await exchangeInstance.fillOrder.estimateGas(
             orderAddresses,
             orderValues,
@@ -183,6 +188,7 @@ export class ExchangeWrapper extends ContractWrapper {
             },
         );
         this._throwErrorLogsAsErrors(response.logs);
+        // this may throw and error if logs is empty
         const logFillArgs = response.logs[0].args as LogFillContractEventArgs;
         const filledTakerTokenAmount = new BigNumber(logFillArgs.filledTakerTokenAmount);
         return filledTakerTokenAmount;
