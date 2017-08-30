@@ -17,12 +17,6 @@ export const web3Factory = {
         web3.setProvider(provider);
         return web3;
     },
-    createBeta(): any {
-        const provider_beta = this.getProviderBeta();
-        const web3_beta = new Web3_beta();
-        web3_beta.setProvider(provider_beta);
-        return web3_beta;
-    },
     getRpcProvider(hasAddresses: boolean = true): Web3.Provider {
         const provider = new ProviderEngine();
         const rpcUrl = `http://${constants.RPC_HOST}:${constants.RPC_PORT}`;
@@ -35,7 +29,7 @@ export const web3Factory = {
         provider.start();
         return provider;
     },
-    getProviderBeta(): any {
+    getProviderBeta(): Web3.Provider {
         const rpcUrl = `http://${constants.RPC_HOST}:${constants.RPC_PORT}`;
         const providerBeta = new Web3_beta.providers.HttpProvider(rpcUrl);
         return providerBeta;
