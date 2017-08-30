@@ -6,6 +6,7 @@
 import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 import * as Web3 from 'web3';
+import * as Web3_beta from 'web3_beta';
 import {constants} from './constants';
 import {EmptyWalletSubProvider} from '../../src/subproviders/empty_wallet_subprovider';
 
@@ -27,5 +28,10 @@ export const web3Factory = {
         }));
         provider.start();
         return provider;
+    },
+    getProviderBeta(): Web3.Provider {
+        const rpcUrl = `http://${constants.RPC_HOST}:${constants.RPC_PORT}`;
+        const providerBeta = new Web3_beta.providers.HttpProvider(rpcUrl);
+        return providerBeta;
     },
 };

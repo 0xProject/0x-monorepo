@@ -85,6 +85,7 @@
     "types-bn": "^0.0.1",
     "types-ethereumjs-util": "^0.0.5",
     "typescript": "^2.4.1",
+    "web3_beta": "ethereum/web3.js#1.0",
     "web3-provider-engine": "^13.0.1",
     "web3-typescript-typings": "^0.3.2",
     "webpack": "^3.1.0"
