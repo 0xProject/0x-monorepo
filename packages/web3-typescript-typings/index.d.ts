@@ -111,7 +111,7 @@ declare module 'web3' {
             sendAsync(
                 payload: JSONRPCRequestPayload,
                 callback: (err: Error, result: JSONRPCResponsePayload) => void,
-            );
+            ): void;
         }
 
         interface Sha3Options {
