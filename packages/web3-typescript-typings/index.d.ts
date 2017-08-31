@@ -94,7 +94,25 @@ declare module 'web3' {
             stopWatching(callback: () => void): void;
         }
 
-        interface Provider {}
+        export interface JSONRPCRequestPayload {
+            params: any[];
+            method: string;
+            id: number;
+            jsonrpc: string;
+        }
+
+        export interface JSONRPCResponsePayload {
+            result: any;
+            id: number;
+            jsonrpc: string;
+        }
+
+        interface Provider {
+            sendAsync(
+                payload: JSONRPCRequestPayload,
+                callback: (err: Error, result: JSONRPCResponsePayload) => void,
+            );
+        }
 
         interface Sha3Options {
             encoding: 'hex';
