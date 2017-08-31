@@ -62,6 +62,18 @@
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-2.3.2.tgz#1e1e99e67162d78e2db17816892bf93bf5209885"
 
+"@types/source-map-support@0.2.28":
+  version "0.2.28"
+  resolved "https://registry.yarnpkg.com/@types/source-map-support/-/source-map-support-0.2.28.tgz#ce6497dfa9c9fbd21a753955b4a51d8993d759dd"
+  dependencies:
+    "@types/node" "*"
+
+"@types/uuid@2.0.29":
+  version "2.0.29"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-2.0.29.tgz#939a198ab73567f811ab84f670d2be9c25addd41"
+  dependencies:
+    "@types/node" "*"
+
 JSONStream@^1.0.4:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.1.tgz#707f761e01dae9e16f1bcf93703b78c70966579a"
@@ -1983,6 +1995,16 @@ ethereumjs-block@^1.2.2:
     ethereumjs-util "^5.0.0"
     merkle-patricia-tree "^2.1.2"
 
+ethereumjs-blockstream@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-2.0.4.tgz#63a36470d75e8d38b05a505ecd68782b529c8f42"
+  dependencies:
+    "@types/source-map-support" "0.2.28"
+    "@types/uuid" "2.0.29"
+    immutable "3.8.1"
+    source-map-support "0.4.14"
+    uuid "3.0.1"
+
 ethereumjs-testrpc@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/ethereumjs-testrpc/-/ethereumjs-testrpc-4.0.1.tgz#af23babff4c36008418bc6de4c80f81606896cad"
@@ -2723,6 +2745,10 @@ ieee754@^1.1.4:
 immediate@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.2.3.tgz#d140fa8f614659bd6541233097ddaac25cdd991c"
+
+immutable@3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
 
 imurmurhash@^0.1.4:
   version "0.1.4"
@@ -4952,6 +4978,12 @@ source-map-resolve@^0.5.0:
     source-map-url "^0.4.0"
     urix "^0.1.0"
 
+source-map-support@0.4.14:
+  version "0.4.14"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.14.tgz#9d4463772598b86271b4f523f6c1f4e02a7d6aef"
+  dependencies:
+    source-map "^0.5.6"
+
 source-map-support@^0.4.15, source-map-support@^0.4.2:
   version "0.4.15"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.15.tgz#03202df65c06d2bd8c7ec2362a193056fef8d3b1"
@@ -5635,6 +5667,10 @@ util@0.10.3, util@^0.10.3:
   dependencies:
     inherits "2.0.1"
 
+uuid@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
+
 uuid@^2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
@@ -5719,9 +5755,9 @@ web3-provider-engine@^8.4.0:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-typescript-typings@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.3.2.tgz#75f65fe452e35e2b96192908199dbb7a9ab5bcc3"
+web3-typescript-typings@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.3.4.tgz#1868dd2483127d8db9b17d6a7c94cc1f7cfa6a62"
   dependencies:
     bignumber.js "^4.0.2"
 
@@ -5754,9 +5790,9 @@ web3@^0.20.0:
     xhr2 "*"
     xmlhttprequest "*"
 
-"web3_beta@https://github.com/ethereum/web3.js#1.0":
+web3_beta@ethereum/web3.js#1.0:
   version "1.0.0-beta.18"
-  resolved "https://github.com/ethereum/web3.js#eff0a026b8259ccbf2eec9fe9a8785e494addb80"
+  resolved "https://codeload.github.com/ethereum/web3.js/tar.gz/eff0a026b8259ccbf2eec9fe9a8785e494addb80"
   dependencies:
     lerna "^2.0.0"
 

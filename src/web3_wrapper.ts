@@ -68,6 +68,40 @@ export class Web3Wrapper {
         const addresses: string[] = await promisify(this.web3.eth.getAccounts)();
         return addresses;
     }
+    public async getLatestBlockAsync(): Promise<Web3.BlockWithoutTransactionData> {
+        const includeTransactions = true;
+        const block = await promisify(this.web3.eth.getBlock)('latest', includeTransactions);
+        return block;
+    }
+    public async getBlockByHashAsync(hash: string): Promise<Web3.BlockWithTransactionData> {
+        const includeTransactions = true;
+        const block = await promisify(this.web3.eth.getBlock)(hash, includeTransactions);
+        return block;
+    }
+    public sha3(data: string): string {
+        const hash = this.web3.sha3(data);
+        return hash;
+    }
+    public toBigNumber(hex: string): BigNumber.BigNumber {
+        const decimal = this.web3.toBigNumber(hex);
+        return decimal;
+    }
+    public async getTxPoolContentAsync(): Promise<Web3.Transaction[]> {
+        const payload = {
+            method: 'parity_pendingTransactions',
+            params: [],
+            id: 1,
+            jsonrpc: '2.0',
+        };
+        const response = await this.sendRawPayloadAsync(payload);
+        const transactions = response.result;
+        return transactions;
+    }
+    private async sendRawPayloadAsync(payload: Web3.JSONRPCRequestPayload): Promise<Web3.JSONRPCResponsePayload> {
+        const provider = this.web3.currentProvider;
+        const response = await promisify(provider.sendAsync.bind(provider))(payload);
+        return response;
+    }
     private async getNetworkAsync(): Promise<number> {
         const networkId = await promisify(this.web3.version.getNetwork)();
         return networkId;

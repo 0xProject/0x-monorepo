@@ -381,11 +381,6 @@ export interface ContractArtifact {
     };
 }
 
-export interface JSONRPCPayload {
-    params: any[];
-    method: string;
-}
-
 export interface ZeroExConfig {
     gasPrice?: BigNumber.BigNumber; // Gas price to use with every transaction
 }

@@ -16,6 +16,7 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
+import {TxPoolMonitor} from './tx_pool_monitor';
 import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider, ZeroExConfig} from './types';
 
 // Customize our BigNumber instances
@@ -56,6 +57,10 @@ export class ZeroEx {
      * tokenTransferProxy smart contract.
      */
     public proxy: TokenTransferProxyWrapper;
+    /**
+     * An instance of the TxPoolMonitor class containing methods for monitoring transaction pool.
+     */
+    public txPool: TxPoolMonitor;
     private _web3Wrapper: Web3Wrapper;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
@@ -164,11 +169,11 @@ export class ZeroEx {
      */
     constructor(provider: Web3Provider, config?: ZeroExConfig) {
         assert.isWeb3Provider('provider', provider);
-        if (_.isUndefined((provider as any).sendAsync)) {
+        if (_.isUndefined(provider.sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
             // We re-assign the send method so that Web3@1.0 providers work with 0x.js
-            (provider as any).sendAsync = (provider as any).send;
+            provider.sendAsync = (provider as any).send;
         }
         this._web3Wrapper = new Web3Wrapper(provider);
         const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
@@ -177,6 +182,7 @@ export class ZeroEx {
         this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, gasPrice);
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, gasPrice);
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, gasPrice);
+        this.txPool = new TxPoolMonitor(this._web3Wrapper);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
