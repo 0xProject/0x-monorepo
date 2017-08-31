@@ -22,6 +22,9 @@ export const utils = {
     isParityNode(nodeVersion: string): boolean {
         return _.includes(nodeVersion, 'Parity');
     },
+    isGethNode(nodeVersion: string): boolean {
+        return _.includes(nodeVersion, 'Geth');
+    },
     isTestRpc(nodeVersion: string): boolean {
         return _.includes(nodeVersion, 'TestRPC');
     },

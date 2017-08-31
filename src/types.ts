@@ -384,3 +384,11 @@ export interface ContractArtifact {
 export interface ZeroExConfig {
     gasPrice?: BigNumber.BigNumber; // Gas price to use with every transaction
 }
+
+export interface GethTxPool {
+    pending: {
+        [address: string]: {
+            [nonce: number]: Web3.Transaction;
+        };
+    };
+}
