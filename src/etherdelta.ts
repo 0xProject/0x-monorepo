@@ -1,6 +1,6 @@
 import * as Web3 from 'web3';
 
-export const etherdeltaAbi = [{
+export const contractAbi = [{
     constant: false,
     inputs: [{
         name: 'tokenGet',
