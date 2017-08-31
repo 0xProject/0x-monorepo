@@ -51,7 +51,7 @@ export interface ExchangeContract extends ContractInstance {
         call: () => Promise<string>;
     };
     getUnavailableTakerTokenAmount: {
-        call: (orderHash: string) => BigNumber.BigNumber;
+        call: (orderHash: string) => Promise<BigNumber.BigNumber>;
     };
     isRoundingError: {
         call: (fillTakerAmount: BigNumber.BigNumber, takerTokenAmount: BigNumber.BigNumber,
@@ -60,63 +60,63 @@ export interface ExchangeContract extends ContractInstance {
     fillOrder: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
          shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
+         v: number, r: string, s: string, txOpts?: TxOpts): Promise<ContractResponse>;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
                       fillTakerTokenAmount: BigNumber.BigNumber,
                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                      v: number, r: string, s: string, txOpts?: TxOpts) => number;
+                      v: number, r: string, s: string, txOpts?: TxOpts) => Promise<number>;
     };
     batchFillOrders: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
          shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
+         v: number[], r: string[], s: string[], txOpts?: TxOpts): Promise<ContractResponse>;
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
                       fillTakerTokenAmounts: BigNumber.BigNumber[],
                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
     };
     fillOrdersUpTo: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmount: BigNumber.BigNumber,
          shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number[], r: string[], s: string[], txOpts?: TxOpts): ContractResponse;
+         v: number[], r: string[], s: string[], txOpts?: TxOpts): Promise<ContractResponse>;
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
                       fillTakerTokenAmount: BigNumber.BigNumber,
                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
     };
     cancelOrder: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelTakerTokenAmount: BigNumber.BigNumber,
-         txOpts?: TxOpts): ContractResponse;
+         txOpts?: TxOpts): Promise<ContractResponse>;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
                       cancelTakerTokenAmount: BigNumber.BigNumber,
-                      txOpts?: TxOpts) => number;
+                      txOpts?: TxOpts) => Promise<number>;
     };
     batchCancelOrders: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelTakerTokenAmounts: BigNumber.BigNumber[],
-         txOpts?: TxOpts): ContractResponse;
+         txOpts?: TxOpts): Promise<ContractResponse>;
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
                       cancelTakerTokenAmounts: BigNumber.BigNumber[],
-                      txOpts?: TxOpts) => number;
+                      txOpts?: TxOpts) => Promise<number>;
     };
     fillOrKillOrder: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
-         v: number, r: string, s: string, txOpts?: TxOpts): ContractResponse;
+         v: number, r: string, s: string, txOpts?: TxOpts): Promise<ContractResponse>;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
                       fillTakerTokenAmount: BigNumber.BigNumber,
-                      v: number, r: string, s: string, txOpts?: TxOpts) => number;
+                      v: number, r: string, s: string, txOpts?: TxOpts) => Promise<number>;
     };
     batchFillOrKillOrders: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
-         v: number[], r: string[], s: string[], txOpts: TxOpts): ContractResponse;
+         v: number[], r: string[], s: string[], txOpts: TxOpts): Promise<ContractResponse>;
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
                       fillTakerTokenAmounts: BigNumber.BigNumber[],
-                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => number;
+                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
     };
     filled: {
-        call: (orderHash: string) => BigNumber.BigNumber;
+        call: (orderHash: string) => Promise<BigNumber.BigNumber>;
     };
     cancelled: {
-        call: (orderHash: string) => BigNumber.BigNumber;
+        call: (orderHash: string) => Promise<BigNumber.BigNumber>;
     };
     getOrderHash: {
         call: (orderAddresses: OrderAddresses, orderValues: OrderValues) => string;
@@ -135,7 +135,7 @@ export interface TokenContract extends ContractInstance {
     transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     transferFrom: (fromAddress: string, toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
                    txOpts?: TxOpts) => Promise<boolean>;
-    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => void;
+    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<void>;
 }
 
 export interface TokenRegistryContract extends ContractInstance {
