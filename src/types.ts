@@ -119,7 +119,7 @@ export interface ExchangeContract extends ContractInstance {
         call: (orderHash: string) => Promise<BigNumber.BigNumber>;
     };
     getOrderHash: {
-        call: (orderAddresses: OrderAddresses, orderValues: OrderValues) => string;
+        call: (orderAddresses: OrderAddresses, orderValues: OrderValues) => Promise<string>;
     };
 }
 
