@@ -147,28 +147,41 @@ export class ExchangeWrapper extends ContractWrapper {
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber.BigNumber,
                                 shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                 takerAddress: string): Promise<BigNumber.BigNumber> {
+        // validate input types
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const exchangeInstance = await this._getExchangeContractAsync();
-        await this.validateFillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
-
+        // extract orderAdresses and orderValues from the provided order
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
 
-        const gas = await exchangeInstance.fillOrder.estimateGas(
-            orderAddresses,
-            orderValues,
-            fillTakerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            signedOrder.ecSignature.v,
-            signedOrder.ecSignature.r,
-            signedOrder.ecSignature.s,
-            {
-                from: takerAddress,
-            },
-        );
+        // build a function that returns a promise that makes an RPC to retrieve the Exchange contract (may be memoized), 
+        // and then makes and RPC to estimate gas cost with the Exchange contract instance
+        const getExchangeInstanceAndGasAsync = async (): Promise<[ExchangeContract, number]> => {
+            const exchangeInstance = await this._getExchangeContractAsync();
+            // can we do this optionally? we can have the caller pass in custom gas and gasPrice
+            const gas = await exchangeInstance.fillOrder.estimateGas(
+                orderAddresses,
+                orderValues,
+                fillTakerTokenAmount,
+                shouldThrowOnInsufficientBalanceOrAllowance,
+                signedOrder.ecSignature.v,
+                signedOrder.ecSignature.r,
+                signedOrder.ecSignature.s,
+                {
+                    from: takerAddress,
+                },
+            );
+            return [exchangeInstance, gas];
+        };
+
+        // await the above promise and validation RPC in parallel
+        const [[exchangeInstance, gas], validation] = await Promise.all([
+            getExchangeInstanceAndGasAsync(),
+            this.validateFillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress) // we can do this optionally
+        ]);
+
+        // await the fillOrder RPC
         const response: ContractResponse = await exchangeInstance.fillOrder(
             orderAddresses,
             orderValues,
@@ -182,7 +195,9 @@ export class ExchangeWrapper extends ContractWrapper {
                 gas,
             },
         );
+
         this._throwErrorLogsAsErrors(response.logs);
+        // this may throw and error if logs is empty
         const logFillArgs = response.logs[0].args as LogFillContractEventArgs;
         const filledTakerTokenAmount = new BigNumber(logFillArgs.filledTakerTokenAmount);
         return filledTakerTokenAmount;
