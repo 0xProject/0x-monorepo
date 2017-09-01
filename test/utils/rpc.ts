@@ -40,6 +40,9 @@ export class RPC {
             method: 'POST',
             uri: `http://${this.host}:${this.port}`,
             body: payload,
+            headers: {
+                'content-type': 'application/json'
+            },
         };
         const bodyString = await request(opts);
         const body = JSON.parse(bodyString);
