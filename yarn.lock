@@ -5754,9 +5754,9 @@ web3@^0.20.0:
     xhr2 "*"
     xmlhttprequest "*"
 
-"web3_beta@https://github.com/ethereum/web3.js#1.0":
+web3_beta@ethereum/web3.js#1.0:
   version "1.0.0-beta.18"
-  resolved "https://github.com/ethereum/web3.js#eff0a026b8259ccbf2eec9fe9a8785e494addb80"
+  resolved "https://codeload.github.com/ethereum/web3.js/tar.gz/eff0a026b8259ccbf2eec9fe9a8785e494addb80"
   dependencies:
     lerna "^2.0.0"
 
