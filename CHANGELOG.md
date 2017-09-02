@@ -1,6 +1,7 @@
 # CHANGELOG
 
-vTBD - _TBD_
+v0.12.0 - _September 2, 2017_
+    * Added the support for web3@1.x.x provider (#142)
     * Added the optional `zeroExConfig`  parameter to the constructor of `ZeroEx` (#139)
     * Added the ability to specify `gasPrice` when instantiating `ZeroEx` (#139)
 
