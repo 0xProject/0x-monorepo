@@ -36,7 +36,7 @@
     "pretest:umd": "run-s clean build:umd:dev build:commonjs",
     "substitute_umd_bundle": "npm run remove_src_files_not_used_by_tests; shx mv _bundles/* lib/src",
     "remove_src_files_not_used_by_tests": "find ./lib/src \\( -path ./lib/src/utils -o -path ./lib/src/subproviders -o -path ./lib/src/schemas -o -path \"./lib/src/types.*\" \\) -prune -o -type f -print | xargs rm",
-    "run_mocha": "mocha lib/test/**/*_test.js --timeout 4000 --bail"
+    "run_mocha": "mocha lib/test/**/*_test.js --timeout 40000000 --bail"
   },
   "config": {
     "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
@@ -85,9 +85,9 @@
     "types-bn": "^0.0.1",
     "types-ethereumjs-util": "^0.0.5",
     "typescript": "^2.4.1",
-    "web3_beta": "ethereum/web3.js#1.0",
     "web3-provider-engine": "^13.0.1",
-    "web3-typescript-typings": "^0.3.2",
+    "web3-typescript-typings": "^0.3.4",
+    "web3_beta": "ethereum/web3.js#1.0",
     "webpack": "^3.1.0"
   },
   "dependencies": {
@@ -96,6 +96,7 @@
     "compare-versions": "^3.0.1",
     "es6-promisify": "^5.0.0",
     "ethereumjs-abi": "^0.6.4",
+    "ethereumjs-blockstream": "^2.0.4",
     "ethereumjs-util": "^5.1.1",
     "find-versions": "^2.0.0",
     "lodash": "^4.17.4",

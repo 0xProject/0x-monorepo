@@ -8,9 +8,9 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ZeroEx with beta web3', () => {
-    const web3_beta_provider = web3Factory.getProviderBeta();
-    const zeroEx = new ZeroEx(web3_beta_provider);
-    it('is able to make a call using a beta provider', async () => {
-        await zeroEx.tokenRegistry.getTokenAddressesAsync();
+    const provider = web3Factory.getRpcProvider();
+    const zeroEx = new ZeroEx(provider);
+    it.only('is able to make a call using a beta provider', (done: any) => {
+        zeroEx.txPool.watch();
     });
 });
