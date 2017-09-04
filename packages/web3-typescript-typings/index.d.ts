@@ -42,15 +42,28 @@ declare module 'web3' {
     namespace Web3 {
         type ContractAbi = AbiDefinition[];
 
-        type AbiDefinition = FunctionDescription|EventDescription;
+        type AbiDefinition = FunctionAbi|EventAbi;
 
-        interface FunctionDescription {
-            type: 'function'|'constructor'|'fallback';
-            name?: string;
+        type FunctionAbi = MethodAbi|ConstructorAbi|FallbackAbi;
+
+        interface MethodAbi {
+            type: 'function';
+            name: string;
             inputs: FunctionParameter[];
-            outputs?: FunctionParameter[];
-            constant?: boolean;
-            payable?: boolean;
+            outputs: FunctionParameter[];
+            constant: boolean;
+            payable: boolean;
+        }
+
+        interface ConstructorAbi {
+            type: 'constructor';
+            inputs: FunctionParameter[];
+            payable: boolean;
+        }
+
+        interface FallbackAbi {
+            type: 'fallback';
+            payable: boolean;
         }
 
         interface EventParameter {
@@ -59,7 +72,7 @@ declare module 'web3' {
             indexed: boolean;
         }
 
-        interface EventDescription {
+        interface EventAbi {
             type: 'event';
             name: string;
             inputs: EventParameter[];
