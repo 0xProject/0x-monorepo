@@ -84,7 +84,13 @@ declare module 'web3' {
             type: string;
         }
 
-        interface Contract<A> {
+        interface ContractInstance {
+            address: string;
+            abi: Web3.ContractAbi;
+            [name: string]: any;
+        }
+
+        interface Contract<A extends ContractInstance> {
             at(address: string): A;
         }
 
