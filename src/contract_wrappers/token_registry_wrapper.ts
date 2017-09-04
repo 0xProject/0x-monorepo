@@ -101,7 +101,9 @@ export class TokenRegistryWrapper extends ContractWrapper {
         if (!_.isUndefined(this._tokenRegistryContractIfExists)) {
             return this._tokenRegistryContractIfExists;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync((TokenRegistryArtifacts as any));
+        const contractInstance = await this._instantiateContractIfExistsAsync<TokenRegistryContract>(
+            TokenRegistryArtifacts as any as Artifact,
+        );
         this._tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
         return this._tokenRegistryContractIfExists;
     }

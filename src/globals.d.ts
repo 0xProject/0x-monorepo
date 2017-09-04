@@ -33,23 +33,11 @@ declare module '*.json' {
     /* tslint:enable */
 }
 
-// truffle-contract declarations
-declare interface ContractInstance {
-    address: string;
-}
-declare interface ContractFactory {
-    setProvider: (providerObj: any) => void;
-    deployed: () => ContractInstance;
-    // Both any's are Web3.CallData, but I was unable to import it in this file
-    defaults: (config: any) => any;
-    at: (address: string) => ContractInstance;
-}
 declare interface Artifact {
-    networks: {[networkId: number]: any};
-}
-declare function contract(artifacts: Artifact): ContractFactory;
-declare module 'truffle-contract' {
-    export = contract;
+    abi: any;
+    networks: {[networkId: number]: {
+        address: string;
+    }};
 }
 
 // find-version declarations

@@ -14,6 +14,7 @@ export enum ZeroExError {
     InsufficientWEthBalanceForWithdrawal = 'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL',
     InvalidJump = 'INVALID_JUMP',
     OutOfGas = 'OUT_OF_GAS',
+    NoNetworkId = 'NO_NETWORK_ID',
 }
 
 /**
@@ -60,7 +61,7 @@ export interface ExchangeContract extends ContractInstance {
     fillOrder: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
          shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number, r: string, s: string, txOpts?: TxOpts): Promise<ContractResponse>;
+         v: number, r: string, s: string, txOpts?: TxOpts): Promise<string>;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
                       fillTakerTokenAmount: BigNumber.BigNumber,
                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
@@ -69,7 +70,7 @@ export interface ExchangeContract extends ContractInstance {
     batchFillOrders: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
          shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number[], r: string[], s: string[], txOpts?: TxOpts): Promise<ContractResponse>;
+         v: number[], r: string[], s: string[], txOpts?: TxOpts): Promise<string>;
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
                       fillTakerTokenAmounts: BigNumber.BigNumber[],
                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
@@ -78,7 +79,7 @@ export interface ExchangeContract extends ContractInstance {
     fillOrdersUpTo: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmount: BigNumber.BigNumber,
          shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number[], r: string[], s: string[], txOpts?: TxOpts): Promise<ContractResponse>;
+         v: number[], r: string[], s: string[], txOpts?: TxOpts): Promise<string>;
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
                       fillTakerTokenAmount: BigNumber.BigNumber,
                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
@@ -86,28 +87,28 @@ export interface ExchangeContract extends ContractInstance {
     };
     cancelOrder: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelTakerTokenAmount: BigNumber.BigNumber,
-         txOpts?: TxOpts): Promise<ContractResponse>;
+         txOpts?: TxOpts): Promise<string>;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
                       cancelTakerTokenAmount: BigNumber.BigNumber,
                       txOpts?: TxOpts) => Promise<number>;
     };
     batchCancelOrders: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelTakerTokenAmounts: BigNumber.BigNumber[],
-         txOpts?: TxOpts): Promise<ContractResponse>;
+         txOpts?: TxOpts): Promise<string>;
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
                       cancelTakerTokenAmounts: BigNumber.BigNumber[],
                       txOpts?: TxOpts) => Promise<number>;
     };
     fillOrKillOrder: {
         (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
-         v: number, r: string, s: string, txOpts?: TxOpts): Promise<ContractResponse>;
+         v: number, r: string, s: string, txOpts?: TxOpts): Promise<string>;
         estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
                       fillTakerTokenAmount: BigNumber.BigNumber,
                       v: number, r: string, s: string, txOpts?: TxOpts) => Promise<number>;
     };
     batchFillOrKillOrders: {
         (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
-         v: number[], r: string[], s: string[], txOpts: TxOpts): Promise<ContractResponse>;
+         v: number[], r: string[], s: string[], txOpts: TxOpts): Promise<string>;
         estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
                       fillTakerTokenAmounts: BigNumber.BigNumber[],
                       v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
@@ -209,6 +210,7 @@ export enum ExchangeContractErrs {
     InsufficientRemainingFillAmount = 'INSUFFICIENT_REMAINING_FILL_AMOUNT',
     MultipleTakerTokensInFillUpToDisallowed = 'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED',
     BatchOrdersMustHaveSameExchangeAddress = 'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
+    BatchOrdersMustHaveAtLeastOneItem = 'BATCH_ORDERS_MUST_HAVE_AT_LEAST_ONE_ITEM',
 }
 
 export interface ContractResponse {
@@ -351,10 +353,7 @@ export type AsyncMethod = (...args: any[]) => Promise<any>;
 
 export interface ContractInstance {
     address: string;
-}
-
-export interface Artifact {
-    networks: {[networkId: number]: any};
+    abi: Web3.ContractAbi;
 }
 
 export interface ContractEventEmitter {
@@ -371,14 +370,6 @@ export type Web3Provider = Web3.Provider;
 
 export interface ExchangeContractByAddress {
     [address: string]: ExchangeContract;
-}
-
-export interface ContractArtifact {
-    networks: {
-        [networkId: number]: {
-            address: string;
-        };
-    };
 }
 
 export interface JSONRPCPayload {

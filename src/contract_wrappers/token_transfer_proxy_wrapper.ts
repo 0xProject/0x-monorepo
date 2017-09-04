@@ -44,7 +44,9 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         if (!_.isUndefined(this._tokenTransferProxyContractIfExists)) {
             return this._tokenTransferProxyContractIfExists;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync((TokenTransferProxyArtifacts as any));
+        const contractInstance = await this._instantiateContractIfExistsAsync<TokenTransferProxyContract>(
+            TokenTransferProxyArtifacts as any as Artifact,
+        );
         this._tokenTransferProxyContractIfExists = contractInstance as TokenTransferProxyContract;
         return this._tokenTransferProxyContractIfExists;
     }

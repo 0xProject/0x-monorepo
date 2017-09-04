@@ -71,7 +71,9 @@ export class EtherTokenWrapper extends ContractWrapper {
         if (!_.isUndefined(this._etherTokenContractIfExists)) {
             return this._etherTokenContractIfExists;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync((EtherTokenArtifacts as any));
+        const contractInstance = await this._instantiateContractIfExistsAsync<EtherTokenContract>(
+            EtherTokenArtifacts as any as Artifact,
+        );
         this._etherTokenContractIfExists = contractInstance as EtherTokenContract;
         return this._etherTokenContractIfExists;
     }

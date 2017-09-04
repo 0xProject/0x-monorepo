@@ -2,6 +2,8 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
+import {ZeroExError} from './types';
+import {Contract} from './contract';
 
 export class Web3Wrapper {
     private web3: Web3;
@@ -41,6 +43,27 @@ export class Web3Wrapper {
             return undefined;
         }
     }
+    public async getContractInstanceFromArtifactAsync<A extends Web3.ContractInstance>(artifact: Artifact,
+                                                                                       address?: string): Promise<A> {
+        if (_.isUndefined(address)) {
+            const networkIdIfExists = await this.getNetworkIdIfExistsAsync();
+            if (_.isUndefined(networkIdIfExists)) {
+                throw new Error(ZeroExError.NoNetworkId);
+            }
+            if (_.isUndefined(artifact.networks[networkIdIfExists])) {
+                throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
+            }
+            address = artifact.networks[networkIdIfExists].address.toLowerCase();
+        }
+        const doesContractExist = await this.doesContractExistAtAddressAsync(address);
+        if (!doesContractExist) {
+            throw new Error(ZeroExError.ContractDoesNotExist);
+        }
+        const contractInstance = this.getContractInstance<A>(
+            artifact.abi, address,
+        );
+        return contractInstance;
+    }
     public toWei(ethAmount: BigNumber.BigNumber): BigNumber.BigNumber {
         const balanceWei = this.web3.toWei(ethAmount, 'ether');
         return balanceWei;
@@ -67,6 +90,11 @@ export class Web3Wrapper {
     public async getAvailableAddressesAsync(): Promise<string[]> {
         const addresses: string[] = await promisify(this.web3.eth.getAccounts)();
         return addresses;
+    }
+    private getContractInstance<A extends Web3.ContractInstance>(abi: Web3.ContractAbi, address: string): A {
+        const web3ContractInstance = this.web3.eth.contract(abi).at(address);
+        const contractInstance = new Contract(web3ContractInstance) as any as A;
+        return contractInstance;
     }
     private async getNetworkAsync(): Promise<number> {
         const networkId = await promisify(this.web3.version.getNetwork)();

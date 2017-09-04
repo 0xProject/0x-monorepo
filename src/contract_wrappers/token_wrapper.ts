@@ -267,7 +267,9 @@ export class TokenWrapper extends ContractWrapper {
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync((TokenArtifacts as any), tokenAddress);
+        const contractInstance = await this._instantiateContractIfExistsAsync<TokenContract>(
+            TokenArtifacts as any as Artifact, tokenAddress,
+        );
         tokenContract = contractInstance as TokenContract;
         this._tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
