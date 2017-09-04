@@ -17,7 +17,4 @@ export class BlockchainLifecycle {
             throw new Error(`Snapshot with id #${this.snapshotId} failed to revert`);
         }
     }
-    public async waitUntilMinedAsync(txHash: string): Promise<void> {
-        return undefined;
-    }
 }
