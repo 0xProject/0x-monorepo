@@ -356,7 +356,7 @@ describe('TokenWrapper', () => {
         // we do need both. A hack is to make the top-level a sync fn w/ a done callback and then
         // wrap the rest of the test in an async block
         // Source: https://github.com/mochajs/mocha/issues/2407
-        it('Should receive the Transfer event when an order is filled', (done: DoneCallback) => {
+        it('Should receive the Transfer event when tokens are transfered', (done: DoneCallback) => {
             (async () => {
                 const zeroExEvent = await zeroEx.token.subscribeAsync(
                     tokenAddress, TokenEvents.Transfer, subscriptionOpts, indexFilterValues);
@@ -372,7 +372,7 @@ describe('TokenWrapper', () => {
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
             })().catch(done);
         });
-        it('Should receive the Approval event when an order is cancelled', (done: DoneCallback) => {
+        it('Should receive the Approval event when allowance is being set', (done: DoneCallback) => {
             (async () => {
                 const zeroExEvent = await zeroEx.token.subscribeAsync(
                     tokenAddress, TokenEvents.Approval, subscriptionOpts, indexFilterValues);
