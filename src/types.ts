@@ -390,3 +390,10 @@ export interface ZeroExConfig {
 }
 
 export type TransactionReceipt = Web3.TransactionReceipt;
+
+export enum AbiType {
+    Function = 'function',
+    Constructor = 'constructor',
+    Event = 'event',
+    Fallback = 'fallback',
+}

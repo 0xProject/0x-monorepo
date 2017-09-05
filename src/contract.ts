@@ -2,6 +2,7 @@ import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import promisify = require('es6-promisify');
 import {SchemaValidator, schemas} from '0x-json-schemas';
+import {AbiType} from './types';
 
 export class Contract implements Web3.ContractInstance {
     public address: string;
@@ -22,7 +23,7 @@ export class Contract implements Web3.ContractInstance {
         this.validator = new SchemaValidator();
     }
     private populateFunctions(): void {
-        const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === Web3.AbiType.Function);
+        const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Function);
         _.forEach(functionsAbi, (functionAbi: Web3.MethodAbi) => {
             if (functionAbi.constant) {
                 const cbStyleCallFunction = this.contract[functionAbi.name].call;
@@ -40,7 +41,7 @@ export class Contract implements Web3.ContractInstance {
         });
     }
     private populateEvents(): void {
-        const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === Web3.AbiType.Event);
+        const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Event);
         _.forEach(eventsAbi, (eventAbi: Web3.EventAbi) => {
             this[eventAbi.name] = this.contract[eventAbi.name];
         });
