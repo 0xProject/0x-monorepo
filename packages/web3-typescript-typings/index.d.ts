@@ -46,8 +46,15 @@ declare module 'web3' {
 
         type FunctionAbi = MethodAbi|ConstructorAbi|FallbackAbi;
 
+        enum AbiType {
+            Function = 'function',
+            Constructor = 'constructor',
+            Event = 'event',
+            Fallback = 'fallback',
+        }
+
         interface MethodAbi {
-            type: 'function';
+            type: AbiType.Function;
             name: string;
             inputs: FunctionParameter[];
             outputs: FunctionParameter[];
@@ -56,13 +63,13 @@ declare module 'web3' {
         }
 
         interface ConstructorAbi {
-            type: 'constructor';
+            type: AbiType.Constructor;
             inputs: FunctionParameter[];
             payable: boolean;
         }
 
         interface FallbackAbi {
-            type: 'fallback';
+            type: AbiType.Fallback;
             payable: boolean;
         }
 
@@ -73,7 +80,7 @@ declare module 'web3' {
         }
 
         interface EventAbi {
-            type: 'event';
+            type: AbiType.Event;
             name: string;
             inputs: EventParameter[];
             anonymous: boolean;
