@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"0x-json-schemas@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/0x-json-schemas/-/0x-json-schemas-0.5.0.tgz#36b1315480deb01dc0363ada949640e26f24a1d2"
+"0x-json-schemas@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/0x-json-schemas/-/0x-json-schemas-0.5.1.tgz#fce6c2962e44930884a838e01f5b605ddd217686"
   dependencies:
     jsonschema "^1.2.0"
 
