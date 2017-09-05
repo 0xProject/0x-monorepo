@@ -51,6 +51,7 @@ export class Web3Wrapper {
     }
     public async getContractInstanceFromArtifactAsync<A extends Web3.ContractInstance>(artifact: Artifact,
                                                                                        address?: string): Promise<A> {
+        let contractAddress: string;
         if (_.isUndefined(address)) {
             const networkIdIfExists = await this.getNetworkIdIfExistsAsync();
             if (_.isUndefined(networkIdIfExists)) {
@@ -59,14 +60,16 @@ export class Web3Wrapper {
             if (_.isUndefined(artifact.networks[networkIdIfExists])) {
                 throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
             }
-            address = artifact.networks[networkIdIfExists].address.toLowerCase();
+            contractAddress = artifact.networks[networkIdIfExists].address.toLowerCase();
+        } else {
+            contractAddress = address;
         }
-        const doesContractExist = await this.doesContractExistAtAddressAsync(address);
+        const doesContractExist = await this.doesContractExistAtAddressAsync(contractAddress);
         if (!doesContractExist) {
             throw new Error(ZeroExError.ContractDoesNotExist);
         }
         const contractInstance = this.getContractInstance<A>(
-            artifact.abi, address,
+            artifact.abi, contractAddress,
         );
         return contractInstance;
     }
