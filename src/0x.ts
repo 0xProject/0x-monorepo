@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
+import * as abiDecoder from 'abi-decoder';
 import {SchemaValidator, schemas} from '0x-json-schemas';
 import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
@@ -11,12 +12,24 @@ import {constants} from './utils/constants';
 import {utils} from './utils/utils';
 import {signatureUtils} from './utils/signature_utils';
 import {assert} from './utils/assert';
+import {artifacts} from './artifacts';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
-import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider, ZeroExConfig, TransactionReceipt} from './types';
+import {
+    ECSignature,
+    ZeroExError,
+    Order,
+    SignedOrder,
+    Web3Provider,
+    ZeroExConfig,
+    TransactionReceipt,
+    DecodedLogArgs,
+    TransactionReceiptWithDecodedLogs,
+    LogWithDecodedArgs,
+} from './types';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -170,6 +183,7 @@ export class ZeroEx {
             // We re-assign the send method so that Web3@1.0 providers work with 0x.js
             (provider as any).sendAsync = (provider as any).send;
         }
+        this._registerArtifactsWithinABIDecoder();
         const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
         const defaults = {
             gasPrice,
@@ -264,11 +278,34 @@ export class ZeroEx {
             const intervalId = setInterval(async () => {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
                 if (!_.isNull(transactionReceipt)) {
-                     clearInterval(intervalId);
-                     resolve(transactionReceipt);
+                    clearInterval(intervalId);
+                    const logsWithDecodedArgs = _.map(transactionReceipt.logs, (log: Web3.LogEntry) => {
+                        const decodedLog = abiDecoder.decodeLogs([log])[0];
+                        const decodedArgs = decodedLog.events;
+                        const args: DecodedLogArgs = {};
+                        _.forEach(decodedArgs, arg => {
+                            args[arg.name] = arg.value;
+                        });
+                        const logWithDecodedArgs: LogWithDecodedArgs = {
+                            ...log,
+                            args,
+                            event: decodedLog.name,
+                        };
+                        return logWithDecodedArgs;
+                    });
+                    const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
+                        ...transactionReceipt,
+                        logs: logsWithDecodedArgs,
+                    };
+                    resolve(transactionReceiptWithDecodedLogArgs);
                 }
             }, pollingIntervalMs);
         });
         return txReceiptPromise;
+    }
+    private _registerArtifactsWithinABIDecoder(): void {
+        for (const artifact of _.values(artifacts)) {
+            abiDecoder.addABI(artifact.abi);
+        }
     }
 }

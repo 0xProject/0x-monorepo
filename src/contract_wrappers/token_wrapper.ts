@@ -7,8 +7,7 @@ import {utils} from '../utils/utils';
 import {eventUtils} from '../utils/event_utils';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
-import * as TokenArtifacts from '../artifacts/Token.json';
-import * as TokenTransferProxyArtifacts from '../artifacts/TokenTransferProxy.json';
+import {artifacts} from '../artifacts';
 import {
     TokenContract,
     ZeroExError,
@@ -286,7 +285,7 @@ export class TokenWrapper extends ContractWrapper {
             return tokenContract;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenContract>(
-            TokenArtifacts as any as Artifact, tokenAddress,
+            artifacts.TokenArtifact, tokenAddress,
         );
         tokenContract = contractInstance as TokenContract;
         this._tokenContractsByAddress[tokenAddress] = tokenContract;
@@ -296,7 +295,7 @@ export class TokenWrapper extends ContractWrapper {
         const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         const proxyNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
                                        undefined :
-                                       (TokenTransferProxyArtifacts as any).networks[networkIdIfExists];
+                                       artifacts.TokenTransferProxyArtifact.networks[networkIdIfExists];
         if (_.isUndefined(proxyNetworkConfigsIfExists)) {
             throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
         }

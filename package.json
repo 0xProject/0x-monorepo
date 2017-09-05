@@ -91,6 +91,7 @@
   },
   "dependencies": {
     "0x-json-schemas": "^0.5.1",
+    "abi-decoder": "^1.0.8",
     "bignumber.js": "^4.0.2",
     "compare-versions": "^3.0.1",
     "es6-promisify": "^5.0.0",

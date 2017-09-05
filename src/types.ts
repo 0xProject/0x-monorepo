@@ -397,3 +397,16 @@ export enum AbiType {
     Event = 'event',
     Fallback = 'fallback',
 }
+
+export interface DecodedLogArgs {
+    [argName: string]: ContractEventArg;
+}
+
+export interface LogWithDecodedArgs extends Web3.LogEntry {
+    args: DecodedLogArgs;
+    event: string;
+}
+
+export interface TransactionReceiptWithDecodedLogs extends Web3.TransactionReceipt {
+    logs: LogWithDecodedArgs[];
+}

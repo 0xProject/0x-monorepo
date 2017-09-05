@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {ContractWrapper} from './contract_wrapper';
-import * as TokenTransferProxyArtifacts from '../artifacts/TokenTransferProxy.json';
+import {artifacts} from '../artifacts';
 import {TokenTransferProxyContract} from '../types';
 
 /**
@@ -45,7 +45,7 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
             return this._tokenTransferProxyContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenTransferProxyContract>(
-            TokenTransferProxyArtifacts as any as Artifact,
+            artifacts.TokenTransferProxyArtifact,
         );
         this._tokenTransferProxyContractIfExists = contractInstance as TokenTransferProxyContract;
         return this._tokenTransferProxyContractIfExists;

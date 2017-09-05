@@ -35,7 +35,7 @@ import {ContractWrapper} from './contract_wrapper';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
-import * as ExchangeArtifacts from '../artifacts/Exchange.json';
+import {artifacts} from '../artifacts';
 
 /**
  * This class includes all the functionality related to calling methods and subscribing to
@@ -706,7 +706,7 @@ export class ExchangeWrapper extends ContractWrapper {
             return this._exchangeContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<ExchangeContract>(
-            (ExchangeArtifacts as any as Artifact),
+            artifacts.ExchangeArtifact,
         );
         this._exchangeContractIfExists = contractInstance as ExchangeContract;
         return this._exchangeContractIfExists;

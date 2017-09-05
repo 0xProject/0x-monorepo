@@ -4,7 +4,7 @@ import {ContractWrapper} from './contract_wrapper';
 import {TokenWrapper} from './token_wrapper';
 import {EtherTokenContract, ZeroExError} from '../types';
 import {assert} from '../utils/assert';
-import * as EtherTokenArtifacts from '../artifacts/EtherToken.json';
+import {artifacts} from '../artifacts';
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
@@ -76,7 +76,7 @@ export class EtherTokenWrapper extends ContractWrapper {
             return this._etherTokenContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<EtherTokenContract>(
-            EtherTokenArtifacts as any as Artifact,
+            artifacts.EtherTokenArtifact,
         );
         this._etherTokenContractIfExists = contractInstance as EtherTokenContract;
         return this._etherTokenContractIfExists;

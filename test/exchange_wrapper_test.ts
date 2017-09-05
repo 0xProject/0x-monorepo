@@ -169,8 +169,9 @@ describe('ExchangeWrapper', () => {
                         .to.be.bignumber.equal(0);
                     expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                         .to.be.bignumber.equal(fillableAmount);
-                    await zeroEx.exchange.fillOrderAsync(
+                    const txHash = await zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress);
+                    await zeroEx.awaitTransactionMinedAsync(txHash);
                     expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
                         .to.be.bignumber.equal(fillableAmount.minus(fillTakerAmount));
                     expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))
@@ -185,8 +186,9 @@ describe('ExchangeWrapper', () => {
                         makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                     );
                     const partialFillAmount = new BigNumber(3);
-                    await zeroEx.exchange.fillOrderAsync(
+                    const txHash = await zeroEx.exchange.fillOrderAsync(
                         signedOrder, partialFillAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress);
+                    await zeroEx.awaitTransactionMinedAsync(txHash);
                     expect(await zeroEx.token.getBalanceAsync(makerTokenAddress, makerAddress))
                         .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
                     expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, makerAddress))

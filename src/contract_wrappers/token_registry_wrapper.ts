@@ -4,7 +4,7 @@ import {assert} from '../utils/assert';
 import {Token, TokenRegistryContract, TokenMetadata} from '../types';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
-import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
+import {artifacts} from '../artifacts';
 
 /**
  * This class includes all the functionality related to interacting with the 0x Token Registry smart contract.
@@ -102,7 +102,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
             return this._tokenRegistryContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenRegistryContract>(
-            TokenRegistryArtifacts as any as Artifact,
+            artifacts.TokenRegistryArtifact,
         );
         this._tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
         return this._tokenRegistryContractIfExists;
