@@ -8,7 +8,9 @@ import {ZeroEx, Order} from '../src';
 import {constants} from './utils/constants';
 import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 
+const blockchainLifecycle = new BlockchainLifecycle();
 chaiSetup.configure();
 const expect = chai.expect;
 
@@ -206,6 +208,12 @@ describe('ZeroEx library', () => {
         });
     });
     describe('#awaitTransactionMinedAsync', () => {
+        beforeEach(async () => {
+            await blockchainLifecycle.startAsync();
+        });
+        afterEach(async () => {
+            await blockchainLifecycle.revertAsync();
+        });
         it('return transaction receipt with decoded logs', async () => {
             const availableAddresses = await zeroEx.getAvailableAddressesAsync();
             const coinbase = availableAddresses[0];
