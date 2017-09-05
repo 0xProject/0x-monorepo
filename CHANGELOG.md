@@ -1,5 +1,8 @@
 # CHANGELOG
 
+v0.12.2 - _TBD_
+    * Added signature validation to validateFillOrderThrowIfInvalidAsync (#152)
+
 v0.12.1 - _September 2, 2017_
     * Added the support for web3@1.x.x provider (#142)
     * Added the optional `zeroExConfig`  parameter to the constructor of `ZeroEx` (#139)
