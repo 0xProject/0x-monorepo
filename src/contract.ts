@@ -7,6 +7,8 @@ export class Contract implements Web3.ContractInstance {
     public abi: Web3.ContractAbi;
     private contract: Web3.ContractInstance;
     private defaults: Partial<Web3.TxData>;
+    // This class instance is going to be populated with functions and events depending on the ABI
+    // and we don't know their types in advance
     [name: string]: any;
     constructor(web3ContractInstance: Web3.ContractInstance, defaults: Partial<Web3.TxData>) {
         this.contract = web3ContractInstance;
