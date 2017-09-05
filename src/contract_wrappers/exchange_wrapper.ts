@@ -72,8 +72,8 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, gasPrice?: BigNumber.BigNumber) {
-        super(web3Wrapper, gasPrice);
+    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
+        super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
         this._exchangeLogEventEmitters = [];

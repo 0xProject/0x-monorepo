@@ -11,8 +11,8 @@ import * as TokenRegistryArtifacts from '../artifacts/TokenRegistry.json';
  */
 export class TokenRegistryWrapper extends ContractWrapper {
     private _tokenRegistryContractIfExists?: TokenRegistryContract;
-    constructor(web3Wrapper: Web3Wrapper, gasPrice?: BigNumber.BigNumber) {
-        super(web3Wrapper, gasPrice);
+    constructor(web3Wrapper: Web3Wrapper) {
+        super(web3Wrapper);
     }
     /**
      * Retrieves all the tokens currently listed in the Token Registry smart contract

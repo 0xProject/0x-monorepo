@@ -7,10 +7,12 @@ import {Contract} from './contract';
 
 export class Web3Wrapper {
     private web3: Web3;
+    private defaults: Partial<Web3.TxData>;
     private networkIdIfExists?: number;
-    constructor(provider: Web3.Provider) {
+    constructor(provider: Web3.Provider, defaults: Partial<Web3.TxData>) {
         this.web3 = new Web3();
         this.web3.setProvider(provider);
+        this.defaults = defaults;
     }
     public setProvider(provider: Web3.Provider) {
         delete this.networkIdIfExists;
@@ -97,7 +99,7 @@ export class Web3Wrapper {
     }
     private getContractInstance<A extends Web3.ContractInstance>(abi: Web3.ContractAbi, address: string): A {
         const web3ContractInstance = this.web3.eth.contract(abi).at(address);
-        const contractInstance = new Contract(web3ContractInstance) as any as A;
+        const contractInstance = new Contract(web3ContractInstance, this.defaults) as any as A;
         return contractInstance;
     }
     private async getNetworkAsync(): Promise<number> {

@@ -170,13 +170,16 @@ export class ZeroEx {
             // We re-assign the send method so that Web3@1.0 providers work with 0x.js
             (provider as any).sendAsync = (provider as any).send;
         }
-        this._web3Wrapper = new Web3Wrapper(provider);
         const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
-        this.token = new TokenWrapper(this._web3Wrapper, gasPrice);
-        this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper, gasPrice);
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, gasPrice);
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, gasPrice);
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, gasPrice);
+        const defaults = {
+            gasPrice,
+        };
+        this._web3Wrapper = new Web3Wrapper(provider, defaults);
+        this.token = new TokenWrapper(this._web3Wrapper);
+        this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper);
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
