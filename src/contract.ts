@@ -1,12 +1,14 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import promisify = require('es6-promisify');
+import {SchemaValidator, schemas} from '0x-json-schemas';
 
 export class Contract implements Web3.ContractInstance {
     public address: string;
     public abi: Web3.ContractAbi;
     private contract: Web3.ContractInstance;
     private defaults: Partial<Web3.TxData>;
+    private validator: SchemaValidator;
     // This class instance is going to be populated with functions and events depending on the ABI
     // and we don't know their types in advance
     [name: string]: any;
@@ -17,6 +19,7 @@ export class Contract implements Web3.ContractInstance {
         this.defaults = defaults;
         this.populateEvents();
         this.populateFunctions();
+        this.validator = new SchemaValidator();
     }
     private populateFunctions(): void {
         const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === 'function');
@@ -47,7 +50,7 @@ export class Contract implements Web3.ContractInstance {
             const promise = new Promise((resolve, reject) => {
                 const lastArg = args[args.length - 1];
                 let txData: Partial<Web3.TxData> = {};
-                if (_.isObject(lastArg) && !_.isArray(lastArg) && !lastArg.isBigNumber) {
+                if (this.isTxData(lastArg)) {
                     txData = args.pop();
                 }
                 txData = {
@@ -68,5 +71,9 @@ export class Contract implements Web3.ContractInstance {
             return promise;
         };
         return promisifiedWithDefaultParams;
+    }
+    private isTxData(lastArg: any): boolean {
+        const isValid = this.validator.isValid(lastArg, schemas.txDataSchema);
+        return isValid;
     }
 }
