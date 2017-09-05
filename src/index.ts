@@ -30,4 +30,5 @@ export {
     ContractEventArgs,
     Web3Provider,
     ZeroExConfig,
+    TransactionReceipt,
 } from './types';

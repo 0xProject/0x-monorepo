@@ -16,7 +16,7 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
-import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider, ZeroExConfig} from './types';
+import {ECSignature, ZeroExError, Order, SignedOrder, Web3Provider, ZeroExConfig, TransactionReceipt} from './types';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -249,9 +249,15 @@ export class ZeroEx {
 
         throw new Error(ZeroExError.InvalidSignature);
     }
+    /**
+     * Waits for transaction to be mined and returns the transaction receipt
+     * @param   txHash            Transaction hash
+     * @param   pollingIntervalMs How often (in ms) should we check if the transaction is mined.
+     * @return  Web3.TransactionReceipt
+     */
     public async awaitTransactionMinedAsync(txHash: string,
-                                            pollingIntervalMs: number = 500): Promise<Web3.TransactionReceipt> {
-        const txReceiptPromise = new Promise((resolve: (receipt: Web3.TransactionReceipt) => void, reject) => {
+                                            pollingIntervalMs: number = 500): Promise<TransactionReceipt> {
+        const txReceiptPromise = new Promise((resolve: (receipt: TransactionReceipt) => void, reject) => {
             const intervalId = setInterval(async () => {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
                 if (!_.isNull(transactionReceipt)) {

@@ -371,3 +371,5 @@ export interface JSONRPCPayload {
 export interface ZeroExConfig {
     gasPrice?: BigNumber.BigNumber; // Gas price to use with every transaction
 }
+
+export type TransactionReceipt = Web3.TransactionReceipt;
