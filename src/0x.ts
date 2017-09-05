@@ -259,7 +259,7 @@ export class ZeroEx {
      * @return  TransactionReceipt
      */
     public async awaitTransactionMinedAsync(txHash: string,
-                                            pollingIntervalMs: number = 500): Promise<TransactionReceipt> {
+                                            pollingIntervalMs: number = 1000): Promise<TransactionReceipt> {
         const txReceiptPromise = new Promise((resolve: (receipt: TransactionReceipt) => void, reject) => {
             const intervalId = setInterval(async () => {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
