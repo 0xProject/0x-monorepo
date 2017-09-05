@@ -42,14 +42,6 @@ import * as ExchangeArtifacts from '../artifacts/Exchange.json';
  * events of the 0x Exchange smart contract.
  */
 export class ExchangeWrapper extends ContractWrapper {
-    private _exchangeContractErrCodesToMsg = {
-        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
-        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
-        [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: ExchangeContractErrs.OrderRemainingFillAmountZero,
-        [ExchangeContractErrCodes.ERROR_CANCEL_NO_VALUE]: ExchangeContractErrs.OrderRemainingFillAmountZero,
-        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.OrderFillRoundingError,
-        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FillBalanceAllowanceError,
-    };
     private _exchangeContractIfExists?: ExchangeContract;
     private _exchangeLogEventEmitters: ContractEventEmitter[];
     private _orderValidationUtils: OrderValidationUtils;
@@ -708,14 +700,6 @@ export class ExchangeWrapper extends ContractWrapper {
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
         const orderHashHex = await exchangeInstance.getOrderHash.callAsync(orderAddresses, orderValues);
         return orderHashHex;
-    }
-    private _throwErrorLogsAsErrors(logs: ContractEvent[]): void {
-        const errEvent = _.find(logs, {event: 'LogError'});
-        if (!_.isUndefined(errEvent)) {
-            const errCode = (errEvent.args as LogErrorContractEventArgs).errorId.toNumber();
-            const errMessage = this._exchangeContractErrCodesToMsg[errCode];
-            throw new Error(errMessage);
-        }
     }
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
