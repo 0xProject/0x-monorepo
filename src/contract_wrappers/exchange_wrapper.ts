@@ -706,7 +706,7 @@ export class ExchangeWrapper extends ContractWrapper {
             return this._exchangeContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<ExchangeContract>(
-            (ExchangeArtifacts as any),
+            (ExchangeArtifacts as any as Artifact),
         );
         this._exchangeContractIfExists = contractInstance as ExchangeContract;
         return this._exchangeContractIfExists;
