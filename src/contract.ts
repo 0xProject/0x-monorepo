@@ -51,8 +51,8 @@ export class Contract implements Web3.ContractInstance {
                     txData = args.pop();
                 }
                 txData = {
-                    ...txData,
                     ...this.defaults,
+                    ...txData,
                 };
                 const callback = (err: Error, data: any) => {
                     if (_.isNull(err)) {
