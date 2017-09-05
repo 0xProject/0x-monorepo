@@ -253,10 +253,10 @@ export class ZeroEx {
         throw new Error(ZeroExError.InvalidSignature);
     }
     /**
-     * Waits for transaction to be mined and returns the transaction receipt
+     * Waits for a transaction to be mined and returns the transaction receipt.
      * @param   txHash            Transaction hash
      * @param   pollingIntervalMs How often (in ms) should we check if the transaction is mined.
-     * @return  Web3.TransactionReceipt
+     * @return  TransactionReceipt
      */
     public async awaitTransactionMinedAsync(txHash: string,
                                             pollingIntervalMs: number = 500): Promise<TransactionReceipt> {
