@@ -21,7 +21,6 @@ import {
     IndexedFilterValues,
     CreateContractEvent,
     ContractEventObj,
-    ContractResponse,
     OrderCancellationRequest,
     OrderFillRequest,
     LogErrorContractEventArgs,

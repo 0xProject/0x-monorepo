@@ -249,8 +249,8 @@ export class ZeroEx {
 
         throw new Error(ZeroExError.InvalidSignature);
     }
-    public async awaitTransactionMined(txHash: string,
-                                       pollingIntervalMs: number = 500): Promise<Web3.TransactionReceipt> {
+    public async awaitTransactionMinedAsync(txHash: string,
+                                            pollingIntervalMs: number = 500): Promise<Web3.TransactionReceipt> {
         const txReceiptPromise = new Promise((resolve: (receipt: Web3.TransactionReceipt) => void, reject) => {
             const intervalId = setInterval(async () => {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);

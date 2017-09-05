@@ -205,7 +205,7 @@ describe('ExchangeWrapper', () => {
                     );
                     const txHash = await zeroEx.exchange.fillOrderAsync(
                         signedOrder, fillTakerAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress);
-                    await zeroEx.awaitTransactionMined(txHash);
+                    await zeroEx.awaitTransactionMinedAsync(txHash);
                     expect(await zeroEx.token.getBalanceAsync(zrxTokenAddress, feeRecipient))
                         .to.be.bignumber.equal(makerFee.plus(takerFee));
                 });
@@ -246,7 +246,7 @@ describe('ExchangeWrapper', () => {
                 it('should successfully fill multiple orders', async () => {
                     const txHash = await zeroEx.exchange.batchFillOrdersAsync(
                         orderFillBatch, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress);
-                    await zeroEx.awaitTransactionMined(txHash);
+                    await zeroEx.awaitTransactionMinedAsync(txHash);
                     const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
                     const anotherFilledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(anotherOrderHashHex);
                     expect(filledAmount).to.be.bignumber.equal(fillTakerAmount);
@@ -282,7 +282,7 @@ describe('ExchangeWrapper', () => {
                     const txHash = await zeroEx.exchange.fillOrdersUpToAsync(
                         signedOrders, fillUpToAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
                     );
-                    await zeroEx.awaitTransactionMined(txHash);
+                    await zeroEx.awaitTransactionMinedAsync(txHash);
                     const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
                     const anotherFilledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(anotherOrderHashHex);
                     expect(filledAmount).to.be.bignumber.equal(fillableAmount);
@@ -316,7 +316,7 @@ describe('ExchangeWrapper', () => {
             describe('successful cancels', () => {
                 it('should cancel an order', async () => {
                     const txHash = await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmount);
-                    await zeroEx.awaitTransactionMined(txHash);
+                    await zeroEx.awaitTransactionMinedAsync(txHash);
                     const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
                     expect(cancelledAmount).to.be.bignumber.equal(cancelAmount);
                 });

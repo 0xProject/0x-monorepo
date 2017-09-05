@@ -133,10 +133,10 @@ export interface TokenContract extends Web3.ContractInstance {
     allowance: {
         call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
     };
-    transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
+    transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<string>;
     transferFrom: (fromAddress: string, toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
-                   txOpts?: TxOpts) => Promise<boolean>;
-    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<void>;
+                   txOpts?: TxOpts) => Promise<string>;
+    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<string>;
 }
 
 export interface TokenRegistryContract extends Web3.ContractInstance {
@@ -161,8 +161,8 @@ export interface TokenRegistryContract extends Web3.ContractInstance {
 }
 
 export interface EtherTokenContract extends Web3.ContractInstance {
-    deposit: (txOpts: TxOpts) => Promise<void>;
-    withdraw: (amount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<void>;
+    deposit: (txOpts: TxOpts) => Promise<string>;
+    withdraw: (amount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<string>;
 }
 
 export interface TokenTransferProxyContract extends Web3.ContractInstance {

@@ -23,8 +23,9 @@ export class EtherTokenWrapper extends ContractWrapper {
      * for ETH.
      * @param   amountInWei      Amount of ETH in Wei the caller wishes to deposit.
      * @param   depositor   The hex encoded user Ethereum address that would like to make the deposit.
+     * @return Transaction hash.
      */
-    public async depositAsync(amountInWei: BigNumber.BigNumber, depositor: string): Promise<void> {
+    public async depositAsync(amountInWei: BigNumber.BigNumber, depositor: string): Promise<string> {
         assert.isBigNumber('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
 
@@ -32,18 +33,20 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.assert(ethBalanceInWei.gte(amountInWei), ZeroExError.InsufficientEthBalanceForDeposit);
 
         const wethContract = await this._getEtherTokenContractAsync();
-        await wethContract.deposit({
+        const txHash = await wethContract.deposit({
             from: depositor,
             value: amountInWei,
         });
+        return txHash;
     }
     /**
      * Withdraw ETH to the withdrawer's address from the wrapped ETH smart contract in exchange for the
      * equivalent number of wrapped ETH tokens.
      * @param   amountInWei  Amount of ETH in Wei the caller wishes to withdraw.
      * @param   withdrawer   The hex encoded user Ethereum address that would like to make the withdrawl.
+     * @return Transaction hash.
      */
-    public async withdrawAsync(amountInWei: BigNumber.BigNumber, withdrawer: string): Promise<void> {
+    public async withdrawAsync(amountInWei: BigNumber.BigNumber, withdrawer: string): Promise<string> {
         assert.isBigNumber('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
 
@@ -52,9 +55,10 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.InsufficientWEthBalanceForWithdrawal);
 
         const wethContract = await this._getEtherTokenContractAsync();
-        await wethContract.withdraw(amountInWei, {
+        const txHash = await wethContract.withdraw(amountInWei, {
             from: withdrawer,
         });
+        return txHash;
     }
     /**
      * Retrieves the Wrapped Ether token contract address

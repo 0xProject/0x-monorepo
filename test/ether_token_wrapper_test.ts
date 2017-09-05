@@ -52,7 +52,8 @@ describe('EtherTokenWrapper', () => {
             expect(preETHBalance).to.be.bignumber.gt(0);
             expect(preWETHBalance).to.be.bignumber.equal(0);
 
-            await zeroEx.etherToken.depositAsync(depositWeiAmount, addressWithETH);
+            const txHash = await zeroEx.etherToken.depositAsync(depositWeiAmount, addressWithETH);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const postETHBalanceInWei = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
             const postWETHBalanceInBaseUnits = await zeroEx.token.getBalanceAsync(wethContractAddress, addressWithETH);
@@ -86,7 +87,8 @@ describe('EtherTokenWrapper', () => {
             expect(gasCost).to.be.bignumber.lte(MAX_REASONABLE_GAS_COST_IN_WEI);
             expect(preWETHBalance).to.be.bignumber.equal(depositWeiAmount);
 
-            await zeroEx.etherToken.withdrawAsync(depositWeiAmount, addressWithETH);
+            const txHash = await zeroEx.etherToken.withdrawAsync(depositWeiAmount, addressWithETH);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const postETHBalance = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
             const postWETHBalanceInBaseUnits = await zeroEx.token.getBalanceAsync(wethContractAddress, addressWithETH);
