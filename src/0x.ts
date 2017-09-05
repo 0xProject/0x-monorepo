@@ -270,11 +270,12 @@ export class ZeroEx {
      * Waits for a transaction to be mined and returns the transaction receipt.
      * @param   txHash            Transaction hash
      * @param   pollingIntervalMs How often (in ms) should we check if the transaction is mined.
-     * @return  TransactionReceipt
+     * @return  Transaction receipt with decoded log args.
      */
-    public async awaitTransactionMinedAsync(txHash: string,
-                                            pollingIntervalMs: number = 1000): Promise<TransactionReceipt> {
-        const txReceiptPromise = new Promise((resolve: (receipt: TransactionReceipt) => void, reject) => {
+    public async awaitTransactionMinedAsync(
+        txHash: string, pollingIntervalMs: number = 1000): Promise<TransactionReceiptWithDecodedLogs> {
+        const txReceiptPromise = new Promise(
+            (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
             const intervalId = setInterval(async () => {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
                 if (!_.isNull(transactionReceipt)) {
