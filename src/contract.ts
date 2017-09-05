@@ -22,7 +22,7 @@ export class Contract implements Web3.ContractInstance {
         this.validator = new SchemaValidator();
     }
     private populateFunctions(): void {
-        const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === 'function');
+        const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === Web3.AbiType.Function);
         _.forEach(functionsAbi, (functionAbi: Web3.MethodAbi) => {
             if (functionAbi.constant) {
                 const cbStyleCallFunction = this.contract[functionAbi.name].call;
@@ -40,7 +40,7 @@ export class Contract implements Web3.ContractInstance {
         });
     }
     private populateEvents(): void {
-        const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === 'event');
+        const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === Web3.AbiType.Event);
         _.forEach(eventsAbi, (eventAbi: Web3.EventAbi) => {
             this[eventAbi.name] = this.contract[eventAbi.name];
         });
