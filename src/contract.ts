@@ -21,16 +21,18 @@ export class Contract implements Web3.ContractInstance {
     private populateFunctions(): void {
         const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === 'function');
         _.forEach(functionsAbi, (functionAbi: Web3.MethodAbi) => {
-            const cbStyleFunction = this.contract[functionAbi.name];
             if (functionAbi.constant) {
-                this[functionAbi.name] = promisify(cbStyleFunction, this.contract);
                 const cbStyleCallFunction = this.contract[functionAbi.name].call;
-                this[functionAbi.name].call = promisify(cbStyleCallFunction, this.contract);
+                this[functionAbi.name] = {
+                    callAsync: promisify(cbStyleCallFunction, this.contract),
+                };
             } else {
-                this[functionAbi.name] = this.promisifyWithDefaultParams(cbStyleFunction);
+                const cbStyleFunction = this.contract[functionAbi.name];
                 const cbStyleEstimateGasFunction = this.contract[functionAbi.name].estimateGas;
-                this[functionAbi.name].estimateGas =
-                    promisify(cbStyleEstimateGasFunction, this.contract);
+                this[functionAbi.name] = {
+                    estimateGasAsync: promisify(cbStyleEstimateGasFunction, this.contract),
+                    sendTransactionAsync: this.promisifyWithDefaultParams(cbStyleFunction),
+                };
             }
         });
     }

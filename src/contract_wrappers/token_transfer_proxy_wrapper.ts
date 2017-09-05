@@ -15,7 +15,7 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      */
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         const tokenTransferProxyContractInstance = await this._getTokenTransferProxyContractAsync();
-        const isAuthorized = await tokenTransferProxyContractInstance.authorized.call(exchangeContractAddress);
+        const isAuthorized = await tokenTransferProxyContractInstance.authorized.callAsync(exchangeContractAddress);
         return isAuthorized;
     }
     /**
@@ -24,7 +24,7 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      */
     public async getAuthorizedAddressesAsync(): Promise<string[]> {
         const tokenTransferProxyContractInstance = await this._getTokenTransferProxyContractAsync();
-        const authorizedAddresses = await tokenTransferProxyContractInstance.getAuthorizedAddresses.call();
+        const authorizedAddresses = await tokenTransferProxyContractInstance.getAuthorizedAddresses.callAsync();
         return authorizedAddresses;
     }
     /**

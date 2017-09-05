@@ -35,7 +35,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
      */
     public async getTokenAddressesAsync(): Promise<string[]> {
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-        const addresses = await tokenRegistryContract.getTokenAddresses.call();
+        const addresses = await tokenRegistryContract.getTokenAddresses.callAsync();
         return addresses;
     }
     /**
@@ -46,14 +46,14 @@ export class TokenRegistryWrapper extends ContractWrapper {
         assert.isETHAddressHex('address', address);
 
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-        const metadata = await tokenRegistryContract.getTokenMetaData.call(address);
+        const metadata = await tokenRegistryContract.getTokenMetaData.callAsync(address);
         const token = this._createTokenFromMetadata(metadata);
         return token;
     }
     public async getTokenAddressBySymbolIfExistsAsync(symbol: string): Promise<string|undefined> {
         assert.isString('symbol', symbol);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-        const addressIfExists = await tokenRegistryContract.getTokenAddressBySymbol.call(symbol);
+        const addressIfExists = await tokenRegistryContract.getTokenAddressBySymbol.callAsync(symbol);
         if (addressIfExists === constants.NULL_ADDRESS) {
             return undefined;
         }
@@ -62,7 +62,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
     public async getTokenAddressByNameIfExistsAsync(name: string): Promise<string|undefined> {
         assert.isString('name', name);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-        const addressIfExists = await tokenRegistryContract.getTokenAddressByName.call(name);
+        const addressIfExists = await tokenRegistryContract.getTokenAddressByName.callAsync(name);
         if (addressIfExists === constants.NULL_ADDRESS) {
             return undefined;
         }
@@ -71,14 +71,14 @@ export class TokenRegistryWrapper extends ContractWrapper {
     public async getTokenBySymbolIfExistsAsync(symbol: string): Promise<Token|undefined> {
         assert.isString('symbol', symbol);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-        const metadata = await tokenRegistryContract.getTokenBySymbol.call(symbol);
+        const metadata = await tokenRegistryContract.getTokenBySymbol.callAsync(symbol);
         const token = this._createTokenFromMetadata(metadata);
         return token;
     }
     public async getTokenByNameIfExistsAsync(name: string): Promise<Token|undefined> {
         assert.isString('name', name);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-        const metadata = await tokenRegistryContract.getTokenByName.call(name);
+        const metadata = await tokenRegistryContract.getTokenByName.callAsync(name);
         const token = this._createTokenFromMetadata(metadata);
         return token;
     }

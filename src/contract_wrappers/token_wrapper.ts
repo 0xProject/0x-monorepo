@@ -47,7 +47,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        let balance = await tokenContract.balanceOf.call(ownerAddress);
+        let balance = await tokenContract.balanceOf.callAsync(ownerAddress);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         balance = new BigNumber(balance);
         return balance;
@@ -75,7 +75,7 @@ export class TokenWrapper extends ContractWrapper {
         // TODO: Debug issue in testrpc and submit a PR, then remove this hack
         const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         const gas = networkIdIfExists === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
-        const txHash = await tokenContract.approve(spenderAddress, amountInBaseUnits, {
+        const txHash = await tokenContract.approve.sendTransactionAsync(spenderAddress, amountInBaseUnits, {
             from: ownerAddress,
             gas,
         });
@@ -112,7 +112,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, spenderAddress);
+        let allowanceInBaseUnits = await tokenContract.allowance.callAsync(ownerAddress, spenderAddress);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
         return allowanceInBaseUnits;
@@ -187,7 +187,7 @@ export class TokenWrapper extends ContractWrapper {
             throw new Error(ZeroExError.InsufficientBalanceForTransfer);
         }
 
-        const txHash = await tokenContract.transfer(toAddress, amountInBaseUnits, {
+        const txHash = await tokenContract.transfer.sendTransactionAsync(toAddress, amountInBaseUnits, {
             from: fromAddress,
         });
         return txHash;
@@ -226,9 +226,12 @@ export class TokenWrapper extends ContractWrapper {
             throw new Error(ZeroExError.InsufficientBalanceForTransfer);
         }
 
-        const txHash = await tokenContract.transferFrom(fromAddress, toAddress, amountInBaseUnits, {
-            from: senderAddress,
-        });
+        const txHash = await tokenContract.transferFrom.sendTransactionAsync(
+            fromAddress, toAddress, amountInBaseUnits,
+            {
+                from: senderAddress,
+            },
+        );
         return txHash;
     }
     /**
