@@ -2,6 +2,7 @@
 
 v0.13.1 - _September 6, 2017_
 ------------------------
+    * Added `zeroEx.exchange.throwLogErrorsAsErrors` method to public interface (#157)
     * Fixed an issue with overlapping async intervals in `zeroEx.awaitTransactionMinedAsync` (#157)
     * Fixed an issue with log decoder returning `BigNumber`s as `strings` (#157)
 
