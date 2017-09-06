@@ -1,5 +1,10 @@
 # CHANGELOG
 
+v0.13.1 - _September 6, 2017_
+------------------------
+    * Fixed an issue with overlapping async intervals in `zeroEx.awaitTransactionMinedAsync` (#157)
+    * Fixed an issue with log decoder returning `BigNumber`s as `strings` (#157)
+
 v0.13.0 - _September 6, 2017_
 ------------------------
     * Made all the functions submitting transactions to the network to immediately return transaction hash (#151)
