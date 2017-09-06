@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.13.0 - _TBD, 2017_
+v0.13.0 - _September 6, 2017_
 ------------------------
     * Made all the functions submitting transactions to the network to immediately return transaction hash (#151)
     * Added `zeroEx.awaitTransactionMinedAsync` (#151)
