@@ -4,7 +4,7 @@ export class IntervalUtils {
     private mutex: {[intervalId: number]: boolean} = {};
     public setAsyncExcludingInterval(fn: () => Promise<void>, intervalMs: number) {
         const intervalId = setInterval(async () => {
-            if (_.isUndefined(this.mutex[intervalId])) {
+            if (!_.isUndefined(this.mutex[intervalId])) {
                 return;
             } else {
                 this.mutex[intervalId] = true;
