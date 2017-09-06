@@ -214,7 +214,7 @@ describe('ZeroEx library', () => {
         afterEach(async () => {
             await blockchainLifecycle.revertAsync();
         });
-        it('return transaction receipt with decoded logs', async () => {
+        it('returns transaction receipt with decoded logs', async () => {
             const availableAddresses = await zeroEx.getAvailableAddressesAsync();
             const coinbase = availableAddresses[0];
             const tokens = await zeroEx.tokenRegistry.getTokensAsync();
