@@ -61,6 +61,6 @@ export class AbiDecoder {
         }
 
         formatted = _.padStart(formatted, 40, '0');
-        return '0x' + formatted;
+        return `0x${formatted}`;
     }
 }
