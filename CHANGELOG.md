@@ -1,7 +1,10 @@
 # CHANGELOG
 
-v0.12.2 - _TBD_
-    * Added signature validation to validateFillOrderThrowIfInvalidAsync (#152)
+v0.13.0 - _TBD, 2017_
+    * Made all the functions submitting transactions to the network to immediately return transaction hash (#151)
+    * Added `zeroEx.awaitTransactionMinedAsync` (#151)
+    * Added `TransactionReceiptWithDecodedLogs`, `LogWithDecodedArgs`, `DecodedLogArgs` to public types (#151)
+    * Added signature validation to `validateFillOrderThrowIfInvalidAsync` (#152)
 
 v0.12.1 - _September 2, 2017_
     * Added the support for web3@1.x.x provider (#142)

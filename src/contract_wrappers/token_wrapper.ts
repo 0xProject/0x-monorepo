@@ -7,8 +7,7 @@ import {utils} from '../utils/utils';
 import {eventUtils} from '../utils/event_utils';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
-import * as TokenArtifacts from '../artifacts/Token.json';
-import * as TokenTransferProxyArtifacts from '../artifacts/TokenTransferProxy.json';
+import {artifacts} from '../artifacts';
 import {
     TokenContract,
     ZeroExError,
@@ -31,8 +30,8 @@ export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenLogEventEmitters: ContractEventEmitter[];
-    constructor(web3Wrapper: Web3Wrapper, gasPrice?: BigNumber.BigNumber) {
-        super(web3Wrapper, gasPrice);
+    constructor(web3Wrapper: Web3Wrapper) {
+        super(web3Wrapper);
         this._tokenContractsByAddress = {};
         this._tokenLogEventEmitters = [];
     }
@@ -47,7 +46,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        let balance = await tokenContract.balanceOf.call(ownerAddress);
+        let balance = await tokenContract.balanceOf.callAsync(ownerAddress);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         balance = new BigNumber(balance);
         return balance;
@@ -60,9 +59,10 @@ export class TokenWrapper extends ContractWrapper {
      *                              for spenderAddress.
      * @param   spenderAddress      The hex encoded user Ethereum address who will be able to spend the set allowance.
      * @param   amountInBaseUnits   The allowance amount you would like to set.
+     * @return Transaction hash.
      */
     public async setAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string,
-                                   amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
+                                   amountInBaseUnits: BigNumber.BigNumber): Promise<string> {
         await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
@@ -74,10 +74,11 @@ export class TokenWrapper extends ContractWrapper {
         // TODO: Debug issue in testrpc and submit a PR, then remove this hack
         const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         const gas = networkIdIfExists === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
-        await tokenContract.approve(spenderAddress, amountInBaseUnits, {
+        const txHash = await tokenContract.approve.sendTransactionAsync(spenderAddress, amountInBaseUnits, {
             from: ownerAddress,
             gas,
         });
+        return txHash;
     }
     /**
      * Sets the spender's allowance to an unlimited number of baseUnits on behalf of the owner address.
@@ -88,12 +89,14 @@ export class TokenWrapper extends ContractWrapper {
      * @param   ownerAddress        The hex encoded user Ethereum address who would like to set an allowance
      *                              for spenderAddress.
      * @param   spenderAddress      The hex encoded user Ethereum address who will be able to spend the set allowance.
+     * @return Transaction hash.
      */
     public async setUnlimitedAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                            spenderAddress: string): Promise<void> {
-        await this.setAllowanceAsync(
+                                            spenderAddress: string): Promise<string> {
+        const txHash = await this.setAllowanceAsync(
             tokenAddress, ownerAddress, spenderAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
         );
+        return txHash;
     }
     /**
      * Retrieves the owners allowance in baseUnits set to the spender's address.
@@ -102,12 +105,13 @@ export class TokenWrapper extends ContractWrapper {
      *                          you would like to retrieve.
      * @param   spenderAddress  The hex encoded user Ethereum address who can spend the allowance you are fetching.
      */
-    public async getAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string) {
+    public async getAllowanceAsync(tokenAddress: string, ownerAddress: string,
+                                   spenderAddress: string): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        let allowanceInBaseUnits = await tokenContract.allowance.call(ownerAddress, spenderAddress);
+        let allowanceInBaseUnits = await tokenContract.allowance.callAsync(ownerAddress, spenderAddress);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
         return allowanceInBaseUnits;
@@ -117,7 +121,7 @@ export class TokenWrapper extends ContractWrapper {
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress    The hex encoded user Ethereum address whose proxy contract allowance we are retrieving.
      */
-    public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string) {
+    public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
@@ -132,15 +136,17 @@ export class TokenWrapper extends ContractWrapper {
      * @param   ownerAddress        The hex encoded user Ethereum address who is setting an allowance
      *                              for the Proxy contract.
      * @param   amountInBaseUnits   The allowance amount specified in baseUnits.
+     * @return Transaction hash.
      */
     public async setProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                        amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
+                                        amountInBaseUnits: BigNumber.BigNumber): Promise<string> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
         const proxyAddress = await this._getProxyAddressAsync();
-        await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
+        const txHash = await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
+        return txHash;
     }
     /**
      * Sets the 0x proxy contract's allowance to a unlimited number of a tokens' baseUnits on behalf
@@ -150,9 +156,13 @@ export class TokenWrapper extends ContractWrapper {
      * @param   tokenAddress        The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress        The hex encoded user Ethereum address who is setting an allowance
      *                              for the Proxy contract.
+     * @return Transaction hash.
      */
-    public async setUnlimitedProxyAllowanceAsync(tokenAddress: string, ownerAddress: string): Promise<void> {
-        await this.setProxyAllowanceAsync(tokenAddress, ownerAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+    public async setUnlimitedProxyAllowanceAsync(tokenAddress: string, ownerAddress: string): Promise<string> {
+        const txHash = await this.setProxyAllowanceAsync(
+            tokenAddress, ownerAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+        );
+        return txHash;
     }
     /**
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
@@ -160,9 +170,10 @@ export class TokenWrapper extends ContractWrapper {
      * @param   fromAddress         The hex encoded user Ethereum address that will send the funds.
      * @param   toAddress           The hex encoded user Ethereum address that will receive the funds.
      * @param   amountInBaseUnits   The amount (specified in baseUnits) of the token to transfer.
+     * @return Transaction hash.
      */
     public async transferAsync(tokenAddress: string, fromAddress: string, toAddress: string,
-                               amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
+                               amountInBaseUnits: BigNumber.BigNumber): Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
         assert.isETHAddressHex('toAddress', toAddress);
@@ -175,9 +186,10 @@ export class TokenWrapper extends ContractWrapper {
             throw new Error(ZeroExError.InsufficientBalanceForTransfer);
         }
 
-        await tokenContract.transfer(toAddress, amountInBaseUnits, {
+        const txHash = await tokenContract.transfer.sendTransactionAsync(toAddress, amountInBaseUnits, {
             from: fromAddress,
         });
+        return txHash;
     }
     /**
      * Transfers `amountInBaseUnits` ERC20 tokens from `fromAddress` to `toAddress`.
@@ -190,10 +202,11 @@ export class TokenWrapper extends ContractWrapper {
      *                              `fromAddress` must have set an allowance to the `senderAddress`
      *                              before this call.
      * @param   amountInBaseUnits   The amount (specified in baseUnits) of the token to transfer.
+     * @return Transaction hash.
      */
     public async transferFromAsync(tokenAddress: string, fromAddress: string, toAddress: string,
                                    senderAddress: string, amountInBaseUnits: BigNumber.BigNumber):
-                                   Promise<void> {
+                                   Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('fromAddress', fromAddress);
         assert.isETHAddressHex('toAddress', toAddress);
@@ -212,9 +225,13 @@ export class TokenWrapper extends ContractWrapper {
             throw new Error(ZeroExError.InsufficientBalanceForTransfer);
         }
 
-        await tokenContract.transferFrom(fromAddress, toAddress, amountInBaseUnits, {
-            from: senderAddress,
-        });
+        const txHash = await tokenContract.transferFrom.sendTransactionAsync(
+            fromAddress, toAddress, amountInBaseUnits,
+            {
+                from: senderAddress,
+            },
+        );
+        return txHash;
     }
     /**
      * Subscribe to an event type emitted by the Token contract.
@@ -267,7 +284,9 @@ export class TokenWrapper extends ContractWrapper {
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync((TokenArtifacts as any), tokenAddress);
+        const contractInstance = await this._instantiateContractIfExistsAsync<TokenContract>(
+            artifacts.TokenArtifact, tokenAddress,
+        );
         tokenContract = contractInstance as TokenContract;
         this._tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
@@ -276,7 +295,7 @@ export class TokenWrapper extends ContractWrapper {
         const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
         const proxyNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
                                        undefined :
-                                       (TokenTransferProxyArtifacts as any).networks[networkIdIfExists];
+                                       artifacts.TokenTransferProxyArtifact.networks[networkIdIfExists];
         if (_.isUndefined(proxyNetworkConfigsIfExists)) {
             throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
         }

@@ -30,4 +30,7 @@ export {
     ContractEventArgs,
     Web3Provider,
     ZeroExConfig,
+    TransactionReceiptWithDecodedLogs,
+    LogWithDecodedArgs,
+    DecodedLogArgs,
 } from './types';

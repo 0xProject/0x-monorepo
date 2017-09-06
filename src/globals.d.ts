@@ -33,23 +33,11 @@ declare module '*.json' {
     /* tslint:enable */
 }
 
-// truffle-contract declarations
-declare interface ContractInstance {
-    address: string;
-}
-declare interface ContractFactory {
-    setProvider: (providerObj: any) => void;
-    deployed: () => ContractInstance;
-    // Both any's are Web3.CallData, but I was unable to import it in this file
-    defaults: (config: any) => any;
-    at: (address: string) => ContractInstance;
-}
 declare interface Artifact {
-    networks: {[networkId: number]: any};
-}
-declare function contract(artifacts: Artifact): ContractFactory;
-declare module 'truffle-contract' {
-    export = contract;
+    abi: any;
+    networks: {[networkId: number]: {
+        address: string;
+    }};
 }
 
 // find-version declarations
@@ -80,4 +68,19 @@ declare class HDWalletProvider {
 }
 declare module 'truffle-hdwallet-provider' {
     export = HDWalletProvider;
+}
+
+// abi-decoder declarations
+interface DecodedLogArg {
+    name: string;
+    value: string|BigNumber.BigNumber;
+}
+interface DecodedLog {
+    name: string;
+    events: DecodedLogArg[];
+}
+declare module 'abi-decoder' {
+    import * as Web3 from 'web3';
+    const addABI: (abi: Web3.AbiDefinition) => void;
+    const decodeLogs: (logs: Web3.LogEntry[]) => DecodedLog[];
 }
