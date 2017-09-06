@@ -5,13 +5,13 @@ import * as SolidityCoder from 'web3/lib/solidity/coder';
 
 export class AbiDecoder {
     private savedABIs: Web3.AbiDefinition[] = [];
-    private methodIDs: {[signatureHash: string]: Web3.EventAbi} = {};
+    private methodIds: {[signatureHash: string]: Web3.EventAbi} = {};
     constructor(abiArrays: Web3.AbiDefinition[][]) {
         _.map(abiArrays, this.addABI.bind(this));
     }
     public decodeLog(logItem: Web3.LogEntry): DecodedArgs|undefined {
-        const methodID = logItem.topics[0];
-        const event = this.methodIDs[methodID];
+        const methodId = logItem.topics[0];
+        const event = this.methodIds[methodId];
         if (!_.isUndefined(event)) {
             const logData = logItem.data;
             const decodedParams: DecodedLogArgs = {};
@@ -49,7 +49,7 @@ export class AbiDecoder {
             if (abi.type === AbiType.Event) {
                 const signature = `${abi.name}(${_.map(abi.inputs, input => input.type).join(',')})`;
                 const signatureHash = new Web3().sha3(signature);
-                this.methodIDs[signatureHash] = abi;
+                this.methodIds[signatureHash] = abi;
             }
         });
         this.savedABIs = this.savedABIs.concat(abiArray);
