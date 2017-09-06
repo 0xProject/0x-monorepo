@@ -1,4 +1,5 @@
-import {ExchangeContractErrs, SignedOrder, Order} from '../types';
+import {ExchangeContractErrs, SignedOrder, Order, ZeroExError} from '../types';
+import {ZeroEx} from '../0x.js';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {utils} from '../utils/utils';
@@ -19,6 +20,9 @@ export class OrderValidationUtils {
             throw new Error(ExchangeContractErrs.OrderFillAmountZero);
         }
         const orderHash = utils.getOrderHashHex(signedOrder);
+        if (!ZeroEx.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker)) {
+            throw new Error(ZeroExError.InvalidSignature);
+        }
         const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
         if (signedOrder.makerTokenAmount.eq(unavailableTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);

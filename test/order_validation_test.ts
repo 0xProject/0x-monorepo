@@ -4,7 +4,7 @@ import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
-import {ZeroEx, SignedOrder, Token, ExchangeContractErrs} from '../src';
+import {ZeroEx, SignedOrder, Token, ExchangeContractErrs, ZeroExError} from '../src';
 import {TokenUtils} from './utils/token_utils';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {FillScenarios} from './utils/fill_scenarios';
@@ -63,6 +63,16 @@ describe('OrderValidation', () => {
             return expect(zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(
                 signedOrder, zeroFillAmount, takerAddress,
             )).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+        });
+        it('should throw when the signature is invalid', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            // 27 <--> 28
+            signedOrder.ecSignature.v = 27 + (28 - signedOrder.ecSignature.v);
+            return expect(zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(
+                signedOrder, fillableAmount, takerAddress,
+            )).to.be.rejectedWith(ZeroExError.InvalidSignature);
         });
         it('should throw when the order is fully filled or cancelled', async () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
