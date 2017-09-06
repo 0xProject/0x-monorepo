@@ -55,12 +55,12 @@ export class AbiDecoder {
         this.savedABIs = this.savedABIs.concat(abiArray);
     }
     private padZeros(address: string) {
-      let formatted = address;
-      if (formatted.indexOf('0x') !== -1) {
-        formatted = formatted.slice(2);
-      }
+        let formatted = address;
+        if (!_.includes(formatted, '0x')) {
+            formatted = formatted.slice(2);
+        }
 
-      formatted = _.padStart(formatted, 40, '0');
-      return '0x' + formatted;
+        formatted = _.padStart(formatted, 40, '0');
+        return '0x' + formatted;
     }
 }
