@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {ContractWrapper} from './contract_wrapper';
-import * as TokenTransferProxyArtifacts from '../artifacts/TokenTransferProxy.json';
+import {artifacts} from '../artifacts';
 import {TokenTransferProxyContract} from '../types';
 
 /**
@@ -15,7 +15,7 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      */
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         const tokenTransferProxyContractInstance = await this._getTokenTransferProxyContractAsync();
-        const isAuthorized = await tokenTransferProxyContractInstance.authorized.call(exchangeContractAddress);
+        const isAuthorized = await tokenTransferProxyContractInstance.authorized.callAsync(exchangeContractAddress);
         return isAuthorized;
     }
     /**
@@ -24,7 +24,7 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      */
     public async getAuthorizedAddressesAsync(): Promise<string[]> {
         const tokenTransferProxyContractInstance = await this._getTokenTransferProxyContractAsync();
-        const authorizedAddresses = await tokenTransferProxyContractInstance.getAuthorizedAddresses.call();
+        const authorizedAddresses = await tokenTransferProxyContractInstance.getAuthorizedAddresses.callAsync();
         return authorizedAddresses;
     }
     /**
@@ -44,7 +44,9 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         if (!_.isUndefined(this._tokenTransferProxyContractIfExists)) {
             return this._tokenTransferProxyContractIfExists;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync((TokenTransferProxyArtifacts as any));
+        const contractInstance = await this._instantiateContractIfExistsAsync<TokenTransferProxyContract>(
+            artifacts.TokenTransferProxyArtifact,
+        );
         this._tokenTransferProxyContractIfExists = contractInstance as TokenTransferProxyContract;
         return this._tokenTransferProxyContractIfExists;
     }

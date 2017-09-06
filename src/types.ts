@@ -14,6 +14,7 @@ export enum ZeroExError {
     InsufficientWEthBalanceForWithdrawal = 'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL',
     InvalidJump = 'INVALID_JUMP',
     OutOfGas = 'OUT_OF_GAS',
+    NoNetworkId = 'NO_NETWORK_ID',
 }
 
 /**
@@ -39,137 +40,154 @@ export interface ContractEventObj {
 }
 export type CreateContractEvent = (indexFilterValues: IndexedFilterValues,
                                    subscriptionOpts: SubscriptionOpts) => ContractEventObj;
-export interface ExchangeContract extends ContractInstance {
+export interface ExchangeContract extends Web3.ContractInstance {
     isValidSignature: {
-        call: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
-               txOpts?: TxOpts) => Promise<boolean>;
+        callAsync: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
+                    txOpts?: TxOpts) => Promise<boolean>;
     };
     LogFill: CreateContractEvent;
     LogCancel: CreateContractEvent;
     LogError: CreateContractEvent;
     ZRX_TOKEN_CONTRACT: {
-        call: () => Promise<string>;
+        callAsync: () => Promise<string>;
     };
     getUnavailableTakerTokenAmount: {
-        call: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
     };
     isRoundingError: {
-        call: (fillTakerAmount: BigNumber.BigNumber, takerTokenAmount: BigNumber.BigNumber,
-               makerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
+        callAsync: (fillTakerAmount: BigNumber.BigNumber, takerTokenAmount: BigNumber.BigNumber,
+                    makerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     };
     fillOrder: {
-        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
-         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number, r: string, s: string, txOpts?: TxOpts): Promise<ContractResponse>;
-        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
-                      fillTakerTokenAmount: BigNumber.BigNumber,
-                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                      v: number, r: string, s: string, txOpts?: TxOpts) => Promise<number>;
+        sendTransactionAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                               fillTakerTokenAmount: BigNumber.BigNumber,
+                               shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                               v: number, r: string, s: string, txOpts?: TxOpts) => Promise<string>;
+        estimateGasAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                           fillTakerTokenAmount: BigNumber.BigNumber,
+                           shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                           v: number, r: string, s: string, txOpts?: TxOpts) => Promise<number>;
     };
     batchFillOrders: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
-         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number[], r: string[], s: string[], txOpts?: TxOpts): Promise<ContractResponse>;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
-                      fillTakerTokenAmounts: BigNumber.BigNumber[],
-                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
+        sendTransactionAsync: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                               fillTakerTokenAmounts: BigNumber.BigNumber[],
+                               shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                               v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<string>;
+        estimateGasAsync: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                           fillTakerTokenAmounts: BigNumber.BigNumber[],
+                           shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                           v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
     };
     fillOrdersUpTo: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmount: BigNumber.BigNumber,
-         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-         v: number[], r: string[], s: string[], txOpts?: TxOpts): Promise<ContractResponse>;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
-                      fillTakerTokenAmount: BigNumber.BigNumber,
-                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
+        sendTransactionAsync: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                               fillTakerTokenAmount: BigNumber.BigNumber,
+                               shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                               v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<string>;
+        estimateGasAsync: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                           fillTakerTokenAmount: BigNumber.BigNumber,
+                           shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+                           v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
     };
     cancelOrder: {
-        (orderAddresses: OrderAddresses, orderValues: OrderValues, cancelTakerTokenAmount: BigNumber.BigNumber,
-         txOpts?: TxOpts): Promise<ContractResponse>;
-        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
-                      cancelTakerTokenAmount: BigNumber.BigNumber,
-                      txOpts?: TxOpts) => Promise<number>;
+        sendTransactionAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                               cancelTakerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<string>;
+        estimateGasAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                           cancelTakerTokenAmount: BigNumber.BigNumber,
+                           txOpts?: TxOpts) => Promise<number>;
     };
     batchCancelOrders: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], cancelTakerTokenAmounts: BigNumber.BigNumber[],
-         txOpts?: TxOpts): Promise<ContractResponse>;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
-                      cancelTakerTokenAmounts: BigNumber.BigNumber[],
-                      txOpts?: TxOpts) => Promise<number>;
+        sendTransactionAsync: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                               cancelTakerTokenAmounts: BigNumber.BigNumber[], txOpts?: TxOpts) => Promise<string>;
+        estimateGasAsync: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                           cancelTakerTokenAmounts: BigNumber.BigNumber[],
+                           txOpts?: TxOpts) => Promise<number>;
     };
     fillOrKillOrder: {
-        (orderAddresses: OrderAddresses, orderValues: OrderValues, fillTakerTokenAmount: BigNumber.BigNumber,
-         v: number, r: string, s: string, txOpts?: TxOpts): Promise<ContractResponse>;
-        estimateGas: (orderAddresses: OrderAddresses, orderValues: OrderValues,
-                      fillTakerTokenAmount: BigNumber.BigNumber,
-                      v: number, r: string, s: string, txOpts?: TxOpts) => Promise<number>;
+        sendTransactionAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                               fillTakerTokenAmount: BigNumber.BigNumber,
+                               v: number, r: string, s: string, txOpts?: TxOpts) => Promise<string>;
+        estimateGasAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues,
+                           fillTakerTokenAmount: BigNumber.BigNumber,
+                           v: number, r: string, s: string, txOpts?: TxOpts) => Promise<number>;
     };
     batchFillOrKillOrders: {
-        (orderAddresses: OrderAddresses[], orderValues: OrderValues[], fillTakerTokenAmounts: BigNumber.BigNumber[],
-         v: number[], r: string[], s: string[], txOpts: TxOpts): Promise<ContractResponse>;
-        estimateGas: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
-                      fillTakerTokenAmounts: BigNumber.BigNumber[],
-                      v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
+        sendTransactionAsync: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                               fillTakerTokenAmounts: BigNumber.BigNumber[],
+                               v: number[], r: string[], s: string[], txOpts: TxOpts) => Promise<string>;
+        estimateGasAsync: (orderAddresses: OrderAddresses[], orderValues: OrderValues[],
+                           fillTakerTokenAmounts: BigNumber.BigNumber[],
+                           v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
     };
     filled: {
-        call: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
     };
     cancelled: {
-        call: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
     };
     getOrderHash: {
-        call: (orderAddresses: OrderAddresses, orderValues: OrderValues) => Promise<string>;
+        callAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues) => Promise<string>;
     };
 }
 
-export interface TokenContract extends ContractInstance {
+export interface TokenContract extends Web3.ContractInstance {
     Transfer: CreateContractEvent;
     Approval: CreateContractEvent;
     balanceOf: {
-        call: (address: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (address: string) => Promise<BigNumber.BigNumber>;
     };
     allowance: {
-        call: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
     };
-    transfer: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
-    transferFrom: (fromAddress: string, toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
-                   txOpts?: TxOpts) => Promise<boolean>;
-    approve: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<void>;
+    transfer: {
+        sendTransactionAsync: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
+                               txOpts?: TxOpts) => Promise<string>;
+    };
+    transferFrom: {
+        sendTransactionAsync: (fromAddress: string, toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
+                               txOpts?: TxOpts) => Promise<string>;
+    };
+    approve: {
+        sendTransactionAsync: (proxyAddress: string, amountInBaseUnits: BigNumber.BigNumber,
+                               txOpts?: TxOpts) => Promise<string>;
+    };
 }
 
-export interface TokenRegistryContract extends ContractInstance {
+export interface TokenRegistryContract extends Web3.ContractInstance {
     getTokenMetaData: {
-        call: (address: string) => Promise<TokenMetadata>;
+        callAsync: (address: string) => Promise<TokenMetadata>;
     };
     getTokenAddresses: {
-        call: () => Promise<string[]>;
+        callAsync: () => Promise<string[]>;
     };
     getTokenAddressBySymbol: {
-        call: (symbol: string) => Promise<string>;
+        callAsync: (symbol: string) => Promise<string>;
     };
     getTokenAddressByName: {
-        call: (name: string) => Promise<string>;
+        callAsync: (name: string) => Promise<string>;
     };
     getTokenBySymbol: {
-        call: (symbol: string) => Promise<TokenMetadata>;
+        callAsync: (symbol: string) => Promise<TokenMetadata>;
     };
     getTokenByName: {
-        call: (name: string) => Promise<TokenMetadata>;
+        callAsync: (name: string) => Promise<TokenMetadata>;
     };
 }
 
-export interface EtherTokenContract extends ContractInstance {
-    deposit: (txOpts: TxOpts) => Promise<void>;
-    withdraw: (amount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<void>;
+export interface EtherTokenContract extends Web3.ContractInstance {
+    deposit: {
+        sendTransactionAsync: (txOpts: TxOpts) => Promise<string>;
+    };
+    withdraw: {
+        sendTransactionAsync: (amount: BigNumber.BigNumber, txOpts: TxOpts) => Promise<string>;
+    };
 }
 
-export interface TokenTransferProxyContract extends ContractInstance {
+export interface TokenTransferProxyContract extends Web3.ContractInstance {
     getAuthorizedAddresses: {
-        call: () => Promise<string[]>;
+        callAsync: () => Promise<string[]>;
     };
     authorized: {
-        call: (address: string) => Promise<boolean>;
+        callAsync: (address: string) => Promise<boolean>;
     };
 }
 
@@ -209,10 +227,7 @@ export enum ExchangeContractErrs {
     InsufficientRemainingFillAmount = 'INSUFFICIENT_REMAINING_FILL_AMOUNT',
     MultipleTakerTokensInFillUpToDisallowed = 'MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED',
     BatchOrdersMustHaveSameExchangeAddress = 'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
-}
-
-export interface ContractResponse {
-    logs: ContractEvent[];
+    BatchOrdersMustHaveAtLeastOneItem = 'BATCH_ORDERS_MUST_HAVE_AT_LEAST_ONE_ITEM',
 }
 
 export interface ContractEvent {
@@ -349,14 +364,6 @@ export interface OrderFillRequest {
 
 export type AsyncMethod = (...args: any[]) => Promise<any>;
 
-export interface ContractInstance {
-    address: string;
-}
-
-export interface Artifact {
-    networks: {[networkId: number]: any};
-}
-
 export interface ContractEventEmitter {
     watch: (eventCallback: EventCallback) => void;
     stopWatchingAsync: () => Promise<void>;
@@ -373,14 +380,6 @@ export interface ExchangeContractByAddress {
     [address: string]: ExchangeContract;
 }
 
-export interface ContractArtifact {
-    networks: {
-        [networkId: number]: {
-            address: string;
-        };
-    };
-}
-
 export interface JSONRPCPayload {
     params: any[];
     method: string;
@@ -388,4 +387,26 @@ export interface JSONRPCPayload {
 
 export interface ZeroExConfig {
     gasPrice?: BigNumber.BigNumber; // Gas price to use with every transaction
+}
+
+export type TransactionReceipt = Web3.TransactionReceipt;
+
+export enum AbiType {
+    Function = 'function',
+    Constructor = 'constructor',
+    Event = 'event',
+    Fallback = 'fallback',
+}
+
+export interface DecodedLogArgs {
+    [argName: string]: ContractEventArg;
+}
+
+export interface LogWithDecodedArgs extends Web3.LogEntry {
+    args: DecodedLogArgs;
+    event: string;
+}
+
+export interface TransactionReceiptWithDecodedLogs extends Web3.TransactionReceipt {
+    logs: LogWithDecodedArgs[];
 }

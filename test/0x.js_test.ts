@@ -6,8 +6,11 @@ import * as BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
 import {ZeroEx, Order} from '../src';
 import {constants} from './utils/constants';
+import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 
+const blockchainLifecycle = new BlockchainLifecycle();
 chaiSetup.configure();
 const expect = chai.expect;
 
@@ -202,6 +205,31 @@ describe('ZeroEx library', () => {
 
             const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
             expect(ecSignature).to.deep.equal(expectedECSignature);
+        });
+    });
+    describe('#awaitTransactionMinedAsync', () => {
+        beforeEach(async () => {
+            await blockchainLifecycle.startAsync();
+        });
+        afterEach(async () => {
+            await blockchainLifecycle.revertAsync();
+        });
+        it('returns transaction receipt with decoded logs', async () => {
+            const availableAddresses = await zeroEx.getAvailableAddressesAsync();
+            const coinbase = availableAddresses[0];
+            const tokens = await zeroEx.tokenRegistry.getTokensAsync();
+            const tokenUtils = new TokenUtils(tokens);
+            const zrxTokenAddress = tokenUtils.getProtocolTokenOrThrow().address;
+            const proxyAddress = await zeroEx.proxy.getContractAddressAsync();
+            const txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(zrxTokenAddress, coinbase);
+            const txReceiptWithDecodedLogs = await zeroEx.awaitTransactionMinedAsync(txHash);
+            const log = txReceiptWithDecodedLogs.logs[0];
+            expect(log.event).to.be.equal('Approval');
+            expect(log.args).to.be.deep.equal({
+                _owner: coinbase,
+                _spender: proxyAddress,
+                _value: zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS.toString(),
+            });
         });
     });
 });
