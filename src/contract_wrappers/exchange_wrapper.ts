@@ -26,6 +26,7 @@ import {
     LogErrorContractEventArgs,
     LogFillContractEventArgs,
     LogCancelContractEventArgs,
+    LogWithDecodedArgs,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -46,6 +47,14 @@ export class ExchangeWrapper extends ContractWrapper {
     private _exchangeLogEventEmitters: ContractEventEmitter[];
     private _orderValidationUtils: OrderValidationUtils;
     private _tokenWrapper: TokenWrapper;
+    private _exchangeContractErrCodesToMsg = {
+        [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
+        [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
+        [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: ExchangeContractErrs.OrderRemainingFillAmountZero,
+        [ExchangeContractErrCodes.ERROR_CANCEL_NO_VALUE]: ExchangeContractErrs.OrderRemainingFillAmountZero,
+        [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.OrderFillRoundingError,
+        [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FillBalanceAllowanceError,
+    };
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
             order.maker,
@@ -673,6 +682,20 @@ export class ExchangeWrapper extends ContractWrapper {
             fillTakerTokenAmount, takerTokenAmount, makerTokenAmount,
         );
         return isRoundingError;
+    }
+    /**
+     * Checks if logs contain LogError, which is emited by Exchange contract on transfer failure
+     * and throws an appropriate error.
+     * @param   logsWithdecodedArgs   Transaction logs as returned by `zeroEx.awaitTransactionMinedAsync`
+     */
+    public throwLogErrorsAsErrors(logsWithdecodedArgs: LogWithDecodedArgs[]): void {
+        const errLog = _.find(logsWithdecodedArgs, {event: 'LogError'});
+        if (!_.isUndefined(errLog)) {
+            const logArgs: LogErrorContractEventArgs = errLog.args as any;
+            const errCode = logArgs.errorId.toNumber();
+            const errMessage = this._exchangeContractErrCodesToMsg[errCode];
+            throw new Error(errMessage);
+        }
     }
     private async _invalidateContractInstancesAsync(): Promise<void> {
         await this.stopWatchingAllEventsAsync();
