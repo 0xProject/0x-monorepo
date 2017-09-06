@@ -56,7 +56,7 @@ export class AbiDecoder {
     }
     private padZeros(address: string) {
         let formatted = address;
-        if (!_.includes(formatted, '0x')) {
+        if (_.startsWith(formatted, '0x')) {
             formatted = formatted.slice(2);
         }
 
