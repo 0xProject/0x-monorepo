@@ -410,5 +410,5 @@ export interface DecodedArgs {
 export interface LogWithDecodedArgs extends Web3.LogEntry, DecodedArgs {}
 
 export interface TransactionReceiptWithDecodedLogs extends Web3.TransactionReceipt {
-    logs: LogWithDecodedArgs[];
+    logs: Array<LogWithDecodedArgs|Web3.LogEntry>;
 }

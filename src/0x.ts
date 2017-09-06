@@ -287,7 +287,7 @@ export class ZeroEx {
                     const logsWithDecodedArgs = _.map(transactionReceipt.logs, (log: Web3.LogEntry) => {
                         const decodedLog = this._abiDecoder.decodeLog(log);
                         if (_.isUndefined(decodedLog)) {
-                            throw new Error('Unknown log');
+                            return log;
                         }
                         const logWithDecodedArgs: LogWithDecodedArgs = {
                             ...log,
