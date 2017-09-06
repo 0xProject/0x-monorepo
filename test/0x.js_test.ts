@@ -9,6 +9,7 @@ import {constants} from './utils/constants';
 import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {LogWithDecodedArgs} from '../src';
 
 const blockchainLifecycle = new BlockchainLifecycle();
 chaiSetup.configure();
@@ -223,7 +224,7 @@ describe('ZeroEx library', () => {
             const proxyAddress = await zeroEx.proxy.getContractAddressAsync();
             const txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(zrxTokenAddress, coinbase);
             const txReceiptWithDecodedLogs = await zeroEx.awaitTransactionMinedAsync(txHash);
-            const log = txReceiptWithDecodedLogs.logs[0];
+            const log = txReceiptWithDecodedLogs.logs[0] as LogWithDecodedArgs;
             expect(log.event).to.be.equal('Approval');
             expect(log.args).to.be.deep.equal({
                 _owner: coinbase,
