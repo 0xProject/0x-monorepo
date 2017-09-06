@@ -402,10 +402,12 @@ export interface DecodedLogArgs {
     [argName: string]: ContractEventArg;
 }
 
-export interface LogWithDecodedArgs extends Web3.LogEntry {
+export interface DecodedArgs {
     args: DecodedLogArgs;
     event: string;
 }
+
+export interface LogWithDecodedArgs extends Web3.LogEntry, DecodedArgs {}
 
 export interface TransactionReceiptWithDecodedLogs extends Web3.TransactionReceipt {
     logs: LogWithDecodedArgs[];

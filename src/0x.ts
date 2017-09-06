@@ -12,6 +12,7 @@ import {constants} from './utils/constants';
 import {utils} from './utils/utils';
 import {signatureUtils} from './utils/signature_utils';
 import {assert} from './utils/assert';
+import {AbiDecoder} from './utils/abi_decoder';
 import {artifacts} from './artifacts';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
@@ -70,6 +71,7 @@ export class ZeroEx {
      */
     public proxy: TokenTransferProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
+    private _abiDecoder: AbiDecoder;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddress` address.
@@ -183,7 +185,9 @@ export class ZeroEx {
             // We re-assign the send method so that Web3@1.0 providers work with 0x.js
             (provider as any).sendAsync = (provider as any).send;
         }
-        this._registerArtifactsWithinABIDecoder();
+        const artifactJSONs = _.values(artifacts);
+        const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
+        this._abiDecoder = new AbiDecoder(abiArrays);
         const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
         const defaults = {
             gasPrice,
@@ -281,16 +285,13 @@ export class ZeroEx {
                 if (!_.isNull(transactionReceipt)) {
                     clearInterval(intervalId);
                     const logsWithDecodedArgs = _.map(transactionReceipt.logs, (log: Web3.LogEntry) => {
-                        const decodedLog = abiDecoder.decodeLogs([log])[0];
-                        const decodedArgs = decodedLog.events;
-                        const args: DecodedLogArgs = {};
-                        _.forEach(decodedArgs, arg => {
-                            args[arg.name] = arg.value;
-                        });
+                        const decodedLog = this._abiDecoder.decodeLog(log);
+                        if (_.isUndefined(decodedLog)) {
+                            throw new Error('Unknown log');
+                        }
                         const logWithDecodedArgs: LogWithDecodedArgs = {
                             ...log,
-                            args,
-                            event: decodedLog.name,
+                            ...decodedLog,
                         };
                         return logWithDecodedArgs;
                     });
@@ -303,10 +304,5 @@ export class ZeroEx {
             }, pollingIntervalMs);
         });
         return txReceiptPromise;
-    }
-    private _registerArtifactsWithinABIDecoder(): void {
-        for (const artifact of _.values(artifacts)) {
-            abiDecoder.addABI(artifact.abi);
-        }
     }
 }
