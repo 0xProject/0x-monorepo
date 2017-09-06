@@ -1,20 +1,20 @@
 import * as _ from 'lodash';
 
-export class IntervalUtils {
-    private mutex: {[intervalId: number]: boolean} = {};
-    public setAsyncExcludingInterval(fn: () => Promise<void>, intervalMs: number) {
+export const intervalUtils = {
+    setAsyncExcludingInterval(fn: () => Promise<void>, intervalMs: number) {
+        let locked = false;
         const intervalId = setInterval(async () => {
-            if (!_.isUndefined(this.mutex[intervalId])) {
+            if (locked) {
                 return;
             } else {
-                this.mutex[intervalId] = true;
+                locked = true;
                 await fn();
-                delete this.mutex[intervalId];
+                locked = false;
             }
         });
         return intervalId;
-    }
-    public clearAsyncExcludingInterval(intervalId: number): void {
+    },
+    clearAsyncExcludingInterval(intervalId: number): void {
         clearInterval(intervalId);
-    }
-}
+    },
+};

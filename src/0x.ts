@@ -13,7 +13,7 @@ import {utils} from './utils/utils';
 import {signatureUtils} from './utils/signature_utils';
 import {assert} from './utils/assert';
 import {AbiDecoder} from './utils/abi_decoder';
-import {IntervalUtils} from './utils/interval_utils';
+import {intervalUtils} from './utils/interval_utils';
 import {artifacts} from './artifacts';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
@@ -73,7 +73,6 @@ export class ZeroEx {
     public proxy: TokenTransferProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
     private _abiDecoder: AbiDecoder;
-    private _intervalUtils: IntervalUtils;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddress` address.
@@ -194,7 +193,6 @@ export class ZeroEx {
         const defaults = {
             gasPrice,
         };
-        this._intervalUtils = new IntervalUtils();
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
         this.token = new TokenWrapper(this._web3Wrapper);
         this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper);
@@ -283,10 +281,10 @@ export class ZeroEx {
         txHash: string, pollingIntervalMs: number = 1000): Promise<TransactionReceiptWithDecodedLogs> {
         const txReceiptPromise = new Promise(
             (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
-            const intervalId = this._intervalUtils.setAsyncExcludingInterval(async () => {
+            const intervalId = intervalUtils.setAsyncExcludingInterval(async () => {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
                 if (!_.isNull(transactionReceipt)) {
-                    this._intervalUtils.clearAsyncExcludingInterval(intervalId);
+                    intervalUtils.clearAsyncExcludingInterval(intervalId);
                     const logsWithDecodedArgs = _.map(transactionReceipt.logs, (log: Web3.LogEntry) => {
                         const decodedLog = this._abiDecoder.decodeLog(log);
                         if (_.isUndefined(decodedLog)) {
