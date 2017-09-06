@@ -90,6 +90,6 @@ declare module 'abi-decoder' {
     const decodeLogs: (logs: Web3.LogEntry[]) => DecodedLog[];
 }
 
-declare module 'web3/lib/solidity/coder.js' {
+declare module 'web3/lib/solidity/coder' {
     const decodeParams: (types: string[], data: string) => any[];
 }

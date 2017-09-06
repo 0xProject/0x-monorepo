@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import {AbiType, DecodedLogArgs, DecodedArgs} from '../types';
-import * as SolidityCoder from 'web3/lib/solidity/coder.js';
+import * as SolidityCoder from 'web3/lib/solidity/coder';
 
 export class AbiDecoder {
     private savedABIs: Web3.AbiDefinition[] = [];
