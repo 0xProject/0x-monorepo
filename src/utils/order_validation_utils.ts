@@ -1,5 +1,5 @@
 import {ExchangeContractErrs, SignedOrder, Order, ZeroExError} from '../types';
-import {ZeroEx} from '../0x.js';
+import {ZeroEx} from '../0x';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {utils} from '../utils/utils';
