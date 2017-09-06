@@ -685,10 +685,10 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Checks if logs contain LogError, which is emmited by Exchange contract on transaction failure.
-     * @param   logsWithdecodedArgs   Transaction logs as returned by `zeroEx.awaitTransactionMinedAsync`
+     * @param   logsWithDecodedArgs   Transaction logs as returned by `zeroEx.awaitTransactionMinedAsync`
      */
-    public throwLogErrorsAsErrors(logsWithdecodedArgs: LogWithDecodedArgs[]): void {
-        const errLog = _.find(logsWithdecodedArgs, {event: 'LogError'});
+    public throwLogErrorsAsErrors(logsWithDecodedArgs: LogWithDecodedArgs[]): void {
+        const errLog = _.find(logsWithDecodedArgs, {event: ExchangeEvents.LogError});
         if (!_.isUndefined(errLog)) {
             const logArgs: LogErrorContractEventArgs = errLog.args as any;
             const errCode = logArgs.errorId.toNumber();
