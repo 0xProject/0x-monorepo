@@ -226,11 +226,9 @@ describe('ZeroEx library', () => {
             const txReceiptWithDecodedLogs = await zeroEx.awaitTransactionMinedAsync(txHash);
             const log = txReceiptWithDecodedLogs.logs[0] as LogWithDecodedArgs;
             expect(log.event).to.be.equal('Approval');
-            expect(log.args).to.be.deep.equal({
-                _owner: coinbase,
-                _spender: proxyAddress,
-                _value: zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS.toString(),
-            });
+            expect(log.args._owner).to.be.equal(coinbase);
+            expect(log.args._spender).to.be.equal(proxyAddress);
+            expect(log.args._value).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
     });
 });

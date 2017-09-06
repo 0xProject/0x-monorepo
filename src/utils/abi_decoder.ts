@@ -1,5 +1,6 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
+import * as BigNumber from 'bignumber.js';
 import {AbiType, DecodedLogArgs, DecodedArgs} from '../types';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
 
@@ -31,9 +32,9 @@ export class AbiDecoder {
                     dataIndex++;
                 }
                 if (param.type === 'address') {
-                    value = this.padZeros(new Web3().toBigNumber(value).toString(16));
+                    value = this.padZeros(new BigNumber(value).toString(16));
                 } else if (param.type === 'uint256' || param.type === 'uint8' || param.type === 'int' ) {
-                    value = new Web3().toBigNumber(value).toString(10);
+                    value = new BigNumber(value);
                 }
                 decodedParams[param.name] = value;
             });
