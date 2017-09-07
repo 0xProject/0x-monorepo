@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.14.2 - _September 7, 2017_
+------------------------
+    * Fixed an issue with bignumber.js types not found (#160)
+
 v0.14.1 - _September 7, 2017_
 ------------------------
     * Fixed an issue with Artifact type not found (#159)
