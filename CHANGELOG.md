@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.14.1 - _September 7, 2017_
+------------------------
+    * Fixed an issue with Artifact type not found (#159)
+
 v0.14.0 - _September 6, 2017_
 ------------------------
     * Added `zeroEx.exchange.throwLogErrorsAsErrors` method to public interface (#157)
