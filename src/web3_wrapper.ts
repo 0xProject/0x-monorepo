@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
-import {ZeroExError} from './types';
+import {ZeroExError, Artifact} from './types';
 import {Contract} from './contract';
 
 export class Web3Wrapper {

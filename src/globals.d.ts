@@ -33,13 +33,6 @@ declare module '*.json' {
     /* tslint:enable */
 }
 
-declare interface Artifact {
-    abi: any;
-    networks: {[networkId: number]: {
-        address: string;
-    }};
-}
-
 // find-version declarations
 declare function findVersions(version: string): string[];
 declare module 'find-versions' {

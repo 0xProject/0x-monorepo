@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
-import {ZeroExError} from '../types';
+import {ZeroExError, Artifact} from '../types';
 import {utils} from '../utils/utils';
 
 export class ContractWrapper {

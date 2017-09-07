@@ -1,3 +1,4 @@
+import {Artifact} from './types';
 import * as TokenArtifact from './artifacts/Token.json';
 import * as ExchangeArtifact from './artifacts/Exchange.json';
 import * as EtherTokenArtifact from './artifacts/EtherToken.json';
