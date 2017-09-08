@@ -421,6 +421,6 @@ export interface Artifact {
     }};
 }
 
-export interface CallOpts {
+export interface MethodOpts {
     defaultBlock?: Web3.BlockParam;
 }
