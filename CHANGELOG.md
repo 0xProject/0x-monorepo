@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.15.0 - _September 8, 2017_
+------------------------
+    * Added the ability to specify a historical `blockNumber` at which to query the blockchain's state when calling a token or exchange method (#161)
+
 v0.14.2 - _September 7, 2017_
 ------------------------
     * Fixed an issue with bignumber.js types not found (#160)

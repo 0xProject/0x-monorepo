@@ -17,6 +17,7 @@ import {
     CreateContractEvent,
     ContractEventEmitter,
     ContractEventObj,
+    MethodOpts,
 } from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
@@ -39,14 +40,17 @@ export class TokenWrapper extends ContractWrapper {
      * Retrieves an owner's ERC20 token balance.
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress    The hex encoded user Ethereum address whose balance you would like to check.
+     * @param   methodOpts      Optional arguments this method accepts.
      * @return  The owner's ERC20 token balance in base units.
      */
-    public async getBalanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
+    public async getBalanceAsync(tokenAddress: string, ownerAddress: string,
+                                 methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        let balance = await tokenContract.balanceOf.callAsync(ownerAddress);
+        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+        let balance = await tokenContract.balanceOf.callAsync(ownerAddress, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         balance = new BigNumber(balance);
         return balance;
@@ -104,14 +108,16 @@ export class TokenWrapper extends ContractWrapper {
      * @param   ownerAddress    The hex encoded user Ethereum address whose allowance to spenderAddress
      *                          you would like to retrieve.
      * @param   spenderAddress  The hex encoded user Ethereum address who can spend the allowance you are fetching.
+     * @param   methodOpts      Optional arguments this method accepts.
      */
     public async getAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                   spenderAddress: string): Promise<BigNumber.BigNumber> {
+                                   spenderAddress: string, methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        let allowanceInBaseUnits = await tokenContract.allowance.callAsync(ownerAddress, spenderAddress);
+        const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+        let allowanceInBaseUnits = await tokenContract.allowance.callAsync(ownerAddress, spenderAddress, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
         return allowanceInBaseUnits;
@@ -120,13 +126,15 @@ export class TokenWrapper extends ContractWrapper {
      * Retrieves the owner's allowance in baseUnits set to the 0x proxy contract.
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress    The hex encoded user Ethereum address whose proxy contract allowance we are retrieving.
+     * @param   methodOpts      Optional arguments this method accepts.
      */
-    public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string): Promise<BigNumber.BigNumber> {
+    public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
+                                        methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
         const proxyAddress = await this._getProxyAddressAsync();
-        const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress);
+        const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, methodOpts);
         return allowanceInBaseUnits;
     }
     /**

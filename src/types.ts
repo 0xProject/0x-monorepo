@@ -52,7 +52,7 @@ export interface ExchangeContract extends Web3.ContractInstance {
         callAsync: () => Promise<string>;
     };
     getUnavailableTakerTokenAmount: {
-        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     isRoundingError: {
         callAsync: (fillTakerAmount: BigNumber.BigNumber, takerTokenAmount: BigNumber.BigNumber,
@@ -119,10 +119,10 @@ export interface ExchangeContract extends Web3.ContractInstance {
                            v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
     };
     filled: {
-        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     cancelled: {
-        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     getOrderHash: {
         callAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues) => Promise<string>;
@@ -133,10 +133,11 @@ export interface TokenContract extends Web3.ContractInstance {
     Transfer: CreateContractEvent;
     Approval: CreateContractEvent;
     balanceOf: {
-        callAsync: (address: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (address: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     allowance: {
-        callAsync: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (ownerAddress: string, allowedAddress: string,
+                    defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     transfer: {
         sendTransactionAsync: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
@@ -418,4 +419,14 @@ export interface Artifact {
     networks: {[networkId: number]: {
         address: string;
     }};
+}
+
+/*
+ * defaultBlock: The block up to which to query the blockchain state. Setting this to a historical block number
+ * let's the user query the blockchain's state at an arbitrary point in time. In order for this to work, the
+ * backing  Ethereum node must keep the entire historical state of the chain (e.g setting `--pruning=archive`
+ * flag when  running Parity).
+ */
+export interface MethodOpts {
+    defaultBlock?: Web3.BlockParam;
 }

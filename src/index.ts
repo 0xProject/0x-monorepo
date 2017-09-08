@@ -33,4 +33,5 @@ export {
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
     DecodedLogArgs,
+    MethodOpts,
 } from './types';
