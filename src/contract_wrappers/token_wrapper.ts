@@ -40,7 +40,7 @@ export class TokenWrapper extends ContractWrapper {
      * Retrieves an owner's ERC20 token balance.
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress    The hex encoded user Ethereum address whose balance you would like to check.
-     * @param   methodOpts      ${FABIOS_COMMENT}
+     * @param   methodOpts      Optional arguments this method accepts.
      * @return  The owner's ERC20 token balance in base units.
      */
     public async getBalanceAsync(tokenAddress: string, ownerAddress: string,
@@ -108,7 +108,7 @@ export class TokenWrapper extends ContractWrapper {
      * @param   ownerAddress    The hex encoded user Ethereum address whose allowance to spenderAddress
      *                          you would like to retrieve.
      * @param   spenderAddress  The hex encoded user Ethereum address who can spend the allowance you are fetching.
-     * @param   methodOpts      ${FABIOS_COMMENT}
+     * @param   methodOpts      Optional arguments this method accepts.
      */
     public async getAllowanceAsync(tokenAddress: string, ownerAddress: string,
                                    spenderAddress: string, methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
@@ -126,7 +126,7 @@ export class TokenWrapper extends ContractWrapper {
      * Retrieves the owner's allowance in baseUnits set to the 0x proxy contract.
      * @param   tokenAddress    The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress    The hex encoded user Ethereum address whose proxy contract allowance we are retrieving.
-     * @param   methodOpts      ${FABIOS_COMMENT}
+     * @param   methodOpts      Optional arguments this method accepts.
      */
     public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
                                         methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {

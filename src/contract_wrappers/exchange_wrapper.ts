@@ -86,7 +86,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * subtracting the unavailable amount from the total order takerAmount.
      * @param   orderHash               The hex encoded orderHash for which you would like to retrieve the
      *                                  unavailable takerAmount.
-     * @param   methodOpts              ${FABIOS_COMMENT}
+     * @param   methodOpts              Optional arguments this method accepts.
      * @return  The amount of the order (in taker tokens) that has either been filled or canceled.
      */
     public async getUnavailableTakerAmountAsync(orderHash: string,
@@ -105,7 +105,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Retrieve the takerAmount of an order that has already been filled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
-     * @param   methodOpts   ${FABIOS_COMMENT}
+     * @param   methodOpts   Optional arguments this method accepts.
      * @return  The amount of the order (in taker tokens) that has already been filled.
      */
     public async getFilledTakerAmountAsync(orderHash: string, methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
@@ -122,7 +122,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Retrieve the takerAmount of an order that has been cancelled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the
      *                       cancelled takerAmount.
-     * @param   methodOpts   ${FABIOS_COMMENT}
+     * @param   methodOpts   Optional arguments this method accepts.
      * @return  The amount of the order (in taker tokens) that has been cancelled.
      */
     public async getCanceledTakerAmountAsync(orderHash: string, methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
