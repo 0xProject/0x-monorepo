@@ -133,10 +133,11 @@ export interface TokenContract extends Web3.ContractInstance {
     Transfer: CreateContractEvent;
     Approval: CreateContractEvent;
     balanceOf: {
-        callAsync: (address: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (address: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     allowance: {
-        callAsync: (ownerAddress: string, allowedAddress: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (ownerAddress: string, allowedAddress: string,
+                    defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     transfer: {
         sendTransactionAsync: (toAddress: string, amountInBaseUnits: BigNumber.BigNumber,
