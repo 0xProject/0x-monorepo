@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.15.0 - _September 8, 2017_
+------------------------
+    * Added a possibility to specify a block when calling const token or exchange methods (fetch historical data) (#161)
+
 v0.14.2 - _September 7, 2017_
 ------------------------
     * Fixed an issue with bignumber.js types not found (#160)
