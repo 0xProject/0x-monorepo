@@ -2,7 +2,7 @@
 
 v0.15.0 - _September 8, 2017_
 ------------------------
-    * Added a possibility to specify a block when calling const token or exchange methods (fetch historical data) (#161)
+    * Added the ability to specify a historical `blockNumber` at which to query the blockchain's state when calling a token or exchange method (#161)
 
 v0.14.2 - _September 7, 2017_
 ------------------------
