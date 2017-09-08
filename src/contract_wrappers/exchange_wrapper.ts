@@ -27,6 +27,7 @@ import {
     LogFillContractEventArgs,
     LogCancelContractEventArgs,
     LogWithDecodedArgs,
+    CallOpts,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -85,13 +86,17 @@ export class ExchangeWrapper extends ContractWrapper {
      * subtracting the unavailable amount from the total order takerAmount.
      * @param   orderHash               The hex encoded orderHash for which you would like to retrieve the
      *                                  unavailable takerAmount.
+     * @param   callOpts                ${FABIOS_COMMENT}
      * @return  The amount of the order (in taker tokens) that has either been filled or canceled.
      */
-    public async getUnavailableTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+    public async getUnavailableTakerAmountAsync(orderHash: string, callOpts?: CallOpts): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync();
-        let unavailableTakerTokenAmount = await exchangeContract.getUnavailableTakerTokenAmount.callAsync(orderHash);
+        const defaultBlock = _.isUndefined(callOpts) ? undefined : callOpts.defaultBlock;
+        let unavailableTakerTokenAmount = await exchangeContract.getUnavailableTakerTokenAmount.callAsync(
+            orderHash, defaultBlock,
+        );
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         unavailableTakerTokenAmount = new BigNumber(unavailableTakerTokenAmount);
         return unavailableTakerTokenAmount;
@@ -99,13 +104,15 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Retrieve the takerAmount of an order that has already been filled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the filled takerAmount.
+     * @param   callOpts     ${FABIOS_COMMENT}
      * @return  The amount of the order (in taker tokens) that has already been filled.
      */
-    public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+    public async getFilledTakerAmountAsync(orderHash: string, callOpts?: CallOpts): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync();
-        let fillAmountInBaseUnits = await exchangeContract.filled.callAsync(orderHash);
+        const defaultBlock = _.isUndefined(callOpts) ? undefined : callOpts.defaultBlock;
+        let fillAmountInBaseUnits = await exchangeContract.filled.callAsync(orderHash, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         fillAmountInBaseUnits = new BigNumber(fillAmountInBaseUnits);
         return fillAmountInBaseUnits;
@@ -114,13 +121,15 @@ export class ExchangeWrapper extends ContractWrapper {
      * Retrieve the takerAmount of an order that has been cancelled.
      * @param   orderHash    The hex encoded orderHash for which you would like to retrieve the
      *                       cancelled takerAmount.
+     * @param   callOpts     ${FABIOS_COMMENT}
      * @return  The amount of the order (in taker tokens) that has been cancelled.
      */
-    public async getCanceledTakerAmountAsync(orderHash: string): Promise<BigNumber.BigNumber> {
+    public async getCanceledTakerAmountAsync(orderHash: string, callOpts?: CallOpts): Promise<BigNumber.BigNumber> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync();
-        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.callAsync(orderHash);
+        const defaultBlock = _.isUndefined(callOpts) ? undefined : callOpts.defaultBlock;
+        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.callAsync(orderHash, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         cancelledAmountInBaseUnits = new BigNumber(cancelledAmountInBaseUnits);
         return cancelledAmountInBaseUnits;

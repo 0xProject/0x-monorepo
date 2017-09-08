@@ -52,7 +52,7 @@ export interface ExchangeContract extends Web3.ContractInstance {
         callAsync: () => Promise<string>;
     };
     getUnavailableTakerTokenAmount: {
-        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     isRoundingError: {
         callAsync: (fillTakerAmount: BigNumber.BigNumber, takerTokenAmount: BigNumber.BigNumber,
@@ -119,10 +119,10 @@ export interface ExchangeContract extends Web3.ContractInstance {
                            v: number[], r: string[], s: string[], txOpts?: TxOpts) => Promise<number>;
     };
     filled: {
-        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     cancelled: {
-        callAsync: (orderHash: string) => Promise<BigNumber.BigNumber>;
+        callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     getOrderHash: {
         callAsync: (orderAddresses: OrderAddresses, orderValues: OrderValues) => Promise<string>;
