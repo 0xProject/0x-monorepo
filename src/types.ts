@@ -419,3 +419,7 @@ export interface Artifact {
         address: string;
     }};
 }
+
+export interface CallOpts {
+    defaultBlock?: Web3.BlockParam;
+}

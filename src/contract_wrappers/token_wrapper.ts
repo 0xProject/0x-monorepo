@@ -17,6 +17,7 @@ import {
     CreateContractEvent,
     ContractEventEmitter,
     ContractEventObj,
+    CallOpts,
 } from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
