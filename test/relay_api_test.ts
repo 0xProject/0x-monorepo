@@ -1,10 +1,10 @@
+import * as fetchMock from 'fetch-mock';
 import * as chai from 'chai';
 import * as BigNumber from 'bignumber.js';
-import {web3Factory} from './utils/web3_factory';
+import * as Sinon from 'sinon';
 import {ZeroEx} from '../src/';
 import {chaiSetup} from './utils/chai_setup';
 import {Web3Wrapper} from '../src/web3_wrapper';
-import {constants} from './utils/constants';
 import {SchemaValidator, schemas} from '0x-json-schemas';
 
 chaiSetup.configure();
@@ -12,26 +12,34 @@ chai.config.includeStack = true;
 const expect = chai.expect;
 
 // We need to have a mock API server in order to test that
-describe.skip('Relay API', () => {
-    const relay = new ZeroEx.Relay('http://0.0.0.0:8000');
+describe('Relay API', () => {
+    const relayUrl = 'https://example.com';
+    const relay = new ZeroEx.Relay(relayUrl);
     const schemaValidator = new SchemaValidator();
+    const responsePayload = {example: 'data'};
+    afterEach(() => {
+        fetchMock.restore();
+    });
     describe('#getTokenPairsAsync', () => {
         it('gets token pairs', async () => {
+            fetchMock.get(`${relayUrl}/v0/token_pairs`, responsePayload);
             const tokenPairs = await relay.getTokenPairsAsync();
-            expect(schemaValidator.isValid(tokenPairs, schemas.relayerApiTokenPairsResponseSchema)).to.be.true();
+            expect(tokenPairs).to.be.deep.equal(responsePayload);
         });
     });
     describe('#getOrdersAsync', () => {
         it('gets orders', async () => {
+            fetchMock.get(`${relayUrl}/v0/orders`, responsePayload);
             const orders = await relay.getOrdersAsync();
-            expect(schemaValidator.isValid(orders, schemas.relayerApiOrdersResponseSchema)).to.be.true();
+            expect(orders).to.be.deep.equal(responsePayload);
         });
     });
     describe('#getOrderAsync', () => {
         it('gets order', async () => {
             const orderHash = '0xdeadbeef';
+            fetchMock.get(`${relayUrl}/v0/order/${orderHash}`, responsePayload);
             const order = await relay.getOrderAsync(orderHash);
-            expect(schemaValidator.isValid(order, schemas.relayerApiOrderResponseSchema)).to.be.true();
+            expect(order).to.be.deep.equal(responsePayload);
         });
     });
     describe('#getFeesAsync', () => {
@@ -44,8 +52,9 @@ describe.skip('Relay API', () => {
                 makerTokenAmount: '10000000000000000000',
                 takerTokenAmount: '30000000000000000000',
             };
+            fetchMock.post(`${relayUrl}/v0/fees`, responsePayload);
             const fees = await relay.getFeesAsync(params);
-            expect(schemaValidator.isValid(fees, schemas.relayerApiFeesResponseSchema)).to.be.true();
+            expect(fees).to.be.deep.equal(responsePayload);
         });
     });
     describe('#submitOrderAsync', () => {
@@ -69,6 +78,7 @@ describe.skip('Relay API', () => {
                     s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
                 },
             };
+            fetchMock.post(`${relayUrl}/v0/order`, responsePayload);
             await relay.submitOrderAsync(signedOrder);
         });
     });
