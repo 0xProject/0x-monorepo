@@ -1,5 +1,13 @@
 # CHANGELOG
 
+v0.16.0 - _TBD_
+    * Added methods to interact with relays using standard relayer API (#163)
+        * `relay.getTokenPairsAsync`
+        * `relay.getOrdersAsync`
+        * `relay.getOrderAsync`
+        * `relay.getFeesAsync`
+        * `relay.submitOrderAsync`
+
 v0.15.0 - _September 8, 2017_
 ------------------------
     * Added the ability to specify a historical `blockNumber` at which to query the blockchain's state when calling a token or exchange method (#161)
