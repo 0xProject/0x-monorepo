@@ -43,7 +43,7 @@ bigNumberConfigs.configure();
  */
 export class ZeroEx {
     /**
-     * Relay constructor. When instantiated - will contain methods to interact with relays using standard relayer API.
+     * Relay constructor. Relay is a client for sending requests to Relayers that implement the Standard Relayer API.
      */
     public static Relay = Relay;
     /**
