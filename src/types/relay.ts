@@ -27,10 +27,10 @@ export interface RelayerApiOrderResponse {
     signedOrder: SignedOrder;
     state: OrderState;
     pending: {
-        fillAmount: number;
-        cancelAmount: number;
+        fillAmount: BigNumber.BigNumber;
+        cancelAmount: BigNumber.BigNumber;
     };
-    remainingTakerTokenAmount: number;
+    remainingTakerTokenAmount: BigNumber.BigNumber;
 }
 
 export interface RelayerApiFeesRequest {
