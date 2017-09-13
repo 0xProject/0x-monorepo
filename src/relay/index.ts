@@ -10,28 +10,28 @@ export class Relay {
         this.version = _.isUndefined(opts) ? 0 : opts.version || 0;
     }
     public async getTokenPairsAsync(): Promise<StandardRelayerApi.RelayerApiTokenTradeInfo[]> {
-        const tokenPairs = await this._requestAsync('token_pairs', 'GET');
+        const tokenPairs = await this._requestAsync('/token_pairs', 'GET');
         return tokenPairs;
     }
     public async getOrderAsync(orderHash: string): Promise<StandardRelayerApi.RelayerApiOrderResponse> {
-        const order = await this._requestAsync(`order/${orderHash}`, 'GET');
+        const order = await this._requestAsync(`/order/${orderHash}`, 'GET');
         return order;
     }
     public async getOrdersAsync(): Promise<StandardRelayerApi.RelayerApiOrderResponse[]> {
-        const orders = await this._requestAsync(`orders`, 'GET');
+        const orders = await this._requestAsync(`/orders`, 'GET');
         return orders;
     }
     public async getFeesAsync(params: StandardRelayerApi.RelayerApiFeesRequest)
     : Promise<StandardRelayerApi.RelayerApiFeesResponse> {
-        const fees = await this._requestAsync(`fees`, 'POST');
+        const fees = await this._requestAsync(`/fees`, 'POST');
         return fees;
     }
     public async submitOrderAsync(signedOrder: SignedOrder)
     : Promise<void> {
-        await this._requestAsync(`order`, 'POST');
+        await this._requestAsync(`/order`, 'POST');
     }
     private async _requestAsync(path: string, method: string): Promise<any> {
-        const url = `${this.url}/v${this.version}/${path}`;
+        const url = `${this.url}/v${this.version}${path}`;
         const response = await fetch(url, {
             method,
         });
