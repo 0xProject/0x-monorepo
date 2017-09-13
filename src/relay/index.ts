@@ -1,12 +1,19 @@
 import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
+import {schemas} from '0x-json-schemas';
+import {assert} from '../utils/assert';
 import {StandardRelayerApi, SignedOrder} from '../types';
+import {relayOptsSchema} from '../schemas';
 
 export class Relay {
     private url: string;
     private version: number;
     constructor(url: string, opts?: StandardRelayerApi.RelayOpts) {
+        assert.isString('url', url);
+        if (!_.isUndefined(opts)) {
+            assert.doesConformToSchema('opts', opts, relayOptsSchema);
+        }
         this.url = url;
         this.version = _.isUndefined(opts) ? 0 : opts.version || 0;
     }
@@ -23,6 +30,7 @@ export class Relay {
         return tokenPairs;
     }
     public async getOrderAsync(orderHash: string): Promise<StandardRelayerApi.RelayerApiOrderResponse> {
+        assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const order = await this._requestAsync(`/order/${orderHash}`, 'GET');
         this._convertOrderNumberFieldsToBigNumber(order);
         return order;
@@ -34,12 +42,14 @@ export class Relay {
     }
     public async getFeesAsync(params: StandardRelayerApi.RelayerApiFeesRequest)
     : Promise<StandardRelayerApi.RelayerApiFeesResponse> {
+        assert.doesConformToSchema('params', params, schemas.relayerApiFeesPayloadSchema);
         const fees = await this._requestAsync(`/fees`, 'POST');
         this._convertNumberFieldsToBigNumbers(fees, ['makerFee', 'takerFee']);
         return fees;
     }
     public async submitOrderAsync(signedOrder: SignedOrder)
     : Promise<void> {
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         await this._requestAsync(`/order`, 'POST');
     }
     private _convertOrderNumberFieldsToBigNumber(order: any): void {
