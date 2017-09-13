@@ -65,6 +65,9 @@ export class Relay {
         const response = await fetch(url, {
             method,
         });
+        if (!response.ok) {
+            throw Error(response.statusText);
+        }
         const json = await response.json();
         return json;
     }
