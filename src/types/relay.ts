@@ -1,5 +1,12 @@
 import {SignedOrder} from './types';
 
+/*
+ * version: The API version to use. Defaults to 0
+ */
+export interface RelayOpts {
+    version?: number;
+}
+
 export interface RelayerApiTokenTradeInfo {
     address: string;
     symbol: string;

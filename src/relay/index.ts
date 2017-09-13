@@ -1,12 +1,13 @@
 import 'isomorphic-fetch';
+import * as _ from 'lodash';
 import {StandardRelayerApi, SignedOrder} from '../types';
 
 export class Relay {
     private url: string;
     private version: number;
-    constructor(url: string) {
+    constructor(url: string, opts?: StandardRelayerApi.RelayOpts) {
         this.url = url;
-        this.version = 0;
+        this.version = _.isUndefined(opts) ? 0 : opts.version || 0;
     }
     public async getTokenPairsAsync(): Promise<StandardRelayerApi.RelayerApiTokenTradeInfo[]> {
         const tokenPairs = await this._requestAsync('token_pairs', 'GET');
