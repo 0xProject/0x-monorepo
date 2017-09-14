@@ -7,11 +7,13 @@ import {chaiSetup} from './utils/chai_setup';
 import {Web3Wrapper} from '../src/web3_wrapper';
 import {SchemaValidator, schemas} from '0x-json-schemas';
 import {feesResponse} from './fixtures/standard_relayer_api/fees';
-import {orderResponse} from './fixtures/standard_relayer_api/order/0xdeadbeef';
+import {
+    orderResponse,
+} from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
 import {ordersResponse} from './fixtures/standard_relayer_api/orders';
 import {tokenPairsResponse} from './fixtures/standard_relayer_api/token_pairs';
 import * as feesResponseJSON from './fixtures/standard_relayer_api/fees.json';
-import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xdeadbeef.json';
+import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f.json';
 import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
 import * as tokenPairsResponseJSON from './fixtures/standard_relayer_api/token_pairs.json';
 
@@ -44,7 +46,7 @@ describe('Relay API', () => {
     });
     describe('#getOrderAsync', () => {
         it('gets order', async () => {
-            const orderHash = '0xdeadbeef';
+            const orderHash = '0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
             fetchMock.get(`${relayUrl}/v0/order/${orderHash}`, orderResponseJSON);
             const order = await relay.getOrderAsync(orderHash);
             expect(order).to.be.deep.equal(orderResponse);
