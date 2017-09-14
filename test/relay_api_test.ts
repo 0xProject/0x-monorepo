@@ -13,7 +13,7 @@ import {
 import {ordersResponse} from './fixtures/standard_relayer_api/orders';
 import {tokenPairsResponse} from './fixtures/standard_relayer_api/token_pairs';
 import * as feesResponseJSON from './fixtures/standard_relayer_api/fees.json';
-import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f.json';
+import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f.json'; // tslint:disable-line
 import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
 import * as tokenPairsResponseJSON from './fixtures/standard_relayer_api/token_pairs.json';
 
