@@ -20,7 +20,7 @@ export class Relay {
     public async getTokenPairsAsync(): Promise<StandardRelayerApi.RelayerApiTokenTradeInfo[]> {
         const tokenPairs = await this._requestAsync('/token_pairs', 'GET');
         _.map(tokenPairs, tokenPair => {
-            this._convertNumberFieldsToBigNumbers(tokenPair, [
+            this._convertStringsFieldsToBigNumbers(tokenPair, [
                 'tokenA.minAmount',
                 'tokenA.maxAmount',
                 'tokenB.minAmount',
@@ -32,19 +32,20 @@ export class Relay {
     public async getOrderAsync(orderHash: string): Promise<StandardRelayerApi.RelayerApiOrderResponse> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const order = await this._requestAsync(`/order/${orderHash}`, 'GET');
-        this._convertOrderNumberFieldsToBigNumber(order);
+        this._convertOrderStringFieldsToBigNumber(order);
         return order;
     }
     public async getOrdersAsync(): Promise<StandardRelayerApi.RelayerApiOrderResponse[]> {
         const orders = await this._requestAsync(`/orders`, 'GET');
-        _.map(orders, this._convertOrderNumberFieldsToBigNumber.bind(this));
+        _.map(orders, this._convertOrderStringFieldsToBigNumber.bind(this));
         return orders;
     }
     public async getFeesAsync(params: StandardRelayerApi.RelayerApiFeesRequest)
     : Promise<StandardRelayerApi.RelayerApiFeesResponse> {
         assert.doesConformToSchema('params', params, schemas.relayerApiFeesPayloadSchema);
+        this._convertBigNumberFieldsToStrings(params, ['makerTokenAmount', 'takerTokenAmount']);
         const fees = await this._requestAsync(`/fees`, 'POST');
-        this._convertNumberFieldsToBigNumbers(fees, ['makerFee', 'takerFee']);
+        this._convertStringsFieldsToBigNumbers(fees, ['makerFee', 'takerFee']);
         return fees;
     }
     public async submitOrderAsync(signedOrder: SignedOrder)
@@ -52,8 +53,8 @@ export class Relay {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         await this._requestAsync(`/order`, 'POST');
     }
-    private _convertOrderNumberFieldsToBigNumber(order: any): void {
-        this._convertNumberFieldsToBigNumbers(order, [
+    private _convertOrderStringFieldsToBigNumber(order: any): void {
+        this._convertStringsFieldsToBigNumbers(order, [
             'signedOrder.makerFee',
             'signedOrder.takerFee',
             'signedOrder.makerTokenAmount',
@@ -65,7 +66,12 @@ export class Relay {
             'remainingTakerTokenAmount',
         ]);
     }
-    private _convertNumberFieldsToBigNumbers(obj: any, fields: string[]): void {
+    private _convertBigNumberFieldsToStrings(obj: any, fields: string[]): void {
+        _.each(fields, field => {
+            _.update(obj, field, (value: BigNumber.BigNumber) => value.toString());
+        });
+    }
+    private _convertStringsFieldsToBigNumbers(obj: any, fields: string[]): void {
         _.each(fields, field => {
             _.update(obj, field, (value: string) => new BigNumber(value));
         });

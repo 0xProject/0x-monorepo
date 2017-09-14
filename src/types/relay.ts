@@ -38,8 +38,8 @@ export interface RelayerApiFeesRequest {
     taker: string;
     makerTokenAddress: string;
     takerTokenAddress: string;
-    makerTokenAmount: string;
-    takerTokenAmount: string;
+    makerTokenAmount: BigNumber.BigNumber;
+    takerTokenAmount: BigNumber.BigNumber;
 }
 
 export interface RelayerApiFeesResponse {

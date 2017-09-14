@@ -57,8 +57,8 @@ describe('Relay API', () => {
                 taker: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
                 makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                 takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-                makerTokenAmount: '10000000000000000000',
-                takerTokenAmount: '30000000000000000000',
+                makerTokenAmount: new BigNumber('10000000000000000000'),
+                takerTokenAmount: new BigNumber('30000000000000000000'),
             };
             fetchMock.post(`${relayUrl}/v0/fees`, JSON.stringify(feesResponseJSON));
             const fees = await relay.getFeesAsync(params);
