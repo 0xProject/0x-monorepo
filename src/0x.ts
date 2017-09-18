@@ -19,6 +19,7 @@ import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
+import {Relay} from './relay/index';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
 import {
     ECSignature,
@@ -41,6 +42,10 @@ bigNumberConfigs.configure();
  * and all calls to the library should be made through a ZeroEx instance.
  */
 export class ZeroEx {
+    /**
+     * Relay constructor. Relay is a client for sending requests to Relayers that implement the Standard Relayer API.
+     */
+    public static Relay = Relay;
     /**
      * When creating an order without a specified taker or feeRecipient you must supply the Solidity
      * address null type (as opposed to Javascripts `null`, `undefined` or empty string). We expose

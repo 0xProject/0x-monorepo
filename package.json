@@ -32,7 +32,8 @@
     "build:umd:dev": "webpack",
     "build:umd:prod": "NODE_ENV=production webpack",
     "build:commonjs": "tsc; copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts;",
-    "test:commonjs": "run-s build:commonjs run_mocha",
+    "test:commonjs": "run-s build:commonjs copy_test_fixtures run_mocha",
+    "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
     "pretest:umd": "run-s clean build:umd:dev build:commonjs",
     "substitute_umd_bundle": "npm run remove_src_files_not_used_by_tests; shx mv _bundles/* lib/src",
     "remove_src_files_not_used_by_tests": "find ./lib/src \\( -path ./lib/src/utils -o -path ./lib/src/subproviders -o -path ./lib/src/schemas -o -path \"./lib/src/types.*\" \\) -prune -o -type f -print | xargs rm",
@@ -51,6 +52,7 @@
     "node": ">=6.0.0"
   },
   "devDependencies": {
+    "@types/fetch-mock": "^5.12.0",
     "@types/jsonschema": "^1.1.1",
     "@types/lodash": "^4.14.64",
     "@types/mocha": "^2.2.41",
@@ -67,6 +69,7 @@
     "coveralls": "^2.13.1",
     "dirty-chai": "^2.0.1",
     "ethereumjs-testrpc": "4.0.1",
+    "fetch-mock": "^5.12.2",
     "json-loader": "^0.5.4",
     "mocha": "^3.4.1",
     "npm-run-all": "^4.0.2",
@@ -89,14 +92,15 @@
     "webpack": "^3.1.0"
   },
   "dependencies": {
-    "@types/bignumber.js": "^4.0.2",
     "0x-json-schemas": "^0.5.1",
+    "@types/bignumber.js": "^4.0.2",
     "bignumber.js": "^4.0.2",
     "compare-versions": "^3.0.1",
     "es6-promisify": "^5.0.0",
     "ethereumjs-abi": "^0.6.4",
     "ethereumjs-util": "^5.1.1",
     "find-versions": "^2.0.0",
+    "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "publish-release": "^1.3.3",
     "web3": "^0.20.0"
