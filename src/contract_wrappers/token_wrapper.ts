@@ -135,7 +135,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
-        const proxyAddress = await this._getTokentransferProxyAddressAsync();
+        const proxyAddress = await this._getTokenTransferProxyAddressAsync();
         const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, methodOpts);
         return allowanceInBaseUnits;
     }
@@ -154,7 +154,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
-        const proxyAddress = await this._getTokentransferProxyAddressAsync();
+        const proxyAddress = await this._getTokenTransferProxyAddressAsync();
         const txHash = await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
         return txHash;
     }
@@ -301,7 +301,7 @@ export class TokenWrapper extends ContractWrapper {
         this._tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
     }
-    private async _getTokentransferProxyAddressAsync(): Promise<string> {
+    private async _getTokenTransferProxyAddressAsync(): Promise<string> {
         const tokenTransferProxyContractAddress = await this._tokenTransferProxyContractAddressFetcher();
         const lowerCaseTokenTransferProxyContractAddress = tokenTransferProxyContractAddress.toLowerCase();
         return lowerCaseTokenTransferProxyContractAddress;
