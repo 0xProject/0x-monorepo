@@ -4,12 +4,11 @@ import {chaiSetup} from './utils/chai_setup';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
-import {ZeroEx, Order} from '../src';
+import {ZeroEx, Order, ZeroExError, LogWithDecodedArgs} from '../src';
 import {constants} from './utils/constants';
 import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import {LogWithDecodedArgs} from '../src';
 
 const blockchainLifecycle = new BlockchainLifecycle();
 chaiSetup.configure();
@@ -229,6 +228,32 @@ describe('ZeroEx library', () => {
             expect(log.args._owner).to.be.equal(coinbase);
             expect(log.args._spender).to.be.equal(proxyAddress);
             expect(log.args._value).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+    });
+    describe('#config', () => {
+        it('allows to specify exchange contract address', async () => {
+            const config = {
+                exchangeContractAddress: ZeroEx.NULL_ADDRESS,
+            };
+            const zeroExWithWrongExchangeAddress = new ZeroEx(web3.currentProvider, config);
+            return expect(zeroExWithWrongExchangeAddress.exchange.getContractAddressAsync())
+                .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+        });
+        it('allows to specify ether token contract address', async () => {
+            const config = {
+                etherTokenContractAddress: ZeroEx.NULL_ADDRESS,
+            };
+            const zeroExWithWrongEtherTokenAddress = new ZeroEx(web3.currentProvider, config);
+            return expect(zeroExWithWrongEtherTokenAddress.etherToken.getContractAddressAsync())
+                .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+        });
+        it('allows to specify token registry token contract address', async () => {
+            const config = {
+                tokenRegistryContractAddress: ZeroEx.NULL_ADDRESS,
+            };
+            const zeroExWithWrongTokenRegistryAddress = new ZeroEx(web3.currentProvider, config);
+            return expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddressAsync())
+                .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
         });
     });
 });

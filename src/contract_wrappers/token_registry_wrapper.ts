@@ -84,6 +84,16 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const token = this._createTokenFromMetadata(metadata);
         return token;
     }
+    /**
+     * Retrieves the Ethereum address of the TokenRegistry contract deployed on the network
+     * that the user-passed web3 provider is connected to.
+     * @returns The Ethereum address of the TokenRegistry contract being used.
+     */
+    public async getContractAddressAsync(): Promise<string> {
+        const tokenRegistryInstance = await this._getTokenRegistryContractAsync();
+        const tokenRegistryAddress = tokenRegistryInstance.address;
+        return tokenRegistryAddress;
+    }
     private _createTokenFromMetadata(metadata: TokenMetadata): Token|undefined {
         if (metadata[0] === constants.NULL_ADDRESS) {
             return undefined;
