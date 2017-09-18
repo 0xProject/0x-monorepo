@@ -391,6 +391,9 @@ export interface JSONRPCPayload {
 
 export interface ZeroExConfig {
     gasPrice?: BigNumber.BigNumber; // Gas price to use with every transaction
+    exchangeContractAddress?: string;
+    tokenRegistryContractAddress?: string;
+    etherTokenContractAddress?: string;
 }
 
 export type TransactionReceipt = Web3.TransactionReceipt;

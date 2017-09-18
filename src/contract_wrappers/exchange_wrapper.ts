@@ -56,6 +56,7 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrCodes.ERROR_FILL_TRUNCATION]: ExchangeContractErrs.OrderFillRoundingError,
         [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FillBalanceAllowanceError,
     };
+    private _contractAddress?: string;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
             order.maker,
@@ -74,11 +75,12 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper) {
+    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, contractAddress?: string) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
         this._exchangeLogEventEmitters = [];
+        this._contractAddress = contractAddress;
     }
     /**
      * Returns the unavailable takerAmount of an order. Unavailable amount is defined as the total
@@ -738,7 +740,7 @@ export class ExchangeWrapper extends ContractWrapper {
             return this._exchangeContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<ExchangeContract>(
-            artifacts.ExchangeArtifact,
+            artifacts.ExchangeArtifact, this._contractAddress,
         );
         this._exchangeContractIfExists = contractInstance as ExchangeContract;
         return this._exchangeContractIfExists;

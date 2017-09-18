@@ -198,13 +198,16 @@ export class ZeroEx {
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
+        const exchangeContractAddress = _.isUndefined(config) ? undefined : config.exchangeContractAddress;
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, exchangeContractAddress);
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
+        const tokenRegistryContractAddress = _.isUndefined(config) ? undefined : config.tokenRegistryContractAddress;
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, tokenRegistryContractAddress);
+        const etherTokenContractAddress = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddress);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
