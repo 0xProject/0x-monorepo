@@ -194,9 +194,15 @@ export class ZeroEx {
             gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
-        this.token = new TokenWrapper(this._web3Wrapper);
-        this.proxy = new TokenTransferProxyWrapper(this._web3Wrapper);
+        this.token = new TokenWrapper(
+            this._web3Wrapper,
+            this._getTokenTransferProxyAddressAsync.bind(this),
+        );
         this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token);
+        this.proxy = new TokenTransferProxyWrapper(
+            this._web3Wrapper,
+            this._getTokenTransferProxyAddressAsync.bind(this),
+        );
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper);
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token);
     }
@@ -305,5 +311,9 @@ export class ZeroEx {
             }, pollingIntervalMs);
         });
         return txReceiptPromise;
+    }
+    private async _getTokenTransferProxyAddressAsync(): Promise<string> {
+        const tokenTransferProxyAddress = await (this.exchange as any)._getTokenTransferProxyAddressAsync();
+        return tokenTransferProxyAddress;
     }
 }

@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import {Web3Wrapper} from '../web3_wrapper';
 import {ContractWrapper} from './contract_wrapper';
 import {artifacts} from '../artifacts';
 import {TokenTransferProxyContract} from '../types';
@@ -8,6 +9,11 @@ import {TokenTransferProxyContract} from '../types';
  */
 export class TokenTransferProxyWrapper extends ContractWrapper {
     private _tokenTransferProxyContractIfExists?: TokenTransferProxyContract;
+    private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
+    constructor(web3Wrapper: Web3Wrapper, tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
+        super(web3Wrapper);
+        this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
+    }
     /**
      * Check if the Exchange contract address is authorized by the TokenTransferProxy contract.
      * @param   exchangeContractAddress     The hex encoded address of the Exchange contract to call.
@@ -44,8 +50,9 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         if (!_.isUndefined(this._tokenTransferProxyContractIfExists)) {
             return this._tokenTransferProxyContractIfExists;
         }
+        const contractAddress = await this._tokenTransferProxyContractAddressFetcher();
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenTransferProxyContract>(
-            artifacts.TokenTransferProxyArtifact,
+            artifacts.TokenTransferProxyArtifact, contractAddress,
         );
         this._tokenTransferProxyContractIfExists = contractInstance as TokenTransferProxyContract;
         return this._tokenTransferProxyContractIfExists;

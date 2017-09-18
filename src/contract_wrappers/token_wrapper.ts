@@ -31,10 +31,12 @@ export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenLogEventEmitters: ContractEventEmitter[];
-    constructor(web3Wrapper: Web3Wrapper) {
+    private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
+    constructor(web3Wrapper: Web3Wrapper, tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
         super(web3Wrapper);
         this._tokenContractsByAddress = {};
         this._tokenLogEventEmitters = [];
+        this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
     }
     /**
      * Retrieves an owner's ERC20 token balance.
@@ -133,7 +135,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
-        const proxyAddress = await this._getProxyAddressAsync();
+        const proxyAddress = await this._getTokentransferProxyAddressAsync();
         const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, methodOpts);
         return allowanceInBaseUnits;
     }
@@ -152,7 +154,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
 
-        const proxyAddress = await this._getProxyAddressAsync();
+        const proxyAddress = await this._getTokentransferProxyAddressAsync();
         const txHash = await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
         return txHash;
     }
@@ -299,15 +301,9 @@ export class TokenWrapper extends ContractWrapper {
         this._tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
     }
-    private async _getProxyAddressAsync() {
-        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const proxyNetworkConfigsIfExists = _.isUndefined(networkIdIfExists) ?
-                                       undefined :
-                                       artifacts.TokenTransferProxyArtifact.networks[networkIdIfExists];
-        if (_.isUndefined(proxyNetworkConfigsIfExists)) {
-            throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
-        }
-        const proxyAddress = proxyNetworkConfigsIfExists.address.toLowerCase();
-        return proxyAddress;
+    private async _getTokentransferProxyAddressAsync(): Promise<string> {
+        const tokenTransferProxyContractAddress = await this._tokenTransferProxyContractAddressFetcher();
+        const lowerCaseTokenTransferProxyContractAddress = tokenTransferProxyContractAddress.toLowerCase();
+        return lowerCaseTokenTransferProxyContractAddress;
     }
 }

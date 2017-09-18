@@ -51,6 +51,9 @@ export interface ExchangeContract extends Web3.ContractInstance {
     ZRX_TOKEN_CONTRACT: {
         callAsync: () => Promise<string>;
     };
+    TOKEN_TRANSFER_PROXY_CONTRACT: {
+        callAsync: () => Promise<string>;
+    };
     getUnavailableTakerTokenAmount: {
         callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
