@@ -32,6 +32,7 @@ import {
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
 } from './types';
+import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -180,6 +181,9 @@ export class ZeroEx {
      */
     constructor(provider: Web3Provider, config?: ZeroExConfig) {
         assert.isWeb3Provider('provider', provider);
+        if (!_.isUndefined(config)) {
+            assert.doesConformToSchema('config', config, zeroExConfigSchema);
+        }
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
