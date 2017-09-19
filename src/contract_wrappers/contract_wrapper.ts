@@ -10,9 +10,10 @@ export class ContractWrapper {
         this._web3Wrapper = web3Wrapper;
     }
     protected async _instantiateContractIfExistsAsync<A extends Web3.ContractInstance>(artifact: Artifact,
-                                                                                       address?: string): Promise<A> {
+                                                                                       addressIfExists?: string,
+                                                                                      ): Promise<A> {
         const contractInstance =
-            await this._web3Wrapper.getContractInstanceFromArtifactAsync<A>(artifact, address);
+            await this._web3Wrapper.getContractInstanceFromArtifactAsync<A>(artifact, addressIfExists);
         return contractInstance;
     }
 }

@@ -13,11 +13,11 @@ import {artifacts} from '../artifacts';
 export class EtherTokenWrapper extends ContractWrapper {
     private _etherTokenContractIfExists?: EtherTokenContract;
     private _tokenWrapper: TokenWrapper;
-    private _contractAddress?: string;
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, contractAddress?: string) {
+    private _contractAddressIfExists?: string;
+    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
         super(web3Wrapper);
         this._tokenWrapper = tokenWrapper;
-        this._contractAddress = contractAddress;
+        this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
      * Deposit ETH into the Wrapped ETH smart contract and issues the equivalent number of wrapped ETH tokens
@@ -78,7 +78,7 @@ export class EtherTokenWrapper extends ContractWrapper {
             return this._etherTokenContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<EtherTokenContract>(
-            artifacts.EtherTokenArtifact, this._contractAddress,
+            artifacts.EtherTokenArtifact, this._contractAddressIfExists,
         );
         this._etherTokenContractIfExists = contractInstance as EtherTokenContract;
         return this._etherTokenContractIfExists;

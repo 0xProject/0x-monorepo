@@ -11,10 +11,10 @@ import {artifacts} from '../artifacts';
  */
 export class TokenRegistryWrapper extends ContractWrapper {
     private _tokenRegistryContractIfExists?: TokenRegistryContract;
-    private _contractAddress?: string;
-    constructor(web3Wrapper: Web3Wrapper, contractAddress?: string) {
+    private _contractAddressIfExists?: string;
+    constructor(web3Wrapper: Web3Wrapper, contractAddressIfExists?: string) {
         super(web3Wrapper);
-        this._contractAddress = contractAddress;
+        this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
      * Retrieves all the tokens currently listed in the Token Registry smart contract
@@ -114,7 +114,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
             return this._tokenRegistryContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenRegistryContract>(
-            artifacts.TokenRegistryArtifact, this._contractAddress,
+            artifacts.TokenRegistryArtifact, this._contractAddressIfExists,
         );
         this._tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
         return this._tokenRegistryContractIfExists;
