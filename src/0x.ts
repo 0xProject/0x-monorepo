@@ -323,7 +323,7 @@ export class ZeroEx {
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
-     * an `ExchnageWrapper`. `ExchangeWrapper` needs `TokenWrapper` to validate orders. Cycle.
+     * an `ExchangeWrapper`. `ExchangeWrapper` needs `TokenWrapper` to validate orders, creating a dependency cycle.
      * In order to break this - we create this function here and pass it as a parameter to the `TokenWrapper`
      * and `ProxyWrapper`.
      */
