@@ -322,7 +322,7 @@ export class ZeroEx {
         return txReceiptPromise;
     }
     /*
-     * `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
+     * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
      * an `ExchnageWrapper`. `ExchangeWrapper` needs `TokenWrapper` to validate orders. Cycle.
      * In order to break this - we create this function here and pass it as a parameter to the `TokenWrapper`
      * and `ProxyWrapper`.
