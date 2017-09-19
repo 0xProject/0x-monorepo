@@ -202,16 +202,18 @@ export class ZeroEx {
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
-        const exchangeContractAddress = _.isUndefined(config) ? undefined : config.exchangeContractAddress;
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, exchangeContractAddress);
+        const exchageContractAddressIfExists = _.isUndefined(config) ? undefined : config.exchangeContractAddress;
+        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, exchageContractAddressIfExists);
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
-        const tokenRegistryContractAddress = _.isUndefined(config) ? undefined : config.tokenRegistryContractAddress;
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, tokenRegistryContractAddress);
-        const etherTokenContractAddress = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddress);
+        const tokenRegistryContractAddressIfExists = _.isUndefined(config) ?
+                                                     undefined :
+                                                     config.tokenRegistryContractAddress;
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, tokenRegistryContractAddressIfExists);
+        const etherTokenContractAddressIfExists = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddressIfExists);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
