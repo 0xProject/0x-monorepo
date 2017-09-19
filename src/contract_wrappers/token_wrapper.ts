@@ -303,7 +303,6 @@ export class TokenWrapper extends ContractWrapper {
     }
     private async _getTokenTransferProxyAddressAsync(): Promise<string> {
         const tokenTransferProxyContractAddress = await this._tokenTransferProxyContractAddressFetcher();
-        const lowerCaseTokenTransferProxyContractAddress = tokenTransferProxyContractAddress.toLowerCase();
-        return lowerCaseTokenTransferProxyContractAddress;
+        return tokenTransferProxyContractAddress;
     }
 }

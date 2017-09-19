@@ -753,6 +753,7 @@ export class ExchangeWrapper extends ContractWrapper {
     private async _getTokenTransferProxyAddressAsync(): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
         const tokenTransferProxyAddress = await exchangeInstance.TOKEN_TRANSFER_PROXY_CONTRACT.callAsync();
-        return tokenTransferProxyAddress;
+        const tokenTransferProxyAddressLowerCase = tokenTransferProxyAddress.toLowerCase();
+        return tokenTransferProxyAddressLowerCase;
     }
 }
