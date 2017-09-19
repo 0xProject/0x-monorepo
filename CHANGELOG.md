@@ -1,5 +1,13 @@
 # CHANGELOG
 
+v0.16.0 - _TBD, 2017_
+------------------------
+    * Added the ability to specify custom contract addresses to be used with 0x.js (#165)
+        * ZeroExConfig.exchangeContractAddress
+        * ZeroExConfig.tokenRegistryContractAddress
+        * ZeroExConfig.etherTokenContractAddress
+    * Added `zeroEx.tokenRegistry.getContractAddressAsync` (#165)
+
 v0.15.0 - _September 8, 2017_
 ------------------------
     * Added the ability to specify a historical `blockNumber` at which to query the blockchain's state when calling a token or exchange method (#161)
