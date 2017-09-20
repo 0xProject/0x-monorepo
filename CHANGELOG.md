@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.16.0 - _TBD, 2017_
+v0.16.0 - _September 20, 2017_
 ------------------------
     * Added the ability to specify custom contract addresses to be used with 0x.js (#165)
         * ZeroExConfig.exchangeContractAddress
