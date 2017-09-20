@@ -51,6 +51,9 @@ export interface ExchangeContract extends Web3.ContractInstance {
     ZRX_TOKEN_CONTRACT: {
         callAsync: () => Promise<string>;
     };
+    TOKEN_TRANSFER_PROXY_CONTRACT: {
+        callAsync: () => Promise<string>;
+    };
     getUnavailableTakerTokenAmount: {
         callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
@@ -386,8 +389,17 @@ export interface JSONRPCPayload {
     method: string;
 }
 
+/*
+ * gasPrice: Gas price to use with every transaction
+ * exchangeContractAddress: The address of an exchange contract to use
+ * tokenRegistryContractAddress: The address of a token registry contract to use
+ * etherTokenContractAddress: The address of an ether token contract to use
+ */
 export interface ZeroExConfig {
     gasPrice?: BigNumber.BigNumber; // Gas price to use with every transaction
+    exchangeContractAddress?: string;
+    tokenRegistryContractAddress?: string;
+    etherTokenContractAddress?: string;
 }
 
 export type TransactionReceipt = Web3.TransactionReceipt;

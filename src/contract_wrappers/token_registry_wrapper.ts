@@ -11,8 +11,10 @@ import {artifacts} from '../artifacts';
  */
 export class TokenRegistryWrapper extends ContractWrapper {
     private _tokenRegistryContractIfExists?: TokenRegistryContract;
-    constructor(web3Wrapper: Web3Wrapper) {
+    private _contractAddressIfExists?: string;
+    constructor(web3Wrapper: Web3Wrapper, contractAddressIfExists?: string) {
         super(web3Wrapper);
+        this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
      * Retrieves all the tokens currently listed in the Token Registry smart contract
@@ -82,6 +84,16 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const token = this._createTokenFromMetadata(metadata);
         return token;
     }
+    /**
+     * Retrieves the Ethereum address of the TokenRegistry contract deployed on the network
+     * that the user-passed web3 provider is connected to.
+     * @returns The Ethereum address of the TokenRegistry contract being used.
+     */
+    public async getContractAddressAsync(): Promise<string> {
+        const tokenRegistryInstance = await this._getTokenRegistryContractAsync();
+        const tokenRegistryAddress = tokenRegistryInstance.address;
+        return tokenRegistryAddress;
+    }
     private _createTokenFromMetadata(metadata: TokenMetadata): Token|undefined {
         if (metadata[0] === constants.NULL_ADDRESS) {
             return undefined;
@@ -102,7 +114,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
             return this._tokenRegistryContractIfExists;
         }
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenRegistryContract>(
-            artifacts.TokenRegistryArtifact,
+            artifacts.TokenRegistryArtifact, this._contractAddressIfExists,
         );
         this._tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
         return this._tokenRegistryContractIfExists;

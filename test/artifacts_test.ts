@@ -23,7 +23,7 @@ describe('Artifacts', () => {
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
         }).timeout(TIMEOUT);
         it('proxy contract is deployed', async () => {
-            await (zeroEx.token as any)._getProxyAddressAsync();
+            await (zeroEx.token as any)._getTokenTransferProxyAddressAsync();
         }).timeout(TIMEOUT);
         it('exchange contract is deployed', async () => {
             await zeroEx.exchange.getContractAddressAsync();
