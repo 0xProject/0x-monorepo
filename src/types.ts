@@ -390,7 +390,7 @@ export interface JSONRPCPayload {
 }
 
 /*
- * gasPirce: Gas price to use with every transaction
+ * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
  * etherTokenContractAddress: The address of an ether token contract to use
