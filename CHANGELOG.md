@@ -1,7 +1,9 @@
 # CHANGELOG
 
-v0.17.0 - _September 26, 2017_
+v0.18.0 - _September 26, 2017_
     * Added `zeroEx.exchange.validateOrderFillableOrThrowAsync` to simplify orderbook pruning (#170)
+
+v0.17.0 - _September 26, 2017_
     * Made `zeroEx.exchange.getZRXTokenAddressAsync` public (#171)
 
 v0.16.0 - _September 20, 2017_
