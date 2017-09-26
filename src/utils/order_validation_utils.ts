@@ -13,7 +13,7 @@ export class OrderValidationUtils {
         this.tokenWrapper = tokenWrapper;
         this.exchangeWrapper = exchangeWrapper;
     }
-    public async validateOrderFillableThrowIfNotFillableAsync(
+    public async validateOrderFillableOrThrowAsync(
         signedOrder: SignedOrder, zrxTokenAddress: string, expectedFillTakerTokenAmount?: BigNumber.BigNumber,
     ): Promise<void> {
         const orderHash = utils.getOrderHashHex(signedOrder);

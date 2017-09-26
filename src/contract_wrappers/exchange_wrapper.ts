@@ -632,13 +632,13 @@ export class ExchangeWrapper extends ContractWrapper {
      *                          interface. Allows specifying a specific fillTakerTokenAmount
      *                          to validate for.
      */
-    public async validateOrderFillableThrowIfNotFillableAsync(
+    public async validateOrderFillableOrThrowAsync(
         signedOrder: SignedOrder, opts: ValidateOrderFillableOpts,
     ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const zrxTokenAddress = await this._getZRXTokenAddressAsync();
         const expectedFillTakerTokenAmount = !_.isUndefined(opts) ? opts.expectedFillTakerTokenAmount : undefined;
-        await this._orderValidationUtils.validateOrderFillableThrowIfNotFillableAsync(
+        await this._orderValidationUtils.validateOrderFillableOrThrowAsync(
             signedOrder, zrxTokenAddress, expectedFillTakerTokenAmount,
         );
     }
