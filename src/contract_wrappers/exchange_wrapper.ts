@@ -625,7 +625,8 @@ export class ExchangeWrapper extends ContractWrapper {
         return exchangeAddress;
     }
     /**
-     * Checks if order is still fillable and throws an error otherwise.
+     * Checks if order is still fillable and throws an error otherwise. Useful for orderbook
+     * pruning where you want to remove stale orders without knowing who the taker will be.
      * @param   signedOrder     An object that conforms to the SignedOrder interface. The
      *                          signedOrder you wish to validate.
      * @param   opts            An object that conforms to the ValidateOrderFillableOpts
