@@ -591,4 +591,11 @@ describe('ExchangeWrapper', () => {
             expect(orderHash).to.equal(orderHashFromContract);
         });
     });
+    describe('#getZRXTokenAddressAsync', () => {
+        it('gets the same token as is in token registry', async () => {
+            const zrxAddress = await zeroEx.exchange.getZRXTokenAddressAsync();
+            const zrxToken = tokenUtils.getProtocolTokenOrThrow();
+            expect(zrxAddress).to.equal(zrxToken.address);
+        });
+    });
 });
