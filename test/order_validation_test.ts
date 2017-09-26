@@ -65,7 +65,7 @@ describe('OrderValidation', () => {
         });
         it('should succeed if the order is asymmetric and fillable', async () => {
             const makerFillableAmount = fillableAmount;
-            const takerFillableAmount = fillableAmount.minus(2);
+            const takerFillableAmount = fillableAmount.minus(4);
             const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
                 makerFillableAmount, takerFillableAmount,
