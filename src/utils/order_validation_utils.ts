@@ -18,7 +18,7 @@ export class OrderValidationUtils {
     ): Promise<void> {
         const orderHash = utils.getOrderHashHex(signedOrder);
         const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
-        if (signedOrder.makerTokenAmount.eq(unavailableTakerTokenAmount)) {
+        if (signedOrder.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
         }
         const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
@@ -45,7 +45,7 @@ export class OrderValidationUtils {
             throw new Error(ZeroExError.InvalidSignature);
         }
         const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
-        if (signedOrder.makerTokenAmount.eq(unavailableTakerTokenAmount)) {
+        if (signedOrder.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
         }
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== takerAddress) {
