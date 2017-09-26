@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as fetch from 'node-fetch';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
@@ -88,16 +89,16 @@ export class Web3Wrapper {
         const decimal = this.web3.toBigNumber(hex);
         return decimal;
     }
-    public async getTxPoolContentAsync(): Promise<Web3.Transaction[]> {
+    public async getTxPoolContentAsync(url: string): Promise<Web3.Transaction[]> {
         const nodeVersion = await this.getNodeVersionAsync();
-        if (utils.isParityNode(nodeVersion)) {
+        if (true) {
             const payload = {
                 method: 'parity_pendingTransactions',
                 params: [],
                 id: 1,
                 jsonrpc: '2.0',
             };
-            const response = await this.sendRawPayloadAsync(payload);
+            const response = await this.sendRawPayloadAsync(payload, url);
             const transactions = response.result;
             return transactions;
         } else if (utils.isGethNode(nodeVersion)) {
@@ -107,7 +108,7 @@ export class Web3Wrapper {
                 id: 1,
                 jsonrpc: '2.0',
             };
-            const response = await this.sendRawPayloadAsync(payload);
+            const response = await this.sendRawPayloadAsync(payload, url);
             const pending = (response.result as GethTxPool).pending;
             const transactions = [];
             for (const txsByNonce of _.values(pending)) {
@@ -121,10 +122,21 @@ export class Web3Wrapper {
                 connected to Geth or Parity nodes. You're currantly connected to: ${nodeVersion}`);
         }
     }
-    private async sendRawPayloadAsync(payload: Web3.JSONRPCRequestPayload): Promise<Web3.JSONRPCResponsePayload> {
-        const provider = this.web3.currentProvider;
-        const response = await promisify(provider.sendAsync.bind(provider))(payload);
-        return response;
+    private async sendRawPayloadAsync(payload: Web3.JSONRPCRequestPayload,
+                                      url: string): Promise<Web3.JSONRPCResponsePayload> {
+        const resp = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+        });
+        const data = await resp.json();
+        return data;
+        // const provider = this.web3.currentProvider;
+        // const response = await promisify(provider.sendAsync.bind(provider))(payload);
+        // return response;
     }
     private async getNetworkAsync(): Promise<number> {
         const networkId = await promisify(this.web3.version.getNetwork)();
