@@ -434,6 +434,16 @@ export interface Artifact {
 }
 
 /*
+ * expectedFillTakerTokenAmount: If specified, the validation method will ensure that the
+ * supplied order maker has a sufficient allowance/balance to fill this amount of the order's
+ * takerTokenAmount. If not specified, the validation method ensures that the maker has a sufficient
+ * allowance/balance to fill the entire remaining order amount.
+ */
+export interface ValidateOrderFillableOpts {
+    expectedFillTakerTokenAmount?: BigNumber.BigNumber;
+}
+
+/*
  * defaultBlock: The block up to which to query the blockchain state. Setting this to a historical block number
  * let's the user query the blockchain's state at an arbitrary point in time. In order for this to work, the
  * backing  Ethereum node must keep the entire historical state of the chain (e.g setting `--pruning=archive`

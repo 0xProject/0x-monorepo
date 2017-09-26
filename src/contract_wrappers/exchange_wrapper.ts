@@ -28,6 +28,7 @@ import {
     LogCancelContractEventArgs,
     LogWithDecodedArgs,
     MethodOpts,
+    ValidateOrderFillableOpts,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -622,6 +623,25 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeInstance = await this._getExchangeContractAsync();
         const exchangeAddress = exchangeInstance.address;
         return exchangeAddress;
+    }
+    /**
+     * Checks if order is still fillable and throws an error otherwise. Useful for orderbook
+     * pruning where you want to remove stale orders without knowing who the taker will be.
+     * @param   signedOrder     An object that conforms to the SignedOrder interface. The
+     *                          signedOrder you wish to validate.
+     * @param   opts            An object that conforms to the ValidateOrderFillableOpts
+     *                          interface. Allows specifying a specific fillTakerTokenAmount
+     *                          to validate for.
+     */
+    public async validateOrderFillableOrThrowAsync(
+        signedOrder: SignedOrder, opts?: ValidateOrderFillableOpts,
+    ): Promise<void> {
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
+        const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+        const expectedFillTakerTokenAmount = !_.isUndefined(opts) ? opts.expectedFillTakerTokenAmount : undefined;
+        await this._orderValidationUtils.validateOrderFillableOrThrowAsync(
+            signedOrder, zrxTokenAddress, expectedFillTakerTokenAmount,
+        );
     }
     /**
      * Checks if order fill will succeed and throws an error otherwise.
