@@ -55,6 +55,25 @@ describe('OrderValidation', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('validateOrderFillableOrThrowAsync', () => {
+        it('should succeed if the order is fillable', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            await zeroEx.exchange.validateOrderFillableOrThrowAsync(
+                signedOrder,
+            );
+        });
+        it('should succeed if the order is asymmetric and fillable', async () => {
+            const makerFillableAmount = fillableAmount;
+            const takerFillableAmount = fillableAmount.minus(5000);
+            const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+                makerFillableAmount, takerFillableAmount,
+            );
+            await zeroEx.exchange.validateOrderFillableOrThrowAsync(
+                signedOrder,
+            );
+        });
         it('should throw when the order is fully filled or cancelled', async () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
