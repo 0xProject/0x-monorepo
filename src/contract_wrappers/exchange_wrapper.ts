@@ -637,7 +637,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrder: SignedOrder, opts?: ValidateOrderFillableOpts,
     ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        const zrxTokenAddress = await this._getZRXTokenAddressAsync();
+        const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         const expectedFillTakerTokenAmount = !_.isUndefined(opts) ? opts.expectedFillTakerTokenAmount : undefined;
         await this._orderValidationUtils.validateOrderFillableOrThrowAsync(
             signedOrder, zrxTokenAddress, expectedFillTakerTokenAmount,
