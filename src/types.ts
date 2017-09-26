@@ -435,9 +435,9 @@ export interface Artifact {
 
 /*
  * expectedFillTakerTokenAmount: If specified, the validation method will ensure that the
- * supplied order's maker has a sufficient allowance/balance to fill this amount of the order's
+ * supplied order maker has a sufficient allowance/balance to fill this amount of the order's
  * takerTokenAmount. If not specified, the validation method ensures that the maker has a sufficient
- * allowance/balance to fill the entire remaining order.
+ * allowance/balance to fill the entire remaining order amount.
  */
 export interface ValidateOrderFillableOpts {
     expectedFillTakerTokenAmount?: BigNumber.BigNumber;
