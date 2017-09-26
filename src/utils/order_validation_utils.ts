@@ -18,13 +18,10 @@ export class OrderValidationUtils {
     ): Promise<void> {
         const orderHash = utils.getOrderHashHex(signedOrder);
         const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
-        if (signedOrder.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
-            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
-        }
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
-        if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.OrderFillExpired);
-        }
+        this.validateRemainingFillAmountNotZeroOrThrow(
+            signedOrder.takerTokenAmount, unavailableTakerTokenAmount,
+        );
+        this.validateOrderNotExpiredOrThrow(signedOrder.expirationUnixTimestampSec);
         let fillTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
         if (!_.isUndefined(expectedFillTakerTokenAmount)) {
             fillTakerTokenAmount = expectedFillTakerTokenAmount;
@@ -45,16 +42,13 @@ export class OrderValidationUtils {
             throw new Error(ZeroExError.InvalidSignature);
         }
         const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
-        if (signedOrder.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
-            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
-        }
+        this.validateRemainingFillAmountNotZeroOrThrow(
+            signedOrder.takerTokenAmount, unavailableTakerTokenAmount,
+        );
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== takerAddress) {
             throw new Error(ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker);
         }
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
-        if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.OrderFillExpired);
-        }
+        this.validateOrderNotExpiredOrThrow(signedOrder.expirationUnixTimestampSec);
         await this.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress,
         );
@@ -166,6 +160,19 @@ export class OrderValidationUtils {
             if (signedOrder.takerFee.greaterThan(takerZRXAllowance)) {
                 throw new Error(ExchangeContractErrs.InsufficientTakerFeeAllowance);
             }
+        }
+    }
+    private validateRemainingFillAmountNotZeroOrThrow(
+        takerTokenAmount: BigNumber.BigNumber, unavailableTakerTokenAmount: BigNumber.BigNumber,
+    ) {
+        if (takerTokenAmount.eq(unavailableTakerTokenAmount)) {
+            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
+        }
+    }
+    private validateOrderNotExpiredOrThrow(expirationUnixTimestampSec: BigNumber.BigNumber) {
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
+        if (expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+            throw new Error(ExchangeContractErrs.OrderFillExpired);
         }
     }
 }
