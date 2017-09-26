@@ -54,6 +54,27 @@ describe('OrderValidation', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
+    describe('validateOrderFillableOrThrowAsync', () => {
+        it('should throw when the order is fully filled or cancelled', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
+            return expect(zeroEx.exchange.validateOrderFillableOrThrowAsync(
+                signedOrder,
+            )).to.be.rejectedWith(ExchangeContractErrs.OrderRemainingFillAmountZero);
+        });
+        it('should throw when order is expired', async () => {
+            const expirationInPast = new BigNumber(1496826058); // 7th Jun 2017
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
+                fillableAmount, expirationInPast,
+            );
+            return expect(zeroEx.exchange.validateOrderFillableOrThrowAsync(
+                signedOrder,
+            )).to.be.rejectedWith(ExchangeContractErrs.OrderFillExpired);
+        });
+    });
     describe('validateFillOrderAndThrowIfInvalidAsync', () => {
         it('should throw when the fill amount is zero', async () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
