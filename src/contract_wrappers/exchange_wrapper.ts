@@ -633,7 +633,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                          to validate for.
      */
     public async validateOrderFillableOrThrowAsync(
-        signedOrder: SignedOrder, opts: ValidateOrderFillableOpts,
+        signedOrder: SignedOrder, opts?: ValidateOrderFillableOpts,
     ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const zrxTokenAddress = await this._getZRXTokenAddressAsync();
