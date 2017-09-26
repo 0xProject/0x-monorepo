@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import {ExchangeContractErrs, SignedOrder, Order, ZeroExError} from '../types';
 import {ZeroEx} from '../0x';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
@@ -11,6 +12,26 @@ export class OrderValidationUtils {
     constructor(tokenWrapper: TokenWrapper, exchangeWrapper: ExchangeWrapper) {
         this.tokenWrapper = tokenWrapper;
         this.exchangeWrapper = exchangeWrapper;
+    }
+    public async validateOrderFillableThrowIfNotFillableAsync(
+        signedOrder: SignedOrder, zrxTokenAddress: string, expectedFillTakerTokenAmount?: BigNumber.BigNumber,
+    ): Promise<void> {
+        const orderHash = utils.getOrderHashHex(signedOrder);
+        const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
+        if (signedOrder.makerTokenAmount.eq(unavailableTakerTokenAmount)) {
+            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
+        }
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
+        if (signedOrder.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+            throw new Error(ExchangeContractErrs.OrderFillExpired);
+        }
+        let fillTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
+        if (!_.isUndefined(expectedFillTakerTokenAmount)) {
+            fillTakerTokenAmount = expectedFillTakerTokenAmount;
+        }
+        await this.validateFillOrderMakerBalancesAllowancesThrowIfInvalidAsync(
+            signedOrder, fillTakerTokenAmount, zrxTokenAddress,
+        );
     }
     public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                       fillTakerTokenAmount: BigNumber.BigNumber,
