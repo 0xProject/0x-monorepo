@@ -709,7 +709,7 @@ export class ExchangeWrapper extends ContractWrapper {
         }
     }
     /**
-     * Returns an address of ZRX token used by the exchange contract.
+     * Returns the ZRX token address used by the exchange contract.
      * @return Address of ZRX token
      */
     public async getZRXTokenAddressAsync(): Promise<string> {
