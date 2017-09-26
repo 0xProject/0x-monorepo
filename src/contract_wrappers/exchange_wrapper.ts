@@ -657,7 +657,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        const zrxTokenAddress = await this._getZRXTokenAddressAsync();
+        const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
@@ -690,7 +690,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        const zrxTokenAddress = await this._getZRXTokenAddressAsync();
+        const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
             signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
@@ -728,6 +728,15 @@ export class ExchangeWrapper extends ContractWrapper {
             throw new Error(errMessage);
         }
     }
+    /**
+     * Returns the ZRX token address used by the exchange contract.
+     * @return Address of ZRX token
+     */
+    public async getZRXTokenAddressAsync(): Promise<string> {
+        const exchangeInstance = await this._getExchangeContractAsync();
+        const ZRXtokenAddress = await exchangeInstance.ZRX_TOKEN_CONTRACT.callAsync();
+        return ZRXtokenAddress;
+    }
     private async _invalidateContractInstancesAsync(): Promise<void> {
         await this.stopWatchingAllEventsAsync();
         delete this._exchangeContractIfExists;
@@ -764,11 +773,6 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         this._exchangeContractIfExists = contractInstance as ExchangeContract;
         return this._exchangeContractIfExists;
-    }
-    private async _getZRXTokenAddressAsync(): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const ZRXtokenAddress = await exchangeInstance.ZRX_TOKEN_CONTRACT.callAsync();
-        return ZRXtokenAddress;
     }
     private async _getTokenTransferProxyAddressAsync(): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
