@@ -568,11 +568,6 @@ export class ExchangeWrapper extends ContractWrapper {
                 this.validateCancelOrderThrowIfInvalidAsync(
                     cancellationRequest.order, cancellationRequest.takerTokenCancelAmount)));
         }
-        for (const cancellationRequest of orderCancellationRequests) {
-            await this.validateCancelOrderThrowIfInvalidAsync(
-                cancellationRequest.order, cancellationRequest.takerTokenCancelAmount,
-            );
-        }
         if (_.isEmpty(orderCancellationRequests)) {
             throw new Error(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
         }
