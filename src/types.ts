@@ -452,3 +452,11 @@ export interface ValidateOrderFillableOpts {
 export interface MethodOpts {
     defaultBlock?: Web3.BlockParam;
 }
+
+/*
+ * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc.
+ */
+export interface OrderTransactionOpts {
+    shouldValidate: boolean;
+}
