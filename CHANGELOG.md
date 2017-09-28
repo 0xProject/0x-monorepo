@@ -1,5 +1,8 @@
 # CHANGELOG
 
+v0.18.1 - _September 28, 2017_
+    * Added Ropsten testnet support (#173)
+
 v0.18.0 - _September 26, 2017_
     * Added `zeroEx.exchange.validateOrderFillableOrThrowAsync` to simplify orderbook pruning (#170)
 
