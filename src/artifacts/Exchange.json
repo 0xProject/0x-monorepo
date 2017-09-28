@@ -725,6 +725,139 @@
       "updated_at": 1502480340000,
       "address": "0x12459c951127e0c374ff9105dda097662a027093"
     },
+    "3": {
+      "links": {},
+      "events": {
+        "0x0d0b9391970d9a25552f37d436d2aae2925e2bfe1b2a923754bada030c498cb3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "maker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "taker",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "feeRecipient",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "makerToken",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "takerToken",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "filledMakerTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "filledTakerTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "paidMakerFee",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "paidTakerFee",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "tokens",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "orderHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "LogFill",
+          "type": "event"
+        },
+        "0x67d66f160bc93d925d05dae1794c90d2d6d6688b29b84ff069398a9b04587131": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "maker",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "feeRecipient",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "makerToken",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "takerToken",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "cancelledMakerTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "cancelledTakerTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "name": "tokens",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "orderHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "LogCancel",
+          "type": "event"
+        },
+        "0x36d86c59e00bd73dc19ba3adfe068e4b64ac7e92be35546adeddf1b956a87e90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "errorId",
+              "type": "uint8"
+            },
+            {
+              "indexed": true,
+              "name": "orderHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "LogError",
+          "type": "event"
+        }
+      },
+      "updated_at": 1506602007000,
+      "address": "0x479cc461fecd078f766ecc58533d6f69580cf3ac"
+    },
     "42": {
       "links": {},
       "events": {

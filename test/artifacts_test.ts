@@ -29,4 +29,21 @@ describe('Artifacts', () => {
             await zeroEx.exchange.getContractAddressAsync();
         }).timeout(TIMEOUT);
     });
+    describe('contracts are deployed on ropsten', () => {
+        const ropstenRpcUrl = constants.ROPSTEN_RPC_URL;
+        const packageJSONContent = fs.readFileSync('package.json', 'utf-8');
+        const packageJSON = JSON.parse(packageJSONContent);
+        const mnemonic = packageJSON.config.mnemonic;
+        const web3Provider = new HDWalletProvider(mnemonic, ropstenRpcUrl);
+        const zeroEx = new ZeroEx(web3Provider);
+        it('token registry contract is deployed', async () => {
+            await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
+        }).timeout(TIMEOUT);
+        it('proxy contract is deployed', async () => {
+            await (zeroEx.token as any)._getTokenTransferProxyAddressAsync();
+        }).timeout(TIMEOUT);
+        it('exchange contract is deployed', async () => {
+            await zeroEx.exchange.getContractAddressAsync();
+        }).timeout(TIMEOUT);
+    });
 });
