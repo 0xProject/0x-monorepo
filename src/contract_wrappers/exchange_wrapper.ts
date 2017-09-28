@@ -41,6 +41,8 @@ import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
 import {artifacts} from '../artifacts';
 
+const SHOULD_VALIDATE_BY_DEFAULT = true;
+
 /**
  * This class includes all the functionality related to calling methods and subscribing to
  * events of the 0x Exchange smart contract.
@@ -169,7 +171,9 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ? true : orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
+            SHOULD_VALIDATE_BY_DEFAULT :
+            orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             await this.validateFillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
         }
@@ -236,7 +240,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ? true : orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
+            SHOULD_VALIDATE_BY_DEFAULT :
+            orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             await Promise.all(signedOrders.map(signedOrder => this.validateFillOrderThrowIfInvalidAsync(
                 signedOrder, fillTakerTokenAmount, takerAddress)));
@@ -320,10 +326,13 @@ export class ExchangeWrapper extends ContractWrapper {
                                        ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ? true : orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
+            SHOULD_VALIDATE_BY_DEFAULT :
+            orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             await Promise.all(orderFillRequests.map(orderFillRequest => this.validateFillOrderThrowIfInvalidAsync(
-                orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress)));
+                orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress)),
+            );
         }
         if (_.isEmpty(orderFillRequests)) {
             throw new Error(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
@@ -392,7 +401,9 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ? true : orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
+            SHOULD_VALIDATE_BY_DEFAULT :
+            orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             await this.validateFillOrKillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
         }
@@ -451,10 +462,13 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ? true : orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
+            SHOULD_VALIDATE_BY_DEFAULT :
+            orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             await Promise.all(orderFillOrKillRequests.map(request => this.validateFillOrKillOrderThrowIfInvalidAsync(
-                request.signedOrder, request.fillTakerAmount, takerAddress)));
+                request.signedOrder, request.fillTakerAmount, takerAddress)),
+            );
         }
 
         const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillOrKillRequests, request => {
@@ -514,7 +528,9 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ? true : orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
+            SHOULD_VALIDATE_BY_DEFAULT :
+            orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             await this.validateCancelOrderThrowIfInvalidAsync(order, cancelTakerTokenAmount);
         }
@@ -562,7 +578,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ? true : orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
+            SHOULD_VALIDATE_BY_DEFAULT :
+            orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             await Promise.all(orderCancellationRequests.map(cancellationRequest =>
                 this.validateCancelOrderThrowIfInvalidAsync(

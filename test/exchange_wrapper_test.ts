@@ -114,18 +114,14 @@ describe('ExchangeWrapper', () => {
                         .to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
                 it('should validate when orderTransactionOptions specify to validate', async () => {
-                    return expect(zeroEx.exchange.batchFillOrKillAsync(orderFillOrKillRequests, takerAddress,
-                        {
-                            shouldValidate: true,
-                        },
-                    )).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    return expect(zeroEx.exchange.batchFillOrKillAsync(orderFillOrKillRequests, takerAddress, {
+                        shouldValidate: true,
+                    })).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
-                    return expect(zeroEx.exchange.batchFillOrKillAsync(orderFillOrKillRequests, takerAddress,
-                        {
-                            shouldValidate: false,
-                        },
-                    )).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    return expect(zeroEx.exchange.batchFillOrKillAsync(orderFillOrKillRequests, takerAddress, {
+                        shouldValidate: false,
+                    })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
         });
@@ -177,18 +173,14 @@ describe('ExchangeWrapper', () => {
                         .to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
                 it('should validate when orderTransactionOptions specify to validate', async () => {
-                    return expect(zeroEx.exchange.fillOrKillOrderAsync(signedOrder, emptyFillableAmount, takerAddress,
-                        {
-                            shouldValidate: true,
-                        },
-                    )).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    return expect(zeroEx.exchange.fillOrKillOrderAsync(signedOrder, emptyFillableAmount, takerAddress, {
+                        shouldValidate: true,
+                    })).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
-                    return expect(zeroEx.exchange.fillOrKillOrderAsync(signedOrder, emptyFillableAmount, takerAddress,
-                        {
-                            shouldValidate: false,
-                        },
-                    )).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    return expect(zeroEx.exchange.fillOrKillOrderAsync(signedOrder, emptyFillableAmount, takerAddress, {
+                        shouldValidate: false,
+                    })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
         });
@@ -277,22 +269,20 @@ describe('ExchangeWrapper', () => {
                 });
                 it('should validate when orderTransactionOptions are not present', async () => {
                     return expect(zeroEx.exchange.fillOrderAsync(
-                        signedOrder, emptyFillTakerAmount, false, takerAddress,
+                        signedOrder, emptyFillTakerAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
                     )).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
                 it('should validate when orderTransactionOptions specify to validate', async () => {
-                    return expect(zeroEx.exchange.fillOrderAsync(signedOrder, emptyFillTakerAmount, false, takerAddress,
-                        {
+                    return expect(zeroEx.exchange.fillOrderAsync(
+                        signedOrder, emptyFillTakerAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress, {
                             shouldValidate: true,
-                        },
-                    )).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    })).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
-                    return expect(zeroEx.exchange.fillOrderAsync(signedOrder, emptyFillTakerAmount, false, takerAddress,
-                        {
+                    return expect(zeroEx.exchange.fillOrderAsync(
+                        signedOrder, emptyFillTakerAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress, {
                             shouldValidate: false,
-                        },
-                    )).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
         });
@@ -361,19 +351,15 @@ describe('ExchangeWrapper', () => {
                 });
                 it('should validate when orderTransactionOptions specify to validate', async () => {
                     return expect(zeroEx.exchange.batchFillOrdersAsync(
-                        orderFillBatch, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
-                        {
+                        orderFillBatch, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress, {
                             shouldValidate: true,
-                        },
-                    )).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    })).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
                     return expect(zeroEx.exchange.batchFillOrdersAsync(
-                        orderFillBatch, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
-                        {
+                        orderFillBatch, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress, {
                             shouldValidate: false,
-                        },
-                    )).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
         });
@@ -422,19 +408,15 @@ describe('ExchangeWrapper', () => {
                 });
                 it('should validate when orderTransactionOptions specify to validate', async () => {
                     return expect(zeroEx.exchange.fillOrdersUpToAsync(
-                        signedOrders, emptyFillUpToAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
-                        {
+                        signedOrders, emptyFillUpToAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress, {
                             shouldValidate: true,
-                        },
-                    )).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    })).to.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
                     return expect(zeroEx.exchange.fillOrdersUpToAsync(
-                        signedOrders, emptyFillUpToAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
-                        {
+                        signedOrders, emptyFillUpToAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress, {
                             shouldValidate: false,
-                        },
-                    )).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                    })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
         });
@@ -469,23 +451,20 @@ describe('ExchangeWrapper', () => {
                 });
             });
             describe('order transaction options', () => {
+                const emptyCancelTakerTokenAmount = new BigNumber(0);
                 it('should validate when orderTransactionOptions are not present', async () => {
-                    return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, new BigNumber(0)))
+                    return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, emptyCancelTakerTokenAmount))
                         .to.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
                 it('should validate when orderTransactionOptions specify to validate', async () => {
-                    return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, new BigNumber(0),
-                    {
-                            shouldValidate: true,
-                        },
-                    )).to.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
+                    return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, emptyCancelTakerTokenAmount, {
+                        shouldValidate: true,
+                    })).to.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
-                    return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, new BigNumber(0),
-                    {
-                            shouldValidate: false,
-                        },
-                    )).to.not.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
+                    return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, emptyCancelTakerTokenAmount, {
+                        shouldValidate: false,
+                    })).to.not.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
             });
         });
@@ -553,18 +532,14 @@ describe('ExchangeWrapper', () => {
                         .to.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
                 it('should validate when orderTransactionOptions specify to validate', async () => {
-                    return expect(zeroEx.exchange.batchCancelOrdersAsync(cancelBatch,
-                        {
-                            shouldValidate: true,
-                        },
-                    )).to.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
+                    return expect(zeroEx.exchange.batchCancelOrdersAsync(cancelBatch, {
+                        shouldValidate: true,
+                    })).to.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
-                    return expect(zeroEx.exchange.batchCancelOrdersAsync(cancelBatch,
-                        {
-                            shouldValidate: false,
-                        },
-                    )).to.not.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
+                    return expect(zeroEx.exchange.batchCancelOrdersAsync(cancelBatch, {
+                        shouldValidate: false,
+                    })).to.not.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
             });
         });
