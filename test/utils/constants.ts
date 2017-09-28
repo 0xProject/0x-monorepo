@@ -3,5 +3,6 @@ export const constants = {
     RPC_HOST: 'localhost',
     RPC_PORT: 8545,
     TESTRPC_NETWORK_ID: 50,
-    KOVAN_RPC_URL: 'https://kovan.0xproject.com',
+    KOVAN_RPC_URL: 'https://kovan.infura.io',
+    ROPSTEN_RPC_URL: 'https://ropsten.infura.io',
 };
