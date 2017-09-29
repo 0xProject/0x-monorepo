@@ -11,7 +11,7 @@ export const intervalUtils = {
                 await fn();
                 locked = false;
             }
-        });
+        }, intervalMs);
         return intervalId;
     },
     clearAsyncExcludingInterval(intervalId: number): void {
