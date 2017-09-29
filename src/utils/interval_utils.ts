@@ -14,7 +14,7 @@ export const intervalUtils = {
         }, intervalMs);
         return intervalId;
     },
-    clearAsyncExcludingInterval(intervalId: number): void {
+    clearAsyncExcludingInterval(intervalId: NodeJS.Timer): void {
         clearInterval(intervalId);
     },
 };
