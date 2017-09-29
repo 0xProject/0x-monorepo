@@ -34,4 +34,5 @@ export {
     LogWithDecodedArgs,
     DecodedLogArgs,
     MethodOpts,
+    OrderTransactionOpts,
 } from './types';
