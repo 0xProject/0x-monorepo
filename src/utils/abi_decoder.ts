@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {AbiType, DecodedLogArgs, DecodedArgs, LogWithDecodedArgs} from '../types';
+import {AbiType, DecodedLogArgs, DecodedArgs, LogWithDecodedArgs, RawLog} from '../types';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
 
 export class AbiDecoder {
@@ -10,7 +10,7 @@ export class AbiDecoder {
     constructor(abiArrays: Web3.AbiDefinition[][]) {
         _.map(abiArrays, this.addABI.bind(this));
     }
-    public tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|Web3.LogEntry {
+    public tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
         const methodId = log.topics[0];
         const event = this.methodIds[methodId];
         if (_.isUndefined(event)) {
