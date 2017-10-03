@@ -15,6 +15,7 @@ export enum ZeroExError {
     InvalidJump = 'INVALID_JUMP',
     OutOfGas = 'OUT_OF_GAS',
     NoNetworkId = 'NO_NETWORK_ID',
+    NoAbiDecoder = 'NO_ABI_DECODER',
 }
 
 /**
@@ -339,6 +340,8 @@ export enum TokenEvents {
     Transfer = 'Transfer',
     Approval = 'Approval',
 }
+
+export type ContractEvents = TokenEvents|ExchangeEvents;
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
