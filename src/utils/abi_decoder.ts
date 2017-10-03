@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {AbiType, DecodedLogArgs, DecodedArgs} from '../types';
+import {AbiType, DecodedLogArgs, DecodedArgs, LogWithDecodedArgs} from '../types';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
 
 export class AbiDecoder {
@@ -10,40 +10,43 @@ export class AbiDecoder {
     constructor(abiArrays: Web3.AbiDefinition[][]) {
         _.map(abiArrays, this.addABI.bind(this));
     }
-    public decodeLog(logItem: Web3.LogEntry): DecodedArgs|undefined {
-        const methodId = logItem.topics[0];
+    public tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|Web3.LogEntry {
+        const methodId = log.topics[0];
         const event = this.methodIds[methodId];
-        if (!_.isUndefined(event)) {
-            const logData = logItem.data;
-            const decodedParams: DecodedLogArgs = {};
-            let dataIndex = 0;
-            let topicsIndex = 1;
-
-            const nonIndexedInputs = _.filter(event.inputs, input => !input.indexed);
-            const dataTypes = _.map(nonIndexedInputs, input => input.type);
-            const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice(2));
-            _.map(event.inputs, (param: Web3.EventParameter) => {
-                let value;
-                if (param.indexed) {
-                    value = logItem.topics[topicsIndex];
-                    topicsIndex++;
-                } else {
-                    value = decodedData[dataIndex];
-                    dataIndex++;
-                }
-                if (param.type === 'address') {
-                    value = this.padZeros(new BigNumber(value).toString(16));
-                } else if (param.type === 'uint256' || param.type === 'uint8' || param.type === 'int' ) {
-                    value = new BigNumber(value);
-                }
-                decodedParams[param.name] = value;
-            });
-
-            return {
-                event: event.name,
-                args: decodedParams,
-            };
+        if (_.isUndefined(event)) {
+            return log;
         }
+        const logData = log.data;
+        const decodedParams: DecodedLogArgs = {};
+        let dataIndex = 0;
+        let topicsIndex = 1;
+
+        const nonIndexedInputs = _.filter(event.inputs, input => !input.indexed);
+        const dataTypes = _.map(nonIndexedInputs, input => input.type);
+        const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice(2));
+
+        _.map(event.inputs, (param: Web3.EventParameter) => {
+            let value;
+            if (param.indexed) {
+                value = log.topics[topicsIndex];
+                topicsIndex++;
+            } else {
+                value = decodedData[dataIndex];
+                dataIndex++;
+            }
+            if (param.type === 'address') {
+                value = this.padZeros(new BigNumber(value).toString(16));
+            } else if (param.type === 'uint256' || param.type === 'uint8' || param.type === 'int' ) {
+                value = new BigNumber(value);
+            }
+            decodedParams[param.name] = value;
+        });
+
+        return {
+            ...log,
+            event: event.name,
+            args: decodedParams,
+        };
     }
     private addABI(abiArray: Web3.AbiDefinition[]): void {
         _.map(abiArray, (abi: Web3.AbiDefinition) => {
