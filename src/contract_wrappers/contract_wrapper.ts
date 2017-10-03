@@ -2,7 +2,15 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
 import {AbiDecoder} from '../utils/abi_decoder';
-import {ZeroExError, Artifact, LogWithDecodedArgs, RawLog, ContractEvents} from '../types';
+import {
+    ZeroExError,
+    Artifact,
+    LogWithDecodedArgs,
+    RawLog,
+    ContractEvents,
+    SubscriptionOpts,
+    IndexedFilterValues,
+} from '../types';
 import {utils} from '../utils/utils';
 
 export class ContractWrapper {
@@ -11,6 +19,21 @@ export class ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper, abiDecoder?: AbiDecoder) {
         this._web3Wrapper = web3Wrapper;
         this._abiDecoder = abiDecoder;
+    }
+    protected async _getLogsAsync(address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,
+                                  indexFilterValues: IndexedFilterValues,
+                                  abi: Web3.ContractAbi): Promise<Array<LogWithDecodedArgs|RawLog>> {
+        // TODO include indexFilterValues in topics
+        const eventSignature = this._getEventSignatureFromAbiByName(abi, eventName);
+        const filter = {
+            fromBlock: subscriptionOpts.fromBlock,
+            toBlock: subscriptionOpts.toBlock,
+            address,
+            topics: [this._web3Wrapper.keccak256(eventSignature)],
+        };
+        const logs = await this._web3Wrapper.getLogsAsync(filter);
+        const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoOp.bind(this));
+        return logsWithDecodedArguments;
     }
     protected _tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
         if (_.isUndefined(this._abiDecoder)) {

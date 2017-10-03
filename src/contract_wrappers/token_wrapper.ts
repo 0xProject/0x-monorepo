@@ -280,20 +280,12 @@ export class TokenWrapper extends ContractWrapper {
         this._tokenLogEventEmitters.push(eventEmitter);
         return eventEmitter;
     }
-    public async getLogsAsync(tokenAddress: string, eventName: TokenEvents,
-                              subscriptionOpts: SubscriptionOpts,
+    public async getLogsAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
                               indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs|RawLog>> {
-        // TODO include indexFilterValues in topics
-        const eventSignature = this._getEventSignatureFromAbiByName(artifacts.TokenArtifact.abi, eventName);
-        const filter = {
-            fromBlock: subscriptionOpts.fromBlock,
-            toBlock: subscriptionOpts.toBlock,
-            address: tokenAddress,
-            topics: [this._web3Wrapper.keccak256(eventSignature)],
-        };
-        const logs = await this._web3Wrapper.getLogsAsync(filter);
-        const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoOp.bind(this));
-        return logsWithDecodedArguments;
+        const logs = await this._getLogsAsync(
+            tokenAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.TokenArtifact.abi,
+        );
+        return logs;
     }
     /**
      * Stops watching for all token events
