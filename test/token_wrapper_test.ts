@@ -14,6 +14,7 @@ import {
     ContractEvent,
     TransferContractEventArgs,
     ApprovalContractEventArgs,
+    LogWithDecodedArgs,
 } from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {TokenUtils} from './utils/token_utils';
@@ -433,6 +434,42 @@ describe('TokenWrapper', () => {
                 });
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
             })().catch(done);
+        });
+    });
+    describe('#getLogsAsync', () => {
+        let tokenAddress: string;
+        let tokenTransferProxyAddress: string;
+        const subscriptionOpts: SubscriptionOpts = {
+            fromBlock: 0,
+            toBlock: 'latest',
+        };
+        const indexFilterValues = {};
+        before(async () => {
+            const token = tokens[0];
+            tokenAddress = token.address;
+            tokenTransferProxyAddress = await zeroEx.proxy.getContractAddressAsync();
+        });
+        it('should get logs with decoded args emitted by Approval', async () => {
+            const txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            const eventName = TokenEvents.Approval;
+            const logs = await zeroEx.token.getLogsAsync(
+                tokenAddress, eventName, subscriptionOpts, indexFilterValues,
+            ) as LogWithDecodedArgs[];
+            expect(logs).to.have.length(1);
+            expect(logs[0].event).to.be.equal(eventName);
+            expect(logs[0].args._owner).to.be.equal(coinbase);
+            expect(logs[0].args._spender).to.be.equal(tokenTransferProxyAddress);
+            expect(logs[0].args._value).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+        it('should only get the logs with the correct event name', async () => {
+            const txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            const differentEventName = TokenEvents.Transfer;
+            const logs = await zeroEx.token.getLogsAsync(
+                tokenAddress, differentEventName, subscriptionOpts, indexFilterValues,
+            ) as LogWithDecodedArgs[];
+            expect(logs).to.have.length(0);
         });
     });
 });
