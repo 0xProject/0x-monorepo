@@ -1,7 +1,8 @@
 # CHANGELOG
 
 v0.20.0 - _October 3, 2017_
-    * Add `zeroEx.getLogsAsync` (#178)
+    * Add `zeroEx.token.getLogsAsync` (#178)
+    * Add `zeroEx.exchange.getLogsAsync` (#178)
 
 v0.19.0 - _September 29, 2017_
     * Made order validation optional  (#172)
