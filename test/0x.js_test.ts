@@ -261,7 +261,6 @@ describe('ZeroEx library', () => {
             logIndex: '0x00',
             transactionIndex: '0x00',
             transactionHash: '0x36db2d7f92cd000834f4f96fa75dafdbeea31e2b389f3f56fc9020cc5e699ab6',
-            blockHash: '0x1fc0ee4950e9a25072cf643a26a5fb94b214021bcf6fe635f9174f78d891d85a',
             blockNumber: '0x14',
             address: '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
             data: '0x0',
@@ -279,7 +278,7 @@ describe('ZeroEx library', () => {
             };
             const logs = await zeroEx.getLogsAsync(filter);
             expect(logs).to.have.length(1);
-            expect(logs[0]).to.be.deep.equal(exchangeAuthorizationLog);
+            expect(logs[0]).to.be.deep.include(exchangeAuthorizationLog);
         });
     });
 });
