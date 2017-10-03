@@ -234,6 +234,8 @@ export enum ExchangeContractErrs {
     BatchOrdersMustHaveAtLeastOneItem = 'BATCH_ORDERS_MUST_HAVE_AT_LEAST_ONE_ITEM',
 }
 
+export type RawLog = Web3.LogEntry;
+
 export interface ContractEvent {
     logIndex: number;
     transactionIndex: number;
@@ -460,3 +462,5 @@ export interface MethodOpts {
 export interface OrderTransactionOpts {
     shouldValidate: boolean;
 }
+
+export type FilterObject = Web3.FilterObject;
