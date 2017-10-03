@@ -256,29 +256,4 @@ describe('ZeroEx library', () => {
                 .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
         });
     });
-    describe('#getLogs', () => {
-        const exchangeAuthorizationLog = {
-            logIndex: '0x00',
-            transactionIndex: '0x00',
-            transactionHash: '0x36db2d7f92cd000834f4f96fa75dafdbeea31e2b389f3f56fc9020cc5e699ab6',
-            blockNumber: '0x14',
-            address: '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
-            data: '0x0',
-            topics: [
-                '0x94bb87f4c15c4587ff559a7584006fa01ddf9299359be6b512b94527aa961aca',
-                '0x000000000000000000000000b69e673309512a9d726f87304c6984054f87a93b',
-                '0x0000000000000000000000005409ed021d9299bf6814279a6a1411a7e866a631',
-            ],
-            type: 'mined',
-        };
-        it('gets historical logs', async () => {
-            const filter = {
-                fromBlock: 0,
-                toBlock: 'latest',
-            };
-            const logs = await zeroEx.getLogsAsync(filter);
-            expect(logs).to.have.length(1);
-            expect(logs[0]).to.be.deep.include(exchangeAuthorizationLog);
-        });
-    });
 });
