@@ -302,17 +302,7 @@ export class ZeroEx {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
                 if (!_.isNull(transactionReceipt)) {
                     intervalUtils.clearAsyncExcludingInterval(intervalId);
-                    const logsWithDecodedArgs = _.map(transactionReceipt.logs, (log: Web3.LogEntry) => {
-                        const decodedLog = this._abiDecoder.decodeLog(log);
-                        if (_.isUndefined(decodedLog)) {
-                            return log;
-                        }
-                        const logWithDecodedArgs: LogWithDecodedArgs = {
-                            ...log,
-                            ...decodedLog,
-                        };
-                        return logWithDecodedArgs;
-                    });
+                    const logsWithDecodedArgs = _.map(transactionReceipt.logs, this.tryToDecodeLogOrNoOp.bind(this));
                     const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
                         ...transactionReceipt,
                         logs: logsWithDecodedArgs,
@@ -331,6 +321,17 @@ export class ZeroEx {
     public async getLogsAsync(filter: FilterObject): Promise<RawLog[]> {
         const logs = await this._web3Wrapper.getLogsAsync(filter);
         return logs;
+    }
+    private tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|Web3.LogEntry {
+        const decodedLog = this._abiDecoder.decodeLog(log);
+        if (_.isUndefined(decodedLog)) {
+            return log;
+        }
+        const logWithDecodedArgs: LogWithDecodedArgs = {
+            ...log,
+            ...decodedLog,
+        };
+        return logWithDecodedArgs;
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
