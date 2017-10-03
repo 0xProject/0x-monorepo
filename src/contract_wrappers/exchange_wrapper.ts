@@ -40,6 +40,7 @@ import {ContractWrapper} from './contract_wrapper';
 import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
+import {AbiDecoder} from '../utils/abi_decoder';
 import {artifacts} from '../artifacts';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;
@@ -80,8 +81,9 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
+                tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
+        super(web3Wrapper, abiDecoder);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
         this._exchangeLogEventEmitters = [];
@@ -665,7 +667,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Array of logs that match the parameters
      */
     public async getLogsAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
-                              indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs|RawLog>> {
+                              indexFilterValues: IndexedFilterValues): Promise<LogWithDecodedArgs[]> {
         const exchangeContractAddress = await this.getContractAddressAsync();
         const logs = await this._getLogsAsync(
             exchangeContractAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.ExchangeArtifact.abi,

@@ -206,7 +206,11 @@ export class ZeroEx {
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
         const exchageContractAddressIfExists = _.isUndefined(config) ? undefined : config.exchangeContractAddress;
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, exchageContractAddressIfExists);
+        this.exchange = new ExchangeWrapper(
+            this._web3Wrapper,
+            this._abiDecoder,
+            this.token,
+            exchageContractAddressIfExists);
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),

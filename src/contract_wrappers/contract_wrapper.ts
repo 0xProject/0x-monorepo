@@ -22,7 +22,7 @@ export class ContractWrapper {
     }
     protected async _getLogsAsync(address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,
                                   indexFilterValues: IndexedFilterValues,
-                                  abi: Web3.ContractAbi): Promise<Array<LogWithDecodedArgs|RawLog>> {
+                                  abi: Web3.ContractAbi): Promise<LogWithDecodedArgs[]> {
         // TODO include indexFilterValues in topics
         const eventSignature = this._getEventSignatureFromAbiByName(abi, eventName);
         const filter = {

@@ -290,7 +290,7 @@ export class TokenWrapper extends ContractWrapper {
      * @return  Array of logs that match the parameters
      */
     public async getLogsAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
-                              indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs|RawLog>> {
+                              indexFilterValues: IndexedFilterValues): Promise<LogWithDecodedArgs[]> {
         const logs = await this._getLogsAsync(
             tokenAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.TokenArtifact.abi,
         );

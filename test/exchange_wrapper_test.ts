@@ -771,4 +771,46 @@ describe('ExchangeWrapper', () => {
             expect(zrxAddress).to.equal(zrxToken.address);
         });
     });
+    describe('#getLogsAsync', () => {
+        let makerTokenAddress: string;
+        let takerTokenAddress: string;
+        let makerAddress: string;
+        let takerAddress: string;
+        const fillableAmount = new BigNumber(5);
+        const shouldThrowOnInsufficientBalanceOrAllowance = true;
+        const subscriptionOpts: SubscriptionOpts = {
+            fromBlock: 0,
+            toBlock: 'latest',
+        };
+        const indexFilterValues = {};
+        before(async () => {
+            [, makerAddress, takerAddress] = userAddresses;
+            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            makerTokenAddress = makerToken.address;
+            takerTokenAddress = takerToken.address;
+        });
+        it('should get logs with decoded args emitted by LogFill', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            await zeroEx.exchange.fillOrderAsync(
+                signedOrder, fillableAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
+            );
+            const eventName = ExchangeEvents.LogFill;
+            const logs = await zeroEx.exchange.getLogsAsync(eventName, subscriptionOpts, indexFilterValues);
+            expect(logs).to.have.length(1);
+            expect(logs[0].event).to.be.equal(eventName);
+        });
+        it('should only get the logs with the correct event name', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            await zeroEx.exchange.fillOrderAsync(
+                signedOrder, fillableAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
+            );
+            const differentEventName = ExchangeEvents.LogCancel;
+            const logs = await zeroEx.exchange.getLogsAsync(differentEventName, subscriptionOpts, indexFilterValues);
+            expect(logs).to.have.length(0);
+        });
+    });
 });

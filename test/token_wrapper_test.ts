@@ -455,7 +455,7 @@ describe('TokenWrapper', () => {
             const eventName = TokenEvents.Approval;
             const logs = await zeroEx.token.getLogsAsync(
                 tokenAddress, eventName, subscriptionOpts, indexFilterValues,
-            ) as LogWithDecodedArgs[];
+            );
             expect(logs).to.have.length(1);
             expect(logs[0].event).to.be.equal(eventName);
             expect(logs[0].args._owner).to.be.equal(coinbase);
@@ -468,7 +468,7 @@ describe('TokenWrapper', () => {
             const differentEventName = TokenEvents.Transfer;
             const logs = await zeroEx.token.getLogsAsync(
                 tokenAddress, differentEventName, subscriptionOpts, indexFilterValues,
-            ) as LogWithDecodedArgs[];
+            );
             expect(logs).to.have.length(0);
         });
     });
