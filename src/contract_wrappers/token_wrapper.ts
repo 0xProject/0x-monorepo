@@ -280,6 +280,15 @@ export class TokenWrapper extends ContractWrapper {
         this._tokenLogEventEmitters.push(eventEmitter);
         return eventEmitter;
     }
+    /**
+     * Gets historical logs without creating a subscription
+     * @param   tokenAddress        An address of the token that emited the logs.
+     * @param   eventName           The token contract event you would like to subscribe to.
+     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return  Array of logs that match the parameters
+     */
     public async getLogsAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
                               indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs|RawLog>> {
         const logs = await this._getLogsAsync(

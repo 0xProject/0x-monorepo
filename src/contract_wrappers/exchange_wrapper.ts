@@ -30,6 +30,7 @@ import {
     MethodOpts,
     ValidateOrderFillableOpts,
     OrderTransactionOpts,
+    RawLog,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -654,6 +655,22 @@ export class ExchangeWrapper extends ContractWrapper {
         const eventEmitter = eventUtils.wrapEventEmitter(logEventObj);
         this._exchangeLogEventEmitters.push(eventEmitter);
         return eventEmitter;
+    }
+    /**
+     * Gets historical logs without creating a subscription
+     * @param   eventName           The exchange contract event you would like to subscribe to.
+     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return  Array of logs that match the parameters
+     */
+    public async getLogsAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
+                              indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs|RawLog>> {
+        const exchangeContractAddress = await this.getContractAddressAsync();
+        const logs = await this._getLogsAsync(
+            exchangeContractAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.ExchangeArtifact.abi,
+        );
+        return logs;
     }
     /**
      * Stops watching for all exchange events
