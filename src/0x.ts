@@ -31,6 +31,8 @@ import {
     DecodedLogArgs,
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
+    FilterObject,
+    RawLog,
 } from './types';
 import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 
@@ -320,6 +322,15 @@ export class ZeroEx {
             }, pollingIntervalMs);
         });
         return txReceiptPromise;
+    }
+    /**
+     * Gets historical logs without creating a subscription
+     * @param   filter            Filter object
+     * @return  Array of logs that match the filter
+     */
+    public async getLogsAsync(filter: FilterObject): Promise<RawLog[]> {
+        const logs = await this._web3Wrapper.getLogsAsync(filter);
+        return logs;
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
