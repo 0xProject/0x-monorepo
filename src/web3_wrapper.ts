@@ -112,6 +112,10 @@ export class Web3Wrapper {
         const logs = await this.sendRawPayloadAsync(payload);
         return logs;
     }
+    public keccak256(data: string): string {
+        const hash = this.web3.sha3(data);
+        return hash;
+    }
     private getContractInstance<A extends Web3.ContractInstance>(abi: Web3.ContractAbi, address: string): A {
         const web3ContractInstance = this.web3.eth.contract(abi).at(address);
         const contractInstance = new Contract(web3ContractInstance, this.defaults) as any as A;
