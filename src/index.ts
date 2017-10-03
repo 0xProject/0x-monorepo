@@ -36,5 +36,4 @@ export {
     MethodOpts,
     OrderTransactionOpts,
     FilterObject,
-    RawLog,
 } from './types';
