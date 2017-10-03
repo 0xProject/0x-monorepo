@@ -12,7 +12,7 @@ export class ContractWrapper {
         this._web3Wrapper = web3Wrapper;
         this._abiDecoder = abiDecoder;
     }
-    protected tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
+    protected _tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
         if (_.isUndefined(this._abiDecoder)) {
             throw new Error(ZeroExError.NoAbiDecoder);
         }

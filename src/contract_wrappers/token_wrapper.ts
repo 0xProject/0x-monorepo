@@ -7,6 +7,7 @@ import {utils} from '../utils/utils';
 import {eventUtils} from '../utils/event_utils';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
+import {AbiDecoder} from '../utils/abi_decoder';
 import {artifacts} from '../artifacts';
 import {
     TokenContract,
@@ -18,6 +19,8 @@ import {
     ContractEventEmitter,
     ContractEventObj,
     MethodOpts,
+    LogWithDecodedArgs,
+    RawLog,
 } from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
@@ -32,8 +35,9 @@ export class TokenWrapper extends ContractWrapper {
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenLogEventEmitters: ContractEventEmitter[];
     private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
-    constructor(web3Wrapper: Web3Wrapper, tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
+                tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
+        super(web3Wrapper, abiDecoder);
         this._tokenContractsByAddress = {};
         this._tokenLogEventEmitters = [];
         this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
@@ -275,6 +279,21 @@ export class TokenWrapper extends ContractWrapper {
         const eventEmitter = eventUtils.wrapEventEmitter(logEventObj);
         this._tokenLogEventEmitters.push(eventEmitter);
         return eventEmitter;
+    }
+    public async getLogsAsync(tokenAddress: string, eventName: TokenEvents,
+                              subscriptionOpts: SubscriptionOpts,
+                              indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs|RawLog>> {
+        // TODO include indexFilterValues in topics
+        const eventSignature = this._getEventSignatureFromAbiByName(artifacts.TokenArtifact.abi, eventName);
+        const filter = {
+            fromBlock: subscriptionOpts.fromBlock,
+            toBlock: subscriptionOpts.toBlock,
+            address: tokenAddress,
+            topics: [this._web3Wrapper.keccak256(eventSignature)],
+        };
+        const logs = await this._web3Wrapper.getLogsAsync(filter);
+        const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoOp.bind(this));
+        return logsWithDecodedArguments;
     }
     /**
      * Stops watching for all token events
