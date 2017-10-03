@@ -106,10 +106,10 @@ declare module 'web3' {
         }
 
         interface FilterObject {
-            fromBlock: number|string;
-            toBlock: number|string;
-            address: string;
-            topics: LogTopic[];
+            fromBlock?: number|string;
+            toBlock?: number|string;
+            address?: string;
+            topics?: LogTopic[];
         }
 
         type LogTopic = null|string|string[];
