@@ -9,10 +9,12 @@ export class Web3Wrapper {
     private web3: Web3;
     private defaults: Partial<Web3.TxData>;
     private networkIdIfExists?: number;
+    private jsonRpcRequestId: number;
     constructor(provider: Web3.Provider, defaults: Partial<Web3.TxData>) {
         this.web3 = new Web3();
         this.web3.setProvider(provider);
         this.defaults = defaults;
+        this.jsonRpcRequestId = 0;
     }
     public setProvider(provider: Web3.Provider) {
         delete this.networkIdIfExists;
@@ -100,6 +102,16 @@ export class Web3Wrapper {
         const addresses: string[] = await promisify(this.web3.eth.getAccounts)();
         return addresses;
     }
+    public async getLogsAsync(filter: Web3.FilterObject): Promise<Web3.LogEntry[]> {
+        const payload = {
+            jsonrpc: '2.0',
+            id: this.jsonRpcRequestId++,
+            method: 'eth_getLogs',
+            params: [filter],
+        };
+        const logs = await this.sendRawPayloadAsync(payload);
+        return logs;
+    }
     private getContractInstance<A extends Web3.ContractInstance>(abi: Web3.ContractAbi, address: string): A {
         const web3ContractInstance = this.web3.eth.contract(abi).at(address);
         const contractInstance = new Contract(web3ContractInstance, this.defaults) as any as A;
@@ -108,5 +120,11 @@ export class Web3Wrapper {
     private async getNetworkAsync(): Promise<number> {
         const networkId = await promisify(this.web3.version.getNetwork)();
         return networkId;
+    }
+    private async sendRawPayloadAsync(payload: Web3.JSONRPCRequestPayload): Promise<any> {
+        const sendAsync = this.web3.currentProvider.sendAsync.bind(this.web3.currentProvider);
+        const response = await promisify(sendAsync)(payload);
+        const result = response.result;
+        return result;
     }
 }
