@@ -109,8 +109,10 @@ declare module 'web3' {
             fromBlock: number|string;
             toBlock: number|string;
             address: string;
-            topics: string[];
+            topics: LogTopic[];
         }
+
+        type LogTopic = null|string|string[];
 
         interface SolidityEvent<A> {
             event: string;
