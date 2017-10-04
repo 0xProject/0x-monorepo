@@ -282,7 +282,7 @@ export class TokenWrapper extends ContractWrapper {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   tokenAddress        An address of the token that emited the logs.
+     * @param   tokenAddress        An address of the token that emmited the logs.
      * @param   eventName           The token contract event you would like to subscribe to.
      * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
