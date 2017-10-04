@@ -121,7 +121,11 @@ export class OrderValidationUtils {
         }
 
         if (!isMakerTokenZRX) {
-            const makerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, signedOrder.maker);
+            const isTakerTokenZRX = signedOrder.takerTokenAddress === zrxTokenAddress;
+            let makerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, signedOrder.maker);
+            if (isTakerTokenZRX) {
+                makerZRXBalance = makerZRXBalance.plus(fillTakerAmount);
+            }
             const makerZRXAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
                 zrxTokenAddress, signedOrder.maker);
 
