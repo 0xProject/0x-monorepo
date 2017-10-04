@@ -24,22 +24,25 @@ export class ContractWrapper {
                                   indexFilterValues: IndexedFilterValues,
                                   abi: Web3.ContractAbi): Promise<LogWithDecodedArgs[]> {
         // TODO include indexFilterValues in topics
-        const eventSignature = this._getEventSignatureFromAbiByName(abi, eventName);
+        const eventAbi = _.filter(abi, {name: eventName})[0] as Web3.EventAbi;
+        const eventSignature = this._getEventSignatureFromAbiByName(eventAbi, eventName);
+        const topicForEventSignature = this._web3Wrapper.keccak256(eventSignature);
+        const topics = [topicForEventSignature];
         const filter = {
             fromBlock: subscriptionOpts.fromBlock,
             toBlock: subscriptionOpts.toBlock,
             address,
-            topics: [this._web3Wrapper.keccak256(eventSignature)],
+            topics,
         };
         const logs = await this._web3Wrapper.getLogsAsync(filter);
-        const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoOp.bind(this));
+        const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoop.bind(this));
         return logsWithDecodedArguments;
     }
-    protected _tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
+    protected _tryToDecodeLogOrNoop(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
         if (_.isUndefined(this._abiDecoder)) {
             throw new Error(ZeroExError.NoAbiDecoder);
         }
-        const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoOp(log);
+        const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
     protected async _instantiateContractIfExistsAsync<A extends Web3.ContractInstance>(artifact: Artifact,
@@ -49,8 +52,7 @@ export class ContractWrapper {
             await this._web3Wrapper.getContractInstanceFromArtifactAsync<A>(artifact, addressIfExists);
         return contractInstance;
     }
-    protected _getEventSignatureFromAbiByName(abi: Web3.ContractAbi, eventName: ContractEvents): string {
-        const eventAbi = _.filter(abi, {name: eventName})[0] as Web3.EventAbi;
+    protected _getEventSignatureFromAbiByName(eventAbi: Web3.EventAbi, eventName: ContractEvents): string {
         const types = _.map(eventAbi.inputs, 'type');
         const signature = `${eventAbi.name}(${types.join(',')})`;
         return signature;
