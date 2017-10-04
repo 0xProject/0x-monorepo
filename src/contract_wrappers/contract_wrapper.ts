@@ -24,7 +24,7 @@ export class ContractWrapper {
                                   indexFilterValues: IndexedFilterValues,
                                   abi: Web3.ContractAbi): Promise<LogWithDecodedArgs[]> {
         // TODO include indexFilterValues in topics
-        const eventAbi = _.filter(abi, {name: eventName})[0] as Web3.EventAbi;
+        const eventAbi = _.find(abi, {name: eventName}) as Web3.EventAbi;
         const eventSignature = this._getEventSignatureFromAbiByName(eventAbi, eventName);
         const topicForEventSignature = this._web3Wrapper.keccak256(eventSignature);
         const topics = [topicForEventSignature];
