@@ -433,7 +433,7 @@ describe('OrderValidation', () => {
                 const makerFee = fillableAmount.plus(1);
                 const takerFee = fillableAmount.plus(1);
                 signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
-                    makerTokenAddress, zrxTokenAddress, makerFee, takerFee,
+                    zrxTokenAddress, takerTokenAddress, makerFee, takerFee,
                     makerAddress, takerAddress, fillableAmount, feeRecipient,
                 );
                 txHash = await zeroEx.token.transferAsync(zrxTokenAddress, takerAddress, coinbase, takerFee);
@@ -441,7 +441,7 @@ describe('OrderValidation', () => {
                 return expect(
                     (orderValidationUtils as any).validateFillOrderTakerBalancesAllowancesThrowIfInvalidAsync(
                     signedOrder, fillTakerAmount, takerAddress, zrxTokenAddress,
-                )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerFeeBalance);
+                )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerFeeBalance);
             });
         });
     });
