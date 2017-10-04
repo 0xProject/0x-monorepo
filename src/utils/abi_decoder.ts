@@ -24,7 +24,7 @@ export class AbiDecoder {
 
         const nonIndexedInputs = _.filter(event.inputs, input => !input.indexed);
         const dataTypes = _.map(nonIndexedInputs, input => input.type);
-        const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice(2));
+        const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice('0x'.length));
 
         _.map(event.inputs, (param: Web3.EventParameter) => {
             let value;
