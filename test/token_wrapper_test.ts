@@ -440,19 +440,20 @@ describe('TokenWrapper', () => {
         let tokenAddress: string;
         let tokenTransferProxyAddress: string;
         const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: 0,
+            fromBlock: 'earliest',
             toBlock: 'latest',
         };
-        const indexFilterValues = {};
+        let txHash: string;
         before(async () => {
             const token = tokens[0];
             tokenAddress = token.address;
             tokenTransferProxyAddress = await zeroEx.proxy.getContractAddressAsync();
         });
         it('should get logs with decoded args emitted by Approval', async () => {
-            const txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
+            txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
             await zeroEx.awaitTransactionMinedAsync(txHash);
             const eventName = TokenEvents.Approval;
+            const indexFilterValues = {};
             const logs = await zeroEx.token.getLogsAsync(
                 tokenAddress, eventName, subscriptionOpts, indexFilterValues,
             );
@@ -463,13 +464,29 @@ describe('TokenWrapper', () => {
             expect(logs[0].args._value).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
         it('should only get the logs with the correct event name', async () => {
-            const txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
+            txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
             await zeroEx.awaitTransactionMinedAsync(txHash);
             const differentEventName = TokenEvents.Transfer;
+            const indexFilterValues = {};
             const logs = await zeroEx.token.getLogsAsync(
                 tokenAddress, differentEventName, subscriptionOpts, indexFilterValues,
             );
             expect(logs).to.have.length(0);
+        });
+        it('should only get the logs with the correct indexed fields', async () => {
+            txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, addressWithoutFunds);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            const eventName = TokenEvents.Approval;
+            const indexFilterValues = {
+                _owner: coinbase,
+            };
+            const logs = await zeroEx.token.getLogsAsync(
+                tokenAddress, eventName, subscriptionOpts, indexFilterValues,
+            );
+            expect(logs).to.have.length(1);
+            expect(logs[0].args._owner).to.be.equal(coinbase);
         });
     });
 });

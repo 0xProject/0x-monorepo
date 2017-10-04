@@ -4762,9 +4762,9 @@ types-bn@^0.0.1:
   dependencies:
     bn.js "4.11.7"
 
-types-ethereumjs-util@^0.0.5:
+types-ethereumjs-util@0xProject/types-ethereumjs-util:
   version "0.0.5"
-  resolved "https://registry.yarnpkg.com/types-ethereumjs-util/-/types-ethereumjs-util-0.0.5.tgz#a65060741c73d1ee5157b9ba2d502b4fe4a19d1c"
+  resolved "https://codeload.github.com/0xProject/types-ethereumjs-util/tar.gz/b9ae55d2c2711d89f63f7fc53a78579f2d4fbd74"
   dependencies:
     bn.js "^4.11.7"
     buffer "^5.0.6"

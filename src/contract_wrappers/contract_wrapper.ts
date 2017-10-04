@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
+import * as ethUtil from 'ethereumjs-util';
 import {Web3Wrapper} from '../web3_wrapper';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {
@@ -13,6 +14,8 @@ import {
 } from '../types';
 import {utils} from '../utils/utils';
 
+const TOPIC_LENGTH = 32;
+
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     private _abiDecoder?: AbiDecoder;
@@ -23,11 +26,11 @@ export class ContractWrapper {
     protected async _getLogsAsync(address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,
                                   indexFilterValues: IndexedFilterValues,
                                   abi: Web3.ContractAbi): Promise<LogWithDecodedArgs[]> {
-        // TODO include indexFilterValues in topics
-        const eventAbi = _.find(abi, {name: eventName}) as Web3.EventAbi;
+        const eventAbi = _.filter(abi, {name: eventName})[0] as Web3.EventAbi;
         const eventSignature = this._getEventSignatureFromAbiByName(eventAbi, eventName);
         const topicForEventSignature = this._web3Wrapper.keccak256(eventSignature);
-        const topics = [topicForEventSignature];
+        const topicsForIndexedArgs = this._getTopicsForIndexedArgs(eventAbi, indexFilterValues);
+        const topics = [topicForEventSignature, ...topicsForIndexedArgs];
         const filter = {
             fromBlock: subscriptionOpts.fromBlock,
             toBlock: subscriptionOpts.toBlock,
@@ -56,5 +59,22 @@ export class ContractWrapper {
         const types = _.map(eventAbi.inputs, 'type');
         const signature = `${eventAbi.name}(${types.join(',')})`;
         return signature;
+    }
+    private _getTopicsForIndexedArgs(abi: Web3.EventAbi, indexFilterValues: IndexedFilterValues): Array<string|null> {
+        const topics: Array<string|null> = [];
+        for (const eventInput of abi.inputs) {
+            if (eventInput.indexed) {
+                if (_.isUndefined(indexFilterValues[eventInput.name])) {
+                    topics.push(null);
+                } else {
+                    const value = indexFilterValues[eventInput.name] as string;
+                    const buffer = ethUtil.toBuffer(value);
+                    const paddedBuffer = ethUtil.setLengthLeft(buffer, TOPIC_LENGTH);
+                    const topic = ethUtil.bufferToHex(paddedBuffer);
+                    topics.push(topic);
+                }
+            }
+        }
+        return topics;
     }
 }

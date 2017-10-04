@@ -779,10 +779,10 @@ describe('ExchangeWrapper', () => {
         const fillableAmount = new BigNumber(5);
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
         const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: 0,
+            fromBlock: 'earliest',
             toBlock: 'latest',
         };
-        const indexFilterValues = {};
+        let txHash: string;
         before(async () => {
             [, makerAddress, takerAddress] = userAddresses;
             const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
@@ -793,10 +793,12 @@ describe('ExchangeWrapper', () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
             );
-            await zeroEx.exchange.fillOrderAsync(
+            txHash = await zeroEx.exchange.fillOrderAsync(
                 signedOrder, fillableAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
             );
+            await zeroEx.awaitTransactionMinedAsync(txHash);
             const eventName = ExchangeEvents.LogFill;
+            const indexFilterValues = {};
             const logs = await zeroEx.exchange.getLogsAsync(eventName, subscriptionOpts, indexFilterValues);
             expect(logs).to.have.length(1);
             expect(logs[0].event).to.be.equal(eventName);
@@ -805,12 +807,42 @@ describe('ExchangeWrapper', () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
             );
-            await zeroEx.exchange.fillOrderAsync(
+            txHash = await zeroEx.exchange.fillOrderAsync(
                 signedOrder, fillableAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
             );
+            await zeroEx.awaitTransactionMinedAsync(txHash);
             const differentEventName = ExchangeEvents.LogCancel;
+            const indexFilterValues = {};
             const logs = await zeroEx.exchange.getLogsAsync(differentEventName, subscriptionOpts, indexFilterValues);
             expect(logs).to.have.length(0);
+        });
+        it('should only get the logs with the correct indexed fields', async () => {
+            const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+            );
+            txHash = await zeroEx.exchange.fillOrderAsync(
+                signedOrder, fillableAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
+            );
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+
+            const differentMakerAddress = userAddresses[2];
+            const anotherSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, differentMakerAddress, takerAddress, fillableAmount,
+            );
+            txHash = await zeroEx.exchange.fillOrderAsync(
+                anotherSignedOrder, fillableAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
+            );
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+
+            const eventName = ExchangeEvents.LogFill;
+            const indexFilterValues = {
+                maker: differentMakerAddress,
+            };
+            const logs = await zeroEx.exchange.getLogsAsync(
+                eventName, subscriptionOpts, indexFilterValues,
+            );
+            expect(logs).to.have.length(1);
+            expect(logs[0].args.maker).to.be.equal(differentMakerAddress);
         });
     });
 });
