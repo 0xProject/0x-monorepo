@@ -31,6 +31,8 @@ import {
     DecodedLogArgs,
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
+    FilterObject,
+    RawLog,
 } from './types';
 import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 
@@ -200,10 +202,16 @@ export class ZeroEx {
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
         this.token = new TokenWrapper(
             this._web3Wrapper,
+            this._abiDecoder,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
         const exchageContractAddressIfExists = _.isUndefined(config) ? undefined : config.exchangeContractAddress;
-        this.exchange = new ExchangeWrapper(this._web3Wrapper, this.token, exchageContractAddressIfExists);
+        this.exchange = new ExchangeWrapper(
+            this._web3Wrapper,
+            this._abiDecoder,
+            this.token,
+            exchageContractAddressIfExists,
+        );
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),
@@ -300,17 +308,10 @@ export class ZeroEx {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
                 if (!_.isNull(transactionReceipt)) {
                     intervalUtils.clearAsyncExcludingInterval(intervalId);
-                    const logsWithDecodedArgs = _.map(transactionReceipt.logs, (log: Web3.LogEntry) => {
-                        const decodedLog = this._abiDecoder.decodeLog(log);
-                        if (_.isUndefined(decodedLog)) {
-                            return log;
-                        }
-                        const logWithDecodedArgs: LogWithDecodedArgs = {
-                            ...log,
-                            ...decodedLog,
-                        };
-                        return logWithDecodedArgs;
-                    });
+                    const logsWithDecodedArgs = _.map(
+                        transactionReceipt.logs,
+                        this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
+                    );
                     const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
                         ...transactionReceipt,
                         logs: logsWithDecodedArgs,

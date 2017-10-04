@@ -7,6 +7,7 @@ import {utils} from '../utils/utils';
 import {eventUtils} from '../utils/event_utils';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
+import {AbiDecoder} from '../utils/abi_decoder';
 import {artifacts} from '../artifacts';
 import {
     TokenContract,
@@ -18,6 +19,8 @@ import {
     ContractEventEmitter,
     ContractEventObj,
     MethodOpts,
+    LogWithDecodedArgs,
+    RawLog,
 } from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
@@ -32,8 +35,9 @@ export class TokenWrapper extends ContractWrapper {
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenLogEventEmitters: ContractEventEmitter[];
     private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
-    constructor(web3Wrapper: Web3Wrapper, tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
+                tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
+        super(web3Wrapper, abiDecoder);
         this._tokenContractsByAddress = {};
         this._tokenLogEventEmitters = [];
         this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
@@ -275,6 +279,22 @@ export class TokenWrapper extends ContractWrapper {
         const eventEmitter = eventUtils.wrapEventEmitter(logEventObj);
         this._tokenLogEventEmitters.push(eventEmitter);
         return eventEmitter;
+    }
+    /**
+     * Gets historical logs without creating a subscription
+     * @param   tokenAddress        An address of the token that emmited the logs.
+     * @param   eventName           The token contract event you would like to subscribe to.
+     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return  Array of logs that match the parameters
+     */
+    public async getLogsAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
+                              indexFilterValues: IndexedFilterValues): Promise<LogWithDecodedArgs[]> {
+        const logs = await this._getLogsAsync(
+            tokenAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.TokenArtifact.abi,
+        );
+        return logs;
     }
     /**
      * Stops watching for all token events

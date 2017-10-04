@@ -35,4 +35,5 @@ export {
     DecodedLogArgs,
     MethodOpts,
     OrderTransactionOpts,
+    FilterObject,
 } from './types';

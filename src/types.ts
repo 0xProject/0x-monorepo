@@ -7,7 +7,6 @@ export enum ZeroExError {
     UserHasNoAssociatedAddress = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
     InvalidSignature = 'INVALID_SIGNATURE',
     ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
-    ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
     InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
     InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
@@ -15,6 +14,11 @@ export enum ZeroExError {
     InvalidJump = 'INVALID_JUMP',
     OutOfGas = 'OUT_OF_GAS',
     NoNetworkId = 'NO_NETWORK_ID',
+}
+
+export enum InternalZeroExError {
+    NoAbiDecoder = 'NO_ABI_DECODER',
+    ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
 }
 
 /**
@@ -198,6 +202,8 @@ export interface TokenTransferProxyContract extends Web3.ContractInstance {
 export enum SolidityTypes {
     Address = 'address',
     Uint256 = 'uint256',
+    Uint8 = 'uint8',
+    Uint = 'uint',
 }
 
 export enum ExchangeContractErrCodes {
@@ -233,6 +239,8 @@ export enum ExchangeContractErrs {
     BatchOrdersMustHaveSameExchangeAddress = 'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
     BatchOrdersMustHaveAtLeastOneItem = 'BATCH_ORDERS_MUST_HAVE_AT_LEAST_ONE_ITEM',
 }
+
+export type RawLog = Web3.LogEntry;
 
 export interface ContractEvent {
     logIndex: number;
@@ -337,6 +345,8 @@ export enum TokenEvents {
     Transfer = 'Transfer',
     Approval = 'Approval',
 }
+
+export type ContractEvents = TokenEvents|ExchangeEvents;
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
@@ -460,3 +470,5 @@ export interface MethodOpts {
 export interface OrderTransactionOpts {
     shouldValidate: boolean;
 }
+
+export type FilterObject = Web3.FilterObject;
