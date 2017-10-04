@@ -94,8 +94,12 @@ export class Web3Wrapper {
         const signData = await promisify(this.web3.eth.sign)(address, message);
         return signData;
     }
-    public async getBlockTimestampAsync(blockHash: string): Promise<number> {
-        const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
+    public async getBlockAsync(blockParam: string|Web3.BlockParam): Promise<Web3.BlockWithoutTransactionData> {
+        const block = await promisify(this.web3.eth.getBlock)(blockParam);
+        return block;
+    }
+    public async getBlockTimestampAsync(blockParam: string|Web3.BlockParam): Promise<number> {
+        const {timestamp} = await this.getBlockAsync(blockParam);
         return timestamp;
     }
     public async getAvailableAddressesAsync(): Promise<string[]> {

@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as ethUtil from 'ethereumjs-util';
+import {BlockAndLogStreamer} from 'ethereumjs-blockstream';
 import {Web3Wrapper} from '../web3_wrapper';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {
@@ -19,9 +20,15 @@ const TOPIC_LENGTH = 32;
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     private _abiDecoder?: AbiDecoder;
+    private _blockAndLogStreamer: BlockAndLogStreamer;
     constructor(web3Wrapper: Web3Wrapper, abiDecoder?: AbiDecoder) {
         this._web3Wrapper = web3Wrapper;
         this._abiDecoder = abiDecoder;
+        const getBlockAsync = async (hash: string) => this._web3Wrapper.getBlockAsync(hash);
+        this._blockAndLogStreamer = new BlockAndLogStreamer(
+            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
+            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
+        );
     }
     protected async _getLogsAsync(address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,
                                   indexFilterValues: IndexedFilterValues,

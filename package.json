@@ -89,12 +89,13 @@
     "webpack": "^3.1.0"
   },
   "dependencies": {
-    "@types/bignumber.js": "^4.0.2",
     "0x-json-schemas": "^0.6.1",
+    "@types/bignumber.js": "^4.0.2",
     "bignumber.js": "^4.0.2",
     "compare-versions": "^3.0.1",
     "es6-promisify": "^5.0.0",
     "ethereumjs-abi": "^0.6.4",
+    "ethereumjs-blockstream": "^2.0.6",
     "ethereumjs-util": "^5.1.1",
     "find-versions": "^2.0.0",
     "lodash": "^4.17.4",
