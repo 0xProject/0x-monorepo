@@ -3,7 +3,7 @@ import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {
-    ZeroExError,
+    InternalZeroExError,
     Artifact,
     LogWithDecodedArgs,
     RawLog,
@@ -40,7 +40,7 @@ export class ContractWrapper {
     }
     protected _tryToDecodeLogOrNoop(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
         if (_.isUndefined(this._abiDecoder)) {
-            throw new Error(ZeroExError.NoAbiDecoder);
+            throw new Error(InternalZeroExError.NoAbiDecoder);
         }
         const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;

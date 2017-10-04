@@ -15,6 +15,9 @@ export enum ZeroExError {
     InvalidJump = 'INVALID_JUMP',
     OutOfGas = 'OUT_OF_GAS',
     NoNetworkId = 'NO_NETWORK_ID',
+}
+
+export enum InternalZeroExError {
     NoAbiDecoder = 'NO_ABI_DECODER',
 }
 
