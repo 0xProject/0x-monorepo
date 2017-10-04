@@ -27,14 +27,8 @@ export class AbiDecoder {
         const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice('0x'.length));
 
         _.map(event.inputs, (param: Web3.EventParameter) => {
-            let value;
-            if (param.indexed) {
-                value = log.topics[topicsIndex];
-                topicsIndex++;
-            } else {
-                value = decodedData[dataIndex];
-                dataIndex++;
-            }
+            // Indexed parameters are stored in topics. Non-indexed ones in decodedData
+            let value = param.indexed ? log.topics[topicsIndex++] : decodedData[dataIndex++];
             if (param.type === SolidityTypes.Address) {
                 value = this.padZeros(new BigNumber(value).toString(16));
             } else if (param.type === SolidityTypes.Uint256 ||
