@@ -90,7 +90,7 @@
   },
   "dependencies": {
     "@types/bignumber.js": "^4.0.2",
-    "0x-json-schemas": "^0.5.1",
+    "0x-json-schemas": "^0.6.0",
     "bignumber.js": "^4.0.2",
     "compare-versions": "^3.0.1",
     "es6-promisify": "^5.0.0",
