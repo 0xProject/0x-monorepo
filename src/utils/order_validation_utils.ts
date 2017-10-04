@@ -145,6 +145,9 @@ export class OrderValidationUtils {
             signedOrder.takerTokenAddress, senderAddress);
 
         const isTakerTokenZRX = signedOrder.takerTokenAddress === zrxTokenAddress;
+        // exchangeRate is the price of one maker token denominated in taker tokens
+        const exchangeRate = signedOrder.takerTokenAmount.div(signedOrder.makerTokenAmount);
+        const fillMakerAmount = fillTakerAmount.div(exchangeRate);
 
         const requiredTakerAmount = isTakerTokenZRX ? fillTakerAmount.plus(signedOrder.takerFee) : fillTakerAmount;
         if (requiredTakerAmount.greaterThan(takerBalance)) {
@@ -155,7 +158,11 @@ export class OrderValidationUtils {
         }
 
         if (!isTakerTokenZRX) {
-            const takerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
+            const isMakerTokenZRX = signedOrder.makerTokenAddress === zrxTokenAddress;
+            let takerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, senderAddress);
+            if (isMakerTokenZRX) {
+                takerZRXBalance = takerZRXBalance.plus(fillMakerAmount);
+            }
             const takerZRXAllowance = await this.tokenWrapper.getProxyAllowanceAsync(zrxTokenAddress, senderAddress);
 
             if (signedOrder.takerFee.greaterThan(takerZRXBalance)) {
