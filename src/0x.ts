@@ -210,7 +210,8 @@ export class ZeroEx {
             this._web3Wrapper,
             this._abiDecoder,
             this.token,
-            exchageContractAddressIfExists);
+            exchageContractAddressIfExists,
+        );
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),
