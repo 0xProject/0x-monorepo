@@ -10,7 +10,7 @@ export class AbiDecoder {
     constructor(abiArrays: Web3.AbiDefinition[][]) {
         _.map(abiArrays, this.addABI.bind(this));
     }
-    public tryToDecodeLogOrNoOp(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
+    public tryToDecodeLogOrNoop(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
         const methodId = log.topics[0];
         const event = this.methodIds[methodId];
         if (_.isUndefined(event)) {

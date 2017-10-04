@@ -307,8 +307,10 @@ export class ZeroEx {
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
                 if (!_.isNull(transactionReceipt)) {
                     intervalUtils.clearAsyncExcludingInterval(intervalId);
-                    const tryToDecodeLogOrNoOp = this._abiDecoder.tryToDecodeLogOrNoOp.bind(this._abiDecoder);
-                    const logsWithDecodedArgs = _.map(transactionReceipt.logs, tryToDecodeLogOrNoOp);
+                    const logsWithDecodedArgs = _.map(
+                        transactionReceipt.logs,
+                        this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
+                    );
                     const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
                         ...transactionReceipt,
                         logs: logsWithDecodedArgs,
