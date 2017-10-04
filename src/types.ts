@@ -7,7 +7,6 @@ export enum ZeroExError {
     UserHasNoAssociatedAddress = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
     InvalidSignature = 'INVALID_SIGNATURE',
     ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
-    ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
     InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
     InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
@@ -19,6 +18,7 @@ export enum ZeroExError {
 
 export enum InternalZeroExError {
     NoAbiDecoder = 'NO_ABI_DECODER',
+    ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
 }
 
 /**
