@@ -63,16 +63,17 @@ export class ContractWrapper {
     private _getTopicsForIndexedArgs(abi: Web3.EventAbi, indexFilterValues: IndexedFilterValues): Array<string|null> {
         const topics: Array<string|null> = [];
         for (const eventInput of abi.inputs) {
-            if (eventInput.indexed) {
-                if (_.isUndefined(indexFilterValues[eventInput.name])) {
-                    topics.push(null);
-                } else {
-                    const value = indexFilterValues[eventInput.name] as string;
-                    const buffer = ethUtil.toBuffer(value);
-                    const paddedBuffer = ethUtil.setLengthLeft(buffer, TOPIC_LENGTH);
-                    const topic = ethUtil.bufferToHex(paddedBuffer);
-                    topics.push(topic);
-                }
+            if (!eventInput.indexed) {
+                continue;
+            }
+            if (_.isUndefined(indexFilterValues[eventInput.name])) {
+                topics.push(null);
+            } else {
+                const value = indexFilterValues[eventInput.name] as string;
+                const buffer = ethUtil.toBuffer(value);
+                const paddedBuffer = ethUtil.setLengthLeft(buffer, TOPIC_LENGTH);
+                const topic = ethUtil.bufferToHex(paddedBuffer);
+                topics.push(topic);
             }
         }
         return topics;
