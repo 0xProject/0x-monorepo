@@ -416,7 +416,6 @@ describe('TokenWrapper', () => {
                 done();
             })().catch(done);
         });
-        // TODO test block reorgs and backfills
     });
     describe('#getLogsAsync', () => {
         let tokenAddress: string;

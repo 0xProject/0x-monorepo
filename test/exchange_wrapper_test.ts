@@ -714,7 +714,6 @@ describe('ExchangeWrapper', () => {
                 done();
             })().catch(done);
         });
-        // TODO test block reorgs and backfills
     });
     describe('#getOrderHashHexUsingContractCallAsync', () => {
         let makerTokenAddress: string;
