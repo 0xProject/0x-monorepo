@@ -620,7 +620,6 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Subscribe to an event type emitted by the Exchange contract.
-     * @param   tokenAddress        The hex encoded address where the ERC20 token is deployed.
      * @param   eventName           The exchange contract event you would like to subscribe to.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
