@@ -4,7 +4,6 @@ import {SchemaValidator, schemas} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
-import {eventUtils} from '../utils/event_utils';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -15,12 +14,10 @@ import {
     TokenEvents,
     IndexedFilterValues,
     SubscriptionOpts,
-    CreateContractEvent,
-    ContractEventEmitter,
-    ContractEventObj,
     MethodOpts,
     LogWithDecodedArgs,
     RawLog,
+    EventCallback,
 } from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
@@ -33,13 +30,13 @@ const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
 export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
-    private _tokenLogEventEmitters: ContractEventEmitter[];
+    private _activeSubscriptions: string[];
     private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
     constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
                 tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
         super(web3Wrapper, abiDecoder);
         this._tokenContractsByAddress = {};
-        this._tokenLogEventEmitters = [];
+        this._activeSubscriptions = [];
         this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
     }
     /**
@@ -251,34 +248,29 @@ export class TokenWrapper extends ContractWrapper {
      * Subscribe to an event type emitted by the Token contract.
      * @param   tokenAddress        The hex encoded address where the ERC20 token is deployed.
      * @param   eventName           The token contract event you would like to subscribe to.
-     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param   callback            Callback that gets called when a log is added/removed
      * @return ContractEventEmitter object
      */
-    public async subscribeAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
-                                indexFilterValues: IndexedFilterValues): Promise<ContractEventEmitter> {
+    public subscribe(tokenAddress: string, eventName: TokenEvents, indexFilterValues: IndexedFilterValues,
+                     callback: EventCallback): string {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
-        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        let createLogEvent: CreateContractEvent;
-        switch (eventName) {
-            case TokenEvents.Approval:
-                createLogEvent = tokenContract.Approval;
-                break;
-            case TokenEvents.Transfer:
-                createLogEvent = tokenContract.Transfer;
-                break;
-            default:
-                throw utils.spawnSwitchErr('TokenEvents', eventName);
-        }
-
-        const logEventObj: ContractEventObj = createLogEvent(indexFilterValues, subscriptionOpts);
-        const eventEmitter = eventUtils.wrapEventEmitter(logEventObj);
-        this._tokenLogEventEmitters.push(eventEmitter);
-        return eventEmitter;
+        const subscriptionToken = this._subscribe(
+            tokenAddress, eventName, indexFilterValues, artifacts.TokenArtifact.abi, callback,
+        );
+        this._activeSubscriptions.push(subscriptionToken);
+        return subscriptionToken;
+    }
+    /**
+     * Cancel a subscription
+     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     */
+    public unsubscribe(subscriptionToken: string): void {
+        _.pull(this._activeSubscriptions, subscriptionToken);
+        this._unsubscribe(subscriptionToken);
     }
     /**
      * Gets historical logs without creating a subscription
@@ -301,16 +293,14 @@ export class TokenWrapper extends ContractWrapper {
         return logs;
     }
     /**
-     * Stops watching for all token events
+     * Cancels all existing subscriptions
      */
-    public async stopWatchingAllEventsAsync(): Promise<void> {
-        const stopWatchingPromises = _.map(this._tokenLogEventEmitters,
-                                           logEventObj => logEventObj.stopWatchingAsync());
-        await Promise.all(stopWatchingPromises);
-        this._tokenLogEventEmitters = [];
+    public unsubscribeAll(): void {
+        _.forEach(this._activeSubscriptions, this._unsubscribe.bind(this));
+        this._activeSubscriptions = [];
     }
-    private async _invalidateContractInstancesAsync(): Promise<void> {
-        await this.stopWatchingAllEventsAsync();
+    private _invalidateContractInstancesAsync(): void {
+        this.unsubscribeAll();
         this._tokenContractsByAddress = {};
     }
     private async _getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {

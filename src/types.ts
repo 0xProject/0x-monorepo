@@ -14,6 +14,7 @@ export enum ZeroExError {
     InvalidJump = 'INVALID_JUMP',
     OutOfGas = 'OUT_OF_GAS',
     NoNetworkId = 'NO_NETWORK_ID',
+    SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
 }
 
 export enum InternalZeroExError {
@@ -35,23 +36,17 @@ export type OrderAddresses = [string, string, string, string, string];
 export type OrderValues = [BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
                            BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber];
 
-export type EventCallbackAsync = (err: Error, event: ContractEvent) => Promise<void>;
-export type EventCallbackSync = (err: Error, event: ContractEvent) => void;
-export type EventCallback = EventCallbackSync|EventCallbackAsync;
-export interface ContractEventObj {
-    watch: (eventWatch: EventCallback) => void;
-    stopWatching: () => void;
+export interface LogEvent extends LogWithDecodedArgs {
+    removed: boolean;
 }
-export type CreateContractEvent = (indexFilterValues: IndexedFilterValues,
-                                   subscriptionOpts: SubscriptionOpts) => ContractEventObj;
+export type EventCallbackAsync = (log: LogEvent) => Promise<void>;
+export type EventCallbackSync = (log: LogEvent) => void;
+export type EventCallback = EventCallbackSync|EventCallbackAsync;
 export interface ExchangeContract extends Web3.ContractInstance {
     isValidSignature: {
         callAsync: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
                     txOpts?: TxOpts) => Promise<boolean>;
     };
-    LogFill: CreateContractEvent;
-    LogCancel: CreateContractEvent;
-    LogError: CreateContractEvent;
     ZRX_TOKEN_CONTRACT: {
         callAsync: () => Promise<string>;
     };
@@ -137,8 +132,6 @@ export interface ExchangeContract extends Web3.ContractInstance {
 }
 
 export interface TokenContract extends Web3.ContractInstance {
-    Transfer: CreateContractEvent;
-    Approval: CreateContractEvent;
     balanceOf: {
         callAsync: (address: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
@@ -377,11 +370,6 @@ export interface OrderFillRequest {
 }
 
 export type AsyncMethod = (...args: any[]) => Promise<any>;
-
-export interface ContractEventEmitter {
-    watch: (eventCallback: EventCallback) => void;
-    stopWatchingAsync: () => Promise<void>;
-}
 
 /**
  * We re-export the `Web3.Provider` type specified in the Web3 Typescript typings
