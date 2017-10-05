@@ -1,19 +1,23 @@
 # CHANGELOG
 
 v0.20.0 - _October 3, 2017_
+------------------------
     * Add `zeroEx.token.getLogsAsync` (#178)
     * Add `zeroEx.exchange.getLogsAsync` (#178)
     * Fixed fees validation when one of the tokens transferred is ZRX (#181)
 
 v0.19.0 - _September 29, 2017_
+------------------------
     * Made order validation optional  (#172)
     * Added Ropsten testnet support (#173)
     * Fixed a bug causing awaitTransactionMinedAsync to DDos backend nodes (#175)
 
 v0.18.0 - _September 26, 2017_
+------------------------
     * Added `zeroEx.exchange.validateOrderFillableOrThrowAsync` to simplify orderbook pruning (#170)
 
 v0.17.0 - _September 26, 2017_
+------------------------
     * Made `zeroEx.exchange.getZRXTokenAddressAsync` public (#171)
 
 v0.16.0 - _September 20, 2017_
