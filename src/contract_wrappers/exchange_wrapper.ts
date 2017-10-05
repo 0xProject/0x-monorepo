@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {SchemaValidator, schemas} from '0x-json-schemas';
-import promisify = require('es6-promisify');
+import {schemas} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {
     ECSignature,
@@ -34,7 +33,6 @@ import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
 import {OrderValidationUtils} from '../utils/order_validation_utils';
 import {ContractWrapper} from './contract_wrapper';
-import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
 import {AbiDecoder} from '../utils/abi_decoder';

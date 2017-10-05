@@ -1,12 +1,8 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import * as Web3 from 'web3';
-import * as abiDecoder from 'abi-decoder';
 import {SchemaValidator, schemas} from '0x-json-schemas';
 import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
-import findVersions = require('find-versions');
-import compareVersions = require('compare-versions');
 import {Web3Wrapper} from './web3_wrapper';
 import {constants} from './utils/constants';
 import {utils} from './utils/utils';
@@ -27,12 +23,7 @@ import {
     SignedOrder,
     Web3Provider,
     ZeroExConfig,
-    TransactionReceipt,
-    DecodedLogArgs,
     TransactionReceiptWithDecodedLogs,
-    LogWithDecodedArgs,
-    FilterObject,
-    RawLog,
 } from './types';
 import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 

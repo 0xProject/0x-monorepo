@@ -1,9 +1,8 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {SchemaValidator, schemas} from '0x-json-schemas';
+import {schemas} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
-import {utils} from '../utils/utils';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -16,7 +15,6 @@ import {
     SubscriptionOpts,
     MethodOpts,
     LogWithDecodedArgs,
-    RawLog,
     EventCallback,
 } from '../types';
 

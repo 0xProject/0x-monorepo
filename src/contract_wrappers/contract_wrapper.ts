@@ -14,7 +14,6 @@ import {
     IndexedFilterValues,
     EventCallback,
 } from '../types';
-import {utils} from '../utils/utils';
 import {constants} from '../utils/constants';
 import {intervalUtils} from '../utils/interval_utils';
 import {filterUtils} from '../utils/filter_utils';
