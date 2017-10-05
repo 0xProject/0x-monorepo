@@ -46,14 +46,6 @@ export class ContractWrapper {
         );
         if (_.isEmpty(this._filters)) {
             this._startBlockAndLogStream();
-            let removed = false;
-            this._onLogAddedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogAdded(
-                this._onLogStateChanged.bind(this, removed),
-            );
-            removed = true;
-            this._onLogRemovedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogRemoved(
-                this._onLogStateChanged.bind(this, removed),
-            );
         }
         const filterToken = filterUtils.generateUUID();
         this._filters[filterToken] = filter;
@@ -67,8 +59,6 @@ export class ContractWrapper {
         delete this._filters[filterToken];
         delete this._filterCallbacks[filterToken];
         if (_.isEmpty(this._filters)) {
-            this._blockAndLogStreamer.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
-            this._blockAndLogStreamer.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
             this._stopBlockAndLogStream();
         }
     }
@@ -114,12 +104,23 @@ export class ContractWrapper {
             this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
         );
-        this._blockAndLogStreamer.addLogFilter({});
+        const catchAllLogFilter = {};
+        this._blockAndLogStreamer.addLogFilter(catchAllLogFilter);
         this._blockAndLogStreamInterval = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this), constants.DEFAULT_BLOCK_POLLING_INTERVAL,
         );
+        let removed = false;
+        this._onLogAddedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogAdded(
+            this._onLogStateChanged.bind(this, removed),
+        );
+        removed = true;
+        this._onLogRemovedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogRemoved(
+            this._onLogStateChanged.bind(this, removed),
+        );
     }
     private _stopBlockAndLogStream(): void {
+        this._blockAndLogStreamer.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
+        this._blockAndLogStreamer.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
         intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamInterval);
         delete this._blockAndLogStreamer;
     }
