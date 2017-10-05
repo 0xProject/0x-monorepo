@@ -291,6 +291,7 @@ export class TokenWrapper extends ContractWrapper {
      */
     public async getLogsAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
                               indexFilterValues: IndexedFilterValues): Promise<LogWithDecodedArgs[]> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
         assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
