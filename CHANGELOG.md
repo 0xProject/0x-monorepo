@@ -3,6 +3,7 @@
 v0.20.0 - _October 3, 2017_
     * Add `zeroEx.token.getLogsAsync` (#178)
     * Add `zeroEx.exchange.getLogsAsync` (#178)
+    * Fixed fees validation when one of the tokens transferred is ZRX (#181)
 
 v0.19.0 - _September 29, 2017_
     * Made order validation optional  (#172)
