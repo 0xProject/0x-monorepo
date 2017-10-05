@@ -617,7 +617,7 @@ describe('ExchangeWrapper', () => {
             });
         });
     });
-    describe('#subscribe', () => {
+    describe('#subscribeAsync', () => {
         const indexFilterValues = {};
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
         let makerTokenAddress: string;
@@ -714,6 +714,7 @@ describe('ExchangeWrapper', () => {
                 done();
             })().catch(done);
         });
+        // TODO test block reorgs and backfills
     });
     describe('#getOrderHashHexUsingContractCallAsync', () => {
         let makerTokenAddress: string;
