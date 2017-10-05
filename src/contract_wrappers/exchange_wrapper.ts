@@ -630,6 +630,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                 callback: EventCallback): Promise<string> {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        assert.isFunction('callback', callback);
         const exchangeContractAddress = await this.getContractAddressAsync();
         const subscriptionToken = this._subscribe(
             exchangeContractAddress, eventName, indexFilterValues, artifacts.ExchangeArtifact.abi, callback,

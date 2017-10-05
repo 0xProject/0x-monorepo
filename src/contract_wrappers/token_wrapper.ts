@@ -258,6 +258,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe(
             tokenAddress, eventName, indexFilterValues, artifacts.TokenArtifact.abi, callback,
         );
