@@ -668,6 +668,9 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     public async getLogsAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
                               indexFilterValues: IndexedFilterValues): Promise<LogWithDecodedArgs[]> {
+        assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
+        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const exchangeContractAddress = await this.getContractAddressAsync();
         const logs = await this._getLogsAsync(
             exchangeContractAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.ExchangeArtifact.abi,
