@@ -251,7 +251,7 @@ export class TokenWrapper extends ContractWrapper {
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
      * @param   callback            Callback that gets called when a log is added/removed
-     * @return ContractEventEmitter object
+     * @return Subscription token used later to unsubscribe
      */
     public subscribe(tokenAddress: string, eventName: TokenEvents, indexFilterValues: IndexedFilterValues,
                      callback: EventCallback): string {
