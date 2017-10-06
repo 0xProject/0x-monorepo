@@ -19,7 +19,7 @@ import {
 } from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {TokenUtils} from './utils/token_utils';
-import {DoneCallback} from '../src/types';
+import {DoneCallback, BlockParamLiteral} from '../src/types';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -421,8 +421,8 @@ describe('TokenWrapper', () => {
         let tokenAddress: string;
         let tokenTransferProxyAddress: string;
         const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: 'earliest',
-            toBlock: 'latest',
+            fromBlock: BlockParamLiteral.Earliest,
+            toBlock: BlockParamLiteral.Latest,
         };
         let txHash: string;
         before(async () => {

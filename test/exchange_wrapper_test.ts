@@ -21,7 +21,7 @@ import {
     OrderFillOrKillRequest,
     LogEvent,
 } from '../src';
-import {DoneCallback} from '../src/types';
+import {DoneCallback, BlockParamLiteral} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 import {assert} from '../src/utils/assert';
@@ -752,8 +752,8 @@ describe('ExchangeWrapper', () => {
         const fillableAmount = new BigNumber(5);
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
         const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: 'earliest',
-            toBlock: 'latest',
+            fromBlock: BlockParamLiteral.Earliest,
+            toBlock: BlockParamLiteral.Latest,
         };
         let txHash: string;
         before(async () => {
