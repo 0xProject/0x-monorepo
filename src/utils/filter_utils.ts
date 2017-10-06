@@ -43,6 +43,7 @@ export const filterUtils = {
                 continue;
             }
             if (_.isUndefined(indexFilterValues[eventInput.name])) {
+                // Null is a wildcard topic in a JSON-RPC call
                 topics.push(null);
             } else {
                 const value = indexFilterValues[eventInput.name] as string;
