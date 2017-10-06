@@ -123,6 +123,9 @@ export class ContractWrapper {
     private async _reconcileBlockAsync(): Promise<void> {
         const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
-        (this._blockAndLogStreamer as BlockAndLogStreamer).reconcileNewBlock(latestBlock as any as Block);
+        if (!_.isUndefined(this._blockAndLogStreamer)) {
+            // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
+            this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
+        }
     }
 }
