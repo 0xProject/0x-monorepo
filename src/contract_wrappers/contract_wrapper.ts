@@ -21,7 +21,7 @@ import {filterUtils} from '../utils/filter_utils';
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     private _abiDecoder?: AbiDecoder;
-    private _blockAndLogStreamer: BlockAndLogStreamer;
+    private _blockAndLogStreamer: BlockAndLogStreamer|undefined;
     private _blockAndLogStreamInterval: NodeJS.Timer;
     private _filters: {[filterToken: string]: Web3.FilterObject};
     private _filterCallbacks: {[filterToken: string]: EventCallback};
@@ -32,6 +32,7 @@ export class ContractWrapper {
         this._abiDecoder = abiDecoder;
         this._filters = {};
         this._filterCallbacks = {};
+        this._blockAndLogStreamer = undefined;
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
@@ -39,7 +40,7 @@ export class ContractWrapper {
                          indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
                          callback: EventCallback): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
-        if (_.isEmpty(this._filters)) {
+        if (_.isUndefined(this._blockAndLogStreamer)) {
             this._startBlockAndLogStream();
         }
         const filterToken = filterUtils.generateUUID();
@@ -111,14 +112,16 @@ export class ContractWrapper {
         );
     }
     private _stopBlockAndLogStream(): void {
-        this._blockAndLogStreamer.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
-        this._blockAndLogStreamer.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
+        (this._blockAndLogStreamer as BlockAndLogStreamer).unsubscribeFromOnLogAdded(
+            this._onLogAddedSubscriptionToken as string);
+        (this._blockAndLogStreamer as BlockAndLogStreamer).unsubscribeFromOnLogRemoved(
+            this._onLogRemovedSubscriptionToken as string);
         intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamInterval);
         delete this._blockAndLogStreamer;
     }
     private async _reconcileBlockAsync(): Promise<void> {
         const latestBlock = await this._web3Wrapper.getBlockAsync('latest');
         // We need to coerce to Block type cause Web3.Block includes types for mempool bloks
-        this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
+        (this._blockAndLogStreamer as BlockAndLogStreamer).reconcileNewBlock(latestBlock as any as Block);
     }
 }
