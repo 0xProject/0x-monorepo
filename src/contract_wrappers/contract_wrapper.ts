@@ -13,6 +13,7 @@ import {
     SubscriptionOpts,
     IndexedFilterValues,
     EventCallback,
+    BlockParamLiteral,
 } from '../types';
 import {constants} from '../utils/constants';
 import {intervalUtils} from '../utils/interval_utils';
@@ -120,7 +121,7 @@ export class ContractWrapper {
         delete this._blockAndLogStreamer;
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        const latestBlock = await this._web3Wrapper.getBlockAsync('latest');
+        const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
         // We need to coerce to Block type cause Web3.Block includes types for mempool bloks
         (this._blockAndLogStreamer as BlockAndLogStreamer).reconcileNewBlock(latestBlock as any as Block);
     }

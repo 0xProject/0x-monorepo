@@ -345,7 +345,13 @@ export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
 }
 
-export type BlockParam = 'latest'|'earliest'|'pending'|number;
+export enum BlockParamLiteral {
+    Latest = 'latest',
+    Earliest = 'earliest',
+    Pending = 'pending',
+}
+
+export type BlockParam = BlockParamLiteral|number;
 
 export interface SubscriptionOpts {
     fromBlock: BlockParam;
