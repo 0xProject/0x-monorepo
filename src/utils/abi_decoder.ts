@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {AbiType, DecodedLogArgs, DecodedArgs, LogWithDecodedArgs, RawLog, SolidityTypes} from '../types';
+import {AbiType, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes} from '../types';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
 
 export class AbiDecoder {

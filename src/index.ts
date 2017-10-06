@@ -19,7 +19,6 @@ export {
     OrderFillOrKillRequest,
     OrderCancellationRequest,
     OrderFillRequest,
-    ContractEventEmitter,
     LogErrorContractEventArgs,
     LogCancelContractEventArgs,
     LogFillContractEventArgs,
@@ -36,4 +35,5 @@ export {
     MethodOpts,
     OrderTransactionOpts,
     FilterObject,
+    LogEvent,
 } from './types';

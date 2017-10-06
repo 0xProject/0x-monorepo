@@ -17,6 +17,9 @@ export const assert = {
     isString(variableName: string, value: string): void {
         this.assert(_.isString(value), this.typeAssertionMessage(variableName, 'string', value));
     },
+    isFunction(variableName: string, value: any): void {
+        this.assert(_.isFunction(value), this.typeAssertionMessage(variableName, 'function', value));
+    },
     isHexString(variableName: string, value: string): void {
         this.assert(_.isString(value) && HEX_REGEX.test(value),
             this.typeAssertionMessage(variableName, 'HexString', value));

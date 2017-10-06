@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {SchemaValidator, schemas} from '0x-json-schemas';
-import promisify = require('es6-promisify');
+import {schemas} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {
     ECSignature,
@@ -16,11 +15,8 @@ import {
     SignedOrder,
     ContractEvent,
     ExchangeEvents,
-    ContractEventEmitter,
     SubscriptionOpts,
     IndexedFilterValues,
-    CreateContractEvent,
-    ContractEventObj,
     OrderCancellationRequest,
     OrderFillRequest,
     LogErrorContractEventArgs,
@@ -31,13 +27,12 @@ import {
     ValidateOrderFillableOpts,
     OrderTransactionOpts,
     RawLog,
+    EventCallback,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
-import {eventUtils} from '../utils/event_utils';
 import {OrderValidationUtils} from '../utils/order_validation_utils';
 import {ContractWrapper} from './contract_wrapper';
-import {constants} from '../utils/constants';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -51,7 +46,7 @@ const SHOULD_VALIDATE_BY_DEFAULT = true;
  */
 export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractIfExists?: ExchangeContract;
-    private _exchangeLogEventEmitters: ContractEventEmitter[];
+    private _activeSubscriptions: string[];
     private _orderValidationUtils: OrderValidationUtils;
     private _tokenWrapper: TokenWrapper;
     private _exchangeContractErrCodesToMsg = {
@@ -86,7 +81,7 @@ export class ExchangeWrapper extends ContractWrapper {
         super(web3Wrapper, abiDecoder);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
-        this._exchangeLogEventEmitters = [];
+        this._activeSubscriptions = [];
         this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
@@ -622,41 +617,32 @@ export class ExchangeWrapper extends ContractWrapper {
         return txHash;
     }
     /**
-     * Subscribe to an event type emitted by the Exchange smart contract
-     * @param   eventName               The exchange contract event you would like to subscribe to.
-     * @param   subscriptionOpts        Subscriptions options that let you configure the subscription.
-     * @param   indexFilterValues       An object where the keys are indexed args returned by the event and
-     *                                  the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   exchangeContractAddress The hex encoded address of the Exchange contract to call.
-     * @return                      ContractEventEmitter object
+     * Subscribe to an event type emitted by the Exchange contract.
+     * @param   eventName           The exchange contract event you would like to subscribe to.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param   callback            Callback that gets called when a log is added/removed
+     * @return Subscription token used later to unsubscribe
      */
-    public async subscribeAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
-                                indexFilterValues: IndexedFilterValues, exchangeContractAddress: string):
-                                Promise<ContractEventEmitter> {
-        assert.isETHAddressHex('exchangeContractAddress', exchangeContractAddress);
+    public async subscribeAsync(eventName: ExchangeEvents, indexFilterValues: IndexedFilterValues,
+                                callback: EventCallback): Promise<string> {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
-        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const exchangeContract = await this._getExchangeContractAsync();
-        let createLogEvent: CreateContractEvent;
-        switch (eventName) {
-            case ExchangeEvents.LogFill:
-                createLogEvent = exchangeContract.LogFill;
-                break;
-            case ExchangeEvents.LogError:
-                createLogEvent = exchangeContract.LogError;
-                break;
-            case ExchangeEvents.LogCancel:
-                createLogEvent = exchangeContract.LogCancel;
-                break;
-            default:
-                throw utils.spawnSwitchErr('ExchangeEvents', eventName);
-        }
-
-        const logEventObj: ContractEventObj = createLogEvent(indexFilterValues, subscriptionOpts);
-        const eventEmitter = eventUtils.wrapEventEmitter(logEventObj);
-        this._exchangeLogEventEmitters.push(eventEmitter);
-        return eventEmitter;
+        assert.isFunction('callback', callback);
+        const exchangeContractAddress = await this.getContractAddressAsync();
+        const subscriptionToken = this._subscribe(
+            exchangeContractAddress, eventName, indexFilterValues, artifacts.ExchangeArtifact.abi, callback,
+        );
+        this._activeSubscriptions.push(subscriptionToken);
+        return subscriptionToken;
+    }
+    /**
+     * Cancel a subscription
+     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     */
+    public unsubscribe(subscriptionToken: string): void {
+        _.pull(this._activeSubscriptions, subscriptionToken);
+        this._unsubscribe(subscriptionToken);
     }
     /**
      * Gets historical logs without creating a subscription
@@ -676,15 +662,6 @@ export class ExchangeWrapper extends ContractWrapper {
             exchangeContractAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.ExchangeArtifact.abi,
         );
         return logs;
-    }
-    /**
-     * Stops watching for all exchange events
-     */
-    public async stopWatchingAllEventsAsync(): Promise<void> {
-        const stopWatchingPromises = _.map(this._exchangeLogEventEmitters,
-                                           logEventObj => logEventObj.stopWatchingAsync());
-        await Promise.all(stopWatchingPromises);
-        this._exchangeLogEventEmitters = [];
     }
     /**
      * Retrieves the Ethereum address of the Exchange contract deployed on the network
@@ -809,8 +786,15 @@ export class ExchangeWrapper extends ContractWrapper {
         const ZRXtokenAddress = await exchangeInstance.ZRX_TOKEN_CONTRACT.callAsync();
         return ZRXtokenAddress;
     }
+    /**
+     * Cancels all existing subscriptions
+     */
+    public unsubscribeAll(): void {
+        _.forEach(this._activeSubscriptions, this._unsubscribe.bind(this));
+        this._activeSubscriptions = [];
+    }
     private async _invalidateContractInstancesAsync(): Promise<void> {
-        await this.stopWatchingAllEventsAsync();
+        this.unsubscribeAll();
         delete this._exchangeContractIfExists;
     }
     private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,

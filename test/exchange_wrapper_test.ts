@@ -19,8 +19,9 @@ import {
     OrderFillRequest,
     LogFillContractEventArgs,
     OrderFillOrKillRequest,
+    LogEvent,
 } from '../src';
-import {DoneCallback} from '../src/types';
+import {DoneCallback, BlockParamLiteral} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
 import {assert} from '../src/utils/assert';
@@ -626,10 +627,6 @@ describe('ExchangeWrapper', () => {
         let makerAddress: string;
         let fillableAmount: BigNumber.BigNumber;
         let signedOrder: SignedOrder;
-        const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: 0,
-            toBlock: 'latest',
-        };
         const fillTakerAmountInBaseUnits = new BigNumber(1);
         const cancelTakerAmountInBaseUnits = new BigNumber(1);
         before(() => {
@@ -645,24 +642,22 @@ describe('ExchangeWrapper', () => {
             );
         });
         afterEach(async () => {
-            await zeroEx.exchange.stopWatchingAllEventsAsync();
+            zeroEx.exchange.unsubscribeAll();
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
-        // Since we need to await the receipt of the event in the `subscribeAsync` callback,
+        // Since we need to await the receipt of the event in the `subscribe` callback,
         // we do need both. A hack is to make the top-level a sync fn w/ a done callback and then
         // wrap the rest of the test in an async block
         // Source: https://github.com/mochajs/mocha/issues/2407
         it('Should receive the LogFill event when an order is filled', (done: DoneCallback) => {
             (async () => {
-                const zeroExEvent = await zeroEx.exchange.subscribeAsync(
-                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues, exchangeContractAddress,
-                );
-                zeroExEvent.watch((err: Error, event: ContractEvent) => {
-                    expect(err).to.be.null();
-                    expect(event).to.not.be.undefined();
-                    expect(event.event).to.be.equal('LogFill');
+                const callback = (logEvent: LogEvent) => {
+                    expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
-                });
+                };
+                await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, indexFilterValues, callback,
+                );
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
                 );
@@ -670,75 +665,53 @@ describe('ExchangeWrapper', () => {
         });
         it('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
             (async () => {
-                const zeroExEvent = await zeroEx.exchange.subscribeAsync(
-                    ExchangeEvents.LogCancel, subscriptionOpts, indexFilterValues, exchangeContractAddress,
+                const callback = (logEvent: LogEvent) => {
+                    expect(logEvent.event).to.be.equal(ExchangeEvents.LogCancel);
+                    done();
+                };
+                await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogCancel, indexFilterValues, callback,
                 );
-                zeroExEvent.watch((err: Error, event: ContractEvent) => {
-                        expect(err).to.be.null();
-                        expect(event).to.not.be.undefined();
-                        expect(event.event).to.be.equal('LogCancel');
-                        done();
-                });
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerAmountInBaseUnits);
             })().catch(done);
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
-                const eventSubscriptionToBeCancelled = await zeroEx.exchange.subscribeAsync(
-                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues, exchangeContractAddress,
-                );
-                eventSubscriptionToBeCancelled.watch((err: Error, event: ContractEvent) => {
+                const callbackNeverToBeCalled = (logEvent: LogEvent) => {
                     done(new Error('Expected this subscription to have been cancelled'));
-                });
+                };
+                await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, indexFilterValues, callbackNeverToBeCalled,
+                );
 
                 const newProvider = web3Factory.getRpcProvider();
                 await zeroEx.setProviderAsync(newProvider);
 
-                const eventSubscriptionToStay = await zeroEx.exchange.subscribeAsync(
-                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues, exchangeContractAddress,
-                );
-                eventSubscriptionToStay.watch((err: Error, event: ContractEvent) => {
-                    expect(err).to.be.null();
-                    expect(event).to.not.be.undefined();
-                    expect(event.event).to.be.equal('LogFill');
+                const callback = (logEvent: LogEvent) => {
+                    expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
-                });
+                };
+                await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, indexFilterValues, callback,
+                );
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
                 );
             })().catch(done);
         });
-        it('Should stop watch for events when stopWatchingAsync called on the eventEmitter', (done: DoneCallback) => {
+        it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
-                const eventSubscriptionToBeStopped = await zeroEx.exchange.subscribeAsync(
-                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues, exchangeContractAddress,
+                const callbackNeverToBeCalled = (logEvent: LogEvent) => {
+                    done(new Error('Expected this subscription to have been cancelled'));
+                };
+                const subscriptionToken = await zeroEx.exchange.subscribeAsync(
+                    ExchangeEvents.LogFill, indexFilterValues, callbackNeverToBeCalled,
                 );
-                eventSubscriptionToBeStopped.watch((err: Error, event: ContractEvent) => {
-                    done(new Error('Expected this subscription to have been stopped'));
-                });
-                await eventSubscriptionToBeStopped.stopWatchingAsync();
+                zeroEx.exchange.unsubscribe(subscriptionToken);
                 await zeroEx.exchange.fillOrderAsync(
                     signedOrder, fillTakerAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
                 );
                 done();
-            })().catch(done);
-        });
-        it('Should wrap all event args BigNumber instances in a newer version of BigNumber', (done: DoneCallback) => {
-            (async () => {
-                const zeroExEvent = await zeroEx.exchange.subscribeAsync(
-                    ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues, exchangeContractAddress,
-                );
-                zeroExEvent.watch((err: Error, event: ContractEvent) => {
-                    const args = event.args as LogFillContractEventArgs;
-                    expect(args.filledMakerTokenAmount.isBigNumber).to.be.true();
-                    expect(args.filledTakerTokenAmount.isBigNumber).to.be.true();
-                    expect(args.paidMakerFee.isBigNumber).to.be.true();
-                    expect(args.paidTakerFee.isBigNumber).to.be.true();
-                    done();
-                });
-                await zeroEx.exchange.fillOrderAsync(
-                    signedOrder, fillTakerAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
-                );
             })().catch(done);
         });
     });
@@ -779,8 +752,8 @@ describe('ExchangeWrapper', () => {
         const fillableAmount = new BigNumber(5);
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
         const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: 'earliest',
-            toBlock: 'latest',
+            fromBlock: BlockParamLiteral.Earliest,
+            toBlock: BlockParamLiteral.Latest,
         };
         let txHash: string;
         before(async () => {
