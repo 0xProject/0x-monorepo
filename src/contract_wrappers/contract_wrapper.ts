@@ -38,9 +38,7 @@ export class ContractWrapper {
     protected _subscribe(address: string, eventName: ContractEvents,
                          indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
                          callback: EventCallback): string {
-        const filter = filterUtils.getFilter(
-            this._web3Wrapper.keccak256.bind(this._web3Wrapper), address, eventName, indexFilterValues, abi,
-        );
+        const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
         if (_.isEmpty(this._filters)) {
             this._startBlockAndLogStream();
         }
@@ -62,10 +60,7 @@ export class ContractWrapper {
     protected async _getLogsAsync(address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,
                                   indexFilterValues: IndexedFilterValues,
                                   abi: Web3.ContractAbi): Promise<LogWithDecodedArgs[]> {
-        const filter = filterUtils.getFilter(
-            this._web3Wrapper.keccak256.bind(this._web3Wrapper), address, eventName, indexFilterValues, abi,
-            subscriptionOpts,
-        );
+        const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi, subscriptionOpts);
         const logs = await this._web3Wrapper.getLogsAsync(filter);
         const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoop.bind(this));
         return logsWithDecodedArguments;

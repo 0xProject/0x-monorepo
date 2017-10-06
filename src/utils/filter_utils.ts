@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as uuid from 'uuid/v4';
 import * as ethUtil from 'ethereumjs-util';
+import * as jsSHA3 from 'js-sha3';
 import {ContractEvents, IndexedFilterValues, SubscriptionOpts} from '../types';
 
 const TOPIC_LENGTH = 32;
@@ -10,12 +11,12 @@ export const filterUtils = {
     generateUUID(): string {
         return uuid();
     },
-    getFilter(keccak256: (data: string) => string, address: string, eventName: ContractEvents,
+    getFilter(address: string, eventName: ContractEvents,
               indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
               subscriptionOpts?: SubscriptionOpts): Web3.FilterObject {
         const eventAbi = _.find(abi, {name: eventName}) as Web3.EventAbi;
         const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi, eventName);
-        const topicForEventSignature = keccak256(eventSignature);
+        const topicForEventSignature = jsSHA3.keccak256(eventSignature);
         const topicsForIndexedArgs = filterUtils.getTopicsForIndexedArgs(eventAbi, indexFilterValues);
         const topics = [topicForEventSignature, ...topicsForIndexedArgs];
         let filter: Web3.FilterObject = {
