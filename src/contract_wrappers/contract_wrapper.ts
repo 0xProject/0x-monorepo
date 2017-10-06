@@ -23,7 +23,6 @@ export class ContractWrapper {
     private _abiDecoder?: AbiDecoder;
     private _blockAndLogStreamer: BlockAndLogStreamer;
     private _blockAndLogStreamInterval: NodeJS.Timer;
-    private _activeFilters: number;
     private _filters: {[filterToken: string]: Web3.FilterObject};
     private _filterCallbacks: {[filterToken: string]: EventCallback};
     private _onLogAddedSubscriptionToken: string|undefined;
@@ -31,7 +30,6 @@ export class ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper, abiDecoder?: AbiDecoder) {
         this._web3Wrapper = web3Wrapper;
         this._abiDecoder = abiDecoder;
-        this._activeFilters = 0;
         this._filters = {};
         this._filterCallbacks = {};
         this._onLogAddedSubscriptionToken = undefined;
