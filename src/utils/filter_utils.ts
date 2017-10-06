@@ -16,7 +16,7 @@ export const filterUtils = {
               subscriptionOpts?: SubscriptionOpts): Web3.FilterObject {
         const eventAbi = _.find(abi, {name: eventName}) as Web3.EventAbi;
         const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi, eventName);
-        const topicForEventSignature = jsSHA3.keccak256(eventSignature);
+        const topicForEventSignature = ethUtil.addHexPrefix(jsSHA3.keccak256(eventSignature));
         const topicsForIndexedArgs = filterUtils.getTopicsForIndexedArgs(eventAbi, indexFilterValues);
         const topics = [topicForEventSignature, ...topicsForIndexedArgs];
         let filter: Web3.FilterObject = {
