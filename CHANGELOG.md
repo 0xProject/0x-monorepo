@@ -3,11 +3,11 @@
 v0.21.0 - _TBD, 2017_
 ------------------------
     * Complete rewrite of subscription logic (#182)
-        * Subscriptions now can't return historical logs. If you want them - use `getLogsAsync`
+        * Subscriptions no longer return historical logs. If you want them - use `getLogsAsync`
         * Subscriptions now use [ethereumjs-blockstream](https://github.com/ethereumjs/ethereumjs-blockstream) under the hood
-            * Subscriptions now correctly handle block re-orgs (forks)
-            * Subscriptions now correctly backfill logs (connection problems)
-            * They don't setup filters on the underlying nodes, so you can use them with infura without a filter Subprovider
+            * Subscriptions correctly handle block re-orgs (forks)
+            * Subscriptions correctly backfill logs (connection problems)
+            * They no longer setup filters on the underlying nodes, so you can use them with infura without a filter Subprovider
         * Removed `ContractEventEmitter` and added `LogEvent`
         * Renamed `zeroEx.token.subscribeAsync` to `zeroEx.token.subscribe`
         * Added `zeroEx.token.unsubscribe` and `zeroEx.exchange.unsubscribe`
