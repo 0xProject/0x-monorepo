@@ -28,7 +28,7 @@ export const assert = {
         const web3 = new Web3();
         this.assert(web3.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
         this.assert(
-            web3.isAddress(value) && !web3.isChecksumAddress(value),
+            web3.isAddress(value) && value.toLowerCase() === value,
             `Checksummed addresses are not supported. Convert ${variableName} to lower case before passing`,
         );
     },

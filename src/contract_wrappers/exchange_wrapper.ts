@@ -36,6 +36,7 @@ import {ContractWrapper} from './contract_wrapper';
 import {TokenWrapper} from './token_wrapper';
 import {decorators} from '../utils/decorators';
 import {AbiDecoder} from '../utils/abi_decoder';
+import {ExchangeTransferSimulator} from '../utils/exchange_transfer_simulator';
 import {artifacts} from '../artifacts';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;
@@ -173,7 +174,10 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            await this.validateFillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
+            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
+            await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+                exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
         }
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
@@ -242,8 +246,12 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            await Promise.all(signedOrders.map(signedOrder => this.validateFillOrderThrowIfInvalidAsync(
-                signedOrder, fillTakerTokenAmount, takerAddress)));
+            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
+            for (const signedOrder of signedOrders) {
+                await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+                    exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+            }
         }
 
         if (_.isEmpty(signedOrders)) {
@@ -328,9 +336,14 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            await Promise.all(orderFillRequests.map(orderFillRequest => this.validateFillOrderThrowIfInvalidAsync(
-                orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount, takerAddress)),
-            );
+            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
+            for (const orderFillRequest of orderFillRequests) {
+                await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+                    exchangeTradeEmulator, orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount,
+                    takerAddress, zrxTokenAddress,
+                );
+            }
         }
         if (_.isEmpty(orderFillRequests)) {
             throw new Error(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
@@ -403,7 +416,10 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            await this.validateFillOrKillOrderThrowIfInvalidAsync(signedOrder, fillTakerTokenAmount, takerAddress);
+            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
+            await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
+                exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
         }
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
@@ -464,9 +480,14 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            await Promise.all(orderFillOrKillRequests.map(request => this.validateFillOrKillOrderThrowIfInvalidAsync(
-                request.signedOrder, request.fillTakerAmount, takerAddress)),
-            );
+            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
+            for (const orderFillOrKillRequest of orderFillOrKillRequests) {
+                await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
+                    exchangeTradeEmulator, orderFillOrKillRequest.signedOrder, orderFillOrKillRequest.fillTakerAmount,
+                    takerAddress, zrxTokenAddress,
+                );
+            }
         }
 
         const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillOrKillRequests, request => {
@@ -530,7 +551,10 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            await this.validateCancelOrderThrowIfInvalidAsync(order, cancelTakerTokenAmount);
+            const orderHash = utils.getOrderHashHex(order);
+            const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
+            await this._orderValidationUtils.validateCancelOrderThrowIfInvalidAsync(
+                order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
         }
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
@@ -580,9 +604,15 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            await Promise.all(orderCancellationRequests.map(cancellationRequest =>
-                this.validateCancelOrderThrowIfInvalidAsync(
-                    cancellationRequest.order, cancellationRequest.takerTokenCancelAmount)));
+            for (const orderCancellationRequest of orderCancellationRequests) {
+                const orderHash = utils.getOrderHashHex(orderCancellationRequest.order);
+                const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
+                await this._orderValidationUtils.validateCancelOrderThrowIfInvalidAsync(
+                    orderCancellationRequest.order, orderCancellationRequest.takerTokenCancelAmount,
+                    unavailableTakerTokenAmount,
+                );
+            }
+
         }
         if (_.isEmpty(orderCancellationRequests)) {
             throw new Error(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
@@ -688,8 +718,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         const expectedFillTakerTokenAmount = !_.isUndefined(opts) ? opts.expectedFillTakerTokenAmount : undefined;
+        const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
         await this._orderValidationUtils.validateOrderFillableOrThrowAsync(
-            signedOrder, zrxTokenAddress, expectedFillTakerTokenAmount,
+            exchangeTradeEmulator, signedOrder, zrxTokenAddress, expectedFillTakerTokenAmount,
         );
     }
     /**
@@ -707,8 +738,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+        const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
         await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
-            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+            exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
     /**
      * Checks if cancelling a given order will succeed and throws an informative error if it won't.
@@ -740,8 +772,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+        const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
         await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
-            signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+            exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
     }
     /**
      * Checks if rounding error will be > 0.1% when computing makerTokenAmount by doing:
