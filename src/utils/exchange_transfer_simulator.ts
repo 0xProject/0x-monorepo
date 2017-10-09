@@ -32,8 +32,6 @@ const ERR_MSG_MAPPING = {
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts touched in trades
- * @param  {TokenWrapper} token [description]
- * @return {[type]}             [description]
  */
 export class BalanceAndProxyAllowanceLazyStore {
     protected _token: TokenWrapper;
