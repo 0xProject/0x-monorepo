@@ -13,6 +13,7 @@ v0.21.0 - _TBD, 2017_
         * Added `zeroEx.token.unsubscribe` and `zeroEx.exchange.unsubscribe`
         * Renamed `zeroEx.exchange.stopWatchingAllEventsAsync` to `zeroEx.exhange.unsubscribeAll`
         * Renamed `zeroEx.token.stopWatchingAllEventsAsync` to `zeroEx.token.unsubscribeAll`
+    * Fixed the batch fills validation by emulating all the transfers (#185)
 
 v0.20.0 - _October 5, 2017_
 ------------------------
