@@ -85,9 +85,9 @@ export class ExchangeTransferSimulator extends BalanceAndProxyAllowanceLazyStore
     /**
      * Simulates transferFrom call performed by a proxy
      * @param  tokenAddress      Address of the token to be transferred
-     * @param  from              Owner of the transfered tokens
-     * @param  to                Recipient of the transfered tokens
-     * @param  amountInBaseUnits The amount of tokens being transfered
+     * @param  from              Owner of the transferred tokens
+     * @param  to                Recipient of the transferred tokens
+     * @param  amountInBaseUnits The amount of tokens being transferred
      * @param  tradeSide         Is Maker/Taker transferring
      * @param  transferType      Is it a fee payment or a value transfer
      */
