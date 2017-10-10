@@ -41,17 +41,17 @@ describe('ExchangeTransferSimulator', () => {
         beforeEach(() => {
             exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token);
         });
-        it('throws if the user doesn\'t have enough balance', async () => {
-            return expect(exchangeTransferSimulator.transferFromAsync(
-                exampleTokenAddress, sender, recipient, transferAmount, TradeSide.Maker, TransferType.Trade,
-            )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
-        });
         it('throws if the user doesn\'t have enough allowance', async () => {
-            txHash = await zeroEx.token.transferAsync(exampleTokenAddress, coinbase, sender, transferAmount);
-            await zeroEx.awaitTransactionMinedAsync(txHash);
             return expect(exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress, sender, recipient, transferAmount, TradeSide.Taker, TransferType.Trade,
             )).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerAllowance);
+        });
+        it('throws if the user doesn\'t have enough balance', async () => {
+            txHash = await zeroEx.token.setProxyAllowanceAsync(exampleTokenAddress, sender, transferAmount);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            return expect(exchangeTransferSimulator.transferFromAsync(
+                exampleTokenAddress, sender, recipient, transferAmount, TradeSide.Maker, TransferType.Trade,
+            )).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
         });
         it('updates balances and proxyAllowance after transfer', async () => {
             txHash = await zeroEx.token.transferAsync(exampleTokenAddress, coinbase, sender, transferAmount);
