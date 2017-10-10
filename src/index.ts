@@ -16,7 +16,6 @@ export {
     IndexedFilterValues,
     SubscriptionOpts,
     BlockParam,
-    OrderFillOrKillRequest,
     OrderCancellationRequest,
     OrderFillRequest,
     LogErrorContractEventArgs,

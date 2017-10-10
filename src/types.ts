@@ -57,7 +57,7 @@ export interface ExchangeContract extends Web3.ContractInstance {
         callAsync: (orderHash: string, defaultBlock?: Web3.BlockParam) => Promise<BigNumber.BigNumber>;
     };
     isRoundingError: {
-        callAsync: (fillTakerAmount: BigNumber.BigNumber, takerTokenAmount: BigNumber.BigNumber,
+        callAsync: (takerTokenFillAmount: BigNumber.BigNumber, takerTokenAmount: BigNumber.BigNumber,
                     makerTokenAmount: BigNumber.BigNumber, txOpts?: TxOpts) => Promise<boolean>;
     };
     fillOrder: {
@@ -359,11 +359,6 @@ export interface SubscriptionOpts {
 }
 
 export type DoneCallback = (err?: Error) => void;
-
-export interface OrderFillOrKillRequest {
-    signedOrder: SignedOrder;
-    fillTakerAmount: BigNumber.BigNumber;
-}
 
 export interface OrderCancellationRequest {
     order: Order|SignedOrder;
