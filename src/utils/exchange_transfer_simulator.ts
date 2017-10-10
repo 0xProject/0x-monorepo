@@ -82,9 +82,6 @@ export class BalanceAndProxyAllowanceLazyStore {
 }
 
 export class ExchangeTransferSimulator extends BalanceAndProxyAllowanceLazyStore {
-    constructor(token: TokenWrapper) {
-        super(token);
-    }
     /**
      * Simulates transferFrom call performed by a proxy
      * @param  tokenAddress      Address of a token to be transfered
