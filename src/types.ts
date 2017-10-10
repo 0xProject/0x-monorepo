@@ -466,3 +466,13 @@ export interface OrderTransactionOpts {
 }
 
 export type FilterObject = Web3.FilterObject;
+
+export enum TradeSide {
+    Maker = 'maker',
+    Taker = 'taker',
+}
+
+export enum TransferType {
+    Trade = 'trade',
+    Fee = 'fee',
+}
