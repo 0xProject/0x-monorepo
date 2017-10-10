@@ -1,6 +1,6 @@
 {
   "name": "0x.js",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "A javascript library for interacting with the 0x protocol",
   "keywords": [
     "0x.js",
