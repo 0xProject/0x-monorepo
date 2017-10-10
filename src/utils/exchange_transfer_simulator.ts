@@ -104,9 +104,7 @@ export class ExchangeTransferSimulator extends BalanceAndProxyAllowanceLazyStore
         }
         await this.decreaseProxyAllowanceAsync(tokenAddress, from, amountInBaseUnits);
         await this.decreaseBalanceAsync(tokenAddress, from, amountInBaseUnits);
-        if (!_.isUndefined(to)) {
-            await this.increaseBalanceAsync(tokenAddress, to, amountInBaseUnits);
-        }
+        await this.increaseBalanceAsync(tokenAddress, to, amountInBaseUnits);
     }
     private async decreaseProxyAllowanceAsync(tokenAddress: string, userAddress: string,
                                               amountInBaseUnits: BigNumber.BigNumber): Promise<void> {
