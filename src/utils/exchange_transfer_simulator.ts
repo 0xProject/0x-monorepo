@@ -4,7 +4,7 @@ import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 
 enum FailureReason {
     Balance = 'balance',
-    ProxyAllowance = 'proxy allowance',
+    ProxyAllowance = 'proxyAllowance',
 }
 
 const ERR_MSG_MAPPING = {
