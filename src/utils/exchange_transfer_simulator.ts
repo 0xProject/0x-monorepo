@@ -96,11 +96,11 @@ export class ExchangeTransferSimulator extends BalanceAndProxyAllowanceLazyStore
                                    transferType: TransferType): Promise<void> {
         const balance = await this.getBalanceAsync(tokenAddress, from);
         const proxyAllowance = await this.getProxyAllowanceAsync(tokenAddress, from);
-        if (balance.lessThan(amountInBaseUnits)) {
-            this.throwValidationError(FailureReason.Balance, tradeSide, transferType);
-        }
         if (proxyAllowance.lessThan(amountInBaseUnits)) {
             this.throwValidationError(FailureReason.ProxyAllowance, tradeSide, transferType);
+        }
+        if (balance.lessThan(amountInBaseUnits)) {
+            this.throwValidationError(FailureReason.Balance, tradeSide, transferType);
         }
         await this.decreaseProxyAllowanceAsync(tokenAddress, from, amountInBaseUnits);
         await this.decreaseBalanceAsync(tokenAddress, from, amountInBaseUnits);
