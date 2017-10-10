@@ -55,7 +55,8 @@ export class BalanceAndProxyAllowanceLazyStore {
             const balance = await this._token.getBalanceAsync(tokenAddress, userAddress);
             this.setBalance(tokenAddress, userAddress, balance);
         }
-        return this._balance[tokenAddress][userAddress];
+        const cachedBalance = this._balance[tokenAddress][userAddress];
+        return cachedBalance;
     }
     protected setBalance(tokenAddress: string, userAddress: string, balance: BigNumber.BigNumber): void {
         if (_.isUndefined(this._balance[tokenAddress])) {
@@ -69,7 +70,8 @@ export class BalanceAndProxyAllowanceLazyStore {
             const proxyAllowance = await this._token.getProxyAllowanceAsync(tokenAddress, userAddress);
             this.setProxyAllowance(tokenAddress, userAddress, proxyAllowance);
         }
-        return this._proxyAllowance[tokenAddress][userAddress];
+        const cachedProxyAllowance = this._proxyAllowance[tokenAddress][userAddress];
+        return cachedProxyAllowance;
     }
     protected setProxyAllowance(tokenAddress: string, userAddress: string, proxyAllowance: BigNumber.BigNumber): void {
         if (_.isUndefined(this._proxyAllowance[tokenAddress])) {
