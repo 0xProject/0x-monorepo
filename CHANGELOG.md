@@ -1,5 +1,8 @@
 # CHANGELOG
 
+v0.21.2 - _October 11, 2017_
+    * Exported `ContractEventArg` as a public type (#190)
+
 v0.21.1 - _October 11, 2017_
 ------------------------
     * Fixed a bug in subscriptions (#189)
