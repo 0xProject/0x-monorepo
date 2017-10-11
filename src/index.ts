@@ -27,6 +27,7 @@ export {
     ApprovalContractEventArgs,
     TokenContractEventArgs,
     ContractEventArgs,
+    ContractEventArg,
     Web3Provider,
     ZeroExConfig,
     TransactionReceiptWithDecodedLogs,
