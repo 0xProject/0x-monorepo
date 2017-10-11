@@ -1,6 +1,10 @@
 # CHANGELOG
 
-v0.21.0 - _TBD, 2017_
+v0.21.1 - _October 11, 2017_
+------------------------
+    * Fixed a bug in subscriptions (#189)
+
+v0.21.0 - _October 10, 2017_
 ------------------------
     * Complete rewrite of subscription logic (#182)
         * Subscriptions no longer return historical logs. If you want them - use `getLogsAsync`
