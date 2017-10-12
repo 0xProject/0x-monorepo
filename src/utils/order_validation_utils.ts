@@ -102,11 +102,11 @@ export class OrderValidationUtils {
         fillTakerTokenAmount: BigNumber.BigNumber, senderAddress: string, zrxTokenAddress: string): Promise<void> {
         const fillMakerTokenAmount = this.getFillMakerTokenAmount(signedOrder, fillTakerTokenAmount);
         await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.makerTokenAddress, signedOrder.maker, signedOrder.taker, fillMakerTokenAmount,
+            signedOrder.makerTokenAddress, signedOrder.maker, senderAddress, fillMakerTokenAmount,
             TradeSide.Maker, TransferType.Trade,
         );
         await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.takerTokenAddress, signedOrder.taker, signedOrder.maker, fillTakerTokenAmount,
+            signedOrder.takerTokenAddress, senderAddress, signedOrder.maker, fillTakerTokenAmount,
             TradeSide.Taker, TransferType.Trade,
         );
         await exchangeTradeEmulator.transferFromAsync(
@@ -114,7 +114,7 @@ export class OrderValidationUtils {
             TransferType.Fee,
         );
         await exchangeTradeEmulator.transferFromAsync(
-            zrxTokenAddress, signedOrder.taker, signedOrder.feeRecipient, signedOrder.takerFee, TradeSide.Taker,
+            zrxTokenAddress, senderAddress, signedOrder.feeRecipient, signedOrder.takerFee, TradeSide.Taker,
             TransferType.Fee,
         );
     }

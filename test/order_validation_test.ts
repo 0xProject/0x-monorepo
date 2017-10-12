@@ -257,5 +257,41 @@ describe('OrderValidation', () => {
                 ),
             ).to.be.true();
         });
+        it('should call exchangeTransferSimulator.transferFrom with correct values for an open order', async () => {
+            const makerFee = new BigNumber(2);
+            const takerFee = new BigNumber(2);
+            const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                makerTokenAddress, takerTokenAddress, makerFee, takerFee,
+                makerAddress, ZeroEx.NULL_ADDRESS, fillableAmount, feeRecipient,
+            );
+            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+                exchangeTransferSimulator, signedOrder, fillableAmount, takerAddress, zrxTokenAddress,
+            );
+            expect(transferFromAsync.callCount).to.be.equal(4);
+            expect(
+                transferFromAsync.getCall(0).calledWith(
+                    makerTokenAddress, makerAddress, takerAddress, bigNumberMatch(fillableAmount),
+                    TradeSide.Maker, TransferType.Trade,
+                ),
+            ).to.be.true();
+            expect(
+                transferFromAsync.getCall(1).calledWith(
+                    takerTokenAddress, takerAddress, makerAddress, bigNumberMatch(fillableAmount),
+                    TradeSide.Taker, TransferType.Trade,
+                ),
+            ).to.be.true();
+            expect(
+                transferFromAsync.getCall(2).calledWith(
+                    zrxTokenAddress, makerAddress, feeRecipient, bigNumberMatch(makerFee),
+                    TradeSide.Maker, TransferType.Fee,
+                ),
+            ).to.be.true();
+            expect(
+                transferFromAsync.getCall(3).calledWith(
+                    zrxTokenAddress, takerAddress, feeRecipient, bigNumberMatch(takerFee),
+                    TradeSide.Taker, TransferType.Fee,
+                ),
+            ).to.be.true();
+        });
     });
 });
