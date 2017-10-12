@@ -1,5 +1,8 @@
 # CHANGELOG
 
+v0.21.3 - _October 12, 2017_
+    * Fixed a bug causing order fills to throw `INSUFFICIENT_TAKER_ALLOWANCE` (#193)
+
 v0.21.2 - _October 11, 2017_
     * Exported `ContractEventArg` as a public type (#190)
 
