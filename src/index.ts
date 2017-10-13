@@ -32,7 +32,6 @@ export {
     ZeroExConfig,
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
-    DecodedLogArgs,
     MethodOpts,
     OrderTransactionOpts,
     FilterObject,

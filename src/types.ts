@@ -36,12 +36,12 @@ export type OrderAddresses = [string, string, string, string, string];
 export type OrderValues = [BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber,
                            BigNumber.BigNumber, BigNumber.BigNumber, BigNumber.BigNumber];
 
-export interface LogEvent extends LogWithDecodedArgs {
+export interface LogEvent<ArgsType> extends LogWithDecodedArgs<ArgsType> {
     removed: boolean;
 }
-export type EventCallbackAsync = (log: LogEvent) => Promise<void>;
-export type EventCallbackSync = (log: LogEvent) => void;
-export type EventCallback = EventCallbackSync|EventCallbackAsync;
+export type EventCallbackAsync<ArgsType> = (log: LogEvent<ArgsType>) => Promise<void>;
+export type EventCallbackSync<ArgsType> = (log: LogEvent<ArgsType>) => void;
+export type EventCallback<ArgsType> = EventCallbackSync<ArgsType>|EventCallbackAsync<ArgsType>;
 export interface ExchangeContract extends Web3.ContractInstance {
     isValidSignature: {
         callAsync: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
@@ -419,15 +419,15 @@ export interface DecodedLogArgs {
     [argName: string]: ContractEventArg;
 }
 
-export interface DecodedArgs {
-    args: DecodedLogArgs;
+export interface DecodedArgs<ArgsType> {
+    args: ArgsType;
     event: string;
 }
 
-export interface LogWithDecodedArgs extends Web3.LogEntry, DecodedArgs {}
+export interface LogWithDecodedArgs<ArgsType> extends Web3.LogEntry, DecodedArgs<ArgsType> {}
 
 export interface TransactionReceiptWithDecodedLogs extends Web3.TransactionReceipt {
-    logs: Array<LogWithDecodedArgs|Web3.LogEntry>;
+    logs: Array<LogWithDecodedArgs<DecodedLogArgs>|Web3.LogEntry>;
 }
 
 export interface Artifact {

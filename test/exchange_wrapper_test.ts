@@ -18,6 +18,7 @@ import {
     OrderCancellationRequest,
     OrderFillRequest,
     LogFillContractEventArgs,
+    LogCancelContractEventArgs,
     OrderFillOrKillRequest,
     LogEvent,
 } from '../src';
@@ -651,7 +652,7 @@ describe('ExchangeWrapper', () => {
         // Source: https://github.com/mochajs/mocha/issues/2407
         it('Should receive the LogFill event when an order is filled', (done: DoneCallback) => {
             (async () => {
-                const callback = (logEvent: LogEvent) => {
+                const callback = (logEvent: LogEvent<LogFillContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
@@ -665,7 +666,7 @@ describe('ExchangeWrapper', () => {
         });
         it('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
             (async () => {
-                const callback = (logEvent: LogEvent) => {
+                const callback = (logEvent: LogEvent<LogCancelContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogCancel);
                     done();
                 };
@@ -677,7 +678,7 @@ describe('ExchangeWrapper', () => {
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (logEvent: LogEvent) => {
+                const callbackNeverToBeCalled = (logEvent: LogEvent<LogFillContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 await zeroEx.exchange.subscribeAsync(
@@ -687,7 +688,7 @@ describe('ExchangeWrapper', () => {
                 const newProvider = web3Factory.getRpcProvider();
                 await zeroEx.setProviderAsync(newProvider);
 
-                const callback = (logEvent: LogEvent) => {
+                const callback = (logEvent: LogEvent<LogFillContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
@@ -701,7 +702,7 @@ describe('ExchangeWrapper', () => {
         });
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (logEvent: LogEvent) => {
+                const callbackNeverToBeCalled = (logEvent: LogEvent<LogFillContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 const subscriptionToken = await zeroEx.exchange.subscribeAsync(
@@ -811,11 +812,12 @@ describe('ExchangeWrapper', () => {
             const indexFilterValues = {
                 maker: differentMakerAddress,
             };
-            const logs = await zeroEx.exchange.getLogsAsync(
+            const logs = await zeroEx.exchange.getLogsAsync<LogFillContractEventArgs>(
                 eventName, subscriptionOpts, indexFilterValues,
             );
             expect(logs).to.have.length(1);
-            expect(logs[0].args.maker).to.be.equal(differentMakerAddress);
+            const args = logs[0].args;
+            expect(args.maker).to.be.equal(differentMakerAddress);
         });
     });
 });

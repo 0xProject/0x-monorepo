@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
-import {AbiType, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes} from '../types';
+import {AbiType, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes, ContractEventArgs} from '../types';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
 
 export class AbiDecoder {
@@ -11,7 +11,8 @@ export class AbiDecoder {
         _.map(abiArrays, this.addABI.bind(this));
     }
     // This method can only decode logs from the 0x smart contracts
-    public tryToDecodeLogOrNoop(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
+    public tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
+        log: Web3.LogEntry): LogWithDecodedArgs<ArgsType>|RawLog {
         const methodId = log.topics[0];
         const event = this.methodIds[methodId];
         if (_.isUndefined(event)) {

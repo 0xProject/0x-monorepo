@@ -14,6 +14,7 @@ import {
     IndexedFilterValues,
     EventCallback,
     BlockParamLiteral,
+    ContractEventArgs,
 } from '../types';
 import {constants} from '../utils/constants';
 import {intervalUtils} from '../utils/interval_utils';
@@ -25,7 +26,7 @@ export class ContractWrapper {
     private _blockAndLogStreamer: BlockAndLogStreamer|undefined;
     private _blockAndLogStreamInterval: NodeJS.Timer;
     private _filters: {[filterToken: string]: Web3.FilterObject};
-    private _filterCallbacks: {[filterToken: string]: EventCallback};
+    private _filterCallbacks: {[filterToken: string]: EventCallback<ContractEventArgs>};
     private _onLogAddedSubscriptionToken: string|undefined;
     private _onLogRemovedSubscriptionToken: string|undefined;
     constructor(web3Wrapper: Web3Wrapper, abiDecoder?: AbiDecoder) {
@@ -37,9 +38,9 @@ export class ContractWrapper {
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
-    protected _subscribe(address: string, eventName: ContractEvents,
-                         indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
-                         callback: EventCallback): string {
+    protected _subscribe<ArgsType extends ContractEventArgs>(
+        address: string, eventName: ContractEvents, indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
+        callback: EventCallback<ArgsType>): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
         if (_.isUndefined(this._blockAndLogStreamer)) {
             this._startBlockAndLogStream();
@@ -59,32 +60,32 @@ export class ContractWrapper {
             this._stopBlockAndLogStream();
         }
     }
-    protected async _getLogsAsync(address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,
-                                  indexFilterValues: IndexedFilterValues,
-                                  abi: Web3.ContractAbi): Promise<LogWithDecodedArgs[]> {
+    protected async _getLogsAsync<ArgsType extends ContractEventArgs>(
+        address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,
+        indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi, subscriptionOpts);
         const logs = await this._web3Wrapper.getLogsAsync(filter);
         const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoop.bind(this));
         return logsWithDecodedArguments;
     }
-    protected _tryToDecodeLogOrNoop(log: Web3.LogEntry): LogWithDecodedArgs|RawLog {
+    protected _tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
+        log: Web3.LogEntry): LogWithDecodedArgs<ArgsType>|RawLog {
         if (_.isUndefined(this._abiDecoder)) {
             throw new Error(InternalZeroExError.NoAbiDecoder);
         }
         const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
-    protected async _instantiateContractIfExistsAsync<A extends Web3.ContractInstance>(artifact: Artifact,
-                                                                                       addressIfExists?: string,
-                                                                                      ): Promise<A> {
+    protected async _instantiateContractIfExistsAsync<ContractType extends Web3.ContractInstance>(
+        artifact: Artifact, addressIfExists?: string): Promise<ContractType> {
         const contractInstance =
-            await this._web3Wrapper.getContractInstanceFromArtifactAsync<A>(artifact, addressIfExists);
+            await this._web3Wrapper.getContractInstanceFromArtifactAsync<ContractType>(artifact, addressIfExists);
         return contractInstance;
     }
-    private _onLogStateChanged(removed: boolean, log: Web3.LogEntry): void {
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(removed: boolean, log: Web3.LogEntry): void {
         _.forEach(this._filters, (filter: Web3.FilterObject, filterToken: string) => {
             if (filterUtils.matchesFilter(log, filter)) {
-                const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs;
+                const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
                 const logEvent = {
                     ...decodedLog,
                     removed,
