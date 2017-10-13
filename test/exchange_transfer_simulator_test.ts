@@ -1,12 +1,10 @@
 import * as chai from 'chai';
 import * as BigNumber from 'bignumber.js';
-import * as Web3 from 'web3';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
-import {ZeroEx, SignedOrder, ExchangeContractErrs, Token} from '../src';
+import {ZeroEx, ExchangeContractErrs, Token} from '../src';
 import {TradeSide, TransferType} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import {FillScenarios} from './utils/fill_scenarios';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
 
 chaiSetup.configure();

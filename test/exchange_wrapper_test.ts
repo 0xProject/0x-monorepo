@@ -3,8 +3,6 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
-import ChaiBigNumber = require('chai-bignumber');
-import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {
@@ -25,8 +23,6 @@ import {
 import {DoneCallback, BlockParamLiteral} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
-import {assert} from '../src/utils/assert';
-import {TokenTransferProxyWrapper} from '../src/contract_wrappers/token_transfer_proxy_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
