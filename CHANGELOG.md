@@ -1,9 +1,15 @@
 # CHANGELOG
 
+v0.21.4 - _October 13, 2017_
+------------------------
+    * Made 0x.js more type-safe by making `getLogsAsync` and `subscribe/subscribeAsync` generics parametrized with arg type (#194)
+
 v0.21.3 - _October 12, 2017_
+------------------------
     * Fixed a bug causing order fills to throw `INSUFFICIENT_TAKER_ALLOWANCE` (#193)
 
 v0.21.2 - _October 11, 2017_
+------------------------
     * Exported `ContractEventArg` as a public type (#190)
 
 v0.21.1 - _October 11, 2017_
