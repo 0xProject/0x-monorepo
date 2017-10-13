@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import {schemas} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
@@ -28,6 +29,8 @@ import {
     OrderTransactionOpts,
     RawLog,
     EventCallback,
+    ExchangeContractEventArgs,
+    DecodedLogArgs,
 } from '../types';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
@@ -654,13 +657,14 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   callback            Callback that gets called when a log is added/removed
      * @return Subscription token used later to unsubscribe
      */
-    public async subscribeAsync(eventName: ExchangeEvents, indexFilterValues: IndexedFilterValues,
-                                callback: EventCallback): Promise<string> {
+    public async subscribeAsync<ArgsType extends ExchangeContractEventArgs>(
+        eventName: ExchangeEvents, indexFilterValues: IndexedFilterValues,
+        callback: EventCallback<ArgsType>): Promise<string> {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const exchangeContractAddress = await this.getContractAddressAsync();
-        const subscriptionToken = this._subscribe(
+        const subscriptionToken = this._subscribe<ArgsType>(
             exchangeContractAddress, eventName, indexFilterValues, artifacts.ExchangeArtifact.abi, callback,
         );
         this._activeSubscriptions.push(subscriptionToken);
@@ -682,13 +686,14 @@ export class ExchangeWrapper extends ContractWrapper {
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
-    public async getLogsAsync(eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts,
-                              indexFilterValues: IndexedFilterValues): Promise<LogWithDecodedArgs[]> {
+    public async getLogsAsync<ArgsType extends ExchangeContractEventArgs>(
+        eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts, indexFilterValues: IndexedFilterValues,
+    ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const exchangeContractAddress = await this.getContractAddressAsync();
-        const logs = await this._getLogsAsync(
+        const logs = await this._getLogsAsync<ArgsType>(
             exchangeContractAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.ExchangeArtifact.abi,
         );
         return logs;
@@ -799,12 +804,14 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Checks if logs contain LogError, which is emmited by Exchange contract on transaction failure.
-     * @param   logsWithDecodedArgs   Transaction logs as returned by `zeroEx.awaitTransactionMinedAsync`
+     * @param   logs   Transaction logs as returned by `zeroEx.awaitTransactionMinedAsync`
      */
-    public throwLogErrorsAsErrors(logsWithDecodedArgs: LogWithDecodedArgs[]): void {
-        const errLog = _.find(logsWithDecodedArgs, {event: ExchangeEvents.LogError});
+    public throwLogErrorsAsErrors(logs: Array<LogWithDecodedArgs<DecodedLogArgs>|Web3.LogEntry>): void {
+        const errLog = _.find(logs, {
+            event: ExchangeEvents.LogError,
+        }) as LogWithDecodedArgs<LogErrorContractEventArgs>|undefined;
         if (!_.isUndefined(errLog)) {
-            const logArgs: LogErrorContractEventArgs = errLog.args as any;
+            const logArgs = errLog.args;
             const errCode = logArgs.errorId.toNumber();
             const errMessage = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);

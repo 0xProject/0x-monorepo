@@ -3,8 +3,6 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
-import ChaiBigNumber = require('chai-bignumber');
-import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {
@@ -18,14 +16,13 @@ import {
     OrderCancellationRequest,
     OrderFillRequest,
     LogFillContractEventArgs,
+    LogCancelContractEventArgs,
     OrderFillOrKillRequest,
     LogEvent,
 } from '../src';
 import {DoneCallback, BlockParamLiteral} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
-import {assert} from '../src/utils/assert';
-import {TokenTransferProxyWrapper} from '../src/contract_wrappers/token_transfer_proxy_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -651,7 +648,7 @@ describe('ExchangeWrapper', () => {
         // Source: https://github.com/mochajs/mocha/issues/2407
         it('Should receive the LogFill event when an order is filled', (done: DoneCallback) => {
             (async () => {
-                const callback = (logEvent: LogEvent) => {
+                const callback = (logEvent: LogEvent<LogFillContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
@@ -665,7 +662,7 @@ describe('ExchangeWrapper', () => {
         });
         it('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
             (async () => {
-                const callback = (logEvent: LogEvent) => {
+                const callback = (logEvent: LogEvent<LogCancelContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogCancel);
                     done();
                 };
@@ -677,7 +674,7 @@ describe('ExchangeWrapper', () => {
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (logEvent: LogEvent) => {
+                const callbackNeverToBeCalled = (logEvent: LogEvent<LogFillContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 await zeroEx.exchange.subscribeAsync(
@@ -687,7 +684,7 @@ describe('ExchangeWrapper', () => {
                 const newProvider = web3Factory.getRpcProvider();
                 await zeroEx.setProviderAsync(newProvider);
 
-                const callback = (logEvent: LogEvent) => {
+                const callback = (logEvent: LogEvent<LogFillContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
@@ -701,7 +698,7 @@ describe('ExchangeWrapper', () => {
         });
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (logEvent: LogEvent) => {
+                const callbackNeverToBeCalled = (logEvent: LogEvent<LogFillContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 const subscriptionToken = await zeroEx.exchange.subscribeAsync(
@@ -811,11 +808,12 @@ describe('ExchangeWrapper', () => {
             const indexFilterValues = {
                 maker: differentMakerAddress,
             };
-            const logs = await zeroEx.exchange.getLogsAsync(
+            const logs = await zeroEx.exchange.getLogsAsync<LogFillContractEventArgs>(
                 eventName, subscriptionOpts, indexFilterValues,
             );
             expect(logs).to.have.length(1);
-            expect(logs[0].args.maker).to.be.equal(differentMakerAddress);
+            const args = logs[0].args;
+            expect(args.maker).to.be.equal(differentMakerAddress);
         });
     });
 });

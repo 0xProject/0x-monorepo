@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
-import promisify = require('es6-promisify');
 import * as Sinon from 'sinon';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
@@ -35,7 +34,6 @@ describe('OrderValidation', () => {
     let orderValidationUtils: OrderValidationUtils;
     const fillableAmount = new BigNumber(5);
     const fillTakerAmount = new BigNumber(5);
-    const shouldThrowOnInsufficientBalanceOrAllowance = false;
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider);
