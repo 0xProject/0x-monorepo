@@ -107,11 +107,24 @@ export class Web3Wrapper {
         return addresses;
     }
     public async getLogsAsync(filter: Web3.FilterObject): Promise<Web3.LogEntry[]> {
+        let fromBlock = filter.fromBlock;
+        if (_.isNumber(fromBlock)) {
+            fromBlock = this.web3.toHex(fromBlock);
+        }
+        let toBlock = filter.toBlock;
+        if (_.isNumber(toBlock)) {
+            toBlock = this.web3.toHex(toBlock);
+        }
+        const serializedFilter = {
+            ...filter,
+            fromBlock,
+            toBlock,
+        };
         const payload = {
             jsonrpc: '2.0',
             id: this.jsonRpcRequestId++,
             method: 'eth_getLogs',
-            params: [filter],
+            params: [serializedFilter],
         };
         const logs = await this.sendRawPayloadAsync(payload);
         return logs;

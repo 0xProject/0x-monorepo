@@ -3,7 +3,6 @@ import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
-import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx, ZeroExError} from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';

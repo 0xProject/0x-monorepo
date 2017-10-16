@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 import * as BigNumber from 'bignumber.js';
-import promisify = require('es6-promisify');
 import * as Sinon from 'sinon';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
@@ -35,7 +34,6 @@ describe('OrderValidation', () => {
     let orderValidationUtils: OrderValidationUtils;
     const fillableAmount = new BigNumber(5);
     const fillTakerAmount = new BigNumber(5);
-    const shouldThrowOnInsufficientBalanceOrAllowance = false;
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider);
@@ -227,6 +225,42 @@ describe('OrderValidation', () => {
             const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
                 makerTokenAddress, takerTokenAddress, makerFee, takerFee,
                 makerAddress, takerAddress, fillableAmount, feeRecipient,
+            );
+            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+                exchangeTransferSimulator, signedOrder, fillableAmount, takerAddress, zrxTokenAddress,
+            );
+            expect(transferFromAsync.callCount).to.be.equal(4);
+            expect(
+                transferFromAsync.getCall(0).calledWith(
+                    makerTokenAddress, makerAddress, takerAddress, bigNumberMatch(fillableAmount),
+                    TradeSide.Maker, TransferType.Trade,
+                ),
+            ).to.be.true();
+            expect(
+                transferFromAsync.getCall(1).calledWith(
+                    takerTokenAddress, takerAddress, makerAddress, bigNumberMatch(fillableAmount),
+                    TradeSide.Taker, TransferType.Trade,
+                ),
+            ).to.be.true();
+            expect(
+                transferFromAsync.getCall(2).calledWith(
+                    zrxTokenAddress, makerAddress, feeRecipient, bigNumberMatch(makerFee),
+                    TradeSide.Maker, TransferType.Fee,
+                ),
+            ).to.be.true();
+            expect(
+                transferFromAsync.getCall(3).calledWith(
+                    zrxTokenAddress, takerAddress, feeRecipient, bigNumberMatch(takerFee),
+                    TradeSide.Taker, TransferType.Fee,
+                ),
+            ).to.be.true();
+        });
+        it('should call exchangeTransferSimulator.transferFrom with correct values for an open order', async () => {
+            const makerFee = new BigNumber(2);
+            const takerFee = new BigNumber(2);
+            const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                makerTokenAddress, takerTokenAddress, makerFee, takerFee,
+                makerAddress, ZeroEx.NULL_ADDRESS, fillableAmount, feeRecipient,
             );
             await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, fillableAmount, takerAddress, zrxTokenAddress,

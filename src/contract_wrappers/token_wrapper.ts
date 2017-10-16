@@ -16,6 +16,7 @@ import {
     MethodOpts,
     LogWithDecodedArgs,
     EventCallback,
+    TokenContractEventArgs,
 } from '../types';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
@@ -251,13 +252,14 @@ export class TokenWrapper extends ContractWrapper {
      * @param   callback            Callback that gets called when a log is added/removed
      * @return Subscription token used later to unsubscribe
      */
-    public subscribe(tokenAddress: string, eventName: TokenEvents, indexFilterValues: IndexedFilterValues,
-                     callback: EventCallback): string {
+    public subscribe<ArgsType extends TokenContractEventArgs>(
+        tokenAddress: string, eventName: TokenEvents, indexFilterValues: IndexedFilterValues,
+        callback: EventCallback<ArgsType>): string {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const subscriptionToken = this._subscribe(
+        const subscriptionToken = this._subscribe<ArgsType>(
             tokenAddress, eventName, indexFilterValues, artifacts.TokenArtifact.abi, callback,
         );
         this._activeSubscriptions.push(subscriptionToken);
@@ -280,13 +282,14 @@ export class TokenWrapper extends ContractWrapper {
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
-    public async getLogsAsync(tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
-                              indexFilterValues: IndexedFilterValues): Promise<LogWithDecodedArgs[]> {
+    public async getLogsAsync<ArgsType extends TokenContractEventArgs>(
+        tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
+        indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
         assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const logs = await this._getLogsAsync(
+        const logs = await this._getLogsAsync<ArgsType>(
             tokenAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.TokenArtifact.abi,
         );
         return logs;
