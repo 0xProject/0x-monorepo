@@ -12,7 +12,6 @@ import {
     OrderValues,
     OrderAddresses,
     Order,
-    OrderFillOrKillRequest,
     SignedOrder,
     ContractEvent,
     ExchangeEvents,
@@ -455,26 +454,26 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Batch version of fillOrKill. Allows a taker to specify a batch of orders that will either be atomically
      * filled (each to the specified fillAmount) or aborted.
-     * @param   orderFillOrKillRequests     An array of objects that conform to the OrderFillOrKillRequest interface.
+     * @param   orderFillRequests           An array of objects that conform to the OrderFillRequest interface.
      * @param   takerAddress                The user Ethereum address who would like to fill there orders.
      *                                      Must be available via the supplied Web3.Provider passed to 0x.js.
      * @param   orderTransactionOpts        Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.contractCallErrorHandler
-    public async batchFillOrKillAsync(orderFillOrKillRequests: OrderFillOrKillRequest[],
+    public async batchFillOrKillAsync(orderFillRequests: OrderFillRequest[],
                                       takerAddress: string,
                                       orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
-        assert.doesConformToSchema('orderFillOrKillRequests', orderFillOrKillRequests,
-                                   schemas.orderFillOrKillRequestsSchema);
+        assert.doesConformToSchema('orderFillRequests', orderFillRequests,
+                                   schemas.orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
-            orderFillOrKillRequests,
-            orderFillOrKillRequest => orderFillOrKillRequest.signedOrder.exchangeContractAddress,
+            orderFillRequests,
+            orderFillRequest => orderFillRequest.signedOrder.exchangeContractAddress,
         );
         assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
                                        ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        if (_.isEmpty(orderFillOrKillRequests)) {
+        if (_.isEmpty(orderFillRequests)) {
             throw new Error(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -485,18 +484,18 @@ export class ExchangeWrapper extends ContractWrapper {
         if (shouldValidate) {
             const zrxTokenAddress = await this.getZRXTokenAddressAsync();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
-            for (const orderFillOrKillRequest of orderFillOrKillRequests) {
+            for (const orderFillRequest of orderFillRequests) {
                 await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
-                    exchangeTradeEmulator, orderFillOrKillRequest.signedOrder, orderFillOrKillRequest.fillTakerAmount,
+                    exchangeTradeEmulator, orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount,
                     takerAddress, zrxTokenAddress,
                 );
             }
         }
 
-        const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillOrKillRequests, request => {
+        const orderAddressesValuesAndTakerTokenFillAmounts = _.map(orderFillRequests, request => {
             return [
                 ...ExchangeWrapper._getOrderAddressesAndValues(request.signedOrder),
-                request.fillTakerAmount,
+                request.takerTokenFillAmount,
                 request.signedOrder.ecSignature.v,
                 request.signedOrder.ecSignature.r,
                 request.signedOrder.ecSignature.s,
