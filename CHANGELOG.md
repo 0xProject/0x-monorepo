@@ -1,5 +1,10 @@
 # CHANGELOG
 
+v0.22.0 - _October 16, 2017_
+------------------------
+    * Started using `OrderFillRequest` interface instead of `OrderFillOrKillRequest` interface for `zeroEx.exchange.batchFillOrKill` (#187)
+    * Removed `OrderFillOrKillRequest` (#187)
+
 v0.21.4 - _October 13, 2017_
 ------------------------
     * Made 0x.js more type-safe by making `getLogsAsync` and `subscribe/subscribeAsync` generics parametrized with arg type (#194)
