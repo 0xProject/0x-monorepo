@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import {_} from '../utils/lodash';
 import * as BigNumber from 'bignumber.js';
 import {schemas} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';

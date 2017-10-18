@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import {_} from '../src/utils/lodash';
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import 'mocha';
