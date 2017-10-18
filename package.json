@@ -96,7 +96,7 @@
     "compare-versions": "^3.0.1",
     "es6-promisify": "^5.0.0",
     "ethereumjs-abi": "^0.6.4",
-    "ethereumjs-blockstream": "^2.0.6",
+    "ethereumjs-blockstream": "^2.0.7",
     "ethereumjs-util": "^5.1.1",
     "find-versions": "^2.0.0",
     "js-sha3": "^0.6.1",
