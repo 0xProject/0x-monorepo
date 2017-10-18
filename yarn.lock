@@ -38,13 +38,13 @@
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash@*", "@types/lodash@4.14.74":
-  version "4.14.74"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.74.tgz#ac3bd8db988e7f7038e5d22bd76a7ba13f876168"
-
-"@types/lodash@^4.14.77":
+"@types/lodash@*", "@types/lodash@^4.14.77":
   version "4.14.77"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.77.tgz#0bc699413e84d6ed5d927ca30ea0f0a890b42d75"
+
+"@types/lodash@4.14.74":
+  version "4.14.74"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.74.tgz#ac3bd8db988e7f7038e5d22bd76a7ba13f876168"
 
 "@types/marked@0.3.0":
   version "0.3.0"
@@ -2874,7 +2874,7 @@ locate-path@^2.0.0:
     p-locate "^2.0.0"
     path-exists "^3.0.0"
 
-lodash-es@4.14.7:
+lodash-es@4.14.2:
   version "4.14.2"
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.14.2.tgz#6a724b14f743dab068c1031d4d3d34fff8aa9ee0"
 
