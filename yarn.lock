@@ -2,11 +2,12 @@
 # yarn lockfile v1
 
 
-"0x-json-schemas@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/0x-json-schemas/-/0x-json-schemas-0.6.3.tgz#976175de4b07f4597f97658b3c56720530eee282"
+"0x-json-schemas@^0.6.5":
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/0x-json-schemas/-/0x-json-schemas-0.6.5.tgz#d67d4afbb69780fa59090b0a9feb744aebfc73ff"
   dependencies:
     jsonschema "^1.2.0"
+    lodash.values "^4.3.0"
 
 "@types/bignumber.js@^4.0.2":
   version "4.0.2"
@@ -2885,6 +2886,10 @@ lodash.assign@^4.0.3, lodash.assign@^4.0.6:
 lodash.get@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
+
+lodash.values@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/lodash.values/-/lodash.values-4.3.0.tgz#a3a6c2b0ebecc5c2cba1c17e6e620fe81b53d347"
 
 lodash@^3.3.1, lodash@^3.6.0:
   version "3.10.1"
