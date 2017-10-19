@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import {_} from '../utils/lodash';
 import {constants} from './constants';
 import {AsyncMethod, ZeroExError} from '../types';
 

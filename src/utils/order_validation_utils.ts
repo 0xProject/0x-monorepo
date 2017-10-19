@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import {_} from '../utils/lodash';
 import {ExchangeContractErrs, SignedOrder, Order, ZeroExError, TradeSide, TransferType} from '../types';
 import {ZeroEx} from '../0x';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';

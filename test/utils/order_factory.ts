@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import {_} from '../../src/utils/lodash';
 import * as BigNumber from 'bignumber.js';
 import {ZeroEx, SignedOrder} from '../../src';
 

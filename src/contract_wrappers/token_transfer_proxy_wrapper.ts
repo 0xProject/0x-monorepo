@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import {_} from '../utils/lodash';
 import {Web3Wrapper} from '../web3_wrapper';
 import {ContractWrapper} from './contract_wrapper';
 import {artifacts} from '../artifacts';

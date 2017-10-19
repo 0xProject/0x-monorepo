@@ -1,5 +1,5 @@
 import * as Web3 from 'web3';
-import * as _ from 'lodash';
+import {_} from '../utils/lodash';
 import * as BigNumber from 'bignumber.js';
 import {AbiType, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes, ContractEventArgs} from '../types';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
