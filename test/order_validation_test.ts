@@ -320,7 +320,7 @@ describe('OrderValidation', () => {
             expect(transferFromAsync.callCount).to.be.equal(4);
             const partialMakerFee = transferFromAsync.getCall(2).args[3];
             expect(partialMakerFee).to.be.bignumber.equal(makerPartialFee);
-            const partialTakerFee = transferFromAsync.getCall(4).args[3];
+            const partialTakerFee = transferFromAsync.getCall(3).args[3];
             expect(partialTakerFee).to.be.bignumber.equal(takerPartialFee);
         });
     });
