@@ -27,13 +27,22 @@ export class OrderValidationUtils {
         if (!_.isUndefined(expectedFillTakerTokenAmount)) {
             fillTakerTokenAmount = expectedFillTakerTokenAmount;
         }
-        const fillMakerTokenAmount = this.getFillMakerTokenAmount(signedOrder, fillTakerTokenAmount);
+        const fillMakerTokenAmount = this.getPartialAmount(
+            fillTakerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.makerTokenAmount,
+        );
         await exchangeTradeEmulator.transferFromAsync(
             signedOrder.makerTokenAddress, signedOrder.maker, signedOrder.taker, fillMakerTokenAmount,
             TradeSide.Maker, TransferType.Trade,
         );
+        const makerFeeAmount = this.getPartialAmount(
+            fillTakerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.makerFee,
+        );
         await exchangeTradeEmulator.transferFromAsync(
-            zrxTokenAddress, signedOrder.maker, signedOrder.feeRecipient, signedOrder.makerFee,
+            zrxTokenAddress, signedOrder.maker, signedOrder.feeRecipient, makerFeeAmount,
             TradeSide.Maker, TransferType.Fee,
         );
     }
@@ -100,7 +109,11 @@ export class OrderValidationUtils {
     public async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator, signedOrder: SignedOrder,
         fillTakerTokenAmount: BigNumber.BigNumber, senderAddress: string, zrxTokenAddress: string): Promise<void> {
-        const fillMakerTokenAmount = this.getFillMakerTokenAmount(signedOrder, fillTakerTokenAmount);
+        const fillMakerTokenAmount = this.getPartialAmount(
+            fillTakerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.makerTokenAmount,
+        );
         await exchangeTradeEmulator.transferFromAsync(
             signedOrder.makerTokenAddress, signedOrder.maker, senderAddress, fillMakerTokenAmount,
             TradeSide.Maker, TransferType.Trade,
@@ -109,12 +122,22 @@ export class OrderValidationUtils {
             signedOrder.takerTokenAddress, senderAddress, signedOrder.maker, fillTakerTokenAmount,
             TradeSide.Taker, TransferType.Trade,
         );
-        await exchangeTradeEmulator.transferFromAsync(
-            zrxTokenAddress, signedOrder.maker, signedOrder.feeRecipient, signedOrder.makerFee, TradeSide.Maker,
-            TransferType.Fee,
+        const makerFeeAmount = this.getPartialAmount(
+            fillTakerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.makerFee,
         );
         await exchangeTradeEmulator.transferFromAsync(
-            zrxTokenAddress, senderAddress, signedOrder.feeRecipient, signedOrder.takerFee, TradeSide.Taker,
+            zrxTokenAddress, signedOrder.maker, signedOrder.feeRecipient, makerFeeAmount, TradeSide.Maker,
+            TransferType.Fee,
+        );
+        const takerFeeAmount = this.getPartialAmount(
+            fillTakerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.takerFee,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            zrxTokenAddress, senderAddress, signedOrder.feeRecipient, takerFeeAmount, TradeSide.Taker,
             TransferType.Fee,
         );
     }
@@ -131,10 +154,12 @@ export class OrderValidationUtils {
             throw new Error(ExchangeContractErrs.OrderFillExpired);
         }
     }
-    private getFillMakerTokenAmount(signedOrder: Order,
-                                    fillTakerTokenAmount: BigNumber.BigNumber): BigNumber.BigNumber {
-        const exchangeRate = signedOrder.takerTokenAmount.div(signedOrder.makerTokenAmount);
-        const fillMakerTokenAmount = fillTakerTokenAmount.div(exchangeRate);
+    private getPartialAmount(numerator: BigNumber.BigNumber, denominator: BigNumber.BigNumber,
+                             target: BigNumber.BigNumber): BigNumber.BigNumber {
+        const fillMakerTokenAmount = numerator
+                                     .mul(target)
+                                     .div(denominator)
+                                     .round(0);
         return fillMakerTokenAmount;
     }
 }
