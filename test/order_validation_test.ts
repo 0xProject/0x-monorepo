@@ -301,7 +301,8 @@ describe('OrderValidation', () => {
                 exchangeTransferSimulator, signedOrder, takerTokenAmount, takerAddress, zrxTokenAddress,
             );
             expect(transferFromAsync.callCount).to.be.equal(4);
-            expect(transferFromAsync.getCall(0).args[3]).to.be.bignumber.equal(makerTokenAmount);
+            const makerFillAmount = transferFromAsync.getCall(0).args[3];
+            expect(makerFillAmount).to.be.bignumber.equal(makerTokenAmount);
         });
         it('should correctly round the makerFeeAmount', async () => {
             const makerFee = new BigNumber(2);
@@ -317,8 +318,10 @@ describe('OrderValidation', () => {
             const makerPartialFee = makerFee.div(2);
             const takerPartialFee = takerFee.div(2);
             expect(transferFromAsync.callCount).to.be.equal(4);
-            expect(transferFromAsync.getCall(2).args[3]).to.be.bignumber.equal(makerPartialFee);
-            expect(transferFromAsync.getCall(4).args[3]).to.be.bignumber.equal(takerPartialFee);
+            const partialMakerFee = transferFromAsync.getCall(2).args[3];
+            expect(partialMakerFee).to.be.bignumber.equal(makerPartialFee);
+            const partialTakerFee = transferFromAsync.getCall(4).args[3];
+            expect(partialTakerFee).to.be.bignumber.equal(takerPartialFee);
         });
     });
 });
