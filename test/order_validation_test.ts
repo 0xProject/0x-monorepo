@@ -210,14 +210,14 @@ describe('OrderValidation', () => {
     });
     describe('#validateFillOrderBalancesAllowancesThrowIfInvalidAsync', () => {
         let exchangeTransferSimulator: ExchangeTransferSimulator;
-        let transferFromAsync: any;
+        let transferFromAsync: Sinon.SinonSpy;
         const bigNumberMatch = (expected: BigNumber.BigNumber) => {
             return Sinon.match((value: BigNumber.BigNumber) => value.eq(expected));
         };
         beforeEach('create exchangeTransferSimulator', async () => {
             exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token);
             transferFromAsync = Sinon.spy();
-            exchangeTransferSimulator.transferFromAsync = transferFromAsync;
+            exchangeTransferSimulator.transferFromAsync = transferFromAsync as any;
         });
         it('should call exchangeTransferSimulator.transferFrom in a correct order', async () => {
             const makerFee = new BigNumber(2);
@@ -290,6 +290,38 @@ describe('OrderValidation', () => {
                     TradeSide.Taker, TransferType.Fee,
                 ),
             ).to.be.true();
+        });
+        it('should correctly round the fillMakerTokenAmount', async () => {
+            const makerTokenAmount = new BigNumber(3);
+            const takerTokenAmount = new BigNumber(1);
+            const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
+                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, makerTokenAmount, takerTokenAmount,
+            );
+            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+                exchangeTransferSimulator, signedOrder, takerTokenAmount, takerAddress, zrxTokenAddress,
+            );
+            expect(transferFromAsync.callCount).to.be.equal(4);
+            const makerFillAmount = transferFromAsync.getCall(0).args[3];
+            expect(makerFillAmount).to.be.bignumber.equal(makerTokenAmount);
+        });
+        it('should correctly round the makerFeeAmount', async () => {
+            const makerFee = new BigNumber(2);
+            const takerFee = new BigNumber(4);
+            const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                makerTokenAddress, takerTokenAddress, makerFee, takerFee, makerAddress, takerAddress,
+                fillableAmount, ZeroEx.NULL_ADDRESS,
+            );
+            const fillTakerTokenAmount = fillableAmount.div(2).round(0);
+            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+                exchangeTransferSimulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress,
+            );
+            const makerPartialFee = makerFee.div(2);
+            const takerPartialFee = takerFee.div(2);
+            expect(transferFromAsync.callCount).to.be.equal(4);
+            const partialMakerFee = transferFromAsync.getCall(2).args[3];
+            expect(partialMakerFee).to.be.bignumber.equal(makerPartialFee);
+            const partialTakerFee = transferFromAsync.getCall(3).args[3];
+            expect(partialTakerFee).to.be.bignumber.equal(takerPartialFee);
         });
     });
 });
