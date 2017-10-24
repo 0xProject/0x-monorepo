@@ -1,5 +1,5 @@
 import * as Web3 from 'web3';
-import {_} from './utils/lodash';
+import * as _ from 'lodash';
 import promisify = require('es6-promisify');
 import {SchemaValidator, schemas} from '0x-json-schemas';
 import {AbiType} from './types';

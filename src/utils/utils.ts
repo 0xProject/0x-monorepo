@@ -1,4 +1,4 @@
-import {_} from '../utils/lodash';
+import * as _ from 'lodash';
 import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
 import {Order, SignedOrder, SolidityTypes} from '../types';

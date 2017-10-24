@@ -304,11 +304,11 @@ describe('ExchangeWrapper', () => {
                     orderFillBatch = [
                         {
                             signedOrder,
-                            takerTokenFillAmount,
+                            takerTokenFillAmount: takerTokenFillAmount,
                         },
                         {
                             signedOrder: anotherSignedOrder,
-                            takerTokenFillAmount,
+                            takerTokenFillAmount: takerTokenFillAmount,
                         },
                     ];
                 });
@@ -655,8 +655,7 @@ describe('ExchangeWrapper', () => {
                     ExchangeEvents.LogFill, indexFilterValues, callback,
                 );
                 await zeroEx.exchange.fillOrderAsync(
-                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance,
-                    takerAddress,
+                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
                 );
             })().catch(done);
         });
@@ -692,8 +691,7 @@ describe('ExchangeWrapper', () => {
                     ExchangeEvents.LogFill, indexFilterValues, callback,
                 );
                 await zeroEx.exchange.fillOrderAsync(
-                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance,
-                    takerAddress,
+                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
                 );
             })().catch(done);
         });
@@ -707,8 +705,7 @@ describe('ExchangeWrapper', () => {
                 );
                 zeroEx.exchange.unsubscribe(subscriptionToken);
                 await zeroEx.exchange.fillOrderAsync(
-                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance,
-                    takerAddress,
+                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
                 );
                 done();
             })().catch(done);

@@ -1,4 +1,4 @@
-import {_} from '../utils/lodash';
+import * as _ from 'lodash';
 
 export const intervalUtils = {
     setAsyncExcludingInterval(fn: () => Promise<void>, intervalMs: number) {

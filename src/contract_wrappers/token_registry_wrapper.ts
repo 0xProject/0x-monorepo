@@ -1,4 +1,4 @@
-import {_} from '../utils/lodash';
+import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
 import {Token, TokenRegistryContract, TokenMetadata} from '../types';
