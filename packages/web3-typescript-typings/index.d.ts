@@ -257,6 +257,7 @@ declare module 'web3' {
             unlockAccount(address: string, password?: string, duration?: number): boolean;
             lockAccount(address: string): boolean;
             sign(message: string, account: string, password: string): string;
+            sign(hexMessage: string, account: string, callback: (error: Error, signature: string) => void): void;
         }
 
         interface NetApi {
