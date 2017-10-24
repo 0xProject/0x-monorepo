@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.22.2 - _October 24, 2017_
+------------------------
+    * Fixed rounding of maker fill amount and incorrect validation of partial fees (#197)
+
 v0.22.0 - _October 16, 2017_
 ------------------------
     * Started using `OrderFillRequest` interface instead of `OrderFillOrKillRequest` interface for `zeroEx.exchange.batchFillOrKill` (#187)
