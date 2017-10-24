@@ -1,9 +1,5 @@
 # CHANGELOG
 
-v0.22.1 - _October 19, 2017_
-------------------------
-    * Reduced bundle size by 11% 82kB (#195)
-
 v0.22.0 - _October 16, 2017_
 ------------------------
     * Started using `OrderFillRequest` interface instead of `OrderFillOrKillRequest` interface for `zeroEx.exchange.batchFillOrKill` (#187)
