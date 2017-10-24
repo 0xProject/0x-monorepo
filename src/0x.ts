@@ -1,4 +1,4 @@
-import {_} from './utils/lodash';
+import * as _ from 'lodash';
 import * as BigNumber from 'bignumber.js';
 import {SchemaValidator, schemas} from '0x-json-schemas';
 import {bigNumberConfigs} from './bignumber_config';

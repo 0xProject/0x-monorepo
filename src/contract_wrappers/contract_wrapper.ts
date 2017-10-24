@@ -1,4 +1,4 @@
-import {_} from '../utils/lodash';
+import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import {BlockAndLogStreamer, Block} from 'ethereumjs-blockstream';
 import {Web3Wrapper} from '../web3_wrapper';

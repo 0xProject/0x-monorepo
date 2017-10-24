@@ -1,4 +1,4 @@
-import {_} from '../src/utils/lodash';
+import * as _ from 'lodash';
 import 'mocha';
 import * as chai from 'chai';
 import {SchemaValidator, schemas} from '0x-json-schemas';

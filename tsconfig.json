@@ -5,7 +5,7 @@
     "lib": [ "es2015", "dom" ],
     "outDir": "lib",
     "sourceMap": true,
-    "allowJs": true,
+    "declaration": true,
     "noImplicitAny": true,
     "experimentalDecorators": true,
     "strictNullChecks": true
@@ -13,7 +13,6 @@
   "include": [
     "./src/**/*",
     "./test/**/*",
-    "./node_modules/lodash-es/**/*",
     "./node_modules/types-bn/index.d.ts",
     "./node_modules/types-ethereumjs-util/index.d.ts",
     "./node_modules/web3-typescript-typings/index.d.ts",
