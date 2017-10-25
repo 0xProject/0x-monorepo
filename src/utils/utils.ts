@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as ethABI from 'ethereumjs-abi';
 import * as ethUtil from 'ethereumjs-util';
 import {Order, SignedOrder, SolidityTypes} from '../types';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import BN = require('bn.js');
 
 export const utils = {
@@ -12,7 +12,7 @@ export const utils = {
      * expects values of Solidity type `uint` to be passed as type `BN`.
      * We do not use BN anywhere else in the codebase.
      */
-    bigNumberToBN(value: BigNumber.BigNumber) {
+    bigNumberToBN(value: BigNumber) {
         return new BN(value.toString(), 10);
     },
     consoleLog(message: string): void {
@@ -49,7 +49,7 @@ export const utils = {
         const hashHex = ethUtil.bufferToHex(hashBuff);
         return hashHex;
     },
-    getCurrentUnixTimestamp(): BigNumber.BigNumber {
+    getCurrentUnixTimestamp(): BigNumber {
         return new BigNumber(Date.now() / 1000);
     },
 };

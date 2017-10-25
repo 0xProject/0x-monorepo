@@ -2,7 +2,7 @@ import 'mocha';
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import * as Web3 from 'web3';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
 import {
@@ -51,7 +51,7 @@ describe('TokenWrapper', () => {
     });
     describe('#transferAsync', () => {
         let token: Token;
-        let transferAmount: BigNumber.BigNumber;
+        let transferAmount: BigNumber;
         before(() => {
             token = tokens[0];
             transferAmount = new BigNumber(42);

@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
 import {Web3Wrapper} from '../web3_wrapper';
 import {SchemaValidator, Schema} from '0x-json-schemas';
@@ -7,8 +7,8 @@ import {SchemaValidator, Schema} from '0x-json-schemas';
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
 export const assert = {
-    isBigNumber(variableName: string, value: BigNumber.BigNumber): void {
-        const isBigNumber = _.isObject(value) && value.isBigNumber;
+    isBigNumber(variableName: string, value: BigNumber): void {
+        const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
         this.assert(isBigNumber, this.typeAssertionMessage(variableName, 'BigNumber', value));
     },
     isUndefined(value: any, variableName?: string): void {
