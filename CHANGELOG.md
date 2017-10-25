@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.22.3 - _October 25, 2017_
+------------------------
+    * Fixed an issue with new version of testrpc and unlimited proxy allowance (#199)
+
 v0.22.2 - _October 24, 2017_
 ------------------------
     * Fixed rounding of maker fill amount and incorrect validation of partial fees (#197)
