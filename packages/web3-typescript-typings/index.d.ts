@@ -114,15 +114,22 @@ declare module 'web3' {
 
         type LogTopic = null|string|string[];
 
-        interface SolidityEvent<A> {
+        interface DecodedLogEntry<A> extends LogEntry {
             event: string;
-            address: string;
             args: A;
+        }
+
+        interface DecodedLogEntryEvent<A> extends DecodedLogEntry<A> {
+            removed: boolean;
+        }
+
+        interface LogEntryEvent extends LogEntry {
+            removed: boolean;
         }
 
         interface FilterResult {
             get(callback: () => void): void;
-            watch<A>(callback: (err: Error, result: SolidityEvent<A>) => void): void;
+            watch(callback: (err: Error, result: LogEntryEvent) => void): void;
             stopWatching(callback: () => void): void;
         }
 
