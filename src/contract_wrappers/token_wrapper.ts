@@ -19,7 +19,7 @@ import {
     TokenContractEventArgs,
 } from '../types';
 
-const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47155;
+const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
 
 /**
  * This class includes all the functionality related to interacting with ERC20 token contracts.
