@@ -348,6 +348,7 @@ declare module 'web3' {
             transactionIndex: number;
             from: string;
             to: string;
+            status: null|string|number;
             cumulativeGasUsed: number;
             gasUsed: number;
             contractAddress: string|null;
