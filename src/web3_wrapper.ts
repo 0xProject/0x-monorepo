@@ -33,7 +33,7 @@ export class Web3Wrapper {
     }
     public async getTransactionReceiptAsync(txHash: string): Promise<TransactionReceipt> {
         const transactionReceipt = await promisify(this.web3.eth.getTransactionReceipt)(txHash);
-        transactionReceipt.status = this.normalizeTxReceiptStatus(status);
+        transactionReceipt.status = this.normalizeTxReceiptStatus(transactionReceipt.status);
         return transactionReceipt;
     }
     public getCurrentProvider(): Web3.Provider {
