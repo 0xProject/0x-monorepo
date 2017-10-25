@@ -62,7 +62,7 @@ describe('TokenWrapper', () => {
             const preBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             expect(preBalance).to.be.bignumber.equal(0);
             const txHash = await zeroEx.token.transferAsync(token.address, fromAddress, toAddress, transferAmount);
-            await zeroEx.awaitTransactionMinedAsync(txHash);
+            const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
             const postBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });

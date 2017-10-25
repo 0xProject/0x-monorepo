@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
-import {ZeroExError, Artifact} from './types';
+import {ZeroExError, Artifact, TransactionReceipt} from './types';
 import {Contract} from './contract';
 
 export class Web3Wrapper {
@@ -31,8 +31,9 @@ export class Web3Wrapper {
         const nodeVersion = await promisify(this.web3.version.getNode)();
         return nodeVersion;
     }
-    public async getTransactionReceiptAsync(txHash: string): Promise<Web3.TransactionReceipt> {
+    public async getTransactionReceiptAsync(txHash: string): Promise<TransactionReceipt> {
         const transactionReceipt = await promisify(this.web3.eth.getTransactionReceipt)(txHash);
+        transactionReceipt.status = this.normalizeTxReceiptStatus(status);
         return transactionReceipt;
     }
     public getCurrentProvider(): Web3.Provider {
@@ -143,5 +144,19 @@ export class Web3Wrapper {
         const response = await promisify(sendAsync)(payload);
         const result = response.result;
         return result;
+    }
+    private normalizeTxReceiptStatus(status: undefined|null|string|0|1): null|0|1 {
+        // Transaction status might have four values
+        // undefined - Testrpc and other old clients
+        // null - New clients on old transactions
+        // number - Parity
+        // hex - Geth
+        if (_.isString(status)) {
+            return this.web3.toDecimal(status) as 0|1;
+        } else if (_.isUndefined(status)) {
+            return null;
+        } else {
+            return status;
+        }
     }
 }

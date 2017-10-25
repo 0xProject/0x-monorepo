@@ -85,7 +85,7 @@
     "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
     "typescript": "^2.4.1",
     "web3-provider-engine": "^13.0.1",
-    "web3-typescript-typings": "^0.6.2",
+    "web3-typescript-typings": "^0.6.4",
     "webpack": "^3.1.0"
   },
   "dependencies": {
