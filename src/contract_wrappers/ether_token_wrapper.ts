@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import BigNumber from 'bignumber.js';
 import {Web3Wrapper} from '../web3_wrapper';
 import {ContractWrapper} from './contract_wrapper';
 import {TokenWrapper} from './token_wrapper';
@@ -27,7 +28,7 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @param   depositor   The hex encoded user Ethereum address that would like to make the deposit.
      * @return Transaction hash.
      */
-    public async depositAsync(amountInWei: BigNumber.BigNumber, depositor: string): Promise<string> {
+    public async depositAsync(amountInWei: BigNumber, depositor: string): Promise<string> {
         assert.isBigNumber('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
 
@@ -48,7 +49,7 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @param   withdrawer   The hex encoded user Ethereum address that would like to make the withdrawl.
      * @return Transaction hash.
      */
-    public async withdrawAsync(amountInWei: BigNumber.BigNumber, withdrawer: string): Promise<string> {
+    public async withdrawAsync(amountInWei: BigNumber, withdrawer: string): Promise<string> {
         assert.isBigNumber('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
 

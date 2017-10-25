@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {ZeroExError, Artifact} from './types';
 import {Contract} from './contract';
@@ -75,11 +75,11 @@ export class Web3Wrapper {
         );
         return contractInstance;
     }
-    public toWei(ethAmount: BigNumber.BigNumber): BigNumber.BigNumber {
+    public toWei(ethAmount: BigNumber): BigNumber {
         const balanceWei = this.web3.toWei(ethAmount, 'ether');
         return balanceWei;
     }
-    public async getBalanceInWeiAsync(owner: string): Promise<BigNumber.BigNumber> {
+    public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
         let balanceInWei = await promisify(this.web3.eth.getBalance)(owner);
         balanceInWei = new BigNumber(balanceInWei);
         return balanceInWei;

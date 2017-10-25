@@ -1,4 +1,4 @@
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',

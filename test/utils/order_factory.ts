@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import {ZeroEx, SignedOrder} from '../../src';
 
 export const orderFactory = {
@@ -7,15 +7,15 @@ export const orderFactory = {
         zeroEx: ZeroEx,
         maker: string,
         taker: string,
-        makerFee: BigNumber.BigNumber,
-        takerFee: BigNumber.BigNumber,
-        makerTokenAmount: BigNumber.BigNumber,
+        makerFee: BigNumber,
+        takerFee: BigNumber,
+        makerTokenAmount: BigNumber,
         makerTokenAddress: string,
-        takerTokenAmount: BigNumber.BigNumber,
+        takerTokenAmount: BigNumber,
         takerTokenAddress: string,
         exchangeContractAddress: string,
         feeRecipient: string,
-        expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
+        expirationUnixTimestampSec?: BigNumber): Promise<SignedOrder> {
         const defaultExpirationUnixTimestampSec = new BigNumber(2524604400); // Close to infinite
         expirationUnixTimestampSec = _.isUndefined(expirationUnixTimestampSec) ?
             defaultExpirationUnixTimestampSec :

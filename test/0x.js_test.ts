@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import 'mocha';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
 import {ZeroEx, Order, ZeroExError, LogWithDecodedArgs, ApprovalContractEventArgs, TokenEvents} from '../src';
 import {constants} from './utils/constants';

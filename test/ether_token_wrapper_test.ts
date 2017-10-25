@@ -2,7 +2,7 @@ import 'mocha';
 import * as chai from 'chai';
 import {chaiSetup} from './utils/chai_setup';
 import * as Web3 from 'web3';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx, ZeroExError} from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
@@ -23,7 +23,7 @@ describe('EtherTokenWrapper', () => {
     let userAddresses: string[];
     let addressWithETH: string;
     let wethContractAddress: string;
-    let depositWeiAmount: BigNumber.BigNumber;
+    let depositWeiAmount: BigNumber;
     let decimalPlaces: number;
     const gasPrice = new BigNumber(1);
     const zeroExConfig = {

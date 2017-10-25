@@ -1,7 +1,7 @@
 import 'mocha';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
@@ -545,8 +545,8 @@ describe('ExchangeWrapper', () => {
         let makerTokenAddress: string;
         let takerTokenAddress: string;
         let takerAddress: string;
-        let fillableAmount: BigNumber.BigNumber;
-        let partialFillAmount: BigNumber.BigNumber;
+        let fillableAmount: BigNumber;
+        let partialFillAmount: BigNumber;
         let signedOrder: SignedOrder;
         let orderHash: string;
         before(() => {
@@ -621,7 +621,7 @@ describe('ExchangeWrapper', () => {
         let coinbase: string;
         let takerAddress: string;
         let makerAddress: string;
-        let fillableAmount: BigNumber.BigNumber;
+        let fillableAmount: BigNumber;
         let signedOrder: SignedOrder;
         const takerTokenFillAmountInBaseUnits = new BigNumber(1);
         const cancelTakerAmountInBaseUnits = new BigNumber(1);

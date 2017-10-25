@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import {schemas} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
@@ -46,7 +46,7 @@ export class TokenWrapper extends ContractWrapper {
      * @return  The owner's ERC20 token balance in base units.
      */
     public async getBalanceAsync(tokenAddress: string, ownerAddress: string,
-                                 methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
+                                 methodOpts?: MethodOpts): Promise<BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
@@ -68,7 +68,7 @@ export class TokenWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     public async setAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string,
-                                   amountInBaseUnits: BigNumber.BigNumber): Promise<string> {
+                                   amountInBaseUnits: BigNumber): Promise<string> {
         await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
@@ -113,7 +113,7 @@ export class TokenWrapper extends ContractWrapper {
      * @param   methodOpts      Optional arguments this method accepts.
      */
     public async getAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                   spenderAddress: string, methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
+                                   spenderAddress: string, methodOpts?: MethodOpts): Promise<BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
@@ -131,7 +131,7 @@ export class TokenWrapper extends ContractWrapper {
      * @param   methodOpts      Optional arguments this method accepts.
      */
     public async getProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                        methodOpts?: MethodOpts): Promise<BigNumber.BigNumber> {
+                                        methodOpts?: MethodOpts): Promise<BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
@@ -149,7 +149,7 @@ export class TokenWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     public async setProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                        amountInBaseUnits: BigNumber.BigNumber): Promise<string> {
+                                        amountInBaseUnits: BigNumber): Promise<string> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
@@ -183,7 +183,7 @@ export class TokenWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     public async transferAsync(tokenAddress: string, fromAddress: string, toAddress: string,
-                               amountInBaseUnits: BigNumber.BigNumber): Promise<string> {
+                               amountInBaseUnits: BigNumber): Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
         assert.isETHAddressHex('toAddress', toAddress);
@@ -215,7 +215,7 @@ export class TokenWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     public async transferFromAsync(tokenAddress: string, fromAddress: string, toAddress: string,
-                                   senderAddress: string, amountInBaseUnits: BigNumber.BigNumber):
+                                   senderAddress: string, amountInBaseUnits: BigNumber):
                                    Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('fromAddress', fromAddress);
