@@ -35,4 +35,6 @@ export {
     OrderTransactionOpts,
     FilterObject,
     LogEvent,
+    DecodedLogEvent,
+    MempoolEventCallback,
 } from './types';
