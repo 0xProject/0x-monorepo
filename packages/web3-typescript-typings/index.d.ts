@@ -364,7 +364,7 @@ declare module 'web3' {
 
         interface LogEntry {
             logIndex: number|null;
-            transactionIndex: number;
+            transactionIndex: number|null;
             transactionHash: string;
             blockHash: string|null;
             blockNumber: number|null;
