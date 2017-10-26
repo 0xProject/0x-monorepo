@@ -58,7 +58,9 @@ export class MempoolWatcher {
                 removed: isRemoved,
                 ...log,
             };
-            (this._callback as MempoolEventCallback)(logWithDecodedArgsEvent);
+            if (!_.isUndefined(this._callback)) {
+                this._callback(logWithDecodedArgsEvent);
+            }
         });
     }
 }
