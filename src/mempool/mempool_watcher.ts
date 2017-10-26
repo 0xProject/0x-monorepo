@@ -54,12 +54,12 @@ export class MempoolWatcher {
     }
     private _emitDifferences(logs: Web3.LogEntry[], isRemoved: boolean): void {
         _.forEach(logs, log => {
-            const logWithDecodedArgsEvent = {
+            const logEvent = {
                 removed: isRemoved,
                 ...log,
             };
             if (!_.isUndefined(this._callback)) {
-                this._callback(logWithDecodedArgsEvent);
+                this._callback(logEvent);
             }
         });
     }
