@@ -4685,7 +4685,7 @@ tslint-react@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/tslint-react/-/tslint-react-3.0.0.tgz#00c48ab7f22e91533b62bdef2c162b49447af00a"
 
-tslint@^5.3.2:
+tslint@~5.5.0:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.5.0.tgz#10e8dab3e3061fa61e9442e8cee3982acf20a6aa"
   dependencies:
@@ -4940,9 +4940,9 @@ web3-provider-engine@^8.4.0:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-typescript-typings@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.6.2.tgz#5dd9bf4dcd1d6dd6897c87d055d1f5cc8f98dfbd"
+web3-typescript-typings@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.7.0.tgz#a8adcfaa5f4933eddd53d9e592bace3edfffa050"
   dependencies:
     bignumber.js "^4.0.2"
 
