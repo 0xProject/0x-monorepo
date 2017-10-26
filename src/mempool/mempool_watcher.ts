@@ -36,8 +36,8 @@ export class MempoolWatcher {
             // that's why we just ignore those cases.
             return;
         }
-        const removedEvents = _.differenceBy(this._lastMempoolEvents, pendingEvents, _.isEqual);
-        const newEvents = _.differenceBy(pendingEvents, this._lastMempoolEvents, _.isEqual);
+        const removedEvents = _.differenceBy(this._lastMempoolEvents, pendingEvents, JSON.stringify);
+        const newEvents = _.differenceBy(pendingEvents, this._lastMempoolEvents, JSON.stringify);
         let isRemoved = true;
         this._emitDifferences(removedEvents, isRemoved);
         isRemoved = false;
