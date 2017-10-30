@@ -304,9 +304,9 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Batch version of fillOrderAsync.
      * Executes multiple fills atomically in a single transaction.
-     * If shouldThrowOnInsufficientBalanceOrAllowance is set to true, it will continue filling subsequent orders even
+     * If shouldThrowOnInsufficientBalanceOrAllowance is set to false, it will continue filling subsequent orders even
      * when earlier ones fail.
-     * When shouldThrowOnInsufficientBalanceOrAllowance is set to false, if any fill fails, the entire batch fails.
+     * When shouldThrowOnInsufficientBalanceOrAllowance is set to true, if any fill fails, the entire batch fails.
      * @param   orderFillRequests                               An array of objects that conform to the
      *                                                          OrderFillRequest interface.
      * @param   shouldThrowOnInsufficientBalanceOrAllowance     Whether or not you wish for the contract call to throw
