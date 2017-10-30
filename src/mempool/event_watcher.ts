@@ -26,6 +26,7 @@ export class EventWatcher {
     }
     public unsubscribe(): void {
         delete this._callback;
+        this._lastMempoolEvents = [];
         intervalUtils.clearAsyncExcludingInterval(this._intervalId);
     }
     private async _pollForMempoolEventsAsync(): Promise<void> {
