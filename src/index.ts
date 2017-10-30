@@ -37,4 +37,8 @@ export {
     LogEvent,
     DecodedLogEvent,
     MempoolEventCallback,
+    OnOrderFillabilityStateChangeCallback,
+    OrderStateValid,
+    OrderStateInvalid,
+    OrderWatcherConfig,
 } from './types';
