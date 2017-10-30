@@ -474,3 +474,24 @@ export enum TransferType {
     Trade = 'trade',
     Fee = 'fee',
 }
+
+export interface OrderStateValid {
+    isValid: true;
+    orderHash: string;
+    makerBalance: BigNumber;
+    makerAllowance: BigNumber;
+    makerFeeBalance: BigNumber;
+    makerFeeAllowance: BigNumber;
+    filledMakerTokenAmount: BigNumber;
+    cancelledMakerTokenAmount: BigNumber;
+}
+
+export interface OrderStateInvalid {
+    isValid: false;
+    orderHash: string;
+    error: ExchangeContractErrs;
+}
+
+export type OnOrderFillabilityStateChangeCallback = (
+    orderState: OrderStateValid|OrderStateInvalid,
+) => void;
