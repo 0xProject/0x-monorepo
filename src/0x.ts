@@ -11,7 +11,6 @@ import {assert} from './utils/assert';
 import {AbiDecoder} from './utils/abi_decoder';
 import {intervalUtils} from './utils/interval_utils';
 import {artifacts} from './artifacts';
-import {MempoolWatcher} from './mempool/mempool_watcher';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
@@ -66,10 +65,6 @@ export class ZeroEx {
      * tokenTransferProxy smart contract.
      */
     public proxy: TokenTransferProxyWrapper;
-    /**
-     * An instance of the MempoolWatcher class containing methods for watching pending events.
-     */
-    public mempool: MempoolWatcher;
     private _web3Wrapper: Web3Wrapper;
     private _abiDecoder: AbiDecoder;
     /**
@@ -197,10 +192,6 @@ export class ZeroEx {
         };
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
         const mempoolPollingIntervalMs = _.isUndefined(config) ? undefined : config.mempoolPollingIntervalMs;
-        this.mempool = new MempoolWatcher(
-            this._web3Wrapper,
-            mempoolPollingIntervalMs,
-        );
         this.token = new TokenWrapper(
             this._web3Wrapper,
             this._abiDecoder,

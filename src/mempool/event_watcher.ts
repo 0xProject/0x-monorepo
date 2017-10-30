@@ -7,7 +7,7 @@ import {intervalUtils} from '../utils/interval_utils';
 
 const DEFAULT_MEMPOOL_POLLING_INTERVAL = 200;
 
-export class MempoolWatcher {
+export class EventWatcher {
     private _web3Wrapper: Web3Wrapper;
     private _pollingIntervalMs: number;
     private _intervalId: NodeJS.Timer;
