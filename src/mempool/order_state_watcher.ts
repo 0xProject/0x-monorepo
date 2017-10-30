@@ -5,13 +5,14 @@ import {EventWatcher} from './event_watcher';
 import {assert} from '../utils/assert';
 import {artifacts} from '../artifacts';
 import {AbiDecoder} from '../utils/abi_decoder';
-import {orderWatcherConfigSchema} from '../schemas/order_watcher_config_schema';
+import {OrderStateUtils} from '../utils/order_state_utils';
 import {
     LogEvent,
+    OrderState,
     SignedOrder,
     Web3Provider,
+    BlockParamLiteral,
     LogWithDecodedArgs,
-    OrderWatcherConfig,
     OnOrderStateChangeCallback,
 } from '../types';
 import {Web3Wrapper} from '../web3_wrapper';
@@ -19,20 +20,19 @@ import {Web3Wrapper} from '../web3_wrapper';
 export class OrderStateWatcher {
     private _orders = new Map<string, SignedOrder>();
     private _web3Wrapper: Web3Wrapper;
-    private _config: OrderWatcherConfig;
-    private _callback?: OnOrderStateChangeCallback;
-    private _eventWatcher?: EventWatcher;
+    private _callbackAsync?: OnOrderStateChangeCallback;
+    private _eventWatcher: EventWatcher;
     private _abiDecoder: AbiDecoder;
-    constructor(provider: Web3Provider, config?: OrderWatcherConfig) {
-        assert.isWeb3Provider('provider', provider);
-        if (!_.isUndefined(config)) {
-            assert.doesConformToSchema('config', config, orderWatcherConfigSchema);
-        }
-        this._web3Wrapper = new Web3Wrapper(provider);
-        this._config = config || {};
-        const artifactJSONs = _.values(artifacts);
-        const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
-        this._abiDecoder = new AbiDecoder(abiArrays);
+    private _orderStateUtils: OrderStateUtils;
+    constructor(
+        web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, orderStateUtils: OrderStateUtils,
+        mempoolPollingIntervalMs?: number) {
+        this._web3Wrapper = web3Wrapper;
+        this._eventWatcher = new EventWatcher(
+            this._web3Wrapper, mempoolPollingIntervalMs,
+        );
+        this._abiDecoder = abiDecoder;
+        this._orderStateUtils = orderStateUtils;
     }
     public addOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
@@ -46,17 +46,12 @@ export class OrderStateWatcher {
     }
     public subscribe(callback: OnOrderStateChangeCallback): void {
         assert.isFunction('callback', callback);
-        this._callback = callback;
-        this._eventWatcher = new EventWatcher(
-            this._web3Wrapper, this._config.mempoolPollingIntervalMs,
-        );
+        this._callbackAsync = callback;
         this._eventWatcher.subscribe(this._onMempoolEventCallbackAsync.bind(this));
     }
     public unsubscribe(): void {
-        delete this._callback;
-        if (!_.isUndefined(this._eventWatcher)) {
-            this._eventWatcher.unsubscribe();
-        }
+        delete this._callbackAsync;
+        this._eventWatcher.unsubscribe();
     }
     private async _onMempoolEventCallbackAsync(log: LogEvent): Promise<void> {
         const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
@@ -65,6 +60,18 @@ export class OrderStateWatcher {
         }
     }
     private async _revalidateOrdersAsync(): Promise<void> {
-        _.noop();
+        const methodOpts = {
+            defaultBlock: BlockParamLiteral.Pending,
+        };
+        const orderHashes = Array.from(this._orders.keys());
+        for (const orderHash of orderHashes) {
+            const signedOrder = this._orders.get(orderHash) as SignedOrder;
+            const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder, methodOpts);
+            if (!_.isUndefined(this._callbackAsync)) {
+                await this._callbackAsync(orderState);
+            } else {
+                break; // Unsubscribe was called
+            }
+        }
     }
 }

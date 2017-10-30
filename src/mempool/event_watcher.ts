@@ -12,7 +12,7 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalId: NodeJS.Timer;
     private _lastMempoolEvents: Web3.LogEntry[] = [];
-    private _callback?: MempoolEventCallback;
+    private _callbackAsync?: MempoolEventCallback;
     constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number) {
         this._web3Wrapper = web3Wrapper;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
@@ -20,12 +20,12 @@ export class EventWatcher {
                                   pollingIntervalMs;
     }
     public subscribe(callback: MempoolEventCallback): void {
-        this._callback = callback;
+        this._callbackAsync = callback;
         this._intervalId = intervalUtils.setAsyncExcludingInterval(
             this._pollForMempoolEventsAsync.bind(this), this._pollingIntervalMs);
     }
     public unsubscribe(): void {
-        delete this._callback;
+        delete this._callbackAsync;
         this._lastMempoolEvents = [];
         intervalUtils.clearAsyncExcludingInterval(this._intervalId);
     }
@@ -40,9 +40,9 @@ export class EventWatcher {
         const removedEvents = _.differenceBy(this._lastMempoolEvents, pendingEvents, JSON.stringify);
         const newEvents = _.differenceBy(pendingEvents, this._lastMempoolEvents, JSON.stringify);
         let isRemoved = true;
-        this._emitDifferences(removedEvents, isRemoved);
+        await this._emitDifferencesAsync(removedEvents, isRemoved);
         isRemoved = false;
-        this._emitDifferences(newEvents, isRemoved);
+        await this._emitDifferencesAsync(newEvents, isRemoved);
         this._lastMempoolEvents = pendingEvents;
     }
     private async _getMempoolEventsAsync(): Promise<Web3.LogEntry[]> {
@@ -53,15 +53,15 @@ export class EventWatcher {
         const pendingEvents = await this._web3Wrapper.getLogsAsync(mempoolFilter);
         return pendingEvents;
     }
-    private _emitDifferences(logs: Web3.LogEntry[], isRemoved: boolean): void {
-        _.forEach(logs, log => {
+    private async _emitDifferencesAsync(logs: Web3.LogEntry[], isRemoved: boolean): Promise<void> {
+        for (const log of logs) {
             const logEvent = {
                 removed: isRemoved,
                 ...log,
             };
-            if (!_.isUndefined(this._callback)) {
-                this._callback(logEvent);
+            if (!_.isUndefined(this._callbackAsync)) {
+                await this._callbackAsync(logEvent);
             }
-        });
+        }
     }
 }
