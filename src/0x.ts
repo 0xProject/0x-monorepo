@@ -185,7 +185,6 @@ export class ZeroEx {
             gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
-        const mempoolPollingIntervalMs = _.isUndefined(config) ? undefined : config.mempoolPollingIntervalMs;
         this.token = new TokenWrapper(
             this._web3Wrapper,
             this._abiDecoder,
