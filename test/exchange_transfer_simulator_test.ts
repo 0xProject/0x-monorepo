@@ -1,5 +1,5 @@
 import * as chai from 'chai';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx, ExchangeContractErrs, Token} from '../src';

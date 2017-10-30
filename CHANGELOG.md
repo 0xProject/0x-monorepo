@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.22.4 - _October 25, 2017_
+------------------------
+    * Upgraded bignumber.js to a new version that ships with native typings
+
 v0.22.3 - _October 25, 2017_
 ------------------------
     * Fixed an issue with new version of testrpc and unlimited proxy allowance (#199)

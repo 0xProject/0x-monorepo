@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import {SchemaValidator, schemas} from '0x-json-schemas';
 import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
@@ -100,7 +100,7 @@ export class ZeroEx {
      * and will not collide with other outstanding orders that are identical in all other parameters.
      * @return  A pseudo-random 256-bit number that can be used as a salt.
      */
-    public static generatePseudoRandomSalt(): BigNumber.BigNumber {
+    public static generatePseudoRandomSalt(): BigNumber {
         // BigNumber.random returns a pseudo-random number between 0 & 1 with a passed in number of decimal places.
         // Source: https://mikemcl.github.io/bignumber.js/#random
         const randomNumber = BigNumber.random(constants.MAX_DIGITS_IN_UNSIGNED_256_INT);
@@ -131,7 +131,7 @@ export class ZeroEx {
      * @param   decimals    The number of decimal places the unit amount has.
      * @return  The amount in units.
      */
-    public static toUnitAmount(amount: BigNumber.BigNumber, decimals: number): BigNumber.BigNumber {
+    public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
         assert.isBigNumber('amount', amount);
         assert.isNumber('decimals', decimals);
 
@@ -147,7 +147,7 @@ export class ZeroEx {
      * @param   decimals    The number of decimal places the unit amount has.
      * @return  The amount in baseUnits.
      */
-    public static toBaseUnitAmount(amount: BigNumber.BigNumber, decimals: number): BigNumber.BigNumber {
+    public static toBaseUnitAmount(amount: BigNumber, decimals: number): BigNumber {
         assert.isBigNumber('amount', amount);
         assert.isNumber('decimals', decimals);
 

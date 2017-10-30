@@ -1,4 +1,4 @@
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import {ZeroEx, Token, SignedOrder} from '../../src';
 import {orderFactory} from '../utils/order_factory';
 import {constants} from './constants';
@@ -21,8 +21,8 @@ export class FillScenarios {
     }
     public async createFillableSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
                                                 makerAddress: string, takerAddress: string,
-                                                fillableAmount: BigNumber.BigNumber,
-                                                expirationUnixTimestampSec?: BigNumber.BigNumber):
+                                                fillableAmount: BigNumber,
+                                                expirationUnixTimestampSec?: BigNumber):
                                            Promise<SignedOrder> {
         return this.createAsymmetricFillableSignedOrderAsync(
             makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
@@ -31,10 +31,10 @@ export class FillScenarios {
     }
     public async createFillableSignedOrderWithFeesAsync(
         makerTokenAddress: string, takerTokenAddress: string,
-        makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,
+        makerFee: BigNumber, takerFee: BigNumber,
         makerAddress: string, takerAddress: string,
-        fillableAmount: BigNumber.BigNumber,
-        feeRecepient: string, expirationUnixTimestampSec?: BigNumber.BigNumber,
+        fillableAmount: BigNumber,
+        feeRecepient: string, expirationUnixTimestampSec?: BigNumber,
     ): Promise<SignedOrder> {
         return this.createAsymmetricFillableSignedOrderWithFeesAsync(
             makerTokenAddress, takerTokenAddress, makerFee, takerFee, makerAddress, takerAddress,
@@ -43,8 +43,8 @@ export class FillScenarios {
     }
     public async createAsymmetricFillableSignedOrderAsync(
         makerTokenAddress: string, takerTokenAddress: string, makerAddress: string, takerAddress: string,
-        makerFillableAmount: BigNumber.BigNumber, takerFillableAmount: BigNumber.BigNumber,
-        expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
+        makerFillableAmount: BigNumber, takerFillableAmount: BigNumber,
+        expirationUnixTimestampSec?: BigNumber): Promise<SignedOrder> {
         const makerFee = new BigNumber(0);
         const takerFee = new BigNumber(0);
         const feeRecepient = constants.NULL_ADDRESS;
@@ -54,8 +54,8 @@ export class FillScenarios {
         );
     }
     public async createPartiallyFilledSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
-                                                       takerAddress: string, fillableAmount: BigNumber.BigNumber,
-                                                       partialFillAmount: BigNumber.BigNumber) {
+                                                       takerAddress: string, fillableAmount: BigNumber,
+                                                       partialFillAmount: BigNumber) {
         const [makerAddress] = this.userAddresses;
         const signedOrder = await this.createAsymmetricFillableSignedOrderAsync(
             makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
@@ -69,10 +69,10 @@ export class FillScenarios {
     }
     private async createAsymmetricFillableSignedOrderWithFeesAsync(
         makerTokenAddress: string, takerTokenAddress: string,
-        makerFee: BigNumber.BigNumber, takerFee: BigNumber.BigNumber,
+        makerFee: BigNumber, takerFee: BigNumber,
         makerAddress: string, takerAddress: string,
-        makerFillableAmount: BigNumber.BigNumber, takerFillableAmount: BigNumber.BigNumber,
-        feeRecepient: string, expirationUnixTimestampSec?: BigNumber.BigNumber): Promise<SignedOrder> {
+        makerFillableAmount: BigNumber, takerFillableAmount: BigNumber,
+        feeRecepient: string, expirationUnixTimestampSec?: BigNumber): Promise<SignedOrder> {
 
         await Promise.all([
             this.increaseBalanceAndAllowanceAsync(makerTokenAddress, makerAddress, makerFillableAmount),
@@ -90,7 +90,7 @@ export class FillScenarios {
         return signedOrder;
     }
     private async increaseBalanceAndAllowanceAsync(
-        tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
+        tokenAddress: string, address: string, amount: BigNumber): Promise<void> {
         if (amount.isZero() || address === ZeroEx.NULL_ADDRESS) {
             return; // noop
         }
@@ -100,11 +100,11 @@ export class FillScenarios {
         ]);
     }
     private async increaseBalanceAsync(
-        tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
+        tokenAddress: string, address: string, amount: BigNumber): Promise<void> {
         await this.zeroEx.token.transferAsync(tokenAddress, this.coinbase, address, amount);
     }
     private async increaseAllowanceAsync(
-        tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
+        tokenAddress: string, address: string, amount: BigNumber): Promise<void> {
         const oldMakerAllowance = await this.zeroEx.token.getProxyAllowanceAsync(tokenAddress, address);
         const newMakerAllowance = oldMakerAllowance.plus(amount);
         await this.zeroEx.token.setProxyAllowanceAsync(

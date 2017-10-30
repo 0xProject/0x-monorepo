@@ -12,12 +12,6 @@ declare module 'web3-provider-engine/subproviders/rpc';
 // disallow `namespace`, we disable tslint for the following.
 /* tslint:disable */
 declare namespace Chai {
-    interface NumberComparer {
-        (value: number|BigNumber.BigNumber, message?: string): Assertion;
-    }
-    interface NumericComparison {
-        greaterThan: NumberComparer;
-    }
     interface Assertion {
         bignumber: Assertion;
         // HACK: In order to comply with chai-as-promised we make eventually a `PromisedAssertion` not an `Assertion`
@@ -70,8 +64,6 @@ declare module 'truffle-hdwallet-provider' {
 
 // abi-decoder declarations
 interface DecodedLogArg {
-    name: string;
-    value: string|BigNumber.BigNumber;
 }
 interface DecodedLog {
     name: string;

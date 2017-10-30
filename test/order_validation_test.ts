@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import * as Web3 from 'web3';
-import * as BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
@@ -211,8 +211,8 @@ describe('OrderValidation', () => {
     describe('#validateFillOrderBalancesAllowancesThrowIfInvalidAsync', () => {
         let exchangeTransferSimulator: ExchangeTransferSimulator;
         let transferFromAsync: Sinon.SinonSpy;
-        const bigNumberMatch = (expected: BigNumber.BigNumber) => {
-            return Sinon.match((value: BigNumber.BigNumber) => value.eq(expected));
+        const bigNumberMatch = (expected: BigNumber) => {
+            return Sinon.match((value: BigNumber) => value.eq(expected));
         };
         beforeEach('create exchangeTransferSimulator', async () => {
             exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token);
