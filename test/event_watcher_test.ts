@@ -6,6 +6,8 @@ import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
+import {Web3Wrapper} from '../src/web3_wrapper';
+import {EventWatcher} from '../src/mempool/event_watcher';
 import {
     ZeroEx,
     LogEvent,
@@ -16,10 +18,11 @@ import {DoneCallback} from '../src/types';
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe('MempoolWatcher', () => {
+describe('EventWatcher', () => {
     let web3: Web3;
-    let zeroEx: ZeroEx;
     let stubs: Sinon.SinonStub[] = [];
+    let eventWatcher: EventWatcher;
+    let web3Wrapper: Web3Wrapper;
     const logA = {
         address: '0x71d271f8b14adef568f8f28f1587ce7271ac4ca5',
         blockHash: null,
@@ -52,16 +55,15 @@ describe('MempoolWatcher', () => {
     };
     before(async () => {
         web3 = web3Factory.create();
-        const config = {
-            mempoolPollingIntervalMs: 10,
-        };
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        const mempoolPollingIntervalMs = 10;
+        web3Wrapper = new Web3Wrapper(web3.currentProvider);
+        eventWatcher = new EventWatcher(web3Wrapper, mempoolPollingIntervalMs);
     });
     afterEach(() => {
         // clean up any stubs after the test has completed
         _.each(stubs, s => s.restore());
         stubs = [];
-        zeroEx.mempool.unsubscribe();
+        eventWatcher.unsubscribe();
     });
     it('correctly emits initial log events', (done: DoneCallback) => {
         const logs: Web3.LogEntry[] = [logA, logB];
@@ -75,7 +77,7 @@ describe('MempoolWatcher', () => {
                 ...logB,
             },
         ];
-        const getLogsStub = Sinon.stub((zeroEx.mempool as any)._web3Wrapper, 'getLogsAsync');
+        const getLogsStub = Sinon.stub(web3Wrapper, 'getLogsAsync');
         getLogsStub.onCall(0).returns(logs);
         stubs.push(getLogsStub);
         const callback = (event: LogEvent) => {
@@ -85,7 +87,7 @@ describe('MempoolWatcher', () => {
                 done();
             }
         };
-        zeroEx.mempool.subscribe(callback);
+        eventWatcher.subscribe(callback);
     });
     it('correctly computes the difference and emits only changes', (done: DoneCallback) => {
         const initialLogs: Web3.LogEntry[] = [logA, logB];
@@ -108,18 +110,17 @@ describe('MempoolWatcher', () => {
                 ...logC,
             },
         ];
-        const getLogsStub = Sinon.stub((zeroEx.mempool as any)._web3Wrapper, 'getLogsAsync');
+        const getLogsStub = Sinon.stub(web3Wrapper, 'getLogsAsync');
         getLogsStub.onCall(0).returns(initialLogs);
         getLogsStub.onCall(1).returns(changedLogs);
         stubs.push(getLogsStub);
         const callback = (event: LogEvent) => {
-            // console.log(event);
             const expectedLogEvent = expectedLogEvents.shift();
             expect(event).to.be.deep.equal(expectedLogEvent);
             if (_.isEmpty(expectedLogEvents)) {
                 done();
             }
         };
-        zeroEx.mempool.subscribe(callback);
+        eventWatcher.subscribe(callback);
     });
 });
