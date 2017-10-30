@@ -1,7 +1,10 @@
 export const orderWatcherConfigSchema = {
     id: '/OrderWatcherConfig',
     properties: {
-        mempoolPollingIntervalMs: {$ref: '/Number'},
+        mempoolPollingIntervalMs: {
+            type: 'number',
+            min: 0,
+        },
     },
     type: 'object',
 };
