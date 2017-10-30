@@ -480,15 +480,19 @@ export enum TransferType {
     Fee = 'fee',
 }
 
+export interface OrderState {
+    makerBalance: BigNumber;
+    makerProxyAllowance: BigNumber;
+    makerFeeBalance: BigNumber;
+    makerFeeProxyAllowance: BigNumber;
+    filledMakerTokenAmount: BigNumber;
+    cancelledMakerTokenAmount: BigNumber;
+}
+
 export interface OrderStateValid {
     isValid: true;
     orderHash: string;
-    makerBalance: BigNumber;
-    makerAllowance: BigNumber;
-    makerFeeBalance: BigNumber;
-    makerFeeAllowance: BigNumber;
-    filledMakerTokenAmount: BigNumber;
-    cancelledMakerTokenAmount: BigNumber;
+    orderState: OrderState;
 }
 
 export interface OrderStateInvalid {
