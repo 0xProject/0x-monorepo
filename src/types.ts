@@ -497,6 +497,6 @@ export interface OrderStateInvalid {
     error: ExchangeContractErrs;
 }
 
-export type OnOrderFillabilityStateChangeCallback = (
+export type OnOrderStateChangeCallback = (
     orderState: OrderStateValid|OrderStateInvalid,
 ) => void;
