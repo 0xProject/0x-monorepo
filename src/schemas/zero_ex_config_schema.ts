@@ -5,6 +5,10 @@ export const zeroExConfigSchema = {
         exchangeContractAddress: {$ref: '/Address'},
         tokenRegistryContractAddress: {$ref: '/Address'},
         etherTokenContractAddress: {$ref: '/Address'},
+        mempoolPollingIntervalMs: {
+            type: 'number',
+            min: 0,
+        },
     },
     type: 'object',
 };

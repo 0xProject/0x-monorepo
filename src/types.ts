@@ -399,18 +399,13 @@ export interface JSONRPCPayload {
  * exchangeContractAddress: The address of an exchange contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
  * etherTokenContractAddress: The address of an ether token contract to use
+ * mempoolPollingIntervalMs: How often to check for new mempool events
  */
 export interface ZeroExConfig {
     gasPrice?: BigNumber; // Gas price to use with every transaction
     exchangeContractAddress?: string;
     tokenRegistryContractAddress?: string;
     etherTokenContractAddress?: string;
-}
-
-/*
- * mempoolPollingIntervalMs: How often to check for new mempool events
- */
-export interface OrderWatcherConfig {
     mempoolPollingIntervalMs?: number;
 }
 
@@ -480,7 +475,7 @@ export enum TransferType {
     Fee = 'fee',
 }
 
-export interface OrderState {
+export interface OrderRelevantState {
     makerBalance: BigNumber;
     makerProxyAllowance: BigNumber;
     makerFeeBalance: BigNumber;
@@ -492,7 +487,7 @@ export interface OrderState {
 export interface OrderStateValid {
     isValid: true;
     orderHash: string;
-    orderState: OrderState;
+    orderRelevantState: OrderRelevantState;
 }
 
 export interface OrderStateInvalid {
@@ -501,6 +496,8 @@ export interface OrderStateInvalid {
     error: ExchangeContractErrs;
 }
 
+export type OrderState = OrderStateValid|OrderStateInvalid;
+
 export type OnOrderStateChangeCallback = (
-    orderState: OrderStateValid|OrderStateInvalid,
+    orderState: OrderState,
 ) => void;
