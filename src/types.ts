@@ -399,13 +399,18 @@ export interface JSONRPCPayload {
  * exchangeContractAddress: The address of an exchange contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
  * etherTokenContractAddress: The address of an ether token contract to use
- * mempoolPollingIntervalMs: How often to check for new mempool events
  */
 export interface ZeroExConfig {
     gasPrice?: BigNumber; // Gas price to use with every transaction
     exchangeContractAddress?: string;
     tokenRegistryContractAddress?: string;
     etherTokenContractAddress?: string;
+}
+
+/*
+ * mempoolPollingIntervalMs: How often to check for new mempool events
+ */
+export interface OrderWatcherConfig {
     mempoolPollingIntervalMs?: number;
 }
 
