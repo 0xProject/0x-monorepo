@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.22.5 - _November 7, 2017_
+------------------------
+    * Re-publish v0.22.4 to fix publishing issue
+
 v0.22.4 - _October 25, 2017_
 ------------------------
     * Upgraded bignumber.js to a new version that ships with native typings
