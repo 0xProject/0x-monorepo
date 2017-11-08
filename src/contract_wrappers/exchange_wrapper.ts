@@ -13,7 +13,6 @@ import {
     OrderAddresses,
     Order,
     SignedOrder,
-    ContractEvent,
     ExchangeEvents,
     SubscriptionOpts,
     IndexedFilterValues,
