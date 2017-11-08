@@ -47,6 +47,7 @@ export class EventWatcher {
         this._lastMempoolEvents = pendingEvents;
     }
     private async _getMempoolEventsAsync(): Promise<Web3.LogEntry[]> {
+        // TODO: Allow users to listen to any number of confirmations deep, not just mempool
         const mempoolFilter = {
             fromBlock: BlockParamLiteral.Pending,
             toBlock: BlockParamLiteral.Pending,
@@ -54,6 +55,7 @@ export class EventWatcher {
         const pendingEvents = await this._web3Wrapper.getLogsAsync(mempoolFilter);
         return pendingEvents;
     }
+    // TODO: Let's emit out own LogEntry type that has property isRemoved rather then removed
     private async _emitDifferencesAsync(logs: Web3.LogEntry[], isRemoved: boolean): Promise<void> {
         for (const log of logs) {
             const logEvent = {
