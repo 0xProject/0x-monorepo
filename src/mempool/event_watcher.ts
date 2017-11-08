@@ -22,7 +22,8 @@ export class EventWatcher {
     public subscribe(callback: MempoolEventCallback): void {
         this._callbackAsync = callback;
         this._intervalId = intervalUtils.setAsyncExcludingInterval(
-            this._pollForMempoolEventsAsync.bind(this), this._pollingIntervalMs);
+            this._pollForMempoolEventsAsync.bind(this), this._pollingIntervalMs,
+        );
     }
     public unsubscribe(): void {
         delete this._callbackAsync;
