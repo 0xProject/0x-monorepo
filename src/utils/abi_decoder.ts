@@ -10,7 +10,7 @@ export class AbiDecoder {
     constructor(abiArrays: Web3.AbiDefinition[][]) {
         _.map(abiArrays, this.addABI.bind(this));
     }
-    // This method can only decode logs from the 0x smart contracts
+    // This method can only decode logs from the 0x & ERC20 smart contracts
     public tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
         log: Web3.LogEntry): LogWithDecodedArgs<ArgsType>|RawLog {
         const methodId = log.topics[0];
