@@ -64,9 +64,10 @@ export class OrderStateWatcher {
         // We currently do not remove the maker/makerToken keys from the mapping when all orderHashes removed
     }
     public subscribe(callback: OnOrderStateChangeCallback): void {
+    public subscribe(callback: OnOrderStateChangeCallback, numConfirmations: number): void {
         assert.isFunction('callback', callback);
         this._callbackAsync = callback;
-        this._eventWatcher.subscribe(this._onMempoolEventCallbackAsync.bind(this));
+        this._eventWatcher.subscribe(this._onMempoolEventCallbackAsync.bind(this), numConfirmations);
     }
     public unsubscribe(): void {
         delete this._callbackAsync;

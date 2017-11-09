@@ -41,6 +41,7 @@ describe('OrderStateWatcher', () => {
     let web3Wrapper: Web3Wrapper;
     let signedOrder: SignedOrder;
     const fillableAmount = new BigNumber(5);
+    const numConfirmations = 0;
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider);
@@ -73,7 +74,7 @@ describe('OrderStateWatcher', () => {
                 expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
                 done();
             };
-            zeroEx.orderStateWatcher.subscribe(callback);
+            zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
             await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, new BigNumber(0));
         })().catch(done);
     });
@@ -91,7 +92,7 @@ describe('OrderStateWatcher', () => {
                 expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
                 done();
             };
-            zeroEx.orderStateWatcher.subscribe(callback);
+            zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
             const anyRecipient = taker;
             const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
             await zeroEx.token.transferAsync(makerToken.address, maker, anyRecipient, makerBalance);
@@ -116,7 +117,7 @@ describe('OrderStateWatcher', () => {
                     done();
                 }
             };
-            zeroEx.orderStateWatcher.subscribe(callback);
+            zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
 
             const shouldThrowOnInsufficientBalanceOrAllowance = true;
             await zeroEx.exchange.fillOrderAsync(
@@ -150,7 +151,7 @@ describe('OrderStateWatcher', () => {
                     done();
                 }
             };
-            zeroEx.orderStateWatcher.subscribe(callback);
+            zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
             const shouldThrowOnInsufficientBalanceOrAllowance = true;
             await zeroEx.exchange.fillOrderAsync(
                 signedOrder, fillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, taker,

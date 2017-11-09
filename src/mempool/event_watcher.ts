@@ -19,10 +19,10 @@ export class EventWatcher {
                                   DEFAULT_MEMPOOL_POLLING_INTERVAL :
                                   pollingIntervalMs;
     }
-    public subscribe(callback: MempoolEventCallback): void {
+    public subscribe(callback: MempoolEventCallback, numConfirmations: number): void {
         this._callbackAsync = callback;
         this._intervalId = intervalUtils.setAsyncExcludingInterval(
-            this._pollForMempoolEventsAsync.bind(this), this._pollingIntervalMs,
+            this._pollForMempoolEventsAsync.bind(this, numConfirmations), this._pollingIntervalMs,
         );
     }
     public unsubscribe(): void {
@@ -30,8 +30,8 @@ export class EventWatcher {
         this._lastMempoolEvents = [];
         intervalUtils.clearAsyncExcludingInterval(this._intervalId);
     }
-    private async _pollForMempoolEventsAsync(): Promise<void> {
-        const pendingEvents = await this._getMempoolEventsAsync();
+    private async _pollForMempoolEventsAsync(numConfirmations: number): Promise<void> {
+        const pendingEvents = await this._getMempoolEventsAsync(numConfirmations);
         if (pendingEvents.length === 0) {
             // HACK: Sometimes when node rebuilds the pending block we get back the empty result.
             // We don't want to emit a lot of removal events and bring them back after a couple of miliseconds,
@@ -46,11 +46,19 @@ export class EventWatcher {
         await this._emitDifferencesAsync(newEvents, isRemoved);
         this._lastMempoolEvents = pendingEvents;
     }
-    private async _getMempoolEventsAsync(): Promise<Web3.LogEntry[]> {
-        // TODO: Allow users to listen to any number of confirmations deep, not just mempool
+    private async _getMempoolEventsAsync(numConfirmations: number): Promise<Web3.LogEntry[]> {
+        let fromBlock: BlockParamLiteral|number;
+        let toBlock: BlockParamLiteral|number;
+        if (numConfirmations === 0) {
+            fromBlock = BlockParamLiteral.Pending;
+            toBlock = BlockParamLiteral.Pending;
+        } else {
+            toBlock = await this._web3Wrapper.getBlockNumberAsync();
+            fromBlock = toBlock - numConfirmations;
+        }
         const mempoolFilter = {
-            fromBlock: BlockParamLiteral.Pending,
-            toBlock: BlockParamLiteral.Pending,
+            fromBlock,
+            toBlock,
         };
         const pendingEvents = await this._web3Wrapper.getLogsAsync(mempoolFilter);
         return pendingEvents;

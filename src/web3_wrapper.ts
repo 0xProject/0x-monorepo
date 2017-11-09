@@ -100,6 +100,10 @@ export class Web3Wrapper {
         const signData = await promisify(this.web3.eth.sign)(address, message);
         return signData;
     }
+    public async getBlockNumberAsync(): Promise<number> {
+        const blockNumber = await promisify(this.web3.eth.getBlockNumber)();
+        return blockNumber;
+    }
     public async getBlockAsync(blockParam: string|Web3.BlockParam): Promise<Web3.BlockWithoutTransactionData> {
         const block = await promisify(this.web3.eth.getBlock)(blockParam);
         return block;
