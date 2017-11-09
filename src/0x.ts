@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import * as Web3 from 'web3';
 import {SchemaValidator, schemas} from '0x-json-schemas';
 import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
@@ -189,7 +188,7 @@ export class ZeroEx {
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
         this._abiDecoder = new AbiDecoder(abiArrays);
-        const gasPrice: number|undefined = _.get(config, 'gasPrice');
+        const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
         const defaults = {
             gasPrice,
         };
@@ -199,7 +198,7 @@ export class ZeroEx {
             this._abiDecoder,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
-        const exchageContractAddressIfExists: string|undefined = _.get(config, 'exchangeContractAddress');
+        const exchageContractAddressIfExists = _.isUndefined(config) ? undefined : config.exchangeContractAddress;
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             this._abiDecoder,
@@ -210,11 +209,13 @@ export class ZeroEx {
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
-        const tokenRegistryContractAddressIfExists = _.get(config, 'tokenRegistryContractAddress');
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, 'tokenRegistryContractAddressIfExists');
-        const etherTokenContractAddressIfExists = _.get(config, 'etherTokenContractAddress');
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, 'etherTokenContractAddressIfExists');
-        const orderWatcherConfig: OrderStateWatcherConfig|undefined = _.get(config, 'orderWatcherConfig');
+        const tokenRegistryContractAddressIfExists = _.isUndefined(config) ?
+                                                     undefined :
+                                                     config.tokenRegistryContractAddress;
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, tokenRegistryContractAddressIfExists);
+        const etherTokenContractAddressIfExists = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddressIfExists);
+        const orderWatcherConfig = _.isUndefined(config) ? undefined : config.orderWatcherConfig;
         const orderStateUtils = new OrderStateUtils(this.token, this.exchange);
         this.orderStateWatcher = new OrderStateWatcher(
             this._web3Wrapper, this._abiDecoder, orderStateUtils, orderWatcherConfig,
