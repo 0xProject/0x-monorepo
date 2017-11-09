@@ -53,8 +53,9 @@ export class EventWatcher {
             fromBlock = BlockParamLiteral.Pending;
             toBlock = BlockParamLiteral.Pending;
         } else {
-            toBlock = await this._web3Wrapper.getBlockNumberAsync();
-            fromBlock = toBlock - numConfirmations;
+            const currentBlock = await this._web3Wrapper.getBlockNumberAsync();
+            toBlock = currentBlock - numConfirmations;
+            fromBlock = currentBlock - numConfirmations;
         }
         const eventFilter = {
             fromBlock,
