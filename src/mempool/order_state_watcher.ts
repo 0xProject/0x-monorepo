@@ -3,6 +3,7 @@ import {schemas} from '0x-json-schemas';
 import {ZeroEx} from '../';
 import {EventWatcher} from './event_watcher';
 import {assert} from '../utils/assert';
+import {utils} from '../utils/utils';
 import {artifacts} from '../artifacts';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {OrderStateUtils} from '../utils/order_state_utils';
@@ -14,11 +15,24 @@ import {
     BlockParamLiteral,
     LogWithDecodedArgs,
     OnOrderStateChangeCallback,
+    ExchangeEvents,
+    TokenEvents,
 } from '../types';
 import {Web3Wrapper} from '../web3_wrapper';
 
+interface DependentOrderHashes {
+    [makerAddress: string]: {
+        [makerToken: string]: Set<string>,
+    };
+}
+
+interface OrderByOrderHash {
+    [orderHash: string]: SignedOrder;
+}
+
 export class OrderStateWatcher {
-    private _orders = new Map<string, SignedOrder>();
+    private _orders: OrderByOrderHash;
+    private _dependentOrderHashes: DependentOrderHashes;
     private _web3Wrapper: Web3Wrapper;
     private _callbackAsync?: OnOrderStateChangeCallback;
     private _eventWatcher: EventWatcher;
@@ -28,6 +42,8 @@ export class OrderStateWatcher {
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, orderStateUtils: OrderStateUtils,
         mempoolPollingIntervalMs?: number) {
         this._web3Wrapper = web3Wrapper;
+        this._orders = {};
+        this._dependentOrderHashes = {};
         this._eventWatcher = new EventWatcher(
             this._web3Wrapper, mempoolPollingIntervalMs,
         );
@@ -37,12 +53,18 @@ export class OrderStateWatcher {
     public addOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        this._orders.set(orderHash, signedOrder);
+        this._orders[orderHash] = signedOrder;
+        this.addToDependentOrderHashes(signedOrder, orderHash);
     }
     public removeOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
+        if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress])) {
+            return; // noop if user tries to remove order that wasn't added
+        }
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        this._orders.delete(orderHash);
+        delete this._orders[orderHash];
+        this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].delete(orderHash);
+        // We currently do not remove the maker/makerToken keys from the mapping when all orderHashes removed
     }
     public subscribe(callback: OnOrderStateChangeCallback): void {
         assert.isFunction('callback', callback);
@@ -55,17 +77,59 @@ export class OrderStateWatcher {
     }
     private async _onMempoolEventCallbackAsync(log: LogEvent): Promise<void> {
         const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
-        if (!_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event)) {
-            await this._revalidateOrdersAsync();
+        const isDecodedLog = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
+        if (!isDecodedLog) {
+            return; // noop
+        }
+        const decodedLog = maybeDecodedLog as LogWithDecodedArgs<any>;
+        let makerToken: string;
+        let makerAddress: string;
+        let orderHashesSet: Set<string>;
+        switch (decodedLog.event) {
+            case TokenEvents.Approval:
+                makerToken = decodedLog.address;
+                makerAddress = decodedLog.args._owner;
+                orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);
+                if (!_.isUndefined(orderHashesSet)) {
+                    const orderHashes = Array.from(orderHashesSet);
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                }
+                break;
+
+            case TokenEvents.Transfer:
+                makerToken = decodedLog.address;
+                makerAddress = decodedLog.args._from;
+                orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);
+                if (!_.isUndefined(orderHashesSet)) {
+                    const orderHashes = Array.from(orderHashesSet);
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                }
+                break;
+
+            case ExchangeEvents.LogFill:
+            case ExchangeEvents.LogCancel:
+                const orderHash = decodedLog.args.orderHash;
+                const isOrderWatched = !_.isUndefined(this._orders[orderHash]);
+                if (isOrderWatched) {
+                    await this._emitRevalidateOrdersAsync([orderHash]);
+                }
+                break;
+
+            case ExchangeEvents.LogError:
+                return; // noop
+
+            default:
+                throw utils.spawnSwitchErr('decodedLog.event', decodedLog.event);
         }
     }
-    private async _revalidateOrdersAsync(): Promise<void> {
+    private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
+        // TODO: Make defaultBlock a passed in option
         const methodOpts = {
             defaultBlock: BlockParamLiteral.Pending,
         };
-        const orderHashes = Array.from(this._orders.keys());
+
         for (const orderHash of orderHashes) {
-            const signedOrder = this._orders.get(orderHash) as SignedOrder;
+            const signedOrder = this._orders[orderHash] as SignedOrder;
             const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder, methodOpts);
             if (!_.isUndefined(this._callbackAsync)) {
                 await this._callbackAsync(orderState);
@@ -73,5 +137,14 @@ export class OrderStateWatcher {
                 break; // Unsubscribe was called
             }
         }
+    }
+    private addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string) {
+        if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker])) {
+            this._dependentOrderHashes[signedOrder.maker] = {};
+        }
+        if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress])) {
+            this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress] = new Set();
+        }
+        this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].add(orderHash);
     }
 }
