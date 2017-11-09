@@ -71,7 +71,7 @@ describe('ExchangeWrapper', () => {
             takerTokenAddress = takerToken.address;
         });
         describe('#batchFillOrKillAsync', () => {
-            it('successfuly batch fillOrKill', async () => {
+            it('successfully batch fillOrKill', async () => {
                 const fillableAmount = new BigNumber(5);
                 const partialFillTakerAmount = new BigNumber(2);
                 const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
