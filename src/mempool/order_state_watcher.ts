@@ -66,7 +66,7 @@ export class OrderStateWatcher {
         const orderHashes = Array.from(this._orders.keys());
         for (const orderHash of orderHashes) {
             const signedOrder = this._orders.get(orderHash) as SignedOrder;
-            const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder, methodOpts);
+            const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
             if (!_.isUndefined(this._callbackAsync)) {
                 await this._callbackAsync(orderState);
             } else {

@@ -25,6 +25,7 @@ import {
     SignedOrder,
     Web3Provider,
     ZeroExConfig,
+    BlockParamLiteral,
     TransactionReceiptWithDecodedLogs,
 } from './types';
 import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
@@ -214,7 +215,7 @@ export class ZeroEx {
         const etherTokenContractAddressIfExists = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddressIfExists);
         const mempoolPollingIntervalMs = _.isUndefined(config) ? undefined : config.mempoolPollingIntervalMs;
-        const orderStateUtils = new OrderStateUtils(this.token, this.exchange);
+        const orderStateUtils = new OrderStateUtils(this.token, this.exchange, BlockParamLiteral.Pending);
         this.orderStateWatcher = new OrderStateWatcher(
             this._web3Wrapper, this._abiDecoder, orderStateUtils, mempoolPollingIntervalMs,
         );
