@@ -12,6 +12,7 @@ export const assert = {
         this.assert(isBigNumber, this.typeAssertionMessage(variableName, 'BigNumber', value));
     },
     isValidBaseUnitAmount(variableName: string, value: BigNumber) {
+        assert.isBigNumber(variableName, value);
         const hasDecimals = value.decimalPlaces() !== 0;
         this.assert(
             !hasDecimals, `${variableName} should be in baseUnits (no decimals), found value: ${value.toNumber()}`,
