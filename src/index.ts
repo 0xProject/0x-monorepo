@@ -35,4 +35,10 @@ export {
     OrderTransactionOpts,
     FilterObject,
     LogEvent,
+    DecodedLogEvent,
+    MempoolEventCallback,
+    OnOrderStateChangeCallback,
+    OrderStateValid,
+    OrderStateInvalid,
+    OrderState,
 } from './types';
