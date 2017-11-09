@@ -12,7 +12,7 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalId: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
-    private _callbackAsync?: EventWatcherCallback;
+    private _callbackIfExistsAsync?: EventWatcherCallback;
     constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number) {
         this._web3Wrapper = web3Wrapper;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
@@ -20,13 +20,13 @@ export class EventWatcher {
                                   pollingIntervalMs;
     }
     public subscribe(callback: EventWatcherCallback, numConfirmations: number): void {
-        this._callbackAsync = callback;
+        this._callbackIfExistsAsync = callback;
         this._intervalId = intervalUtils.setAsyncExcludingInterval(
             this._pollForMempoolEventsAsync.bind(this, numConfirmations), this._pollingIntervalMs,
         );
     }
     public unsubscribe(): void {
-        delete this._callbackAsync;
+        delete this._callbackIfExistsAsync;
         this._lastEvents = [];
         intervalUtils.clearAsyncExcludingInterval(this._intervalId);
     }
@@ -70,8 +70,8 @@ export class EventWatcher {
                 removed: isRemoved,
                 ...log,
             };
-            if (!_.isUndefined(this._callbackAsync)) {
-                await this._callbackAsync(logEvent);
+            if (!_.isUndefined(this._callbackIfExistsAsync)) {
+                await this._callbackIfExistsAsync(logEvent);
             }
         }
     }

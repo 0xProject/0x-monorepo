@@ -36,7 +36,7 @@ export class OrderStateWatcher {
     private _orders: OrderByOrderHash;
     private _dependentOrderHashes: DependentOrderHashes;
     private _web3Wrapper: Web3Wrapper;
-    private _callbackAsync?: OnOrderStateChangeCallback;
+    private _callbackIfExistsAsync?: OnOrderStateChangeCallback;
     private _eventWatcher: EventWatcher;
     private _abiDecoder: AbiDecoder;
     private _orderStateUtils: OrderStateUtils;
@@ -89,10 +89,10 @@ export class OrderStateWatcher {
      */
     public subscribe(callback: OnOrderStateChangeCallback, numConfirmations: number): void {
         assert.isFunction('callback', callback);
-        if (!_.isUndefined(this._callbackAsync)) {
+        if (!_.isUndefined(this._callbackIfExistsAsync)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
-        this._callbackAsync = callback;
+        this._callbackIfExistsAsync = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this), numConfirmations);
     }
     /**
@@ -100,7 +100,7 @@ export class OrderStateWatcher {
      * @param   signedOrder     The order you wish to stop watching.
      */
     public unsubscribe(): void {
-        delete this._callbackAsync;
+        delete this._callbackIfExistsAsync;
         this._eventWatcher.unsubscribe();
     }
     private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {
@@ -158,8 +158,8 @@ export class OrderStateWatcher {
         for (const orderHash of orderHashes) {
             const signedOrder = this._orders[orderHash] as SignedOrder;
             const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder, methodOpts);
-            if (!_.isUndefined(this._callbackAsync)) {
-                await this._callbackAsync(orderState);
+            if (!_.isUndefined(this._callbackIfExistsAsync)) {
+                await this._callbackIfExistsAsync(orderState);
             } else {
                 break; // Unsubscribe was called
             }
