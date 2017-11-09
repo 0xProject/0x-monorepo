@@ -42,7 +42,8 @@ export class OrderStateWatcher {
     private _orderStateUtils: OrderStateUtils;
     constructor(
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, orderStateUtils: OrderStateUtils,
-        config?: OrderStateWatcherConfig) {
+        config?: OrderStateWatcherConfig,
+    ) {
         this._web3Wrapper = web3Wrapper;
         this._orders = {};
         this._dependentOrderHashes = {};
