@@ -58,9 +58,6 @@ export class OrderStateWatcher {
     }
     public removeOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress])) {
-            return; // noop if user tries to remove order that wasn't added
-        }
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         delete this._orders[orderHash];
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].delete(orderHash);
