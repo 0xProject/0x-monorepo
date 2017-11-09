@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {Web3Wrapper} from '../src/web3_wrapper';
-import {EventWatcher} from '../src/mempool/event_watcher';
+import {EventWatcher} from '../src/order_watcher/event_watcher';
 import {
     ZeroEx,
     LogEvent,
@@ -56,9 +56,9 @@ describe('EventWatcher', () => {
     };
     before(async () => {
         web3 = web3Factory.create();
-        const mempoolPollingIntervalMs = 10;
+        const pollingIntervalMs = 10;
         web3Wrapper = new Web3Wrapper(web3.currentProvider);
-        eventWatcher = new EventWatcher(web3Wrapper, mempoolPollingIntervalMs);
+        eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalMs);
     });
     afterEach(() => {
         // clean up any stubs after the test has completed

@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 import { chaiSetup } from './utils/chai_setup';
 import { web3Factory } from './utils/web3_factory';
 import { Web3Wrapper } from '../src/web3_wrapper';
-import { OrderStateWatcher } from '../src/mempool/order_state_watcher';
+import { OrderStateWatcher } from '../src/order_watcher/order_state_watcher';
 import {
     Token,
     ZeroEx,

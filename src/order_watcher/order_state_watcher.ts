@@ -15,6 +15,7 @@ import {
     BlockParamLiteral,
     LogWithDecodedArgs,
     OnOrderStateChangeCallback,
+    OrderStateWatcherConfig,
     ExchangeEvents,
     TokenEvents,
     ZeroExError,
@@ -41,10 +42,11 @@ export class OrderStateWatcher {
     private _orderStateUtils: OrderStateUtils;
     constructor(
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, orderStateUtils: OrderStateUtils,
-        eventPollingIntervalMs?: number) {
+        config?: OrderStateWatcherConfig) {
         this._web3Wrapper = web3Wrapper;
         this._orders = {};
         this._dependentOrderHashes = {};
+        const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.pollingIntervalMs;
         this._eventWatcher = new EventWatcher(
             this._web3Wrapper, eventPollingIntervalMs,
         );
