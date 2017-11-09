@@ -22,6 +22,8 @@ import {
 } from '../types';
 import {Web3Wrapper} from '../web3_wrapper';
 
+const DEFAULT_NUM_CONFIRMATIONS = 0;
+
 interface DependentOrderHashes {
     [makerAddress: string]: {
         [makerToken: string]: Set<string>,
@@ -40,6 +42,7 @@ export class OrderStateWatcher {
     private _eventWatcher: EventWatcher;
     private _abiDecoder: AbiDecoder;
     private _orderStateUtils: OrderStateUtils;
+    private _numConfirmations: number;
     constructor(
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, orderStateUtils: OrderStateUtils,
         config?: OrderStateWatcherConfig,
@@ -48,8 +51,11 @@ export class OrderStateWatcher {
         this._orders = {};
         this._dependentOrderHashes = {};
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.pollingIntervalMs;
+        this._numConfirmations = _.isUndefined(config) ?
+                                    DEFAULT_NUM_CONFIRMATIONS
+                                    : config.numConfirmations;
         this._eventWatcher = new EventWatcher(
-            this._web3Wrapper, eventPollingIntervalMs,
+            this._web3Wrapper, eventPollingIntervalMs, this._numConfirmations,
         );
         this._abiDecoder = abiDecoder;
         this._orderStateUtils = orderStateUtils;
@@ -88,13 +94,13 @@ export class OrderStateWatcher {
      *                              is 0 will watch the backing node's mempool, 3 will emit events when blockchain
      *                              state relevant to a watched order changed 3 blocks ago.
      */
-    public subscribe(callback: OnOrderStateChangeCallback, numConfirmations: number): void {
+    public subscribe(callback: OnOrderStateChangeCallback): void {
         assert.isFunction('callback', callback);
         if (!_.isUndefined(this._callbackIfExistsAsync)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
         this._callbackIfExistsAsync = callback;
-        this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this), numConfirmations);
+        this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
     }
     /**
      * Ends an orderStateWatcher subscription.
@@ -151,8 +157,11 @@ export class OrderStateWatcher {
         }
     }
     private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
+        const defaultBlock = this._numConfirmations === 0 ?
+                                BlockParamLiteral.Pending :
+                                this._numConfirmations;
         const methodOpts = {
-            defaultBlock: BlockParamLiteral.Pending,
+            defaultBlock,
         };
 
         for (const orderHash of orderHashes) {

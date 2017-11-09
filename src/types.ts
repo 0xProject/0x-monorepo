@@ -400,6 +400,7 @@ export interface JSONRPCPayload {
  */
 export interface OrderStateWatcherConfig {
     pollingIntervalMs?: number;
+    numConfirmations: number;
 }
 
 /*

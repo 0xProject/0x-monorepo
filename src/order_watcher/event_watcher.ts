@@ -13,16 +13,18 @@ export class EventWatcher {
     private _intervalId: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
     private _callbackIfExistsAsync?: EventWatcherCallback;
-    constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number) {
+    private _numConfirmations: number;
+    constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number, numConfirmations: number) {
         this._web3Wrapper = web3Wrapper;
+        this._numConfirmations = numConfirmations;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
                                   DEFAULT_EVENT_POLLING_INTERVAL :
                                   pollingIntervalMs;
     }
-    public subscribe(callback: EventWatcherCallback, numConfirmations: number): void {
+    public subscribe(callback: EventWatcherCallback): void {
         this._callbackIfExistsAsync = callback;
         this._intervalId = intervalUtils.setAsyncExcludingInterval(
-            this._pollForMempoolEventsAsync.bind(this, numConfirmations), this._pollingIntervalMs,
+            this._pollForMempoolEventsAsync.bind(this), this._pollingIntervalMs,
         );
     }
     public unsubscribe(): void {
@@ -30,8 +32,8 @@ export class EventWatcher {
         this._lastEvents = [];
         intervalUtils.clearAsyncExcludingInterval(this._intervalId);
     }
-    private async _pollForMempoolEventsAsync(numConfirmations: number): Promise<void> {
-        const pendingEvents = await this._getEventsAsync(numConfirmations);
+    private async _pollForMempoolEventsAsync(): Promise<void> {
+        const pendingEvents = await this._getEventsAsync();
         if (pendingEvents.length === 0) {
             // HACK: Sometimes when node rebuilds the pending block we get back the empty result.
             // We don't want to emit a lot of removal events and bring them back after a couple of miliseconds,
@@ -46,16 +48,16 @@ export class EventWatcher {
         await this._emitDifferencesAsync(newEvents, isRemoved);
         this._lastEvents = pendingEvents;
     }
-    private async _getEventsAsync(numConfirmations: number): Promise<Web3.LogEntry[]> {
+    private async _getEventsAsync(): Promise<Web3.LogEntry[]> {
         let fromBlock: BlockParamLiteral|number;
         let toBlock: BlockParamLiteral|number;
-        if (numConfirmations === 0) {
+        if (this._numConfirmations === 0) {
             fromBlock = BlockParamLiteral.Pending;
-            toBlock = BlockParamLiteral.Pending;
+            toBlock = fromBlock;
         } else {
             const currentBlock = await this._web3Wrapper.getBlockNumberAsync();
-            toBlock = currentBlock - numConfirmations;
-            fromBlock = currentBlock - numConfirmations;
+            toBlock = currentBlock - this._numConfirmations;
+            fromBlock = toBlock;
         }
         const eventFilter = {
             fromBlock,

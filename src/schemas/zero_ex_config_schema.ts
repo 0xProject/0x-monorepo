@@ -12,6 +12,10 @@ export const zeroExConfigSchema = {
                     type: 'number',
                     minimum: 0,
                 },
+                numConfirmations: {
+                    type: 'number',
+                    minimum: 0,
+                },
             },
         },
     },
