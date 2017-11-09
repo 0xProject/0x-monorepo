@@ -84,6 +84,20 @@ describe('OrderStateWatcher', () => {
             zeroEx.orderStateWatcher.removeOrder(nonExistentOrderHash);
         });
     });
+    describe('#subscribe', async () => {
+        afterEach(async () => {
+            zeroEx.orderStateWatcher.unsubscribe();
+        });
+        it('should fail when trying to subscribe twice', (done: DoneCallback) => {
+            zeroEx.orderStateWatcher.subscribe(_.noop);
+            try {
+                zeroEx.orderStateWatcher.subscribe(_.noop);
+                done(new Error('Expected the second subscription to fail'));
+            } catch (err) {
+                done();
+            }
+        });
+    });
     describe('tests with cleanup', async () => {
         afterEach(async () => {
             zeroEx.orderStateWatcher.unsubscribe();
