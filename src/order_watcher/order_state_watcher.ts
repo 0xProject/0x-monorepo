@@ -73,15 +73,15 @@ export class OrderStateWatcher {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const signedOrder = this._orders[orderHash];
         if (_.isUndefined(signedOrder)) {
-            return;
+            return; // noop
         }
         delete this._orders[orderHash];
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].delete(orderHash);
         // We currently do not remove the maker/makerToken keys from the mapping when all orderHashes removed
     }
     /**
-     * Starts an orderStateWatcher subscription. The callback will be notified every time a watched order's
-     * backing blockchain state has changed. This is a call-to-action for the caller to re-validate the order
+     * Starts an orderStateWatcher subscription. The callback will be called every time a watched order's
+     * backing blockchain state has changed. This is a call-to-action for the caller to re-validate the order.
      * @param   callback            Receives the orderHash of the order that should be re-validated, together.
      *                              with all the order-relevant blockchain state needed to re-validate the order
      * @param   numConfirmations    Number of confirmed blocks deeps you want to run the orderWatcher from. Passing
