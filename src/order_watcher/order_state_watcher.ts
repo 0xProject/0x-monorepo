@@ -151,7 +151,6 @@ export class OrderStateWatcher {
         }
     }
     private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
-        // TODO: Make defaultBlock a passed in option
         const methodOpts = {
             defaultBlock: BlockParamLiteral.Pending,
         };

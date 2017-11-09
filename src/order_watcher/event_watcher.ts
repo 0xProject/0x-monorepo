@@ -63,7 +63,6 @@ export class EventWatcher {
         const events = await this._web3Wrapper.getLogsAsync(eventFilter);
         return events;
     }
-    // TODO: Let's emit out own LogEntry type that has property isRemoved rather then removed
     private async _emitDifferencesAsync(logs: Web3.LogEntry[], isRemoved: boolean): Promise<void> {
         for (const log of logs) {
             const logEvent = {
