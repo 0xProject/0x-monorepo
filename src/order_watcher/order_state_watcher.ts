@@ -60,6 +60,7 @@ export class OrderStateWatcher {
     public addOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+        assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
         this._orders[orderHash] = signedOrder;
         this.addToDependentOrderHashes(signedOrder, orderHash);
     }
