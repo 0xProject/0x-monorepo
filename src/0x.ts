@@ -68,7 +68,8 @@ export class ZeroEx {
      */
     public proxy: TokenTransferProxyWrapper;
     /**
-     * An instance of the OrderStateWatcher class containing methods for watching the order state changes.
+     * An instance of the OrderStateWatcher class containing methods for watching a set of orders for relevant
+     * blockchain state changes.
      */
     public orderStateWatcher: OrderStateWatcher;
     private _web3Wrapper: Web3Wrapper;
