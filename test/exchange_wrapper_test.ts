@@ -11,7 +11,6 @@ import {
     SignedOrder,
     SubscriptionOpts,
     ExchangeEvents,
-    ContractEvent,
     ExchangeContractErrs,
     OrderCancellationRequest,
     OrderFillRequest,
