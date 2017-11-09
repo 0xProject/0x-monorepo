@@ -11,6 +11,12 @@ export const assert = {
         const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
         this.assert(isBigNumber, this.typeAssertionMessage(variableName, 'BigNumber', value));
     },
+    isValidBaseUnitAmount(variableName: string, value: BigNumber) {
+        const hasDecimals = value.decimalPlaces() !== 0;
+        this.assert(
+            !hasDecimals, `${variableName} should be in baseUnits (no decimals), found value: ${value.toNumber()}`,
+        );
+    },
     isUndefined(value: any, variableName?: string): void {
         this.assert(_.isUndefined(value), this.typeAssertionMessage(variableName, 'undefined', value));
     },

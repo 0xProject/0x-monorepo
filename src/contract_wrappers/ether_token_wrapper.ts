@@ -30,6 +30,7 @@ export class EtherTokenWrapper extends ContractWrapper {
      */
     public async depositAsync(amountInWei: BigNumber, depositor: string): Promise<string> {
         assert.isBigNumber('amountInWei', amountInWei);
+        assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
 
         const ethBalanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(depositor);
@@ -51,6 +52,7 @@ export class EtherTokenWrapper extends ContractWrapper {
      */
     public async withdrawAsync(amountInWei: BigNumber, withdrawer: string): Promise<string> {
         assert.isBigNumber('amountInWei', amountInWei);
+        assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
 
         const wethContractAddress = await this.getContractAddressAsync();

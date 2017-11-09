@@ -167,6 +167,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                 orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
@@ -240,6 +241,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
                                        ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
@@ -409,6 +411,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                       orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -544,6 +547,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                   orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', cancelTakerTokenAmount);
+        assert.isValidBaseUnitAmount('takerTokenCancelAmount', cancelTakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -739,6 +743,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                                       takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
@@ -755,6 +760,7 @@ export class ExchangeWrapper extends ContractWrapper {
         order: Order, cancelTakerTokenAmount: BigNumber): Promise<void> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isBigNumber('cancelTakerTokenAmount', cancelTakerTokenAmount);
+        assert.isValidBaseUnitAmount('cancelTakerTokenAmount', cancelTakerTokenAmount);
         const orderHash = utils.getOrderHashHex(order);
         const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
         await this._orderValidationUtils.validateCancelOrderThrowIfInvalidAsync(
@@ -773,6 +779,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                                             takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = await this.getZRXTokenAddressAsync();
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
@@ -792,8 +799,11 @@ export class ExchangeWrapper extends ContractWrapper {
                                       takerTokenAmount: BigNumber,
                                       makerTokenAmount: BigNumber): Promise<boolean> {
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
+        assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBigNumber('takerTokenAmount', takerTokenAmount);
+        assert.isValidBaseUnitAmount('takerTokenAmount', takerTokenAmount);
         assert.isBigNumber('makerTokenAmount', makerTokenAmount);
+        assert.isValidBaseUnitAmount('makerTokenAmount', makerTokenAmount);
         const exchangeInstance = await this._getExchangeContractAsync();
         const isRoundingError = await exchangeInstance.isRoundingError.callAsync(
             fillTakerTokenAmount, takerTokenAmount, makerTokenAmount,
