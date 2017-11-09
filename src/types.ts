@@ -16,6 +16,7 @@ export enum ZeroExError {
     OutOfGas = 'OUT_OF_GAS',
     NoNetworkId = 'NO_NETWORK_ID',
     SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+    SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
 }
 
 export enum InternalZeroExError {

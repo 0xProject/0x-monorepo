@@ -17,6 +17,7 @@ import {
     OnOrderStateChangeCallback,
     ExchangeEvents,
     TokenEvents,
+    ZeroExError,
 } from '../types';
 import {Web3Wrapper} from '../web3_wrapper';
 
@@ -85,6 +86,9 @@ export class OrderStateWatcher {
      */
     public subscribe(callback: OnOrderStateChangeCallback, numConfirmations: number): void {
         assert.isFunction('callback', callback);
+        if (!_.isUndefined(this._callbackAsync)) {
+            throw new Error(ZeroExError.SubscriptionAlreadyPresent);
+        }
         this._callbackAsync = callback;
         this._eventWatcher.subscribe(this._onMempoolEventCallbackAsync.bind(this), numConfirmations);
     }

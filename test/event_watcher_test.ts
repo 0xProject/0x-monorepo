@@ -23,6 +23,7 @@ describe('EventWatcher', () => {
     let stubs: Sinon.SinonStub[] = [];
     let eventWatcher: EventWatcher;
     let web3Wrapper: Web3Wrapper;
+    const numConfirmations = 0;
     const logA = {
         address: '0x71d271f8b14adef568f8f28f1587ce7271ac4ca5',
         blockHash: null,
@@ -87,7 +88,7 @@ describe('EventWatcher', () => {
                 done();
             }
         };
-        eventWatcher.subscribe(callback);
+        eventWatcher.subscribe(callback, numConfirmations);
     });
     it('correctly computes the difference and emits only changes', (done: DoneCallback) => {
         const initialLogs: Web3.LogEntry[] = [logA, logB];
@@ -121,6 +122,6 @@ describe('EventWatcher', () => {
                 done();
             }
         };
-        eventWatcher.subscribe(callback);
+        eventWatcher.subscribe(callback, numConfirmations);
     });
 });
