@@ -396,7 +396,7 @@ export interface JSONRPCPayload {
 }
 
 /*
- * pollingIntervalMs: How often to check for new mempool events
+ * pollingIntervalMs: How often to poll the Ethereum node for new events
  */
 export interface OrderStateWatcherConfig {
     pollingIntervalMs?: number;
