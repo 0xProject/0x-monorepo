@@ -50,12 +50,20 @@ export class OrderStateWatcher {
         this._abiDecoder = abiDecoder;
         this._orderStateUtils = orderStateUtils;
     }
+    /**
+     * Add an order to the orderStateWatcher
+     * @param   signedOrder     The order you wish to start watching.
+     */
     public addOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         this._orders[orderHash] = signedOrder;
         this.addToDependentOrderHashes(signedOrder, orderHash);
     }
+    /**
+     * Removes an order from the orderStateWatcher
+     * @param   signedOrder     The order you wish to stop watching.
+     */
     public removeOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
@@ -63,12 +71,24 @@ export class OrderStateWatcher {
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].delete(orderHash);
         // We currently do not remove the maker/makerToken keys from the mapping when all orderHashes removed
     }
-    public subscribe(callback: OnOrderStateChangeCallback): void {
+    /**
+     * Starts an orderStateWatcher subscription. The callback will be notified every time a watched order's
+     * backing blockchain state has changed. This is a call-to-action for the caller to re-validate the order
+     * @param   callback            Receives the orderHash of the order that should be re-validated, together.
+     *                              with all the order-relevant blockchain state needed to re-validate the order
+     * @param   numConfirmations    Number of confirmed blocks deeps you want to run the orderWatcher from. Passing
+     *                              is 0 will watch the backing node's mempool, 3 will emit events when blockchain
+     *                              state relevant to a watched order changed 3 blocks ago.
+     */
     public subscribe(callback: OnOrderStateChangeCallback, numConfirmations: number): void {
         assert.isFunction('callback', callback);
         this._callbackAsync = callback;
         this._eventWatcher.subscribe(this._onMempoolEventCallbackAsync.bind(this), numConfirmations);
     }
+    /**
+     * Ends an orderStateWatcher subscription.
+     * @param   signedOrder     The order you wish to stop watching.
+     */
     public unsubscribe(): void {
         delete this._callbackAsync;
         this._eventWatcher.unsubscribe();
