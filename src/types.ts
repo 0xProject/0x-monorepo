@@ -45,9 +45,9 @@ export type EventCallbackAsync<ArgsType> = (log: DecodedLogEvent<ArgsType>) => P
 export type EventCallbackSync<ArgsType> = (log: DecodedLogEvent<ArgsType>) => void;
 export type EventCallback<ArgsType> = EventCallbackSync<ArgsType>|EventCallbackAsync<ArgsType>;
 
-export type MempoolEventCallbackSync = (log: LogEvent) => void;
-export type MempoolEventCallbackAsync = (log: LogEvent) => Promise<void>;
-export type MempoolEventCallback = MempoolEventCallbackSync|MempoolEventCallbackAsync;
+export type EventWatcherCallbackSync = (log: LogEvent) => void;
+export type EventWatcherCallbackAsync = (log: LogEvent) => Promise<void>;
+export type EventWatcherCallback = EventWatcherCallbackSync|EventWatcherCallbackAsync;
 
 export interface ExchangeContract extends Web3.ContractInstance {
     isValidSignature: {

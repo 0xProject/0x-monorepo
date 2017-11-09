@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
-import {BlockParamLiteral, EventCallback, MempoolEventCallback} from '../types';
+import {BlockParamLiteral, EventCallback, EventWatcherCallback} from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {intervalUtils} from '../utils/interval_utils';
 
@@ -12,14 +12,14 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalId: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
-    private _callbackAsync?: MempoolEventCallback;
+    private _callbackAsync?: EventWatcherCallback;
     constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number) {
         this._web3Wrapper = web3Wrapper;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
                                   DEFAULT_EVENT_POLLING_INTERVAL :
                                   pollingIntervalMs;
     }
-    public subscribe(callback: MempoolEventCallback, numConfirmations: number): void {
+    public subscribe(callback: EventWatcherCallback, numConfirmations: number): void {
         this._callbackAsync = callback;
         this._intervalId = intervalUtils.setAsyncExcludingInterval(
             this._pollForMempoolEventsAsync.bind(this, numConfirmations), this._pollingIntervalMs,

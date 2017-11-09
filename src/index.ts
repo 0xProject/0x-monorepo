@@ -36,7 +36,7 @@ export {
     FilterObject,
     LogEvent,
     DecodedLogEvent,
-    MempoolEventCallback,
+    EventWatcherCallback,
     OnOrderStateChangeCallback,
     OrderStateValid,
     OrderStateInvalid,

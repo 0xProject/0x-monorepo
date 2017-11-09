@@ -90,7 +90,7 @@ export class OrderStateWatcher {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
         this._callbackAsync = callback;
-        this._eventWatcher.subscribe(this._onMempoolEventCallbackAsync.bind(this), numConfirmations);
+        this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this), numConfirmations);
     }
     /**
      * Ends an orderStateWatcher subscription.
@@ -100,7 +100,7 @@ export class OrderStateWatcher {
         delete this._callbackAsync;
         this._eventWatcher.unsubscribe();
     }
-    private async _onMempoolEventCallbackAsync(log: LogEvent): Promise<void> {
+    private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {
         const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
         const isDecodedLog = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
         if (!isDecodedLog) {
