@@ -80,7 +80,6 @@ describe('OrderStateWatcher', () => {
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             const nonExistentOrderHash = `0x${orderHash.substr(2).split('').reverse().join('')}`;
-            zeroEx.orderStateWatcher.addOrder(signedOrder);
             zeroEx.orderStateWatcher.removeOrder(nonExistentOrderHash);
         });
     });
