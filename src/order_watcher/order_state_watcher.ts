@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {schemas} from '0x-json-schemas';
-import {ZeroEx} from '../';
+import {ZeroEx} from '../0x';
 import {EventWatcher} from './event_watcher';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
