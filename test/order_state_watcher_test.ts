@@ -88,9 +88,9 @@ describe('OrderStateWatcher', () => {
             zeroEx.orderStateWatcher.unsubscribe();
         });
         it('should fail when trying to subscribe twice', (done: DoneCallback) => {
-            zeroEx.orderStateWatcher.subscribe(_.noop);
+            zeroEx.orderStateWatcher.subscribe(_.noop, numConfirmations);
             try {
-                zeroEx.orderStateWatcher.subscribe(_.noop);
+                zeroEx.orderStateWatcher.subscribe(_.noop, numConfirmations);
                 done(new Error('Expected the second subscription to fail'));
             } catch (err) {
                 done();
