@@ -17,7 +17,7 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
-import {OrderStateWatcher} from './mempool/order_state_watcher';
+import {OrderStateWatcher} from './order_watcher/order_state_watcher';
 import {OrderStateUtils} from './utils/order_state_utils';
 import {
     ECSignature,

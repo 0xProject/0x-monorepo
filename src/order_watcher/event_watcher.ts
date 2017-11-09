@@ -5,18 +5,18 @@ import {BlockParamLiteral, EventCallback, MempoolEventCallback} from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {intervalUtils} from '../utils/interval_utils';
 
-const DEFAULT_MEMPOOL_POLLING_INTERVAL = 200;
+const DEFAULT_EVENT_POLLING_INTERVAL = 200;
 
 export class EventWatcher {
     private _web3Wrapper: Web3Wrapper;
     private _pollingIntervalMs: number;
     private _intervalId: NodeJS.Timer;
-    private _lastMempoolEvents: Web3.LogEntry[] = [];
+    private _lastEvents: Web3.LogEntry[] = [];
     private _callbackAsync?: MempoolEventCallback;
     constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number) {
         this._web3Wrapper = web3Wrapper;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
-                                  DEFAULT_MEMPOOL_POLLING_INTERVAL :
+                                  DEFAULT_EVENT_POLLING_INTERVAL :
                                   pollingIntervalMs;
     }
     public subscribe(callback: MempoolEventCallback, numConfirmations: number): void {
@@ -27,7 +27,7 @@ export class EventWatcher {
     }
     public unsubscribe(): void {
         delete this._callbackAsync;
-        this._lastMempoolEvents = [];
+        this._lastEvents = [];
         intervalUtils.clearAsyncExcludingInterval(this._intervalId);
     }
     private async _pollForMempoolEventsAsync(numConfirmations: number): Promise<void> {
@@ -38,13 +38,13 @@ export class EventWatcher {
             // that's why we just ignore those cases.
             return;
         }
-        const removedEvents = _.differenceBy(this._lastMempoolEvents, pendingEvents, JSON.stringify);
-        const newEvents = _.differenceBy(pendingEvents, this._lastMempoolEvents, JSON.stringify);
+        const removedEvents = _.differenceBy(this._lastEvents, pendingEvents, JSON.stringify);
+        const newEvents = _.differenceBy(pendingEvents, this._lastEvents, JSON.stringify);
         let isRemoved = true;
         await this._emitDifferencesAsync(removedEvents, isRemoved);
         isRemoved = false;
         await this._emitDifferencesAsync(newEvents, isRemoved);
-        this._lastMempoolEvents = pendingEvents;
+        this._lastEvents = pendingEvents;
     }
     private async _getMempoolEventsAsync(numConfirmations: number): Promise<Web3.LogEntry[]> {
         let fromBlock: BlockParamLiteral|number;

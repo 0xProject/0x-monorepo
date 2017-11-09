@@ -41,12 +41,12 @@ export class OrderStateWatcher {
     private _orderStateUtils: OrderStateUtils;
     constructor(
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, orderStateUtils: OrderStateUtils,
-        mempoolPollingIntervalMs?: number) {
+        eventPollingIntervalMs?: number) {
         this._web3Wrapper = web3Wrapper;
         this._orders = {};
         this._dependentOrderHashes = {};
         this._eventWatcher = new EventWatcher(
-            this._web3Wrapper, mempoolPollingIntervalMs,
+            this._web3Wrapper, eventPollingIntervalMs,
         );
         this._abiDecoder = abiDecoder;
         this._orderStateUtils = orderStateUtils;
