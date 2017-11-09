@@ -57,7 +57,7 @@ describe('OrderStateWatcher', () => {
     afterEach(async () => {
         zeroEx.orderStateWatcher.unsubscribe();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        zeroEx.orderStateWatcher.removeOrder(signedOrder);
+        zeroEx.orderStateWatcher.removeOrder(orderHash);
     });
     it('should emit orderStateInvalid when maker allowance set to 0 for watched order', (done: DoneCallback) => {
         (async () => {
