@@ -62,11 +62,14 @@ export class OrderStateWatcher {
     }
     /**
      * Removes an order from the orderStateWatcher
-     * @param   signedOrder     The order you wish to stop watching.
+     * @param   orderHash     The orderHash of the order you wish to stop watching.
      */
-    public removeOrder(signedOrder: SignedOrder): void {
-        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+    public removeOrder(orderHash: string): void {
+        assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
+        const signedOrder = this._orders[orderHash];
+        if (_.isUndefined(signedOrder)) {
+            return;
+        }
         delete this._orders[orderHash];
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].delete(orderHash);
         // We currently do not remove the maker/makerToken keys from the mapping when all orderHashes removed

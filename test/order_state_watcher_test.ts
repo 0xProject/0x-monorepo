@@ -55,108 +55,139 @@ describe('OrderStateWatcher', () => {
         [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
         web3Wrapper = (zeroEx as any)._web3Wrapper;
     });
-    afterEach(async () => {
-        zeroEx.orderStateWatcher.unsubscribe();
-        const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        zeroEx.orderStateWatcher.removeOrder(signedOrder);
-    });
-    it('should emit orderStateInvalid when maker allowance set to 0 for watched order', (done: DoneCallback) => {
-        (async () => {
+    describe('#removeOrder', async () => {
+        it('should successfully remove existing order', async () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerToken.address, takerToken.address, maker, taker, fillableAmount,
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             zeroEx.orderStateWatcher.addOrder(signedOrder);
-            const callback = (orderState: OrderState) => {
-                expect(orderState.isValid).to.be.false();
-                const invalidOrderState = orderState as OrderStateInvalid;
-                expect(invalidOrderState.orderHash).to.be.equal(orderHash);
-                expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
-                done();
-            };
-            zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
-            await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, new BigNumber(0));
-        })().catch(done);
-    });
-    it('should emit orderStateInvalid when maker moves balance backing watched order', (done: DoneCallback) => {
-        (async () => {
+            expect((zeroEx.orderStateWatcher as any)._orders).to.include({
+                [orderHash]: signedOrder,
+            });
+            let dependentOrderHashes = (zeroEx.orderStateWatcher as any)._dependentOrderHashes;
+            expect(dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress]).to.have.keys(orderHash);
+            zeroEx.orderStateWatcher.removeOrder(orderHash);
+            expect((zeroEx.orderStateWatcher as any)._orders).to.not.include({
+                [orderHash]: signedOrder,
+            });
+            dependentOrderHashes = (zeroEx.orderStateWatcher as any)._dependentOrderHashes;
+            expect(dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress]).to.not.have.keys(orderHash);
+        });
+        it('should no-op when removing a non-existing order', async () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerToken.address, takerToken.address, maker, taker, fillableAmount,
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+            const nonExistentOrderHash = `0x${orderHash.substr(2).split('').reverse().join('')}`;
             zeroEx.orderStateWatcher.addOrder(signedOrder);
-            const callback = (orderState: OrderState) => {
-                expect(orderState.isValid).to.be.false();
-                const invalidOrderState = orderState as OrderStateInvalid;
-                expect(invalidOrderState.orderHash).to.be.equal(orderHash);
-                expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
-                done();
-            };
-            zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
-            const anyRecipient = taker;
-            const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-            await zeroEx.token.transferAsync(makerToken.address, maker, anyRecipient, makerBalance);
-        })().catch(done);
+            zeroEx.orderStateWatcher.removeOrder(nonExistentOrderHash);
+        });
     });
-    it('should emit orderStateInvalid when watched order fully filled', (done: DoneCallback) => {
-        (async () => {
-            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                makerToken.address, takerToken.address, maker, taker, fillableAmount,
-            );
+    describe('tests with cleanup', async () => {
+        afterEach(async () => {
+            zeroEx.orderStateWatcher.unsubscribe();
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-            zeroEx.orderStateWatcher.addOrder(signedOrder);
-
-            let eventCount = 0;
-            const callback = (orderState: OrderState) => {
-                eventCount++;
-                expect(orderState.isValid).to.be.false();
-                const invalidOrderState = orderState as OrderStateInvalid;
-                expect(invalidOrderState.orderHash).to.be.equal(orderHash);
-                expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderRemainingFillAmountZero);
-                if (eventCount === 2) {
+            zeroEx.orderStateWatcher.removeOrder(orderHash);
+        });
+        it('should emit orderStateInvalid when maker allowance set to 0 for watched order', (done: DoneCallback) => {
+            (async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                );
+                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                zeroEx.orderStateWatcher.addOrder(signedOrder);
+                const callback = (orderState: OrderState) => {
+                    expect(orderState.isValid).to.be.false();
+                    const invalidOrderState = orderState as OrderStateInvalid;
+                    expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
                     done();
-                }
-            };
-            zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
-
-            const shouldThrowOnInsufficientBalanceOrAllowance = true;
-            await zeroEx.exchange.fillOrderAsync(
-                signedOrder, fillableAmount, shouldThrowOnInsufficientBalanceOrAllowance, taker,
-            );
-        })().catch(done);
-    });
-    it('should emit orderStateValid when watched order partially filled', (done: DoneCallback) => {
-        (async () => {
-            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                makerToken.address, takerToken.address, maker, taker, fillableAmount,
-            );
-
-            const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-            const takerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, taker);
-
-            const fillAmountInBaseUnits = new BigNumber(2);
-            const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-            zeroEx.orderStateWatcher.addOrder(signedOrder);
-
-            let eventCount = 0;
-            const callback = (orderState: OrderState) => {
-                eventCount++;
-                expect(orderState.isValid).to.be.true();
-                const validOrderState = orderState as OrderStateValid;
-                expect(validOrderState.orderHash).to.be.equal(orderHash);
-                const orderRelevantState = validOrderState.orderRelevantState;
-                const remainingMakerBalance = makerBalance.sub(fillAmountInBaseUnits);
-                expect(orderRelevantState.makerBalance).to.be.bignumber.equal(remainingMakerBalance);
-                if (eventCount === 2) {
+                };
+                zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
+                await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, new BigNumber(0));
+            })().catch(done);
+        });
+        it('should emit orderStateInvalid when maker moves balance backing watched order', (done: DoneCallback) => {
+            (async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                );
+                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                zeroEx.orderStateWatcher.addOrder(signedOrder);
+                const callback = (orderState: OrderState) => {
+                    expect(orderState.isValid).to.be.false();
+                    const invalidOrderState = orderState as OrderStateInvalid;
+                    expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
                     done();
-                }
-            };
-            zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
-            const shouldThrowOnInsufficientBalanceOrAllowance = true;
-            await zeroEx.exchange.fillOrderAsync(
-                signedOrder, fillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, taker,
-            );
-        })().catch(done);
+                };
+                zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
+                const anyRecipient = taker;
+                const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+                await zeroEx.token.transferAsync(makerToken.address, maker, anyRecipient, makerBalance);
+            })().catch(done);
+        });
+        it('should emit orderStateInvalid when watched order fully filled', (done: DoneCallback) => {
+            (async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                );
+                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                zeroEx.orderStateWatcher.addOrder(signedOrder);
+
+                let eventCount = 0;
+                const callback = (orderState: OrderState) => {
+                    eventCount++;
+                    expect(orderState.isValid).to.be.false();
+                    const invalidOrderState = orderState as OrderStateInvalid;
+                    expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderRemainingFillAmountZero);
+                    if (eventCount === 2) {
+                        done();
+                    }
+                };
+                zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
+
+                const shouldThrowOnInsufficientBalanceOrAllowance = true;
+                await zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillableAmount, shouldThrowOnInsufficientBalanceOrAllowance, taker,
+                );
+            })().catch(done);
+        });
+        it('should emit orderStateValid when watched order partially filled', (done: DoneCallback) => {
+            (async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                );
+
+                const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+                const takerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, taker);
+
+                const fillAmountInBaseUnits = new BigNumber(2);
+                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                zeroEx.orderStateWatcher.addOrder(signedOrder);
+
+                let eventCount = 0;
+                const callback = (orderState: OrderState) => {
+                    eventCount++;
+                    expect(orderState.isValid).to.be.true();
+                    const validOrderState = orderState as OrderStateValid;
+                    expect(validOrderState.orderHash).to.be.equal(orderHash);
+                    const orderRelevantState = validOrderState.orderRelevantState;
+                    const remainingMakerBalance = makerBalance.sub(fillAmountInBaseUnits);
+                    expect(orderRelevantState.makerBalance).to.be.bignumber.equal(remainingMakerBalance);
+                    if (eventCount === 2) {
+                        done();
+                    }
+                };
+                zeroEx.orderStateWatcher.subscribe(callback, numConfirmations);
+                const shouldThrowOnInsufficientBalanceOrAllowance = true;
+                await zeroEx.exchange.fillOrderAsync(
+                    signedOrder, fillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, taker,
+                );
+            })().catch(done);
+        });
     });
 });
 
