@@ -31,7 +31,7 @@ export class EventWatcher {
         intervalUtils.clearAsyncExcludingInterval(this._intervalId);
     }
     private async _pollForMempoolEventsAsync(numConfirmations: number): Promise<void> {
-        const pendingEvents = await this._getMempoolEventsAsync(numConfirmations);
+        const pendingEvents = await this._getEventsAsync(numConfirmations);
         if (pendingEvents.length === 0) {
             // HACK: Sometimes when node rebuilds the pending block we get back the empty result.
             // We don't want to emit a lot of removal events and bring them back after a couple of miliseconds,
@@ -46,7 +46,7 @@ export class EventWatcher {
         await this._emitDifferencesAsync(newEvents, isRemoved);
         this._lastEvents = pendingEvents;
     }
-    private async _getMempoolEventsAsync(numConfirmations: number): Promise<Web3.LogEntry[]> {
+    private async _getEventsAsync(numConfirmations: number): Promise<Web3.LogEntry[]> {
         let fromBlock: BlockParamLiteral|number;
         let toBlock: BlockParamLiteral|number;
         if (numConfirmations === 0) {
@@ -56,12 +56,12 @@ export class EventWatcher {
             toBlock = await this._web3Wrapper.getBlockNumberAsync();
             fromBlock = toBlock - numConfirmations;
         }
-        const mempoolFilter = {
+        const eventFilter = {
             fromBlock,
             toBlock,
         };
-        const pendingEvents = await this._web3Wrapper.getLogsAsync(mempoolFilter);
-        return pendingEvents;
+        const events = await this._web3Wrapper.getLogsAsync(eventFilter);
+        return events;
     }
     // TODO: Let's emit out own LogEntry type that has property isRemoved rather then removed
     private async _emitDifferencesAsync(logs: Web3.LogEntry[], isRemoved: boolean): Promise<void> {
