@@ -35,6 +35,9 @@ export class OrderFilledCancelledLazyStore {
     public setFilledTakerAmount(orderHash: string, filledTakerAmount: BigNumber): void {
         this.filledTakerAmount[orderHash] = filledTakerAmount;
     }
+    public deleteFilledTakerAmount(orderHash: string): void {
+        delete this.filledTakerAmount[orderHash];
+    }
     public async getCancelledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         if (_.isUndefined(this.cancelledTakerAmount[orderHash])) {
             const methodOpts = {
@@ -48,5 +51,8 @@ export class OrderFilledCancelledLazyStore {
     }
     public setCancelledTakerAmount(orderHash: string, cancelledTakerAmount: BigNumber): void {
         this.cancelledTakerAmount[orderHash] = cancelledTakerAmount;
+    }
+    public deleteCancelledTakerAmount(orderHash: string): void {
+        delete this.cancelledTakerAmount[orderHash];
     }
 }
