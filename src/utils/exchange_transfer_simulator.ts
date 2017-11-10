@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
 import {ExchangeContractErrs, TradeSide, TransferType} from '../types';
-import {TokenWrapper} from '../contract_wrappers/token_wrapper';
+import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
 
 enum FailureReason {
     Balance = 'balance',
@@ -31,57 +31,6 @@ const ERR_MSG_MAPPING = {
     },
 };
 
-/**
- * Copy on read store for balances/proxyAllowances of tokens/accounts touched in trades
- */
-export class BalanceAndProxyAllowanceLazyStore {
-    protected _token: TokenWrapper;
-    private _balance: {
-        [tokenAddress: string]: {
-            [userAddress: string]: BigNumber,
-        },
-    };
-    private _proxyAllowance: {
-        [tokenAddress: string]: {
-            [userAddress: string]: BigNumber,
-        },
-    };
-    constructor(token: TokenWrapper) {
-        this._token = token;
-        this._balance = {};
-        this._proxyAllowance = {};
-    }
-    protected async getBalanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
-        if (_.isUndefined(this._balance[tokenAddress]) || _.isUndefined(this._balance[tokenAddress][userAddress])) {
-            const balance = await this._token.getBalanceAsync(tokenAddress, userAddress);
-            this.setBalance(tokenAddress, userAddress, balance);
-        }
-        const cachedBalance = this._balance[tokenAddress][userAddress];
-        return cachedBalance;
-    }
-    protected setBalance(tokenAddress: string, userAddress: string, balance: BigNumber): void {
-        if (_.isUndefined(this._balance[tokenAddress])) {
-            this._balance[tokenAddress] = {};
-        }
-        this._balance[tokenAddress][userAddress] = balance;
-    }
-    protected async getProxyAllowanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
-        if (_.isUndefined(this._proxyAllowance[tokenAddress]) ||
-            _.isUndefined(this._proxyAllowance[tokenAddress][userAddress])) {
-            const proxyAllowance = await this._token.getProxyAllowanceAsync(tokenAddress, userAddress);
-            this.setProxyAllowance(tokenAddress, userAddress, proxyAllowance);
-        }
-        const cachedProxyAllowance = this._proxyAllowance[tokenAddress][userAddress];
-        return cachedProxyAllowance;
-    }
-    protected setProxyAllowance(tokenAddress: string, userAddress: string, proxyAllowance: BigNumber): void {
-        if (_.isUndefined(this._proxyAllowance[tokenAddress])) {
-            this._proxyAllowance[tokenAddress] = {};
-        }
-        this._proxyAllowance[tokenAddress][userAddress] = proxyAllowance;
-    }
-}
-
 export class ExchangeTransferSimulator extends BalanceAndProxyAllowanceLazyStore {
     /**
      * Simulates transferFrom call performed by a proxy
@@ -110,7 +59,7 @@ export class ExchangeTransferSimulator extends BalanceAndProxyAllowanceLazyStore
     private async decreaseProxyAllowanceAsync(tokenAddress: string, userAddress: string,
                                               amountInBaseUnits: BigNumber): Promise<void> {
         const proxyAllowance = await this.getProxyAllowanceAsync(tokenAddress, userAddress);
-        if (!proxyAllowance.eq(this._token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
+        if (!proxyAllowance.eq(this.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
             this.setProxyAllowance(tokenAddress, userAddress, proxyAllowance.minus(amountInBaseUnits));
         }
     }
