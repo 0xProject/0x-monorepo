@@ -23,8 +23,8 @@ export class EventWatcher {
         this._web3Wrapper = web3Wrapper;
         this._numConfirmations = numConfirmations;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
-                                  DEFAULT_EVENT_POLLING_INTERVAL :
-                                  pollingIntervalMs;
+                                    DEFAULT_EVENT_POLLING_INTERVAL :
+                                    pollingIntervalMs;
     }
     public subscribe(callback: EventWatcherCallback): void {
         assert.isFunction('callback', callback);
