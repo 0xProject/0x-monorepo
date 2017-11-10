@@ -400,12 +400,14 @@ export interface JSONRPCPayload {
 }
 
 /*
- * pollingIntervalMs: How often to poll the Ethereum node for new events.
+ * eventPollingIntervalMs: How often to poll the Ethereum node for new events
+ * blockPollingIntervalMs: How often to poll the Ethereum node for new blocks
  * numConfirmations: How many confirmed blocks deep you wish to listen for events at.
  */
 export interface OrderStateWatcherConfig {
-    pollingIntervalMs?: number;
-    numConfirmations: number;
+    eventPollingIntervalMs?: number;
+    blockPollingIntervalMs?: number;
+    numConfirmations?: number;
 }
 
 /*
