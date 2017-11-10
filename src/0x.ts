@@ -294,9 +294,19 @@ export class ZeroEx {
      */
     public async awaitTransactionMinedAsync(
         txHash: string, pollingIntervalMs = 1000, timeoutMs?: number): Promise<TransactionReceiptWithDecodedLogs> {
+        let timeoutExceeded = false;
+        if (timeoutMs) {
+            setTimeout(() => timeoutExceeded = true, timeoutMs);
+        }
+
         const txReceiptPromise = new Promise(
             (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
             const intervalId = intervalUtils.setAsyncExcludingInterval(async () => {
+                if (timeoutExceeded) {
+                    clearInterval(intervalId);
+                    return reject(ZeroExError.TransactionMiningTimeout);
+                }
+
                 const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
                 if (!_.isNull(transactionReceipt)) {
                     intervalUtils.clearAsyncExcludingInterval(intervalId);
@@ -312,15 +322,6 @@ export class ZeroEx {
                 }
             }, pollingIntervalMs);
         });
-
-        if (timeoutMs) {
-            return Promise.race([
-                txReceiptPromise,
-                new Promise<TransactionReceiptWithDecodedLogs>((resolve, reject) => {
-                    setTimeout(() => reject(ZeroExError.TransactionMiningTimeout), timeoutMs);
-                })
-            ]);
-        }
 
         return txReceiptPromise;
     }
