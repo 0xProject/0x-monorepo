@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {ExchangeContractErrs, TradeSide, TransferType} from '../types';
+import {ExchangeContractErrs, TradeSide, TransferType, BlockParamLiteral} from '../types';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
 
@@ -36,7 +36,7 @@ export class ExchangeTransferSimulator {
     private store: BalanceAndProxyAllowanceLazyStore;
     private UNLIMITED_ALLOWANCE_IN_BASE_UNITS: BigNumber;
     constructor(token: TokenWrapper) {
-        this.store = new BalanceAndProxyAllowanceLazyStore(token);
+        this.store = new BalanceAndProxyAllowanceLazyStore(token, BlockParamLiteral.Latest);
         this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS = token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     }
     /**
