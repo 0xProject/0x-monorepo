@@ -10,7 +10,7 @@ const DEFAULT_EVENT_POLLING_INTERVAL = 200;
 export class EventWatcher {
     private _web3Wrapper: Web3Wrapper;
     private _pollingIntervalMs: number;
-    private _intervalId: NodeJS.Timer;
+    private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
     private _callbackIfExistsAsync?: EventWatcherCallback;
     private _numConfirmations: number;
@@ -23,14 +23,16 @@ export class EventWatcher {
     }
     public subscribe(callback: EventWatcherCallback): void {
         this._callbackIfExistsAsync = callback;
-        this._intervalId = intervalUtils.setAsyncExcludingInterval(
+        this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             this._pollForMempoolEventsAsync.bind(this), this._pollingIntervalMs,
         );
     }
     public unsubscribe(): void {
         delete this._callbackIfExistsAsync;
         this._lastEvents = [];
-        intervalUtils.clearAsyncExcludingInterval(this._intervalId);
+        if (!_.isUndefined(this._intervalIdIfExists)) {
+            intervalUtils.clearAsyncExcludingInterval(this._intervalIdIfExists);
+        }
     }
     private async _pollForMempoolEventsAsync(): Promise<void> {
         const pendingEvents = await this._getEventsAsync();
