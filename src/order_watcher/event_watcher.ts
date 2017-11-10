@@ -26,7 +26,7 @@ export class EventWatcher {
         assert.isFunction('callback', callback);
         this._callbackIfExistsAsync = callback;
         this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this._pollForMempoolEventsAsync.bind(this), this._pollingIntervalMs,
+            this._pollForBlockchainEventsAsync.bind(this), this._pollingIntervalMs,
         );
     }
     public unsubscribe(): void {
@@ -36,7 +36,7 @@ export class EventWatcher {
             intervalUtils.clearAsyncExcludingInterval(this._intervalIdIfExists);
         }
     }
-    private async _pollForMempoolEventsAsync(): Promise<void> {
+    private async _pollForBlockchainEventsAsync(): Promise<void> {
         const pendingEvents = await this._getEventsAsync();
         if (pendingEvents.length === 0) {
             // HACK: Sometimes when node rebuilds the pending block we get back the empty result.
