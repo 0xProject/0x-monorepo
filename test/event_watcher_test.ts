@@ -58,7 +58,7 @@ describe('EventWatcher', () => {
         web3 = web3Factory.create();
         const pollingIntervalMs = 10;
         web3Wrapper = new Web3Wrapper(web3.currentProvider);
-        eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalMs);
+        eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalMs, numConfirmations);
     });
     afterEach(() => {
         // clean up any stubs after the test has completed
@@ -88,7 +88,7 @@ describe('EventWatcher', () => {
                 done();
             }
         };
-        eventWatcher.subscribe(callback, numConfirmations);
+        eventWatcher.subscribe(callback);
     });
     it('correctly computes the difference and emits only changes', (done: DoneCallback) => {
         const initialLogs: Web3.LogEntry[] = [logA, logB];
@@ -122,6 +122,6 @@ describe('EventWatcher', () => {
                 done();
             }
         };
-        eventWatcher.subscribe(callback, numConfirmations);
+        eventWatcher.subscribe(callback);
     });
 });
