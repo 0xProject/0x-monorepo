@@ -50,11 +50,15 @@ export class OrderStateWatcher {
     private _dependentOrderHashes: DependentOrderHashes = {};
     private _callbackIfExistsAsync?: OnOrderStateChangeCallback;
     private _eventWatcher: EventWatcher;
+    private _web3Wrapper: Web3Wrapper;
+    private _token: TokenWrapper;
+    private _exchange: ExchangeWrapper;
     private _abiDecoder: AbiDecoder;
-    private _orderStateUtils: OrderStateUtils;
+    private _orderStateUtils?: OrderStateUtils;
+    private _blockStore?: BlockStore;
     private _numConfirmations: number;
-    private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
-    private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
+    private _orderFilledCancelledLazyStore?: OrderFilledCancelledLazyStore;
+    private _balanceAndProxyAllowanceLazyStore?: BalanceAndProxyAllowanceLazyStore;
     constructor(
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, token: TokenWrapper, exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
@@ -67,16 +71,8 @@ export class OrderStateWatcher {
             web3Wrapper, eventPollingIntervalMs, this._numConfirmations,
         );
         this._abiDecoder = abiDecoder;
-        const blockStore = new BlockStore(web3Wrapper);
-        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            token, blockStore, this._numConfirmations,
-        );
-        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
-            exchange, blockStore, this._numConfirmations,
-        );
-        this._orderStateUtils = new OrderStateUtils(
-            this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
-        );
+        this._token = token;
+        this._exchange = exchange;
     }
     /**
      * Add an order to the orderStateWatcher. Before the order is added, it's
@@ -109,11 +105,22 @@ export class OrderStateWatcher {
      * @param   callback            Receives the orderHash of the order that should be re-validated, together
      *                              with all the order-relevant blockchain state needed to re-validate the order.
      */
-    public subscribe(callback: OnOrderStateChangeCallback): void {
+    public async subscribeAsync(callback: OnOrderStateChangeCallback): Promise<void> {
         assert.isFunction('callback', callback);
         if (!_.isUndefined(this._callbackIfExistsAsync)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
+        this._blockStore = new BlockStore(this._web3Wrapper);
+        await this._blockStore.startAsync();
+        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+            this._token, this._blockStore, this._numConfirmations,
+        );
+        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
+            this._exchange, this._blockStore, this._numConfirmations,
+        );
+        this._orderStateUtils = new OrderStateUtils(
+            this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
+        );
         this._callbackIfExistsAsync = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
     }
@@ -121,7 +128,15 @@ export class OrderStateWatcher {
      * Ends an orderStateWatcher subscription.
      */
     public unsubscribe(): void {
+        if (_.isUndefined(this._blockStore)) {
+            throw new Error(ZeroExError.SubscriptionNotFound);
+        }
+        this._blockStore.stop();
+        delete this._blockStore;
         delete this._callbackIfExistsAsync;
+        delete this._balanceAndProxyAllowanceLazyStore;
+        delete this._orderFilledCancelledLazyStore;
+        delete this._orderStateUtils;
         this._eventWatcher.unsubscribe();
     }
     private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {
@@ -174,12 +189,14 @@ export class OrderStateWatcher {
     private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
         for (const orderHash of orderHashes) {
             const signedOrder = this._orderByOrderHash[orderHash] as SignedOrder;
-            const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
-            if (!_.isUndefined(this._callbackIfExistsAsync)) {
-                await this._callbackIfExistsAsync(orderState);
-            } else {
+            if (_.isUndefined(this._orderStateUtils)) {
                 break; // Unsubscribe was called
             }
+            const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
+            if (_.isUndefined(this._callbackIfExistsAsync)) {
+                break; // Unsubscribe was called
+            }
+            await this._callbackIfExistsAsync(orderState);
         }
     }
     private addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string) {
