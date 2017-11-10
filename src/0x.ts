@@ -303,7 +303,7 @@ export class ZeroEx {
             (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
             const intervalId = intervalUtils.setAsyncExcludingInterval(async () => {
                 if (timeoutExceeded) {
-                    clearInterval(intervalId);
+                    intervalUtils.clearAsyncExcludingInterval(intervalId);
                     return reject(ZeroExError.TransactionMiningTimeout);
                 }
 
