@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import {schemas} from '0x-json-schemas';
+import * as ethUtil from 'ethereumjs-util';
 import {ZeroEx} from '../0x';
 import {EventWatcher} from './event_watcher';
 import {assert} from '../utils/assert';
@@ -115,6 +116,9 @@ export class OrderStateWatcher {
         if (!isDecodedLog) {
             return; // noop
         }
+        const blockNumberBuff = ethUtil.toBuffer(maybeDecodedLog.blockNumber);
+        const blockNumber = ethUtil.bufferToInt(blockNumberBuff);
+
         const decodedLog = maybeDecodedLog as LogWithDecodedArgs<any>;
         let makerToken: string;
         let makerAddress: string;
@@ -126,7 +130,7 @@ export class OrderStateWatcher {
                 orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);
                 if (!_.isUndefined(orderHashesSet)) {
                     const orderHashes = Array.from(orderHashesSet);
-                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    await this._emitRevalidateOrdersAsync(orderHashes, blockNumber);
                 }
                 break;
 
@@ -136,7 +140,7 @@ export class OrderStateWatcher {
                 orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);
                 if (!_.isUndefined(orderHashesSet)) {
                     const orderHashes = Array.from(orderHashesSet);
-                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    await this._emitRevalidateOrdersAsync(orderHashes, blockNumber);
                 }
                 break;
 
@@ -145,7 +149,7 @@ export class OrderStateWatcher {
                 const orderHash = decodedLog.args.orderHash;
                 const isOrderWatched = !_.isUndefined(this._orders[orderHash]);
                 if (isOrderWatched) {
-                    await this._emitRevalidateOrdersAsync([orderHash]);
+                    await this._emitRevalidateOrdersAsync([orderHash], blockNumber);
                 }
                 break;
 
@@ -156,10 +160,10 @@ export class OrderStateWatcher {
                 throw utils.spawnSwitchErr('decodedLog.event', decodedLog.event);
         }
     }
-    private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
+    private async _emitRevalidateOrdersAsync(orderHashes: string[], blockNumber: number): Promise<void> {
         const defaultBlock = this._numConfirmations === 0 ?
                                 BlockParamLiteral.Pending :
-                                this._numConfirmations;
+                                blockNumber;
         const methodOpts = {
             defaultBlock,
         };
