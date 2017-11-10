@@ -222,7 +222,7 @@ describe('OrderStateWatcher', () => {
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
             })().catch(done);
         });
-        it('should emit orderStateValid when watched order partially filled', (done: DoneCallback) => {
+        it('should emit orderStateValid when watched order partially cancelled', (done: DoneCallback) => {
             (async () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerToken.address, takerToken.address, maker, taker, fillableAmount,
