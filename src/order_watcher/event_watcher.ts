@@ -53,19 +53,16 @@ export class EventWatcher {
         this._lastEvents = pendingEvents;
     }
     private async _getEventsAsync(): Promise<Web3.LogEntry[]> {
-        let fromBlock: BlockParamLiteral|number;
-        let toBlock: BlockParamLiteral|number;
+        let latestBlock: BlockParamLiteral|number;
         if (this._numConfirmations === 0) {
-            fromBlock = BlockParamLiteral.Pending;
-            toBlock = fromBlock;
+            latestBlock = BlockParamLiteral.Pending;
         } else {
             const currentBlock = await this._web3Wrapper.getBlockNumberAsync();
-            toBlock = currentBlock - this._numConfirmations;
-            fromBlock = toBlock;
+            latestBlock = currentBlock - this._numConfirmations;
         }
         const eventFilter = {
-            fromBlock,
-            toBlock,
+            fromBlock: latestBlock,
+            toBlock: latestBlock,
         };
         const events = await this._web3Wrapper.getLogsAsync(eventFilter);
         return events;
