@@ -201,7 +201,7 @@ describe('OrderStateWatcher', () => {
                 );
             })().catch(done);
         });
-        it('should emit orderStateValid when watched order cancelled', (done: DoneCallback) => {
+        it('should emit orderStateInvalid when watched order cancelled', (done: DoneCallback) => {
             (async () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerToken.address, takerToken.address, maker, taker, fillableAmount,
