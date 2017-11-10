@@ -50,9 +50,13 @@ export class ContractWrapper {
         this._filterCallbacks[filterToken] = callback;
         return filterToken;
     }
-    protected _unsubscribe(filterToken: string): void {
+    protected _unsubscribe(filterToken: string, err?: Error): void {
         if (_.isUndefined(this._filters[filterToken])) {
             throw new Error(ZeroExError.SubscriptionNotFound);
+        }
+        if (!_.isUndefined(err)) {
+            const callback = this._filterCallbacks[filterToken];
+            callback(err, undefined);
         }
         delete this._filters[filterToken];
         delete this._filterCallbacks[filterToken];
@@ -90,7 +94,7 @@ export class ContractWrapper {
                     ...decodedLog,
                     removed,
                 };
-                this._filterCallbacks[filterToken](logEvent);
+                this._filterCallbacks[filterToken](null, logEvent);
             }
         });
     }
@@ -122,11 +126,18 @@ export class ContractWrapper {
         delete this._blockAndLogStreamer;
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
-        // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
-        if (!_.isUndefined(this._blockAndLogStreamer)) {
-            // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-            this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
+        try {
+            const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
+            // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
+            if (!_.isUndefined(this._blockAndLogStreamer)) {
+                // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
+                this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
+            }
+        } catch (err) {
+            const filterTokens = _.keys(this._filterCallbacks);
+            _.each(filterTokens, filterToken => {
+                this._unsubscribe(filterToken, err);
+            });
         }
     }
 }

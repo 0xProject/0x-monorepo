@@ -304,11 +304,11 @@ describe('ExchangeWrapper', () => {
                     orderFillBatch = [
                         {
                             signedOrder,
-                            takerTokenFillAmount: takerTokenFillAmount,
+                            takerTokenFillAmount,
                         },
                         {
                             signedOrder: anotherSignedOrder,
-                            takerTokenFillAmount: takerTokenFillAmount,
+                            takerTokenFillAmount,
                         },
                     ];
                 });
@@ -647,7 +647,7 @@ describe('ExchangeWrapper', () => {
         // Source: https://github.com/mochajs/mocha/issues/2407
         it('Should receive the LogFill event when an order is filled', (done: DoneCallback) => {
             (async () => {
-                const callback = (logEvent: LogEvent<LogFillContractEventArgs>) => {
+                const callback = (err: Error, logEvent: LogEvent<LogFillContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
@@ -655,13 +655,14 @@ describe('ExchangeWrapper', () => {
                     ExchangeEvents.LogFill, indexFilterValues, callback,
                 );
                 await zeroEx.exchange.fillOrderAsync(
-                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
+                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance,
+                    takerAddress,
                 );
             })().catch(done);
         });
         it('Should receive the LogCancel event when an order is cancelled', (done: DoneCallback) => {
             (async () => {
-                const callback = (logEvent: LogEvent<LogCancelContractEventArgs>) => {
+                const callback = (err: Error, logEvent: LogEvent<LogCancelContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogCancel);
                     done();
                 };
@@ -673,7 +674,7 @@ describe('ExchangeWrapper', () => {
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (logEvent: LogEvent<LogFillContractEventArgs>) => {
+                const callbackNeverToBeCalled = (err: Error, logEvent: LogEvent<LogFillContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 await zeroEx.exchange.subscribeAsync(
@@ -683,7 +684,7 @@ describe('ExchangeWrapper', () => {
                 const newProvider = web3Factory.getRpcProvider();
                 await zeroEx.setProviderAsync(newProvider);
 
-                const callback = (logEvent: LogEvent<LogFillContractEventArgs>) => {
+                const callback = (err: Error, logEvent: LogEvent<LogFillContractEventArgs>) => {
                     expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
@@ -691,13 +692,14 @@ describe('ExchangeWrapper', () => {
                     ExchangeEvents.LogFill, indexFilterValues, callback,
                 );
                 await zeroEx.exchange.fillOrderAsync(
-                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
+                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance,
+                    takerAddress,
                 );
             })().catch(done);
         });
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (logEvent: LogEvent<LogFillContractEventArgs>) => {
+                const callbackNeverToBeCalled = (err: Error, logEvent: LogEvent<LogFillContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 const subscriptionToken = await zeroEx.exchange.subscribeAsync(
@@ -705,7 +707,8 @@ describe('ExchangeWrapper', () => {
                 );
                 zeroEx.exchange.unsubscribe(subscriptionToken);
                 await zeroEx.exchange.fillOrderAsync(
-                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,
+                    signedOrder, takerTokenFillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance,
+                    takerAddress,
                 );
                 done();
             })().catch(done);
