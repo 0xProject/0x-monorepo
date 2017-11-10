@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import {ExchangeContractErrs, TradeSide, TransferType, BlockParamLiteral} from '../types';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
+import {BlockStore} from '../stores/block_store';
 
 enum FailureReason {
     Balance = 'balance',
@@ -36,7 +37,9 @@ export class ExchangeTransferSimulator {
     private store: BalanceAndProxyAllowanceLazyStore;
     private UNLIMITED_ALLOWANCE_IN_BASE_UNITS: BigNumber;
     constructor(token: TokenWrapper) {
-        this.store = new BalanceAndProxyAllowanceLazyStore(token, BlockParamLiteral.Latest);
+        const blockStore = new BlockStore();
+        const latestBlockConfirmationNumber = 1;
+        this.store = new BalanceAndProxyAllowanceLazyStore(token, blockStore, latestBlockConfirmationNumber);
         this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS = token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     }
     /**
