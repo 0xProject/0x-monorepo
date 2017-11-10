@@ -4,6 +4,7 @@ import {Web3Wrapper} from '../web3_wrapper';
 import {BlockParamLiteral, EventCallback, EventWatcherCallback} from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {intervalUtils} from '../utils/interval_utils';
+import {assert} from '../utils/assert';
 
 const DEFAULT_EVENT_POLLING_INTERVAL = 200;
 
@@ -22,6 +23,7 @@ export class EventWatcher {
                                   pollingIntervalMs;
     }
     public subscribe(callback: EventWatcherCallback): void {
+        assert.isFunction('callback', callback);
         this._callbackIfExistsAsync = callback;
         this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             this._pollForMempoolEventsAsync.bind(this), this._pollingIntervalMs,
