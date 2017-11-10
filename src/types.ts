@@ -18,12 +18,14 @@ export enum ZeroExError {
     SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
     SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
     TransactionMiningTimeout = 'TRANSACTION_MINING_TIMEOUT',
+    FailedToFetchLatestBlock = 'FAILED_TO_FETCH_LATEST_BLOCK',
 }
 
 export enum InternalZeroExError {
     NoAbiDecoder = 'NO_ABI_DECODER',
     ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
     LatestBlockNumberNotSet = 'LATEST_BLOCK_NUMBER_NOT_SET',
+    Web3WrapperRequiredToStartBlockStore = 'WEB3_WRAPPER_REQUIRED_TO_START_BLOCK_STORE',
 }
 
 /**
