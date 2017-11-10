@@ -289,10 +289,11 @@ export class ZeroEx {
      * Waits for a transaction to be mined and returns the transaction receipt.
      * @param   txHash            Transaction hash
      * @param   pollingIntervalMs How often (in ms) should we check if the transaction is mined.
+     * @param   timeoutMs         How long (in ms) to poll for transaction mined until aborting.
      * @return  Transaction receipt with decoded log args.
      */
     public async awaitTransactionMinedAsync(
-        txHash: string, pollingIntervalMs: number = 1000): Promise<TransactionReceiptWithDecodedLogs> {
+        txHash: string, pollingIntervalMs = 1000, timeoutMs?: number): Promise<TransactionReceiptWithDecodedLogs> {
         const txReceiptPromise = new Promise(
             (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
             const intervalId = intervalUtils.setAsyncExcludingInterval(async () => {
@@ -311,6 +312,16 @@ export class ZeroEx {
                 }
             }, pollingIntervalMs);
         });
+
+        if (timeoutMs) {
+            return Promise.race([
+                txReceiptPromise,
+                new Promise<TransactionReceiptWithDecodedLogs>((resolve, reject) => {
+                    setTimeout(() => reject(ZeroExError.TransactionMiningTimeout), timeoutMs);
+                })
+            ]);
+        }
+
         return txReceiptPromise;
     }
     /*

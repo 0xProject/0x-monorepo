@@ -16,6 +16,7 @@ export enum ZeroExError {
     OutOfGas = 'OUT_OF_GAS',
     NoNetworkId = 'NO_NETWORK_ID',
     SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+    TransactionMiningTimeout = 'TRANSACTION_MINING_TIMEOUT',
 }
 
 export enum InternalZeroExError {
