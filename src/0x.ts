@@ -205,9 +205,8 @@ export class ZeroEx {
         const etherTokenContractAddressIfExists = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddressIfExists);
         const orderWatcherConfig = _.isUndefined(config) ? undefined : config.orderWatcherConfig;
-        const orderStateUtils = new OrderStateUtils(this.token, this.exchange);
         this.orderStateWatcher = new OrderStateWatcher(
-            this._web3Wrapper, this._abiDecoder, orderStateUtils, orderWatcherConfig,
+            this._web3Wrapper, this._abiDecoder, this.token, this.exchange, orderWatcherConfig,
         );
     }
     /**
