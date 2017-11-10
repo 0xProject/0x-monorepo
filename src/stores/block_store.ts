@@ -5,7 +5,7 @@ import {BlockParamLiteral, InternalZeroExError, ZeroExError} from '../types';
 import {Web3Wrapper} from '../web3_wrapper';
 import {intervalUtils} from '../utils/interval_utils';
 
-const POLLING_INTERVAL_MS = 500;
+const DEFAULT_BLOCK_POLLING_INTERVAL_MS = 500;
 
 /**
  * Store for a current latest block number
@@ -14,8 +14,10 @@ export class BlockStore {
     private web3Wrapper?: Web3Wrapper;
     private latestBlockNumber?: number;
     private intervalId?: NodeJS.Timer;
-    constructor(web3Wrapper?: Web3Wrapper) {
+    private blockPollingIntervalMs: number;
+    constructor(web3Wrapper?: Web3Wrapper, blockPollingIntervalMs?: number) {
         this.web3Wrapper = web3Wrapper;
+        this.blockPollingIntervalMs = blockPollingIntervalMs || DEFAULT_BLOCK_POLLING_INTERVAL_MS;
     }
     public getBlockNumberWithNConfirmations(numConfirmations: number): Web3.BlockParam {
         let blockNumber;
@@ -38,7 +40,7 @@ export class BlockStore {
     public async startAsync(): Promise<void> {
         await this.updateLatestBlockAsync();
         this.intervalId = intervalUtils.setAsyncExcludingInterval(
-            this.updateLatestBlockAsync.bind(this), POLLING_INTERVAL_MS,
+            this.updateLatestBlockAsync.bind(this), this.blockPollingIntervalMs,
         );
     }
     public stop(): void {

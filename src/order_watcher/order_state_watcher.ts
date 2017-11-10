@@ -14,8 +14,13 @@ import {
     Web3Provider,
     BlockParamLiteral,
     LogWithDecodedArgs,
+    ContractEventArgs,
     OnOrderStateChangeCallback,
     OrderStateWatcherConfig,
+    ApprovalContractEventArgs,
+    TransferContractEventArgs,
+    LogFillContractEventArgs,
+    LogCancelContractEventArgs,
     ExchangeEvents,
     TokenEvents,
     ZeroExError,
@@ -54,25 +59,46 @@ export class OrderStateWatcher {
     private _token: TokenWrapper;
     private _exchange: ExchangeWrapper;
     private _abiDecoder: AbiDecoder;
-    private _orderStateUtils?: OrderStateUtils;
-    private _blockStore?: BlockStore;
+    private _orderStateUtils: OrderStateUtils;
+    private _blockStore: BlockStore;
     private _numConfirmations: number;
-    private _orderFilledCancelledLazyStore?: OrderFilledCancelledLazyStore;
-    private _balanceAndProxyAllowanceLazyStore?: BalanceAndProxyAllowanceLazyStore;
+    private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
+    private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
     constructor(
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, token: TokenWrapper, exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
     ) {
+<<<<<<< HEAD
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.pollingIntervalMs;
         this._numConfirmations = _.isUndefined(config) ?
                                     DEFAULT_NUM_CONFIRMATIONS
                                     : config.numConfirmations;
-        this._eventWatcher = new EventWatcher(
-            web3Wrapper, eventPollingIntervalMs, this._numConfirmations,
-        );
+=======
+        this._orders = {};
         this._abiDecoder = abiDecoder;
         this._token = token;
         this._exchange = exchange;
+        this._web3Wrapper = web3Wrapper;
+        this._dependentOrderHashes = {};
+        const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
+        const blockPollingIntervalMs = _.isUndefined(config) ? undefined : config.blockPollingIntervalMs;
+        this._numConfirmations = (_.isUndefined(config) || _.isUndefined(config.numConfirmations)) ?
+                                 DEFAULT_NUM_CONFIRMATIONS :
+                                 config.numConfirmations;
+>>>>>>> Clear store cache on events
+        this._eventWatcher = new EventWatcher(
+            web3Wrapper, eventPollingIntervalMs, this._numConfirmations,
+        );
+        this._blockStore = new BlockStore(this._web3Wrapper, blockPollingIntervalMs);
+        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+            this._token, this._blockStore, this._numConfirmations,
+        );
+        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
+            this._exchange, this._blockStore, this._numConfirmations,
+        );
+        this._orderStateUtils = new OrderStateUtils(
+            this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
+        );
     }
     /**
      * Add an order to the orderStateWatcher. Before the order is added, it's
@@ -110,17 +136,7 @@ export class OrderStateWatcher {
         if (!_.isUndefined(this._callbackIfExistsAsync)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
-        this._blockStore = new BlockStore(this._web3Wrapper);
         await this._blockStore.startAsync();
-        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            this._token, this._blockStore, this._numConfirmations,
-        );
-        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
-            this._exchange, this._blockStore, this._numConfirmations,
-        );
-        this._orderStateUtils = new OrderStateUtils(
-            this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
-        );
         this._callbackIfExistsAsync = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
     }
@@ -128,15 +144,11 @@ export class OrderStateWatcher {
      * Ends an orderStateWatcher subscription.
      */
     public unsubscribe(): void {
-        if (_.isUndefined(this._blockStore)) {
+        if (_.isUndefined(this._callbackIfExistsAsync)) {
             throw new Error(ZeroExError.SubscriptionNotFound);
         }
         this._blockStore.stop();
-        delete this._blockStore;
         delete this._callbackIfExistsAsync;
-        delete this._balanceAndProxyAllowanceLazyStore;
-        delete this._orderFilledCancelledLazyStore;
-        delete this._orderStateUtils;
         this._eventWatcher.unsubscribe();
     }
     private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {
@@ -145,40 +157,69 @@ export class OrderStateWatcher {
         if (!isLogDecoded) {
             return; // noop
         }
-        const decodedLog = maybeDecodedLog as LogWithDecodedArgs<any>;
+        const decodedLog = maybeDecodedLog as LogWithDecodedArgs<ContractEventArgs>;
         let makerToken: string;
         let makerAddress: string;
         let orderHashesSet: Set<string>;
         switch (decodedLog.event) {
             case TokenEvents.Approval:
+            {
+                // Invalidate cache
+                const args = decodedLog.args as ApprovalContractEventArgs;
+                this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(decodedLog.address, args._owner);
                 makerToken = decodedLog.address;
-                makerAddress = decodedLog.args._owner;
+                makerAddress = args._owner;
                 orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);
                 if (!_.isUndefined(orderHashesSet)) {
                     const orderHashes = Array.from(orderHashesSet);
                     await this._emitRevalidateOrdersAsync(orderHashes);
                 }
                 break;
-
+            }
             case TokenEvents.Transfer:
+            {
+                // Invalidate cache
+                const args = decodedLog.args as TransferContractEventArgs;
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._from);
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._to);
+                // Revalidate orders
                 makerToken = decodedLog.address;
-                makerAddress = decodedLog.args._from;
+                makerAddress = args._from;
                 orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);
                 if (!_.isUndefined(orderHashesSet)) {
                     const orderHashes = Array.from(orderHashesSet);
                     await this._emitRevalidateOrdersAsync(orderHashes);
                 }
                 break;
-
+            }
             case ExchangeEvents.LogFill:
-            case ExchangeEvents.LogCancel:
-                const orderHash = decodedLog.args.orderHash;
-                const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
+            {
+                // Invalidate cache
+                const args = decodedLog.args as LogFillContractEventArgs;
+                this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
+                this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
+                // Revalidate orders
+                const orderHash = args.orderHash;
+                const isOrderWatched = !_.isUndefined(this._orders[orderHash]);
                 if (isOrderWatched) {
                     await this._emitRevalidateOrdersAsync([orderHash]);
                 }
                 break;
-
+            }
+            case ExchangeEvents.LogCancel:
+            {
+                // Invalidate cache
+                const args = decodedLog.args as LogCancelContractEventArgs;
+                this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
+                this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
+                // Revalidate orders
+                const orderHash = args.orderHash;
+                const isOrderWatched = !_.isUndefined(this._orders[orderHash]);
+                if (isOrderWatched) {
+                    await this._emitRevalidateOrdersAsync([orderHash]);
+                }
+                break;
+            }
             case ExchangeEvents.LogError:
                 return; // noop
 
