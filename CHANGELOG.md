@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.22.6 - _November 10, 2017_
+------------------------
+    * Add a timeout parameter to transaction awaiting (#206)
+
 v0.22.5 - _November 7, 2017_
 ------------------------
     * Re-publish v0.22.4 to fix publishing issue
