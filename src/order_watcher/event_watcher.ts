@@ -1,7 +1,12 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
-import {BlockParamLiteral, EventCallback, EventWatcherCallback} from '../types';
+import {
+    BlockParamLiteral,
+    EventCallback,
+    EventWatcherCallback,
+    ZeroExError,
+} from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {intervalUtils} from '../utils/interval_utils';
 import {assert} from '../utils/assert';
@@ -28,6 +33,9 @@ export class EventWatcher {
     }
     public subscribe(callback: EventWatcherCallback): void {
         assert.isFunction('callback', callback);
+        if (!_.isUndefined(this._callbackIfExistsAsync)) {
+            throw new Error(ZeroExError.SubscriptionAlreadyPresent);
+        }
         this._callbackIfExistsAsync = callback;
         this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             this._pollForBlockchainEventsAsync.bind(this), this._pollingIntervalMs,
