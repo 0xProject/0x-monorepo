@@ -164,16 +164,9 @@ export class OrderStateWatcher {
         }
     }
     private async _emitRevalidateOrdersAsync(orderHashes: string[], blockNumber: number): Promise<void> {
-        const defaultBlock = this._numConfirmations === 0 ?
-                                BlockParamLiteral.Pending :
-                                blockNumber;
-        const methodOpts = {
-            defaultBlock,
-        };
-
         for (const orderHash of orderHashes) {
             const signedOrder = this._orderByOrderHash[orderHash] as SignedOrder;
-            const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder, methodOpts);
+            const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
             if (!_.isUndefined(this._callbackIfExistsAsync)) {
                 await this._callbackIfExistsAsync(orderState);
             } else {
