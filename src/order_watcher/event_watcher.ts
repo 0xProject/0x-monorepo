@@ -8,6 +8,10 @@ import {assert} from '../utils/assert';
 
 const DEFAULT_EVENT_POLLING_INTERVAL = 200;
 
+/*
+ * The EventWatcher watches for blockchain events at the specified block confirmation
+ * depth.
+ */
 export class EventWatcher {
     private _web3Wrapper: Web3Wrapper;
     private _pollingIntervalMs: number;
