@@ -23,6 +23,7 @@ export enum ZeroExError {
 export enum InternalZeroExError {
     NoAbiDecoder = 'NO_ABI_DECODER',
     ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
+    LatestBlockNumberNotSet = 'LATEST_BLOCK_NUMBER_NOT_SET',
 }
 
 /**
