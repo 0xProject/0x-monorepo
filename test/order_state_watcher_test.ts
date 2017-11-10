@@ -121,6 +121,28 @@ describe('OrderStateWatcher', () => {
                 await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, new BigNumber(0));
             })().catch(done);
         });
+        it('should not emit an orderState event when irrelevant Transfer event received', (done: DoneCallback) => {
+            (async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                );
+                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                zeroEx.orderStateWatcher.addOrder(signedOrder);
+                const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                    throw new Error('OrderState callback fired for irrelevant order');
+                });
+                zeroEx.orderStateWatcher.subscribe(callback);
+                const notTheMaker = userAddresses[0];
+                const anyRecipient = taker;
+                const transferAmount = new BigNumber(2);
+                const notTheMakerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, notTheMaker);
+                await zeroEx.token.transferAsync(makerToken.address, notTheMaker, anyRecipient, transferAmount);
+                const timeoutInMs = 150;
+                setTimeout(() => {
+                    done();
+                }, timeoutInMs);
+            })().catch(done);
+        });
         it('should emit orderStateInvalid when maker moves balance backing watched order', (done: DoneCallback) => {
             (async () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
