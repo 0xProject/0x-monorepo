@@ -72,7 +72,7 @@ describe('OrderStateWatcher', () => {
                 [orderHash]: signedOrder,
             });
             dependentOrderHashes = (zeroEx.orderStateWatcher as any)._dependentOrderHashes;
-            expect(dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress]).to.not.have.keys(orderHash);
+            expect(dependentOrderHashes[signedOrder.maker]).to.be.undefined();
         });
         it('should no-op when removing a non-existing order', async () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
