@@ -24,7 +24,7 @@ describe('EventWatcher', () => {
     let eventWatcher: EventWatcher;
     let web3Wrapper: Web3Wrapper;
     const numConfirmations = 0;
-    const logA = {
+    const logA: Web3.LogEntry = {
         address: '0x71d271f8b14adef568f8f28f1587ce7271ac4ca5',
         blockHash: null,
         blockNumber: null,
@@ -32,9 +32,9 @@ describe('EventWatcher', () => {
         logIndex: null,
         topics: [],
         transactionHash: '0x004881d38cd4a8f72f1a0d68c8b9b8124504706041ff37019c1d1ed6bfda8e17',
-        transactionIndex: null,
+        transactionIndex: 0,
     };
-    const logB = {
+    const logB: Web3.LogEntry = {
         address: '0x8d12a197cb00d4747a1fe03395095ce2a5cc6819',
         blockHash: null,
         blockNumber: null,
@@ -42,9 +42,9 @@ describe('EventWatcher', () => {
         logIndex: null,
         topics: [ '0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567' ],
         transactionHash: '0x01ef3c048b18d9b09ea195b4ed94cf8dd5f3d857a1905ff886b152cfb1166f25',
-        transactionIndex: null,
+        transactionIndex: 0,
     };
-    const logC = {
+    const logC: Web3.LogEntry = {
         address: '0x1d271f8b174adef58f1587ce68f8f27271ac4ca5',
         blockHash: null,
         blockNumber: null,
@@ -52,7 +52,7 @@ describe('EventWatcher', () => {
         logIndex: null,
         topics: [ '0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567' ],
         transactionHash: '0x01ef3c048b18d9b09ea195b4ed94cf8dd5f3d857a1905ff886b152cfb1166f25',
-        transactionIndex: null,
+        transactionIndex: 0,
     };
     before(async () => {
         web3 = web3Factory.create();
