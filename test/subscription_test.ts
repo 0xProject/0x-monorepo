@@ -11,13 +11,8 @@ import {
     ZeroEx,
     ZeroExError,
     Token,
-    SubscriptionOpts,
-    TokenEvents,
-    ContractEvent,
-    TransferContractEventArgs,
     ApprovalContractEventArgs,
-    TokenContractEventArgs,
-    LogWithDecodedArgs,
+    TokenEvents,
     LogEvent,
 } from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
@@ -51,7 +46,6 @@ describe('SubscriptionTest', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-
     describe('#subscribe', () => {
         const indexFilterValues = {};
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
@@ -72,6 +66,7 @@ describe('SubscriptionTest', () => {
             (async () => {
                 const callback = (err: Error, logEvent: LogEvent<ApprovalContractEventArgs>) => {
                     expect(err).to.not.be.undefined();
+                    expect(err).to.not.be.null();
                     expect(logEvent).to.be.undefined();
                     done();
                 };
@@ -89,7 +84,6 @@ describe('SubscriptionTest', () => {
                 const callback = (err: Error, logEvent: LogEvent<ApprovalContractEventArgs>) => { };
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
-                await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
                 stubs = [
                   Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
                    .throws("JSON RPC error")

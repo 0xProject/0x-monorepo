@@ -827,7 +827,6 @@ export class ExchangeWrapper extends ContractWrapper {
         const ZRXtokenAddress = await exchangeInstance.ZRX_TOKEN_CONTRACT.callAsync();
         return ZRXtokenAddress;
     }
-
     private async _invalidateContractInstancesAsync(): Promise<void> {
         this.unsubscribeAll();
         delete this._exchangeContractIfExists;
