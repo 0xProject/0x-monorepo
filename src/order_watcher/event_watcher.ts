@@ -22,7 +22,6 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
-    private _callbackIfExistsAsync?: EventWatcherCallback;
     private _numConfirmations: number;
     constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number, numConfirmations: number) {
         this._web3Wrapper = web3Wrapper;
@@ -33,22 +32,21 @@ export class EventWatcher {
     }
     public subscribe(callback: EventWatcherCallback): void {
         assert.isFunction('callback', callback);
-        if (!_.isUndefined(this._callbackIfExistsAsync)) {
+        if (!_.isUndefined(this._intervalIdIfExists)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
-        this._callbackIfExistsAsync = callback;
         this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this._pollForBlockchainEventsAsync.bind(this), this._pollingIntervalMs,
+            this._pollForBlockchainEventsAsync.bind(this, callback), this._pollingIntervalMs,
         );
     }
     public unsubscribe(): void {
-        delete this._callbackIfExistsAsync;
         this._lastEvents = [];
         if (!_.isUndefined(this._intervalIdIfExists)) {
             intervalUtils.clearAsyncExcludingInterval(this._intervalIdIfExists);
+            delete this._intervalIdIfExists;
         }
     }
-    private async _pollForBlockchainEventsAsync(): Promise<void> {
+    private async _pollForBlockchainEventsAsync(callback: EventWatcherCallback): Promise<void> {
         const pendingEvents = await this._getEventsAsync();
         if (pendingEvents.length === 0) {
             // HACK: Sometimes when node rebuilds the pending block we get back the empty result.
@@ -59,9 +57,9 @@ export class EventWatcher {
         const removedEvents = _.differenceBy(this._lastEvents, pendingEvents, JSON.stringify);
         const newEvents = _.differenceBy(pendingEvents, this._lastEvents, JSON.stringify);
         let isRemoved = true;
-        await this._emitDifferencesAsync(removedEvents, isRemoved);
+        await this._emitDifferencesAsync(removedEvents, isRemoved, callback);
         isRemoved = false;
-        await this._emitDifferencesAsync(newEvents, isRemoved);
+        await this._emitDifferencesAsync(newEvents, isRemoved, callback);
         this._lastEvents = pendingEvents;
     }
     private async _getEventsAsync(): Promise<Web3.LogEntry[]> {
@@ -79,14 +77,16 @@ export class EventWatcher {
         const events = await this._web3Wrapper.getLogsAsync(eventFilter);
         return events;
     }
-    private async _emitDifferencesAsync(logs: Web3.LogEntry[], isRemoved: boolean): Promise<void> {
+    private async _emitDifferencesAsync(
+        logs: Web3.LogEntry[], isRemoved: boolean, callback: EventWatcherCallback,
+    ): Promise<void> {
         for (const log of logs) {
             const logEvent = {
                 removed: isRemoved,
                 ...log,
             };
-            if (!_.isUndefined(this._callbackIfExistsAsync)) {
-                await this._callbackIfExistsAsync(logEvent);
+            if (!_.isUndefined(this._intervalIdIfExists)) {
+                await callback(logEvent);
             }
         }
     }
