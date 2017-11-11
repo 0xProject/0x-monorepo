@@ -113,8 +113,8 @@ export class OrderStateWatcher {
     }
     private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {
         const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
-        const isDecodedLog = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
-        if (!isDecodedLog) {
+        const isLogDecoded = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
+        if (!isLogDecoded) {
             return; // noop
         }
         const blockNumberBuff = ethUtil.toBuffer(maybeDecodedLog.blockNumber);
