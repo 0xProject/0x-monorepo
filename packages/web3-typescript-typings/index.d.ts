@@ -306,7 +306,7 @@ declare module 'web3' {
             extraData: string;
             size: number;
             gasLimit: number;
-            gasUser: number;
+            gasUsed: number;
             timestamp: number;
             uncles: string[];
         }
