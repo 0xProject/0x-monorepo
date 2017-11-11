@@ -62,13 +62,13 @@ describe('OrderStateWatcher', () => {
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             zeroEx.orderStateWatcher.addOrder(signedOrder);
-            expect((zeroEx.orderStateWatcher as any)._orders).to.include({
+            expect((zeroEx.orderStateWatcher as any)._orderByOrderHash).to.include({
                 [orderHash]: signedOrder,
             });
             let dependentOrderHashes = (zeroEx.orderStateWatcher as any)._dependentOrderHashes;
             expect(dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress]).to.have.keys(orderHash);
             zeroEx.orderStateWatcher.removeOrder(orderHash);
-            expect((zeroEx.orderStateWatcher as any)._orders).to.not.include({
+            expect((zeroEx.orderStateWatcher as any)._orderByOrderHash).to.not.include({
                 [orderHash]: signedOrder,
             });
             dependentOrderHashes = (zeroEx.orderStateWatcher as any)._dependentOrderHashes;
