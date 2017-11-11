@@ -42,7 +42,7 @@ interface OrderByOrderHash {
  * the order should be deemed invalid.
  */
 export class OrderStateWatcher {
-    private _orders: OrderByOrderHash;
+    private _orderByOrderHash: OrderByOrderHash;
     private _dependentOrderHashes: DependentOrderHashes;
     private _web3Wrapper: Web3Wrapper;
     private _callbackIfExistsAsync?: OnOrderStateChangeCallback;
@@ -55,7 +55,7 @@ export class OrderStateWatcher {
         config?: OrderStateWatcherConfig,
     ) {
         this._web3Wrapper = web3Wrapper;
-        this._orders = {};
+        this._orderByOrderHash = {};
         this._dependentOrderHashes = {};
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.pollingIntervalMs;
         this._numConfirmations = _.isUndefined(config) ?
@@ -75,7 +75,7 @@ export class OrderStateWatcher {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
-        this._orders[orderHash] = signedOrder;
+        this._orderByOrderHash[orderHash] = signedOrder;
         this.addToDependentOrderHashes(signedOrder, orderHash);
     }
     /**
@@ -84,11 +84,11 @@ export class OrderStateWatcher {
      */
     public removeOrder(orderHash: string): void {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        const signedOrder = this._orders[orderHash];
+        const signedOrder = this._orderByOrderHash[orderHash];
         if (_.isUndefined(signedOrder)) {
             return; // noop
         }
-        delete this._orders[orderHash];
+        delete this._orderByOrderHash[orderHash];
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].delete(orderHash);
         // We currently do not remove the maker/makerToken keys from the mapping when all orderHashes removed
     }
@@ -153,7 +153,7 @@ export class OrderStateWatcher {
             case ExchangeEvents.LogFill:
             case ExchangeEvents.LogCancel:
                 const orderHash = decodedLog.args.orderHash;
-                const isOrderWatched = !_.isUndefined(this._orders[orderHash]);
+                const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
                 if (isOrderWatched) {
                     await this._emitRevalidateOrdersAsync([orderHash], blockNumber);
                 }
@@ -175,7 +175,7 @@ export class OrderStateWatcher {
         };
 
         for (const orderHash of orderHashes) {
-            const signedOrder = this._orders[orderHash] as SignedOrder;
+            const signedOrder = this._orderByOrderHash[orderHash] as SignedOrder;
             const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder, methodOpts);
             if (!_.isUndefined(this._callbackIfExistsAsync)) {
                 await this._callbackIfExistsAsync(orderState);
