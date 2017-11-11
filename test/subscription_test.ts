@@ -65,7 +65,6 @@ describe('SubscriptionTest', () => {
         it('Should receive the Error when an error occurs', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: LogEvent<ApprovalContractEventArgs>) => {
-                    expect(err).to.not.be.undefined();
                     expect(err).to.not.be.null();
                     expect(logEvent).to.be.undefined();
                     done();
