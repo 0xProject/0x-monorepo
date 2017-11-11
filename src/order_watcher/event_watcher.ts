@@ -10,8 +10,14 @@ import {
 import {AbiDecoder} from '../utils/abi_decoder';
 import {intervalUtils} from '../utils/interval_utils';
 import {assert} from '../utils/assert';
+import {utils} from '../utils/utils';
 
 const DEFAULT_EVENT_POLLING_INTERVAL = 200;
+
+enum LogEventState {
+    Removed,
+    Added,
+}
 
 /*
  * The EventWatcher watches for blockchain events at the specified block confirmation
@@ -56,10 +62,8 @@ export class EventWatcher {
         }
         const removedEvents = _.differenceBy(this._lastEvents, pendingEvents, JSON.stringify);
         const newEvents = _.differenceBy(pendingEvents, this._lastEvents, JSON.stringify);
-        let isRemoved = true;
-        await this._emitDifferencesAsync(removedEvents, isRemoved, callback);
-        isRemoved = false;
-        await this._emitDifferencesAsync(newEvents, isRemoved, callback);
+        await this._emitDifferencesAsync(removedEvents, LogEventState.Removed, callback);
+        await this._emitDifferencesAsync(newEvents, LogEventState.Added, callback);
         this._lastEvents = pendingEvents;
     }
     private async _getEventsAsync(): Promise<Web3.LogEntry[]> {
@@ -78,11 +82,11 @@ export class EventWatcher {
         return events;
     }
     private async _emitDifferencesAsync(
-        logs: Web3.LogEntry[], isRemoved: boolean, callback: EventWatcherCallback,
+        logs: Web3.LogEntry[], logEventState: LogEventState, callback: EventWatcherCallback,
     ): Promise<void> {
         for (const log of logs) {
             const logEvent = {
-                removed: isRemoved,
+                removed: logEventState === LogEventState.Removed,
                 ...log,
             };
             if (!_.isUndefined(this._intervalIdIfExists)) {
