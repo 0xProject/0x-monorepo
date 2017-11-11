@@ -117,6 +117,8 @@ export class OrderStateWatcher {
         if (!isLogDecoded) {
             return; // noop
         }
+        // Unfortunately blockNumber is returned as a hex-encoded string, so we
+        // convert it to a number here.
         const blockNumberBuff = ethUtil.toBuffer(maybeDecodedLog.blockNumber);
         const blockNumber = ethUtil.bufferToInt(blockNumberBuff);
 
