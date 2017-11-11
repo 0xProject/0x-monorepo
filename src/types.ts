@@ -508,6 +508,6 @@ export interface OrderStateInvalid {
 
 export type OrderState = OrderStateValid|OrderStateInvalid;
 
-export type OnOrderStateChangeCallback = (
-    orderState: OrderState,
-) => void;
+export type OnOrderStateChangeCallbackSync = (orderState: OrderState) => void;
+export type OnOrderStateChangeCallbackAsync = (orderState: OrderState) => Promise<void>;
+export type OnOrderStateChangeCallback = OnOrderStateChangeCallbackAsync|OnOrderStateChangeCallbackSync;
