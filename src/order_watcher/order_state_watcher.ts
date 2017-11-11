@@ -94,9 +94,6 @@ export class OrderStateWatcher {
      * backing blockchain state has changed. This is a call-to-action for the caller to re-validate the order.
      * @param   callback            Receives the orderHash of the order that should be re-validated, together
      *                              with all the order-relevant blockchain state needed to re-validate the order.
-     * @param   numConfirmations    Number of confirmed blocks deeps you want to run the orderWatcher from. Passing
-     *                              is 0 will watch the backing node's mempool, 3 will emit events when blockchain
-     *                              state relevant to a watched order changed 3 blocks ago.
      */
     public subscribe(callback: OnOrderStateChangeCallback): void {
         assert.isFunction('callback', callback);
