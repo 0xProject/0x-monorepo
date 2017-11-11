@@ -66,7 +66,8 @@ export class OrderStateWatcher {
         this._orderStateUtils = orderStateUtils;
     }
     /**
-     * Add an order to the orderStateWatcher
+     * Add an order to the orderStateWatcher. Before the order is added, it's
+     * signature is verified.
      * @param   signedOrder     The order you wish to start watching.
      */
     public addOrder(signedOrder: SignedOrder): void {
