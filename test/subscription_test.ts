@@ -1,4 +1,5 @@
 import 'mocha';
+import * as _ from 'lodash';
 import * as chai from 'chai';
 import * as Sinon from 'sinon';
 import {chaiSetup} from './utils/chai_setup';
@@ -57,12 +58,15 @@ describe('SubscriptionTest', () => {
         let tokenAddress: string;
         const transferAmount = new BigNumber(42);
         const allowanceAmount = new BigNumber(42);
+        let stubs: Sinon.SinonStub[] = [];
         before(() => {
             const token = tokens[0];
             tokenAddress = token.address;
         });
         afterEach(() => {
             zeroEx.token.unsubscribeAll();
+            _.each(stubs, s => s.restore());
+            stubs = [];
         });
         it('Should receive the Error when an error occurs', (done: DoneCallback) => {
             (async () => {
@@ -71,20 +75,25 @@ describe('SubscriptionTest', () => {
                     expect(logEvent).to.be.undefined();
                     done();
                 };
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                 .throws("JSON RPC error")
+                stubs = [
+                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
+                   .throws("JSON RPC error")
+                ]
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
          });
-        it('Should allow unsubscribeAll to be called multiple times', (done: DoneCallback) => {
+        it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: LogEvent<ApprovalContractEventArgs>) => { };
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
-                zeroEx.token.unsubscribeAll();
+                stubs = [
+                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
+                   .throws("JSON RPC error")
+                ]
                 zeroEx.token.unsubscribeAll();
                 done();
             })().catch(done);
