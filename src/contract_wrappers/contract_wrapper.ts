@@ -38,19 +38,10 @@ export class ContractWrapper {
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
-    protected _subscribe<ArgsType extends ContractEventArgs>(
-        address: string, eventName: ContractEvents, indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
-        callback: EventCallback<ArgsType>): string {
-        const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
-        if (_.isUndefined(this._blockAndLogStreamer)) {
-            this._startBlockAndLogStream();
-        }
-        const filterToken = filterUtils.generateUUID();
-        this._filters[filterToken] = filter;
-        this._filterCallbacks[filterToken] = callback;
-        return filterToken;
-    }
-    protected unsubscribeAll(): void {
+    /**
+     * Cancels all existing subscriptions
+     */
+    public unsubscribeAll(): void {
         const filterTokens = _.keys(this._filterCallbacks);
         _.each(filterTokens, filterToken => {
             this._unsubscribe(filterToken);
@@ -69,6 +60,18 @@ export class ContractWrapper {
         if (_.isEmpty(this._filters)) {
             this._stopBlockAndLogStream();
         }
+    }
+    protected _subscribe<ArgsType extends ContractEventArgs>(
+        address: string, eventName: ContractEvents, indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
+        callback: EventCallback<ArgsType>): string {
+        const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
+        if (_.isUndefined(this._blockAndLogStreamer)) {
+            this._startBlockAndLogStream();
+        }
+        const filterToken = filterUtils.generateUUID();
+        this._filters[filterToken] = filter;
+        this._filterCallbacks[filterToken] = callback;
+        return filterToken;
     }
     protected async _getLogsAsync<ArgsType extends ContractEventArgs>(
         address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,

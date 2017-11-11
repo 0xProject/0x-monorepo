@@ -290,12 +290,6 @@ export class TokenWrapper extends ContractWrapper {
         );
         return logs;
     }
-    /**
-     * Cancels all existing subscriptions
-     */
-    public unsubscribeAll(): void {
-        super.unsubscribeAll();
-    }
     private _invalidateContractInstancesAsync(): void {
         this.unsubscribeAll();
         this._tokenContractsByAddress = {};

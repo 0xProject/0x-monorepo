@@ -674,12 +674,6 @@ export class ExchangeWrapper extends ContractWrapper {
         this._unsubscribe(subscriptionToken);
     }
     /**
-     * Cancels all existing subscriptions
-     */
-    public unsubscribeAll(): void {
-        super.unsubscribeAll();
-    }
-    /**
      * Gets historical logs without creating a subscription
      * @param   eventName           The exchange contract event you would like to subscribe to.
      * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
