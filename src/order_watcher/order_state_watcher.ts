@@ -35,6 +35,12 @@ interface OrderByOrderHash {
     [orderHash: string]: SignedOrder;
 }
 
+/**
+ * This class includes all the functionality related to watching a set of orders
+ * for potential changes in order validity/fillability. The orderWatcher notifies
+ * the subscriber of these changes so that a final decison can be made on whether
+ * the order should be deemed invalid.
+ */
 export class OrderStateWatcher {
     private _orders: OrderByOrderHash;
     private _dependentOrderHashes: DependentOrderHashes;
