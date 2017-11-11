@@ -17,6 +17,7 @@ export enum ZeroExError {
     NoNetworkId = 'NO_NETWORK_ID',
     SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
     SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
+    TransactionMiningTimeout = 'TRANSACTION_MINING_TIMEOUT',
 }
 
 export enum InternalZeroExError {
