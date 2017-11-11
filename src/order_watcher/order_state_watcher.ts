@@ -87,8 +87,7 @@ export class OrderStateWatcher {
             return; // noop
         }
         delete this._orderByOrderHash[orderHash];
-        this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].delete(orderHash);
-        // We currently do not remove the maker/makerToken keys from the mapping when all orderHashes removed
+        this.removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
     }
     /**
      * Starts an orderStateWatcher subscription. The callback will be called every time a watched order's
@@ -190,5 +189,14 @@ export class OrderStateWatcher {
             this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress] = new Set();
         }
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].add(orderHash);
+    }
+    private removeFromDependentOrderHashes(makerAddress: string, makerTokenAddress: string, orderHash: string) {
+        this._dependentOrderHashes[makerAddress][makerTokenAddress].delete(orderHash);
+        if (this._dependentOrderHashes[makerAddress][makerTokenAddress].size === 0) {
+            delete this._dependentOrderHashes[makerAddress][makerTokenAddress];
+        }
+        if (_.isEmpty(this._dependentOrderHashes[makerAddress])) {
+            delete this._dependentOrderHashes[makerAddress];
+        }
     }
 }
