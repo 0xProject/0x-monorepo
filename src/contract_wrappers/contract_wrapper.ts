@@ -50,6 +50,12 @@ export class ContractWrapper {
         this._filterCallbacks[filterToken] = callback;
         return filterToken;
     }
+    protected unsubscribeAll(): void {
+        const filterTokens = _.keys(this._filterCallbacks);
+        _.each(filterTokens, filterToken => {
+            this._unsubscribe(filterToken);
+        });
+    }
     protected _unsubscribe(filterToken: string, err?: Error): void {
         if (_.isUndefined(this._filters[filterToken])) {
             throw new Error(ZeroExError.SubscriptionNotFound);

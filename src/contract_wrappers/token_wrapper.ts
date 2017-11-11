@@ -29,13 +29,11 @@ const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
 export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
-    private _activeSubscriptions: string[];
     private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
     constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
                 tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
         super(web3Wrapper, abiDecoder);
         this._tokenContractsByAddress = {};
-        this._activeSubscriptions = [];
         this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
     }
     /**
@@ -262,7 +260,6 @@ export class TokenWrapper extends ContractWrapper {
         const subscriptionToken = this._subscribe<ArgsType>(
             tokenAddress, eventName, indexFilterValues, artifacts.TokenArtifact.abi, callback,
         );
-        this._activeSubscriptions.push(subscriptionToken);
         return subscriptionToken;
     }
     /**
@@ -270,7 +267,6 @@ export class TokenWrapper extends ContractWrapper {
      * @param   subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
-        _.pull(this._activeSubscriptions, subscriptionToken);
         this._unsubscribe(subscriptionToken);
     }
     /**
@@ -298,8 +294,7 @@ export class TokenWrapper extends ContractWrapper {
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
-        _.forEach(this._activeSubscriptions, this._unsubscribe.bind(this));
-        this._activeSubscriptions = [];
+        super.unsubscribeAll();
     }
     private _invalidateContractInstancesAsync(): void {
         this.unsubscribeAll();

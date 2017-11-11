@@ -49,7 +49,6 @@ const SHOULD_VALIDATE_BY_DEFAULT = true;
  */
 export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractIfExists?: ExchangeContract;
-    private _activeSubscriptions: string[];
     private _orderValidationUtils: OrderValidationUtils;
     private _tokenWrapper: TokenWrapper;
     private _exchangeContractErrCodesToMsg = {
@@ -84,7 +83,6 @@ export class ExchangeWrapper extends ContractWrapper {
         super(web3Wrapper, abiDecoder);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
-        this._activeSubscriptions = [];
         this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
@@ -666,7 +664,6 @@ export class ExchangeWrapper extends ContractWrapper {
         const subscriptionToken = this._subscribe<ArgsType>(
             exchangeContractAddress, eventName, indexFilterValues, artifacts.ExchangeArtifact.abi, callback,
         );
-        this._activeSubscriptions.push(subscriptionToken);
         return subscriptionToken;
     }
     /**
@@ -674,8 +671,13 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
-        _.pull(this._activeSubscriptions, subscriptionToken);
         this._unsubscribe(subscriptionToken);
+    }
+    /**
+     * Cancels all existing subscriptions
+     */
+    public unsubscribeAll(): void {
+        super.unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -825,13 +827,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const ZRXtokenAddress = await exchangeInstance.ZRX_TOKEN_CONTRACT.callAsync();
         return ZRXtokenAddress;
     }
-    /**
-     * Cancels all existing subscriptions
-     */
-    public unsubscribeAll(): void {
-        _.forEach(this._activeSubscriptions, this._unsubscribe.bind(this));
-        this._activeSubscriptions = [];
-    }
+
     private async _invalidateContractInstancesAsync(): Promise<void> {
         this.unsubscribeAll();
         delete this._exchangeContractIfExists;
