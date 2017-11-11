@@ -42,8 +42,8 @@ interface OrderByOrderHash {
  * the order should be deemed invalid.
  */
 export class OrderStateWatcher {
-    private _orderByOrderHash: OrderByOrderHash;
-    private _dependentOrderHashes: DependentOrderHashes;
+    private _orderByOrderHash: OrderByOrderHash = {};
+    private _dependentOrderHashes: DependentOrderHashes = {};
     private _web3Wrapper: Web3Wrapper;
     private _callbackIfExistsAsync?: OnOrderStateChangeCallback;
     private _eventWatcher: EventWatcher;
@@ -55,8 +55,6 @@ export class OrderStateWatcher {
         config?: OrderStateWatcherConfig,
     ) {
         this._web3Wrapper = web3Wrapper;
-        this._orderByOrderHash = {};
-        this._dependentOrderHashes = {};
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.pollingIntervalMs;
         this._numConfirmations = _.isUndefined(config) ?
                                     DEFAULT_NUM_CONFIRMATIONS
