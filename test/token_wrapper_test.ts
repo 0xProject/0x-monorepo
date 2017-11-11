@@ -162,7 +162,7 @@ describe('TokenWrapper', () => {
                 const token = tokens[0];
                 const ownerAddress = coinbase;
                 const balance = await zeroEx.token.getBalanceAsync(token.address, ownerAddress);
-                const expectedBalance = new BigNumber('100000000000000000000000000');
+                const expectedBalance = new BigNumber('1000000000000000000000000000');
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
             it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
@@ -190,7 +190,7 @@ describe('TokenWrapper', () => {
                     const token = tokens[0];
                     const ownerAddress = coinbase;
                     const balance = await zeroExWithoutAccounts.token.getBalanceAsync(token.address, ownerAddress);
-                    const expectedBalance = new BigNumber('100000000000000000000000000');
+                    const expectedBalance = new BigNumber('1000000000000000000000000000');
                     return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
         });
