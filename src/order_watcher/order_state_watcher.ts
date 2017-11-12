@@ -225,9 +225,6 @@ export class OrderStateWatcher {
     private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
         for (const orderHash of orderHashes) {
             const signedOrder = this._orderByOrderHash[orderHash] as SignedOrder;
-            if (_.isUndefined(this._orderStateUtils)) {
-                break; // Unsubscribe was called
-            }
             const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
             if (_.isUndefined(this._callbackIfExistsAsync)) {
                 break; // Unsubscribe was called
