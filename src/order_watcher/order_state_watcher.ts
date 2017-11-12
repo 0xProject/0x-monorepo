@@ -68,13 +68,7 @@ export class OrderStateWatcher {
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, token: TokenWrapper, exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
     ) {
-<<<<<<< HEAD
-        const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.pollingIntervalMs;
-        this._numConfirmations = _.isUndefined(config) ?
-                                    DEFAULT_NUM_CONFIRMATIONS
-                                    : config.numConfirmations;
-=======
-        this._orders = {};
+        this._orderByOrderHash = {};
         this._abiDecoder = abiDecoder;
         this._token = token;
         this._exchange = exchange;
@@ -82,10 +76,6 @@ export class OrderStateWatcher {
         this._dependentOrderHashes = {};
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         const blockPollingIntervalMs = _.isUndefined(config) ? undefined : config.blockPollingIntervalMs;
-        this._numConfirmations = (_.isUndefined(config) || _.isUndefined(config.numConfirmations)) ?
-                                 DEFAULT_NUM_CONFIRMATIONS :
-                                 config.numConfirmations;
->>>>>>> Clear store cache on events
         this._eventWatcher = new EventWatcher(
             web3Wrapper, eventPollingIntervalMs, this._numConfirmations,
         );
@@ -202,7 +192,7 @@ export class OrderStateWatcher {
                 this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
-                const isOrderWatched = !_.isUndefined(this._orders[orderHash]);
+                const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
                 if (isOrderWatched) {
                     await this._emitRevalidateOrdersAsync([orderHash]);
                 }
@@ -216,7 +206,7 @@ export class OrderStateWatcher {
                 this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
-                const isOrderWatched = !_.isUndefined(this._orders[orderHash]);
+                const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
                 if (isOrderWatched) {
                     await this._emitRevalidateOrdersAsync([orderHash]);
                 }
