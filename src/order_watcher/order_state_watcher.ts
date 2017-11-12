@@ -205,7 +205,7 @@ export class OrderStateWatcher {
     private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
         for (const orderHash of orderHashes) {
             const signedOrder = this._orderByOrderHash[orderHash] as SignedOrder;
-            // Most of those calls will never reach the network because the data is fetched from stores
+            // Most of these calls will never reach the network because the data is fetched from stores
             // and only updated when cache is invalidated
             const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
             if (_.isUndefined(this._callbackIfExistsAsync)) {
