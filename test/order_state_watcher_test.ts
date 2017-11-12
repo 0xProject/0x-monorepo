@@ -189,6 +189,8 @@ describe('OrderStateWatcher', () => {
                     expect(validOrderState.orderHash).to.be.equal(orderHash);
                     const orderRelevantState = validOrderState.orderRelevantState;
                     const remainingMakerBalance = makerBalance.sub(fillAmountInBaseUnits);
+                    const remainingFillable = fillableAmount.minus(fillAmountInBaseUnits);
+                    expect(remainingFillable).to.be.bignumber.equal(fillableAmount.minus(fillAmountInBaseUnits));
                     expect(orderRelevantState.makerBalance).to.be.bignumber.equal(remainingMakerBalance);
                     if (eventCount === 2) {
                         done();

@@ -60,6 +60,21 @@ export class OrderStateUtils {
         );
         const filledTakerTokenAmount = await this.exchangeWrapper.getFilledTakerAmountAsync(orderHash, methodOpts);
         const canceledTakerTokenAmount = await this.exchangeWrapper.getCanceledTakerAmountAsync(orderHash, methodOpts);
+        const unavailableTakerTokenAmount =
+          await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash, methodOpts);
+        const totalMakerTokenAmount = signedOrder.makerTokenAmount;
+        const totalTakerTokenAmount = signedOrder.takerTokenAmount;
+        const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
+        // 200 in order, 100 unavailable  = 100 remaning, 0.5 remaning proportion
+        const remainingTakerProportion = remainingTakerTokenAmount.dividedBy(totalTakerTokenAmount);
+        const remainingMakerTokenAmount = remainingTakerProportion.times(totalMakerTokenAmount);
+        // min allowance, balance in account of maker
+        const fillableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
+        // min ^, remaining order maker token amount
+        const remainingFillableMakerTokenAmount = BigNumber.min(fillableMakerTokenAmount, remainingMakerTokenAmount);
+        // TODO
+        // edge case when maker token is ZRX
+        // rounding issues, check if its fillabae
         const orderRelevantState = {
             makerBalance,
             makerProxyAllowance,
@@ -67,6 +82,7 @@ export class OrderStateUtils {
             makerFeeProxyAllowance,
             filledTakerTokenAmount,
             canceledTakerTokenAmount,
+            remainingFillableMakerTokenAmount,
         };
         return orderRelevantState;
     }
