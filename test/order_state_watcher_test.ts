@@ -204,7 +204,7 @@ describe('OrderStateWatcher', () => {
             })().catch(done);
         });
         describe('remainingFillableMakerTokenAmount', () => {
-          it.only('should calculate correct reamining fillable', (done: DoneCallback) => {
+          it('should calculate correct reamining fillable', (done: DoneCallback) => {
               (async () => {
                   const takerFillableAmount = new BigNumber(10);
                   const makerFillableAmount = new BigNumber(20);
@@ -235,7 +235,7 @@ describe('OrderStateWatcher', () => {
                   );
               })().catch(done);
           });
-          it.only('should emit approved amount when approved amount is lower', (done: DoneCallback) => {
+          it('should emit approved amount when approved amount is lower', (done: DoneCallback) => {
               (async () => {
                   signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                       makerToken.address, takerToken.address, maker, taker, fillableAmount,
@@ -257,7 +257,7 @@ describe('OrderStateWatcher', () => {
                   await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, changedMakerApprovalAmount);
               })().catch(done);
           });
-          it.only('should emit balance amount when balance amount is lower', (done: DoneCallback) => {
+          it('should emit balance amount when balance amount is lower', (done: DoneCallback) => {
               (async () => {
                   signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                       makerToken.address, takerToken.address, maker, taker, fillableAmount,
