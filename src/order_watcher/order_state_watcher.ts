@@ -174,7 +174,6 @@ export class OrderStateWatcher {
                 // Invalidate cache
                 const args = decodedLog.args as LogFillContractEventArgs;
                 this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
-                this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
                 const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
@@ -187,7 +186,6 @@ export class OrderStateWatcher {
             {
                 // Invalidate cache
                 const args = decodedLog.args as LogCancelContractEventArgs;
-                this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
                 this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
