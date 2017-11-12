@@ -65,7 +65,7 @@ export class OrderStateUtils {
         const totalMakerTokenAmount = signedOrder.makerTokenAmount;
         const totalTakerTokenAmount = signedOrder.takerTokenAmount;
         const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
-        // 200 in order, 100 unavailable  = 100 remaning, 0.5 remaning proportion
+        // 200 in order, 100 unavailable  = 100 remaning, 0.5 remaining in taker proportion
         const remainingTakerProportion = remainingTakerTokenAmount.dividedBy(totalTakerTokenAmount);
         const remainingMakerTokenAmount = remainingTakerProportion.times(totalMakerTokenAmount);
         // min allowance, balance in account of maker
