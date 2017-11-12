@@ -44,6 +44,9 @@ export class BalanceAndProxyAllowanceLazyStore {
     public deleteBalance(tokenAddress: string, userAddress: string): void {
         if (!_.isUndefined(this.balance[tokenAddress])) {
             delete this.balance[tokenAddress][userAddress];
+            if (_.isEmpty(this.balance[tokenAddress])) {
+                delete this.balance[tokenAddress];
+            }
         }
     }
     public async getProxyAllowanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
@@ -67,6 +70,9 @@ export class BalanceAndProxyAllowanceLazyStore {
     public deleteProxyAllowance(tokenAddress: string, userAddress: string): void {
         if (!_.isUndefined(this.proxyAllowance[tokenAddress])) {
             delete this.proxyAllowance[tokenAddress][userAddress];
+            if (_.isEmpty(this.proxyAllowance[tokenAddress])) {
+                delete this.proxyAllowance[tokenAddress];
+            }
         }
     }
     public deleteAll(): void {
