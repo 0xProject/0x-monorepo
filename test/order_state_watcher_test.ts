@@ -203,6 +203,85 @@ describe('OrderStateWatcher', () => {
                 );
             })().catch(done);
         });
+        describe('remainingFillableMakerTokenAmount', () => {
+          it.only('should calculate correct reamining fillable', (done: DoneCallback) => {
+              (async () => {
+                  const takerFillableAmount = new BigNumber(10);
+                  const makerFillableAmount = new BigNumber(20);
+                  signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
+                      makerToken.address, takerToken.address, maker, taker, makerFillableAmount, takerFillableAmount);
+                  const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+                  const takerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, taker);
+                  const fillAmountInBaseUnits = new BigNumber(2);
+                  const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                  zeroEx.orderStateWatcher.addOrder(signedOrder);
+                  let eventCount = 0;
+                  const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                      eventCount++;
+                      expect(orderState.isValid).to.be.true();
+                      const validOrderState = orderState as OrderStateValid;
+                      expect(validOrderState.orderHash).to.be.equal(orderHash);
+                      const orderRelevantState = validOrderState.orderRelevantState;
+                      expect(orderRelevantState.remainingFillableMakerTokenAmount).to.be.bignumber.equal(
+                          new BigNumber(16));
+                      if (eventCount === 2) {
+                          done();
+                      }
+                  });
+                  zeroEx.orderStateWatcher.subscribe(callback);
+                  const shouldThrowOnInsufficientBalanceOrAllowance = true;
+                  await zeroEx.exchange.fillOrderAsync(
+                      signedOrder, fillAmountInBaseUnits, shouldThrowOnInsufficientBalanceOrAllowance, taker,
+                  );
+              })().catch(done);
+          });
+          it.only('should emit approved amount when approved amount is lower', (done: DoneCallback) => {
+              (async () => {
+                  signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                      makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                  );
+
+                  const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+
+                  const changedMakerApprovalAmount = new BigNumber(3);
+                  zeroEx.orderStateWatcher.addOrder(signedOrder);
+
+                  const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                      const validOrderState = orderState as OrderStateValid;
+                      const orderRelevantState = validOrderState.orderRelevantState;
+                      expect(orderRelevantState.remainingFillableMakerTokenAmount).to.be.bignumber.equal(
+                          changedMakerApprovalAmount);
+                      done();
+                  });
+                  zeroEx.orderStateWatcher.subscribe(callback);
+                  await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, changedMakerApprovalAmount);
+              })().catch(done);
+          });
+          it.only('should emit balance amount when balance amount is lower', (done: DoneCallback) => {
+              (async () => {
+                  signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                      makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                  );
+
+                  const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+
+                  const transferAmount = new BigNumber(1);
+                  zeroEx.orderStateWatcher.addOrder(signedOrder);
+
+                  const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                      const validOrderState = orderState as OrderStateValid;
+                      const orderRelevantState = validOrderState.orderRelevantState;
+
+                      expect(orderRelevantState.remainingFillableMakerTokenAmount).to.be.bignumber.equal(
+                          transferAmount);
+                      done();
+                  });
+                  zeroEx.orderStateWatcher.subscribe(callback);
+                  await zeroEx.token.transferAsync(makerToken.address, maker, ZeroEx.NULL_ADDRESS,
+                                                   makerBalance.minus(transferAmount));
+              })().catch(done);
+          });
+        });
         it('should emit orderStateInvalid when watched order cancelled', (done: DoneCallback) => {
             (async () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(

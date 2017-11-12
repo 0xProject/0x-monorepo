@@ -72,9 +72,7 @@ export class OrderStateUtils {
         const fillableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
         // min ^, remaining order maker token amount
         const remainingFillableMakerTokenAmount = BigNumber.min(fillableMakerTokenAmount, remainingMakerTokenAmount);
-        // TODO
         // edge case when maker token is ZRX
-        // rounding issues, check if its fillabae
         const orderRelevantState = {
             makerBalance,
             makerProxyAllowance,
