@@ -2,14 +2,13 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import {BigNumber} from 'bignumber.js';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
-import {BlockStore} from './block_store';
+import {BlockParamLiteral} from '../types';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
  */
 export class BalanceAndProxyAllowanceLazyStore {
     private token: TokenWrapper;
-    private blockStore: BlockStore;
     private balance: {
         [tokenAddress: string]: {
             [userAddress: string]: BigNumber,
@@ -20,17 +19,15 @@ export class BalanceAndProxyAllowanceLazyStore {
             [userAddress: string]: BigNumber,
         },
     };
-    constructor(token: TokenWrapper, blockStore: BlockStore) {
+    constructor(token: TokenWrapper) {
         this.token = token;
-        this.blockStore = blockStore;
         this.balance = {};
         this.proxyAllowance = {};
     }
     public async getBalanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
         if (_.isUndefined(this.balance[tokenAddress]) || _.isUndefined(this.balance[tokenAddress][userAddress])) {
-            const defaultBlock = this.blockStore.getBlockNumber();
             const methodOpts = {
-                defaultBlock,
+                defaultBlock: BlockParamLiteral.Pending,
             };
             const balance = await this.token.getBalanceAsync(tokenAddress, userAddress, methodOpts);
             this.setBalance(tokenAddress, userAddress, balance);
@@ -52,9 +49,8 @@ export class BalanceAndProxyAllowanceLazyStore {
     public async getProxyAllowanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
         if (_.isUndefined(this.proxyAllowance[tokenAddress]) ||
             _.isUndefined(this.proxyAllowance[tokenAddress][userAddress])) {
-            const defaultBlock = this.blockStore.getBlockNumber();
             const methodOpts = {
-                defaultBlock,
+                defaultBlock: BlockParamLiteral.Pending,
             };
             const proxyAllowance = await this.token.getProxyAllowanceAsync(tokenAddress, userAddress, methodOpts);
             this.setProxyAllowance(tokenAddress, userAddress, proxyAllowance);

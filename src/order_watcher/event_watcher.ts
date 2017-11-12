@@ -11,7 +11,6 @@ import {AbiDecoder} from '../utils/abi_decoder';
 import {intervalUtils} from '../utils/interval_utils';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
-import {BlockStore} from '../stores/block_store';
 
 const DEFAULT_EVENT_POLLING_INTERVAL = 200;
 
@@ -29,10 +28,8 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
-    private _blockStore: BlockStore;
-    constructor(web3Wrapper: Web3Wrapper, blockStore: BlockStore, pollingIntervalMs: undefined|number) {
+    constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number) {
         this._web3Wrapper = web3Wrapper;
-        this._blockStore = blockStore;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
                                     DEFAULT_EVENT_POLLING_INTERVAL :
                                     pollingIntervalMs;
@@ -68,10 +65,9 @@ export class EventWatcher {
         this._lastEvents = pendingEvents;
     }
     private async _getEventsAsync(): Promise<Web3.LogEntry[]> {
-        const blockNumber = this._blockStore.getBlockNumber();
         const eventFilter = {
-            fromBlock: blockNumber,
-            toBlock: blockNumber,
+            fromBlock: BlockParamLiteral.Pending,
+            toBlock: BlockParamLiteral.Pending,
         };
         const events = await this._web3Wrapper.getLogsAsync(eventFilter);
         return events;

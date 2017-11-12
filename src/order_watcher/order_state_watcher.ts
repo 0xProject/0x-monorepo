@@ -26,7 +26,6 @@ import {
     ZeroExError,
 } from '../types';
 import {Web3Wrapper} from '../web3_wrapper';
-import {BlockStore} from '../stores/block_store';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
@@ -60,7 +59,6 @@ export class OrderStateWatcher {
     private _exchange: ExchangeWrapper;
     private _abiDecoder: AbiDecoder;
     private _orderStateUtils: OrderStateUtils;
-    private _blockStore: BlockStore;
     private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
     private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
     constructor(
@@ -75,19 +73,11 @@ export class OrderStateWatcher {
         this._dependentOrderHashes = {};
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         const blockPollingIntervalMs = _.isUndefined(config) ? undefined : config.blockPollingIntervalMs;
-        const numConfirmations = (_.isUndefined(config) || _.isUndefined(config.numConfirmations)) ?
-                                 DEFAULT_NUM_CONFIRMATIONS :
-                                 config.numConfirmations;
-        this._blockStore = new BlockStore(numConfirmations, this._web3Wrapper, blockPollingIntervalMs);
-        this._eventWatcher = new EventWatcher(
-            web3Wrapper, this._blockStore, eventPollingIntervalMs,
-        );
+        this._eventWatcher = new EventWatcher(web3Wrapper, eventPollingIntervalMs);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            this._token, this._blockStore,
+            this._token,
         );
-        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
-            this._exchange, this._blockStore,
-        );
+        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(this._exchange);
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
         );
@@ -123,12 +113,11 @@ export class OrderStateWatcher {
      * @param   callback            Receives the orderHash of the order that should be re-validated, together
      *                              with all the order-relevant blockchain state needed to re-validate the order.
      */
-    public async subscribeAsync(callback: OnOrderStateChangeCallback): Promise<void> {
+    public subscribe(callback: OnOrderStateChangeCallback): void {
         assert.isFunction('callback', callback);
         if (!_.isUndefined(this._callbackIfExistsAsync)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
-        await this._blockStore.startAsync();
         this._callbackIfExistsAsync = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
     }
@@ -139,7 +128,6 @@ export class OrderStateWatcher {
         if (_.isUndefined(this._callbackIfExistsAsync)) {
             throw new Error(ZeroExError.SubscriptionNotFound);
         }
-        this._blockStore.stop();
         this._balanceAndProxyAllowanceLazyStore.deleteAll();
         this._orderFilledCancelledLazyStore.deleteAll();
         delete this._callbackIfExistsAsync;

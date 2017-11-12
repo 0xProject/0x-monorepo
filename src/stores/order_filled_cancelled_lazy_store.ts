@@ -2,31 +2,28 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import {BigNumber} from 'bignumber.js';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
-import {BlockStore} from './block_store';
+import {BlockParamLiteral} from '../types';
 
 /**
  * Copy on read store for filled/cancelled taker  amounts
  */
 export class OrderFilledCancelledLazyStore {
     private exchange: ExchangeWrapper;
-    private blockStore: BlockStore;
     private filledTakerAmount: {
         [orderHash: string]: BigNumber,
     };
     private cancelledTakerAmount: {
         [orderHash: string]: BigNumber,
     };
-    constructor(exchange: ExchangeWrapper, blockStore: BlockStore) {
+    constructor(exchange: ExchangeWrapper) {
         this.exchange = exchange;
-        this.blockStore = blockStore;
         this.filledTakerAmount = {};
         this.cancelledTakerAmount = {};
     }
     public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         if (_.isUndefined(this.filledTakerAmount[orderHash])) {
-            const defaultBlock = this.blockStore.getBlockNumber();
             const methodOpts = {
-                defaultBlock,
+                defaultBlock: BlockParamLiteral.Pending,
             };
             const filledTakerAmount = await this.exchange.getFilledTakerAmountAsync(orderHash, methodOpts);
             this.setFilledTakerAmount(orderHash, filledTakerAmount);
@@ -42,9 +39,8 @@ export class OrderFilledCancelledLazyStore {
     }
     public async getCancelledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         if (_.isUndefined(this.cancelledTakerAmount[orderHash])) {
-            const defaultBlock = this.blockStore.getBlockNumber();
             const methodOpts = {
-                defaultBlock,
+                defaultBlock: BlockParamLiteral.Pending,
             };
             const cancelledTakerAmount = await this.exchange.getCanceledTakerAmountAsync(orderHash, methodOpts);
             this.setCancelledTakerAmount(orderHash, cancelledTakerAmount);
