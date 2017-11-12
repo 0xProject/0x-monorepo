@@ -12,6 +12,7 @@ import {
     ZeroEx,
     LogEvent,
     DecodedLogEvent,
+    ZeroExConfig,
     OrderState,
     SignedOrder,
     OrderStateValid,
@@ -21,10 +22,14 @@ import {
 import { TokenUtils } from './utils/token_utils';
 import { FillScenarios } from './utils/fill_scenarios';
 import { DoneCallback } from '../src/types';
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {reportCallbackErrors} from './utils/report_callback_errors';
+
+const TIMEOUT_MS = 150;
 
 chaiSetup.configure();
 const expect = chai.expect;
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('OrderStateWatcher', () => {
     let web3: Web3;
@@ -119,6 +124,27 @@ describe('OrderStateWatcher', () => {
                 });
                 zeroEx.orderStateWatcher.subscribe(callback);
                 await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, new BigNumber(0));
+            })().catch(done);
+        });
+        it('should not emit an orderState event when irrelevant Transfer event received', (done: DoneCallback) => {
+            (async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                );
+                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                zeroEx.orderStateWatcher.addOrder(signedOrder);
+                const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                    throw new Error('OrderState callback fired for irrelevant order');
+                });
+                zeroEx.orderStateWatcher.subscribe(callback);
+                const notTheMaker = userAddresses[0];
+                const anyRecipient = taker;
+                const transferAmount = new BigNumber(2);
+                const notTheMakerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, notTheMaker);
+                await zeroEx.token.transferAsync(makerToken.address, notTheMaker, anyRecipient, transferAmount);
+                setTimeout(() => {
+                    done();
+                }, TIMEOUT_MS);
             })().catch(done);
         });
         it('should emit orderStateInvalid when maker moves balance backing watched order', (done: DoneCallback) => {
@@ -246,6 +272,68 @@ describe('OrderStateWatcher', () => {
                 zeroEx.orderStateWatcher.subscribe(callback);
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmountInBaseUnits);
             })().catch(done);
+        });
+        describe('check numConfirmations behavior', () => {
+            before(() => {
+                const configs: ZeroExConfig = {
+                    orderWatcherConfig: {
+                        numConfirmations: 1,
+                    },
+                };
+                zeroEx = new ZeroEx(web3.currentProvider, configs);
+            });
+            it('should emit orderState when watching at 1 confirmation deep and event is one block deep',
+                (done: DoneCallback) => {
+                (async () => {
+                    fillScenarios = new FillScenarios(
+                        zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress,
+                    );
+
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                    );
+                    const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                    zeroEx.orderStateWatcher.addOrder(signedOrder);
+                    const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
+                        done();
+                    });
+                    zeroEx.orderStateWatcher.subscribe(callback);
+
+                    const anyRecipient = taker;
+                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+                    await zeroEx.token.transferAsync(makerToken.address, maker, anyRecipient, makerBalance);
+                    blockchainLifecycle.mineABlock();
+                })().catch(done);
+            });
+            it('shouldn\'t emit orderState when watching at 1 confirmation deep and event is in mempool',
+                (done: DoneCallback) => {
+                (async () => {
+                    fillScenarios = new FillScenarios(
+                        zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress,
+                    );
+
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerToken.address, takerToken.address, maker, taker, fillableAmount,
+                    );
+                    const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                    zeroEx.orderStateWatcher.addOrder(signedOrder);
+                    const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                        throw new Error('OrderState callback fired when it shouldn\'t have');
+                    });
+                    zeroEx.orderStateWatcher.subscribe(callback);
+
+                    const anyRecipient = taker;
+                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+                    await zeroEx.token.transferAsync(makerToken.address, maker, anyRecipient, makerBalance);
+                    setTimeout(() => {
+                        done();
+                    }, TIMEOUT_MS);
+                })().catch(done);
+            });
         });
     });
 });
