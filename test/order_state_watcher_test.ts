@@ -235,7 +235,7 @@ describe('OrderStateWatcher', () => {
                   );
               })().catch(done);
           });
-          it('should emit approved amount when approved amount is lower', (done: DoneCallback) => {
+          it('should equal approved amount when approved amount is lowest', (done: DoneCallback) => {
               (async () => {
                   signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                       makerToken.address, takerToken.address, maker, taker, fillableAmount,
@@ -257,7 +257,7 @@ describe('OrderStateWatcher', () => {
                   await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, changedMakerApprovalAmount);
               })().catch(done);
           });
-          it('should emit balance amount when balance amount is lower', (done: DoneCallback) => {
+          it('should equal balance amount when balance amount is lowest', (done: DoneCallback) => {
               (async () => {
                   signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                       makerToken.address, takerToken.address, maker, taker, fillableAmount,
