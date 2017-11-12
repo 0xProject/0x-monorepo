@@ -55,8 +55,6 @@ export class OrderStateWatcher {
     private _callbackIfExistsAsync?: OnOrderStateChangeCallback;
     private _eventWatcher: EventWatcher;
     private _web3Wrapper: Web3Wrapper;
-    private _token: TokenWrapper;
-    private _exchange: ExchangeWrapper;
     private _abiDecoder: AbiDecoder;
     private _orderStateUtils: OrderStateUtils;
     private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
@@ -67,17 +65,13 @@ export class OrderStateWatcher {
     ) {
         this._orderByOrderHash = {};
         this._abiDecoder = abiDecoder;
-        this._token = token;
-        this._exchange = exchange;
         this._web3Wrapper = web3Wrapper;
         this._dependentOrderHashes = {};
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         const blockPollingIntervalMs = _.isUndefined(config) ? undefined : config.blockPollingIntervalMs;
         this._eventWatcher = new EventWatcher(web3Wrapper, eventPollingIntervalMs);
-        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            this._token,
-        );
-        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(this._exchange);
+        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(token);
+        this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
         );
