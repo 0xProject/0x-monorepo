@@ -61,7 +61,6 @@ export class OrderStateWatcher {
     private _abiDecoder: AbiDecoder;
     private _orderStateUtils: OrderStateUtils;
     private _blockStore: BlockStore;
-    private _numConfirmations: number;
     private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
     private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
     constructor(
@@ -76,15 +75,18 @@ export class OrderStateWatcher {
         this._dependentOrderHashes = {};
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         const blockPollingIntervalMs = _.isUndefined(config) ? undefined : config.blockPollingIntervalMs;
-        this._eventWatcher = new EventWatcher(
-            web3Wrapper, eventPollingIntervalMs, this._numConfirmations,
-        );
+        const numConfirmations = (_.isUndefined(config) || _.isUndefined(config.numConfirmations)) ?
+                                 DEFAULT_NUM_CONFIRMATIONS :
+                                 config.numConfirmations;
         this._blockStore = new BlockStore(this._web3Wrapper, blockPollingIntervalMs);
+        this._eventWatcher = new EventWatcher(
+            web3Wrapper, this._blockStore, eventPollingIntervalMs, numConfirmations,
+        );
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            this._token, this._blockStore, this._numConfirmations,
+            this._token, this._blockStore, numConfirmations,
         );
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
-            this._exchange, this._blockStore, this._numConfirmations,
+            this._exchange, this._blockStore, numConfirmations,
         );
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
@@ -159,6 +161,7 @@ export class OrderStateWatcher {
                 // Invalidate cache
                 const args = decodedLog.args as ApprovalContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(decodedLog.address, args._owner);
+                // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._owner;
                 orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);

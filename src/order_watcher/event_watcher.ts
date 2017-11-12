@@ -11,6 +11,7 @@ import {AbiDecoder} from '../utils/abi_decoder';
 import {intervalUtils} from '../utils/interval_utils';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
+import {BlockStore} from '../stores/block_store';
 
 const DEFAULT_EVENT_POLLING_INTERVAL = 200;
 
@@ -29,8 +30,11 @@ export class EventWatcher {
     private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
     private _numConfirmations: number;
-    constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number, numConfirmations: number) {
+    private _blockStore: BlockStore;
+    constructor(web3Wrapper: Web3Wrapper, blockStore: BlockStore, pollingIntervalMs: undefined|number,
+                numConfirmations: number) {
         this._web3Wrapper = web3Wrapper;
+        this._blockStore = blockStore;
         this._numConfirmations = numConfirmations;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
                                     DEFAULT_EVENT_POLLING_INTERVAL :
@@ -67,16 +71,10 @@ export class EventWatcher {
         this._lastEvents = pendingEvents;
     }
     private async _getEventsAsync(): Promise<Web3.LogEntry[]> {
-        let latestBlock: BlockParamLiteral|number;
-        if (this._numConfirmations === 0) {
-            latestBlock = BlockParamLiteral.Pending;
-        } else {
-            const currentBlock = await this._web3Wrapper.getBlockNumberAsync();
-            latestBlock = currentBlock - this._numConfirmations;
-        }
+        const blockNumber = this._blockStore.getBlockNumberWithNConfirmations(this._numConfirmations);
         const eventFilter = {
-            fromBlock: latestBlock,
-            toBlock: latestBlock,
+            fromBlock: blockNumber,
+            toBlock: blockNumber,
         };
         const events = await this._web3Wrapper.getLogsAsync(eventFilter);
         return events;
