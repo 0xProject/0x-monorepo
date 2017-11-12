@@ -78,15 +78,15 @@ export class OrderStateWatcher {
         const numConfirmations = (_.isUndefined(config) || _.isUndefined(config.numConfirmations)) ?
                                  DEFAULT_NUM_CONFIRMATIONS :
                                  config.numConfirmations;
-        this._blockStore = new BlockStore(this._web3Wrapper, blockPollingIntervalMs);
+        this._blockStore = new BlockStore(numConfirmations, this._web3Wrapper, blockPollingIntervalMs);
         this._eventWatcher = new EventWatcher(
-            web3Wrapper, this._blockStore, eventPollingIntervalMs, numConfirmations,
+            web3Wrapper, this._blockStore, eventPollingIntervalMs,
         );
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            this._token, this._blockStore, numConfirmations,
+            this._token, this._blockStore,
         );
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(
-            this._exchange, this._blockStore, numConfirmations,
+            this._exchange, this._blockStore,
         );
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,

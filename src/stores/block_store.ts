@@ -15,15 +15,17 @@ export class BlockStore {
     private latestBlockNumber?: number;
     private intervalId?: NodeJS.Timer;
     private blockPollingIntervalMs: number;
-    constructor(web3Wrapper?: Web3Wrapper, blockPollingIntervalMs?: number) {
+    private numConfirmations: number;
+    constructor(numConfirmations: number, web3Wrapper?: Web3Wrapper, blockPollingIntervalMs?: number) {
+        this.numConfirmations = numConfirmations;
         this.web3Wrapper = web3Wrapper;
         this.blockPollingIntervalMs = blockPollingIntervalMs || DEFAULT_BLOCK_POLLING_INTERVAL_MS;
     }
-    public getBlockNumberWithNConfirmations(numConfirmations: number): Web3.BlockParam {
+    public getBlockNumber(): Web3.BlockParam {
         let blockNumber;
-        if (numConfirmations === 0) {
+        if (this.numConfirmations === 0) {
             blockNumber = BlockParamLiteral.Pending;
-        } else if (numConfirmations === 1) {
+        } else if (this.numConfirmations === 1) {
             // HACK: We special-case `numConfirmations === 1` so that we can use this block store without actually
             // setting `latestBlockNumber` when block number is latest (in order validation) whhich allows us to omit
             // an async call in a constructor of `ExchangeTransferSimulator`
@@ -33,11 +35,14 @@ export class BlockStore {
                 throw new Error(InternalZeroExError.LatestBlockNumberNotSet);
             }
             // Latest block already has 1 confirmation
-            blockNumber = this.latestBlockNumber - numConfirmations + 1;
+            blockNumber = this.latestBlockNumber - this.numConfirmations + 1;
         }
         return blockNumber;
     }
     public async startAsync(): Promise<void> {
+        if (this.numConfirmations === 0 || this.numConfirmations === 1) {
+            return; // no-op
+        }
         await this.updateLatestBlockAsync();
         this.intervalId = intervalUtils.setAsyncExcludingInterval(
             this.updateLatestBlockAsync.bind(this), this.blockPollingIntervalMs,

@@ -60,15 +60,13 @@ describe('EventWatcher', () => {
         web3 = web3Factory.create();
         const pollingIntervalMs = 10;
         web3Wrapper = new Web3Wrapper(web3.currentProvider);
-        blockStore = new BlockStore();
-        await blockStore.startAsync();
-        eventWatcher = new EventWatcher(web3Wrapper, blockStore, pollingIntervalMs, numConfirmations);
+        blockStore = new BlockStore(numConfirmations);
+        eventWatcher = new EventWatcher(web3Wrapper, blockStore, pollingIntervalMs);
     });
     afterEach(() => {
         // clean up any stubs after the test has completed
         _.each(stubs, s => s.restore());
         stubs = [];
-        blockStore.stop();
         eventWatcher.unsubscribe();
     });
     it('correctly emits initial log events', (done: DoneCallback) => {

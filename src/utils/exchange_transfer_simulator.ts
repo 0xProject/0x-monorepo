@@ -37,9 +37,9 @@ export class ExchangeTransferSimulator {
     private store: BalanceAndProxyAllowanceLazyStore;
     private UNLIMITED_ALLOWANCE_IN_BASE_UNITS: BigNumber;
     constructor(token: TokenWrapper) {
-        const blockStore = new BlockStore();
         const latestBlockConfirmationNumber = 1;
-        this.store = new BalanceAndProxyAllowanceLazyStore(token, blockStore, latestBlockConfirmationNumber);
+        const blockStore = new BlockStore(latestBlockConfirmationNumber);
+        this.store = new BalanceAndProxyAllowanceLazyStore(token, blockStore);
         this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS = token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     }
     /**

@@ -29,13 +29,10 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
-    private _numConfirmations: number;
     private _blockStore: BlockStore;
-    constructor(web3Wrapper: Web3Wrapper, blockStore: BlockStore, pollingIntervalMs: undefined|number,
-                numConfirmations: number) {
+    constructor(web3Wrapper: Web3Wrapper, blockStore: BlockStore, pollingIntervalMs: undefined|number) {
         this._web3Wrapper = web3Wrapper;
         this._blockStore = blockStore;
-        this._numConfirmations = numConfirmations;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
                                     DEFAULT_EVENT_POLLING_INTERVAL :
                                     pollingIntervalMs;
@@ -71,7 +68,7 @@ export class EventWatcher {
         this._lastEvents = pendingEvents;
     }
     private async _getEventsAsync(): Promise<Web3.LogEntry[]> {
-        const blockNumber = this._blockStore.getBlockNumberWithNConfirmations(this._numConfirmations);
+        const blockNumber = this._blockStore.getBlockNumber();
         const eventFilter = {
             fromBlock: blockNumber,
             toBlock: blockNumber,

@@ -9,7 +9,6 @@ import {BlockStore} from './block_store';
  */
 export class OrderFilledCancelledLazyStore {
     private exchange: ExchangeWrapper;
-    private numConfirmations: number;
     private blockStore: BlockStore;
     private filledTakerAmount: {
         [orderHash: string]: BigNumber,
@@ -17,16 +16,15 @@ export class OrderFilledCancelledLazyStore {
     private cancelledTakerAmount: {
         [orderHash: string]: BigNumber,
     };
-    constructor(exchange: ExchangeWrapper, blockStore: BlockStore, numConfirmations: number) {
+    constructor(exchange: ExchangeWrapper, blockStore: BlockStore) {
         this.exchange = exchange;
-        this.numConfirmations = numConfirmations;
         this.blockStore = blockStore;
         this.filledTakerAmount = {};
         this.cancelledTakerAmount = {};
     }
     public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         if (_.isUndefined(this.filledTakerAmount[orderHash])) {
-            const defaultBlock = this.blockStore.getBlockNumberWithNConfirmations(this.numConfirmations);
+            const defaultBlock = this.blockStore.getBlockNumber();
             const methodOpts = {
                 defaultBlock,
             };
@@ -44,7 +42,7 @@ export class OrderFilledCancelledLazyStore {
     }
     public async getCancelledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         if (_.isUndefined(this.cancelledTakerAmount[orderHash])) {
-            const defaultBlock = this.blockStore.getBlockNumberWithNConfirmations(this.numConfirmations);
+            const defaultBlock = this.blockStore.getBlockNumber();
             const methodOpts = {
                 defaultBlock,
             };

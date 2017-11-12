@@ -9,7 +9,6 @@ import {BlockStore} from './block_store';
  */
 export class BalanceAndProxyAllowanceLazyStore {
     private token: TokenWrapper;
-    private numConfirmations: number;
     private blockStore: BlockStore;
     private balance: {
         [tokenAddress: string]: {
@@ -21,16 +20,15 @@ export class BalanceAndProxyAllowanceLazyStore {
             [userAddress: string]: BigNumber,
         },
     };
-    constructor(token: TokenWrapper, blockStore: BlockStore, numConfirmations: number) {
+    constructor(token: TokenWrapper, blockStore: BlockStore) {
         this.token = token;
-        this.numConfirmations = numConfirmations;
         this.blockStore = blockStore;
         this.balance = {};
         this.proxyAllowance = {};
     }
     public async getBalanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
         if (_.isUndefined(this.balance[tokenAddress]) || _.isUndefined(this.balance[tokenAddress][userAddress])) {
-            const defaultBlock = this.blockStore.getBlockNumberWithNConfirmations(this.numConfirmations);
+            const defaultBlock = this.blockStore.getBlockNumber();
             const methodOpts = {
                 defaultBlock,
             };
@@ -54,7 +52,7 @@ export class BalanceAndProxyAllowanceLazyStore {
     public async getProxyAllowanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
         if (_.isUndefined(this.proxyAllowance[tokenAddress]) ||
             _.isUndefined(this.proxyAllowance[tokenAddress][userAddress])) {
-            const defaultBlock = this.blockStore.getBlockNumberWithNConfirmations(this.numConfirmations);
+            const defaultBlock = this.blockStore.getBlockNumber();
             const methodOpts = {
                 defaultBlock,
             };
