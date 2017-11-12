@@ -148,6 +148,8 @@ export class OrderStateWatcher {
             throw new Error(ZeroExError.SubscriptionNotFound);
         }
         this._blockStore.stop();
+        this._balanceAndProxyAllowanceLazyStore.deleteAll();
+        this._orderFilledCancelledLazyStore.deleteAll();
         delete this._callbackIfExistsAsync;
         this._eventWatcher.unsubscribe();
     }

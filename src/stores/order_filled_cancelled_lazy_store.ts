@@ -60,4 +60,8 @@ export class OrderFilledCancelledLazyStore {
     public deleteCancelledTakerAmount(orderHash: string): void {
         delete this.cancelledTakerAmount[orderHash];
     }
+    public deleteAll(): void {
+        this.filledTakerAmount = {};
+        this.cancelledTakerAmount = {};
+    }
 }

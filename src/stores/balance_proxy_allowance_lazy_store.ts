@@ -75,4 +75,8 @@ export class BalanceAndProxyAllowanceLazyStore {
             delete this.proxyAllowance[tokenAddress][userAddress];
         }
     }
+    public deleteAll(): void {
+        this.balance = {};
+        this.proxyAllowance = {};
+    }
 }
