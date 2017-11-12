@@ -41,8 +41,8 @@ export type OrderValues = [BigNumber, BigNumber, BigNumber,
 export interface LogEvent<ArgsType> extends LogWithDecodedArgs<ArgsType> {
     removed: boolean;
 }
-export type EventCallbackAsync<ArgsType> = (log: LogEvent<ArgsType>) => Promise<void>;
-export type EventCallbackSync<ArgsType> = (log: LogEvent<ArgsType>) => void;
+export type EventCallbackAsync<ArgsType> = (err: null|Error, log?: LogEvent<ArgsType>) => Promise<void>;
+export type EventCallbackSync<ArgsType> = (err: null|Error, log?: LogEvent<ArgsType>) => void;
 export type EventCallback<ArgsType> = EventCallbackSync<ArgsType>|EventCallbackAsync<ArgsType>;
 export interface ExchangeContract extends Web3.ContractInstance {
     isValidSignature: {

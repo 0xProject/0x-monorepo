@@ -161,7 +161,7 @@ describe('TokenWrapper', () => {
                 const token = tokens[0];
                 const ownerAddress = coinbase;
                 const balance = await zeroEx.token.getBalanceAsync(token.address, ownerAddress);
-                const expectedBalance = new BigNumber('100000000000000000000000000');
+                const expectedBalance = new BigNumber('1000000000000000000000000000');
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
             it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
@@ -189,7 +189,7 @@ describe('TokenWrapper', () => {
                     const token = tokens[0];
                     const ownerAddress = coinbase;
                     const balance = await zeroExWithoutAccounts.token.getBalanceAsync(token.address, ownerAddress);
-                    const expectedBalance = new BigNumber('100000000000000000000000000');
+                    const expectedBalance = new BigNumber('1000000000000000000000000000');
                     return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
         });
@@ -358,7 +358,7 @@ describe('TokenWrapper', () => {
         // Source: https://github.com/mochajs/mocha/issues/2407
         it('Should receive the Transfer event when tokens are transfered', (done: DoneCallback) => {
             (async () => {
-                const callback = (logEvent: LogEvent<TransferContractEventArgs>) => {
+                const callback = (err: Error, logEvent: LogEvent<TransferContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
                     const args = logEvent.args;
                     expect(args._from).to.be.equal(coinbase);
@@ -373,7 +373,7 @@ describe('TokenWrapper', () => {
         });
         it('Should receive the Approval event when allowance is being set', (done: DoneCallback) => {
             (async () => {
-                const callback = (logEvent: LogEvent<ApprovalContractEventArgs>) => {
+                const callback = (err: Error, logEvent: LogEvent<ApprovalContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
                     const args = logEvent.args;
                     expect(args._owner).to.be.equal(coinbase);
@@ -388,13 +388,13 @@ describe('TokenWrapper', () => {
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (logEvent: LogEvent<TransferContractEventArgs>) => {
+                const callbackNeverToBeCalled = (err: Error, logEvent: LogEvent<TransferContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled,
                 );
-                const callbackToBeCalled = (logEvent: LogEvent<TransferContractEventArgs>) => {
+                const callbackToBeCalled = (err: Error, logEvent: LogEvent<TransferContractEventArgs>) => {
                     done();
                 };
                 const newProvider = web3Factory.getRpcProvider();
@@ -407,7 +407,7 @@ describe('TokenWrapper', () => {
         });
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (logEvent: LogEvent<TokenContractEventArgs>) => {
+                const callbackNeverToBeCalled = (err: Error, logEvent: LogEvent<TokenContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 const subscriptionToken = zeroEx.token.subscribe(
