@@ -30,8 +30,7 @@ export class RPC {
         const method = 'evm_mine';
         const params: any[] = [];
         const payload = this.toPayload(method, params);
-        const didRevert = await this.sendAsync(payload);
-        return didRevert;
+        await this.sendAsync(payload);
     }
     private toPayload(method: string, params: any[] = []): string {
         const payload = JSON.stringify({
