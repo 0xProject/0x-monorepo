@@ -133,7 +133,6 @@ export class OrderStateWatcher {
         const decodedLog = maybeDecodedLog as LogWithDecodedArgs<ContractEventArgs>;
         let makerToken: string;
         let makerAddress: string;
-        let orderHashesSet: Set<string>;
         switch (decodedLog.event) {
             case TokenEvents.Approval:
             {
