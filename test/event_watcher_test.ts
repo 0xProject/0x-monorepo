@@ -58,7 +58,7 @@ describe('EventWatcher', () => {
         web3 = web3Factory.create();
         const pollingIntervalMs = 10;
         web3Wrapper = new Web3Wrapper(web3.currentProvider);
-        eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalMs, numConfirmations);
+        eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalMs);
     });
     afterEach(() => {
         // clean up any stubs after the test has completed
