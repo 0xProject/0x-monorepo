@@ -26,5 +26,5 @@ jobs:
           background: true
       - run: yarn lerna:run test:coverage
       - run: yarn lerna:run report_test_coverage
-      - run: if [ $CIRCLE_BRANCH = "master" ]; then yarn lerna:run test:umd; fi
+      - run: if [ $CIRCLE_BRANCH = "development" ]; then yarn lerna:run test:umd; fi
       - run: yarn lerna:run lint
