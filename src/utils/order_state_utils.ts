@@ -60,6 +60,16 @@ export class OrderStateUtils {
         );
         const filledTakerTokenAmount = await this.exchangeWrapper.getFilledTakerAmountAsync(orderHash, methodOpts);
         const canceledTakerTokenAmount = await this.exchangeWrapper.getCanceledTakerAmountAsync(orderHash, methodOpts);
+        const unavailableTakerTokenAmount =
+          await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash, methodOpts);
+        const totalMakerTokenAmount = signedOrder.makerTokenAmount;
+        const totalTakerTokenAmount = signedOrder.takerTokenAmount;
+        const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
+        const remainingMakerTokenAmount = remainingTakerTokenAmount.times(totalMakerTokenAmount)
+                                                                   .dividedToIntegerBy(totalTakerTokenAmount);
+        const fillableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
+        const remainingFillableMakerTokenAmount = BigNumber.min(fillableMakerTokenAmount, remainingMakerTokenAmount);
+        // TODO: Handle edge case where maker token is ZRX with fee
         const orderRelevantState = {
             makerBalance,
             makerProxyAllowance,
@@ -67,6 +77,7 @@ export class OrderStateUtils {
             makerFeeProxyAllowance,
             filledTakerTokenAmount,
             canceledTakerTokenAmount,
+            remainingFillableMakerTokenAmount,
         };
         return orderRelevantState;
     }
