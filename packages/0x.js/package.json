@@ -38,7 +38,7 @@
     "run_mocha": "mocha lib/test/**/*_test.js --timeout 5000 --bail --exit"
   },
   "config": {
-    "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
+    "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken"
   },
   "repository": {
     "type": "git",
