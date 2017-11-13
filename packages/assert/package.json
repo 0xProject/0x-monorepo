@@ -17,12 +17,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/0xProject/assert.git"
+    "url": "https://github.com/0xProject/0x.js.git"
   },
   "bugs": {
-    "url": "https://github.com/0xProject/assert/issues"
+    "url": "https://github.com/0xProject/0x.js/issues"
   },
-  "homepage": "https://github.com/0xProject/assert#readme",
+  "homepage": "https://github.com/0xProject/0x.js/packages/assert/README.md",
   "devDependencies": {
     "@types/lodash": "^4.14.78",
     "@types/mocha": "^2.2.42",
