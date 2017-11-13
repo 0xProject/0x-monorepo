@@ -33,8 +33,7 @@
     "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts;",
     "test:commonjs": "run-s build:commonjs run_mocha",
     "pretest:umd": "run-s clean build:umd:dev build:commonjs",
-    "substitute_umd_bundle": "npm run remove_src_files_not_used_by_tests; shx mv _bundles/* lib/src",
-    "remove_src_files_not_used_by_tests": "find ./lib/src \\( -path ./lib/src/utils -o -path ./lib/src/subproviders -o -path ./lib/src/schemas -o -path \"./lib/src/types.*\" \\) -prune -o -type f -print | xargs rm",
+    "substitute_umd_bundle": "shx mv _bundles/* lib/src",
     "run_mocha": "mocha lib/test/**/*_test.js --timeout 5000 --bail --exit"
   },
   "config": {
@@ -81,7 +80,7 @@
     "typedoc": "~0.8.0",
     "types-bn": "^0.0.1",
     "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
-    "typescript": "^2.4.1",
+    "typescript": "~2.6.1",
     "web3-provider-engine": "^13.0.1",
     "web3-typescript-typings": "^0.7.1",
     "webpack": "^3.1.0"
