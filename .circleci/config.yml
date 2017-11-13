@@ -24,7 +24,5 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run test:coverage
-      - run: yarn lerna:run report_test_coverage
-      - run: if [ $CIRCLE_BRANCH = "development" ]; then yarn lerna:run test:umd; fi
+      - run: yarn lerna:run test:circleci
       - run: yarn lerna:run lint
