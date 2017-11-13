@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import {
     ExchangeContractErrs,
@@ -14,16 +15,19 @@ import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {utils} from '../utils/utils';
 import {constants} from '../utils/constants';
+import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
+import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
 
 export class OrderStateUtils {
-    private tokenWrapper: TokenWrapper;
-    private exchangeWrapper: ExchangeWrapper;
-    constructor(tokenWrapper: TokenWrapper, exchangeWrapper: ExchangeWrapper) {
-        this.tokenWrapper = tokenWrapper;
-        this.exchangeWrapper = exchangeWrapper;
+    private balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
+    private orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
+    constructor(balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore,
+                orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore) {
+        this.balanceAndProxyAllowanceLazyStore = balanceAndProxyAllowanceLazyStore;
+        this.orderFilledCancelledLazyStore = orderFilledCancelledLazyStore;
     }
-    public async getOrderStateAsync(signedOrder: SignedOrder, methodOpts?: MethodOpts): Promise<OrderState> {
-        const orderRelevantState = await this.getOrderRelevantStateAsync(signedOrder, methodOpts);
+    public async getOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
+        const orderRelevantState = await this.getOrderRelevantStateAsync(signedOrder);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         try {
             this.validateIfOrderIsValid(signedOrder, orderRelevantState);
@@ -42,26 +46,31 @@ export class OrderStateUtils {
             return orderState;
         }
     }
-    public async getOrderRelevantStateAsync(
-        signedOrder: SignedOrder, methodOpts?: MethodOpts): Promise<OrderRelevantState> {
-        const zrxTokenAddress = await this.exchangeWrapper.getZRXTokenAddressAsync();
+    public async getOrderRelevantStateAsync(signedOrder: SignedOrder): Promise<OrderRelevantState> {
+        // HACK: We access the private property here but otherwise the interface will be less nice.
+        // If we pass it from the instantiator - there is no opportunity to get it there
+        // because JS doesn't support async constructors.
+        // Moreover - it's cached under the hood so it's equivalent to an async constructor.
+        const exchange = (this.orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const zrxTokenAddress = await exchange.getZRXTokenAddressAsync();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        const makerBalance = await this.tokenWrapper.getBalanceAsync(
-            signedOrder.makerTokenAddress, signedOrder.maker, methodOpts,
+        const makerBalance = await this.balanceAndProxyAllowanceLazyStore.getBalanceAsync(
+            signedOrder.makerTokenAddress, signedOrder.maker,
         );
-        const makerProxyAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
-            signedOrder.makerTokenAddress, signedOrder.maker, methodOpts,
+        const makerProxyAllowance = await this.balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
+            signedOrder.makerTokenAddress, signedOrder.maker,
         );
-        const makerFeeBalance = await this.tokenWrapper.getBalanceAsync(
-            zrxTokenAddress, signedOrder.maker, methodOpts,
+        const makerFeeBalance = await this.balanceAndProxyAllowanceLazyStore.getBalanceAsync(
+            zrxTokenAddress, signedOrder.maker,
         );
-        const makerFeeProxyAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
-            zrxTokenAddress, signedOrder.maker, methodOpts,
+        const makerFeeProxyAllowance = await this.balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
+            zrxTokenAddress, signedOrder.maker,
         );
-        const filledTakerTokenAmount = await this.exchangeWrapper.getFilledTakerAmountAsync(orderHash, methodOpts);
-        const canceledTakerTokenAmount = await this.exchangeWrapper.getCanceledTakerAmountAsync(orderHash, methodOpts);
-        const unavailableTakerTokenAmount =
-          await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash, methodOpts);
+        const filledTakerTokenAmount = await this.orderFilledCancelledLazyStore.getFilledTakerAmountAsync(orderHash);
+        const canceledTakerTokenAmount = await this.orderFilledCancelledLazyStore.getCancelledTakerAmountAsync(
+            orderHash,
+        );
+        const unavailableTakerTokenAmount = await exchange.getUnavailableTakerAmountAsync(orderHash);
         const totalMakerTokenAmount = signedOrder.makerTokenAmount;
         const totalTakerTokenAmount = signedOrder.takerTokenAmount;
         const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);

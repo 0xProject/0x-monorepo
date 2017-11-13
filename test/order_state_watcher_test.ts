@@ -15,6 +15,7 @@ import {
     ZeroExConfig,
     OrderState,
     SignedOrder,
+    ZeroExError,
     OrderStateValid,
     OrderStateInvalid,
     ExchangeContractErrs,
@@ -92,14 +93,10 @@ describe('OrderStateWatcher', () => {
         afterEach(async () => {
             zeroEx.orderStateWatcher.unsubscribe();
         });
-        it('should fail when trying to subscribe twice', (done: DoneCallback) => {
+        it('should fail when trying to subscribe twice', async () => {
             zeroEx.orderStateWatcher.subscribe(_.noop);
-            try {
-                zeroEx.orderStateWatcher.subscribe(_.noop);
-                done(new Error('Expected the second subscription to fail'));
-            } catch (err) {
-                done();
-            }
+            expect(() => zeroEx.orderStateWatcher.subscribe(_.noop))
+                .to.throw(ZeroExError.SubscriptionAlreadyPresent);
         });
     });
     describe('tests with cleanup', async () => {
@@ -354,68 +351,6 @@ describe('OrderStateWatcher', () => {
                 zeroEx.orderStateWatcher.subscribe(callback);
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmountInBaseUnits);
             })().catch(done);
-        });
-        describe('check numConfirmations behavior', () => {
-            before(() => {
-                const configs: ZeroExConfig = {
-                    orderWatcherConfig: {
-                        numConfirmations: 1,
-                    },
-                };
-                zeroEx = new ZeroEx(web3.currentProvider, configs);
-            });
-            it('should emit orderState when watching at 1 confirmation deep and event is one block deep',
-                (done: DoneCallback) => {
-                (async () => {
-                    fillScenarios = new FillScenarios(
-                        zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress,
-                    );
-
-                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                        makerToken.address, takerToken.address, maker, taker, fillableAmount,
-                    );
-                    const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-                    zeroEx.orderStateWatcher.addOrder(signedOrder);
-                    const callback = reportCallbackErrors(done)((orderState: OrderState) => {
-                        expect(orderState.isValid).to.be.false();
-                        const invalidOrderState = orderState as OrderStateInvalid;
-                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
-                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
-                        done();
-                    });
-                    zeroEx.orderStateWatcher.subscribe(callback);
-
-                    const anyRecipient = taker;
-                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-                    await zeroEx.token.transferAsync(makerToken.address, maker, anyRecipient, makerBalance);
-                    blockchainLifecycle.mineABlock();
-                })().catch(done);
-            });
-            it('shouldn\'t emit orderState when watching at 1 confirmation deep and event is in mempool',
-                (done: DoneCallback) => {
-                (async () => {
-                    fillScenarios = new FillScenarios(
-                        zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress,
-                    );
-
-                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                        makerToken.address, takerToken.address, maker, taker, fillableAmount,
-                    );
-                    const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-                    zeroEx.orderStateWatcher.addOrder(signedOrder);
-                    const callback = reportCallbackErrors(done)((orderState: OrderState) => {
-                        throw new Error('OrderState callback fired when it shouldn\'t have');
-                    });
-                    zeroEx.orderStateWatcher.subscribe(callback);
-
-                    const anyRecipient = taker;
-                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-                    await zeroEx.token.transferAsync(makerToken.address, maker, anyRecipient, makerBalance);
-                    setTimeout(() => {
-                        done();
-                    }, TIMEOUT_MS);
-                })().catch(done);
-            });
         });
     });
 });
