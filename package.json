@@ -5,7 +5,8 @@
         "packages/*"
     ],
     "scripts": {
-        "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\""
+        "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
+        "lerna:run": "lerna run"
     },
     "config": {
       "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"

@@ -18,11 +18,12 @@ jobs:
             - ~/.cache/yarn
       - run: wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
       - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
-      - run:
+      - run: node ./node_modules/lerna/bin/lerna.js bootstrap
+      - run: yarn lerna:run -- bootstrap
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: node ./node_modules/lerna/bin/lerna.js run test:coverage
-      - run: node ./node_modules/lerna/bin/lerna.js run report_test_coverage
-      - run: if [ $CIRCLE_BRANCH = "master" ]; then node ./node_modules/lerna/bin/lerna.js run test:umd; fi
-      - run: node ./node_modules/lerna/bin/lerna.js run lint
+      - run: yarn lerna:run -- test:coverage
+      - run: yarn lerna:run -- report_test_coverage
+      - run: if [ $CIRCLE_BRANCH = "master" ]; then yarn lerna:run -- test:umd; fi
+      - run: yarn lerna:run -- lint
