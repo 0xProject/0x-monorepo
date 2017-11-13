@@ -807,7 +807,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (!_.isUndefined(errLog)) {
             const logArgs = errLog.args;
             const errCode = logArgs.errorId.toNumber();
-            const errMessage: ExchangeContractErrs = this._exchangeContractErrCodesToMsg[errCode];
+            const errMessage: string = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
         }
     }
