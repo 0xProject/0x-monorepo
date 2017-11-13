@@ -25,5 +25,4 @@ jobs:
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run test:circleci
-      - run: if [ $CIRCLE_BRANCH = "development" ]; then yarn lerna:run test:umd; fi
       - run: yarn lerna:run lint
