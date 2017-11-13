@@ -190,7 +190,8 @@ describe('OrderStateWatcher', () => {
                     const orderRelevantState = validOrderState.orderRelevantState;
                     const remainingMakerBalance = makerBalance.sub(fillAmountInBaseUnits);
                     const remainingFillable = fillableAmount.minus(fillAmountInBaseUnits);
-                    expect(remainingFillable).to.be.bignumber.equal(fillableAmount.minus(fillAmountInBaseUnits));
+                    expect(orderRelevantState.remainingFillableMakerTokenAmount).to.be.bignumber.equal(
+                        remainingFillable);
                     expect(orderRelevantState.makerBalance).to.be.bignumber.equal(remainingMakerBalance);
                     if (eventCount === 2) {
                         done();
@@ -204,7 +205,7 @@ describe('OrderStateWatcher', () => {
             })().catch(done);
         });
         describe('remainingFillableMakerTokenAmount', () => {
-          it('should calculate correct reamining fillable', (done: DoneCallback) => {
+          it('should calculate correct remaining fillable', (done: DoneCallback) => {
               (async () => {
                   const takerFillableAmount = new BigNumber(10);
                   const makerFillableAmount = new BigNumber(20);
@@ -265,20 +266,20 @@ describe('OrderStateWatcher', () => {
 
                   const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
 
-                  const transferAmount = new BigNumber(1);
+                  const remainingAmount = new BigNumber(1);
+                  const transferAmount = makerBalance.sub(remainingAmount);
                   zeroEx.orderStateWatcher.addOrder(signedOrder);
 
                   const callback = reportCallbackErrors(done)((orderState: OrderState) => {
                       const validOrderState = orderState as OrderStateValid;
                       const orderRelevantState = validOrderState.orderRelevantState;
-
                       expect(orderRelevantState.remainingFillableMakerTokenAmount).to.be.bignumber.equal(
-                          transferAmount);
+                          remainingAmount);
                       done();
                   });
                   zeroEx.orderStateWatcher.subscribe(callback);
-                  await zeroEx.token.transferAsync(makerToken.address, maker, ZeroEx.NULL_ADDRESS,
-                                                   makerBalance.minus(transferAmount));
+                  await zeroEx.token.transferAsync(
+                      makerToken.address, maker, ZeroEx.NULL_ADDRESS, transferAmount);
               })().catch(done);
           });
         });
