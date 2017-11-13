@@ -5,7 +5,7 @@ import {SchemaValidator, Schema} from '0x-json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {signatureUtils} from '../utils/signature_utils';
 import {ECSignature} from '../types';
-import {assert as sharedAssert} from '0x-assert';
+import {assert as sharedAssert} from '@0xproject/assert';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
