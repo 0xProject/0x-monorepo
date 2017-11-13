@@ -42,8 +42,8 @@ export type OrderValues = [BigNumber, BigNumber, BigNumber,
 export type LogEvent = Web3.LogEntryEvent;
 export type DecodedLogEvent<ArgsType> = Web3.DecodedLogEntryEvent<ArgsType>;
 
-export type EventCallbackAsync<ArgsType> = (log: DecodedLogEvent<ArgsType>) => Promise<void>;
-export type EventCallbackSync<ArgsType> = (log: DecodedLogEvent<ArgsType>) => void;
+export type EventCallbackAsync<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => Promise<void>;
+export type EventCallbackSync<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => void;
 export type EventCallback<ArgsType> = EventCallbackSync<ArgsType>|EventCallbackAsync<ArgsType>;
 
 export type EventWatcherCallbackSync = (log: LogEvent) => void;
