@@ -62,7 +62,7 @@
     "chai-as-promised": "^7.1.0",
     "chai-as-promised-typescript-typings": "0.0.3",
     "chai-bignumber": "^2.0.1",
-    "chai-typescript-typings": "^0.0.0",
+    "chai-typescript-typings": "^0.0.1",
     "copyfiles": "^1.2.0",
     "coveralls": "^3.0.0",
     "dirty-chai": "^2.0.1",

@@ -96,7 +96,7 @@ describe('OrderStateWatcher', () => {
         it('should fail when trying to subscribe twice', async () => {
             zeroEx.orderStateWatcher.subscribe(_.noop);
             expect(() => zeroEx.orderStateWatcher.subscribe(_.noop))
-                .to.throw();
+                .to.throw(ZeroExError.SubscriptionAlreadyPresent);
         });
     });
     describe('tests with cleanup', async () => {

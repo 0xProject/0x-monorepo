@@ -63,12 +63,9 @@ export class OrderStateWatcher {
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, token: TokenWrapper, exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
     ) {
-        this._orderByOrderHash = {};
         this._abiDecoder = abiDecoder;
         this._web3Wrapper = web3Wrapper;
-        this._dependentOrderHashes = {};
         const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
-        const blockPollingIntervalMs = _.isUndefined(config) ? undefined : config.blockPollingIntervalMs;
         this._eventWatcher = new EventWatcher(web3Wrapper, eventPollingIntervalMs);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(token);
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
