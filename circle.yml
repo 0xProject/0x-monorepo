@@ -19,7 +19,7 @@ test:
     - unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
     - npm run testrpc -- --db testrpc_snapshot:
         background: true
-    - yarn test:coverage
-    - yarn report_test_coverage
-    - if [ $CIRCLE_BRANCH = "master" ]; then yarn test:umd; fi
-    - yarn lint
+    - ./node_modules/lerna/bin/lerna run test:coverage
+    - ./node_modules/lerna/bin/lerna run report_test_coverage
+    - if [ $CIRCLE_BRANCH = "master" ]; then ./node_modules/lerna/bin/lerna run test:umd; fi
+    - ./node_modules/lerna/bin/lerna run lint
