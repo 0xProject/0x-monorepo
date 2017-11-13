@@ -29,6 +29,7 @@ export {
     ContractEventArg,
     Web3Provider,
     ZeroExConfig,
+    TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
     MethodOpts,

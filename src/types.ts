@@ -418,8 +418,6 @@ export interface ZeroExConfig {
     orderWatcherConfig?: OrderStateWatcherConfig;
 }
 
-export type TransactionReceipt = Web3.TransactionReceipt;
-
 export enum AbiType {
     Function = 'function',
     Constructor = 'constructor',
@@ -433,7 +431,7 @@ export interface DecodedLogArgs {
 
 export interface LogWithDecodedArgs<ArgsType> extends Web3.DecodedLogEntry<ArgsType> {}
 
-export interface TransactionReceiptWithDecodedLogs extends Web3.TransactionReceipt {
+export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
     logs: Array<LogWithDecodedArgs<DecodedLogArgs>|Web3.LogEntry>;
 }
 
@@ -511,3 +509,17 @@ export type OrderState = OrderStateValid|OrderStateInvalid;
 export type OnOrderStateChangeCallbackSync = (orderState: OrderState) => void;
 export type OnOrderStateChangeCallbackAsync = (orderState: OrderState) => Promise<void>;
 export type OnOrderStateChangeCallback = OnOrderStateChangeCallbackAsync|OnOrderStateChangeCallbackSync;
+
+export interface TransactionReceipt {
+    blockHash: string;
+    blockNumber: number;
+    transactionHash: string;
+    transactionIndex: number;
+    from: string;
+    to: string;
+    status: null|0|1;
+    cumulativeGasUsed: number;
+    gasUsed: number;
+    contractAddress: string|null;
+    logs: Web3.LogEntry[];
+}
