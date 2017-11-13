@@ -19,6 +19,7 @@
     "release": "publish-release --assets _bundles/index.js,_bundles/index.min.js --tag $(git describe --tags) --owner 0xProject --repo 0x.js",
     "upload_docs_json": "aws s3 cp docs/index.json s3://0xjs-docs-jsons/$(git describe --tags).json --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type aplication/json",
     "lint": "tslint src/**/*.ts test/**/*.ts",
+    "test:circleci": "run-s test:coverage report_test_coverage",
     "test": "run-s clean test:commonjs",
     "test:umd": "./scripts/test_umd.sh",
     "test:coverage": "nyc npm run test --all",
