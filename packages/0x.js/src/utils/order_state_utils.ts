@@ -78,6 +78,9 @@ export class OrderStateUtils {
                                                                    .dividedToIntegerBy(totalTakerTokenAmount);
         const fillableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
         const remainingFillableMakerTokenAmount = BigNumber.min(fillableMakerTokenAmount, remainingMakerTokenAmount);
+        const remainingFillableTakerTokenAmount = remainingFillableMakerTokenAmount
+                                                  .times(totalTakerTokenAmount)
+                                                  .dividedToIntegerBy(totalMakerTokenAmount);
         // TODO: Handle edge case where maker token is ZRX with fee
         const orderRelevantState = {
             makerBalance,
@@ -87,6 +90,7 @@ export class OrderStateUtils {
             filledTakerTokenAmount,
             canceledTakerTokenAmount,
             remainingFillableMakerTokenAmount,
+            remainingFillableTakerTokenAmount,
         };
         return orderRelevantState;
     }
