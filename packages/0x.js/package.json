@@ -80,7 +80,7 @@
     "typedoc": "~0.8.0",
     "types-bn": "^0.0.1",
     "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
-    "typescript": "^2.4.1",
+    "typescript": "~2.6.1",
     "web3-provider-engine": "^13.0.1",
     "web3-typescript-typings": "^0.7.1",
     "webpack": "^3.1.0"
