@@ -7,6 +7,7 @@ jobs:
     environment:
       CONTRACTS_COMMIT_HASH: '78fe8dd'
     steps:
+      - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
       - run:
           name: yarn
