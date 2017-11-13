@@ -14,8 +14,8 @@ const blockchainLifecycle = new BlockchainLifecycle();
 // Since the address depositing/withdrawing ETH/WETH also needs to pay gas costs for the transaction,
 // a small amount of ETH will be used to pay this gas cost. We therefore check that the difference between
 // the expected balance and actual balance (given the amount of ETH deposited), only deviates by the amount
-// required to pay gas costs.
-const MAX_REASONABLE_GAS_COST_IN_WEI = 62237;
+// required to pay gas costs. We don't want to use the real gas amount here, cause it might change.
+const MAX_REASONABLE_GAS_COST_IN_WEI = 100000;
 
 describe('EtherTokenWrapper', () => {
     let web3: Web3;
