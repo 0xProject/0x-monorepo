@@ -21,7 +21,7 @@ Make sure you have `yarn@1.x` installed locally.
 
 ### Creating a new sub-package
 
-1. Make sure the `name` field in the sub-package's `package.json` starts with `@0xproject/` and has a unique name (e.g `0xproject/assert`).
+1. Make sure the `name` field in the sub-package's `package.json` starts with `@0xproject/` and has a unique name (e.g `@0xproject/assert`).
 
 2. Run `yarn install` to install all it's dependencies.
 
@@ -34,5 +34,5 @@ Make sure you have `yarn@1.x` installed locally.
 3. Import the sub-package as:
 
 ```
-import {myPkg} from '0xproject/myPkg';
+import {myPkg} from '@0xproject/myPkg';
 ```
