@@ -443,7 +443,7 @@ describe('ExchangeWrapper', () => {
                 it('should cancel an order', async () => {
                     const txHash = await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmount);
                     await zeroEx.awaitTransactionMinedAsync(txHash);
-                    const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
+                    const cancelledAmount = await zeroEx.exchange.getCancelledTakerAmountAsync(orderHashHex);
                     expect(cancelledAmount).to.be.bignumber.equal(cancelAmount);
                 });
             });
@@ -502,8 +502,8 @@ describe('ExchangeWrapper', () => {
             describe('successful batch cancels', () => {
                 it('should cancel a batch of orders', async () => {
                     await zeroEx.exchange.batchCancelOrdersAsync(cancelBatch);
-                    const cancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHashHex);
-                    const anotherCancelledAmount = await zeroEx.exchange.getCanceledTakerAmountAsync(
+                    const cancelledAmount = await zeroEx.exchange.getCancelledTakerAmountAsync(orderHashHex);
+                    const anotherCancelledAmount = await zeroEx.exchange.getCancelledTakerAmountAsync(
                         anotherOrderHashHex,
                     );
                     expect(cancelledAmount).to.be.bignumber.equal(cancelAmount);
@@ -592,23 +592,23 @@ describe('ExchangeWrapper', () => {
                 expect(filledValueT).to.be.bignumber.equal(partialFillAmount);
             });
         });
-        describe('#getCanceledTakerAmountAsync', () => {
+        describe('#getCancelledTakerAmountAsync', () => {
             it('should throw if passed an invalid orderHash', async () => {
                 const invalidOrderHashHex = '0x123';
-                return expect(zeroEx.exchange.getCanceledTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
+                return expect(zeroEx.exchange.getCancelledTakerAmountAsync(invalidOrderHashHex)).to.be.rejected();
             });
             it('should return zero if passed a valid but non-existent orderHash', async () => {
-                const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(NON_EXISTENT_ORDER_HASH);
+                const cancelledValueT = await zeroEx.exchange.getCancelledTakerAmountAsync(NON_EXISTENT_ORDER_HASH);
                 expect(cancelledValueT).to.be.bignumber.equal(0);
             });
             it('should return the cancelledValueT for a valid and partially filled orderHash', async () => {
-                const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHash);
+                const cancelledValueT = await zeroEx.exchange.getCancelledTakerAmountAsync(orderHash);
                 expect(cancelledValueT).to.be.bignumber.equal(0);
             });
             it('should return the cancelledValueT for a valid and cancelled orderHash', async () => {
                 const cancelAmount = fillableAmount.minus(partialFillAmount);
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelAmount);
-                const cancelledValueT = await zeroEx.exchange.getCanceledTakerAmountAsync(orderHash);
+                const cancelledValueT = await zeroEx.exchange.getCancelledTakerAmountAsync(orderHash);
                 expect(cancelledValueT).to.be.bignumber.equal(cancelAmount);
             });
         });

@@ -67,7 +67,7 @@ export class OrderStateUtils {
             zrxTokenAddress, signedOrder.maker,
         );
         const filledTakerTokenAmount = await this.orderFilledCancelledLazyStore.getFilledTakerAmountAsync(orderHash);
-        const canceledTakerTokenAmount = await this.orderFilledCancelledLazyStore.getCancelledTakerAmountAsync(
+        const cancelledTakerTokenAmount = await this.orderFilledCancelledLazyStore.getCancelledTakerAmountAsync(
             orderHash,
         );
         const unavailableTakerTokenAmount = await exchange.getUnavailableTakerAmountAsync(orderHash);
@@ -85,13 +85,13 @@ export class OrderStateUtils {
             makerFeeBalance,
             makerFeeProxyAllowance,
             filledTakerTokenAmount,
-            canceledTakerTokenAmount,
+            cancelledTakerTokenAmount,
             remainingFillableMakerTokenAmount,
         };
         return orderRelevantState;
     }
     private validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
-        const unavailableTakerTokenAmount = orderRelevantState.canceledTakerTokenAmount.add(
+        const unavailableTakerTokenAmount = orderRelevantState.cancelledTakerTokenAmount.add(
             orderRelevantState.filledTakerTokenAmount,
         );
         const availableTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
