@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "0x-assert",
   "version": "0.0.3",
   "description": "Provides a standard way of performing type and schema validation across 0x projects",
@@ -40,6 +41,7 @@
     "bignumber.js": "~4.1.0",
     "ethereum-address": "^0.0.4",
     "lodash": "^4.17.4",
-    "valid-url": "^1.0.9"
+    "valid-url": "^1.0.9",
+    "0x-assert": "0.0.3"
   }
 }
