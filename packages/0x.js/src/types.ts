@@ -490,6 +490,7 @@ export interface OrderRelevantState {
     filledTakerTokenAmount: BigNumber;
     canceledTakerTokenAmount: BigNumber;
     remainingFillableMakerTokenAmount: BigNumber;
+    remainingFillableTakerTokenAmount: BigNumber;
 }
 
 export interface OrderStateValid {
