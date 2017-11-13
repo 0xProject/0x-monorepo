@@ -16,6 +16,8 @@ import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
+import {OrderStateWatcher} from './order_watcher/order_state_watcher';
+import {OrderStateUtils} from './utils/order_state_utils';
 import {
     ECSignature,
     ZeroExError,
@@ -23,6 +25,7 @@ import {
     SignedOrder,
     Web3Provider,
     ZeroExConfig,
+    OrderStateWatcherConfig,
     TransactionReceiptWithDecodedLogs,
 } from './types';
 import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
@@ -65,6 +68,11 @@ export class ZeroEx {
      * tokenTransferProxy smart contract.
      */
     public proxy: TokenTransferProxyWrapper;
+    /**
+     * An instance of the OrderStateWatcher class containing methods for watching a set of orders for relevant
+     * blockchain state changes.
+     */
+    public orderStateWatcher: OrderStateWatcher;
     private _web3Wrapper: Web3Wrapper;
     private _abiDecoder: AbiDecoder;
     /**
@@ -80,19 +88,8 @@ export class ZeroEx {
         assert.doesConformToSchema('signature', signature, schemas.ecSignatureSchema);
         assert.isETHAddressHex('signerAddress', signerAddress);
 
-        const dataBuff = ethUtil.toBuffer(data);
-        const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
-        try {
-            const pubKey = ethUtil.ecrecover(
-                msgHashBuff,
-                signature.v,
-                ethUtil.toBuffer(signature.r),
-                ethUtil.toBuffer(signature.s));
-            const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
-            return retrievedAddress === signerAddress;
-        } catch (err) {
-            return false;
-        }
+        const isValidSignature = signatureUtils.isValidSignature(data, signature, signerAddress);
+        return isValidSignature;
     }
     /**
      * Generates a pseudo-random 256-bit salt.
@@ -177,12 +174,6 @@ export class ZeroEx {
         if (!_.isUndefined(config)) {
             assert.doesConformToSchema('config', config, zeroExConfigSchema);
         }
-        if (_.isUndefined((provider as any).sendAsync)) {
-            // Web3@1.0 provider doesn't support synchronous http requests,
-            // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
-            // We re-assign the send method so that Web3@1.0 providers work with 0x.js
-            (provider as any).sendAsync = (provider as any).send;
-        }
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
         this._abiDecoder = new AbiDecoder(abiArrays);
@@ -213,6 +204,10 @@ export class ZeroEx {
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, tokenRegistryContractAddressIfExists);
         const etherTokenContractAddressIfExists = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddressIfExists);
+        const orderWatcherConfig = _.isUndefined(config) ? undefined : config.orderWatcherConfig;
+        this.orderStateWatcher = new OrderStateWatcher(
+            this._web3Wrapper, this._abiDecoder, this.token, this.exchange, orderWatcherConfig,
+        );
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all

@@ -20,4 +20,7 @@ export class BlockchainLifecycle {
             throw new Error(`Snapshot with id #${snapshotId} failed to revert`);
         }
     }
+    public async mineABlock(): Promise<void> {
+        await this.rpc.mineBlockAsync();
+    }
 }

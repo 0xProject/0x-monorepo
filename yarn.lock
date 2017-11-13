@@ -1041,6 +1041,10 @@ chai-typescript-typings@^0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/chai-typescript-typings/-/chai-typescript-typings-0.0.0.tgz#52e076d72cf29129c94ab1dba6e33ce3828a0724"
 
+chai-typescript-typings@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/chai-typescript-typings/-/chai-typescript-typings-0.0.1.tgz#433dee303b0b2978ad0dd03129df0a5afb791274"
+
 chai@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.0.2.tgz#2f7327c4de6f385dd7787999e2ab02697a32b83b"
@@ -4685,7 +4689,7 @@ tslint-react@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/tslint-react/-/tslint-react-3.0.0.tgz#00c48ab7f22e91533b62bdef2c162b49447af00a"
 
-tslint@^5.3.2:
+tslint@~5.5.0:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.5.0.tgz#10e8dab3e3061fa61e9442e8cee3982acf20a6aa"
   dependencies:
@@ -4940,9 +4944,9 @@ web3-provider-engine@^8.4.0:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-typescript-typings@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.6.2.tgz#5dd9bf4dcd1d6dd6897c87d055d1f5cc8f98dfbd"
+web3-typescript-typings@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.7.1.tgz#4b1145b9fd7e80292c2ab6b75e2359cf95f0efe1"
   dependencies:
     bignumber.js "^4.0.2"
 

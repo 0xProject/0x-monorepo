@@ -5,6 +5,19 @@ export const zeroExConfigSchema = {
         exchangeContractAddress: {$ref: '/Address'},
         tokenRegistryContractAddress: {$ref: '/Address'},
         etherTokenContractAddress: {$ref: '/Address'},
+        orderWatcherConfig: {
+            type: 'object',
+            properties: {
+                pollingIntervalMs: {
+                    type: 'number',
+                    minimum: 0,
+                },
+                numConfirmations: {
+                    type: 'number',
+                    minimum: 0,
+                },
+            },
+        },
     },
     type: 'object',
 };

@@ -16,6 +16,7 @@ export enum ZeroExError {
     OutOfGas = 'OUT_OF_GAS',
     NoNetworkId = 'NO_NETWORK_ID',
     SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+    SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
     TransactionMiningTimeout = 'TRANSACTION_MINING_TIMEOUT',
 }
 
@@ -38,12 +39,17 @@ export type OrderAddresses = [string, string, string, string, string];
 export type OrderValues = [BigNumber, BigNumber, BigNumber,
                            BigNumber, BigNumber, BigNumber];
 
-export interface LogEvent<ArgsType> extends LogWithDecodedArgs<ArgsType> {
-    removed: boolean;
-}
-export type EventCallbackAsync<ArgsType> = (err: null|Error, log?: LogEvent<ArgsType>) => Promise<void>;
-export type EventCallbackSync<ArgsType> = (err: null|Error, log?: LogEvent<ArgsType>) => void;
+export type LogEvent = Web3.LogEntryEvent;
+export type DecodedLogEvent<ArgsType> = Web3.DecodedLogEntryEvent<ArgsType>;
+
+export type EventCallbackAsync<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => Promise<void>;
+export type EventCallbackSync<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => void;
 export type EventCallback<ArgsType> = EventCallbackSync<ArgsType>|EventCallbackAsync<ArgsType>;
+
+export type EventWatcherCallbackSync = (log: LogEvent) => void;
+export type EventWatcherCallbackAsync = (log: LogEvent) => Promise<void>;
+export type EventWatcherCallback = EventWatcherCallbackSync|EventWatcherCallbackAsync;
+
 export interface ExchangeContract extends Web3.ContractInstance {
     isValidSignature: {
         callAsync: (signerAddressHex: string, dataHex: string, v: number, r: string, s: string,
@@ -391,16 +397,25 @@ export interface JSONRPCPayload {
 }
 
 /*
+ * eventPollingIntervalMs: How often to poll the Ethereum node for new events
+ */
+export interface OrderStateWatcherConfig {
+    eventPollingIntervalMs?: number;
+}
+
+/*
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
  * etherTokenContractAddress: The address of an ether token contract to use
+ * orderWatcherConfig: All the configs related to the orderWatcher
  */
 export interface ZeroExConfig {
     gasPrice?: BigNumber; // Gas price to use with every transaction
     exchangeContractAddress?: string;
     tokenRegistryContractAddress?: string;
     etherTokenContractAddress?: string;
+    orderWatcherConfig?: OrderStateWatcherConfig;
 }
 
 export type TransactionReceipt = Web3.TransactionReceipt;
@@ -416,12 +431,7 @@ export interface DecodedLogArgs {
     [argName: string]: ContractEventArg;
 }
 
-export interface DecodedArgs<ArgsType> {
-    args: ArgsType;
-    event: string;
-}
-
-export interface LogWithDecodedArgs<ArgsType> extends Web3.LogEntry, DecodedArgs<ArgsType> {}
+export interface LogWithDecodedArgs<ArgsType> extends Web3.DecodedLogEntry<ArgsType> {}
 
 export interface TransactionReceiptWithDecodedLogs extends Web3.TransactionReceipt {
     logs: Array<LogWithDecodedArgs<DecodedLogArgs>|Web3.LogEntry>;
@@ -473,3 +483,31 @@ export enum TransferType {
     Trade = 'trade',
     Fee = 'fee',
 }
+
+export interface OrderRelevantState {
+    makerBalance: BigNumber;
+    makerProxyAllowance: BigNumber;
+    makerFeeBalance: BigNumber;
+    makerFeeProxyAllowance: BigNumber;
+    filledTakerTokenAmount: BigNumber;
+    canceledTakerTokenAmount: BigNumber;
+    remainingFillableMakerTokenAmount: BigNumber;
+}
+
+export interface OrderStateValid {
+    isValid: true;
+    orderHash: string;
+    orderRelevantState: OrderRelevantState;
+}
+
+export interface OrderStateInvalid {
+    isValid: false;
+    orderHash: string;
+    error: ExchangeContractErrs;
+}
+
+export type OrderState = OrderStateValid|OrderStateInvalid;
+
+export type OnOrderStateChangeCallbackSync = (orderState: OrderState) => void;
+export type OnOrderStateChangeCallbackAsync = (orderState: OrderState) => Promise<void>;
+export type OnOrderStateChangeCallback = OnOrderStateChangeCallbackAsync|OnOrderStateChangeCallbackSync;

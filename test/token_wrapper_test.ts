@@ -17,6 +17,7 @@ import {
     TokenContractEventArgs,
     LogWithDecodedArgs,
     LogEvent,
+    DecodedLogEvent,
 } from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {TokenUtils} from './utils/token_utils';
@@ -358,7 +359,7 @@ describe('TokenWrapper', () => {
         // Source: https://github.com/mochajs/mocha/issues/2407
         it('Should receive the Transfer event when tokens are transfered', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: LogEvent<TransferContractEventArgs>) => {
+                const callback = (err: Error, logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
                     const args = logEvent.args;
                     expect(args._from).to.be.equal(coinbase);
@@ -373,7 +374,7 @@ describe('TokenWrapper', () => {
         });
         it('Should receive the Approval event when allowance is being set', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: LogEvent<ApprovalContractEventArgs>) => {
+                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
                     const args = logEvent.args;
                     expect(args._owner).to.be.equal(coinbase);
@@ -388,13 +389,13 @@ describe('TokenWrapper', () => {
         });
         it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (err: Error, logEvent: LogEvent<TransferContractEventArgs>) => {
+                const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled,
                 );
-                const callbackToBeCalled = (err: Error, logEvent: LogEvent<TransferContractEventArgs>) => {
+                const callbackToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done();
                 };
                 const newProvider = web3Factory.getRpcProvider();
@@ -407,7 +408,7 @@ describe('TokenWrapper', () => {
         });
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (err: Error, logEvent: LogEvent<TokenContractEventArgs>) => {
+                const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 const subscriptionToken = zeroEx.token.subscribe(
