@@ -1,6 +1,6 @@
 {
   "name": "0x.js",
-  "version": "0.22.6",
+  "version": "0.23.0",
   "description": "A javascript library for interacting with the 0x protocol",
   "keywords": [
     "0x.js",
@@ -62,7 +62,7 @@
     "chai-as-promised": "^7.1.0",
     "chai-as-promised-typescript-typings": "0.0.3",
     "chai-bignumber": "^2.0.1",
-    "chai-typescript-typings": "^0.0.0",
+    "chai-typescript-typings": "^0.0.1",
     "copyfiles": "^1.2.0",
     "coveralls": "^3.0.0",
     "dirty-chai": "^2.0.1",
@@ -85,7 +85,7 @@
     "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
     "typescript": "^2.4.1",
     "web3-provider-engine": "^13.0.1",
-    "web3-typescript-typings": "^0.6.4",
+    "web3-typescript-typings": "^0.7.1",
     "webpack": "^3.1.0"
   },
   "dependencies": {

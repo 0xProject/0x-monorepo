@@ -1,8 +1,10 @@
 import * as _ from 'lodash';
-import BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
-import {Web3Wrapper} from '../web3_wrapper';
+import BigNumber from 'bignumber.js';
 import {SchemaValidator, Schema} from '0x-json-schemas';
+import {Web3Wrapper} from '../web3_wrapper';
+import {signatureUtils} from '../utils/signature_utils';
+import {ECSignature} from '../types';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
@@ -10,6 +12,17 @@ export const assert = {
     isBigNumber(variableName: string, value: BigNumber): void {
         const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
         this.assert(isBigNumber, this.typeAssertionMessage(variableName, 'BigNumber', value));
+    },
+    isValidBaseUnitAmount(variableName: string, value: BigNumber) {
+        assert.isBigNumber(variableName, value);
+        const hasDecimals = value.decimalPlaces() !== 0;
+        this.assert(
+            !hasDecimals, `${variableName} should be in baseUnits (no decimals), found value: ${value.toNumber()}`,
+        );
+    },
+    isValidSignature(orderHash: string, ecSignature: ECSignature, signerAddress: string) {
+        const isValidSignature = signatureUtils.isValidSignature(orderHash, ecSignature, signerAddress);
+        this.assert(isValidSignature, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
     isUndefined(value: any, variableName?: string): void {
         this.assert(_.isUndefined(value), this.typeAssertionMessage(variableName, 'undefined', value));

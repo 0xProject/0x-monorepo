@@ -70,7 +70,7 @@ export class TokenWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
+        assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
         // Hack: for some reason default estimated gas amount causes `base fee exceeds gas limit` exception
@@ -150,7 +150,7 @@ export class TokenWrapper extends ContractWrapper {
                                         amountInBaseUnits: BigNumber): Promise<string> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
+        assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const proxyAddress = await this._getTokenTransferProxyAddressAsync();
         const txHash = await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
@@ -185,7 +185,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
         assert.isETHAddressHex('toAddress', toAddress);
-        assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
+        assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
 
@@ -219,7 +219,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('fromAddress', fromAddress);
         assert.isETHAddressHex('toAddress', toAddress);
         await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
-        assert.isBigNumber('amountInBaseUnits', amountInBaseUnits);
+        assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
 

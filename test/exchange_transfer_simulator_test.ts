@@ -59,11 +59,10 @@ describe('ExchangeTransferSimulator', () => {
             await exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress, sender, recipient, transferAmount, TradeSide.Taker, TransferType.Trade,
             );
-            const senderBalance = await (exchangeTransferSimulator as any).getBalanceAsync(exampleTokenAddress, sender);
-            const recipientBalance = await (exchangeTransferSimulator as any).getBalanceAsync(
-                exampleTokenAddress, recipient);
-            const senderProxyAllowance = await (exchangeTransferSimulator as any).getProxyAllowanceAsync(
-                exampleTokenAddress, sender);
+            const store = (exchangeTransferSimulator as any).store;
+            const senderBalance = await store.getBalanceAsync(exampleTokenAddress, sender);
+            const recipientBalance = await store.getBalanceAsync(exampleTokenAddress, recipient);
+            const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleTokenAddress, sender);
             expect(senderBalance).to.be.bignumber.equal(0);
             expect(recipientBalance).to.be.bignumber.equal(transferAmount);
             expect(senderProxyAllowance).to.be.bignumber.equal(0);
@@ -76,11 +75,10 @@ describe('ExchangeTransferSimulator', () => {
             await exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress, sender, recipient, transferAmount, TradeSide.Taker, TransferType.Trade,
             );
-            const senderBalance = await (exchangeTransferSimulator as any).getBalanceAsync(exampleTokenAddress, sender);
-            const recipientBalance = await (exchangeTransferSimulator as any).getBalanceAsync(
-                exampleTokenAddress, recipient);
-            const senderProxyAllowance = await (exchangeTransferSimulator as any).getProxyAllowanceAsync(
-                exampleTokenAddress, sender);
+            const store = (exchangeTransferSimulator as any).store;
+            const senderBalance = await store.getBalanceAsync(exampleTokenAddress, sender);
+            const recipientBalance = await store.getBalanceAsync(exampleTokenAddress, recipient);
+            const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleTokenAddress, sender);
             expect(senderBalance).to.be.bignumber.equal(0);
             expect(recipientBalance).to.be.bignumber.equal(transferAmount);
             expect(senderProxyAllowance).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
