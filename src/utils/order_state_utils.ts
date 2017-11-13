@@ -65,12 +65,9 @@ export class OrderStateUtils {
         const totalMakerTokenAmount = signedOrder.makerTokenAmount;
         const totalTakerTokenAmount = signedOrder.takerTokenAmount;
         const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
-        // 200 in order, 100 unavailable  = 100 remaning, 0.5 remaining in taker proportion
         const remainingMakerTokenAmount = remainingTakerTokenAmount.times(totalMakerTokenAmount)
                                                                    .dividedToIntegerBy(totalTakerTokenAmount);
-        // min allowance, balance in account of maker
         const fillableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
-        // min ^, remaining order maker token amount
         const remainingFillableMakerTokenAmount = BigNumber.min(fillableMakerTokenAmount, remainingMakerTokenAmount);
         // TODO: Handle edge case where maker token is ZRX with fee
         const orderRelevantState = {
