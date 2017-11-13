@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "lib": [ "es2017", "dom"],
+    "outDir": "lib",
+    "sourceMap": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "./src/**/*",
+    "./test/**/*",
+    "../../node_modules/chai-typescript-typings/index.d.ts",    
+    "../../node_modules/web3-typescript-typings/index.d.ts"
+  ]
+}
