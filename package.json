@@ -3,5 +3,14 @@
     "name": "0x.js",
     "workspaces": [
         "packages/*"
-    ]
+    ],
+    "scripts": {
+        "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
+    },
+    "config": {
+      "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
+    },
+    "devDependencies": {
+        "lerna": "^2.5.1"
+    }
 }

@@ -24,7 +24,6 @@
     "test:coverage": "nyc npm run test --all",
     "report_test_coverage": "nyc report --reporter=text-lcov | coveralls",
     "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
-    "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
     "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json docs/index.json .",
     "docs:generate": "typedoc --out docs .",
     "docs:open": "opn docs/index.html",
@@ -40,7 +39,6 @@
   },
   "config": {
     "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
-    "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
   },
   "repository": {
     "type": "git",
