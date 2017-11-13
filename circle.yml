@@ -2,12 +2,14 @@ machine:
   node:
     version: 6.5.0
   environment:
+      YARN_VERSION: 0.28.4
       CONTRACTS_COMMIT_HASH: '78fe8dd'
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
 
 dependencies:
   override:
-    - yarn
+    - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
+    - yarn install --pure-lockfile
   cache_directories:
     - ~/.cache/yarn
 
