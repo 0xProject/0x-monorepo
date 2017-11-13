@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import * as ethereum_address from 'ethereum-address';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
-
 import {SchemaValidator, Schema} from '0x-json-schemas';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
