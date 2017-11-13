@@ -13,7 +13,7 @@ import {
     Token,
     ApprovalContractEventArgs,
     TokenEvents,
-    LogEvent,
+    DecodedLogEvent,
 } from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {TokenUtils} from './utils/token_utils';
@@ -64,15 +64,15 @@ describe('SubscriptionTest', () => {
         });
         it('Should receive the Error when an error occurs', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: LogEvent<ApprovalContractEventArgs>) => {
+                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     expect(err).to.not.be.null();
                     expect(logEvent).to.be.undefined();
                     done();
                 };
                 stubs = [
                   Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws("JSON RPC error")
-                ]
+                   .throws('JSON RPC error'),
+                ];
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
@@ -80,16 +80,16 @@ describe('SubscriptionTest', () => {
          });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: LogEvent<ApprovalContractEventArgs>) => { };
+                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 stubs = [
                   Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws("JSON RPC error")
-                ]
+                   .throws('JSON RPC error'),
+                ];
                 zeroEx.token.unsubscribeAll();
                 done();
             })().catch(done);
          });
-    })
-  })
+    });
+});

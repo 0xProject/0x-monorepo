@@ -42,6 +42,10 @@ import {artifacts} from '../artifacts';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;
 
+interface ExchangeContractErrCodesToMsgs {
+    [exchangeContractErrCodes: number]: string;
+}
+
 /**
  * This class includes all the functionality related to calling methods and subscribing to
  * events of the 0x Exchange smart contract.
@@ -50,7 +54,7 @@ export class ExchangeWrapper extends ContractWrapper {
     private _exchangeContractIfExists?: ExchangeContract;
     private _orderValidationUtils: OrderValidationUtils;
     private _tokenWrapper: TokenWrapper;
-    private _exchangeContractErrCodesToMsg = {
+    private _exchangeContractErrCodesToMsg: ExchangeContractErrCodesToMsgs = {
         [ExchangeContractErrCodes.ERROR_FILL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
         [ExchangeContractErrCodes.ERROR_CANCEL_EXPIRED]: ExchangeContractErrs.OrderFillExpired,
         [ExchangeContractErrCodes.ERROR_FILL_NO_VALUE]: ExchangeContractErrs.OrderRemainingFillAmountZero,

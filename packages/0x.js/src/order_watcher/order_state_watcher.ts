@@ -133,7 +133,6 @@ export class OrderStateWatcher {
         const decodedLog = maybeDecodedLog as LogWithDecodedArgs<ContractEventArgs>;
         let makerToken: string;
         let makerAddress: string;
-        let orderHashesSet: Set<string>;
         switch (decodedLog.event) {
             case TokenEvents.Approval:
             {
@@ -143,9 +142,9 @@ export class OrderStateWatcher {
                 // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._owner;
-                orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);
-                if (!_.isUndefined(orderHashesSet)) {
-                    const orderHashes = Array.from(orderHashesSet);
+                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
                     await this._emitRevalidateOrdersAsync(orderHashes);
                 }
                 break;
@@ -159,9 +158,9 @@ export class OrderStateWatcher {
                 // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._from;
-                orderHashesSet = _.get(this._dependentOrderHashes, [makerAddress, makerToken]);
-                if (!_.isUndefined(orderHashesSet)) {
-                    const orderHashes = Array.from(orderHashesSet);
+                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
                     await this._emitRevalidateOrdersAsync(orderHashes);
                 }
                 break;
