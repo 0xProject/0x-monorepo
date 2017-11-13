@@ -1,0 +1,27 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:6.12
+    environment:
+      CONTRACTS_COMMIT_HASH: '78fe8dd'
+    steps:
+      - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
+      - run:
+          name: yarn
+          command: yarn
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ~/.cache/yarn
+      - run: wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
+      - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
+      - run:
+          name: testrpc
+          command: npm run testrpc -- --db testrpc_snapshot
+          background: true
+      - run: ./node_modules/lerna/bin/lerna run test:coverage
+      - run: ./node_modules/lerna/bin/lerna run report_test_coverage
+      - run: if [ $CIRCLE_BRANCH = "master" ]; then ./node_modules/lerna/bin/lerna run test:umd; fi
+      - run: ./node_modules/lerna/bin/lerna run lint
