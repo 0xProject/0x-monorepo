@@ -337,6 +337,29 @@ describe('OrderStateWatcher', () => {
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
             })().catch(done);
         });
+        it('should emit orderStateInvalid when within rounding error range', (done: DoneCallback) => {
+            (async () => {
+                const fillableAmountInBaseUnits = new BigNumber(10).pow(18);
+                const remainingFillableAmountInBaseUnits = new BigNumber(10).pow(2);
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerToken.address, takerToken.address, maker, taker, fillableAmountInBaseUnits,
+                );
+                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
+                zeroEx.orderStateWatcher.addOrder(signedOrder);
+
+                const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                    expect(orderState.isValid).to.be.false();
+                    const invalidOrderState = orderState as OrderStateInvalid;
+                    expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderFillRoundingError);
+                    done();
+                });
+                zeroEx.orderStateWatcher.subscribe(callback);
+                await zeroEx.exchange.cancelOrderAsync(
+                    signedOrder, fillableAmountInBaseUnits.minus(remainingFillableAmountInBaseUnits),
+                );
+            })().catch(done);
+        });
         it('should emit orderStateValid when watched order partially cancelled', (done: DoneCallback) => {
             (async () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
