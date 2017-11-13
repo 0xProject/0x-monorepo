@@ -94,9 +94,9 @@ describe('OrderStateWatcher', () => {
             zeroEx.orderStateWatcher.unsubscribe();
         });
         it('should fail when trying to subscribe twice', async () => {
-            await zeroEx.orderStateWatcher.subscribe(_.noop);
-            return expect(zeroEx.orderStateWatcher.subscribe(_.noop))
-                .to.be.eventually.rejectedWith(ZeroExError.SubscriptionAlreadyPresent);
+            zeroEx.orderStateWatcher.subscribe(_.noop);
+            expect(() => zeroEx.orderStateWatcher.subscribe(_.noop))
+                .to.throw();
         });
     });
     describe('tests with cleanup', async () => {
@@ -119,7 +119,7 @@ describe('OrderStateWatcher', () => {
                     expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
                     done();
                 });
-                await zeroEx.orderStateWatcher.subscribe(callback);
+                zeroEx.orderStateWatcher.subscribe(callback);
                 await zeroEx.token.setProxyAllowanceAsync(makerToken.address, maker, new BigNumber(0));
             })().catch(done);
         });
