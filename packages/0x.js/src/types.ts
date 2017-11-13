@@ -488,7 +488,7 @@ export interface OrderRelevantState {
     makerFeeBalance: BigNumber;
     makerFeeProxyAllowance: BigNumber;
     filledTakerTokenAmount: BigNumber;
-    canceledTakerTokenAmount: BigNumber;
+    cancelledTakerTokenAmount: BigNumber;
     remainingFillableMakerTokenAmount: BigNumber;
 }
 

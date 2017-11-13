@@ -42,7 +42,7 @@ export class OrderFilledCancelledLazyStore {
             const methodOpts = {
                 defaultBlock: BlockParamLiteral.Pending,
             };
-            const cancelledTakerAmount = await this.exchange.getCanceledTakerAmountAsync(orderHash, methodOpts);
+            const cancelledTakerAmount = await this.exchange.getCancelledTakerAmountAsync(orderHash, methodOpts);
             this.setCancelledTakerAmount(orderHash, cancelledTakerAmount);
         }
         const cachedCancelled = this.cancelledTakerAmount[orderHash];
