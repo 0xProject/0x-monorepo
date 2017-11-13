@@ -20,6 +20,7 @@ jobs:
       - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
       - run: yarn lerna:run -- bootstrap
+      - run:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
