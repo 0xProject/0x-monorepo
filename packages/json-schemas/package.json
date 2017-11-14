@@ -23,10 +23,12 @@
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/json-schemas/README.md",
   "dependencies": {
+    "es6-promisify": "^5.0.0",
     "jsonschema": "^1.2.0",
     "lodash.values": "^4.3.0"
   },
   "devDependencies": {
+    "@0xproject/tslint-config": "0.0.2",
     "@types/lodash.foreach": "^4.5.3",
     "@types/lodash.values": "^4.3.3",
     "@types/mocha": "^2.2.42",
@@ -38,8 +40,7 @@
     "mocha": "^4.0.1",
     "npm-run-all": "^4.1.1",
     "shx": "^0.2.2",
-    "tslint": "~5.5.0",
-    "tslint-config-0xproject": "^0.0.2",
-    "typescript": "^2.4.2"
+    "tslint": "5.8.0",
+    "typescript": "~2.6.1"
   }
 }
