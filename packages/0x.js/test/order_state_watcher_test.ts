@@ -61,6 +61,12 @@ describe('OrderStateWatcher', () => {
         [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
         web3Wrapper = (zeroEx as any)._web3Wrapper;
     });
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('#removeOrder', async () => {
         it('should successfully remove existing order', async () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
