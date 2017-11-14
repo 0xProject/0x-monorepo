@@ -18,6 +18,8 @@ import {constants} from '../utils/constants';
 import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
 
+const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
+
 export class OrderStateUtils {
     private balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
     private orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
@@ -118,8 +120,8 @@ export class OrderStateUtils {
             }
         }
         const minFillableTakerTokenAmountWithinNoRoundingErrorRange = signedOrder.takerTokenAmount
-                                                                           .times(1000)
-                                                                           .dividedBy(signedOrder.makerTokenAmount);
+                                                                      .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
+                                                                      .dividedBy(signedOrder.makerTokenAmount);
         if (orderRelevantState.remainingFillableTakerTokenAmount
             .lessThan(minFillableTakerTokenAmountWithinNoRoundingErrorRange)) {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
