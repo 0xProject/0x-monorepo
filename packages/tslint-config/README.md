@@ -1,4 +1,4 @@
 tslint-config
 -----------------------
 
-0xProject TypeScript Style Guide
+Lint rules related to 0xProject for TSLint.

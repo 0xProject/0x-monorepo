@@ -1,7 +1,7 @@
 {
   "name": "@0xproject/tslint-config",
   "version": "0.0.2",
-  "description": "0xProject TypeScript Style Guide",
+  "description": "Lint rules related to 0xProject for TSLint",
   "main": "tslint.json",
   "files": [
     "tslint.js",
