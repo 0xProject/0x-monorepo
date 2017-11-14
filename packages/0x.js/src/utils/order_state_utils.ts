@@ -117,11 +117,11 @@ export class OrderStateUtils {
                 throw new Error(ExchangeContractErrs.InsufficientMakerFeeAllowance);
             }
         }
-        const minimumFillableTakerTokenAmountWithingNoRoundingErrorRange = signedOrder.takerTokenAmount
+        const minFillableTakerTokenAmountWithinNoRoundingErrorRange = signedOrder.takerTokenAmount
                                                                            .times(1000)
                                                                            .dividedBy(signedOrder.makerTokenAmount);
         if (orderRelevantState.remainingFillableTakerTokenAmount
-            .lessThan(minimumFillableTakerTokenAmountWithingNoRoundingErrorRange)) {
+            .lessThan(minFillableTakerTokenAmountWithinNoRoundingErrorRange)) {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
         }
         // TODO Add linear function solver when maker token is ZRX #badass
