@@ -95,7 +95,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderHash               The hex encoded orderHash for which you would like to retrieve the
      *                                  unavailable takerAmount.
      * @param   methodOpts              Optional arguments this method accepts.
-     * @return  The amount of the order (in taker tokens) that has either been filled or canceled.
+     * @return  The amount of the order (in taker tokens) that has either been filled or cancelled.
      */
     public async getUnavailableTakerAmountAsync(orderHash: string,
                                                 methodOpts?: MethodOpts): Promise<BigNumber> {
@@ -133,7 +133,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   methodOpts   Optional arguments this method accepts.
      * @return  The amount of the order (in taker tokens) that has been cancelled.
      */
-    public async getCanceledTakerAmountAsync(orderHash: string, methodOpts?: MethodOpts): Promise<BigNumber> {
+    public async getCancelledTakerAmountAsync(orderHash: string, methodOpts?: MethodOpts): Promise<BigNumber> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync();

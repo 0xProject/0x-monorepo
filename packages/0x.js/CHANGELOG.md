@@ -1,5 +1,14 @@
 # CHANGELOG
 
+v0.24.0 - _November 13, 2017_
+------------------------
+    * Standardise on Cancelled over Canceled
+
+v0.23.0 - _November 12, 2017_
+------------------------
+    *  Fixed unhandled promise rejection error in subscribe methods (#209)
+        * Subscribe callbacks now receive an error object as their first argument
+
 v0.22.6 - _November 10, 2017_
 ------------------------
     * Add a timeout parameter to transaction awaiting (#206)

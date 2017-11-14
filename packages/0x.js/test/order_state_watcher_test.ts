@@ -61,6 +61,12 @@ describe('OrderStateWatcher', () => {
         [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
         web3Wrapper = (zeroEx as any)._web3Wrapper;
     });
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('#removeOrder', async () => {
         it('should successfully remove existing order', async () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
@@ -345,7 +351,7 @@ describe('OrderStateWatcher', () => {
                     const validOrderState = orderState as OrderStateValid;
                     expect(validOrderState.orderHash).to.be.equal(orderHash);
                     const orderRelevantState = validOrderState.orderRelevantState;
-                    expect(orderRelevantState.canceledTakerTokenAmount).to.be.bignumber.equal(cancelAmountInBaseUnits);
+                    expect(orderRelevantState.cancelledTakerTokenAmount).to.be.bignumber.equal(cancelAmountInBaseUnits);
                     done();
                 });
                 zeroEx.orderStateWatcher.subscribe(callback);
