@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.22.7 - _November 13, 2017_
+v0.23.0 - _November 13, 2017_
 ------------------------
     * Standardise on Cancelled over Canceled
 
