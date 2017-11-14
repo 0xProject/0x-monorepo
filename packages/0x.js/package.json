@@ -1,6 +1,6 @@
 {
   "name": "@0xproject/0x.js",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "description": "A javascript library for interacting with the 0x protocol",
   "keywords": [
     "0x.js",
@@ -49,7 +49,7 @@
     "node": ">=6.0.0"
   },
   "devDependencies": {
-    "@0xproject/tslint-config": "0.0.2",
+    "@0xproject/tslint-config": "^0.1.0",
     "@types/jsonschema": "^1.1.1",
     "@types/lodash": "^4.14.64",
     "@types/mocha": "^2.2.41",
@@ -87,8 +87,8 @@
     "webpack": "^3.1.0"
   },
   "dependencies": {
-    "@0xproject/assert": "0.0.3",
-    "@0xproject/json-schemas": "0.6.6",
+    "@0xproject/assert": "^0.0.4",
+    "@0xproject/json-schemas": "^0.6.7",
     "bignumber.js": "~4.1.0",
     "bn.js": "4.11.8",
     "compare-versions": "^3.0.1",

@@ -1,6 +1,6 @@
 {
   "name": "@0xproject/assert",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Provides a standard way of performing type and schema validation across 0x projects",
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/assert/README.md",
   "devDependencies": {
-    "@0xproject/tslint-config": "0.0.2",
+    "@0xproject/tslint-config": "^0.1.0",
     "@types/lodash": "^4.14.78",
     "@types/mocha": "^2.2.42",
     "@types/valid-url": "^1.0.2",
@@ -37,7 +37,7 @@
     "typescript": "^2.4.2"
   },
   "dependencies": {
-    "@0xproject/json-schemas": "0.6.6",
+    "@0xproject/json-schemas": "^0.6.7",
     "bignumber.js": "~4.1.0",
     "ethereum-address": "^0.0.4",
     "lodash": "^4.17.4",
