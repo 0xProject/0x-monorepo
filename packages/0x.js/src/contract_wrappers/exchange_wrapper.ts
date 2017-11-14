@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
-import {schemas} from '0x-json-schemas';
+import {schemas} from '@0xproject/json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {
     ECSignature,

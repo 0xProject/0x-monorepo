@@ -2,13 +2,6 @@
 # yarn lockfile v1
 
 
-"0x-json-schemas@^0.6.1", "0x-json-schemas@^0.6.5":
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/0x-json-schemas/-/0x-json-schemas-0.6.6.tgz#3852e639245474a14daa2f8c454ba83ca5df8a9c"
-  dependencies:
-    jsonschema "^1.2.0"
-    lodash.values "^4.3.0"
-
 "@types/fs-extra@^4.0.0":
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-4.0.4.tgz#72947e108f2cbeda5ab288a927399fdf6d02bd42"
@@ -36,7 +29,19 @@
   dependencies:
     jsonschema "*"
 
-"@types/lodash@^4.14.37", "@types/lodash@^4.14.64", "@types/lodash@^4.14.78":
+"@types/lodash.foreach@^4.5.3":
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.foreach/-/lodash.foreach-4.5.3.tgz#87c01a0c5d9d17eec936ca3c28897af79440cdfc"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.values@^4.3.3":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.values/-/lodash.values-4.3.3.tgz#910edc65b391782d65dc4b4d8804a0dabc5370e6"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*", "@types/lodash@^4.14.37", "@types/lodash@^4.14.64", "@types/lodash@^4.14.78":
   version "4.14.85"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.85.tgz#a16fbf942422f6eca5622b6910492c496c35069b"
 
@@ -1119,7 +1124,7 @@ chai-typescript-typings@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/chai-typescript-typings/-/chai-typescript-typings-0.0.1.tgz#433dee303b0b2978ad0dd03129df0a5afb791274"
 
-chai@^4.0.1:
+chai@^4.0.1, chai@^4.1.1:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.1.2.tgz#0f64584ba642f0f2ace2806279f4f06ca23ad73c"
   dependencies:
@@ -3546,6 +3551,10 @@ lodash._reinterpolate@~3.0.0:
 lodash.assign@^4.0.3, lodash.assign@^4.0.6:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
+
+lodash.foreach@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.foreach/-/lodash.foreach-4.5.0.tgz#1a6a35eace401280c7f06dddec35165ab27e3e53"
 
 lodash.get@^4.4.2:
   version "4.4.2"

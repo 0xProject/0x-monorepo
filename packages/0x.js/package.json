@@ -88,7 +88,7 @@
   },
   "dependencies": {
     "@0xproject/assert": "0.0.3",
-    "0x-json-schemas": "^0.6.1",
+    "@0xproject/json-schemas": "0.6.6",
     "bignumber.js": "~4.1.0",
     "compare-versions": "^3.0.1",
     "es6-promisify": "^5.0.0",

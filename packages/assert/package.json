@@ -38,7 +38,7 @@
     "typescript": "^2.4.2"
   },
   "dependencies": {
-    "0x-json-schemas": "^0.6.5",
+    "@0xproject/json-schemas": "0.6.6",
     "bignumber.js": "~4.1.0",
     "ethereum-address": "^0.0.4",
     "lodash": "^4.17.4",
