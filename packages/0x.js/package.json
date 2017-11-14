@@ -13,7 +13,7 @@
   "types": "lib/src/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "run-p build:commonjs; exit 0;",
+    "build": "run-p build:umd:prod build:commonjs; exit 0;",
     "prepublishOnly": "run-p build",
     "postpublish": "run-s release docs:json upload_docs_json",
     "release": "publish-release --assets _bundles/index.js,_bundles/index.min.js --tag $(git describe --tags) --owner 0xProject --repo 0x.js",
