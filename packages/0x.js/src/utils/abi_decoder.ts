@@ -34,7 +34,7 @@ export class AbiDecoder {
                 value = this.padZeros(new BigNumber(value).toString(16));
             } else if (param.type === SolidityTypes.Uint256 ||
                        param.type === SolidityTypes.Uint8 ||
-                       param.type === SolidityTypes.Uint ) {
+                       param.type === SolidityTypes.Uint) {
                 value = new BigNumber(value);
             }
             decodedParams[param.name] = value;
