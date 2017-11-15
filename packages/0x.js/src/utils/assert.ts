@@ -9,7 +9,8 @@ import {ECSignature} from '../types';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
-export const assert = _.extend({}, sharedAssert, {
+export const assert = {
+    ...sharedAssert,
     isValidSignature(orderHash: string, ecSignature: ECSignature, signerAddress: string) {
         const isValidSignature = signatureUtils.isValidSignature(orderHash, ecSignature, signerAddress);
         this.assert(isValidSignature, `Expected order with hash '${orderHash}' to have a valid signature`);
@@ -26,4 +27,4 @@ export const assert = _.extend({}, sharedAssert, {
         const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
         this.assert(!_.isEmpty(availableAddresses), 'No addresses were available on the provided web3 provider');
     },
-});
+};
