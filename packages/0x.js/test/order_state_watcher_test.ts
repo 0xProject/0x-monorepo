@@ -32,7 +32,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle();
 
-describe('OrderStateWatcher', () => {
+describe.only('OrderStateWatcher', () => {
     let web3: Web3;
     let zeroEx: ZeroEx;
     let tokens: Token[];
