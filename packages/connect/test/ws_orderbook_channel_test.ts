@@ -1,4 +1,5 @@
 import 'mocha';
+import * as _ from 'lodash';
 import * as dirtyChai from 'dirty-chai';
 import * as chai from 'chai';
 import {
@@ -19,10 +20,10 @@ describe('WebSocketOrderbookChannel', () => {
         limit: 100,
     };
     const emptyOrderbookChannelHandler = {
-        onSnapshot: () => { return; },
-        onUpdate: () => { return; },
-        onError: () => { return; },
-        onClose: () => { return; },
+        onSnapshot: () => { _.noop(); },
+        onUpdate: () => { _.noop(); },
+        onError: () => { _.noop(); },
+        onClose: () => { _.noop(); },
     };
     describe('#subscribe', () => {
         it('throws when subscriptionOpts does not conform to schema', () => {
