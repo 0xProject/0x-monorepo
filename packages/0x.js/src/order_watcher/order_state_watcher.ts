@@ -6,6 +6,7 @@ import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
 import {artifacts} from '../artifacts';
 import {AbiDecoder} from '../utils/abi_decoder';
+import {intervalUtils} from '../utils/interval_utils';
 import {OrderStateUtils} from '../utils/order_state_utils';
 import {
     LogEvent,
@@ -24,14 +25,14 @@ import {
     ExchangeEvents,
     TokenEvents,
     ZeroExError,
+    ExchangeContractErrs,
 } from '../types';
 import {Web3Wrapper} from '../web3_wrapper';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
-
-const DEFAULT_NUM_CONFIRMATIONS = 0;
+import {ExpirationWatcher} from './expiration_watcher';
 
 interface DependentOrderHashes {
     [makerAddress: string]: {
@@ -56,6 +57,7 @@ export class OrderStateWatcher {
     private _eventWatcher: EventWatcher;
     private _web3Wrapper: Web3Wrapper;
     private _abiDecoder: AbiDecoder;
+    private _expirationWatcher: ExpirationWatcher;
     private _orderStateUtils: OrderStateUtils;
     private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
     private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
@@ -72,6 +74,10 @@ export class OrderStateWatcher {
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
         );
+        const orderExpirationCheckingIntervalMs = _.isUndefined(config) ?
+                                                  undefined :
+                                                  config.orderExpirationCheckingIntervalMs;
+        this._expirationWatcher = new ExpirationWatcher(orderExpirationCheckingIntervalMs);
     }
     /**
      * Add an order to the orderStateWatcher. Before the order is added, it's
@@ -84,6 +90,8 @@ export class OrderStateWatcher {
         assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
         this._orderByOrderHash[orderHash] = signedOrder;
         this.addToDependentOrderHashes(signedOrder, orderHash);
+        // We don't remove orders from expirationWatcher because heap removal is linear. We just skip it later
+        this._expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec);
     }
     /**
      * Removes an order from the orderStateWatcher
@@ -111,6 +119,7 @@ export class OrderStateWatcher {
         }
         this._callbackIfExistsAsync = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
+        this._expirationWatcher.subscribe(this._onOrderExpired.bind(this));
     }
     /**
      * Ends an orderStateWatcher subscription.
@@ -123,6 +132,18 @@ export class OrderStateWatcher {
         this._orderFilledCancelledLazyStore.deleteAll();
         delete this._callbackIfExistsAsync;
         this._eventWatcher.unsubscribe();
+        this._expirationWatcher.unsubscribe();
+    }
+    private _onOrderExpired(orderHash: string): void {
+        const orderState: OrderState = {
+            isValid: false,
+            orderHash,
+            error: ExchangeContractErrs.OrderFillExpired,
+        };
+        if (!_.isUndefined(this._orderByOrderHash[orderHash])) {
+            // We need this check because we never remove the orders from expiration watcher
+            (this._callbackIfExistsAsync as OnOrderStateChangeCallback)(orderState);
+        }
     }
     private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {
         const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
