@@ -17,8 +17,6 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Greenkeeper badge](https://badges.greenkeeper.io/0xProject/0x.js.svg?token=7c22e5c72acf39d3ead8d29c5d9bb38f9096df3e643024dcedd53ab732847be1&ts=1496426342666)](https://greenkeeper.io/)
 
-[Rocket Chat](https://chat.0xproject.com)
-
 Instructions
 ------------
 
