@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.25.0 - _November 14, 2017_
+vx.x.x
 ------------------------
     * Remove support for Async callback types when used in Subscribe functions
 
