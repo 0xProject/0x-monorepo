@@ -6,7 +6,8 @@
     ],
     "scripts": {
         "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
-        "lerna:run": "lerna run"
+        "lerna:run": "lerna run",
+        "lerna:publish": "lerna run clean; lerna run build; lerna publish"
     },
     "config": {
       "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
