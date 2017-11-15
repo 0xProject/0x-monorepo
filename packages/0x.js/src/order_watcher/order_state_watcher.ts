@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {schemas} from '0x-json-schemas';
+import {schemas} from '@0xproject/json-schemas';
 import {ZeroEx} from '../0x';
 import {EventWatcher} from './event_watcher';
 import {assert} from '../utils/assert';
