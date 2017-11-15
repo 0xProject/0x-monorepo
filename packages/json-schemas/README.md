@@ -1,4 +1,13 @@
+json-schemas
+------------
+
 Contains 0x-related json schemas
+
+## Install:
+
+```bash
+npm install @0xproject/json-schemas --save
+```
 
 ## Usage:
 ```
