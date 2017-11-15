@@ -235,7 +235,7 @@ describe('OrderStateWatcher', () => {
                 );
             })().catch(done);
         });
-        describe('remainingFillable(M|T)akerTokenAmount', () => {
+        describe.only('remainingFillable(M|T)akerTokenAmount', () => {
             it('should calculate correct remaining fillable', (done: DoneCallback) => {
                 (async () => {
                     const takerFillableAmount = ZeroEx.toBaseUnitAmount(new BigNumber(10), 18);
@@ -319,6 +319,39 @@ describe('OrderStateWatcher', () => {
                     zeroEx.orderStateWatcher.subscribe(callback);
                     await zeroEx.token.transferAsync(
                         makerToken.address, maker, ZeroEx.NULL_ADDRESS, transferAmount);
+                })().catch(done);
+            });
+            it('should equal ratio amount when fee balance is lowered', (done: DoneCallback) => {
+                (async () => {
+                    const takerFee = ZeroEx.toBaseUnitAmount(new BigNumber(0), 18);
+                    const makerFee = ZeroEx.toBaseUnitAmount(new BigNumber(5), 18);
+                    const feeRecipient = taker;
+                    signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                        makerToken.address, takerToken.address, makerFee, takerFee, maker,
+                        taker, fillableAmount, feeRecipient);
+
+                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+
+                    const remainingFeeAmount = ZeroEx.toBaseUnitAmount(new BigNumber(3), 18);
+                    const transferFeeAmount = makerFee.sub(remainingFeeAmount);
+
+                    const remainingTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(3), 18);
+                    const transferTokenAmount = makerFee.sub(remainingFeeAmount);
+                    zeroEx.orderStateWatcher.addOrder(signedOrder);
+
+                    const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                        const validOrderState = orderState as OrderStateValid;
+                        const orderRelevantState = validOrderState.orderRelevantState;
+                        expect(orderRelevantState.remainingFillableMakerTokenAmount).to.be.bignumber.equal(
+                            remainingAmount);
+                        expect(orderRelevantState.remainingFillableTakerTokenAmount).to.be.bignumber.equal(
+                            remainingAmount);
+                        done();
+                    });
+                    zeroEx.orderStateWatcher.subscribe(callback);
+                    await zeroEx.token.setProxyAllowanceAsync(zrxTokenAddress, maker, remainingAmount);
+                    // await zeroEx.token.transferAsync(
+                    //     zrxTokenAddress, maker, ZeroEx.NULL_ADDRESS, transferAmount);
                 })().catch(done);
             });
         });
