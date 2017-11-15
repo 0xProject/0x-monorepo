@@ -14,7 +14,6 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "run-p build:umd:prod build:commonjs; exit 0;",
-    "release": "publish-release --assets _bundles/index.js,_bundles/index.min.js --tag $LATEST_TAG --owner 0xProject --repo 0x.js",
     "upload_docs_json": "aws s3 cp docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type aplication/json",
     "lint": "tslint src/**/*.ts test/**/*.ts",
     "test:circleci": "run-s test:coverage report_test_coverage; if [ $CIRCLE_BRANCH = \"development\" ]; then yarn test:umd; fi",
@@ -70,6 +69,7 @@
     "npm-run-all": "^4.0.2",
     "nyc": "^11.0.1",
     "opn-cli": "^3.1.0",
+    "prompt": "^1.0.0",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4",
     "semver-sort": "^0.0.4",
