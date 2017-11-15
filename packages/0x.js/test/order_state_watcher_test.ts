@@ -335,7 +335,7 @@ describe('OrderStateWatcher', () => {
                     const remainingFeeAmount = ZeroEx.toBaseUnitAmount(new BigNumber(3), 18);
                     const transferFeeAmount = makerFee.sub(remainingFeeAmount);
 
-                    const remainingTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(3), 18);
+                    const remainingTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
                     const transferTokenAmount = makerFee.sub(remainingFeeAmount);
                     zeroEx.orderStateWatcher.addOrder(signedOrder);
 
@@ -343,15 +343,13 @@ describe('OrderStateWatcher', () => {
                         const validOrderState = orderState as OrderStateValid;
                         const orderRelevantState = validOrderState.orderRelevantState;
                         expect(orderRelevantState.remainingFillableMakerTokenAmount).to.be.bignumber.equal(
-                            remainingAmount);
-                        expect(orderRelevantState.remainingFillableTakerTokenAmount).to.be.bignumber.equal(
-                            remainingAmount);
+                            remainingFeeAmount);
                         done();
                     });
                     zeroEx.orderStateWatcher.subscribe(callback);
-                    await zeroEx.token.setProxyAllowanceAsync(zrxTokenAddress, maker, remainingAmount);
-                    // await zeroEx.token.transferAsync(
-                    //     zrxTokenAddress, maker, ZeroEx.NULL_ADDRESS, transferAmount);
+                    await zeroEx.token.setProxyAllowanceAsync(zrxTokenAddress, maker, remainingFeeAmount);
+                    await zeroEx.token.transferAsync(
+                        makerToken.address, maker, ZeroEx.NULL_ADDRESS, transferTokenAmount);
                 })().catch(done);
             });
         });
