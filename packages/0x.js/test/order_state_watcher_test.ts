@@ -235,7 +235,7 @@ describe('OrderStateWatcher', () => {
                 );
             })().catch(done);
         });
-        it('should callback when Fee Token balance changes', (done: DoneCallback) => {
+        it('should callback when Fee Token transferrable changes', (done: DoneCallback) => {
             (async () => {
                 const makerFee = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
                 const takerFee = ZeroEx.toBaseUnitAmount(new BigNumber(0), 18);
