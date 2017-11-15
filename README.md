@@ -6,6 +6,9 @@
 
 This repository contains all the 0x developer tools written in TypeScript. Our hope is that these tools make it easy to build Relayers and other DApps that use the 0x protocol.
 
+[website-url]: https://0xproject.com/
+[whitepaper-url]: https://0xproject.com/pdfs/0x_white_paper.pdf
+
 [![CircleCI](https://circleci.com/gh/0xProject/0x.js.svg?style=svg&circle-token=61bf7cd8c9b4e11b132089dfcffdd1be277d1e0c)](https://circleci.com/gh/0xProject/0x.js)
 [![npm version](https://badge.fury.io/js/0x.js.svg)](https://badge.fury.io/js/0x.js)
 [![Coverage Status](https://coveralls.io/repos/github/0xProject/0x.js/badge.svg?branch=master&t=fp0cXD)](https://coveralls.io/github/0xProject/0x.js?branch=master)
