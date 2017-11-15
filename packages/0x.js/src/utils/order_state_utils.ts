@@ -111,11 +111,8 @@ export class OrderStateUtils {
             return BigNumber.min(makerTransferrable, remainingMakerAmount);
         }
         const orderToFeeRatio = totalMakerAmount.dividedToIntegerBy(makerFee);
-        console.log('Order to Fee Ratio: ', orderToFeeRatio.toString());
         let fillableTimesInMakerToken = makerTransferrable.dividedToIntegerBy(orderToFeeRatio);
-        console.log('Fillable Token Times: ', fillableTimesInMakerToken.toString());
         const fillableTimesInFeeToken = BigNumber.min(makerFeeTransferrable, remainingMakerFee);
-        console.log('Fillable Fee Times: ', fillableTimesInFeeToken.toString());
         if (makerTokenAddress === zrxTokenAddress) {
           fillableTimesInMakerToken = makerTransferrable.plus(makerFeeTransferrable)
                                                         .dividedToIntegerBy(orderToFeeRatio.plus(new BigNumber(1)));
