@@ -110,7 +110,13 @@ export class OrderStateUtils {
         if (makerFee.isZero()) {
             return BigNumber.min(makerTransferrable, remainingMakerAmount);
         }
+        if (makerFeeTransferrable.greaterThanOrEqualTo(makerFee) &&
+            makerTransferrable.greaterThanOrEqualTo(remainingMakerAmount) &&
+            makerTokenAddress !== zrxTokenAddress) {
+            return BigNumber.min(makerTransferrable, remainingMakerAmount);
+        }
         const orderToFeeRatio = totalMakerAmount.dividedToIntegerBy(makerFee);
+        console.log('order to fee ratio: ', orderToFeeRatio.toString());
         let fillableTimesInMakerToken = makerTransferrable.dividedToIntegerBy(orderToFeeRatio);
         const fillableTimesInFeeToken = BigNumber.min(makerFeeTransferrable, remainingMakerFee);
         if (makerTokenAddress === zrxTokenAddress) {
