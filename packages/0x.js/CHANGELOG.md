@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.24.0 - _November 13, 2017_
+v0.25.1 - _November 13, 2017_
 ------------------------
     * Standardise on Cancelled over Canceled
     * Add missing `DecodedLogEvent` type to exported types
