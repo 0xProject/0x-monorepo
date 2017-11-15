@@ -52,7 +52,8 @@ export class ContractWrapper {
             throw new Error(ZeroExError.SubscriptionNotFound);
         }
         if (!_.isUndefined(err)) {
-            this._filterCallbacks[filterToken](err, undefined);
+            const callback = this._filterCallbacks[filterToken];
+            callback(err, undefined);
         }
         delete this._filters[filterToken];
         delete this._filterCallbacks[filterToken];
