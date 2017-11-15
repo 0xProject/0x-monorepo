@@ -2,7 +2,7 @@
 
 Pending
 ------------------------
-    * Subscribe to ZRX Token Transfer and Approval events when maker token is different
+    * In OrderWatcher subscribe to ZRX Token Transfer and Approval events when maker token is different (#225)
 
 v0.25.1 - _November 13, 2017_
 ------------------------

@@ -213,7 +213,7 @@ export class OrderStateWatcher {
             await this._callbackIfExistsAsync(orderState);
         }
     }
-    private async addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string) {
+    private async addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string): Promise<void> {
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker])) {
             this._dependentOrderHashes[signedOrder.maker] = {};
         }
