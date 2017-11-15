@@ -1,5 +1,9 @@
 # CHANGELOG
 
+Pending
+------------------------
+    * Subscribe to ZRX Token Transfer and Approval events when maker token is different
+
 v0.25.1 - _November 13, 2017_
 ------------------------
     * Standardise on Cancelled over Canceled
