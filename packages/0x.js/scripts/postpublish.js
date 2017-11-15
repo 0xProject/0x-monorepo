@@ -28,12 +28,12 @@ getLatestTagAndVersionAsync(subPackageName)
             prerelease: false,
             reuseRelease: true,
             reuseDraftOnly: false,
-            assets: ['_bundles/index.js', '_bundles/index.min.js'],
+            assets: [__dirname + '/../_bundles/index.js', __dirname + '/../_bundles/index.min.js'],
           });
     })
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
-        return execAsync('yarn docs:json');
+        return execAsync('typedoc --excludePrivate --excludeExternals --target ES5 --json ' + __dirname + '/../docs/index.json ' + __dirname + '/..');
     })
     .then(function(result) {
         if (result.stderr !== '') {
@@ -41,13 +41,12 @@ getLatestTagAndVersionAsync(subPackageName)
         }
         console.log('POSTPUBLISH: Doc generation successful, uploading docs...');
         const s3Url = 's3://0xjs-docs-jsons/v' + version +'.json';
-        return execAsync('S3_URL=' + s3Url + ' yarn upload_docs_json');
+        return execAsync('aws s3 cp ' + __dirname + '/../docs/index.json ' + s3Url + ' --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type aplication/json');
     });
 
 function getLatestTagAndVersionAsync(subPackageName) {
     const subPackagePrefix = subPackageName + '@';
     const gitTagsCommand = 'git tags -l "' + subPackagePrefix + '*"';
-    console.log(gitTagsCommand);
     return execAsync(gitTagsCommand)
         .then(function(result) {
             if (result.stderr !== '') {
