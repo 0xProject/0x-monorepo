@@ -78,24 +78,27 @@ export class OrderStateWatcher {
      * signature is verified.
      * @param   signedOrder     The order you wish to start watching.
      */
-    public addOrder(signedOrder: SignedOrder): void {
+    public async addOrder(signedOrder: SignedOrder): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
         this._orderByOrderHash[orderHash] = signedOrder;
-        this.addToDependentOrderHashes(signedOrder, orderHash);
+        await this.addToDependentOrderHashes(signedOrder, orderHash);
     }
     /**
      * Removes an order from the orderStateWatcher
      * @param   orderHash     The orderHash of the order you wish to stop watching.
      */
-    public removeOrder(orderHash: string): void {
+    public async removeOrder(orderHash: string): Promise<void> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const signedOrder = this._orderByOrderHash[orderHash];
         if (_.isUndefined(signedOrder)) {
             return; // noop
         }
         delete this._orderByOrderHash[orderHash];
+        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const zrxTokenAddress = await exchange.getZRXTokenAddressAsync();
+        this.removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
         this.removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
     }
     /**
@@ -210,19 +213,25 @@ export class OrderStateWatcher {
             await this._callbackIfExistsAsync(orderState);
         }
     }
-    private addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string) {
+    private async addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string) {
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker])) {
             this._dependentOrderHashes[signedOrder.maker] = {};
         }
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress])) {
             this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress] = new Set();
         }
+        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const zrxTokenAddress = await exchange.getZRXTokenAddressAsync();
+        if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress])) {
+            this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress] = new Set();
+        }
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].add(orderHash);
+        this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress].add(orderHash);
     }
-    private removeFromDependentOrderHashes(makerAddress: string, makerTokenAddress: string, orderHash: string) {
-        this._dependentOrderHashes[makerAddress][makerTokenAddress].delete(orderHash);
-        if (this._dependentOrderHashes[makerAddress][makerTokenAddress].size === 0) {
-            delete this._dependentOrderHashes[makerAddress][makerTokenAddress];
+    private removeFromDependentOrderHashes(makerAddress: string, tokenAddress: string, orderHash: string) {
+        this._dependentOrderHashes[makerAddress][tokenAddress].delete(orderHash);
+        if (this._dependentOrderHashes[makerAddress][tokenAddress].size === 0) {
+            delete this._dependentOrderHashes[makerAddress][tokenAddress];
         }
         if (_.isEmpty(this._dependentOrderHashes[makerAddress])) {
             delete this._dependentOrderHashes[makerAddress];
