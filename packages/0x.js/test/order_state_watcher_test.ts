@@ -235,7 +235,7 @@ describe('OrderStateWatcher', () => {
                 );
             })().catch(done);
         });
-        describe.only('remainingFillable(M|T)akerTokenAmount', () => {
+        describe('remainingFillable(M|T)akerTokenAmount', () => {
             it('should calculate correct remaining fillable', (done: DoneCallback) => {
                 (async () => {
                     const takerFillableAmount = ZeroEx.toBaseUnitAmount(new BigNumber(10), 18);
