@@ -10,12 +10,13 @@ const subPackageName = '0x.js';
 const subPackagePrefix = subPackageName + '@';
 const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS;
 let tag;
-
+let version;
 getLatestTagAndVersionAsync(subPackageName)
     .then(function(result) {
         console.log('POSTPUBLISH: Releasing...');
         tag = result.tag;
-        const releaseName = subPackageName + ' v' + result.version;      
+        version = result.version;
+        const releaseName = subPackageName + ' v' + result.version;
         return publishReleaseAsync({
             token: githubPersonalAccessToken,
             owner: '0xProject',
@@ -30,24 +31,19 @@ getLatestTagAndVersionAsync(subPackageName)
             assets: ['_bundles/index.js', '_bundles/index.min.js'],
           });
     })
-    .then(function(err, release) {
-        if (err !== null) {
-            throw err;
-        }
-        console.log('POSTPUBLISH: Release successful, generating docs...');        
-        return execAsync('yarn docs:json');        
+    .then(function(release) {
+        console.log('POSTPUBLISH: Release successful, generating docs...');
+        return execAsync('yarn docs:json');
     })
     .then(function(result) {
         if (result.stderr !== '') {
             throw new Error(result.stderr);
         }
-        console.log('POSTPUBLISH: Doc generation successful, uploading docs...');        
-        const s3Url = 's3://0xjs-docs-jsons/v' + tag +'.json';
-        return execAsync('S3_URL=' + s3Url + ' yarn upload_docs_json');  
+        console.log('POSTPUBLISH: Doc generation successful, uploading docs...');
+        const s3Url = 's3://0xjs-docs-jsons/v' + version +'.json';
+        return execAsync('S3_URL=' + s3Url + ' yarn upload_docs_json');
     });
 
-    // "release": "publish-release --assets _bundles/index.js,_bundles/index.min.js --tag $LATEST_TAG --owner 0xProject --repo 0x.js --notes TODO --name $RELEASE_NAME",
-    
 function getLatestTagAndVersionAsync(subPackageName) {
     const subPackagePrefix = subPackageName + '@';
     const gitTagsCommand = 'git tags -l "' + subPackagePrefix + '*"';
