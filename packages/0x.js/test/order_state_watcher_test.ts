@@ -235,7 +235,7 @@ describe('OrderStateWatcher', () => {
                 );
             })().catch(done);
         });
-        it('should callback when Fee Token transferrable changes', (done: DoneCallback) => {
+        it('should trigger the callback when orders backing ZRX allowance changes', (done: DoneCallback) => {
             (async () => {
                 const makerFee = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
                 const takerFee = ZeroEx.toBaseUnitAmount(new BigNumber(0), 18);
@@ -245,8 +245,6 @@ describe('OrderStateWatcher', () => {
                 const orderHash = ZeroEx.getOrderHashHex(signedOrder);
                 await zeroEx.orderStateWatcher.addOrderAsync(signedOrder);
                 const callback = reportCallbackErrors(done)((orderState: OrderState) => {
-                    const invalidOrderState = orderState as OrderStateInvalid;
-                    expect(invalidOrderState.orderHash).to.be.equal(orderHash);
                     done();
                 });
                 zeroEx.orderStateWatcher.subscribe(callback);

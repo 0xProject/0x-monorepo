@@ -220,12 +220,12 @@ export class OrderStateWatcher {
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress])) {
             this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress] = new Set();
         }
+        this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].add(orderHash);
         const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
         const zrxTokenAddress = await exchange.getZRXTokenAddressAsync();
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress])) {
             this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress] = new Set();
         }
-        this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].add(orderHash);
         this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress].add(orderHash);
     }
     private removeFromDependentOrderHashes(makerAddress: string, tokenAddress: string, orderHash: string) {
