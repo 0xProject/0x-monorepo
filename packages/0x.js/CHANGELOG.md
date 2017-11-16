@@ -1,7 +1,8 @@
 # CHANGELOG
 
-Pending
+vx.x.x
 ------------------------
+    * Remove support for Async callback types when used in Subscribe functions
     * In OrderWatcher subscribe to ZRX Token Transfer and Approval events when maker token is different (#225)
 
 v0.25.1 - _November 13, 2017_
@@ -12,7 +13,7 @@ v0.25.1 - _November 13, 2017_
 v0.23.0 - _November 12, 2017_
 ------------------------
     *  Fixed unhandled promise rejection error in subscribe methods (#209)
-        * Subscribe callbacks now receive an error object as their first argument
+    * Subscribe callbacks now receive an error object as their first argument
 
 v0.22.6 - _November 10, 2017_
 ------------------------

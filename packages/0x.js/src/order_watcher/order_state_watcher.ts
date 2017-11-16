@@ -52,7 +52,7 @@ interface OrderByOrderHash {
 export class OrderStateWatcher {
     private _orderByOrderHash: OrderByOrderHash = {};
     private _dependentOrderHashes: DependentOrderHashes = {};
-    private _callbackIfExistsAsync?: OnOrderStateChangeCallback;
+    private _callbackIfExists?: OnOrderStateChangeCallback;
     private _eventWatcher: EventWatcher;
     private _web3Wrapper: Web3Wrapper;
     private _abiDecoder: AbiDecoder;
@@ -109,22 +109,22 @@ export class OrderStateWatcher {
      */
     public subscribe(callback: OnOrderStateChangeCallback): void {
         assert.isFunction('callback', callback);
-        if (!_.isUndefined(this._callbackIfExistsAsync)) {
+        if (!_.isUndefined(this._callbackIfExists)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
-        this._callbackIfExistsAsync = callback;
+        this._callbackIfExists = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
     }
     /**
      * Ends an orderStateWatcher subscription.
      */
     public unsubscribe(): void {
-        if (_.isUndefined(this._callbackIfExistsAsync)) {
+        if (_.isUndefined(this._callbackIfExists)) {
             throw new Error(ZeroExError.SubscriptionNotFound);
         }
         this._balanceAndProxyAllowanceLazyStore.deleteAll();
         this._orderFilledCancelledLazyStore.deleteAll();
-        delete this._callbackIfExistsAsync;
+        delete this._callbackIfExists;
         this._eventWatcher.unsubscribe();
     }
     private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {
@@ -207,10 +207,10 @@ export class OrderStateWatcher {
             // Most of these calls will never reach the network because the data is fetched from stores
             // and only updated when cache is invalidated
             const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
-            if (_.isUndefined(this._callbackIfExistsAsync)) {
+            if (_.isUndefined(this._callbackIfExists)) {
                 break; // Unsubscribe was called
             }
-            await this._callbackIfExistsAsync(orderState);
+            this._callbackIfExists(orderState);
         }
     }
     private async addToDependentOrderHashesAsync(signedOrder: SignedOrder, orderHash: string): Promise<void> {
