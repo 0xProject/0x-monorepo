@@ -78,18 +78,18 @@ export class OrderStateWatcher {
      * signature is verified.
      * @param   signedOrder     The order you wish to start watching.
      */
-    public async addOrder(signedOrder: SignedOrder): Promise<void> {
+    public async addOrderAsync(signedOrder: SignedOrder): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
         this._orderByOrderHash[orderHash] = signedOrder;
-        await this.addToDependentOrderHashes(signedOrder, orderHash);
+        await this.addToDependentOrderHashesAsync(signedOrder, orderHash);
     }
     /**
      * Removes an order from the orderStateWatcher
      * @param   orderHash     The orderHash of the order you wish to stop watching.
      */
-    public async removeOrder(orderHash: string): Promise<void> {
+    public async removeOrderAsync(orderHash: string): Promise<void> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const signedOrder = this._orderByOrderHash[orderHash];
         if (_.isUndefined(signedOrder)) {
@@ -213,7 +213,7 @@ export class OrderStateWatcher {
             await this._callbackIfExistsAsync(orderState);
         }
     }
-    private async addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string): Promise<void> {
+    private async addToDependentOrderHashesAsync(signedOrder: SignedOrder, orderHash: string): Promise<void> {
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker])) {
             this._dependentOrderHashes[signedOrder.maker] = {};
         }
