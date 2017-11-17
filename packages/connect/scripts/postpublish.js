@@ -5,7 +5,7 @@ const subPackageName = packageJSON.name;
 
 postpublish_utils.getLatestTagAndVersionAsync(subPackageName)
     .then(function(result) {
-        const releaseName = subPackageName + ' v' + result.version;
+        const releaseName = postpublish_utils.getReleaseName(subPackageName, result.version);
         const assets = [];
         return postpublish_utils.publishReleaseNotes(result.tag, releaseName, assets);
     })

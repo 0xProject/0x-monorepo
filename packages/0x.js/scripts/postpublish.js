@@ -10,10 +10,9 @@ let tag;
 let version;
 postpublish_utils.getLatestTagAndVersionAsync(subPackageName)
     .then(function(result) {
-        console.log('POSTPUBLISH: Releasing...');
         tag = result.tag;
         version = result.version;
-         const releaseName = subPackageName + ' v' + version;
+         const releaseName = postpublish_utils.getReleaseName(subPackageName, version);
          const assets = [
              __dirname + '/../_bundles/index.js',
              __dirname + '/../_bundles/index.min.js',

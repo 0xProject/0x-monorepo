@@ -44,4 +44,7 @@ module.exports = {
             assets: assets,
          });
     },
+    getReleaseName(subPackageName, version) {
+        const releaseName = subPackageName + ' v' + version;
+    },
 };
