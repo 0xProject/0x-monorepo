@@ -4,7 +4,7 @@ const packageJSON = require('../package.json');
 
 const cwd = __dirname + '/..';
 const subPackageName = packageJSON.name;
-const S3BucketPath = 's3://0xjs-docs-jsons/',
+const S3BucketPath = 's3://0xjs-docs-jsons/';
 
 let tag;
 let version;

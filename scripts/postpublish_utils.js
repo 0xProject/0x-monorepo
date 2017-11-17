@@ -46,5 +46,6 @@ module.exports = {
     },
     getReleaseName(subPackageName, version) {
         const releaseName = subPackageName + ' v' + version;
+        return releaseName;
     },
 };
