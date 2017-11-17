@@ -34,7 +34,12 @@ getLatestTagAndVersionAsync(subPackageName)
         console.log('POSTPUBLISH: Release successful, generating docs...');
 
         // return typedocApp.generateDocs([rootDir], __dirname + '/../docs/index.json');
-        return execAsync('yarn typedoc --excludePrivate --excludeExternals --target ES5 --json ' + __dirname + '/../docs/index.json ' + __dirname + '/..');
+        return execAsync(
+            'yarn typedoc --excludePrivate --excludeExternals --target ES5 --json ' + __dirname + '/../docs/index.json ' + __dirname + '/..',
+            {
+                cwd: __dirname + '/..',
+            }
+        );
     })
     .then(function(result) {
         if (result.stderr !== '') {
