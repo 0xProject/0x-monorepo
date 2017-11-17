@@ -10,7 +10,8 @@ import {ZeroEx} from '../0x';
 const DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS = 50;
 
 /**
- * This class includes all the functionality related to prunning expired orders
+ * This class includes the functionality to detect expired orders.
+ * It stores them in a min heap by expiration time and checks for expired ones every `orderExpirationCheckingIntervalMs`
  */
 export class ExpirationWatcher {
     private orderHashHeapByExpiration: Heap<string>;
