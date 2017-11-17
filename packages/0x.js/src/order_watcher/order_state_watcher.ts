@@ -142,6 +142,7 @@ export class OrderStateWatcher {
         };
         if (!_.isUndefined(this._orderByOrderHash[orderHash])) {
             // We need this check because we never remove the orders from expiration watcher
+            this.removeOrder(orderHash);
             (this._callbackIfExistsAsync as OnOrderStateChangeCallback)(orderState);
         }
     }
