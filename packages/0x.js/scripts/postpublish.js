@@ -1,8 +1,9 @@
 const execAsync = require('async-child-process').execAsync;
 const postpublish_utils = require('../../../scripts/postpublish_utils');
+const packageJSON = require('../package.json');
 
 const cwd = __dirname + '/..';
-const subPackageName = '0x.js';
+const subPackageName = packageJSON.name;
 
 let tag;
 let version;
