@@ -25,7 +25,7 @@ getLatestTagAndVersionAsync(subPackageName)
             name: releaseName,
             notes: 'TODO',
             draft: false,
-            prerelease: false,
+            prerelease: true,
             reuseRelease: true,
             reuseDraftOnly: false,
             assets: [__dirname + '/../_bundles/index.js', __dirname + '/../_bundles/index.min.js'],
