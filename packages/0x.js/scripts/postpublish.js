@@ -7,6 +7,7 @@ const typedoc = require('typedoc');
 const publishReleaseAsync = promisify(publishRelease);
 const subPackageName = '0x.js';
 const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS;
+
 let tag;
 let version;
 getLatestTagAndVersionAsync(subPackageName)
@@ -32,20 +33,6 @@ getLatestTagAndVersionAsync(subPackageName)
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
 
-        // const rootDir = __dirname + '/../src/index.ts';
-        // const typedocApp = new typedoc.Application({
-        //     excludePrivate: true,
-        //     excludeExternals: true,
-        //     target: 'ES5',
-        // });
-
-        // console.log(typedocApp.options);
-        // typedocApp.options.setValue('excludePrivate', true);
-        // typedocApp.options.setValue('excludeExternals', true);
-        // typedocApp.options.setValue('json', true);
-        // typedocApp.options.setValue('target', 'ES5');
-
-
         // return typedocApp.generateDocs([rootDir], __dirname + '/../docs/index.json');
         return execAsync('yarn typedoc --excludePrivate --excludeExternals --target ES5 --json ' + __dirname + '/../docs/index.json ' + __dirname + '/..');
     })
@@ -56,8 +43,8 @@ getLatestTagAndVersionAsync(subPackageName)
         console.log('POSTPUBLISH: Doc generation successful, uploading docs...');
         const s3Url = 's3://0xjs-docs-jsons/v' + version +'.json';
         return execAsync('aws s3 cp ' + __dirname + '/../docs/index.json ' + s3Url + ' --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type aplication/json');
-    }).catch (function(error) {
-        throw error;
+    }).catch (function(err) {
+        throw err;
     });
 
 function getLatestTagAndVersionAsync(subPackageName) {
