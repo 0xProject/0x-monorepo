@@ -6,8 +6,6 @@ export {
     ECSignature,
     ZeroExError,
     EventCallback,
-    EventCallbackAsync,
-    EventCallbackSync,
     ExchangeContractErrs,
     ContractEvent,
     Token,
