@@ -7,6 +7,7 @@ v0.25.1 - _November 13, 2017_
 ------------------------
     * Standardise on Cancelled over Canceled
     * Add missing `DecodedLogEvent` type to exported types
+    * Normalized the transactionReceipt status to be `null|0|1`, 1 meaning transaction execution successful, 0 unsuccessful and `null` if it is a pre-byzantinium transaction. 
 
 v0.23.0 - _November 12, 2017_
 ------------------------
