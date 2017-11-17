@@ -4,6 +4,7 @@ const publishRelease = require('publish-release');
 const promisify = require('es6-promisify');
 const typedoc = require('typedoc');
 
+const cwd = __dirname + '/..';
 const publishReleaseAsync = promisify(publishRelease);
 const subPackageName = '0x.js';
 const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS;
@@ -34,9 +35,9 @@ getLatestTagAndVersionAsync(subPackageName)
         console.log('POSTPUBLISH: Release successful, generating docs...');
 
         return execAsync(
-            'yarn docs:json ' + __dirname + '/../docs/index.json ' + __dirname + '/..',
+            'JSON_FILE_PATH=' +  __dirname + '/../docs/index.json PROJECT_DIR=' + __dirname + '/.. yarn docs:json',
             {
-                cwd: __dirname + '/..',
+                cwd,
             }
         );
     })
@@ -47,7 +48,9 @@ getLatestTagAndVersionAsync(subPackageName)
         const fileName = 'v' + version + '.json';
         console.log('POSTPUBLISH: Doc generation successful, uploading docs... as ', fileName);
         const s3Url = 's3://0xjs-docs-jsons/' + fileName;
-        return execAsync('aws s3 cp ' + __dirname + '/../docs/index.json ' + s3Url + ' --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type aplication/json');
+        return execAsync('S3_URL=' + s3Url + ' yarn upload_docs_json', {
+            cwd,
+        });
     }).catch (function(err) {
         throw err;
     });
