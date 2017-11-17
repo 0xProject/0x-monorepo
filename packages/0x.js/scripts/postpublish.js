@@ -40,8 +40,9 @@ getLatestTagAndVersionAsync(subPackageName)
         if (result.stderr !== '') {
             throw new Error(result.stderr);
         }
-        console.log('POSTPUBLISH: Doc generation successful, uploading docs...');
-        const s3Url = 's3://0xjs-docs-jsons/v' + version +'.json';
+        const fileName = 'v' + version + '.json';
+        console.log('POSTPUBLISH: Doc generation successful, uploading docs... as ', fileName);
+        const s3Url = 's3://0xjs-docs-jsons/' + fileName;
         return execAsync('aws s3 cp ' + __dirname + '/../docs/index.json ' + s3Url + ' --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type aplication/json');
     }).catch (function(err) {
         throw err;
