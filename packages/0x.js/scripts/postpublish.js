@@ -4,6 +4,7 @@ const packageJSON = require('../package.json');
 
 const cwd = __dirname + '/..';
 const subPackageName = packageJSON.name;
+const S3BucketPath = 's3://0xjs-docs-jsons/',
 
 let tag;
 let version;
@@ -34,7 +35,7 @@ postpublish_utils.getLatestTagAndVersionAsync(subPackageName)
         }
         const fileName = 'v' + version + '.json';
         console.log('POSTPUBLISH: Doc generation successful, uploading docs... as ', fileName);
-        const s3Url = 's3://0xjs-docs-jsons/' + fileName;
+        const s3Url = S3BucketPath + fileName;
         return execAsync('S3_URL=' + s3Url + ' yarn upload_docs_json', {
             cwd,
         });
