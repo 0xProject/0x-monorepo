@@ -82,6 +82,9 @@ export class Heap<T> {
                     }
                 }
             }
+            if (swap === n) {
+                break;
+            }
             this.content[n] = this.content[swap];
             this.content[swap] = element;
             n = swap;
