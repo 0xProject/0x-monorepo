@@ -28,14 +28,13 @@ getLatestTagAndVersionAsync(subPackageName)
             reuseRelease: true,
             reuseDraftOnly: false,
             assets: [__dirname + '/../_bundles/index.js', __dirname + '/../_bundles/index.min.js'],
-          });
+         });
     })
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
 
-        // return typedocApp.generateDocs([rootDir], __dirname + '/../docs/index.json');
         return execAsync(
-            'yarn typedoc --excludePrivate --excludeExternals --target ES5 --json ' + __dirname + '/../docs/index.json ' + __dirname + '/..',
+            'yarn docs:json ' + __dirname + '/../docs/index.json ' + __dirname + '/..',
             {
                 cwd: __dirname + '/..',
             }

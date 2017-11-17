@@ -14,6 +14,7 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "run-p build:umd:prod build:commonjs; exit 0;",
+    "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $1 $2",
     "lint": "tslint src/**/*.ts test/**/*.ts",
     "test:circleci": "run-s test:coverage report_test_coverage; if [ $CIRCLE_BRANCH = \"development\" ]; then yarn test:umd; fi",
     "test": "run-s clean test:commonjs",
