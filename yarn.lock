@@ -7,8 +7,8 @@
   resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-5.12.2.tgz#8c96517ff74303031c65c5da2d99858e34c844d2"
 
 "@types/fs-extra@^4.0.0":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-4.0.4.tgz#72947e108f2cbeda5ab288a927399fdf6d02bd42"
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-4.0.5.tgz#8aa6033c0e87c653b09a6711686916864b48ec9e"
   dependencies:
     "@types/node" "*"
 
@@ -53,7 +53,11 @@
   version "0.0.28"
   resolved "https://registry.yarnpkg.com/@types/marked/-/marked-0.0.28.tgz#44ba754e9fa51432583e8eb30a7c4dd249b52faa"
 
-"@types/minimatch@*", "@types/minimatch@^2.0.29":
+"@types/minimatch@*":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.1.tgz#b683eb60be358304ef146f5775db4c0e3696a550"
+
+"@types/minimatch@^2.0.29":
   version "2.0.29"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-2.0.29.tgz#5002e14f75e2d71e564281df0431c8c1b4a2a36a"
 
@@ -70,8 +74,8 @@
   resolved "https://registry.yarnpkg.com/@types/query-string/-/query-string-5.0.1.tgz#6cb41c724cb1644d56c2d1dae7c7b204e706b39e"
 
 "@types/shelljs@^0.7.0":
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.7.5.tgz#5834fb7385d1137bd2be5842f2c278ac36a117f4"
+  version "0.7.6"
+  resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.7.6.tgz#4ac7ca01c191ba65b8e2bf50543c5560084d8d27"
   dependencies:
     "@types/glob" "*"
     "@types/node" "*"
@@ -322,6 +326,12 @@ assert@^1.1.1:
 assertion-error@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/assertion-error/-/assertion-error-1.0.2.tgz#13ca515d86206da0bac66e834dd397d87581094c"
+
+async-child-process@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/async-child-process/-/async-child-process-1.1.1.tgz#27d0a598b5738707f9898c048bd231340583747b"
+  dependencies:
+    babel-runtime "^6.11.6"
 
 async-each@^1.0.0:
   version "1.0.1"
@@ -740,7 +750,7 @@ babel-register@^6.26.0:
     mkdirp "^0.5.1"
     source-map-support "^0.4.15"
 
-babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.26.0:
+babel-runtime@^6.11.6, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   dependencies:
@@ -4500,9 +4510,9 @@ public-encrypt@^4.0.0:
     parse-asn1 "^5.0.0"
     randombytes "^2.0.1"
 
-publish-release@^1.3.3:
+publish-release@0xproject/publish-release:
   version "1.3.3"
-  resolved "https://registry.yarnpkg.com/publish-release/-/publish-release-1.3.3.tgz#6cd11df835e14c13b0e08a35d3fb992b918bec3c"
+  resolved "https://codeload.github.com/0xproject/publish-release/tar.gz/c67c546726deecabd0cb35f9873afc912f862bd3"
   dependencies:
     async "^0.9.0"
     ghauth "^2.0.0"
@@ -4979,7 +4989,14 @@ semver-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/semver-regex/-/semver-regex-1.0.0.tgz#92a4969065f9c70c694753d55248fc68f8f652c9"
 
-"semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@~5.4.1:
+semver-sort@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/semver-sort/-/semver-sort-0.0.4.tgz#34fdbddc6a6b2b4161398c3c4dba56243bfeaa8b"
+  dependencies:
+    semver "^5.0.3"
+    semver-regex "^1.0.0"
+
+"semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.0.3, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@~5.4.1:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
 
