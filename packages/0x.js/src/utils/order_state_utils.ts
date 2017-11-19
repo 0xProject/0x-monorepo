@@ -17,6 +17,7 @@ import {utils} from '../utils/utils';
 import {constants} from '../utils/constants';
 import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
+import { TokenTransferProxyWrapper } from '../contract_wrappers/token_transfer_proxy_wrapper';
 
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
@@ -84,16 +85,16 @@ export class OrderStateUtils {
         const transferrableFeeTokenAmount = BigNumber.min([makerFeeProxyAllowance, makerFeeBalance]);
 
         let remainingFillableMakerTokenAmount;
-        if (signedOrder.makerFee.isZero() ||
-             (transferrableFeeTokenAmount.greaterThanOrEqualTo(remainingFeeTokenAmount) &&
-              transferrableMakerTokenAmount.greaterThanOrEqualTo(remainingMakerTokenAmount) &&
-              signedOrder.makerTokenAddress !== zrxTokenAddress)) {
-            remainingFillableMakerTokenAmount = remainingMakerTokenAmount;
+        if ((signedOrder.makerTokenAddress !== zrxTokenAddress || signedOrder.makerFee.isZero())) {
+            remainingFillableMakerTokenAmount = this.calculateFillableMakerTokenAmount(
+                  transferrableMakerTokenAmount, transferrableFeeTokenAmount, remainingMakerTokenAmount,
+                  remainingFeeTokenAmount, totalMakerTokenAmount, signedOrder.makerFee, signedOrder.makerTokenAddress,
+                  zrxTokenAddress);
         } else {
-            remainingFillableMakerTokenAmount = this.calculatePartiallyFillableMakerTokenAmount(
-              transferrableMakerTokenAmount, transferrableFeeTokenAmount, remainingMakerTokenAmount,
-              remainingFeeTokenAmount, totalMakerTokenAmount, signedOrder.makerFee, signedOrder.makerTokenAddress,
-              zrxTokenAddress);
+            remainingFillableMakerTokenAmount = this.calculatePooledFillableMakerTokenAmount(
+                  transferrableMakerTokenAmount, transferrableFeeTokenAmount, remainingMakerTokenAmount,
+                  remainingFeeTokenAmount, totalMakerTokenAmount, signedOrder.makerFee, signedOrder.makerTokenAddress,
+                  zrxTokenAddress);
         }
 
         const remainingFillableTakerTokenAmount = remainingFillableMakerTokenAmount
@@ -111,8 +112,44 @@ export class OrderStateUtils {
         };
         return orderRelevantState;
     }
-    private calculatePartiallyFillableMakerTokenAmount(makerTransferrableAmount: BigNumber, makerFeeTransferrableAmount: BigNumber,
-                                                       remainingMakerAmount: BigNumber, remainingMakerFeeAmount: BigNumber,
+    private calculateFillableMakerTokenAmount(makerTransferrableAmount: BigNumber,
+                                              makerFeeTransferrableAmount: BigNumber,
+                                              remainingMakerAmount: BigNumber,
+                                              remainingMakerFeeAmount: BigNumber,
+                                              totalMakerAmount: BigNumber, makerFeeAmount: BigNumber,
+                                              makerTokenAddress: string, zrxTokenAddress: string): BigNumber {
+        if (makerFeeAmount.isZero()) {
+            return BigNumber.min(remainingMakerAmount, makerTransferrableAmount);
+        } else if (makerTransferrableAmount.gte(remainingMakerAmount) &&
+                   makerFeeTransferrableAmount.gte(remainingMakerFeeAmount)) {
+            return makerTransferrableAmount;
+        } else {
+            return this.calculatePartiallyFillableMakerTokenAmount(
+              makerTransferrableAmount, makerFeeTransferrableAmount, remainingMakerAmount,
+              remainingMakerFeeAmount, totalMakerAmount, makerFeeAmount, makerTokenAddress,
+              zrxTokenAddress);
+        }
+    }
+    private calculatePooledFillableMakerTokenAmount(makerTransferrableAmount: BigNumber,
+                                                    makerFeeTransferrableAmount: BigNumber,
+                                                    remainingMakerAmount: BigNumber,
+                                                    remainingMakerFeeAmount: BigNumber,
+                                                    totalMakerAmount: BigNumber, makerFeeAmount: BigNumber,
+                                                    makerTokenAddress: string, zrxTokenAddress: string): BigNumber {
+        if (makerTransferrableAmount.plus(makerFeeTransferrableAmount).gte(
+            remainingMakerAmount.plus(remainingMakerFeeAmount))) {
+            return remainingMakerAmount;
+        } else {
+            return this.calculatePartiallyFillableMakerTokenAmount(
+              makerTransferrableAmount, makerFeeTransferrableAmount, remainingMakerAmount,
+              remainingMakerFeeAmount, totalMakerAmount, makerFeeAmount, makerTokenAddress,
+              zrxTokenAddress);
+        }
+    }
+    private calculatePartiallyFillableMakerTokenAmount(makerTransferrableAmount: BigNumber,
+                                                       makerFeeTransferrableAmount: BigNumber,
+                                                       remainingMakerAmount: BigNumber,
+                                                       remainingMakerFeeAmount: BigNumber,
                                                        totalMakerAmount: BigNumber, makerFeeAmount: BigNumber,
                                                        makerTokenAddress: string, zrxTokenAddress: string): BigNumber {
         const orderToFeeRatio = totalMakerAmount.dividedToIntegerBy(makerFeeAmount);
@@ -121,7 +158,8 @@ export class OrderStateUtils {
         if (makerTokenAddress === zrxTokenAddress) {
             const totalFeeTokenPool = makerTransferrableAmount.plus(makerFeeTransferrableAmount);
             fillableTimesInMakerToken = totalFeeTokenPool.dividedToIntegerBy(
-                                                             orderToFeeRatio.plus(ZeroEx.toBaseUnitAmount(new BigNumber(1), 18)));
+                                                             orderToFeeRatio.plus(
+                                                                 ZeroEx.toBaseUnitAmount(new BigNumber(1), 18)));
 
         }
         return BigNumber.min(fillableTimesInMakerToken.times(orderToFeeRatio),
