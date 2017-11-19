@@ -88,7 +88,7 @@ export class OrderStateUtils {
              (transferrableFeeTokenAmount.greaterThanOrEqualTo(remainingFeeTokenAmount) &&
               transferrableMakerTokenAmount.greaterThanOrEqualTo(remainingMakerTokenAmount) &&
               signedOrder.makerTokenAddress !== zrxTokenAddress)) {
-            remainingFillableMakerTokenAmount = transferrableMakerTokenAmount;
+            remainingFillableMakerTokenAmount = remainingMakerTokenAmount;
         } else {
             remainingFillableMakerTokenAmount = this.calculatePartiallyFillableMakerTokenAmount(
               transferrableMakerTokenAmount, transferrableFeeTokenAmount, remainingMakerTokenAmount,
