@@ -85,7 +85,7 @@ export class OrderStateUtils {
 
         let remainingFillableMakerTokenAmount;
         if (signedOrder.makerFee.isZero() ||
-             (transferrableFeeTokenAmount.greaterThanOrEqualTo(signedOrder.makerFee) &&
+             (transferrableFeeTokenAmount.greaterThanOrEqualTo(remainingFeeTokenAmount) &&
               transferrableMakerTokenAmount.greaterThanOrEqualTo(remainingMakerTokenAmount) &&
               signedOrder.makerTokenAddress !== zrxTokenAddress)) {
             remainingFillableMakerTokenAmount = transferrableMakerTokenAmount;
@@ -111,17 +111,17 @@ export class OrderStateUtils {
         };
         return orderRelevantState;
     }
-    private calculatePartiallyFillableMakerTokenAmount(makerTransferrable: BigNumber, makerFeeTransferrable: BigNumber,
-                                                       remainingMakerAmount: BigNumber, remainingMakerFee: BigNumber,
-                                                       totalMakerAmount: BigNumber, makerFee: BigNumber,
+    private calculatePartiallyFillableMakerTokenAmount(makerTransferrableAmount: BigNumber, makerFeeTransferrableAmount: BigNumber,
+                                                       remainingMakerAmount: BigNumber, remainingMakerFeeAmount: BigNumber,
+                                                       totalMakerAmount: BigNumber, makerFeeAmount: BigNumber,
                                                        makerTokenAddress: string, zrxTokenAddress: string): BigNumber {
-        const orderToFeeRatio = totalMakerAmount.dividedToIntegerBy(makerFee);
-        let fillableTimesInMakerToken = makerTransferrable.dividedToIntegerBy(orderToFeeRatio);
-        const fillableTimesInFeeToken = BigNumber.min(makerFeeTransferrable, remainingMakerFee);
+        const orderToFeeRatio = totalMakerAmount.dividedToIntegerBy(makerFeeAmount);
+        const fillableTimesInFeeToken = BigNumber.min(makerFeeTransferrableAmount, remainingMakerFeeAmount);
+        let fillableTimesInMakerToken = makerTransferrableAmount.dividedToIntegerBy(orderToFeeRatio);
         if (makerTokenAddress === zrxTokenAddress) {
-          fillableTimesInMakerToken = makerTransferrable.plus(makerFeeTransferrable)
-                                                        .dividedToIntegerBy(orderToFeeRatio.plus(
-                                                            ZeroEx.toBaseUnitAmount(new BigNumber(1), 18)));
+            const totalFeeTokenPool = makerTransferrableAmount.plus(makerFeeTransferrableAmount);
+            fillableTimesInMakerToken = totalFeeTokenPool.dividedToIntegerBy(
+                                                             orderToFeeRatio.plus(ZeroEx.toBaseUnitAmount(new BigNumber(1), 18)));
 
         }
         return BigNumber.min(fillableTimesInMakerToken.times(orderToFeeRatio),
