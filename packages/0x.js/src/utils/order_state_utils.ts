@@ -17,7 +17,6 @@ import {utils} from '../utils/utils';
 import {constants} from '../utils/constants';
 import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
-import { TokenTransferProxyWrapper } from '../contract_wrappers/token_transfer_proxy_wrapper';
 
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
