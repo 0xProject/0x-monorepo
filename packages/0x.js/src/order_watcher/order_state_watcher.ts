@@ -77,7 +77,12 @@ export class OrderStateWatcher {
         const orderExpirationCheckingIntervalMsIfExists = _.isUndefined(config) ?
                                                           undefined :
                                                           config.orderExpirationCheckingIntervalMs;
-        this._expirationWatcher = new ExpirationWatcher(orderExpirationCheckingIntervalMsIfExists);
+        const expirationMarginIfExistsMs = _.isUndefined(config) ?
+                                           undefined :
+                                           config.expirationMarginMs;
+        this._expirationWatcher = new ExpirationWatcher(
+            expirationMarginIfExistsMs, orderExpirationCheckingIntervalMsIfExists,
+        );
     }
     /**
      * Add an order to the orderStateWatcher. Before the order is added, it's
@@ -91,7 +96,8 @@ export class OrderStateWatcher {
         this._orderByOrderHash[orderHash] = signedOrder;
         this.addToDependentOrderHashes(signedOrder, orderHash);
         // We don't remove orders from expirationWatcher because heap removal is linear. We just skip it later
-        this._expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec);
+        const expirationUnixTimestampMs = signedOrder.expirationUnixTimestampSec.times(1000);
+        this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);
     }
     /**
      * Removes an order from the orderStateWatcher
