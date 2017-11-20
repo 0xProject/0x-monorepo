@@ -10,10 +10,8 @@ import {utils} from '../src/utils/utils';
 import {Web3Wrapper} from '../src/web3_wrapper';
 import {TokenUtils} from './utils/token_utils';
 import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
-import {
-    ZeroEx,
-    Token,
-} from '../src';
+import {Token} from '../src/types';
+import {ZeroEx} from '../src';
 import {FillScenarios} from './utils/fill_scenarios';
 import {DoneCallback} from '../src/types';
 import {reportCallbackErrors} from './utils/report_callback_errors';
