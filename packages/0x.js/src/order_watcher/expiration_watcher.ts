@@ -35,7 +35,10 @@ export class ExpirationWatcher {
         );
     }
     public unsubscribe(): void {
-        intervalUtils.clearAsyncExcludingInterval(this.orderExpirationCheckingIntervalIdIfExists as NodeJS.Timer);
+        if (_.isUndefined(this.orderExpirationCheckingIntervalIdIfExists)) {
+            throw new Error(ZeroExError.SubscriptionNotFound);
+        }
+        intervalUtils.clearAsyncExcludingInterval(this.orderExpirationCheckingIntervalIdIfExists);
         delete this.callbackIfExists;
     }
     public addOrder(orderHash: string, expirationUnixTimestampSec: BigNumber): void {
