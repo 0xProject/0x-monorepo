@@ -15,14 +15,13 @@ const DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS = 50;
  */
 export class ExpirationWatcher {
     private orderHashHeapByExpiration: Heap<string>;
-    private expiration: {[orderHash: string]: BigNumber};
+    private expiration: {[orderHash: string]: BigNumber} = {};
     private callbackIfExists?: (orderHash: string) => void;
     private orderExpirationCheckingIntervalMs: number;
     private orderExpirationCheckingIntervalIdIfExists?: NodeJS.Timer;
     constructor(orderExpirationCheckingIntervalMs?: number) {
         this.orderExpirationCheckingIntervalMs = orderExpirationCheckingIntervalMs ||
                                                  DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
-        this.expiration = {};
         const scoreFunction = ((orderHash: string) => {
             return this.expiration[orderHash].toNumber();
         }).bind(this);
