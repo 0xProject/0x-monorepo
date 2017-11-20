@@ -22,9 +22,7 @@ export class ExpirationWatcher {
     constructor(orderExpirationCheckingIntervalMs?: number) {
         this.orderExpirationCheckingIntervalMs = orderExpirationCheckingIntervalMs ||
                                                  DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
-        const scoreFunction = ((orderHash: string) => {
-            return this.expiration[orderHash].toNumber();
-        }).bind(this);
+        const scoreFunction = (orderHash: string) => this.expiration[orderHash].toNumber();
         this.orderHashHeapByExpiration = new Heap(scoreFunction);
     }
     public subscribe(callback: (orderHash: string) => void): void {
