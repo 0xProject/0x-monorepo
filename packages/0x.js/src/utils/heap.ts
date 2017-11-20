@@ -49,7 +49,6 @@ export class Heap<T> {
             n = parentN;
         }
     }
-
     private sinkDown(n: number) {
         // Look up the target element and its score.
         const length = this.content.length;
