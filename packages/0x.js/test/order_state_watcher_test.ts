@@ -321,6 +321,32 @@ describe('OrderStateWatcher', () => {
                         makerToken.address, maker, ZeroEx.NULL_ADDRESS, transferAmount);
                 })().catch(done);
             });
+            it('should equal remaining amount when partially cancelled and order has fees', (done: DoneCallback) => {
+                (async () => {
+                    const takerFee = ZeroEx.toBaseUnitAmount(new BigNumber(0), 18);
+                    const makerFee = ZeroEx.toBaseUnitAmount(new BigNumber(5), 18);
+                    const feeRecipient = taker;
+                    signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                        makerToken.address, takerToken.address, makerFee, takerFee, maker,
+                        taker, fillableAmount, feeRecipient);
+
+                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
+
+                    const remainingTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(4), 18);
+                    const transferTokenAmount = makerFee.sub(remainingTokenAmount);
+                    zeroEx.orderStateWatcher.addOrder(signedOrder);
+
+                    const callback = reportCallbackErrors(done)((orderState: OrderState) => {
+                        const validOrderState = orderState as OrderStateValid;
+                        const orderRelevantState = validOrderState.orderRelevantState;
+                        expect(orderRelevantState.remainingFillableMakerTokenAmount).to.be.bignumber.equal(
+                            remainingTokenAmount);
+                        done();
+                    });
+                    zeroEx.orderStateWatcher.subscribe(callback);
+                    await zeroEx.exchange.cancelOrderAsync(signedOrder, transferTokenAmount);
+                })().catch(done);
+            });
             it('should equal ratio amount when fee balance is lowered', (done: DoneCallback) => {
                 (async () => {
                     const takerFee = ZeroEx.toBaseUnitAmount(new BigNumber(0), 18);

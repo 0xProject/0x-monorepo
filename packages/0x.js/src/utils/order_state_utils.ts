@@ -131,7 +131,7 @@ export class OrderStateUtils {
             return BigNumber.min(remainingMakerAmount, transferrableMakerTokenAmount);
         } else if (transferrableMakerTokenAmount.gte(remainingMakerAmount) &&
                    transferrableMakerFeeTokenAmount.gte(remainingMakerFeeAmount)) {
-            return transferrableMakerTokenAmount;
+            return remainingMakerAmount;
         } else {
             return this.calculatePartiallyFillableMakerTokenAmount(
               transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerAmount,
