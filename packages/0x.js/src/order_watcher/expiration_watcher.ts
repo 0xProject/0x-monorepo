@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import {BigNumber} from 'bignumber.js';
 import {utils} from '../utils/utils';
 import {intervalUtils} from '../utils/interval_utils';
-import {SignedOrder} from '../types';
+import {SignedOrder, ZeroExError} from '../types';
 import {Heap} from '../utils/heap';
 import {ZeroEx} from '../0x';
 
@@ -26,6 +26,9 @@ export class ExpirationWatcher {
         this.orderHashHeapByExpiration = new Heap(scoreFunction);
     }
     public subscribe(callback: (orderHash: string) => void): void {
+        if (!_.isUndefined(this.callbackIfExists)) {
+            throw new Error(ZeroExError.SubscriptionAlreadyPresent);
+        }
         this.callbackIfExists = callback;
         this.orderExpirationCheckingIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             this.pruneExpiredOrders.bind(this), this.orderExpirationCheckingIntervalMs,
