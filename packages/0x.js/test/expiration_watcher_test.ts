@@ -66,8 +66,8 @@ describe('ExpirationWatcher', () => {
     });
     it('correctly emits events when order expires', (done: DoneCallback) => {
         (async () => {
-            const orderLifetime = 60;
-            const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetime);
+            const orderLifetimeS = 60;
+            const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeS);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 expirationUnixTimestampSec,
@@ -80,13 +80,13 @@ describe('ExpirationWatcher', () => {
                 done();
             });
             expirationWatcher.subscribe(callback);
-            timer.tick(orderLifetime * 1000);
+            timer.tick(orderLifetimeS * 1000);
         })().catch(done);
     });
     it('doesn\'t emit events before order expires', (done: DoneCallback) => {
         (async () => {
-            const orderLifetime = 60;
-            const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetime);
+            const orderLifetimeS = 60;
+            const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeS);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 expirationUnixTimestampSec,
@@ -97,7 +97,7 @@ describe('ExpirationWatcher', () => {
                 done(new Error('Emited expiration vent before the order actually expired'));
             });
             expirationWatcher.subscribe(callback);
-            const notEnoughTime = orderLifetime - 1;
+            const notEnoughTime = orderLifetimeS - 1;
             timer.tick(notEnoughTime * 1000);
             done();
         })().catch(done);
