@@ -78,14 +78,14 @@ export class OrderStateUtils {
         const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
         const remainingMakerTokenAmount = remainingTakerTokenAmount.times(totalMakerTokenAmount)
                                                                    .dividedToIntegerBy(totalTakerTokenAmount);
-        const remainingFeeTokenAmount = remainingTakerTokenAmount.times(signedOrder.makerFee)
-                                                                   .dividedToIntegerBy(totalTakerTokenAmount);
+        const remainingMakerFeeAmount = remainingTakerTokenAmount.times(signedOrder.makerFee)
+                                                                 .dividedToIntegerBy(totalTakerTokenAmount);
         const transferrableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
         const transferrableFeeTokenAmount = BigNumber.min([makerFeeProxyAllowance, makerFeeBalance]);
 
         const remainingFillableMakerTokenAmount = this.calculateRemainingMakerTokenAmount(
                   transferrableMakerTokenAmount, transferrableFeeTokenAmount, remainingMakerTokenAmount,
-                  remainingFeeTokenAmount, totalMakerTokenAmount, signedOrder.makerFee, signedOrder.makerTokenAddress,
+                  remainingMakerFeeAmount, totalMakerTokenAmount, signedOrder.makerFee, signedOrder.makerTokenAddress,
                   zrxTokenAddress);
 
         const remainingFillableTakerTokenAmount = remainingFillableMakerTokenAmount
@@ -107,52 +107,63 @@ export class OrderStateUtils {
                                                transferrableMakerFeeTokenAmount: BigNumber,
                                                remainingMakerAmount: BigNumber,
                                                remainingMakerFeeAmount: BigNumber,
-                                               totalMakerAmount: BigNumber, makerFeeAmount: BigNumber,
-                                               makerTokenAddress: string, zrxTokenAddress: string): BigNumber {
+                                               totalMakerAmount: BigNumber,
+                                               makerFeeAmount: BigNumber,
+                                               makerTokenAddress: string,
+                                               zrxTokenAddress: string): BigNumber {
         if ((makerTokenAddress !== zrxTokenAddress || makerFeeAmount.isZero())) {
-            return this.calculateFillableMakerTokenAmount(
+            return this.computeFillableMakerTokenAmountWhenMakerTokenIsNotZRX(
                   transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerAmount,
                   remainingMakerFeeAmount, totalMakerAmount, makerFeeAmount, makerTokenAddress,
                   zrxTokenAddress);
         } else {
-            return this.calculatePooledFillableMakerTokenAmount(
+            return this.computeFillableMakerTokenAmountWhenMakerTokenIsZRX(
                   transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerAmount,
                   remainingMakerFeeAmount, totalMakerAmount, makerFeeAmount, makerTokenAddress,
                   zrxTokenAddress);
         }
     }
-    private calculateFillableMakerTokenAmount(transferrableMakerTokenAmount: BigNumber,
-                                              transferrableMakerFeeTokenAmount: BigNumber,
-                                              remainingMakerAmount: BigNumber,
-                                              remainingMakerFeeAmount: BigNumber,
-                                              totalMakerAmount: BigNumber, makerFeeAmount: BigNumber,
-                                              makerTokenAddress: string, zrxTokenAddress: string): BigNumber {
+    private computeFillableMakerTokenAmountWhenMakerTokenIsNotZRX(transferrableMakerTokenAmount: BigNumber,
+                                                                  transferrableMakerFeeTokenAmount: BigNumber,
+                                                                  remainingMakerAmount: BigNumber,
+                                                                  remainingMakerFeeAmount: BigNumber,
+                                                                  totalMakerAmount: BigNumber,
+                                                                  makerFeeAmount: BigNumber,
+                                                                  makerTokenAddress: string,
+                                                                  zrxTokenAddress: string): BigNumber {
+        const hasSufficientFundsForTransferAmount = transferrableMakerTokenAmount.gte(remainingMakerAmount);
+        const hasSufficientFundsForFeeAmount = transferrableMakerFeeTokenAmount.gte(remainingMakerFeeAmount);
+        const hasSufficientFundsForFeeAndTransferAmount = (hasSufficientFundsForTransferAmount &&
+                                                           hasSufficientFundsForFeeAmount);
+
         if (makerFeeAmount.isZero()) {
             return BigNumber.min(remainingMakerAmount, transferrableMakerTokenAmount);
-        } else if (transferrableMakerTokenAmount.gte(remainingMakerAmount) &&
-                   transferrableMakerFeeTokenAmount.gte(remainingMakerFeeAmount)) {
+        } else if (hasSufficientFundsForFeeAndTransferAmount) {
             return remainingMakerAmount;
         } else {
             return this.calculatePartiallyFillableMakerTokenAmount(
-              transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerAmount,
-              remainingMakerFeeAmount, totalMakerAmount, makerFeeAmount, makerTokenAddress,
-              zrxTokenAddress);
+                transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerAmount,
+                remainingMakerFeeAmount, totalMakerAmount, makerFeeAmount, makerTokenAddress,
+                zrxTokenAddress);
         }
     }
-    private calculatePooledFillableMakerTokenAmount(transferrableMakerTokenAmount: BigNumber,
-                                                    transferrableMakerFeeTokenAmount: BigNumber,
-                                                    remainingMakerAmount: BigNumber,
-                                                    remainingMakerFeeAmount: BigNumber,
-                                                    totalMakerAmount: BigNumber, makerFeeAmount: BigNumber,
-                                                    makerTokenAddress: string, zrxTokenAddress: string): BigNumber {
-        if (transferrableMakerTokenAmount.plus(transferrableMakerFeeTokenAmount).gte(
-            remainingMakerAmount.plus(remainingMakerFeeAmount))) {
+    private computeFillableMakerTokenAmountWhenMakerTokenIsZRX(transferrableMakerTokenAmount: BigNumber,
+                                                               transferrableMakerFeeTokenAmount: BigNumber,
+                                                               remainingMakerAmount: BigNumber,
+                                                               remainingMakerFeeAmount: BigNumber,
+                                                               totalMakerAmount: BigNumber,
+                                                               makerFeeAmount: BigNumber,
+                                                               makerTokenAddress: string,
+                                                               zrxTokenAddress: string): BigNumber {
+        const totalZRXTransferAmount = remainingMakerAmount.plus(remainingMakerFeeAmount);
+        const hasSufficientFundsForFeeAndTransferAmount = transferrableMakerTokenAmount.gte(totalZRXTransferAmount);
+        if (hasSufficientFundsForFeeAndTransferAmount) {
             return remainingMakerAmount;
         } else {
             return this.calculatePartiallyFillableMakerTokenAmount(
-              transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerAmount,
-              remainingMakerFeeAmount, totalMakerAmount, makerFeeAmount, makerTokenAddress,
-              zrxTokenAddress);
+                transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerAmount,
+                remainingMakerFeeAmount, totalMakerAmount, makerFeeAmount, makerTokenAddress,
+                zrxTokenAddress);
         }
     }
     private calculatePartiallyFillableMakerTokenAmount(transferrableMakerTokenAmount: BigNumber,
@@ -165,14 +176,15 @@ export class OrderStateUtils {
         const fillableTimesInFeeToken = BigNumber.min(transferrableMakerFeeTokenAmount, remainingMakerFeeAmount);
         let fillableTimesInMakerToken = transferrableMakerTokenAmount.dividedToIntegerBy(orderToFeeRatio);
         if (makerTokenAddress === zrxTokenAddress) {
-            const totalFeeTokenPool = transferrableMakerTokenAmount.plus(transferrableMakerFeeTokenAmount);
-            fillableTimesInMakerToken = totalFeeTokenPool.dividedToIntegerBy(
-                                                             orderToFeeRatio.plus(
-                                                                 ZeroEx.toBaseUnitAmount(new BigNumber(1), 18)));
+            // when zrx == maker token transferrable maker == transfer
+            const totalZRXTokenPooled = transferrableMakerTokenAmount;
+            fillableTimesInMakerToken = totalZRXTokenPooled.dividedToIntegerBy(
+                                                             orderToFeeRatio.plus(new BigNumber(1)));
 
         }
-        return BigNumber.min(fillableTimesInMakerToken.times(orderToFeeRatio),
-                             fillableTimesInFeeToken.times(orderToFeeRatio));
+        const partiallyFillableMakerTokenAmount = fillableTimesInMakerToken.times(orderToFeeRatio);
+        const partiallyFillableFeeTokenAmount = fillableTimesInFeeToken.times(orderToFeeRatio);
+        return BigNumber.min(partiallyFillableMakerTokenAmount, partiallyFillableFeeTokenAmount);
     }
     private validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
         const unavailableTakerTokenAmount = orderRelevantState.cancelledTakerTokenAmount.add(
