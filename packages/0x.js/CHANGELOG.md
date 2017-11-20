@@ -3,6 +3,8 @@
 vx.x.x
 ------------------------
     * Remove support for Async callback types when used in Subscribe functions
+    * In OrderWatcher subscribe to ZRX Token Transfer and Approval events when maker token is different (#225)
+
 v0.25.1 - _November 13, 2017_
 ------------------------
     * Standardise on Cancelled over Canceled
