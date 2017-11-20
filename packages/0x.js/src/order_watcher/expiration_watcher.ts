@@ -40,6 +40,7 @@ export class ExpirationWatcher {
         }
         intervalUtils.clearAsyncExcludingInterval(this.orderExpirationCheckingIntervalIdIfExists);
         delete this.callbackIfExists;
+        delete this.orderExpirationCheckingIntervalIdIfExists;
     }
     public addOrder(orderHash: string, expirationUnixTimestampSec: BigNumber): void {
         this.expiration[orderHash] = expirationUnixTimestampSec;
