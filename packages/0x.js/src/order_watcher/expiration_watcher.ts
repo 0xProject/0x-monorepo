@@ -18,8 +18,8 @@ export class ExpirationWatcher {
     private callbackIfExists?: (orderHash: string) => void;
     private orderExpirationCheckingIntervalMs: number;
     private orderExpirationCheckingIntervalIdIfExists?: NodeJS.Timer;
-    constructor(orderExpirationCheckingIntervalMs?: number) {
-        this.orderExpirationCheckingIntervalMs = orderExpirationCheckingIntervalMs ||
+    constructor(orderExpirationCheckingIntervalMsIfExists?: number) {
+        this.orderExpirationCheckingIntervalMs = orderExpirationCheckingIntervalMsIfExists ||
                                                  DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
         const scoreFunction = (orderHash: string) => this.expiration[orderHash].toNumber();
         this.orderHashHeapByExpiration = new Heap(scoreFunction);

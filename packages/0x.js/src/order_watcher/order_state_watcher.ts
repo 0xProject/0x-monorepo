@@ -74,10 +74,10 @@ export class OrderStateWatcher {
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
         );
-        const orderExpirationCheckingIntervalMs = _.isUndefined(config) ?
-                                                  undefined :
-                                                  config.orderExpirationCheckingIntervalMs;
-        this._expirationWatcher = new ExpirationWatcher(orderExpirationCheckingIntervalMs);
+        const orderExpirationCheckingIntervalMsIfExists = _.isUndefined(config) ?
+                                                          undefined :
+                                                          config.orderExpirationCheckingIntervalMs;
+        this._expirationWatcher = new ExpirationWatcher(orderExpirationCheckingIntervalMsIfExists);
     }
     /**
      * Add an order to the orderStateWatcher. Before the order is added, it's
