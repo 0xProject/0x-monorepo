@@ -10,10 +10,9 @@ import {utils} from '../src/utils/utils';
 import {Web3Wrapper} from '../src/web3_wrapper';
 import {TokenUtils} from './utils/token_utils';
 import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
-import {Token} from '../src/types';
+import {Token, DoneCallback} from '../src/types';
 import {ZeroEx} from '../src';
 import {FillScenarios} from './utils/fill_scenarios';
-import {DoneCallback} from '../src/types';
 import {reportCallbackErrors} from './utils/report_callback_errors';
 
 chaiSetup.configure();
@@ -57,7 +56,7 @@ describe('ExpirationWatcher', () => {
         const sinonTimerConfig = {shouldAdvanceTime: true} as any;
         // This constructor has incorrect types
         timer = Sinon.useFakeTimers(sinonTimerConfig);
-        currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
+        currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
         expirationWatcher = new ExpirationWatcher();
     });
     afterEach(() => {
@@ -74,12 +73,12 @@ describe('ExpirationWatcher', () => {
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec);
-            const callback = reportCallbackErrors(done)((hash: string) => {
+            const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
                 expect(hash).to.be.equal(orderHash);
-                expect(utils.getCurrentUnixTimestamp()).to.be.bignumber.above(expirationUnixTimestampSec);
+                expect(utils.getCurrentUnixTimestampSec()).to.be.bignumber.above(expirationUnixTimestampSec);
                 done();
             });
-            expirationWatcher.subscribe(callback);
+            expirationWatcher.subscribe(callbackAsync);
             timer.tick(orderLifetimeS * 1000);
         })().catch(done);
     });
@@ -93,10 +92,10 @@ describe('ExpirationWatcher', () => {
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec);
-            const callback = reportCallbackErrors(done)((hash: string) => {
+            const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
                 done(new Error('Emitted expiration went before the order actually expired'));
             });
-            expirationWatcher.subscribe(callback);
+            expirationWatcher.subscribe(callbackAsync);
             const notEnoughTime = orderLifetimeS - 1;
             timer.tick(notEnoughTime * 1000);
             done();
@@ -121,14 +120,14 @@ describe('ExpirationWatcher', () => {
             expirationWatcher.addOrder(orderHash2, signedOrder2.expirationUnixTimestampSec);
             expirationWatcher.addOrder(orderHash1, signedOrder1.expirationUnixTimestampSec);
             const expirationOrder = [orderHash1, orderHash2];
-            const callback = reportCallbackErrors(done)((hash: string) => {
+            const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
                 const orderHash = expirationOrder.shift();
                 expect(hash).to.be.equal(orderHash);
                 if (_.isEmpty(expirationOrder)) {
                     done();
                 }
             });
-            expirationWatcher.subscribe(callback);
+            expirationWatcher.subscribe(callbackAsync);
             timer.tick(order2Lifetime * 1000);
         })().catch(done);
     });
