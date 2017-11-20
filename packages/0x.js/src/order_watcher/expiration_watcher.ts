@@ -16,7 +16,6 @@ const DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS = 50;
 export class ExpirationWatcher {
     private orderHashRBTreeByExpiration: RBTree<string>;
     private expiration: {[orderHash: string]: BigNumber} = {};
-    private callbackIfExists?: (orderHash: string) => void;
     private orderExpirationCheckingIntervalMs: number;
     private expirationMarginMs: number;
     private orderExpirationCheckingIntervalIdIfExists?: NodeJS.Timer;
@@ -31,12 +30,11 @@ export class ExpirationWatcher {
         this.orderHashRBTreeByExpiration = new RBTree(comparator);
     }
     public subscribe(callback: (orderHash: string) => void): void {
-        if (!_.isUndefined(this.callbackIfExists)) {
+        if (!_.isUndefined(this.orderExpirationCheckingIntervalIdIfExists)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
-        this.callbackIfExists = callback;
         this.orderExpirationCheckingIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this.pruneExpiredOrders.bind(this), this.orderExpirationCheckingIntervalMs,
+            this.pruneExpiredOrders.bind(this, callback), this.orderExpirationCheckingIntervalMs,
         );
     }
     public unsubscribe(): void {
@@ -44,7 +42,6 @@ export class ExpirationWatcher {
             throw new Error(ZeroExError.SubscriptionNotFound);
         }
         intervalUtils.clearAsyncExcludingInterval(this.orderExpirationCheckingIntervalIdIfExists);
-        delete this.callbackIfExists;
         delete this.orderExpirationCheckingIntervalIdIfExists;
     }
     public addOrder(orderHash: string, expirationUnixTimestampMs: BigNumber): void {
@@ -55,19 +52,18 @@ export class ExpirationWatcher {
         this.orderHashRBTreeByExpiration.remove(orderHash);
         delete this.expiration[orderHash];
     }
-    private pruneExpiredOrders(): void {
+    private pruneExpiredOrders(callback: (orderHash: string) => void): void {
         const currentUnixTimestampMs = utils.getCurrentUnixTimestampMs();
         while (
             this.orderHashRBTreeByExpiration.size !== 0 &&
             this.expiration[this.orderHashRBTreeByExpiration.min()].lessThan(
                 currentUnixTimestampMs.plus(this.expirationMarginMs),
-            ) &&
-            !_.isUndefined(this.callbackIfExists)
+            )
         ) {
             const orderHash = this.orderHashRBTreeByExpiration.min();
             this.orderHashRBTreeByExpiration.remove(orderHash);
             delete this.expiration[orderHash];
-            this.callbackIfExists(orderHash);
+            callback(orderHash);
         }
     }
 }
