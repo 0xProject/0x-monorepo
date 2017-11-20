@@ -6,7 +6,6 @@ import {SignedOrder, ZeroExError} from '../types';
 import {Heap} from '../utils/heap';
 import {ZeroEx} from '../0x';
 
-// Order prunning is very fast
 const DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS = 50;
 
 /**
