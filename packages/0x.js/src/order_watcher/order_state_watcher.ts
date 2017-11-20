@@ -128,7 +128,7 @@ export class OrderStateWatcher {
         }
         this._callbackIfExists = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
-        this._expirationWatcher.subscribe(this._onOrderExpired.bind(this));
+        this._expirationWatcher.subscribe(this._onOrderExpiredAsync.bind(this));
     }
     /**
      * Ends an orderStateWatcher subscription.
@@ -143,7 +143,7 @@ export class OrderStateWatcher {
         this._eventWatcher.unsubscribe();
         this._expirationWatcher.unsubscribe();
     }
-    private _onOrderExpired(orderHash: string): void {
+    private async _onOrderExpiredAsync(orderHash: string): Promise<void> {
         const orderState: OrderState = {
             isValid: false,
             orderHash,
@@ -151,8 +151,10 @@ export class OrderStateWatcher {
         };
         if (!_.isUndefined(this._orderByOrderHash[orderHash])) {
             // We need this check because we never remove the orders from expiration watcher
-            this.removeOrder(orderHash);
-            (this._callbackIfExistsAsync as OnOrderStateChangeCallback)(orderState);
+            await this.removeOrderAsync(orderHash);
+            if (!_.isUndefined(this._callbackIfExists)) {
+                this._callbackIfExists(orderState);
+            }
         }
     }
     private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {

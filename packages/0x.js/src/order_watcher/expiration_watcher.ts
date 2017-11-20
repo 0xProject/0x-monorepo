@@ -29,12 +29,12 @@ export class ExpirationWatcher {
         const comparator = (lhs: string, rhs: string) => scoreFunction(lhs) - scoreFunction(rhs);
         this.orderHashByExpirationRBTree = new RBTree(comparator);
     }
-    public subscribe(callback: (orderHash: string) => void): void {
+    public subscribe(callbackAsync: (orderHash: string) => Promise<void>): void {
         if (!_.isUndefined(this.orderExpirationCheckingIntervalIdIfExists)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
         this.orderExpirationCheckingIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this.pruneExpiredOrders.bind(this, callback), this.orderExpirationCheckingIntervalMs,
+            this.pruneExpiredOrdersAsync.bind(this, callbackAsync), this.orderExpirationCheckingIntervalMs,
         );
     }
     public unsubscribe(): void {
@@ -52,7 +52,7 @@ export class ExpirationWatcher {
         this.orderHashByExpirationRBTree.remove(orderHash);
         delete this.expiration[orderHash];
     }
-    private pruneExpiredOrders(callback: (orderHash: string) => void): void {
+    private async pruneExpiredOrdersAsync(callbackAsync: (orderHash: string) => Promise<void>): Promise<void> {
         const currentUnixTimestampMs = utils.getCurrentUnixTimestampMs();
         while (
             this.orderHashByExpirationRBTree.size !== 0 &&
@@ -63,7 +63,7 @@ export class ExpirationWatcher {
             const orderHash = this.orderHashByExpirationRBTree.min();
             this.orderHashByExpirationRBTree.remove(orderHash);
             delete this.expiration[orderHash];
-            callback(orderHash);
+            await callbackAsync(orderHash);
         }
     }
 }
