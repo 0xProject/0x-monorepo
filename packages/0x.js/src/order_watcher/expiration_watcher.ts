@@ -14,7 +14,7 @@ const DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS = 50;
  * It stores them in a min heap by expiration time and checks for expired ones every `orderExpirationCheckingIntervalMs`
  */
 export class ExpirationWatcher {
-    private orderHashRBTreeByExpiration: RBTree<string>;
+    private orderHashByExpirationRBTree: RBTree<string>;
     private expiration: {[orderHash: string]: BigNumber} = {};
     private orderExpirationCheckingIntervalMs: number;
     private expirationMarginMs: number;
@@ -27,7 +27,7 @@ export class ExpirationWatcher {
                                                  DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
         const scoreFunction = (orderHash: string) => this.expiration[orderHash].toNumber();
         const comparator = (lhs: string, rhs: string) => scoreFunction(lhs) - scoreFunction(rhs);
-        this.orderHashRBTreeByExpiration = new RBTree(comparator);
+        this.orderHashByExpirationRBTree = new RBTree(comparator);
     }
     public subscribe(callback: (orderHash: string) => void): void {
         if (!_.isUndefined(this.orderExpirationCheckingIntervalIdIfExists)) {
@@ -46,22 +46,22 @@ export class ExpirationWatcher {
     }
     public addOrder(orderHash: string, expirationUnixTimestampMs: BigNumber): void {
         this.expiration[orderHash] = expirationUnixTimestampMs;
-        this.orderHashRBTreeByExpiration.insert(orderHash);
+        this.orderHashByExpirationRBTree.insert(orderHash);
     }
     public removeOrder(orderHash: string): void {
-        this.orderHashRBTreeByExpiration.remove(orderHash);
+        this.orderHashByExpirationRBTree.remove(orderHash);
         delete this.expiration[orderHash];
     }
     private pruneExpiredOrders(callback: (orderHash: string) => void): void {
         const currentUnixTimestampMs = utils.getCurrentUnixTimestampMs();
         while (
-            this.orderHashRBTreeByExpiration.size !== 0 &&
-            this.expiration[this.orderHashRBTreeByExpiration.min()].lessThan(
+            this.orderHashByExpirationRBTree.size !== 0 &&
+            this.expiration[this.orderHashByExpirationRBTree.min()].lessThan(
                 currentUnixTimestampMs.plus(this.expirationMarginMs),
             )
         ) {
-            const orderHash = this.orderHashRBTreeByExpiration.min();
-            this.orderHashRBTreeByExpiration.remove(orderHash);
+            const orderHash = this.orderHashByExpirationRBTree.min();
+            this.orderHashByExpirationRBTree.remove(orderHash);
             delete this.expiration[orderHash];
             callback(orderHash);
         }
