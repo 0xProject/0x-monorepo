@@ -8,7 +8,8 @@
     "declaration": true,
     "noImplicitAny": true,
     "experimentalDecorators": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": [ "jsonschema", "lodash", "mocha", "node", "sinon", "uuid"]
   },
   "include": [
     "./src/**/*",

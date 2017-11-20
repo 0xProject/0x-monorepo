@@ -68,3 +68,6 @@ generated_docs/
 TODO.md
 
 packages/website/public/bundle*
+
+# generated binaries
+bin/
