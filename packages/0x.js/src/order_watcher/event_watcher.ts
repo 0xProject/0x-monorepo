@@ -81,7 +81,7 @@ export class EventWatcher {
                 ...log,
             };
             if (!_.isUndefined(this._intervalIdIfExists)) {
-                await callback(logEvent);
+                callback(logEvent);
             }
         }
     }

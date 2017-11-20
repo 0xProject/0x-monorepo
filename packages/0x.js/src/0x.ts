@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {SchemaValidator, schemas} from '0x-json-schemas';
+import {SchemaValidator, schemas} from '@0xproject/json-schemas';
 import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
 import {Web3Wrapper} from './web3_wrapper';

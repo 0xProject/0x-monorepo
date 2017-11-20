@@ -2,7 +2,7 @@ import 'mocha';
 import * as dirtyChai from 'dirty-chai';
 import * as chai from 'chai';
 import {BigNumber} from 'bignumber.js';
-import {schemas} from '0x-json-schemas';
+import {schemas} from '@0xproject/json-schemas';
 import {assert} from '../src/index';
 
 chai.config.includeStack = true;

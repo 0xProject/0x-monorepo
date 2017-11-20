@@ -3,5 +3,4 @@
 # UMD tests should only be run after building the commonjs because they reuse some of the commonjs build artifacts
 run-s substitute_umd_bundle run_mocha
 return_code=$?
-npm run clean
 exit $return_code
