@@ -43,7 +43,7 @@ export class ExpirationWatcher {
     }
     public addOrder(orderHash: string, expirationUnixTimestampSec: BigNumber): void {
         this.expiration[orderHash] = expirationUnixTimestampSec;
-        // We don't remove hashes on order remove because it's slow (linear).
+        // We don't remove hashes from the heap on order remove because it's slow (linear).
         // We just skip them later if the order was already removed from the order watcher.
         this.orderHashHeapByExpiration.push(orderHash);
     }
