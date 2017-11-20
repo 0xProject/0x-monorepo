@@ -391,18 +391,17 @@ export interface JSONRPCPayload {
     method: string;
 }
 
-// tslint:disable:max-line-length
 /*
  * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
  * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Defaults: 200
- * expirationMarginMs: Amount of time before order expiry that you'd like to be notified of an orders expiration. Defaults: 0
+ * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
+ * of an orders expiration. Defaults: 0
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;
     eventPollingIntervalMs?: number;
     expirationMarginMs?: number;
 }
-// tslint:enable:max-line-length
 
 /*
  * gasPrice: Gas price to use with every transaction

@@ -11,7 +11,7 @@ import {Web3Wrapper} from '../src/web3_wrapper';
 import {TokenUtils} from './utils/token_utils';
 import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
 import {Token, DoneCallback} from '../src/types';
-import {ZeroEx} from '../src';
+import {ZeroEx} from '../src/0x';
 import {FillScenarios} from './utils/fill_scenarios';
 import {reportCallbackErrors} from './utils/report_callback_errors';
 
@@ -65,8 +65,8 @@ describe('ExpirationWatcher', () => {
     });
     it('correctly emits events when order expires', (done: DoneCallback) => {
         (async () => {
-            const orderLifetimeS = 60;
-            const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeS);
+            const orderLifetimeSec = 60;
+            const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeSec);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 expirationUnixTimestampSec,
@@ -79,13 +79,13 @@ describe('ExpirationWatcher', () => {
                 done();
             });
             expirationWatcher.subscribe(callbackAsync);
-            timer.tick(orderLifetimeS * 1000);
+            timer.tick(orderLifetimeSec * 1000);
         })().catch(done);
     });
     it('doesn\'t emit events before order expires', (done: DoneCallback) => {
         (async () => {
-            const orderLifetimeS = 60;
-            const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeS);
+            const orderLifetimeSec = 60;
+            const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeSec);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
                 expirationUnixTimestampSec,
@@ -96,7 +96,7 @@ describe('ExpirationWatcher', () => {
                 done(new Error('Emitted expiration went before the order actually expired'));
             });
             expirationWatcher.subscribe(callbackAsync);
-            const notEnoughTime = orderLifetimeS - 1;
+            const notEnoughTime = orderLifetimeSec - 1;
             timer.tick(notEnoughTime * 1000);
             done();
         })().catch(done);
