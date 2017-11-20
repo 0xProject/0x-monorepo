@@ -150,7 +150,6 @@ export class OrderStateWatcher {
             error: ExchangeContractErrs.OrderFillExpired,
         };
         if (!_.isUndefined(this._orderByOrderHash[orderHash])) {
-            // We need this check because we never remove the orders from expiration watcher
             await this.removeOrderAsync(orderHash);
             if (!_.isUndefined(this._callbackIfExists)) {
                 this._callbackIfExists(orderState);
