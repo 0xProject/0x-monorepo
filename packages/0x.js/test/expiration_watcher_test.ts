@@ -94,7 +94,7 @@ describe('ExpirationWatcher', () => {
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec);
             const callback = reportCallbackErrors(done)((hash: string) => {
-                done(new Error('Emited expiration vent before the order actually expired'));
+                done(new Error('Emitted expiration went before the order actually expired'));
             });
             expirationWatcher.subscribe(callback);
             const notEnoughTime = orderLifetimeS - 1;
