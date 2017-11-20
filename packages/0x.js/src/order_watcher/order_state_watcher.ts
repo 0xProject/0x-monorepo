@@ -67,8 +67,8 @@ export class OrderStateWatcher {
     ) {
         this._abiDecoder = abiDecoder;
         this._web3Wrapper = web3Wrapper;
-        const eventPollingIntervalMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
-        this._eventWatcher = new EventWatcher(web3Wrapper, eventPollingIntervalMs);
+        const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
+        this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(token);
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
         this._orderStateUtils = new OrderStateUtils(

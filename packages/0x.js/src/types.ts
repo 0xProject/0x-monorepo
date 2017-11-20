@@ -397,8 +397,8 @@ export interface JSONRPCPayload {
 }
 
 /*
- * orderExpirationCheckingIntervalMs: How often to check for expired orders
- * eventPollingIntervalMs: How often to poll the Ethereum node for new events
+ * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
+ * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Defaults: 200
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;
