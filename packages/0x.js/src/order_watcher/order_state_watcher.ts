@@ -95,7 +95,6 @@ export class OrderStateWatcher {
         assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
         this._orderByOrderHash[orderHash] = signedOrder;
         this.addToDependentOrderHashes(signedOrder, orderHash);
-        // We don't remove orders from expirationWatcher because heap removal is linear. We just skip it later
         const expirationUnixTimestampMs = signedOrder.expirationUnixTimestampSec.times(1000);
         this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);
     }
@@ -111,6 +110,7 @@ export class OrderStateWatcher {
         }
         delete this._orderByOrderHash[orderHash];
         this.removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
+        this._expirationWatcher.removeOrder(orderHash);
     }
     /**
      * Starts an orderStateWatcher subscription. The callback will be called every time a watched order's
