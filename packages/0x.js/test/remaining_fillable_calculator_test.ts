@@ -5,6 +5,7 @@ import { chaiSetup } from './utils/chai_setup';
 import { RemainingFillableCalculator } from '../src/order_watcher/remaining_fillable_calculator';
 import { SignedOrder, ECSignature } from '../src/types';
 import { TokenUtils } from './utils/token_utils';
+import { ZeroEx } from '../src/0x';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -26,7 +27,12 @@ describe.only('RemainingFillableCalculator', () => {
     const signature: ECSignature = { v: 27, r: '', s: ''};
     before(async () => {
         [makerToken, takerToken, zrxToken] = ['0x1', '0x2', '0x3'];
-        [makerAmount, takerAmount, makerFee] = [new BigNumber(50), new BigNumber(5), new BigNumber(1)];
+        [makerAmount, takerAmount, makerFee] = [ZeroEx.toBaseUnitAmount(new BigNumber(50), 18),
+                                                ZeroEx.toBaseUnitAmount(new BigNumber(5), 18),
+                                                ZeroEx.toBaseUnitAmount(new BigNumber(1), 18)];
+        [transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount] = [
+                                                ZeroEx.toBaseUnitAmount(new BigNumber(50), 18),
+                                                ZeroEx.toBaseUnitAmount(new BigNumber(5), 18)];
     });
     function buildSignedOrder(): SignedOrder {
         return { ecSignature: signature,
@@ -45,9 +51,7 @@ describe.only('RemainingFillableCalculator', () => {
     }
     it('calculates the correct amount when partially filled and funds available', () => {
         signedOrder = buildSignedOrder();
-        remainingMakerTokenAmount = new BigNumber(1);
-        transferrableMakerTokenAmount = new BigNumber(100);
-        transferrableMakerFeeTokenAmount = transferrableMakerTokenAmount;
+        remainingMakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
         calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
                        transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
         expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(remainingMakerTokenAmount);
@@ -55,7 +59,6 @@ describe.only('RemainingFillableCalculator', () => {
     describe('Maker token is NOT ZRX', () => {
         it('calculates the amount to be 0 when all fee funds move', () => {
             signedOrder = buildSignedOrder();
-            transferrableMakerTokenAmount = new BigNumber(100);
             transferrableMakerFeeTokenAmount = zero;
             remainingMakerTokenAmount = signedOrder.makerTokenAmount;
             calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
@@ -69,9 +72,7 @@ describe.only('RemainingFillableCalculator', () => {
         });
         it('calculates the correct amount when partially filled and funds available', () => {
             signedOrder = buildSignedOrder();
-            transferrableMakerTokenAmount = new BigNumber(100);
-            transferrableMakerFeeTokenAmount = transferrableMakerTokenAmount;
-            remainingMakerTokenAmount = new BigNumber(1);
+            remainingMakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
             calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
                            transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
             expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(remainingMakerTokenAmount);
@@ -79,7 +80,7 @@ describe.only('RemainingFillableCalculator', () => {
         it('calculates the amount to be 0 when all fee funds move', () => {
             signedOrder = buildSignedOrder();
             transferrableMakerTokenAmount = zero;
-            transferrableMakerFeeTokenAmount = transferrableMakerTokenAmount;
+            transferrableMakerFeeTokenAmount = zero;
             remainingMakerTokenAmount = signedOrder.makerTokenAmount;
             calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
                            transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
