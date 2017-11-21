@@ -122,15 +122,15 @@ describe.only('RemainingFillableCalculator', () => {
             transferrableMakerFeeTokenAmount = transferrableMakerTokenAmount;
 
             const orderToFeeRatio = signedOrder.makerTokenAmount.dividedToIntegerBy(signedOrder.makerFee);
-            const expectedRemainingAmount = new BigNumber(450950);
-            const numberOfFillsInRatio = expectedRemainingAmount.dividedToIntegerBy(orderToFeeRatio);
+            const expectedFillableAmount = new BigNumber(450950);
+            const numberOfFillsInRatio = expectedFillableAmount.dividedToIntegerBy(orderToFeeRatio);
             calculator = new RemainingFillableCalculator(signedOrder, isMakerTokenZRX,
                            transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
-            const calculatedRemainingAmount = calculator.computeRemainingMakerFillable();
-            const calculatedRemainingAmountPlusFees = calculatedRemainingAmount.plus(numberOfFillsInRatio);
-            expect(calculatedRemainingAmount).to.be.bignumber.equal(expectedRemainingAmount);
-            expect(calculatedRemainingAmountPlusFees).to.be.bignumber.lessThan(transferrableMakerTokenAmount);
-            expect(calculatedRemainingAmountPlusFees).to.be.bignumber.lessThan(remainingMakerTokenAmount);
+            const calculatedFillableAmount = calculator.computeRemainingMakerFillable();
+            const calculatedFillableAmountPlusFees = calculatedFillableAmount.plus(numberOfFillsInRatio);
+            expect(calculatedFillableAmount).to.be.bignumber.equal(expectedFillableAmount);
+            expect(calculatedFillableAmountPlusFees).to.be.bignumber.lessThan(transferrableMakerTokenAmount);
+            expect(calculatedFillableAmountPlusFees).to.be.bignumber.lessThan(remainingMakerTokenAmount);
         });
     });
 });
