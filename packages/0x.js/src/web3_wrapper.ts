@@ -18,10 +18,11 @@ interface RawLogEntry {
 
 export class Web3Wrapper {
     private web3: Web3;
+    private networkId: number;
     private defaults: Partial<Web3.TxData>;
     private networkIdIfExists?: number;
     private jsonRpcRequestId: number;
-    constructor(provider: Web3.Provider, defaults?: Partial<Web3.TxData>) {
+    constructor(provider: Web3.Provider, networkId: number, defaults?: Partial<Web3.TxData>) {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
@@ -29,6 +30,7 @@ export class Web3Wrapper {
             (provider as any).sendAsync = (provider as any).send;
         }
         this.web3 = new Web3();
+        this.networkId = networkId;
         this.web3.setProvider(provider);
         this.defaults = defaults || {};
         this.jsonRpcRequestId = 0;
@@ -58,31 +60,18 @@ export class Web3Wrapper {
     public getCurrentProvider(): Web3.Provider {
         return this.web3.currentProvider;
     }
-    public async getNetworkIdIfExistsAsync(): Promise<number|undefined> {
-        if (!_.isUndefined(this.networkIdIfExists)) {
-          return this.networkIdIfExists;
-        }
-
-        try {
-            const networkId = await this.getNetworkAsync();
-            this.networkIdIfExists = Number(networkId);
-            return this.networkIdIfExists;
-        } catch (err) {
-            return undefined;
-        }
+    public getNetworkId(): number {
+        return this.networkId;
     }
     public async getContractInstanceFromArtifactAsync<A extends Web3.ContractInstance>(artifact: Artifact,
                                                                                        address?: string): Promise<A> {
         let contractAddress: string;
         if (_.isUndefined(address)) {
-            const networkIdIfExists = await this.getNetworkIdIfExistsAsync();
-            if (_.isUndefined(networkIdIfExists)) {
-                throw new Error(ZeroExError.NoNetworkId);
-            }
-            if (_.isUndefined(artifact.networks[networkIdIfExists])) {
+            const networkId = this.getNetworkId();
+            if (_.isUndefined(artifact.networks[networkId])) {
                 throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
             }
-            contractAddress = artifact.networks[networkIdIfExists].address.toLowerCase();
+            contractAddress = artifact.networks[networkId].address.toLowerCase();
         } else {
             contractAddress = address;
         }

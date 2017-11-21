@@ -178,7 +178,7 @@ export class ZeroEx {
         const defaults = {
             gasPrice: config.gasPrice,
         };
-        this._web3Wrapper = new Web3Wrapper(provider, defaults);
+        this._web3Wrapper = new Web3Wrapper(provider, config.networkId, defaults);
         this.token = new TokenWrapper(
             this._web3Wrapper,
             this._abiDecoder,
