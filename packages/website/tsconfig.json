@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "outDir": "./transpiled/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es5",
+        "jsx": "react",
+        "baseUrl": "./",
+        "allowJs": true,
+        "paths": {
+            "*": [ "node_modules/@types/*", "*"]
+        }
+    },
+    "include": [
+        "./ts/**/*",
+        "../../node_modules/web3-typescript-typings/index.d.ts"
+    ]
+}
