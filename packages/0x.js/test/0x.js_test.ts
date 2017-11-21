@@ -16,7 +16,10 @@ const expect = chai.expect;
 
 describe('ZeroEx library', () => {
     const web3 = web3Factory.create();
-    const zeroEx = new ZeroEx(web3.currentProvider);
+    const networkId = 50;
+    const zeroEx = new ZeroEx(web3.currentProvider, {
+        networkId,
+    });
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             // Instantiate the contract instances with the current provider
@@ -234,6 +237,7 @@ describe('ZeroEx library', () => {
         it('allows to specify exchange contract address', async () => {
             const config = {
                 exchangeContractAddress: ZeroEx.NULL_ADDRESS,
+                networkId,
             };
             const zeroExWithWrongExchangeAddress = new ZeroEx(web3.currentProvider, config);
             return expect(zeroExWithWrongExchangeAddress.exchange.getContractAddressAsync())
@@ -242,6 +246,7 @@ describe('ZeroEx library', () => {
         it('allows to specify ether token contract address', async () => {
             const config = {
                 etherTokenContractAddress: ZeroEx.NULL_ADDRESS,
+                networkId,
             };
             const zeroExWithWrongEtherTokenAddress = new ZeroEx(web3.currentProvider, config);
             return expect(zeroExWithWrongEtherTokenAddress.etherToken.getContractAddressAsync())
@@ -250,6 +255,7 @@ describe('ZeroEx library', () => {
         it('allows to specify token registry token contract address', async () => {
             const config = {
                 tokenRegistryContractAddress: ZeroEx.NULL_ADDRESS,
+                networkId,
             };
             const zeroExWithWrongTokenRegistryAddress = new ZeroEx(web3.currentProvider, config);
             return expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddressAsync())
