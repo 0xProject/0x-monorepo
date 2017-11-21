@@ -1,6 +1,10 @@
 export const zeroExConfigSchema = {
     id: '/ZeroExConfig',
     properties: {
+        networkId: {
+            type: 'number',
+            minimum: 0,
+        },
         gasPrice: {$ref: '/Number'},
         exchangeContractAddress: {$ref: '/Address'},
         tokenRegistryContractAddress: {$ref: '/Address'},
@@ -20,4 +24,5 @@ export const zeroExConfigSchema = {
         },
     },
     type: 'object',
+    required: ['networkId'],
 };
