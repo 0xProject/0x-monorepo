@@ -25,7 +25,7 @@ describe.only('RemainingFillableCalculator', () => {
     const zero: BigNumber = new BigNumber(0);
     const zeroAddress = '0x0';
     const signature: ECSignature = { v: 27, r: '', s: ''};
-    before(async () => {
+    beforeEach(async () => {
         [makerToken, takerToken, zrxToken] = ['0x1', '0x2', '0x3'];
         [makerAmount, takerAmount, makerFee] = [ZeroEx.toBaseUnitAmount(new BigNumber(50), 18),
                                                 ZeroEx.toBaseUnitAmount(new BigNumber(5), 18),
@@ -49,15 +49,31 @@ describe.only('RemainingFillableCalculator', () => {
                  salt: zero,
                  expirationUnixTimestampSec: zero };
     }
-    it('calculates the correct amount when partially filled and funds available', () => {
-        signedOrder = buildSignedOrder();
-        remainingMakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
-        calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
-                       transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
-        expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(remainingMakerTokenAmount);
-    });
     describe('Maker token is NOT ZRX', () => {
-        it('calculates the amount to be 0 when all fee funds move', () => {
+        it('calculates the correct amount when balance is less than remaining fillable', () => {
+            signedOrder = buildSignedOrder();
+            const partiallyFilledAmount = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
+            remainingMakerTokenAmount = signedOrder.makerTokenAmount.minus(partiallyFilledAmount);
+            transferrableMakerTokenAmount = remainingMakerTokenAmount.minus(partiallyFilledAmount);
+            calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
+                           transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
+            expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(transferrableMakerTokenAmount);
+        });
+        it('calculates the correct amount when unfilled and funds available', () => {
+            signedOrder = buildSignedOrder();
+            remainingMakerTokenAmount = signedOrder.makerTokenAmount;
+            calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
+                           transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
+            expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(remainingMakerTokenAmount);
+        });
+        it('calculates the correct amount when partially filled and funds available', () => {
+            signedOrder = buildSignedOrder();
+            remainingMakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
+            calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
+                           transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
+            expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(remainingMakerTokenAmount);
+        });
+        it('calculates the amount to be 0 when all fee funds are transferred', () => {
             signedOrder = buildSignedOrder();
             transferrableMakerFeeTokenAmount = zero;
             remainingMakerTokenAmount = signedOrder.makerTokenAmount;
@@ -67,8 +83,27 @@ describe.only('RemainingFillableCalculator', () => {
         });
     });
     describe('Maker Token is ZRX', () => {
-        before(async () => {
+        beforeEach(async () => {
             makerToken = zrxToken;
+        });
+        it('calculates the correct amount when balance is less than remaining fillable', () => {
+            signedOrder = buildSignedOrder();
+            const partiallyFilledAmount = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
+            remainingMakerTokenAmount = signedOrder.makerTokenAmount.minus(partiallyFilledAmount);
+            transferrableMakerTokenAmount = remainingMakerTokenAmount.minus(partiallyFilledAmount);
+            transferrableMakerFeeTokenAmount = transferrableMakerTokenAmount;
+            calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
+                           transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
+            expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(transferrableMakerTokenAmount);
+        });
+        it('calculates the correct amount when unfilled and funds available', () => {
+            signedOrder = buildSignedOrder();
+            transferrableMakerTokenAmount = makerAmount.plus(makerFee);
+            transferrableMakerFeeTokenAmount = transferrableMakerTokenAmount;
+            remainingMakerTokenAmount = signedOrder.makerTokenAmount;
+            calculator = new RemainingFillableCalculator(signedOrder, zrxToken,
+                           transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
+            expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(remainingMakerTokenAmount);
         });
         it('calculates the correct amount when partially filled and funds available', () => {
             signedOrder = buildSignedOrder();
@@ -77,7 +112,7 @@ describe.only('RemainingFillableCalculator', () => {
                            transferrableMakerTokenAmount, transferrableMakerFeeTokenAmount, remainingMakerTokenAmount);
             expect(calculator.computeRemainingMakerFillable()).to.be.bignumber.equal(remainingMakerTokenAmount);
         });
-        it('calculates the amount to be 0 when all fee funds move', () => {
+        it('calculates the amount to be 0 when all fee funds are transferred', () => {
             signedOrder = buildSignedOrder();
             transferrableMakerTokenAmount = zero;
             transferrableMakerFeeTokenAmount = zero;
