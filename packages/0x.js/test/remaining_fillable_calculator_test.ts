@@ -10,7 +10,7 @@ import { ZeroEx } from '../src/0x';
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe.only('RemainingFillableCalculator', () => {
+describe('RemainingFillableCalculator', () => {
     let calculator: RemainingFillableCalculator;
     let signedOrder: SignedOrder;
     let transferrableMakerTokenAmount: BigNumber;
