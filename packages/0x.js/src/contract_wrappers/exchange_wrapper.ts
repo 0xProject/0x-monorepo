@@ -63,6 +63,7 @@ export class ExchangeWrapper extends ContractWrapper {
         [ExchangeContractErrCodes.ERROR_FILL_BALANCE_ALLOWANCE]: ExchangeContractErrs.FillBalanceAllowanceError,
     };
     private _contractAddressIfExists?: string;
+    private _zrxContractAddressIfExists?: string;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
             order.maker,
@@ -177,7 +178,7 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
             await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
                 exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
@@ -249,7 +250,7 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
             for (const signedOrder of signedOrders) {
                 await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
@@ -339,7 +340,7 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
             for (const orderFillRequest of orderFillRequests) {
                 await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
@@ -419,7 +420,7 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
             await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
                 exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
@@ -483,7 +484,7 @@ export class ExchangeWrapper extends ContractWrapper {
             SHOULD_VALIDATE_BY_DEFAULT :
             orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
-            const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+            const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
             for (const orderFillRequest of orderFillRequests) {
                 await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
@@ -719,7 +720,7 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrder: SignedOrder, opts?: ValidateOrderFillableOpts,
     ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+        const zrxTokenAddress = this.getZRXTokenAddress();
         const expectedFillTakerTokenAmount = !_.isUndefined(opts) ? opts.expectedFillTakerTokenAmount : undefined;
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
         await this._orderValidationUtils.validateOrderFillableOrThrowAsync(
@@ -740,7 +741,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+        const zrxTokenAddress = this.getZRXTokenAddress();
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
         await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
@@ -774,7 +775,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        const zrxTokenAddress = await this.getZRXTokenAddressAsync();
+        const zrxTokenAddress = this.getZRXTokenAddress();
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper);
         await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
             exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
@@ -819,10 +820,17 @@ export class ExchangeWrapper extends ContractWrapper {
      * Returns the ZRX token address used by the exchange contract.
      * @return Address of ZRX token
      */
-    public async getZRXTokenAddressAsync(): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const ZRXtokenAddress = await exchangeInstance.ZRX_TOKEN_CONTRACT.callAsync();
-        return ZRXtokenAddress;
+    public getZRXTokenAddress(): string {
+        const networkId = this._web3Wrapper.getNetworkId();
+        if (_.isUndefined(this._zrxContractAddressIfExists)) {
+            const zrxTokenAddress = artifacts.ZRXArtifact.networks[networkId].address;
+            if (_.isUndefined(zrxTokenAddress)) {
+                throw new Error(ZeroExError.ZRXContractDoesNotExist);
+            }
+            return zrxTokenAddress;
+        } else {
+            return this._zrxContractAddressIfExists;
+        }
     }
     private async _invalidateContractInstancesAsync(): Promise<void> {
         this.unsubscribeAll();

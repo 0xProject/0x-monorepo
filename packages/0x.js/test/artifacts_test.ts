@@ -12,15 +12,15 @@ const expect = chai.expect;
 const TIMEOUT = 10000;
 
 describe('Artifacts', () => {
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
     describe('contracts are deployed on kovan', () => {
         const kovanRpcUrl = constants.KOVAN_RPC_URL;
         const packageJSONContent = fs.readFileSync('package.json', 'utf-8');
         const packageJSON = JSON.parse(packageJSONContent);
         const mnemonic = packageJSON.config.mnemonic;
         const web3Provider = new HDWalletProvider(mnemonic, kovanRpcUrl);
+        const config = {
+            networkId: constants.KOVAN_NETWORK_ID,
+        };
         const zeroEx = new ZeroEx(web3Provider, config);
         it('token registry contract is deployed', async () => {
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
@@ -38,6 +38,9 @@ describe('Artifacts', () => {
         const packageJSON = JSON.parse(packageJSONContent);
         const mnemonic = packageJSON.config.mnemonic;
         const web3Provider = new HDWalletProvider(mnemonic, ropstenRpcUrl);
+        const config = {
+            networkId: constants.ROPSTEN_NETWORK_ID,
+        };
         const zeroEx = new ZeroEx(web3Provider, config);
         it('token registry contract is deployed', async () => {
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();

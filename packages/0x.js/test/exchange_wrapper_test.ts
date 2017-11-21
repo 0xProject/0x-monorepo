@@ -744,8 +744,8 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#getZRXTokenAddressAsync', () => {
-        it('gets the same token as is in token registry', async () => {
-            const zrxAddress = await zeroEx.exchange.getZRXTokenAddressAsync();
+        it('gets the same token as is in token registry', () => {
+            const zrxAddress = zeroEx.exchange.getZRXTokenAddress();
             const zrxToken = tokenUtils.getProtocolTokenOrThrow();
             expect(zrxAddress).to.equal(zrxToken.address);
         });

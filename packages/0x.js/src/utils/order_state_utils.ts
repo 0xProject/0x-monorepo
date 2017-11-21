@@ -55,7 +55,7 @@ export class OrderStateUtils {
         // because JS doesn't support async constructors.
         // Moreover - it's cached under the hood so it's equivalent to an async constructor.
         const exchange = (this.orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
-        const zrxTokenAddress = await exchange.getZRXTokenAddressAsync();
+        const zrxTokenAddress = exchange.getZRXTokenAddress();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         const makerBalance = await this.balanceAndProxyAllowanceLazyStore.getBalanceAsync(
             signedOrder.makerTokenAddress, signedOrder.maker,

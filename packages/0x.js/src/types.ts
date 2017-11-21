@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 export enum ZeroExError {
     ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
     ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
+    ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
     UnhandledError = 'UNHANDLED_ERROR',
     UserHasNoAssociatedAddress = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
     InvalidSignature = 'INVALID_SIGNATURE',
@@ -441,7 +442,7 @@ export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
 }
 
 export interface Artifact {
-    abi: any;
+    abi: Web3.ContractAbi;
     networks: {[networkId: number]: {
         address: string;
     }};

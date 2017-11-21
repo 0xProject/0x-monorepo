@@ -116,7 +116,7 @@ export class OrderStateWatcher {
         delete this._orderByOrderHash[orderHash];
         delete this._orderStateByOrderHashCache[orderHash];
         const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
-        const zrxTokenAddress = await exchange.getZRXTokenAddressAsync();
+        const zrxTokenAddress = exchange.getZRXTokenAddress();
         this.removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
         this.removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
         this._expirationWatcher.removeOrder(orderHash);
@@ -263,7 +263,7 @@ export class OrderStateWatcher {
         }
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].add(orderHash);
         const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
-        const zrxTokenAddress = await exchange.getZRXTokenAddressAsync();
+        const zrxTokenAddress = exchange.getZRXTokenAddress();
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress])) {
             this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress] = new Set();
         }

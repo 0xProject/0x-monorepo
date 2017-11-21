@@ -58,7 +58,7 @@ describe('EventWatcher', () => {
     before(async () => {
         web3 = web3Factory.create();
         const pollingIntervalMs = 10;
-        web3Wrapper = new Web3Wrapper(web3.currentProvider);
+        web3Wrapper = new Web3Wrapper(web3.currentProvider, constants.TESTRPC_NETWORK_ID);
         eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalMs);
     });
     afterEach(() => {
