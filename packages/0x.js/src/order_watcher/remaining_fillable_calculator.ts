@@ -38,8 +38,8 @@ export class RemainingFillableCalculator {
     }
     private hasSufficientFundsForFeeAndTransferAmount(): boolean {
         if (this._isMakerTokenZRX) {
-            const totalZRXTransferAmount = this._remainingMakerTokenAmount.plus(this._remainingMakerFeeAmount);
-            return this._transferrableMakerTokenAmount.gte(totalZRXTransferAmount);
+            const totalZRXTransferAmountRequired = this._remainingMakerTokenAmount.plus(this._remainingMakerFeeAmount);
+            return this._transferrableMakerTokenAmount.gte(totalZRXTransferAmountRequired);
         } else {
             const hasSufficientFundsForTransferAmount = this._transferrableMakerTokenAmount.gte(
                                                             this._remainingMakerTokenAmount);
