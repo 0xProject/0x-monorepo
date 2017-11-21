@@ -22,7 +22,7 @@ export class ExpirationWatcher {
     constructor(expirationMarginIfExistsMs?: number,
                 orderExpirationCheckingIntervalIfExistsMs?: number) {
         this.expirationMarginMs = expirationMarginIfExistsMs ||
-                                  DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
+                                  DEFAULT_EXPIRATION_MARGIN_MS;
         this.orderExpirationCheckingIntervalMs = expirationMarginIfExistsMs ||
                                                  DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
         const scoreFunction = (orderHash: string) => this.expiration[orderHash].toNumber();
