@@ -361,6 +361,8 @@ describe('TokenWrapper', () => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
+                    expect(logEvent.logIndex).to.be.equal(0);
+                    expect(logEvent.transactionIndex).to.be.equal(0);
                     const args = logEvent.args;
                     expect(args._from).to.be.equal(coinbase);
                     expect(args._to).to.be.equal(addressWithoutFunds);
