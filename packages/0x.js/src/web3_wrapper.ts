@@ -184,13 +184,13 @@ export class Web3Wrapper {
     private formatLog(rawLog: RawLogEntry): Web3.LogEntry {
         const formattedLog = {
             ...rawLog,
-            logIndex: this.toDecimal(rawLog.logIndex),
-            blockNumber: this.toDecimal(rawLog.blockNumber),
-            transactionIndex: this.toDecimal(rawLog.transactionIndex),
+            logIndex: this.hexToDecimal(rawLog.logIndex),
+            blockNumber: this.hexToDecimal(rawLog.blockNumber),
+            transactionIndex: this.hexToDecimal(rawLog.transactionIndex),
         };
         return formattedLog;
     }
-    private toDecimal(hex: string|null): number|null {
+    private hexToDecimal(hex: string|null): number|null {
         if (_.isNull(hex)) {
             return null;
         }
