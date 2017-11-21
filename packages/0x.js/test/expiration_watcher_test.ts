@@ -72,10 +72,10 @@ describe('ExpirationWatcher', () => {
                 expirationUnixTimestampSec,
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec);
+            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(1000));
             const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
                 expect(hash).to.be.equal(orderHash);
-                expect(utils.getCurrentUnixTimestampSec()).to.be.bignumber.above(expirationUnixTimestampSec);
+                expect(utils.getCurrentUnixTimestampSec()).to.be.bignumber.gte(expirationUnixTimestampSec);
                 done();
             });
             expirationWatcher.subscribe(callbackAsync);
@@ -91,7 +91,7 @@ describe('ExpirationWatcher', () => {
                 expirationUnixTimestampSec,
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec);
+            expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(1000));
             const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
                 done(new Error('Emitted expiration went before the order actually expired'));
             });
@@ -117,8 +117,8 @@ describe('ExpirationWatcher', () => {
             );
             const orderHash1 = ZeroEx.getOrderHashHex(signedOrder1);
             const orderHash2 = ZeroEx.getOrderHashHex(signedOrder2);
-            expirationWatcher.addOrder(orderHash2, signedOrder2.expirationUnixTimestampSec);
-            expirationWatcher.addOrder(orderHash1, signedOrder1.expirationUnixTimestampSec);
+            expirationWatcher.addOrder(orderHash2, signedOrder2.expirationUnixTimestampSec.times(1000));
+            expirationWatcher.addOrder(orderHash1, signedOrder1.expirationUnixTimestampSec.times(1000));
             const expirationOrder = [orderHash1, orderHash2];
             const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
                 const orderHash = expirationOrder.shift();

@@ -58,7 +58,8 @@ export class ExpirationWatcher {
             this.orderHashByExpirationRBTree.size !== 0 &&
             this.expiration[this.orderHashByExpirationRBTree.min()].lessThan(
                 currentUnixTimestampMs.plus(this.expirationMarginMs),
-            )
+            ) &&
+            !_.isUndefined(this.orderExpirationCheckingIntervalIdIfExists)
         ) {
             const orderHash = this.orderHashByExpirationRBTree.min();
             this.orderHashByExpirationRBTree.remove(orderHash);
