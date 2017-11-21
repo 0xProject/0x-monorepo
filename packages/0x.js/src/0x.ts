@@ -169,17 +169,14 @@ export class ZeroEx {
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Web3Provider, config?: ZeroExConfig) {
+    constructor(provider: Web3Provider, config: ZeroExConfig) {
         assert.isWeb3Provider('provider', provider);
-        if (!_.isUndefined(config)) {
-            assert.doesConformToSchema('config', config, zeroExConfigSchema);
-        }
+        assert.doesConformToSchema('config', config, zeroExConfigSchema);
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
         this._abiDecoder = new AbiDecoder(abiArrays);
-        const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
         const defaults = {
-            gasPrice,
+            gasPrice: config.gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
         this.token = new TokenWrapper(
@@ -187,26 +184,20 @@ export class ZeroEx {
             this._abiDecoder,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
-        const exchageContractAddressIfExists = _.isUndefined(config) ? undefined : config.exchangeContractAddress;
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             this._abiDecoder,
             this.token,
-            exchageContractAddressIfExists,
+            config.exchangeContractAddress,
         );
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
             this._getTokenTransferProxyAddressAsync.bind(this),
         );
-        const tokenRegistryContractAddressIfExists = _.isUndefined(config) ?
-                                                     undefined :
-                                                     config.tokenRegistryContractAddress;
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, tokenRegistryContractAddressIfExists);
-        const etherTokenContractAddressIfExists = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddressIfExists);
-        const orderWatcherConfig = _.isUndefined(config) ? undefined : config.orderWatcherConfig;
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, config.tokenRegistryContractAddress);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, config.etherTokenContractAddress);
         this.orderStateWatcher = new OrderStateWatcher(
-            this._web3Wrapper, this._abiDecoder, this.token, this.exchange, orderWatcherConfig,
+            this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config.orderWatcherConfig,
         );
     }
     /**
