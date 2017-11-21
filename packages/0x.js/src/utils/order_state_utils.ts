@@ -82,8 +82,9 @@ export class OrderStateUtils {
         const transferrableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
         const transferrableFeeTokenAmount = BigNumber.min([makerFeeProxyAllowance, makerFeeBalance]);
 
+        const isMakerTokenZRX = signedOrder.makerTokenAddress === zrxTokenAddress;
         const remainingFillableCalculator = new RemainingFillableCalculator(signedOrder,
-                                                zrxTokenAddress,
+                                                isMakerTokenZRX,
                                                 transferrableMakerTokenAmount,
                                                 transferrableFeeTokenAmount,
                                                 remainingMakerTokenAmount);

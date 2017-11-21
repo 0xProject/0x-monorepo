@@ -10,12 +10,12 @@ export class RemainingFillableCalculator {
     private _remainingMakerTokenAmount: BigNumber;
     private _remainingMakerFeeAmount: BigNumber;
     constructor(signedOrder: SignedOrder,
-                zrxAddress: string,
+                isMakerTokenZRX: boolean,
                 transferrableMakerTokenAmount: BigNumber,
                 transferrableMakerFeeTokenAmount: BigNumber,
                 remainingMakerTokenAmount: BigNumber) {
         this._signedOrder = signedOrder;
-        this._isMakerTokenZRX = signedOrder.makerTokenAddress === zrxAddress;
+        this._isMakerTokenZRX = isMakerTokenZRX;
         this._transferrableMakerTokenAmount = transferrableMakerTokenAmount;
         this._transferrableMakerFeeTokenAmount = transferrableMakerFeeTokenAmount;
         this._remainingMakerTokenAmount = remainingMakerTokenAmount;
@@ -51,18 +51,21 @@ export class RemainingFillableCalculator {
 
     private calculatePartiallyFillableMakerTokenAmount(): BigNumber {
         const orderToFeeRatio = this._signedOrder.makerTokenAmount.dividedToIntegerBy(this._signedOrder.makerFee);
-        const fillableTimesInFeeToken = BigNumber.min(this._transferrableMakerFeeTokenAmount,
-                                                      this._remainingMakerFeeAmount);
-        let fillableTimesInMakerToken = this._transferrableMakerTokenAmount.dividedToIntegerBy(orderToFeeRatio);
+        // Maximum number of times the Maker can fill the order, given the fees
+        const fillableTimesInFeeTokenUnits = BigNumber.min(this._transferrableMakerFeeTokenAmount,
+                                                           this._remainingMakerFeeAmount);
+        // Maximum number of times the Maker can fill the order, given the Maker Token Balance
+        let fillableTimesInMakerTokenUnits = this._transferrableMakerTokenAmount.dividedToIntegerBy(orderToFeeRatio);
         if (this._isMakerTokenZRX) {
-            // when zrx == maker token transferrable maker == transfer
             const totalZRXTokenPooled = this._transferrableMakerTokenAmount;
-            fillableTimesInMakerToken = totalZRXTokenPooled.dividedToIntegerBy(
-                                                             orderToFeeRatio.plus(new BigNumber(1)));
+            // The purchasing power here is less as the tokens are taken from the same Pool
+            // For every one number of fills, we have to take an extra ZRX out of the pool
+            fillableTimesInMakerTokenUnits = totalZRXTokenPooled.dividedToIntegerBy(
+                                                                     orderToFeeRatio.plus(new BigNumber(1)));
 
         }
-        const partiallyFillableMakerTokenAmount = fillableTimesInMakerToken.times(orderToFeeRatio);
-        const partiallyFillableFeeTokenAmount = fillableTimesInFeeToken.times(orderToFeeRatio);
+        const partiallyFillableMakerTokenAmount = fillableTimesInMakerTokenUnits.times(orderToFeeRatio);
+        const partiallyFillableFeeTokenAmount = fillableTimesInFeeTokenUnits.times(orderToFeeRatio);
         return BigNumber.min(partiallyFillableMakerTokenAmount, partiallyFillableFeeTokenAmount);
     }
 }
