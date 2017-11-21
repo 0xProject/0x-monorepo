@@ -7,6 +7,7 @@ import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
 import {web3Factory} from './utils/web3_factory';
+import {constants} from './utils/constants';
 import {
     ZeroEx,
     ZeroExError,
@@ -31,9 +32,12 @@ describe('SubscriptionTest', () => {
     let tokenUtils: TokenUtils;
     let coinbase: string;
     let addressWithoutFunds: string;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
+        zeroEx = new ZeroEx(web3.currentProvider, config);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);

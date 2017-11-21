@@ -5,6 +5,7 @@ import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 import {Web3Wrapper} from '../src/web3_wrapper';
 import {EventWatcher} from '../src/order_watcher/event_watcher';

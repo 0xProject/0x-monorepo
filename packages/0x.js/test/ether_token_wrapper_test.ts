@@ -4,6 +4,7 @@ import {chaiSetup} from './utils/chai_setup';
 import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import {web3Factory} from './utils/web3_factory';
+import {constants} from './utils/constants';
 import {ZeroEx, ZeroExError} from '../src';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 
@@ -28,6 +29,7 @@ describe('EtherTokenWrapper', () => {
     const gasPrice = new BigNumber(1);
     const zeroExConfig = {
         gasPrice,
+        networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
         web3 = web3Factory.create();

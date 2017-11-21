@@ -7,6 +7,7 @@ import {web3Factory} from './utils/web3_factory';
 import {ZeroEx, SignedOrder, Token, ExchangeContractErrs, ZeroExError} from '../src';
 import {TradeSide, TransferType} from '../src/types';
 import {TokenUtils} from './utils/token_utils';
+import {constants} from './utils/constants';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {FillScenarios} from './utils/fill_scenarios';
 import {OrderValidationUtils} from '../src/utils/order_validation_utils';
@@ -34,9 +35,12 @@ describe('OrderValidation', () => {
     let orderValidationUtils: OrderValidationUtils;
     const fillableAmount = new BigNumber(5);
     const fillTakerAmount = new BigNumber(5);
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
+        zeroEx = new ZeroEx(web3.currentProvider, config);
         exchangeContractAddress = await zeroEx.exchange.getContractAddressAsync();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;

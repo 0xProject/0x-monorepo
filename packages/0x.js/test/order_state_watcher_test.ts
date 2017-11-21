@@ -20,12 +20,12 @@ import {
     OrderStateInvalid,
     ExchangeContractErrs,
 } from '../src';
+import {constants} from './utils/constants';
 import {TokenUtils} from './utils/token_utils';
 import {FillScenarios} from './utils/fill_scenarios';
 import {DoneCallback} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {reportCallbackErrors} from './utils/report_callback_errors';
-import {constants as constants} from './utils/constants';
 
 const TIMEOUT_MS = 150;
 
@@ -48,11 +48,14 @@ describe('OrderStateWatcher', () => {
     let taker: string;
     let web3Wrapper: Web3Wrapper;
     let signedOrder: SignedOrder;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = ZeroEx.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
+        zeroEx = new ZeroEx(web3.currentProvider, config);
         exchangeContractAddress = await zeroEx.exchange.getContractAddressAsync();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         [, maker, taker] = userAddresses;

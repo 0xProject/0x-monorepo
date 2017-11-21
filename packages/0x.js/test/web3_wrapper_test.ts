@@ -9,15 +9,18 @@ const expect = chai.expect;
 
 describe('Web3Wrapper', () => {
     const web3Provider = web3Factory.create().currentProvider;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     describe('#getNetworkIdIfExistsAsync', () => {
         it('caches network id requests', async () => {
-            const web3Wrapper = (new ZeroEx(web3Provider) as any)._web3Wrapper as Web3Wrapper;
+            const web3Wrapper = (new ZeroEx(web3Provider, config) as any)._web3Wrapper as Web3Wrapper;
             expect((web3Wrapper as any).networkIdIfExists).to.be.undefined();
             const networkIdIfExists = await web3Wrapper.getNetworkIdIfExistsAsync();
             expect((web3Wrapper as any).networkIdIfExists).to.be.equal(constants.TESTRPC_NETWORK_ID);
         });
         it('invalidates network id cache on setProvider call', async () => {
-            const web3Wrapper = (new ZeroEx(web3Provider) as any)._web3Wrapper as Web3Wrapper;
+            const web3Wrapper = (new ZeroEx(web3Provider, config) as any)._web3Wrapper as Web3Wrapper;
             expect((web3Wrapper as any).networkIdIfExists).to.be.undefined();
             const networkIdIfExists = await web3Wrapper.getNetworkIdIfExistsAsync();
             expect((web3Wrapper as any).networkIdIfExists).to.be.equal(constants.TESTRPC_NETWORK_ID);

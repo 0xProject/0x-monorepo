@@ -19,6 +19,7 @@ import {
     LogEvent,
     DecodedLogEvent,
 } from '../src';
+import {constants} from './utils/constants';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {TokenUtils} from './utils/token_utils';
 import {DoneCallback, BlockParamLiteral} from '../src/types';
@@ -35,9 +36,12 @@ describe('TokenWrapper', () => {
     let tokenUtils: TokenUtils;
     let coinbase: string;
     let addressWithoutFunds: string;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
+        zeroEx = new ZeroEx(web3.currentProvider, config);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);
@@ -184,7 +188,7 @@ describe('TokenWrapper', () => {
             before(async () => {
                 const hasAddresses = false;
                 const web3WithoutAccounts = web3Factory.create(hasAddresses);
-                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider);
+                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should return balance even when called with Web3 provider instance without addresses', async () => {
                     const token = tokens[0];
@@ -281,7 +285,7 @@ describe('TokenWrapper', () => {
             before(async () => {
                 const hasAddresses = false;
                 const web3WithoutAccounts = web3Factory.create(hasAddresses);
-                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider);
+                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should get the proxy allowance', async () => {
                 const token = tokens[0];

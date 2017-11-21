@@ -16,10 +16,10 @@ const expect = chai.expect;
 
 describe('ZeroEx library', () => {
     const web3 = web3Factory.create();
-    const networkId = 50;
-    const zeroEx = new ZeroEx(web3.currentProvider, {
-        networkId,
-    });
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
+    const zeroEx = new ZeroEx(web3.currentProvider, config);
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             // Instantiate the contract instances with the current provider
@@ -235,29 +235,29 @@ describe('ZeroEx library', () => {
     });
     describe('#config', () => {
         it('allows to specify exchange contract address', async () => {
-            const config = {
+            const zeroExConfig = {
                 exchangeContractAddress: ZeroEx.NULL_ADDRESS,
-                networkId,
+                networkId: constants.TESTRPC_NETWORK_ID,
             };
-            const zeroExWithWrongExchangeAddress = new ZeroEx(web3.currentProvider, config);
+            const zeroExWithWrongExchangeAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
             return expect(zeroExWithWrongExchangeAddress.exchange.getContractAddressAsync())
                 .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
         });
         it('allows to specify ether token contract address', async () => {
-            const config = {
+            const zeroExConfig = {
                 etherTokenContractAddress: ZeroEx.NULL_ADDRESS,
-                networkId,
+                networkId: constants.TESTRPC_NETWORK_ID,
             };
-            const zeroExWithWrongEtherTokenAddress = new ZeroEx(web3.currentProvider, config);
+            const zeroExWithWrongEtherTokenAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
             return expect(zeroExWithWrongEtherTokenAddress.etherToken.getContractAddressAsync())
                 .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
         });
         it('allows to specify token registry token contract address', async () => {
-            const config = {
+            const zeroExConfig = {
                 tokenRegistryContractAddress: ZeroEx.NULL_ADDRESS,
-                networkId,
+                networkId: constants.TESTRPC_NETWORK_ID,
             };
-            const zeroExWithWrongTokenRegistryAddress = new ZeroEx(web3.currentProvider, config);
+            const zeroExWithWrongTokenRegistryAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
             return expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddressAsync())
                 .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
         });

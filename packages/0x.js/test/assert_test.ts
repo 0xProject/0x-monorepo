@@ -2,13 +2,17 @@ import * as chai from 'chai';
 import 'mocha';
 import {ZeroEx} from '../src';
 import {assert} from '../src/utils/assert';
+import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 
 const expect = chai.expect;
 
 describe('Assertion library', () => {
     const web3 = web3Factory.create();
-    const zeroEx = new ZeroEx(web3.currentProvider);
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
+    const zeroEx = new ZeroEx(web3.currentProvider, config);
     describe('#isSenderAddressHexAsync', () => {
         it('throws when address is invalid', async () => {
             const address = '0xdeadbeef';

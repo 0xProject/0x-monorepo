@@ -22,6 +22,7 @@ import {
 import {DoneCallback, BlockParamLiteral} from '../src/types';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
+import {constants} from './utils/constants';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -38,9 +39,12 @@ describe('ExchangeWrapper', () => {
     let zrxTokenAddress: string;
     let fillScenarios: FillScenarios;
     let exchangeContractAddress: string;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
+        zeroEx = new ZeroEx(web3.currentProvider, config);
         exchangeContractAddress = await zeroEx.exchange.getContractAddressAsync();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
