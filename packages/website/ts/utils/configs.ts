@@ -13,6 +13,6 @@ export const configs = {
     symbolsOfMintableTokens: ['MKR', 'MLN', 'GNT', 'DGD', 'REP'],
     // WARNING: ZRX & WETH MUST always be default trackedTokens
     defaultTrackedTokenSymbols: ['WETH', 'ZRX'],
-    lastLocalStorageFillClearanceDate: '2017-09-09',
+    lastLocalStorageFillClearanceDate: '2017-11-22',
     isMainnetEnabled: true,
 };
