@@ -81,7 +81,7 @@ export class ExchangeTransferSimulator {
         this.store.setBalance(tokenAddress, userAddress, balance.minus(amountInBaseUnits));
     }
     private throwValidationError(failureReason: FailureReason, tradeSide: TradeSide,
-                                 transferType: TransferType): Promise<never> {
+                                 transferType: TransferType): never {
         const errMsg = ERR_MSG_MAPPING[failureReason][tradeSide][transferType];
         throw new Error(errMsg);
     }

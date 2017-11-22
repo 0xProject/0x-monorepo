@@ -26,7 +26,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const addresses = await this.getTokenAddressesAsync();
         const tokenPromises: Array<Promise<Token|undefined>> = _.map(
             addresses,
-            (address: string) => (this.getTokenIfExistsAsync(address)),
+            async (address: string) => this.getTokenIfExistsAsync(address),
         );
         const tokens = await Promise.all(tokenPromises);
         return tokens as Token[];
