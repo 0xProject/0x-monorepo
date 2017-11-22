@@ -223,7 +223,7 @@ describe('ZeroEx library', () => {
             const tokens = await zeroEx.tokenRegistry.getTokensAsync();
             const tokenUtils = new TokenUtils(tokens);
             const zrxTokenAddress = tokenUtils.getProtocolTokenOrThrow().address;
-            const proxyAddress = await zeroEx.proxy.getContractAddressAsync();
+            const proxyAddress = zeroEx.proxy.getContractAddress();
             const txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(zrxTokenAddress, coinbase);
             const txReceiptWithDecodedLogs = await zeroEx.awaitTransactionMinedAsync(txHash);
             const log = txReceiptWithDecodedLogs.logs[0] as LogWithDecodedArgs<ApprovalContractEventArgs>;
@@ -248,8 +248,7 @@ describe('ZeroEx library', () => {
                 networkId: constants.TESTRPC_NETWORK_ID,
             };
             const zeroExWithWrongEtherTokenAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
-            return expect(zeroExWithWrongEtherTokenAddress.etherToken.getContractAddressAsync())
-                .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+            expect(zeroExWithWrongEtherTokenAddress.etherToken.getContractAddress()).to.be.equal(ZeroEx.NULL_ADDRESS);
         });
         it('allows to specify token registry token contract address', async () => {
             const zeroExConfig = {
@@ -257,8 +256,8 @@ describe('ZeroEx library', () => {
                 networkId: constants.TESTRPC_NETWORK_ID,
             };
             const zeroExWithWrongTokenRegistryAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
-            return expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddressAsync())
-                .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+            expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddress())
+                .to.be.equal(ZeroEx.NULL_ADDRESS);
         });
     });
 });

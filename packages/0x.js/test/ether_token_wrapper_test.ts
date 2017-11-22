@@ -36,7 +36,7 @@ describe('EtherTokenWrapper', () => {
         zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
-        wethContractAddress = await zeroEx.etherToken.getContractAddressAsync();
+        wethContractAddress = zeroEx.etherToken.getContractAddress();
         depositWeiAmount = (zeroEx as any)._web3Wrapper.toWei(new BigNumber(5));
         decimalPlaces = 7;
     });

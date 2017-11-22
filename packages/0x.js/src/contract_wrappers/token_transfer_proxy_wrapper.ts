@@ -2,17 +2,17 @@ import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
 import {ContractWrapper} from './contract_wrapper';
 import {artifacts} from '../artifacts';
-import {TokenTransferProxyContract} from '../types';
+import {TokenTransferProxyContract, ZeroExError} from '../types';
 
 /**
  * This class includes the functionality related to interacting with the TokenTransferProxy contract.
  */
 export class TokenTransferProxyWrapper extends ContractWrapper {
     private _tokenTransferProxyContractIfExists?: TokenTransferProxyContract;
-    private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
-    constructor(web3Wrapper: Web3Wrapper, tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
+    private _contractAddressIfExists?: string;
+    constructor(web3Wrapper: Web3Wrapper, contractAddressIfExists?: string) {
         super(web3Wrapper);
-        this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
+        this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
      * Check if the Exchange contract address is authorized by the TokenTransferProxy contract.
@@ -38,10 +38,17 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      * that the user-passed web3 provider is connected to.
      * @returns The Ethereum address of the TokenTransferProxy contract being used.
      */
-    public async getContractAddressAsync(): Promise<string> {
-        const proxyInstance = await this._getTokenTransferProxyContractAsync();
-        const proxyAddress = proxyInstance.address;
-        return proxyAddress;
+    public getContractAddress(): string {
+        const networkId = this._web3Wrapper.getNetworkId();
+        if (_.isUndefined(this._contractAddressIfExists)) {
+            const contractAddress = artifacts.TokenTransferProxyArtifact.networks[networkId].address;
+            if (_.isUndefined(contractAddress)) {
+                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
+            }
+            return contractAddress;
+        } else {
+            return this._contractAddressIfExists;
+        }
     }
     private _invalidateContractInstance(): void {
         delete this._tokenTransferProxyContractIfExists;
@@ -50,9 +57,8 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         if (!_.isUndefined(this._tokenTransferProxyContractIfExists)) {
             return this._tokenTransferProxyContractIfExists;
         }
-        const contractAddress = await this._tokenTransferProxyContractAddressFetcher();
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenTransferProxyContract>(
-            artifacts.TokenTransferProxyArtifact, contractAddress,
+            artifacts.TokenTransferProxyArtifact, this._contractAddressIfExists,
         );
         this._tokenTransferProxyContractIfExists = contractInstance as TokenTransferProxyContract;
         return this._tokenTransferProxyContractIfExists;

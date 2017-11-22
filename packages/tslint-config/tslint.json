@@ -5,6 +5,7 @@
   ],
   "rules": {
     "arrow-parens": [true, "ban-single-arg-parens"],
+    "await-promise": true,
     "ordered-imports": false,
     "quotemark": [true, "single", "avoid-escape", "jsx-double"],
     "callable-types": true,
@@ -21,10 +22,12 @@
     "no-angle-bracket-type-assertion": true,
     "no-default-export": true,
     "no-empty-interface": false,
+    "no-floating-promises": true,
     "no-string-throw": true,
     "no-submodule-imports": false,
     "no-implicit-dependencies": [true, "dev"],
     "prefer-const": true,
+    "promise-function-async": true,
     "variable-name": [true,
       "ban-keywords",
       "allow-pascal-case"

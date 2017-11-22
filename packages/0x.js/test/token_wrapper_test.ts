@@ -436,10 +436,10 @@ describe('TokenWrapper', () => {
             toBlock: BlockParamLiteral.Latest,
         };
         let txHash: string;
-        before(async () => {
+        before(() => {
             const token = tokens[0];
             tokenAddress = token.address;
-            tokenTransferProxyAddress = await zeroEx.proxy.getContractAddressAsync();
+            tokenTransferProxyAddress = zeroEx.proxy.getContractAddress();
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);

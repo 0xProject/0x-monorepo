@@ -53,7 +53,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
 
-        const wethContractAddress = await this.getContractAddressAsync();
+        const wethContractAddress = this.getContractAddress();
         const WETHBalanceInBaseUnits = await this._tokenWrapper.getBalanceAsync(wethContractAddress, withdrawer);
         assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.InsufficientWEthBalanceForWithdrawal);
 
@@ -67,9 +67,17 @@ export class EtherTokenWrapper extends ContractWrapper {
      * Retrieves the Wrapped Ether token contract address
      * @return  The Wrapped Ether token contract address
      */
-    public async getContractAddressAsync(): Promise<string> {
-        const wethContract = await this._getEtherTokenContractAsync();
-        return wethContract.address;
+    public getContractAddress(): string {
+        const networkId = this._web3Wrapper.getNetworkId();
+        if (_.isUndefined(this._contractAddressIfExists)) {
+            const contractAddress = artifacts.EtherTokenArtifact.networks[networkId].address;
+            if (_.isUndefined(contractAddress)) {
+                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
+            }
+            return contractAddress;
+        } else {
+            return this._contractAddressIfExists;
+        }
     }
     private _invalidateContractInstance(): void {
         delete this._etherTokenContractIfExists;

@@ -557,7 +557,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (shouldValidate) {
             const orderHash = utils.getOrderHashHex(order);
             const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
-            await this._orderValidationUtils.validateCancelOrderThrowIfInvalidAsync(
+            this._orderValidationUtils.validateCancelOrderThrowIfInvalid(
                 order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
         }
 
@@ -611,7 +611,7 @@ export class ExchangeWrapper extends ContractWrapper {
             for (const orderCancellationRequest of orderCancellationRequests) {
                 const orderHash = utils.getOrderHashHex(orderCancellationRequest.order);
                 const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
-                await this._orderValidationUtils.validateCancelOrderThrowIfInvalidAsync(
+                this._orderValidationUtils.validateCancelOrderThrowIfInvalid(
                     orderCancellationRequest.order, orderCancellationRequest.takerTokenCancelAmount,
                     unavailableTakerTokenAmount,
                 );
@@ -765,7 +765,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isValidBaseUnitAmount('cancelTakerTokenAmount', cancelTakerTokenAmount);
         const orderHash = utils.getOrderHashHex(order);
         const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
-        await this._orderValidationUtils.validateCancelOrderThrowIfInvalidAsync(
+        this._orderValidationUtils.validateCancelOrderThrowIfInvalid(
             order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
     }
     /**

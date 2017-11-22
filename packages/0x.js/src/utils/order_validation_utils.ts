@@ -92,10 +92,9 @@ export class OrderValidationUtils {
             throw new Error(ExchangeContractErrs.InsufficientRemainingFillAmount);
         }
     }
-    public async validateCancelOrderThrowIfInvalidAsync(order: Order,
-                                                        cancelTakerTokenAmount: BigNumber,
-                                                        unavailableTakerTokenAmount: BigNumber,
-    ): Promise<void> {
+    public validateCancelOrderThrowIfInvalid(
+        order: Order, cancelTakerTokenAmount: BigNumber, unavailableTakerTokenAmount: BigNumber,
+    ): void {
         if (cancelTakerTokenAmount.eq(0)) {
             throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
         }
