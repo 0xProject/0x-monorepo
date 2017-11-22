@@ -970,4 +970,4 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, txDataSchema, shouldFail);
         });
     });
-});
+}); // tslint:disable:max-file-line-count
