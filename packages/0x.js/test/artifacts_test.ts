@@ -29,7 +29,7 @@ describe('Artifacts', () => {
             await (zeroEx.token as any)._getTokenTransferProxyAddressAsync();
         }).timeout(TIMEOUT);
         it('exchange contract is deployed', async () => {
-            await zeroEx.exchange.getContractAddressAsync();
+            await (zeroEx.exchange as any)._getExchangeContractAsync();
         }).timeout(TIMEOUT);
     });
     describe('contracts are deployed on ropsten', () => {
@@ -49,7 +49,7 @@ describe('Artifacts', () => {
             await (zeroEx.token as any)._getTokenTransferProxyAddressAsync();
         }).timeout(TIMEOUT);
         it('exchange contract is deployed', async () => {
-            await zeroEx.exchange.getContractAddressAsync();
+            await (zeroEx.exchange as any)._getExchangeContractAsync();
         }).timeout(TIMEOUT);
     });
 });

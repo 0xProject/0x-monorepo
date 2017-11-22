@@ -664,7 +664,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const exchangeContractAddress = await this.getContractAddressAsync();
+        const exchangeContractAddress = this.getContractAddress();
         const subscriptionToken = this._subscribe<ArgsType>(
             exchangeContractAddress, eventName, indexFilterValues, artifacts.ExchangeArtifact.abi, callback,
         );
@@ -691,7 +691,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const exchangeContractAddress = await this.getContractAddressAsync();
+        const exchangeContractAddress = this.getContractAddress();
         const logs = await this._getLogsAsync<ArgsType>(
             exchangeContractAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.ExchangeArtifact.abi,
         );
@@ -702,10 +702,17 @@ export class ExchangeWrapper extends ContractWrapper {
      * that the user-passed web3 provider is connected to.
      * @returns The Ethereum address of the Exchange contract being used.
      */
-    public async getContractAddressAsync(): Promise<string> {
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const exchangeAddress = exchangeInstance.address;
-        return exchangeAddress;
+    public getContractAddress(): string {
+        const networkId = this._web3Wrapper.getNetworkId();
+        if (_.isUndefined(this._contractAddressIfExists)) {
+            const contractAddress = artifacts.ExchangeArtifact.networks[networkId].address;
+            if (_.isUndefined(contractAddress)) {
+                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
+            }
+            return contractAddress;
+        } else {
+            return this._contractAddressIfExists;
+        }
     }
     /**
      * Checks if order is still fillable and throws an error otherwise. Useful for orderbook
