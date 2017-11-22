@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {schemas} from '0x-json-schemas';
+import {schemas} from '@0xproject/json-schemas';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
 import {constants} from '../utils/constants';

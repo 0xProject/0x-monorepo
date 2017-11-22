@@ -1,5 +1,22 @@
 # CHANGELOG
 
+v0.26.0
+------------------------
+    * Add post-formatter for logs converting `blockNumber`, `logIndex`, `transactionIndex` from hexes to numbers (#231)
+    * Remove support for Async callback types when used in Subscribe functions (#222)
+    * In OrderWatcher subscribe to ZRX Token Transfer and Approval events when maker token is different (#225)
+
+v0.25.1 - _November 13, 2017_
+------------------------
+    * Standardise on Cancelled over Canceled (#217)
+    * Add missing `DecodedLogEvent` type to exported types (#205)
+    * Normalized the transactionReceipt status to be `null|0|1`, 1 meaning transaction execution successful, 0 unsuccessful and `null` if it is a pre-byzantinium transaction. (#200)
+
+v0.23.0 - _November 12, 2017_
+------------------------
+    * Fixed unhandled promise rejection error in subscribe methods (#209)
+    * Subscribe callbacks now receive an error object as their first argument
+
 v0.22.6 - _November 10, 2017_
 ------------------------
     * Add a timeout parameter to transaction awaiting (#206)

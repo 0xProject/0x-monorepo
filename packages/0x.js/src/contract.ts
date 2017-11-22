@@ -1,7 +1,7 @@
 import * as Web3 from 'web3';
 import * as _ from 'lodash';
 import promisify = require('es6-promisify');
-import {SchemaValidator, schemas} from '0x-json-schemas';
+import {SchemaValidator, schemas} from '@0xproject/json-schemas';
 import {AbiType} from './types';
 
 export class Contract implements Web3.ContractInstance {

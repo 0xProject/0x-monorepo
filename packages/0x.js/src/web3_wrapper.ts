@@ -5,6 +5,17 @@ import promisify = require('es6-promisify');
 import {ZeroExError, Artifact, TransactionReceipt} from './types';
 import {Contract} from './contract';
 
+interface RawLogEntry {
+    logIndex: string|null;
+    transactionIndex: string|null;
+    transactionHash: string;
+    blockHash: string|null;
+    blockNumber: string|null;
+    address: string;
+    data: string;
+    topics: string[];
+}
+
 export class Web3Wrapper {
     private web3: Web3;
     private defaults: Partial<Web3.TxData>;
@@ -39,7 +50,9 @@ export class Web3Wrapper {
     }
     public async getTransactionReceiptAsync(txHash: string): Promise<TransactionReceipt> {
         const transactionReceipt = await promisify(this.web3.eth.getTransactionReceipt)(txHash);
-        transactionReceipt.status = this.normalizeTxReceiptStatus(transactionReceipt.status);
+        if (!_.isNull(transactionReceipt)) {
+            transactionReceipt.status = this.normalizeTxReceiptStatus(transactionReceipt.status);
+        }
         return transactionReceipt;
     }
     public getCurrentProvider(): Web3.Provider {
@@ -137,8 +150,9 @@ export class Web3Wrapper {
             method: 'eth_getLogs',
             params: [serializedFilter],
         };
-        const logs = await this.sendRawPayloadAsync(payload);
-        return logs;
+        const rawLogs = await this.sendRawPayloadAsync<RawLogEntry[]>(payload);
+        const formattedLogs = _.map(rawLogs, this.formatLog.bind(this));
+        return formattedLogs;
     }
     private getContractInstance<A extends Web3.ContractInstance>(abi: Web3.ContractAbi, address: string): A {
         const web3ContractInstance = this.web3.eth.contract(abi).at(address);
@@ -149,7 +163,7 @@ export class Web3Wrapper {
         const networkId = await promisify(this.web3.version.getNetwork)();
         return networkId;
     }
-    private async sendRawPayloadAsync(payload: Web3.JSONRPCRequestPayload): Promise<any> {
+    private async sendRawPayloadAsync<A>(payload: Web3.JSONRPCRequestPayload): Promise<A> {
         const sendAsync = this.web3.currentProvider.sendAsync.bind(this.web3.currentProvider);
         const response = await promisify(sendAsync)(payload);
         const result = response.result;
@@ -168,5 +182,21 @@ export class Web3Wrapper {
         } else {
             return status;
         }
+    }
+    private formatLog(rawLog: RawLogEntry): Web3.LogEntry {
+        const formattedLog = {
+            ...rawLog,
+            logIndex: this.hexToDecimal(rawLog.logIndex),
+            blockNumber: this.hexToDecimal(rawLog.blockNumber),
+            transactionIndex: this.hexToDecimal(rawLog.transactionIndex),
+        };
+        return formattedLog;
+    }
+    private hexToDecimal(hex: string|null): number|null {
+        if (_.isNull(hex)) {
+            return null;
+        }
+        const decimal = this.web3.toDecimal(hex);
+        return decimal;
     }
 }

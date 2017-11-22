@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import 'mocha';
 import * as chai from 'chai';
-import {SchemaValidator, schemas} from '0x-json-schemas';
+import {SchemaValidator, schemas} from '@0xproject/json-schemas';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx, Token} from '../src';

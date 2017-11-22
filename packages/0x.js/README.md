@@ -1,3 +1,6 @@
+0x.js
+-----
+
 ## Installation
 
 0x.js ships as both a [UMD](https://github.com/umdjs/umd) module and a [CommonJS](https://en.wikipedia.org/wiki/CommonJS) package.
