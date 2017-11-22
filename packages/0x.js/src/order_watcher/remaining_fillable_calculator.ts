@@ -74,8 +74,12 @@ export class RemainingFillableCalculator {
         }
         // When Ratio is not fully divisible there can be remainders which cannot be represented, so they are floored.
         // This can result in a RoundingError being thrown by the Exchange Contract.
-        const partiallyFillableMakerTokenAmount = fillableTimesInMakerTokenUnits.times(orderToFeeRatio).floor();
-        const partiallyFillableFeeTokenAmount = fillableTimesInFeeTokenBaseUnits.times(orderToFeeRatio).floor();
+        const partiallyFillableMakerTokenAmount = fillableTimesInMakerTokenUnits
+                                                     .times(this.signedOrder.makerTokenAmount)
+                                                     .dividedToIntegerBy(this.signedOrder.makerFee);
+        const partiallyFillableFeeTokenAmount = fillableTimesInFeeTokenBaseUnits
+                                                     .times(this.signedOrder.makerTokenAmount)
+                                                     .dividedToIntegerBy(this.signedOrder.makerFee);
         const partiallyFillableAmount = BigNumber.min(partiallyFillableMakerTokenAmount,
                                                       partiallyFillableFeeTokenAmount);
         return partiallyFillableAmount;
