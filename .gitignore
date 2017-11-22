@@ -66,3 +66,5 @@ _bundles
 docs/
 
 TODO.md
+
+packages/website/public/bundle*
