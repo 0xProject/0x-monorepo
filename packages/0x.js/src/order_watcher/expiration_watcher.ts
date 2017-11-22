@@ -54,13 +54,19 @@ export class ExpirationWatcher {
     }
     private async pruneExpiredOrdersAsync(callbackAsync: (orderHash: string) => Promise<void>): Promise<void> {
         const currentUnixTimestampMs = utils.getCurrentUnixTimestampMs();
-        while (
-            this.orderHashByExpirationRBTree.size !== 0 &&
-            this.expiration[this.orderHashByExpirationRBTree.min()].lessThan(
+        while (true) {
+            const noOrdersLeft = this.orderHashByExpirationRBTree.size === 0;
+            if (noOrdersLeft) {
+                break;
+            }
+            const nextOrderHashToExpire = this.orderHashByExpirationRBTree.min();
+            const noExpiredOrdersLeft = this.expiration[nextOrderHashToExpire].greaterThan(
                 currentUnixTimestampMs.plus(this.expirationMarginMs),
-            ) &&
-            !_.isUndefined(this.orderExpirationCheckingIntervalIdIfExists)
-        ) {
+            );
+            const noActiveSubscription = _.isUndefined(this.orderExpirationCheckingIntervalIdIfExists);
+            if (noExpiredOrdersLeft || noActiveSubscription) {
+                break;
+            }
             const orderHash = this.orderHashByExpirationRBTree.min();
             this.orderHashByExpirationRBTree.remove(orderHash);
             delete this.expiration[orderHash];
