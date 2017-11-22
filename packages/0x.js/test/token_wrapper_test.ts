@@ -363,7 +363,7 @@ describe('TokenWrapper', () => {
                     expect(logEvent).to.not.be.undefined();
                     expect(logEvent.logIndex).to.be.equal(0);
                     expect(logEvent.transactionIndex).to.be.equal(0);
-                    expect(logEvent.blockNumber).to.be.instanceOf(Number);
+                    expect(logEvent.blockNumber).to.be.a('number');
                     const args = logEvent.args;
                     expect(args._from).to.be.equal(coinbase);
                     expect(args._to).to.be.equal(addressWithoutFunds);
