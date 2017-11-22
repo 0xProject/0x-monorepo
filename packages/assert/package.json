@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "shx rm -rf _bundles lib test_temp",
-    "lint": "tslint src/**/*.ts test/**/*.ts",
+    "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
     "run_mocha": "mocha lib/test/**/*_test.js",
     "prepublishOnly": "run-p build",
     "test": "run-s clean build run_mocha",
