@@ -25,6 +25,39 @@ const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 export class OrderStateUtils {
     private balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
     private orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
+    private static validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
+        const unavailableTakerTokenAmount = orderRelevantState.cancelledTakerTokenAmount.add(
+            orderRelevantState.filledTakerTokenAmount,
+        );
+        const availableTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
+        if (availableTakerTokenAmount.eq(0)) {
+            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
+        }
+
+        if (orderRelevantState.makerBalance.eq(0)) {
+            throw new Error(ExchangeContractErrs.InsufficientMakerBalance);
+        }
+        if (orderRelevantState.makerProxyAllowance.eq(0)) {
+            throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
+        }
+        if (!signedOrder.makerFee.eq(0)) {
+            if (orderRelevantState.makerFeeBalance.eq(0)) {
+                throw new Error(ExchangeContractErrs.InsufficientMakerFeeBalance);
+            }
+            if (orderRelevantState.makerFeeProxyAllowance.eq(0)) {
+                throw new Error(ExchangeContractErrs.InsufficientMakerFeeAllowance);
+            }
+        }
+        const minFillableTakerTokenAmountWithinNoRoundingErrorRange = signedOrder.takerTokenAmount
+                                                                      .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
+                                                                      .dividedBy(signedOrder.makerTokenAmount);
+        if (orderRelevantState.remainingFillableTakerTokenAmount
+            .lessThan(minFillableTakerTokenAmountWithinNoRoundingErrorRange)) {
+            throw new Error(ExchangeContractErrs.OrderFillRoundingError);
+        }
+        // TODO Add linear function solver when maker token is ZRX #badass
+        // Return the max amount that's fillable
+    }
     constructor(balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore,
                 orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore) {
         this.balanceAndProxyAllowanceLazyStore = balanceAndProxyAllowanceLazyStore;
@@ -34,7 +67,7 @@ export class OrderStateUtils {
         const orderRelevantState = await this.getOrderRelevantStateAsync(signedOrder);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         try {
-            this.validateIfOrderIsValid(signedOrder, orderRelevantState);
+            OrderStateUtils.validateIfOrderIsValid(signedOrder, orderRelevantState);
             const orderState: OrderStateValid = {
                 isValid: true,
                 orderHash,
@@ -102,38 +135,5 @@ export class OrderStateUtils {
             remainingFillableTakerTokenAmount,
         };
         return orderRelevantState;
-    }
-    private validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
-        const unavailableTakerTokenAmount = orderRelevantState.cancelledTakerTokenAmount.add(
-            orderRelevantState.filledTakerTokenAmount,
-        );
-        const availableTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
-        if (availableTakerTokenAmount.eq(0)) {
-            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
-        }
-
-        if (orderRelevantState.makerBalance.eq(0)) {
-            throw new Error(ExchangeContractErrs.InsufficientMakerBalance);
-        }
-        if (orderRelevantState.makerProxyAllowance.eq(0)) {
-            throw new Error(ExchangeContractErrs.InsufficientMakerAllowance);
-        }
-        if (!signedOrder.makerFee.eq(0)) {
-            if (orderRelevantState.makerFeeBalance.eq(0)) {
-                throw new Error(ExchangeContractErrs.InsufficientMakerFeeBalance);
-            }
-            if (orderRelevantState.makerFeeProxyAllowance.eq(0)) {
-                throw new Error(ExchangeContractErrs.InsufficientMakerFeeAllowance);
-            }
-        }
-        const minFillableTakerTokenAmountWithinNoRoundingErrorRange = signedOrder.takerTokenAmount
-                                                                      .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
-                                                                      .dividedBy(signedOrder.makerTokenAmount);
-        if (orderRelevantState.remainingFillableTakerTokenAmount
-            .lessThan(minFillableTakerTokenAmountWithinNoRoundingErrorRange)) {
-            throw new Error(ExchangeContractErrs.OrderFillRoundingError);
-        }
-        // TODO Add linear function solver when maker token is ZRX #badass
-        // Return the max amount that's fillable
     }
 }

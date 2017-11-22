@@ -8,6 +8,15 @@ import {AbiType, ContractEventArgs, DecodedLogArgs, LogWithDecodedArgs, RawLog, 
 export class AbiDecoder {
     private savedABIs: Web3.AbiDefinition[] = [];
     private methodIds: {[signatureHash: string]: Web3.EventAbi} = {};
+    private static padZeros(address: string) {
+        let formatted = address;
+        if (_.startsWith(formatted, '0x')) {
+            formatted = formatted.slice(2);
+        }
+
+        formatted = _.padStart(formatted, 40, '0');
+        return `0x${formatted}`;
+    }
     constructor(abiArrays: Web3.AbiDefinition[][]) {
         _.map(abiArrays, this.addABI.bind(this));
     }
@@ -32,7 +41,7 @@ export class AbiDecoder {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
             let value = param.indexed ? log.topics[topicsIndex++] : decodedData[dataIndex++];
             if (param.type === SolidityTypes.Address) {
-                value = this.padZeros(new BigNumber(value).toString(16));
+                value = AbiDecoder.padZeros(new BigNumber(value).toString(16));
             } else if (param.type === SolidityTypes.Uint256 ||
                        param.type === SolidityTypes.Uint8 ||
                        param.type === SolidityTypes.Uint) {
@@ -56,14 +65,5 @@ export class AbiDecoder {
             }
         });
         this.savedABIs = this.savedABIs.concat(abiArray);
-    }
-    private padZeros(address: string) {
-        let formatted = address;
-        if (_.startsWith(formatted, '0x')) {
-            formatted = formatted.slice(2);
-        }
-
-        formatted = _.padStart(formatted, 40, '0');
-        return `0x${formatted}`;
     }
 }

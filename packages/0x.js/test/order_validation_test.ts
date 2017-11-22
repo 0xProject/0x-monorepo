@@ -114,7 +114,7 @@ describe('OrderValidation', () => {
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
             );
             // 27 <--> 28
-            signedOrder.ecSignature.v = 27 + (28 - signedOrder.ecSignature.v);
+            signedOrder.ecSignature.v = (28 - signedOrder.ecSignature.v) + 27;
             return expect(zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(
                 signedOrder, fillableAmount, takerAddress,
             )).to.be.rejectedWith(ZeroExError.InvalidSignature);
@@ -230,7 +230,7 @@ describe('OrderValidation', () => {
                 makerTokenAddress, takerTokenAddress, makerFee, takerFee,
                 makerAddress, takerAddress, fillableAmount, feeRecipient,
             );
-            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, fillableAmount, takerAddress, zrxTokenAddress,
             );
             expect(transferFromAsync.callCount).to.be.equal(4);
@@ -266,7 +266,7 @@ describe('OrderValidation', () => {
                 makerTokenAddress, takerTokenAddress, makerFee, takerFee,
                 makerAddress, ZeroEx.NULL_ADDRESS, fillableAmount, feeRecipient,
             );
-            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, fillableAmount, takerAddress, zrxTokenAddress,
             );
             expect(transferFromAsync.callCount).to.be.equal(4);
@@ -301,7 +301,7 @@ describe('OrderValidation', () => {
             const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, makerTokenAmount, takerTokenAmount,
             );
-            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, takerTokenAmount, takerAddress, zrxTokenAddress,
             );
             expect(transferFromAsync.callCount).to.be.equal(4);
@@ -316,7 +316,7 @@ describe('OrderValidation', () => {
                 fillableAmount, ZeroEx.NULL_ADDRESS,
             );
             const fillTakerTokenAmount = fillableAmount.div(2).round(0);
-            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress,
             );
             const makerPartialFee = makerFee.div(2);

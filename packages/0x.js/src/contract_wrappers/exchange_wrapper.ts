@@ -559,7 +559,7 @@ export class ExchangeWrapper extends ContractWrapper {
         if (shouldValidate) {
             const orderHash = utils.getOrderHashHex(order);
             const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
-            this._orderValidationUtils.validateCancelOrderThrowIfInvalid(
+            OrderValidationUtils.validateCancelOrderThrowIfInvalid(
                 order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
         }
 
@@ -613,7 +613,7 @@ export class ExchangeWrapper extends ContractWrapper {
             for (const orderCancellationRequest of orderCancellationRequests) {
                 const orderHash = utils.getOrderHashHex(orderCancellationRequest.order);
                 const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
-                this._orderValidationUtils.validateCancelOrderThrowIfInvalid(
+                OrderValidationUtils.validateCancelOrderThrowIfInvalid(
                     orderCancellationRequest.order, orderCancellationRequest.takerTokenCancelAmount,
                     unavailableTakerTokenAmount,
                 );
@@ -767,7 +767,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isValidBaseUnitAmount('cancelTakerTokenAmount', cancelTakerTokenAmount);
         const orderHash = utils.getOrderHashHex(order);
         const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
-        this._orderValidationUtils.validateCancelOrderThrowIfInvalid(
+        OrderValidationUtils.validateCancelOrderThrowIfInvalid(
             order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
     }
     /**
@@ -884,4 +884,4 @@ export class ExchangeWrapper extends ContractWrapper {
         const tokenTransferProxyAddressLowerCase = tokenTransferProxyAddress.toLowerCase();
         return tokenTransferProxyAddressLowerCase;
     }
-}
+} // tslint:disable:max-file-line-count

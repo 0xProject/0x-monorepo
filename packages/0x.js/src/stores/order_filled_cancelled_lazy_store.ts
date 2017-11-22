@@ -11,10 +11,10 @@ import {BlockParamLiteral} from '../types';
 export class OrderFilledCancelledLazyStore {
     private exchange: ExchangeWrapper;
     private filledTakerAmount: {
-        [orderHash: string]: BigNumber,
+        [orderHash: string]: BigNumber;
     };
     private cancelledTakerAmount: {
-        [orderHash: string]: BigNumber,
+        [orderHash: string]: BigNumber;
     };
     constructor(exchange: ExchangeWrapper) {
         this.exchange = exchange;

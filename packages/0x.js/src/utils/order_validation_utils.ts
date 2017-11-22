@@ -13,6 +13,77 @@ import {ExchangeTransferSimulator} from './exchange_transfer_simulator';
 export class OrderValidationUtils {
     private tokenWrapper: TokenWrapper;
     private exchangeWrapper: ExchangeWrapper;
+    public static validateCancelOrderThrowIfInvalid(
+        order: Order, cancelTakerTokenAmount: BigNumber, unavailableTakerTokenAmount: BigNumber,
+    ): void {
+        if (cancelTakerTokenAmount.eq(0)) {
+            throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
+        }
+        if (order.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
+            throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
+        }
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
+        if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+            throw new Error(ExchangeContractErrs.OrderCancelExpired);
+        }
+    }
+    public static async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+        exchangeTradeEmulator: ExchangeTransferSimulator, signedOrder: SignedOrder,
+        fillTakerTokenAmount: BigNumber, senderAddress: string, zrxTokenAddress: string,
+    ): Promise<void> {
+        const fillMakerTokenAmount = OrderValidationUtils.getPartialAmount(
+            fillTakerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.makerTokenAmount,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            signedOrder.makerTokenAddress, signedOrder.maker, senderAddress, fillMakerTokenAmount,
+            TradeSide.Maker, TransferType.Trade,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            signedOrder.takerTokenAddress, senderAddress, signedOrder.maker, fillTakerTokenAmount,
+            TradeSide.Taker, TransferType.Trade,
+        );
+        const makerFeeAmount = OrderValidationUtils.getPartialAmount(
+            fillTakerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.makerFee,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            zrxTokenAddress, signedOrder.maker, signedOrder.feeRecipient, makerFeeAmount, TradeSide.Maker,
+            TransferType.Fee,
+        );
+        const takerFeeAmount = OrderValidationUtils.getPartialAmount(
+            fillTakerTokenAmount,
+            signedOrder.takerTokenAmount,
+            signedOrder.takerFee,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            zrxTokenAddress, senderAddress, signedOrder.feeRecipient, takerFeeAmount, TradeSide.Taker,
+            TransferType.Fee,
+        );
+    }
+    private static validateRemainingFillAmountNotZeroOrThrow(
+        takerTokenAmount: BigNumber, unavailableTakerTokenAmount: BigNumber,
+    ) {
+        if (takerTokenAmount.eq(unavailableTakerTokenAmount)) {
+            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
+        }
+    }
+    private static validateOrderNotExpiredOrThrow(expirationUnixTimestampSec: BigNumber) {
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
+        if (expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
+            throw new Error(ExchangeContractErrs.OrderFillExpired);
+        }
+    }
+    private static getPartialAmount(numerator: BigNumber, denominator: BigNumber,
+                                    target: BigNumber): BigNumber {
+        const fillMakerTokenAmount = numerator
+                                     .mul(target)
+                                     .div(denominator)
+                                     .round(0);
+        return fillMakerTokenAmount;
+    }
     constructor(tokenWrapper: TokenWrapper, exchangeWrapper: ExchangeWrapper) {
         this.tokenWrapper = tokenWrapper;
         this.exchangeWrapper = exchangeWrapper;
@@ -22,15 +93,15 @@ export class OrderValidationUtils {
         expectedFillTakerTokenAmount?: BigNumber): Promise<void> {
         const orderHash = utils.getOrderHashHex(signedOrder);
         const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
-        this.validateRemainingFillAmountNotZeroOrThrow(
+        OrderValidationUtils.validateRemainingFillAmountNotZeroOrThrow(
             signedOrder.takerTokenAmount, unavailableTakerTokenAmount,
         );
-        this.validateOrderNotExpiredOrThrow(signedOrder.expirationUnixTimestampSec);
+        OrderValidationUtils.validateOrderNotExpiredOrThrow(signedOrder.expirationUnixTimestampSec);
         let fillTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
         if (!_.isUndefined(expectedFillTakerTokenAmount)) {
             fillTakerTokenAmount = expectedFillTakerTokenAmount;
         }
-        const fillMakerTokenAmount = this.getPartialAmount(
+        const fillMakerTokenAmount = OrderValidationUtils.getPartialAmount(
             fillTakerTokenAmount,
             signedOrder.takerTokenAmount,
             signedOrder.makerTokenAmount,
@@ -39,7 +110,7 @@ export class OrderValidationUtils {
             signedOrder.makerTokenAddress, signedOrder.maker, signedOrder.taker, fillMakerTokenAmount,
             TradeSide.Maker, TransferType.Trade,
         );
-        const makerFeeAmount = this.getPartialAmount(
+        const makerFeeAmount = OrderValidationUtils.getPartialAmount(
             fillTakerTokenAmount,
             signedOrder.takerTokenAmount,
             signedOrder.makerFee,
@@ -61,18 +132,18 @@ export class OrderValidationUtils {
             throw new Error(ZeroExError.InvalidSignature);
         }
         const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
-        this.validateRemainingFillAmountNotZeroOrThrow(
+        OrderValidationUtils.validateRemainingFillAmountNotZeroOrThrow(
             signedOrder.takerTokenAmount, unavailableTakerTokenAmount,
         );
         if (signedOrder.taker !== constants.NULL_ADDRESS && signedOrder.taker !== takerAddress) {
             throw new Error(ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker);
         }
-        this.validateOrderNotExpiredOrThrow(signedOrder.expirationUnixTimestampSec);
+        OrderValidationUtils.validateOrderNotExpiredOrThrow(signedOrder.expirationUnixTimestampSec);
         const remainingTakerTokenAmount = signedOrder.takerTokenAmount.minus(unavailableTakerTokenAmount);
         const filledTakerTokenAmount = remainingTakerTokenAmount.lessThan(fillTakerTokenAmount) ?
                                        remainingTakerTokenAmount :
                                        fillTakerTokenAmount;
-        await this.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+        await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
             exchangeTradeEmulator, signedOrder, filledTakerTokenAmount, takerAddress, zrxTokenAddress,
         );
 
@@ -93,75 +164,5 @@ export class OrderValidationUtils {
         if (filledTakerTokenAmount !== fillTakerTokenAmount) {
             throw new Error(ExchangeContractErrs.InsufficientRemainingFillAmount);
         }
-    }
-    public validateCancelOrderThrowIfInvalid(
-        order: Order, cancelTakerTokenAmount: BigNumber, unavailableTakerTokenAmount: BigNumber,
-    ): void {
-        if (cancelTakerTokenAmount.eq(0)) {
-            throw new Error(ExchangeContractErrs.OrderCancelAmountZero);
-        }
-        if (order.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
-            throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
-        }
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
-        if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.OrderCancelExpired);
-        }
-    }
-    public async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
-        exchangeTradeEmulator: ExchangeTransferSimulator, signedOrder: SignedOrder,
-        fillTakerTokenAmount: BigNumber, senderAddress: string, zrxTokenAddress: string): Promise<void> {
-        const fillMakerTokenAmount = this.getPartialAmount(
-            fillTakerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerTokenAmount,
-        );
-        await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.makerTokenAddress, signedOrder.maker, senderAddress, fillMakerTokenAmount,
-            TradeSide.Maker, TransferType.Trade,
-        );
-        await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.takerTokenAddress, senderAddress, signedOrder.maker, fillTakerTokenAmount,
-            TradeSide.Taker, TransferType.Trade,
-        );
-        const makerFeeAmount = this.getPartialAmount(
-            fillTakerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerFee,
-        );
-        await exchangeTradeEmulator.transferFromAsync(
-            zrxTokenAddress, signedOrder.maker, signedOrder.feeRecipient, makerFeeAmount, TradeSide.Maker,
-            TransferType.Fee,
-        );
-        const takerFeeAmount = this.getPartialAmount(
-            fillTakerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.takerFee,
-        );
-        await exchangeTradeEmulator.transferFromAsync(
-            zrxTokenAddress, senderAddress, signedOrder.feeRecipient, takerFeeAmount, TradeSide.Taker,
-            TransferType.Fee,
-        );
-    }
-    private validateRemainingFillAmountNotZeroOrThrow(
-        takerTokenAmount: BigNumber, unavailableTakerTokenAmount: BigNumber,
-    ) {
-        if (takerTokenAmount.eq(unavailableTakerTokenAmount)) {
-            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
-        }
-    }
-    private validateOrderNotExpiredOrThrow(expirationUnixTimestampSec: BigNumber) {
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
-        if (expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
-            throw new Error(ExchangeContractErrs.OrderFillExpired);
-        }
-    }
-    private getPartialAmount(numerator: BigNumber, denominator: BigNumber,
-                             target: BigNumber): BigNumber {
-        const fillMakerTokenAmount = numerator
-                                     .mul(target)
-                                     .div(denominator)
-                                     .round(0);
-        return fillMakerTokenAmount;
     }
 }

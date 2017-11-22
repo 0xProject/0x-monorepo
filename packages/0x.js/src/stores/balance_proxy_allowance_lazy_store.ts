@@ -12,13 +12,13 @@ export class BalanceAndProxyAllowanceLazyStore {
     private token: TokenWrapper;
     private balance: {
         [tokenAddress: string]: {
-            [userAddress: string]: BigNumber,
-        },
+            [userAddress: string]: BigNumber;
+        };
     };
     private proxyAllowance: {
         [tokenAddress: string]: {
-            [userAddress: string]: BigNumber,
-        },
+            [userAddress: string]: BigNumber;
+        };
     };
     constructor(token: TokenWrapper) {
         this.token = token;

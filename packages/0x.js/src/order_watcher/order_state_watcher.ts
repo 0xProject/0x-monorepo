@@ -38,7 +38,7 @@ import {ExpirationWatcher} from './expiration_watcher';
 
 interface DependentOrderHashes {
     [makerAddress: string]: {
-        [makerToken: string]: Set<string>,
+        [makerToken: string]: Set<string>;
     };
 }
 
