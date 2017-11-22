@@ -11,6 +11,13 @@
     "binary-expression-operand-order": true,
     "callable-types": true,
     "class-name": true,
+    "completed-docs": [
+      true,
+      {
+        "functions": {"visibilities": ["exported"]},
+        "methods": {"locations": "instance", "privacies": ["public", "protected"]}
+      }
+    ],
     "curly": true,
     "eofline": true,
     "encoding": true,
