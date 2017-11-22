@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import {Web3Wrapper} from '../web3_wrapper';
 import {assert} from '../utils/assert';
-import {Token, TokenRegistryContract, TokenMetadata} from '../types';
+import {Token, TokenRegistryContract, TokenMetadata, ZeroExError} from '../types';
 import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import {artifacts} from '../artifacts';
@@ -89,10 +89,17 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * that the user-passed web3 provider is connected to.
      * @returns The Ethereum address of the TokenRegistry contract being used.
      */
-    public async getContractAddressAsync(): Promise<string> {
-        const tokenRegistryInstance = await this._getTokenRegistryContractAsync();
-        const tokenRegistryAddress = tokenRegistryInstance.address;
-        return tokenRegistryAddress;
+    public getContractAddress(): string {
+        const networkId = this._web3Wrapper.getNetworkId();
+        if (_.isUndefined(this._contractAddressIfExists)) {
+            const contractAddress = artifacts.TokenRegistryArtifact.networks[networkId].address;
+            if (_.isUndefined(contractAddress)) {
+                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
+            }
+            return contractAddress;
+        } else {
+            return this._contractAddressIfExists;
+        }
     }
     private _createTokenFromMetadata(metadata: TokenMetadata): Token|undefined {
         if (metadata[0] === constants.NULL_ADDRESS) {
