@@ -102,7 +102,7 @@ export class OrderValidationUtils {
         if (order.takerTokenAmount.eq(unavailableTakerTokenAmount)) {
             throw new Error(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
         }
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
         if (order.expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.OrderCancelExpired);
         }
@@ -150,7 +150,7 @@ export class OrderValidationUtils {
         }
     }
     private validateOrderNotExpiredOrThrow(expirationUnixTimestampSec: BigNumber) {
-        const currentUnixTimestampSec = utils.getCurrentUnixTimestamp();
+        const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
         if (expirationUnixTimestampSec.lessThan(currentUnixTimestampSec)) {
             throw new Error(ExchangeContractErrs.OrderFillExpired);
         }

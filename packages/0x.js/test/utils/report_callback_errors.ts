@@ -1,10 +1,10 @@
 import { DoneCallback } from '../../src/types';
 
 export const reportCallbackErrors = (done: DoneCallback) => {
-    return (f: (...args: any[]) => void) => {
-        const wrapped = (...args: any[]) => {
+    return (fAsync: (...args: any[]) => void|Promise<void>) => {
+        const wrapped = async (...args: any[]) => {
             try {
-                f(...args);
+                await fAsync(...args);
             } catch (err) {
                 done(err);
             }

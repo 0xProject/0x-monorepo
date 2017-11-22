@@ -49,7 +49,10 @@ export const utils = {
         const hashHex = ethUtil.bufferToHex(hashBuff);
         return hashHex;
     },
-    getCurrentUnixTimestamp(): BigNumber {
-        return new BigNumber(Date.now() / 1000);
+    getCurrentUnixTimestampSec(): BigNumber {
+        return new BigNumber(Date.now() / 1000).round();
+    },
+    getCurrentUnixTimestampMs(): BigNumber {
+        return new BigNumber(Date.now());
     },
 };
