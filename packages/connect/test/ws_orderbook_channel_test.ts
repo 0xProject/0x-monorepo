@@ -4,7 +4,7 @@ import * as dirtyChai from 'dirty-chai';
 import * as chai from 'chai';
 import {
     WebSocketOrderbookChannel,
-} from '../src/index';
+} from '../src/ws_orderbook_channel';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
