@@ -1,8 +1,9 @@
-import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {ExchangeContractErrs, TradeSide, TransferType, BlockParamLiteral} from '../types';
+import * as _ from 'lodash';
+
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
+import {BlockParamLiteral, ExchangeContractErrs, TradeSide, TransferType} from '../types';
 
 enum FailureReason {
     Balance = 'balance',

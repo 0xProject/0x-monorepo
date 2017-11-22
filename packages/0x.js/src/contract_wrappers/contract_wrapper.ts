@@ -1,24 +1,25 @@
+import {Block, BlockAndLogStreamer} from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import {BlockAndLogStreamer, Block} from 'ethereumjs-blockstream';
-import {Web3Wrapper} from '../web3_wrapper';
-import {AbiDecoder} from '../utils/abi_decoder';
+
 import {
-    ZeroExError,
-    InternalZeroExError,
     Artifact,
-    LogWithDecodedArgs,
-    RawLog,
-    ContractEvents,
-    SubscriptionOpts,
-    IndexedFilterValues,
-    EventCallback,
     BlockParamLiteral,
     ContractEventArgs,
+    ContractEvents,
+    EventCallback,
+    IndexedFilterValues,
+    InternalZeroExError,
+    LogWithDecodedArgs,
+    RawLog,
+    SubscriptionOpts,
+    ZeroExError,
 } from '../types';
+import {AbiDecoder} from '../utils/abi_decoder';
 import {constants} from '../utils/constants';
-import {intervalUtils} from '../utils/interval_utils';
 import {filterUtils} from '../utils/filter_utils';
+import {intervalUtils} from '../utils/interval_utils';
+import {Web3Wrapper} from '../web3_wrapper';
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;

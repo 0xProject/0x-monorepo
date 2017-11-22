@@ -1,37 +1,39 @@
-import * as _ from 'lodash';
 import {schemas} from '@0xproject/json-schemas';
+import * as _ from 'lodash';
+
 import {ZeroEx} from '../0x';
-import {EventWatcher} from './event_watcher';
-import {assert} from '../utils/assert';
-import {utils} from '../utils/utils';
 import {artifacts} from '../artifacts';
+import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
+import {TokenWrapper} from '../contract_wrappers/token_wrapper';
+import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
+import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
+import {
+    ApprovalContractEventArgs,
+    BlockParamLiteral,
+    ContractEventArgs,
+    ExchangeContractErrs,
+    ExchangeEvents,
+    LogCancelContractEventArgs,
+    LogEvent,
+    LogFillContractEventArgs,
+    LogWithDecodedArgs,
+    OnOrderStateChangeCallback,
+    OrderState,
+    OrderStateWatcherConfig,
+    SignedOrder,
+    TokenEvents,
+    TransferContractEventArgs,
+    Web3Provider,
+    ZeroExError,
+} from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
+import {assert} from '../utils/assert';
 import {intervalUtils} from '../utils/interval_utils';
 import {OrderStateUtils} from '../utils/order_state_utils';
-import {
-    LogEvent,
-    OrderState,
-    SignedOrder,
-    Web3Provider,
-    BlockParamLiteral,
-    LogWithDecodedArgs,
-    ContractEventArgs,
-    OnOrderStateChangeCallback,
-    OrderStateWatcherConfig,
-    ApprovalContractEventArgs,
-    TransferContractEventArgs,
-    LogFillContractEventArgs,
-    LogCancelContractEventArgs,
-    ExchangeEvents,
-    TokenEvents,
-    ZeroExError,
-    ExchangeContractErrs,
-} from '../types';
+import {utils} from '../utils/utils';
 import {Web3Wrapper} from '../web3_wrapper';
-import {TokenWrapper} from '../contract_wrappers/token_wrapper';
-import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
-import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
-import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
+
+import {EventWatcher} from './event_watcher';
 import {ExpirationWatcher} from './expiration_watcher';
 
 interface DependentOrderHashes {
@@ -238,7 +240,7 @@ export class OrderStateWatcher {
     }
     private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
         for (const orderHash of orderHashes) {
-            const signedOrder = this._orderByOrderHash[orderHash] as SignedOrder;
+            const signedOrder = this._orderByOrderHash[orderHash];
             // Most of these calls will never reach the network because the data is fetched from stores
             // and only updated when cache is invalidated
             const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);

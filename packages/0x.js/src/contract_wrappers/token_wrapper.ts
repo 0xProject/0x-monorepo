@@ -1,23 +1,25 @@
-import * as _ from 'lodash';
-import BigNumber from 'bignumber.js';
 import {schemas} from '@0xproject/json-schemas';
-import {Web3Wrapper} from '../web3_wrapper';
-import {assert} from '../utils/assert';
-import {constants} from '../utils/constants';
-import {ContractWrapper} from './contract_wrapper';
-import {AbiDecoder} from '../utils/abi_decoder';
+import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
+
 import {artifacts} from '../artifacts';
 import {
-    TokenContract,
-    ZeroExError,
-    TokenEvents,
-    IndexedFilterValues,
-    SubscriptionOpts,
-    MethodOpts,
-    LogWithDecodedArgs,
     EventCallback,
+    IndexedFilterValues,
+    LogWithDecodedArgs,
+    MethodOpts,
+    SubscriptionOpts,
+    TokenContract,
     TokenContractEventArgs,
+    TokenEvents,
+    ZeroExError,
 } from '../types';
+import {AbiDecoder} from '../utils/abi_decoder';
+import {assert} from '../utils/assert';
+import {constants} from '../utils/constants';
+import {Web3Wrapper} from '../web3_wrapper';
+
+import {ContractWrapper} from './contract_wrapper';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
 
@@ -302,7 +304,7 @@ export class TokenWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenContract>(
             artifacts.TokenArtifact, tokenAddress,
         );
-        tokenContract = contractInstance as TokenContract;
+        tokenContract = contractInstance;
         this._tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
     }

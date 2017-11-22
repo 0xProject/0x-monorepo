@@ -1,10 +1,12 @@
 import * as _ from 'lodash';
-import {Web3Wrapper} from '../web3_wrapper';
-import {assert} from '../utils/assert';
-import {Token, TokenRegistryContract, TokenMetadata, ZeroExError} from '../types';
-import {constants} from '../utils/constants';
-import {ContractWrapper} from './contract_wrapper';
+
 import {artifacts} from '../artifacts';
+import {Token, TokenMetadata, TokenRegistryContract, ZeroExError} from '../types';
+import {assert} from '../utils/assert';
+import {constants} from '../utils/constants';
+import {Web3Wrapper} from '../web3_wrapper';
+
+import {ContractWrapper} from './contract_wrapper';
 
 /**
  * This class includes all the functionality related to interacting with the 0x Token Registry smart contract.
@@ -123,7 +125,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenRegistryContract>(
             artifacts.TokenRegistryArtifact, this._contractAddressIfExists,
         );
-        this._tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
+        this._tokenRegistryContractIfExists = contractInstance;
         return this._tokenRegistryContractIfExists;
     }
 }

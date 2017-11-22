@@ -1,23 +1,24 @@
+import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import BigNumber from 'bignumber.js';
+
+import {ZeroEx} from '../0x';
+import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
+import {TokenWrapper} from '../contract_wrappers/token_wrapper';
+import {RemainingFillableCalculator} from '../order_watcher/remaining_fillable_calculator';
+import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
+import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
 import {
     ExchangeContractErrs,
-    SignedOrder,
-    OrderRelevantState,
     MethodOpts,
+    OrderRelevantState,
     OrderState,
-    OrderStateValid,
     OrderStateInvalid,
+    OrderStateValid,
+    SignedOrder,
 } from '../types';
-import {ZeroEx} from '../0x';
-import {TokenWrapper} from '../contract_wrappers/token_wrapper';
-import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
-import {utils} from '../utils/utils';
 import {constants} from '../utils/constants';
-import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
-import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
-import {RemainingFillableCalculator} from '../order_watcher/remaining_fillable_calculator';
+import {utils} from '../utils/utils';
 
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 

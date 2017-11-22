@@ -1,8 +1,10 @@
 import * as _ from 'lodash';
-import {Web3Wrapper} from '../web3_wrapper';
-import {ContractWrapper} from './contract_wrapper';
+
 import {artifacts} from '../artifacts';
 import {TokenTransferProxyContract, ZeroExError} from '../types';
+import {Web3Wrapper} from '../web3_wrapper';
+
+import {ContractWrapper} from './contract_wrapper';
 
 /**
  * This class includes the functionality related to interacting with the TokenTransferProxy contract.
@@ -60,7 +62,7 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenTransferProxyContract>(
             artifacts.TokenTransferProxyArtifact, this._contractAddressIfExists,
         );
-        this._tokenTransferProxyContractIfExists = contractInstance as TokenTransferProxyContract;
+        this._tokenTransferProxyContractIfExists = contractInstance;
         return this._tokenTransferProxyContractIfExists;
     }
 }

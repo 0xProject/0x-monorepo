@@ -1,11 +1,13 @@
-import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {Web3Wrapper} from '../web3_wrapper';
-import {ContractWrapper} from './contract_wrapper';
-import {TokenWrapper} from './token_wrapper';
+import * as _ from 'lodash';
+
+import {artifacts} from '../artifacts';
 import {EtherTokenContract, ZeroExError} from '../types';
 import {assert} from '../utils/assert';
-import {artifacts} from '../artifacts';
+import {Web3Wrapper} from '../web3_wrapper';
+
+import {ContractWrapper} from './contract_wrapper';
+import {TokenWrapper} from './token_wrapper';
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
@@ -89,7 +91,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<EtherTokenContract>(
             artifacts.EtherTokenArtifact, this._contractAddressIfExists,
         );
-        this._etherTokenContractIfExists = contractInstance as EtherTokenContract;
+        this._etherTokenContractIfExists = contractInstance;
         return this._etherTokenContractIfExists;
     }
 }

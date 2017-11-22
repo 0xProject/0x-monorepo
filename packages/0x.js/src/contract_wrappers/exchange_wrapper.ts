@@ -1,44 +1,46 @@
+import {schemas} from '@0xproject/json-schemas';
+import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import BigNumber from 'bignumber.js';
-import {schemas} from '@0xproject/json-schemas';
-import {Web3Wrapper} from '../web3_wrapper';
+
+import {artifacts} from '../artifacts';
 import {
+    DecodedLogArgs,
     ECSignature,
+    EventCallback,
     ExchangeContract,
     ExchangeContractErrCodes,
     ExchangeContractErrs,
-    ZeroExError,
-    OrderValues,
-    OrderAddresses,
-    Order,
-    SignedOrder,
+    ExchangeContractEventArgs,
     ExchangeEvents,
-    SubscriptionOpts,
     IndexedFilterValues,
-    OrderCancellationRequest,
-    OrderFillRequest,
+    LogCancelContractEventArgs,
     LogErrorContractEventArgs,
     LogFillContractEventArgs,
-    LogCancelContractEventArgs,
     LogWithDecodedArgs,
     MethodOpts,
-    ValidateOrderFillableOpts,
+    Order,
+    OrderAddresses,
+    OrderCancellationRequest,
+    OrderFillRequest,
     OrderTransactionOpts,
+    OrderValues,
     RawLog,
-    EventCallback,
-    ExchangeContractEventArgs,
-    DecodedLogArgs,
+    SignedOrder,
+    SubscriptionOpts,
+    ValidateOrderFillableOpts,
+    ZeroExError,
 } from '../types';
+import {AbiDecoder} from '../utils/abi_decoder';
 import {assert} from '../utils/assert';
-import {utils} from '../utils/utils';
+import {decorators} from '../utils/decorators';
+import {ExchangeTransferSimulator} from '../utils/exchange_transfer_simulator';
 import {OrderValidationUtils} from '../utils/order_validation_utils';
+import {utils} from '../utils/utils';
+import {Web3Wrapper} from '../web3_wrapper';
+
 import {ContractWrapper} from './contract_wrapper';
 import {TokenWrapper} from './token_wrapper';
-import {decorators} from '../utils/decorators';
-import {AbiDecoder} from '../utils/abi_decoder';
-import {ExchangeTransferSimulator} from '../utils/exchange_transfer_simulator';
-import {artifacts} from '../artifacts';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;
 
@@ -873,7 +875,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<ExchangeContract>(
             artifacts.ExchangeArtifact, this._contractAddressIfExists,
         );
-        this._exchangeContractIfExists = contractInstance as ExchangeContract;
+        this._exchangeContractIfExists = contractInstance;
         return this._exchangeContractIfExists;
     }
     private async _getTokenTransferProxyAddressAsync(): Promise<string> {

@@ -1,5 +1,6 @@
 import * as ethUtil from 'ethereumjs-util';
 import * as request from 'request-promise-native';
+
 import {constants} from './constants';
 
 export class RPC {

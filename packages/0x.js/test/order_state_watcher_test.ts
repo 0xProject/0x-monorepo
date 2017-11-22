@@ -1,31 +1,33 @@
-import 'mocha';
+import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
+import 'mocha';
 import * as Web3 from 'web3';
-import BigNumber from 'bignumber.js';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {Web3Wrapper} from '../src/web3_wrapper';
-import {OrderStateWatcher} from '../src/order_watcher/order_state_watcher';
+
 import {
+    DecodedLogEvent,
+    ExchangeContractErrs,
+    LogEvent,
+    OrderState,
+    OrderStateInvalid,
+    OrderStateValid,
+    SignedOrder,
     Token,
     ZeroEx,
-    LogEvent,
-    DecodedLogEvent,
     ZeroExConfig,
-    OrderState,
-    SignedOrder,
     ZeroExError,
-    OrderStateValid,
-    OrderStateInvalid,
-    ExchangeContractErrs,
 } from '../src';
-import {constants} from './utils/constants';
-import {TokenUtils} from './utils/token_utils';
-import {FillScenarios} from './utils/fill_scenarios';
+import {OrderStateWatcher} from '../src/order_watcher/order_state_watcher';
 import {DoneCallback} from '../src/types';
+import {Web3Wrapper} from '../src/web3_wrapper';
+
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {FillScenarios} from './utils/fill_scenarios';
 import {reportCallbackErrors} from './utils/report_callback_errors';
+import {TokenUtils} from './utils/token_utils';
+import {web3Factory} from './utils/web3_factory';
 
 const TIMEOUT_MS = 150;
 

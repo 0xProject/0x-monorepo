@@ -1,8 +1,9 @@
-import * as Web3 from 'web3';
-import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {AbiType, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes, ContractEventArgs} from '../types';
+import * as _ from 'lodash';
+import * as Web3 from 'web3';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
+
+import {AbiType, ContractEventArgs, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes} from '../types';
 
 export class AbiDecoder {
     private savedABIs: Web3.AbiDefinition[] = [];

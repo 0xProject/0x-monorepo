@@ -3,11 +3,13 @@
 // we are not running in a browser env.
 // Filed issue: https://github.com/ethereum/web3.js/issues/844
 (global as any).XMLHttpRequest = undefined;
+import * as Web3 from 'web3';
 import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
-import * as Web3 from 'web3';
-import {constants} from './constants';
+
 import {EmptyWalletSubProvider} from '../../src/subproviders/empty_wallet_subprovider';
+
+import {constants} from './constants';
 
 export const web3Factory = {
     create(hasAddresses: boolean = true): Web3 {

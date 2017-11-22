@@ -1,6 +1,7 @@
+import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import {BigNumber} from 'bignumber.js';
+
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {BlockParamLiteral} from '../types';
 

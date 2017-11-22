@@ -1,11 +1,13 @@
-import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {ExchangeContractErrs, SignedOrder, Order, ZeroExError, TradeSide, TransferType} from '../types';
+import * as _ from 'lodash';
+
 import {ZeroEx} from '../0x';
-import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
-import {utils} from '../utils/utils';
+import {TokenWrapper} from '../contract_wrappers/token_wrapper';
+import {ExchangeContractErrs, Order, SignedOrder, TradeSide, TransferType, ZeroExError} from '../types';
 import {constants} from '../utils/constants';
+import {utils} from '../utils/utils';
+
 import {ExchangeTransferSimulator} from './exchange_transfer_simulator';
 
 export class OrderValidationUtils {
