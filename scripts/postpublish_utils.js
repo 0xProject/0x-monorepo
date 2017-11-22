@@ -9,7 +9,7 @@ const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS
 module.exports = {
     getLatestTagAndVersionAsync: function(subPackageName) {
         const subPackagePrefix = subPackageName + '@';
-        const gitTagsCommand = 'git tags -l "' + subPackagePrefix + '*"';
+        const gitTagsCommand = 'git tag -l "' + subPackagePrefix + '*"';
         return execAsync(gitTagsCommand)
             .then(function(result) {
                 if (result.stderr !== '') {
