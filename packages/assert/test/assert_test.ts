@@ -1,8 +1,9 @@
-import 'mocha';
-import * as dirtyChai from 'dirty-chai';
-import * as chai from 'chai';
-import {BigNumber} from 'bignumber.js';
 import {schemas} from '@0xproject/json-schemas';
+import {BigNumber} from 'bignumber.js';
+import * as chai from 'chai';
+import * as dirtyChai from 'dirty-chai';
+import 'mocha';
+
 import {assert} from '../src/index';
 
 chai.config.includeStack = true;
@@ -183,7 +184,7 @@ describe('Assertions', () => {
         it('should not throw for valid input', () => {
             const validInputs = [
                 42,
-                0.00,
+                0.00, // tslint:disable-line:number-literal-format
                 21e+42,
             ];
             validInputs.forEach(input => expect(assert.isNumber.bind(assert, variableName, input)).to.not.throw());

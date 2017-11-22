@@ -1,10 +1,12 @@
-import 'isomorphic-fetch';
-import * as _ from 'lodash';
-import {BigNumber} from 'bignumber.js';
-import * as queryString from 'query-string';
+import {SignedOrder} from '0x.js';
 import {assert} from '@0xproject/assert';
 import {schemas} from '@0xproject/json-schemas';
-import {SignedOrder} from '0x.js';
+import {BigNumber} from 'bignumber.js';
+import 'isomorphic-fetch';
+import * as _ from 'lodash';
+import * as queryString from 'query-string';
+
+import {schemas as clientSchemas} from './schemas/schemas';
 import {
     Client,
     FeesRequest,
@@ -15,7 +17,6 @@ import {
     TokenPairsItem,
     TokenPairsRequest,
 } from './types';
-import {schemas as clientSchemas} from './schemas/schemas';
 import {typeConverters} from './utils/type_converters';
 
 // TODO: move this and bigNumberConfigs in the 0x.js package into one place

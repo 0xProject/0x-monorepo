@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
 import {BigNumber} from 'bignumber.js';
+import * as _ from 'lodash';
 
 // TODO: convert all of these to non-mutating, pure functions
 export const typeConverters = {

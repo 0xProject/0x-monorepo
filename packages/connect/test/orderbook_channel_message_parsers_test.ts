@@ -1,19 +1,21 @@
-import 'mocha';
-import * as dirtyChai from 'dirty-chai';
 import * as chai from 'chai';
+import * as dirtyChai from 'dirty-chai';
+import 'mocha';
+
 import {orderbookChannelMessageParsers} from '../src/utils/orderbook_channel_message_parsers';
-import {
-    snapshotOrderbookChannelMessage,
-    malformedSnapshotOrderbookChannelMessage,
-} from './fixtures/standard_relayer_api/snapshot_orderbook_channel_message';
-import {
-    updateOrderbookChannelMessage,
-    malformedUpdateOrderbookChannelMessage,
-} from './fixtures/standard_relayer_api/update_orderbook_channel_message';
-import {unknownOrderbookChannelMessage} from './fixtures/standard_relayer_api/unknown_orderbook_channel_message';
-import {orderbookResponse} from './fixtures/standard_relayer_api/orderbook';
+
 // tslint:disable-next-line:max-line-length
 import {orderResponse} from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
+import {orderbookResponse} from './fixtures/standard_relayer_api/orderbook';
+import {
+    malformedSnapshotOrderbookChannelMessage,
+    snapshotOrderbookChannelMessage,
+} from './fixtures/standard_relayer_api/snapshot_orderbook_channel_message';
+import {unknownOrderbookChannelMessage} from './fixtures/standard_relayer_api/unknown_orderbook_channel_message';
+import {
+    malformedUpdateOrderbookChannelMessage,
+    updateOrderbookChannelMessage,
+} from './fixtures/standard_relayer_api/update_orderbook_channel_message';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);

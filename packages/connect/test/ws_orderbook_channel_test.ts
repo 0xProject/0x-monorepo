@@ -1,7 +1,8 @@
-import 'mocha';
-import * as _ from 'lodash';
-import * as dirtyChai from 'dirty-chai';
 import * as chai from 'chai';
+import * as dirtyChai from 'dirty-chai';
+import * as _ from 'lodash';
+import 'mocha';
+
 import {
     WebSocketOrderbookChannel,
 } from '../src/ws_orderbook_channel';
