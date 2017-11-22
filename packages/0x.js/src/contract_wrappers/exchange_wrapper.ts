@@ -658,9 +658,9 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   callback            Callback that gets called when a log is added/removed
      * @return Subscription token used later to unsubscribe
      */
-    public async subscribeAsync<ArgsType extends ExchangeContractEventArgs>(
+    public subscribe<ArgsType extends ExchangeContractEventArgs>(
         eventName: ExchangeEvents, indexFilterValues: IndexedFilterValues,
-        callback: EventCallback<ArgsType>): Promise<string> {
+        callback: EventCallback<ArgsType>): string {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
