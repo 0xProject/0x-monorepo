@@ -16,6 +16,7 @@
   "author": "Fabio Berger",
   "license": "Apache-2.0",
   "dependencies": {
+    "0x.js": "^0.26.0",
     "accounting": "^0.4.1",
     "basscss": "^8.0.3",
     "bignumber.js": "~4.1.0",
@@ -69,7 +70,6 @@
     "@types/accounting": "^0.4.1",
     "@types/dateformat": "^1.0.1",
     "@types/deep-equal": "^1.0.0",
-    "@types/es6-promise": "0.0.32",
     "@types/jsonschema": "^1.1.1",
     "@types/lodash": "^4.14.55",
     "@types/material-ui": "0.18.0",

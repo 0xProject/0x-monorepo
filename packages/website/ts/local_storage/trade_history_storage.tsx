@@ -31,9 +31,21 @@ export const tradeHistoryStorage = {
         const fillHash = this._getFillHash(fill);
         const doesFillExist = !_.isUndefined(fillsByHash[fillHash]);
         if (doesFillExist) {
-            return;
+            return; // noop
         }
         fillsByHash[fillHash] = fill;
+        const userFillsJSONString = JSON.stringify(fillsByHash);
+        const userFillsKey = this._getUserFillsKey(userAddress, networkId);
+        localStorage.setItem(userFillsKey, userFillsJSONString);
+    },
+    removeFillFromUser(userAddress: string, networkId: number, fill: Fill) {
+        const fillsByHash = this.getUserFillsByHash(userAddress, networkId);
+        const fillHash = this._getFillHash(fill);
+        const doesFillExist = !_.isUndefined(fillsByHash[fillHash]);
+        if (!doesFillExist) {
+            return; // noop
+        }
+        delete fillsByHash[fillHash];
         const userFillsJSONString = JSON.stringify(fillsByHash);
         const userFillsKey = this._getUserFillsKey(userAddress, networkId);
         localStorage.setItem(userFillsKey, userFillsJSONString);

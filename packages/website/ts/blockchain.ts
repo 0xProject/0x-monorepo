@@ -27,7 +27,7 @@ import contract = require('truffle-contract');
 import ethUtil = require('ethereumjs-util');
 import ProviderEngine = require('web3-provider-engine');
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
-import {TransactionSubmitted} from 'ts/components/flash_messages/transaction_submitted';
+import { TransactionSubmitted } from 'ts/components/flash_messages/transaction_submitted';
 import {TokenSendCompleted} from 'ts/components/flash_messages/token_send_completed';
 import {RedundantRPCSubprovider} from 'ts/subproviders/redundant_rpc_subprovider';
 import {InjectedWeb3SubProvider} from 'ts/subproviders/injected_web3_subprovider';
@@ -496,7 +496,16 @@ export class Blockchain {
                 this.stopWatchingExchangeLogFillEventsAsync(); // fire and forget
                 return;
             } else {
-                await this.addFillEventToTradeHistoryAsync(decodedLogEvent);
+                if (this.doesLogEventInvolveUser(decodedLogEvent)) {
+                    return; // We aren't interested in the fill event
+                }
+                this.updateLatestFillsBlockIfNeeded(decodedLogEvent.blockNumber);
+                const fill = await this.convertDecodedLogToFillAsync(decodedLogEvent);
+                if (decodedLogEvent.removed) {
+                    tradeHistoryStorage.removeFillFromUser(this.userAddress, this.networkId, fill);
+                } else {
+                    tradeHistoryStorage.addFillToUser(this.userAddress, this.networkId, fill);
+                }
             }
         });
     }
@@ -510,30 +519,16 @@ export class Blockchain {
             ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues,
         );
         for (const decodedLog of decodedLogs) {
-            console.log('decodedLog', decodedLog);
-            await this.addFillEventToTradeHistoryAsync(decodedLog);
+            if (this.doesLogEventInvolveUser(decodedLog)) {
+                continue; // We aren't interested in the fill event
+            }
+            this.updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
+            const fill = await this.convertDecodedLogToFillAsync(decodedLog);
+            tradeHistoryStorage.addFillToUser(this.userAddress, this.networkId, fill);
         }
     }
-    private async addFillEventToTradeHistoryAsync(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
+    private async convertDecodedLogToFillAsync(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
         const args = decodedLog.args as LogFillContractEventArgs;
-        const isUserMakerOrTaker = args.maker === this.userAddress ||
-                                   args.taker === this.userAddress;
-        if (!isUserMakerOrTaker) {
-            return; // We aren't interested in the fill event
-        }
-        const isBlockPending = _.isNull(decodedLog.blockNumber);
-        if (!isBlockPending) {
-            // Hack: I've observed the behavior where a client won't register certain fill events
-            // and lowering the cache blockNumber fixes the issue. As a quick fix for now, simply
-            // set the cached blockNumber 50 below the one returned. This way, upon refreshing, a user
-            // would still attempt to re-fetch events from the previous 50 blocks, but won't need to
-            // re-fetch all events in all blocks.
-            // TODO: Debug if this is a race condition, and apply a more precise fix
-            const blockNumberToSet = decodedLog.blockNumber - BLOCK_NUMBER_BACK_TRACK < 0 ?
-                                     0 :
-                                     decodedLog.blockNumber - BLOCK_NUMBER_BACK_TRACK;
-            tradeHistoryStorage.setFillsLatestBlock(this.userAddress, this.networkId, blockNumberToSet);
-        }
         const blockTimestamp = await this.web3Wrapper.getBlockTimestampAsync(decodedLog.blockHash);
         const fill = {
             filledTakerTokenAmount: args.filledTakerTokenAmount,
@@ -549,7 +544,28 @@ export class Blockchain {
             transactionHash: decodedLog.transactionHash,
             blockTimestamp,
         };
-        tradeHistoryStorage.addFillToUser(this.userAddress, this.networkId, fill);
+        return fill;
+    }
+    private doesLogEventInvolveUser(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
+        const args = decodedLog.args as LogFillContractEventArgs;
+        const isUserMakerOrTaker = args.maker === this.userAddress ||
+                                   args.taker === this.userAddress;
+        return isUserMakerOrTaker;
+    }
+    private updateLatestFillsBlockIfNeeded(blockNumber: number) {
+        const isBlockPending = _.isNull(blockNumber);
+        if (!isBlockPending) {
+            // Hack: I've observed the behavior where a client won't register certain fill events
+            // and lowering the cache blockNumber fixes the issue. As a quick fix for now, simply
+            // set the cached blockNumber 50 below the one returned. This way, upon refreshing, a user
+            // would still attempt to re-fetch events from the previous 50 blocks, but won't need to
+            // re-fetch all events in all blocks.
+            // TODO: Debug if this is a race condition, and apply a more precise fix
+            const blockNumberToSet = blockNumber - BLOCK_NUMBER_BACK_TRACK < 0 ?
+                                     0 :
+                                     blockNumber - BLOCK_NUMBER_BACK_TRACK;
+            tradeHistoryStorage.setFillsLatestBlock(this.userAddress, this.networkId, blockNumberToSet);
+        }
     }
     private async stopWatchingExchangeLogFillEventsAsync() {
         this.zeroEx.exchange.unsubscribeAll();
