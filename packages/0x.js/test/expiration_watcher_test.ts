@@ -12,11 +12,13 @@ import {TokenUtils} from './utils/token_utils';
 import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
 import {Token, DoneCallback} from '../src/types';
 import {ZeroEx} from '../src/0x';
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {FillScenarios} from './utils/fill_scenarios';
 import {reportCallbackErrors} from './utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('ExpirationWatcher', () => {
     let web3: Web3;
@@ -52,14 +54,16 @@ describe('ExpirationWatcher', () => {
         makerTokenAddress = makerToken.address;
         takerTokenAddress = takerToken.address;
     });
-    beforeEach(() => {
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
         const sinonTimerConfig = {shouldAdvanceTime: true} as any;
         // This constructor has incorrect types
         timer = Sinon.useFakeTimers(sinonTimerConfig);
         currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
         expirationWatcher = new ExpirationWatcher();
     });
-    afterEach(() => {
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
         timer.restore();
         expirationWatcher.unsubscribe();
     });

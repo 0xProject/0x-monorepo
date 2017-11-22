@@ -1,6 +1,6 @@
 # CHANGELOG
 
-vx.x.x
+v0.26.0
 ------------------------
     * Add post-formatter for logs converting `blockNumber`, `logIndex`, `transactionIndex` from hexes to numbers (#231)
     * Remove support for Async callback types when used in Subscribe functions (#222)
