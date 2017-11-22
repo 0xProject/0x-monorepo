@@ -18,6 +18,10 @@ import {
 import {schemas as clientSchemas} from './schemas/schemas';
 import {typeConverters} from './utils/type_converters';
 
+BigNumber.config({
+    EXPONENTIAL_AT: 1000,
+});
+
 interface RequestOptions {
     params?: object;
     payload?: object;
@@ -157,9 +161,10 @@ export class HttpClient implements Client {
         const headers = new Headers({
             'content-type': 'application/json',
         });
+
         const response = await fetch(url, {
             method: requestType,
-            body: payload,
+            body: JSON.stringify(payload),
             headers,
         });
         if (!response.ok) {
