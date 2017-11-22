@@ -1,9 +1,10 @@
-import * as _ from 'lodash';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
-import {ZeroExError, Artifact, TransactionReceipt} from './types';
+import * as _ from 'lodash';
+import * as Web3 from 'web3';
+
 import {Contract} from './contract';
+import {Artifact, TransactionReceipt, ZeroExError} from './types';
 
 interface RawLogEntry {
     logIndex: string|null;

@@ -1,21 +1,23 @@
-import 'mocha';
+import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
+import 'mocha';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
-import BigNumber from 'bignumber.js';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {utils} from '../src/utils/utils';
-import {constants} from '../src/utils/constants';
-import {Web3Wrapper} from '../src/web3_wrapper';
-import {TokenUtils} from './utils/token_utils';
-import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
-import {Token, DoneCallback} from '../src/types';
+
 import {ZeroEx} from '../src/0x';
+import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
+import {DoneCallback, Token} from '../src/types';
+import {constants} from '../src/utils/constants';
+import {utils} from '../src/utils/utils';
+import {Web3Wrapper} from '../src/web3_wrapper';
+
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
 import {FillScenarios} from './utils/fill_scenarios';
 import {reportCallbackErrors} from './utils/report_callback_errors';
+import {TokenUtils} from './utils/token_utils';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -46,7 +48,7 @@ describe('ExpirationWatcher', () => {
             networkId: constants.TESTRPC_NETWORK_ID,
         };
         zeroEx = new ZeroEx(web3.currentProvider, config);
-        exchangeContractAddress = await zeroEx.exchange.getContractAddress();
+        exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);

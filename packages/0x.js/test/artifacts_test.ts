@@ -1,8 +1,10 @@
-import * as fs from 'fs';
 import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
+import * as fs from 'fs';
 import HDWalletProvider = require('truffle-hdwallet-provider');
+
 import {ZeroEx} from '../src';
+
+import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
 
 chaiSetup.configure();
@@ -26,7 +28,7 @@ describe('Artifacts', () => {
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
         }).timeout(TIMEOUT);
         it('proxy contract is deployed', async () => {
-            await (zeroEx.token as any)._getTokenTransferProxyAddressAsync();
+            await (zeroEx.proxy as any)._getTokenTransferProxyContractAsync();
         }).timeout(TIMEOUT);
         it('exchange contract is deployed', async () => {
             await (zeroEx.exchange as any)._getExchangeContractAsync();
@@ -46,7 +48,7 @@ describe('Artifacts', () => {
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
         }).timeout(TIMEOUT);
         it('proxy contract is deployed', async () => {
-            await (zeroEx.token as any)._getTokenTransferProxyAddressAsync();
+            await (zeroEx.proxy as any)._getTokenTransferProxyContractAsync();
         }).timeout(TIMEOUT);
         it('exchange contract is deployed', async () => {
             await (zeroEx.exchange as any)._getExchangeContractAsync();

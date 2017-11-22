@@ -1,7 +1,9 @@
 import * as chai from 'chai';
 import 'mocha';
+
 import {ZeroEx} from '../src';
 import {assert} from '../src/utils/assert';
+
 import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 

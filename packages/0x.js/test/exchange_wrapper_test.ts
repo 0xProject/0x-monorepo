@@ -1,28 +1,30 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import * as chai from 'chai';
+import 'mocha';
+import * as Web3 from 'web3';
+
 import {
-    ZeroEx,
-    Token,
-    SignedOrder,
-    SubscriptionOpts,
-    ExchangeEvents,
+    DecodedLogEvent,
     ExchangeContractErrs,
-    OrderCancellationRequest,
-    OrderFillRequest,
-    LogFillContractEventArgs,
+    ExchangeEvents,
     LogCancelContractEventArgs,
     LogEvent,
-    DecodedLogEvent,
+    LogFillContractEventArgs,
+    OrderCancellationRequest,
+    OrderFillRequest,
+    SignedOrder,
+    SubscriptionOpts,
+    Token,
+    ZeroEx,
 } from '../src';
-import {DoneCallback, BlockParamLiteral} from '../src/types';
+import {BlockParamLiteral, DoneCallback} from '../src/types';
+
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
-import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -825,4 +827,4 @@ describe('ExchangeWrapper', () => {
             expect(args.maker).to.be.equal(differentMakerAddress);
         });
     });
-});
+}); // tslint:disable:max-file-line-count

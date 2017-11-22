@@ -1,7 +1,8 @@
-import * as Web3 from 'web3';
-import * as _ from 'lodash';
+import {schemas, SchemaValidator} from '@0xproject/json-schemas';
 import promisify = require('es6-promisify');
-import {SchemaValidator, schemas} from '@0xproject/json-schemas';
+import * as _ from 'lodash';
+import * as Web3 from 'web3';
+
 import {AbiType} from './types';
 
 export class Contract implements Web3.ContractInstance {
@@ -47,7 +48,7 @@ export class Contract implements Web3.ContractInstance {
         });
     }
     private promisifyWithDefaultParams(fn: (...args: any[]) => void): (...args: any[]) => Promise<any> {
-        const promisifiedWithDefaultParams = (...args: any[]) => {
+        const promisifiedWithDefaultParams = async (...args: any[]) => {
             const promise = new Promise((resolve, reject) => {
                 const lastArg = args[args.length - 1];
                 let txData: Partial<Web3.TxData> = {};

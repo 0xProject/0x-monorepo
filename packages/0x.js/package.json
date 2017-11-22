@@ -16,7 +16,7 @@
     "build": "run-p build:umd:prod build:commonjs; exit 0;",
     "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
     "upload_docs_json": "aws s3 cp docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type aplication/json",
-    "lint": "tslint --project . src/**/*.ts test/**/*.ts",
+    "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
     "test:circleci": "run-s test:coverage report_test_coverage && if [ $CIRCLE_BRANCH = \"development\" ]; then yarn test:umd; fi",
     "test": "run-s clean test:commonjs",
     "test:umd": "./scripts/test_umd.sh",

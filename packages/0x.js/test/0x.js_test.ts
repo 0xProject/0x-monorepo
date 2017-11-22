@@ -1,14 +1,16 @@
-import * as _ from 'lodash';
-import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
-import 'mocha';
 import BigNumber from 'bignumber.js';
+import * as chai from 'chai';
+import * as _ from 'lodash';
+import 'mocha';
 import * as Sinon from 'sinon';
-import {ZeroEx, Order, ZeroExError, LogWithDecodedArgs, ApprovalContractEventArgs, TokenEvents} from '../src';
+
+import {ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx, ZeroExError} from '../src';
+
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
 import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 
 const blockchainLifecycle = new BlockchainLifecycle();
 chaiSetup.configure();
@@ -39,11 +41,11 @@ describe('ZeroEx library', () => {
 
             // Check that all nested web3 wrapper instances return the updated provider
             const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getCurrentProvider();
-            expect((nestedWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
+            expect((nestedWeb3WrapperProvider).zeroExTestId).to.be.a('number');
             const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getCurrentProvider();
-            expect((exchangeWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
+            expect((exchangeWeb3WrapperProvider).zeroExTestId).to.be.a('number');
             const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getCurrentProvider();
-            expect((tokenRegistryWeb3WrapperProvider as any).zeroExTestId).to.be.a('number');
+            expect((tokenRegistryWeb3WrapperProvider).zeroExTestId).to.be.a('number');
         });
     });
     describe('#isValidSignature', () => {

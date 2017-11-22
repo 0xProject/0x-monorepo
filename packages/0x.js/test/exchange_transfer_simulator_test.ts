@@ -1,12 +1,14 @@
-import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {constants} from './utils/constants';
-import {ZeroEx, ExchangeContractErrs, Token} from '../src';
+import * as chai from 'chai';
+
+import {ExchangeContractErrs, Token, ZeroEx} from '../src';
 import {TradeSide, TransferType} from '../src/types';
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
+
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;

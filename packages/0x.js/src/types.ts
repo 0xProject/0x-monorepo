@@ -1,5 +1,5 @@
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
+import * as Web3 from 'web3';
 
 export enum ZeroExError {
     ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
@@ -413,6 +413,7 @@ export interface OrderStateWatcherConfig {
  * exchangeContractAddress: The address of an exchange contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
  * etherTokenContractAddress: The address of an ether token contract to use
+ * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
  */
 export interface ZeroExConfig {
@@ -421,6 +422,7 @@ export interface ZeroExConfig {
     exchangeContractAddress?: string;
     tokenRegistryContractAddress?: string;
     etherTokenContractAddress?: string;
+    tokenTransferProxyContractAddress?: string;
     orderWatcherConfig?: OrderStateWatcherConfig;
 }
 
@@ -443,9 +445,11 @@ export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
 
 export interface Artifact {
     abi: Web3.ContractAbi;
-    networks: {[networkId: number]: {
-        address: string;
-    }};
+    networks: {
+        [networkId: number]: {
+            address: string;
+        };
+    };
 }
 
 /*
@@ -527,4 +531,4 @@ export interface TransactionReceipt {
     gasUsed: number;
     contractAddress: string|null;
     logs: Web3.LogEntry[];
-}
+} // tslint:disable:max-file-line-count

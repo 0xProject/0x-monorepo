@@ -1,28 +1,30 @@
-import 'mocha';
-import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
+import * as chai from 'chai';
 import promisify = require('es6-promisify');
-import {web3Factory} from './utils/web3_factory';
+import 'mocha';
+import * as Web3 from 'web3';
+
 import {
+    ApprovalContractEventArgs,
+    ContractEvent,
+    DecodedLogEvent,
+    LogEvent,
+    LogWithDecodedArgs,
+    SubscriptionOpts,
+    Token,
+    TokenContractEventArgs,
+    TokenEvents,
+    TransferContractEventArgs,
     ZeroEx,
     ZeroExError,
-    Token,
-    SubscriptionOpts,
-    TokenEvents,
-    ContractEvent,
-    TransferContractEventArgs,
-    ApprovalContractEventArgs,
-    TokenContractEventArgs,
-    LogWithDecodedArgs,
-    LogEvent,
-    DecodedLogEvent,
 } from '../src';
-import {constants} from './utils/constants';
+import {BlockParamLiteral, DoneCallback} from '../src/types';
+
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
 import {TokenUtils} from './utils/token_utils';
-import {DoneCallback, BlockParamLiteral} from '../src/types';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;

@@ -1,9 +1,11 @@
 import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
+
 import {ZeroEx} from '../src';
-import {constants} from './utils/constants';
 import {TokenTransferProxyWrapper} from '../src/contract_wrappers/token_transfer_proxy_wrapper';
+
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;

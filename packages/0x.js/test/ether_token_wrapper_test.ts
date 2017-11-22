@@ -1,12 +1,14 @@
-import 'mocha';
-import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
-import {web3Factory} from './utils/web3_factory';
-import {constants} from './utils/constants';
+import * as chai from 'chai';
+import 'mocha';
+import * as Web3 from 'web3';
+
 import {ZeroEx, ZeroExError} from '../src';
+
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;

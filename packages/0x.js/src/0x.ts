@@ -1,34 +1,35 @@
-import * as _ from 'lodash';
+import {schemas, SchemaValidator} from '@0xproject/json-schemas';
 import BigNumber from 'bignumber.js';
-import {SchemaValidator, schemas} from '@0xproject/json-schemas';
-import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
-import {Web3Wrapper} from './web3_wrapper';
-import {constants} from './utils/constants';
-import {utils} from './utils/utils';
-import {signatureUtils} from './utils/signature_utils';
-import {assert} from './utils/assert';
-import {AbiDecoder} from './utils/abi_decoder';
-import {intervalUtils} from './utils/interval_utils';
+import * as _ from 'lodash';
+
 import {artifacts} from './artifacts';
+import {bigNumberConfigs} from './bignumber_config';
+import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
-import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
-import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
+import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {OrderStateWatcher} from './order_watcher/order_state_watcher';
-import {OrderStateUtils} from './utils/order_state_utils';
+import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 import {
     ECSignature,
-    ZeroExError,
     Order,
+    OrderStateWatcherConfig,
     SignedOrder,
+    TransactionReceiptWithDecodedLogs,
     Web3Provider,
     ZeroExConfig,
-    OrderStateWatcherConfig,
-    TransactionReceiptWithDecodedLogs,
+    ZeroExError,
 } from './types';
-import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
+import {AbiDecoder} from './utils/abi_decoder';
+import {assert} from './utils/assert';
+import {constants} from './utils/constants';
+import {intervalUtils} from './utils/interval_utils';
+import {OrderStateUtils} from './utils/order_state_utils';
+import {signatureUtils} from './utils/signature_utils';
+import {utils} from './utils/utils';
+import {Web3Wrapper} from './web3_wrapper';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -179,20 +180,20 @@ export class ZeroEx {
             gasPrice: config.gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(provider, config.networkId, defaults);
+        this.proxy = new TokenTransferProxyWrapper(
+            this._web3Wrapper,
+            config.tokenTransferProxyContractAddress,
+        );
         this.token = new TokenWrapper(
             this._web3Wrapper,
             this._abiDecoder,
-            this._getTokenTransferProxyAddressAsync.bind(this),
+            this.proxy,
         );
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             this._abiDecoder,
             this.token,
             config.exchangeContractAddress,
-        );
-        this.proxy = new TokenTransferProxyWrapper(
-            this._web3Wrapper,
-            this._getTokenTransferProxyAddressAsync.bind(this),
         );
         this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, config.tokenRegistryContractAddress);
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, config.etherTokenContractAddress);
