@@ -94,12 +94,12 @@ export class OrderStateWatcher {
      * signature is verified.
      * @param   signedOrder     The order you wish to start watching.
      */
-    public async addOrderAsync(signedOrder: SignedOrder): Promise<void> {
+    public addOrder(signedOrder: SignedOrder): void {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
         this._orderByOrderHash[orderHash] = signedOrder;
-        await this.addToDependentOrderHashesAsync(signedOrder, orderHash);
+        this.addToDependentOrderHashes(signedOrder, orderHash);
         const expirationUnixTimestampMs = signedOrder.expirationUnixTimestampSec.times(1000);
         this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);
     }
@@ -107,7 +107,7 @@ export class OrderStateWatcher {
      * Removes an order from the orderStateWatcher
      * @param   orderHash     The orderHash of the order you wish to stop watching.
      */
-    public async removeOrderAsync(orderHash: string): Promise<void> {
+    public removeOrder(orderHash: string): void {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const signedOrder = this._orderByOrderHash[orderHash];
         if (_.isUndefined(signedOrder)) {
@@ -134,7 +134,7 @@ export class OrderStateWatcher {
         }
         this._callbackIfExists = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
-        this._expirationWatcher.subscribe(this._onOrderExpiredAsync.bind(this));
+        this._expirationWatcher.subscribe(this._onOrderExpired.bind(this));
     }
     /**
      * Ends an orderStateWatcher subscription.
@@ -149,14 +149,14 @@ export class OrderStateWatcher {
         this._eventWatcher.unsubscribe();
         this._expirationWatcher.unsubscribe();
     }
-    private async _onOrderExpiredAsync(orderHash: string): Promise<void> {
+    private _onOrderExpired(orderHash: string): void {
         const orderState: OrderState = {
             isValid: false,
             orderHash,
             error: ExchangeContractErrs.OrderFillExpired,
         };
         if (!_.isUndefined(this._orderByOrderHash[orderHash])) {
-            await this.removeOrderAsync(orderHash);
+            this.removeOrder(orderHash);
             if (!_.isUndefined(this._callbackIfExists)) {
                 this._callbackIfExists(orderState);
             }
@@ -254,7 +254,7 @@ export class OrderStateWatcher {
             this._callbackIfExists(orderState);
         }
     }
-    private async addToDependentOrderHashesAsync(signedOrder: SignedOrder, orderHash: string): Promise<void> {
+    private addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string): void {
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker])) {
             this._dependentOrderHashes[signedOrder.maker] = {};
         }

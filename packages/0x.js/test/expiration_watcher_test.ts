@@ -7,6 +7,7 @@ import BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {utils} from '../src/utils/utils';
+import {constants} from '../src/utils/constants';
 import {Web3Wrapper} from '../src/web3_wrapper';
 import {TokenUtils} from './utils/token_utils';
 import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
@@ -41,8 +42,11 @@ describe('ExpirationWatcher', () => {
     let expirationWatcher: ExpirationWatcher;
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
-        exchangeContractAddress = await zeroEx.exchange.getContractAddressAsync();
+        const config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+        };
+        zeroEx = new ZeroEx(web3.currentProvider, config);
+        exchangeContractAddress = await zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);
