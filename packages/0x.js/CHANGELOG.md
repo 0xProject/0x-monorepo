@@ -3,7 +3,7 @@
 vx.x.x
 ------------------------
     * Make `ZeroExConfig` required parameter of `ZeroEx` constructor (#233)
-    * Add a required property `networkId` (#233)
+    * Add a required property `networkId` to `ZeroExConfig` (#233)
     * Make all `getContractAddress` functions, `zeroEx.exchange.subscribe`, `zeroEx.exchange.getZRXTokenAddress` sync (#233)
     * Make `DecodedLogEvent<A>` contain `LogWithDecodedArgs<A>` under log key instead of merging it in like web3 does (#234)
 
