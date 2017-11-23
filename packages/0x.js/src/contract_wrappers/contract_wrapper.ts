@@ -100,7 +100,7 @@ export class ContractWrapper {
             if (filterUtils.matchesFilter(log, filter)) {
                 const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
                 const logEvent = {
-                    ...decodedLog,
+                    log: decodedLog,
                     removed,
                 };
                 this._filterCallbacks[filterToken](null, logEvent);

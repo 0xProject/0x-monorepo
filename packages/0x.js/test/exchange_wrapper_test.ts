@@ -649,7 +649,7 @@ describe('ExchangeWrapper', () => {
             (async () => {
 
                 const callback = (err: Error, logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
-                    expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
+                    expect(logEvent.log.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
                 await zeroEx.exchange.subscribeAsync(
@@ -665,7 +665,7 @@ describe('ExchangeWrapper', () => {
             (async () => {
 
                 const callback = (err: Error, logEvent: DecodedLogEvent<LogCancelContractEventArgs>) => {
-                    expect(logEvent.event).to.be.equal(ExchangeEvents.LogCancel);
+                    expect(logEvent.log.event).to.be.equal(ExchangeEvents.LogCancel);
                     done();
                 };
                 await zeroEx.exchange.subscribeAsync(
@@ -688,7 +688,7 @@ describe('ExchangeWrapper', () => {
                 await zeroEx.setProviderAsync(newProvider);
 
                 const callback = (err: Error, logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
-                    expect(logEvent.event).to.be.equal(ExchangeEvents.LogFill);
+                    expect(logEvent.log.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
                 await zeroEx.exchange.subscribeAsync(
