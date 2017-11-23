@@ -68,22 +68,40 @@ describe('SubscriptionTest', () => {
             _.each(stubs, s => s.restore());
             stubs = [];
         });
-        it('Should receive the Error when an error occurs', (done: DoneCallback) => {
+        it('Should receive the Error when an error occurs while fetching the block', (done: DoneCallback) => {
             (async () => {
+                const errMsg = 'Error fetching block';
                 const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                    expect(err).to.not.be.null();
+                    expect(err).to.be.equal(errMsg);
                     expect(logEvent).to.be.undefined();
                     done();
                 };
                 stubs = [
                   Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws('JSON RPC error'),
+                   .throws(errMsg),
                 ];
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
-         });
+        });
+        it('Should receive the Error when an error occurs while reconciling the new block', (done: DoneCallback) => {
+            (async () => {
+                const errMsg = 'Error fetching logs';
+                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    expect(err).to.be.equal(errMsg);
+                    expect(logEvent).to.be.undefined();
+                    done();
+                };
+                stubs = [
+                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getLogsAsync')
+                   .throws(errMsg),
+                ];
+                zeroEx.token.subscribe(
+                    tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
+            })().catch(done);
+        });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
@@ -96,6 +114,6 @@ describe('SubscriptionTest', () => {
                 zeroEx.token.unsubscribeAll();
                 done();
             })().catch(done);
-         });
+        });
     });
 });
