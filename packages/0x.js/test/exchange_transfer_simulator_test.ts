@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import {chaiSetup} from './utils/chai_setup';
 import {web3Factory} from './utils/web3_factory';
 import {ZeroEx, ExchangeContractErrs, Token} from '../src';
-import {TradeSide, TransferType} from '../src/types';
+import {TradeSide, TransferType, BlockParamLiteral} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
 
