@@ -21,7 +21,6 @@ export class Web3Wrapper {
     private web3: Web3;
     private networkId: number;
     private defaults: Partial<Web3.TxData>;
-    private networkIdIfExists?: number;
     private jsonRpcRequestId: number;
     constructor(provider: Web3.Provider, networkId: number, defaults?: Partial<Web3.TxData>) {
         if (_.isUndefined((provider as any).sendAsync)) {
@@ -36,8 +35,8 @@ export class Web3Wrapper {
         this.defaults = defaults || {};
         this.jsonRpcRequestId = 0;
     }
-    public setProvider(provider: Web3.Provider) {
-        delete this.networkIdIfExists;
+    public setProvider(provider: Web3.Provider, networkId: number) {
+        this.networkId = networkId;
         this.web3.setProvider(provider);
     }
     public isAddress(address: string): boolean {

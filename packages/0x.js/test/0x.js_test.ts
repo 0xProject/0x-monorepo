@@ -33,7 +33,7 @@ describe('ZeroEx library', () => {
             const newProvider = web3Factory.getRpcProvider();
             // Add property to newProvider so that we can differentiate it from old provider
             (newProvider as any).zeroExTestId = 1;
-            await zeroEx.setProviderAsync(newProvider);
+            zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
 
             // Check that contractInstances with old provider are removed after provider update
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.be.undefined();

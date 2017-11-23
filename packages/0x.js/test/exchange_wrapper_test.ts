@@ -691,7 +691,7 @@ describe('ExchangeWrapper', () => {
                 );
 
                 const newProvider = web3Factory.getRpcProvider();
-                await zeroEx.setProviderAsync(newProvider);
+                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
 
                 const callback = (err: Error, logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
                     expect(logEvent.log.event).to.be.equal(ExchangeEvents.LogFill);

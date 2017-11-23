@@ -827,7 +827,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return contractAddress;
     }
-    private async _invalidateContractInstancesAsync(): Promise<void> {
+    private _invalidateContractInstances(): void {
         this.unsubscribeAll();
         delete this._exchangeContractIfExists;
     }

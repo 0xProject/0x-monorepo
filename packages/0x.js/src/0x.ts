@@ -205,12 +205,13 @@ export class ZeroEx {
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
      * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
      * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
+     * @param   networkId   The id of the network your provider is connected to
      */
-    public async setProviderAsync(provider: Web3Provider) {
-        this._web3Wrapper.setProvider(provider);
-        await (this.exchange as any)._invalidateContractInstancesAsync();
+    public setProvider(provider: Web3Provider, networkId: number): void {
+        this._web3Wrapper.setProvider(provider, networkId);
+        (this.exchange as any)._invalidateContractInstances();
         (this.tokenRegistry as any)._invalidateContractInstance();
-        await (this.token as any)._invalidateContractInstancesAsync();
+        (this.token as any)._invalidateContractInstances();
         (this.proxy as any)._invalidateContractInstance();
         (this.etherToken as any)._invalidateContractInstance();
     }

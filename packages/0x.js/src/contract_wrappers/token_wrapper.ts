@@ -293,7 +293,7 @@ export class TokenWrapper extends ContractWrapper {
         );
         return logs;
     }
-    private _invalidateContractInstancesAsync(): void {
+    private _invalidateContractInstances(): void {
         this.unsubscribeAll();
         this._tokenContractsByAddress = {};
     }

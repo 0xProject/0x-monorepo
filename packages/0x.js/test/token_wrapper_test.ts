@@ -410,7 +410,7 @@ describe('TokenWrapper', () => {
                     done();
                 };
                 const newProvider = web3Factory.getRpcProvider();
-                await zeroEx.setProviderAsync(newProvider);
+                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackToBeCalled,
                 );
