@@ -42,13 +42,8 @@ export type OrderValues = [BigNumber, BigNumber, BigNumber,
 export type LogEvent = Web3.LogEntryEvent;
 export type DecodedLogEvent<ArgsType> = Web3.DecodedLogEntryEvent<ArgsType>;
 
-export type EventCallbackAsync<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => Promise<void>;
-export type EventCallbackSync<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => void;
-export type EventCallback<ArgsType> = EventCallbackSync<ArgsType>|EventCallbackAsync<ArgsType>;
-
-export type EventWatcherCallbackSync = (log: LogEvent) => void;
-export type EventWatcherCallbackAsync = (log: LogEvent) => Promise<void>;
-export type EventWatcherCallback = EventWatcherCallbackSync|EventWatcherCallbackAsync;
+export type EventCallback<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => void;
+export type EventWatcherCallback = (log: LogEvent) => void;
 
 export interface ExchangeContract extends Web3.ContractInstance {
     isValidSignature: {
@@ -397,10 +392,15 @@ export interface JSONRPCPayload {
 }
 
 /*
- * eventPollingIntervalMs: How often to poll the Ethereum node for new events
+ * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
+ * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Defaults: 200
+ * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
+ * of an orders expiration. Defaults: 0
  */
 export interface OrderStateWatcherConfig {
+    orderExpirationCheckingIntervalMs?: number;
     eventPollingIntervalMs?: number;
+    expirationMarginMs?: number;
 }
 
 /*
@@ -507,9 +507,7 @@ export interface OrderStateInvalid {
 
 export type OrderState = OrderStateValid|OrderStateInvalid;
 
-export type OnOrderStateChangeCallbackSync = (orderState: OrderState) => void;
-export type OnOrderStateChangeCallbackAsync = (orderState: OrderState) => Promise<void>;
-export type OnOrderStateChangeCallback = OnOrderStateChangeCallbackAsync|OnOrderStateChangeCallbackSync;
+export type OnOrderStateChangeCallback = (orderState: OrderState) => void;
 
 export interface TransactionReceipt {
     blockHash: string;

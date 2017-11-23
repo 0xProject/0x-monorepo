@@ -12,7 +12,7 @@ import {intervalUtils} from '../utils/interval_utils';
 import {assert} from '../utils/assert';
 import {utils} from '../utils/utils';
 
-const DEFAULT_EVENT_POLLING_INTERVAL = 200;
+const DEFAULT_EVENT_POLLING_INTERVAL_MS = 200;
 
 enum LogEventState {
     Removed,
@@ -28,11 +28,11 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
-    constructor(web3Wrapper: Web3Wrapper, pollingIntervalMs: undefined|number) {
+    constructor(web3Wrapper: Web3Wrapper, pollingIntervalIfExistsMs: undefined|number) {
         this._web3Wrapper = web3Wrapper;
-        this._pollingIntervalMs = _.isUndefined(pollingIntervalMs) ?
-                                    DEFAULT_EVENT_POLLING_INTERVAL :
-                                    pollingIntervalMs;
+        this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs) ?
+                                    DEFAULT_EVENT_POLLING_INTERVAL_MS :
+                                    pollingIntervalIfExistsMs;
     }
     public subscribe(callback: EventWatcherCallback): void {
         assert.isFunction('callback', callback);
@@ -81,7 +81,7 @@ export class EventWatcher {
                 ...log,
             };
             if (!_.isUndefined(this._intervalIdIfExists)) {
-                await callback(logEvent);
+                callback(logEvent);
             }
         }
     }
