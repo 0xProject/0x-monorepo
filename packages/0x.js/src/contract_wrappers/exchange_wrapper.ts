@@ -830,16 +830,10 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return Address of ZRX token
      */
     public getZRXTokenAddress(): string {
-        const networkId = this._web3Wrapper.getNetworkId();
-        if (_.isUndefined(this._zrxContractAddressIfExists)) {
-            const zrxTokenAddress = artifacts.ZRXArtifact.networks[networkId].address;
-            if (_.isUndefined(zrxTokenAddress)) {
-                throw new Error(ZeroExError.ZRXContractDoesNotExist);
-            }
-            return zrxTokenAddress;
-        } else {
-            return this._zrxContractAddressIfExists;
-        }
+        const contractAddress = this._getContractAddress(
+            artifacts.ZRXArtifact, this._zrxContractAddressIfExists,
+        );
+        return contractAddress;
     }
     private async _invalidateContractInstancesAsync(): Promise<void> {
         this.unsubscribeAll();

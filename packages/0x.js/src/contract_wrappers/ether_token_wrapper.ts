@@ -70,16 +70,10 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @return  The Wrapped Ether token contract address
      */
     public getContractAddress(): string {
-        const networkId = this._web3Wrapper.getNetworkId();
-        if (_.isUndefined(this._contractAddressIfExists)) {
-            const contractAddress = artifacts.EtherTokenArtifact.networks[networkId].address;
-            if (_.isUndefined(contractAddress)) {
-                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
-            }
-            return contractAddress;
-        } else {
-            return this._contractAddressIfExists;
-        }
+        const contractAddress = this._getContractAddress(
+            artifacts.EtherTokenArtifact, this._contractAddressIfExists,
+        );
+        return contractAddress;
     }
     private _invalidateContractInstance(): void {
         delete this._etherTokenContractIfExists;

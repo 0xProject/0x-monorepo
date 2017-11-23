@@ -104,16 +104,10 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * @returns The Ethereum address of the TokenRegistry contract being used.
      */
     public getContractAddress(): string {
-        const networkId = this._web3Wrapper.getNetworkId();
-        if (_.isUndefined(this._contractAddressIfExists)) {
-            const contractAddress = artifacts.TokenRegistryArtifact.networks[networkId].address;
-            if (_.isUndefined(contractAddress)) {
-                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
-            }
-            return contractAddress;
-        } else {
-            return this._contractAddressIfExists;
-        }
+        const contractAddress = this._getContractAddress(
+            artifacts.TokenRegistryArtifact, this._contractAddressIfExists,
+        );
+        return contractAddress;
     }
     private _invalidateContractInstance(): void {
         delete this._tokenRegistryContractIfExists;
