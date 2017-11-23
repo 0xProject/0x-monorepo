@@ -107,25 +107,25 @@ export class Dispatcher {
     public encounteredBlockchainError(err: BlockchainErrs) {
         this.dispatch({
              data: err,
-            type: ActionTypes.BLOCKCHAIN_ERR_ENCOUNTERED,
+             type: ActionTypes.BLOCKCHAIN_ERR_ENCOUNTERED,
          });
     }
     public updateBlockchainIsLoaded(isLoaded: boolean) {
         this.dispatch({
              data: isLoaded,
-            type: ActionTypes.UPDATE_BLOCKCHAIN_IS_LOADED,
+             type: ActionTypes.UPDATE_BLOCKCHAIN_IS_LOADED,
          });
     }
     public addTokenToTokenByAddress(token: Token) {
         this.dispatch({
              data: token,
-            type: ActionTypes.ADD_TOKEN_TO_TOKEN_BY_ADDRESS,
+             type: ActionTypes.ADD_TOKEN_TO_TOKEN_BY_ADDRESS,
          });
     }
     public removeTokenToTokenByAddress(token: Token) {
         this.dispatch({
              data: token,
-            type: ActionTypes.REMOVE_TOKEN_TO_TOKEN_BY_ADDRESS,
+             type: ActionTypes.REMOVE_TOKEN_TO_TOKEN_BY_ADDRESS,
          });
     }
     public clearTokenByAddress() {
@@ -136,13 +136,13 @@ export class Dispatcher {
     public updateTokenByAddress(tokens: Token[]) {
         this.dispatch({
              data: tokens,
-            type: ActionTypes.UPDATE_TOKEN_BY_ADDRESS,
+             type: ActionTypes.UPDATE_TOKEN_BY_ADDRESS,
          });
     }
     public updateTokenStateByAddress(tokenStateByAddress: TokenStateByAddress) {
         this.dispatch({
              data: tokenStateByAddress,
-            type: ActionTypes.UPDATE_TOKEN_STATE_BY_ADDRESS,
+             type: ActionTypes.UPDATE_TOKEN_STATE_BY_ADDRESS,
          });
     }
     public removeFromTokenStateByAddress(tokenAddress: string) {
@@ -181,19 +181,19 @@ export class Dispatcher {
     public updateSignatureData(signatureData: SignatureData) {
         this.dispatch({
              data: signatureData,
-            type: ActionTypes.UPDATE_ORDER_SIGNATURE_DATA,
+             type: ActionTypes.UPDATE_ORDER_SIGNATURE_DATA,
          });
     }
     public updateUserEtherBalance(balance: BigNumber) {
         this.dispatch({
              data: balance,
-            type: ActionTypes.UPDATE_USER_ETHER_BALANCE,
+             type: ActionTypes.UPDATE_USER_ETHER_BALANCE,
          });
     }
     public updateNetworkId(networkId: number) {
         this.dispatch({
              data: networkId,
-            type: ActionTypes.UPDATE_NETWORK_ID,
+             type: ActionTypes.UPDATE_NETWORK_ID,
          });
     }
     public updateOrderFillAmount(amount: BigNumber) {
