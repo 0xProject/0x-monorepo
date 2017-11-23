@@ -269,7 +269,6 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
 
         newTokenEntry.isTracked = true;
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
-        this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
 
         const [
             balance,
@@ -281,6 +280,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                 allowance,
             },
         });
+        this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
         this.setState({
             isAddingTokenToTracked: false,
             assetView: AssetViews.ASSET_PICKER,
