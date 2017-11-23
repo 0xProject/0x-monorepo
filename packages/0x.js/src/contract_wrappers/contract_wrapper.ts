@@ -96,6 +96,18 @@ export class ContractWrapper {
             await this._web3Wrapper.getContractInstanceFromArtifactAsync<ContractType>(artifact, addressIfExists);
         return contractInstance;
     }
+    protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
+        if (_.isUndefined(addressIfExists)) {
+            const networkId = this._web3Wrapper.getNetworkId();
+            const contractAddress = artifact.networks[networkId].address;
+            if (_.isUndefined(contractAddress)) {
+                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
+            }
+            return contractAddress;
+        } else {
+            return addressIfExists;
+        }
+    }
     private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, log: Web3.LogEntry): void {
         _.forEach(this._filters, (filter: Web3.FilterObject, filterToken: string) => {
             if (filterUtils.matchesFilter(log, filter)) {
