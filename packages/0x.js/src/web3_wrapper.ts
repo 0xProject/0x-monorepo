@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import {Contract} from './contract';
-import {Artifact, TransactionReceipt, ZeroExError} from './types';
+import {Artifact, ArtifactContractName, TransactionReceipt, ZeroExError} from './types';
 
 interface RawLogEntry {
     logIndex: string|null;
@@ -16,6 +16,15 @@ interface RawLogEntry {
     data: string;
     topics: string[];
 }
+
+const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {[contractName: string]: ZeroExError} = {
+    ZRX: ZeroExError.ZRXContractDoesNotExist,
+    EtherToken: ZeroExError.EtherTokenContractDoesNotExist,
+    Token: ZeroExError.TokenContractDoesNotExist,
+    TokenRegistry: ZeroExError.TokenRegistryContractDoesNotExist,
+    TokenTransferProxy: ZeroExError.TokenTransferProxyContractDoesNotExist,
+    Exchange: ZeroExError.ExchangeContractDoesNotExist,
+};
 
 export class Web3Wrapper {
     private web3: Web3;
@@ -77,7 +86,7 @@ export class Web3Wrapper {
         }
         const doesContractExist = await this.doesContractExistAtAddressAsync(contractAddress);
         if (!doesContractExist) {
-            throw new Error(ZeroExError.ContractDoesNotExist);
+            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
         }
         const contractInstance = this.getContractInstance<A>(
             artifact.abi, contractAddress,

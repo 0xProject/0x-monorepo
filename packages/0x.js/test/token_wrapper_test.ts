@@ -86,7 +86,7 @@ describe('TokenWrapper', () => {
             const toAddress = coinbase;
             return expect(zeroEx.token.transferAsync(
                 nonExistentTokenAddress, fromAddress, toAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+            )).to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
         });
     });
     describe('#transferFromAsync', () => {
@@ -159,7 +159,7 @@ describe('TokenWrapper', () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             return expect(zeroEx.token.transferFromAsync(
                 nonExistentTokenAddress, fromAddress, toAddress, senderAddress, new BigNumber(42),
-            )).to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+            )).to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
         });
     });
     describe('#getBalanceAsync', () => {
@@ -175,7 +175,7 @@ describe('TokenWrapper', () => {
                 const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
                 const ownerAddress = coinbase;
                 return expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress))
-                    .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+                    .to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
             });
             it('should return a balance of 0 for a non-existent owner address', async () => {
                 const token = tokens[0];

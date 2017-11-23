@@ -2,9 +2,12 @@ import BigNumber from 'bignumber.js';
 import * as Web3 from 'web3';
 
 export enum ZeroExError {
-    ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
     ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
     ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
+    EtherTokenContractDoesNotExist = 'ETHER_TOKEN_CONTRACT_DOES_NOT_EXIST',
+    TokenTransferProxyContractDoesNotExist = 'TOKEN_TRANSFER_PROXY_CONTRACT_DOES_NOT_EXIST',
+    TokenRegistryContractDoesNotExist = 'TOKEN_REGISTRY_CONTRACT_DOES_NOT_EXIST',
+    TokenContractDoesNotExist = 'TOKEN_CONTRACT_DOES_NOT_EXIST',
     UnhandledError = 'UNHANDLED_ERROR',
     UserHasNoAssociatedAddress = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
     InvalidSignature = 'INVALID_SIGNATURE',
@@ -443,7 +446,10 @@ export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
     logs: Array<LogWithDecodedArgs<DecodedLogArgs>|Web3.LogEntry>;
 }
 
+export type ArtifactContractName = 'ZRX'|'TokenTransferProxy'|'TokenRegistry'|'Token'|'Exchange'|'EtherToken';
+
 export interface Artifact {
+    contract_name: ArtifactContractName;
     abi: Web3.ContractAbi;
     networks: {
         [networkId: number]: {
