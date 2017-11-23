@@ -31,7 +31,9 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @param   txOpts           Transaction parameters.
      * @return Transaction hash.
      */
-    public async depositAsync(amountInWei: BigNumber, depositor: string, txOpts: TransactionOpts): Promise<string> {
+    public async depositAsync(
+        amountInWei: BigNumber, depositor: string, txOpts: TransactionOpts = {},
+    ): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
 
@@ -55,7 +57,9 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @param   txOpts       Transaction parameters.
      * @return Transaction hash.
      */
-    public async withdrawAsync(amountInWei: BigNumber, withdrawer: string, txOpts: TransactionOpts): Promise<string> {
+    public async withdrawAsync(
+        amountInWei: BigNumber, withdrawer: string, txOpts: TransactionOpts = {},
+    ): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
 
