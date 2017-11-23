@@ -122,6 +122,9 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             givenAmount = fill.filledTakerTokenAmount;
             receiveToken = makerToken;
             givenToken = takerToken;
+        } else {
+            // This condition should never be hit
+            throw new Error('Found Fill that wasn\'t performed by this user');
         }
 
         return (
