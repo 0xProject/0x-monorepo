@@ -37,7 +37,7 @@ describe('ExchangeTransferSimulator', () => {
     });
     describe('#transferFromAsync', () => {
         beforeEach(() => {
-            exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token);
+            exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token, BlockParamLiteral.Latest);
         });
         it('throws if the user doesn\'t have enough allowance', async () => {
             return expect(exchangeTransferSimulator.transferFromAsync(

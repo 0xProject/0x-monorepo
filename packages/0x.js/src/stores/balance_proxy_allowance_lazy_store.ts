@@ -9,6 +9,7 @@ import {BlockParamLiteral} from '../types';
  */
 export class BalanceAndProxyAllowanceLazyStore {
     private token: TokenWrapper;
+    private defaultBlock: BlockParamLiteral;
     private balance: {
         [tokenAddress: string]: {
             [userAddress: string]: BigNumber,
@@ -19,15 +20,16 @@ export class BalanceAndProxyAllowanceLazyStore {
             [userAddress: string]: BigNumber,
         },
     };
-    constructor(token: TokenWrapper) {
+    constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {
         this.token = token;
+        this.defaultBlock = defaultBlock;
         this.balance = {};
         this.proxyAllowance = {};
     }
     public async getBalanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
         if (_.isUndefined(this.balance[tokenAddress]) || _.isUndefined(this.balance[tokenAddress][userAddress])) {
             const methodOpts = {
-                defaultBlock: BlockParamLiteral.Pending,
+                defaultBlock: this.defaultBlock,
             };
             const balance = await this.token.getBalanceAsync(tokenAddress, userAddress, methodOpts);
             this.setBalance(tokenAddress, userAddress, balance);
@@ -53,7 +55,7 @@ export class BalanceAndProxyAllowanceLazyStore {
         if (_.isUndefined(this.proxyAllowance[tokenAddress]) ||
             _.isUndefined(this.proxyAllowance[tokenAddress][userAddress])) {
             const methodOpts = {
-                defaultBlock: BlockParamLiteral.Pending,
+                defaultBlock: this.defaultBlock,
             };
             const proxyAllowance = await this.token.getProxyAllowanceAsync(tokenAddress, userAddress, methodOpts);
             this.setProxyAllowance(tokenAddress, userAddress, proxyAllowance);
