@@ -5,4 +5,5 @@ export const constants = {
     TESTRPC_NETWORK_ID: 50,
     KOVAN_RPC_URL: 'https://kovan.infura.io',
     ROPSTEN_RPC_URL: 'https://ropsten.infura.io',
+    ZRX_DECIMALS: 18,
 };
