@@ -1,5 +1,6 @@
-import {SignedOrder} from '../types';
 import {BigNumber} from 'bignumber.js';
+
+import {SignedOrder} from '../types';
 
 export class RemainingFillableCalculator {
     private signedOrder: SignedOrder;

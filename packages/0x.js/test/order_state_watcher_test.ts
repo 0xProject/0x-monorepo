@@ -358,7 +358,7 @@ describe('OrderStateWatcher', () => {
 
                     const remainingTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(4), decimals);
                     const transferTokenAmount = makerFee.sub(remainingTokenAmount);
-                    await zeroEx.orderStateWatcher.addOrderAsync(signedOrder);
+                    zeroEx.orderStateWatcher.addOrder(signedOrder);
 
                     const callback = reportCallbackErrors(done)((orderState: OrderState) => {
                         expect(orderState.isValid).to.be.true();
@@ -388,7 +388,7 @@ describe('OrderStateWatcher', () => {
 
                     const remainingTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(4), decimals);
                     const transferTokenAmount = makerFee.sub(remainingTokenAmount);
-                    await zeroEx.orderStateWatcher.addOrderAsync(signedOrder);
+                    zeroEx.orderStateWatcher.addOrder(signedOrder);
 
                     const callback = reportCallbackErrors(done)((orderState: OrderState) => {
                         const validOrderState = orderState as OrderStateValid;
@@ -413,7 +413,7 @@ describe('OrderStateWatcher', () => {
                         taker, fillableAmount, feeRecipient);
 
                     const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-                    await zeroEx.orderStateWatcher.addOrderAsync(signedOrder);
+                    zeroEx.orderStateWatcher.addOrder(signedOrder);
 
                     const callback = reportCallbackErrors(done)((orderState: OrderState) => {
                         const validOrderState = orderState as OrderStateValid;
@@ -497,4 +497,4 @@ describe('OrderStateWatcher', () => {
             })().catch(done);
         });
     });
-});
+}); // tslint:disable:max-file-line-count
