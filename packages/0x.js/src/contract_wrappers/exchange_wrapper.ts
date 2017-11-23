@@ -169,16 +169,14 @@ export class ExchangeWrapper extends ContractWrapper {
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber,
                                 shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                 takerAddress: string,
-                                orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
+                                orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
-            SHOULD_VALIDATE_BY_DEFAULT :
-            orderTransactionOpts.shouldValidate;
+        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -188,18 +186,6 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
 
-        const gas = await exchangeInstance.fillOrder.estimateGasAsync(
-            orderAddresses,
-            orderValues,
-            fillTakerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            signedOrder.ecSignature.v,
-            signedOrder.ecSignature.r,
-            signedOrder.ecSignature.s,
-            {
-                from: takerAddress,
-            },
-        );
         const txHash: string = await exchangeInstance.fillOrder.sendTransactionAsync(
             orderAddresses,
             orderValues,
@@ -210,7 +196,8 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.s,
             {
                 from: takerAddress,
-                gas,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
             },
         );
         return txHash;
@@ -236,7 +223,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], fillTakerTokenAmount: BigNumber,
                                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                      takerAddress: string,
-                                     orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
+                                     orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
         assert.hasAtMostOneUniqueValue(takerTokenAddresses,
@@ -248,9 +235,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
-            SHOULD_VALIDATE_BY_DEFAULT :
-            orderTransactionOpts.shouldValidate;
+        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -278,18 +263,6 @@ export class ExchangeWrapper extends ContractWrapper {
         );
 
         const exchangeInstance = await this._getExchangeContractAsync();
-        const gas = await exchangeInstance.fillOrdersUpTo.estimateGasAsync(
-            orderAddressesArray,
-            orderValuesArray,
-            fillTakerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            vArray,
-            rArray,
-            sArray,
-            {
-                from: takerAddress,
-            },
-        );
         const txHash = await exchangeInstance.fillOrdersUpTo.sendTransactionAsync(
             orderAddressesArray,
             orderValuesArray,
@@ -300,7 +273,8 @@ export class ExchangeWrapper extends ContractWrapper {
             sArray,
             {
                 from: takerAddress,
-                gas,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
             },
         );
         return txHash;
@@ -328,7 +302,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async batchFillOrdersAsync(orderFillRequests: OrderFillRequest[],
                                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                       takerAddress: string,
-                                      orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
+                                      orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('orderFillRequests', orderFillRequests, schemas.orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillRequests,
@@ -338,9 +312,7 @@ export class ExchangeWrapper extends ContractWrapper {
                                        ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
-            SHOULD_VALIDATE_BY_DEFAULT :
-            orderTransactionOpts.shouldValidate;
+        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -370,18 +342,6 @@ export class ExchangeWrapper extends ContractWrapper {
         );
 
         const exchangeInstance = await this._getExchangeContractAsync();
-        const gas = await exchangeInstance.batchFillOrders.estimateGasAsync(
-            orderAddressesArray,
-            orderValuesArray,
-            fillTakerTokenAmounts,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            vArray,
-            rArray,
-            sArray,
-            {
-                from: takerAddress,
-            },
-        );
         const txHash = await exchangeInstance.batchFillOrders.sendTransactionAsync(
             orderAddressesArray,
             orderValuesArray,
@@ -392,7 +352,8 @@ export class ExchangeWrapper extends ContractWrapper {
             sArray,
             {
                 from: takerAddress,
-                gas,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
             },
         );
         return txHash;
@@ -411,16 +372,14 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber,
                                       takerAddress: string,
-                                      orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
+                                      orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
-            SHOULD_VALIDATE_BY_DEFAULT :
-            orderTransactionOpts.shouldValidate;
+        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -429,18 +388,6 @@ export class ExchangeWrapper extends ContractWrapper {
         }
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
-
-        const gas = await exchangeInstance.fillOrKillOrder.estimateGasAsync(
-            orderAddresses,
-            orderValues,
-            fillTakerTokenAmount,
-            signedOrder.ecSignature.v,
-            signedOrder.ecSignature.r,
-            signedOrder.ecSignature.s,
-            {
-                from: takerAddress,
-            },
-        );
         const txHash = await exchangeInstance.fillOrKillOrder.sendTransactionAsync(
             orderAddresses,
             orderValues,
@@ -450,7 +397,8 @@ export class ExchangeWrapper extends ContractWrapper {
             signedOrder.ecSignature.s,
             {
                 from: takerAddress,
-                gas,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
             },
         );
         return txHash;
@@ -467,7 +415,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async batchFillOrKillAsync(orderFillRequests: OrderFillRequest[],
                                       takerAddress: string,
-                                      orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
+                                      orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('orderFillRequests', orderFillRequests,
                                    schemas.orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
@@ -482,9 +430,7 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
-            SHOULD_VALIDATE_BY_DEFAULT :
-            orderTransactionOpts.shouldValidate;
+        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -509,18 +455,6 @@ export class ExchangeWrapper extends ContractWrapper {
         // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
         const [orderAddresses, orderValues, fillTakerTokenAmounts, vParams, rParams, sParams] =
               _.unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
-
-        const gas = await exchangeInstance.batchFillOrKillOrders.estimateGasAsync(
-            orderAddresses,
-            orderValues,
-            fillTakerTokenAmounts,
-            vParams,
-            rParams,
-            sParams,
-            {
-                from: takerAddress,
-            },
-        );
         const txHash = await exchangeInstance.batchFillOrKillOrders.sendTransactionAsync(
             orderAddresses,
             orderValues,
@@ -530,7 +464,8 @@ export class ExchangeWrapper extends ContractWrapper {
             sParams,
             {
                 from: takerAddress,
-                gas,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
             },
         );
         return txHash;
@@ -546,16 +481,14 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.contractCallErrorHandler
     public async cancelOrderAsync(order: Order|SignedOrder,
                                   cancelTakerTokenAmount: BigNumber,
-                                  orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
+                                  orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isValidBaseUnitAmount('takerTokenCancelAmount', cancelTakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
-            SHOULD_VALIDATE_BY_DEFAULT :
-            orderTransactionOpts.shouldValidate;
+        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
         if (shouldValidate) {
             const orderHash = utils.getOrderHashHex(order);
             const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
@@ -564,21 +497,14 @@ export class ExchangeWrapper extends ContractWrapper {
         }
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
-        const gas = await exchangeInstance.cancelOrder.estimateGasAsync(
-            orderAddresses,
-            orderValues,
-            cancelTakerTokenAmount,
-            {
-                from: order.maker,
-            },
-        );
         const txHash = await exchangeInstance.cancelOrder.sendTransactionAsync(
             orderAddresses,
             orderValues,
             cancelTakerTokenAmount,
             {
                 from: order.maker,
-                gas,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
             },
         );
         return txHash;
@@ -593,7 +519,7 @@ export class ExchangeWrapper extends ContractWrapper {
      */
     @decorators.contractCallErrorHandler
     public async batchCancelOrdersAsync(orderCancellationRequests: OrderCancellationRequest[],
-                                        orderTransactionOpts?: OrderTransactionOpts): Promise<string> {
+                                        orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
                                    schemas.orderCancellationRequestsSchema);
         const exchangeContractAddresses = _.map(
@@ -606,9 +532,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
-        const shouldValidate = _.isUndefined(orderTransactionOpts) ?
-            SHOULD_VALIDATE_BY_DEFAULT :
-            orderTransactionOpts.shouldValidate;
+        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
         if (shouldValidate) {
             for (const orderCancellationRequest of orderCancellationRequests) {
                 const orderHash = utils.getOrderHashHex(orderCancellationRequest.order);
@@ -633,21 +557,14 @@ export class ExchangeWrapper extends ContractWrapper {
         // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
         const [orderAddresses, orderValues, cancelTakerTokenAmounts] =
             _.unzip<any>(orderAddressesValuesAndTakerTokenCancelAmounts);
-        const gas = await exchangeInstance.batchCancelOrders.estimateGasAsync(
-            orderAddresses,
-            orderValues,
-            cancelTakerTokenAmounts,
-            {
-                from: maker,
-            },
-        );
         const txHash = await exchangeInstance.batchCancelOrders.sendTransactionAsync(
             orderAddresses,
             orderValues,
             cancelTakerTokenAmounts,
             {
                 from: maker,
-                gas,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
             },
         );
         return txHash;

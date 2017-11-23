@@ -34,9 +34,10 @@ export class Contract implements Web3.ContractInstance {
             } else {
                 const cbStyleFunction = this.contract[functionAbi.name];
                 const cbStyleEstimateGasFunction = this.contract[functionAbi.name].estimateGas;
+                const estimateGasAsync = promisify(cbStyleEstimateGasFunction, this.contract);
                 this[functionAbi.name] = {
-                    estimateGasAsync: promisify(cbStyleEstimateGasFunction, this.contract),
-                    sendTransactionAsync: this.promisifyWithDefaultParams(cbStyleFunction),
+                    estimateGasAsync,
+                    sendTransactionAsync: this.promisifyWithDefaultParams(cbStyleFunction, estimateGasAsync),
                 };
             }
         });
@@ -47,18 +48,29 @@ export class Contract implements Web3.ContractInstance {
             this[eventAbi.name] = this.contract[eventAbi.name];
         });
     }
-    private promisifyWithDefaultParams(fn: (...args: any[]) => void): (...args: any[]) => Promise<any> {
+    private promisifyWithDefaultParams(
+        web3CbStyleFunction: (...args: any[]) => void,
+        estimateGasAsync: (...args: any[]) => Promise<number>,
+    ): (...args: any[]) => Promise<any> {
         const promisifiedWithDefaultParams = async (...args: any[]) => {
-            const promise = new Promise((resolve, reject) => {
+            const promise = new Promise(async (resolve, reject) => {
                 const lastArg = args[args.length - 1];
                 let txData: Partial<Web3.TxData> = {};
                 if (this.isTxData(lastArg)) {
                     txData = args.pop();
                 }
+                // Gas amounts priorities:
+                // 1 - method level
+                // 2 - Library defaults
+                // 3 - estimate
                 txData = {
                     ...this.defaults,
                     ...txData,
                 };
+                if (_.isUndefined(txData.gas)) {
+                    const estimatedGas = await estimateGasAsync.apply(this.contract, [...args, txData]);
+                    txData.gas = estimatedGas;
+                }
                 const callback = (err: Error, data: any) => {
                     if (_.isNull(err)) {
                         resolve(data);
@@ -68,7 +80,7 @@ export class Contract implements Web3.ContractInstance {
                 };
                 args.push(txData);
                 args.push(callback);
-                fn.apply(this.contract, args);
+                web3CbStyleFunction.apply(this.contract, args);
             });
             return promise;
         };

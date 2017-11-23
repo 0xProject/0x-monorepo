@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
-import {EtherTokenContract, ZeroExError} from '../types';
+import {EtherTokenContract, TransactionOpts, ZeroExError} from '../types';
 import {assert} from '../utils/assert';
 import {Web3Wrapper} from '../web3_wrapper';
 
@@ -27,10 +27,11 @@ export class EtherTokenWrapper extends ContractWrapper {
      * to the depositor address. These wrapped ETH tokens can be used in 0x trades and are redeemable for 1-to-1
      * for ETH.
      * @param   amountInWei      Amount of ETH in Wei the caller wishes to deposit.
-     * @param   depositor   The hex encoded user Ethereum address that would like to make the deposit.
+     * @param   depositor        The hex encoded user Ethereum address that would like to make the deposit.
+     * @param   txOpts           Transaction parameters.
      * @return Transaction hash.
      */
-    public async depositAsync(amountInWei: BigNumber, depositor: string): Promise<string> {
+    public async depositAsync(amountInWei: BigNumber, depositor: string, txOpts: TransactionOpts): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
 
@@ -41,6 +42,8 @@ export class EtherTokenWrapper extends ContractWrapper {
         const txHash = await wethContract.deposit.sendTransactionAsync({
             from: depositor,
             value: amountInWei,
+            gas: txOpts.gasLimit,
+            gasPrice: txOpts.gasPrice,
         });
         return txHash;
     }
@@ -49,9 +52,10 @@ export class EtherTokenWrapper extends ContractWrapper {
      * equivalent number of wrapped ETH tokens.
      * @param   amountInWei  Amount of ETH in Wei the caller wishes to withdraw.
      * @param   withdrawer   The hex encoded user Ethereum address that would like to make the withdrawl.
+     * @param   txOpts       Transaction parameters.
      * @return Transaction hash.
      */
-    public async withdrawAsync(amountInWei: BigNumber, withdrawer: string): Promise<string> {
+    public async withdrawAsync(amountInWei: BigNumber, withdrawer: string, txOpts: TransactionOpts): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
 
@@ -62,6 +66,8 @@ export class EtherTokenWrapper extends ContractWrapper {
         const wethContract = await this._getEtherTokenContractAsync();
         const txHash = await wethContract.withdraw.sendTransactionAsync(amountInWei, {
             from: withdrawer,
+            gas: txOpts.gasLimit,
+            gasPrice: txOpts.gasPrice,
         });
         return txHash;
     }
