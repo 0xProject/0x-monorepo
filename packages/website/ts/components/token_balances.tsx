@@ -132,6 +132,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     public render() {
         const errorDialogActions = [
             <FlatButton
+                key="errorOkBtn"
                 label="Ok"
                 primary={true}
                 onTouchTap={this.onErrorDialogToggle.bind(this, false)}
@@ -139,6 +140,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         ];
         const dharmaDialogActions = [
             <FlatButton
+                key="dharmaCloseBtn"
                 label="Close"
                 primary={true}
                 onTouchTap={this.onDharmaDialogToggle.bind(this, false)}
