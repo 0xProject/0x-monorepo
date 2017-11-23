@@ -361,10 +361,11 @@ describe('TokenWrapper', () => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
-                    expect(logEvent.logIndex).to.be.equal(0);
-                    expect(logEvent.transactionIndex).to.be.equal(0);
-                    expect(logEvent.blockNumber).to.be.a('number');
-                    const args = logEvent.args;
+                    expect(logEvent.isRemoved).to.be.false();
+                    expect(logEvent.log.logIndex).to.be.equal(0);
+                    expect(logEvent.log.transactionIndex).to.be.equal(0);
+                    expect(logEvent.log.blockNumber).to.be.a('number');
+                    const args = logEvent.log.args;
                     expect(args._from).to.be.equal(coinbase);
                     expect(args._to).to.be.equal(addressWithoutFunds);
                     expect(args._value).to.be.bignumber.equal(transferAmount);
@@ -379,7 +380,8 @@ describe('TokenWrapper', () => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
-                    const args = logEvent.args;
+                    expect(logEvent.isRemoved).to.be.false();
+                    const args = logEvent.log.args;
                     expect(args._owner).to.be.equal(coinbase);
                     expect(args._spender).to.be.equal(addressWithoutFunds);
                     expect(args._value).to.be.bignumber.equal(allowanceAmount);

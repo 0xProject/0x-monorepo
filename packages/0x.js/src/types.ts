@@ -40,7 +40,10 @@ export type OrderValues = [BigNumber, BigNumber, BigNumber,
                            BigNumber, BigNumber, BigNumber];
 
 export type LogEvent = Web3.LogEntryEvent;
-export type DecodedLogEvent<ArgsType> = Web3.DecodedLogEntryEvent<ArgsType>;
+export interface DecodedLogEvent<ArgsType> {
+    isRemoved: boolean;
+    log: LogWithDecodedArgs<ArgsType>;
+}
 
 export type EventCallback<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => void;
 export type EventWatcherCallback = (log: LogEvent) => void;
