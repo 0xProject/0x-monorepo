@@ -705,16 +705,8 @@ export class ExchangeWrapper extends ContractWrapper {
      * @returns The Ethereum address of the Exchange contract being used.
      */
     public getContractAddress(): string {
-        const networkId = this._web3Wrapper.getNetworkId();
-        if (_.isUndefined(this._contractAddressIfExists)) {
-            const contractAddress = artifacts.ExchangeArtifact.networks[networkId].address;
-            if (_.isUndefined(contractAddress)) {
-                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
-            }
-            return contractAddress;
-        } else {
-            return this._contractAddressIfExists;
-        }
+        const contractAddress = this._getContractAddress(artifacts.ExchangeArtifact, this._contractAddressIfExists);
+        return contractAddress;
     }
     /**
      * Checks if order is still fillable and throws an error otherwise. Useful for orderbook
