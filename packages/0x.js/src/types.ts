@@ -350,7 +350,6 @@ export interface IndexedFilterValues {
 
 export enum BlockParamLiteral {
     Latest = 'latest',
-    Earliest = 'earliest',
     Pending = 'pending',
 }
 
