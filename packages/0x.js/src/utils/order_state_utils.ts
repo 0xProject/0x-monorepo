@@ -55,8 +55,6 @@ export class OrderStateUtils {
             .lessThan(minFillableTakerTokenAmountWithinNoRoundingErrorRange)) {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
         }
-        // TODO Add linear function solver when maker token is ZRX #badass
-        // Return the max amount that's fillable
     }
     constructor(balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore,
                 orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore) {
