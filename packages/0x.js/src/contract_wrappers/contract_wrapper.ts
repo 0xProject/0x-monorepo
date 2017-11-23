@@ -95,13 +95,13 @@ export class ContractWrapper {
             await this._web3Wrapper.getContractInstanceFromArtifactAsync<ContractType>(artifact, addressIfExists);
         return contractInstance;
     }
-    private _onLogStateChanged<ArgsType extends ContractEventArgs>(removed: boolean, log: Web3.LogEntry): void {
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, log: Web3.LogEntry): void {
         _.forEach(this._filters, (filter: Web3.FilterObject, filterToken: string) => {
             if (filterUtils.matchesFilter(log, filter)) {
                 const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
                 const logEvent = {
                     log: decodedLog,
-                    removed,
+                    isRemoved,
                 };
                 this._filterCallbacks[filterToken](null, logEvent);
             }
@@ -117,13 +117,13 @@ export class ContractWrapper {
         this._blockAndLogStreamInterval = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this), constants.DEFAULT_BLOCK_POLLING_INTERVAL,
         );
-        let removed = false;
+        let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogAdded(
-            this._onLogStateChanged.bind(this, removed),
+            this._onLogStateChanged.bind(this, isRemoved),
         );
-        removed = true;
+        isRemoved = true;
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogRemoved(
-            this._onLogStateChanged.bind(this, removed),
+            this._onLogStateChanged.bind(this, isRemoved),
         );
     }
     private _stopBlockAndLogStream(): void {

@@ -41,7 +41,7 @@ export type OrderValues = [BigNumber, BigNumber, BigNumber,
 
 export type LogEvent = Web3.LogEntryEvent;
 export interface DecodedLogEvent<ArgsType> {
-    removed: boolean;
+    isRemoved: boolean;
     log: LogWithDecodedArgs<ArgsType>;
 }
 
