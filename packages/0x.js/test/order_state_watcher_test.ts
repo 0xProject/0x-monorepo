@@ -25,7 +25,7 @@ import {FillScenarios} from './utils/fill_scenarios';
 import {DoneCallback} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {reportCallbackErrors} from './utils/report_callback_errors';
-import { constants as constants } from './utils/constants';
+import {constants as constants} from './utils/constants';
 
 const TIMEOUT_MS = 150;
 

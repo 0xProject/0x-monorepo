@@ -51,16 +51,15 @@ export class RemainingFillableCalculator {
         }
     }
     private calculatePartiallyFillableMakerTokenAmount(): BigNumber {
-        // The number of times the maker can fill the order, if each fill only required the transfer of a single
-        // baseUnit of fee tokens.
         // Given an order for 200 wei for 2 ZRXwei fee, find 100 wei for 1 ZRXwei. Order ratio is then 100:1
         const orderToFeeRatio = this.signedOrder.makerTokenAmount.dividedBy(this.signedOrder.makerFee);
-        // Maximum number of times the Maker can fill the order, given the fees
+        // The number of times the maker can fill the order, if each fill only required the transfer of a single
+        // baseUnit of fee tokens.
         // Given 2 ZRXwei, the maximum amount of times Maker can fill this order, in terms of fees, is 2
         const fillableTimesInFeeTokenBaseUnits = BigNumber.min(this.transferrableMakerFeeTokenAmount,
                                                                this.remainingMakerFeeAmount);
-        // Maximum number of times the Maker can fill the order, given the Maker Token Balance
-        // Assuming a balance of 150 wei, maker can fill this order 1 time.
+        // The number of times the Maker can fill the order, given the Maker Token Balance
+        // Assuming a balance of 150 wei, and an orderToFeeRatio of 100:1, maker can fill this order 1 time.
         let fillableTimesInMakerTokenUnits = this.transferrableMakerTokenAmount.dividedBy(orderToFeeRatio);
         if (this.isMakerTokenZRX) {
             // If ZRX is the maker token, the Fee and the Maker amount need to be removed from the same pool;
