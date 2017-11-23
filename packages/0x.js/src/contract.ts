@@ -48,7 +48,7 @@ export class Contract implements Web3.ContractInstance {
         });
     }
     private promisifyWithDefaultParams(fn: (...args: any[]) => void): (...args: any[]) => Promise<any> {
-        const promisifiedWithDefaultParams = async (...args: any[]) => {
+        const promisifiedWithDefaultParams = (...args: any[]) => {
             const promise = new Promise((resolve, reject) => {
                 const lastArg = args[args.length - 1];
                 let txData: Partial<Web3.TxData> = {};
