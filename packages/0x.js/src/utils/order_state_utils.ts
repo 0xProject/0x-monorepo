@@ -17,6 +17,7 @@ import {utils} from '../utils/utils';
 import {constants} from '../utils/constants';
 import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
+import {RemainingFillableCalculator} from '../order_watcher/remaining_fillable_calculator';
 
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
@@ -78,12 +79,17 @@ export class OrderStateUtils {
         const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
         const remainingMakerTokenAmount = remainingTakerTokenAmount.times(totalMakerTokenAmount)
                                                                    .dividedToIntegerBy(totalTakerTokenAmount);
-        const fillableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
-        const remainingFillableMakerTokenAmount = BigNumber.min(fillableMakerTokenAmount, remainingMakerTokenAmount);
-        const remainingFillableTakerTokenAmount = remainingFillableMakerTokenAmount
-                                                  .times(totalTakerTokenAmount)
-                                                  .dividedToIntegerBy(totalMakerTokenAmount);
-        // TODO: Handle edge case where maker token is ZRX with fee
+        const transferrableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
+        const transferrableFeeTokenAmount = BigNumber.min([makerFeeProxyAllowance, makerFeeBalance]);
+
+        const isMakerTokenZRX = signedOrder.makerTokenAddress === zrxTokenAddress;
+        const remainingFillableCalculator = new RemainingFillableCalculator(signedOrder,
+                                                isMakerTokenZRX,
+                                                transferrableMakerTokenAmount,
+                                                transferrableFeeTokenAmount,
+                                                remainingMakerTokenAmount);
+        const remainingFillableMakerTokenAmount = remainingFillableCalculator.computeRemainingMakerFillable();
+        const remainingFillableTakerTokenAmount = remainingFillableCalculator.computeRemainingTakerFillable();
         const orderRelevantState = {
             makerBalance,
             makerProxyAllowance,

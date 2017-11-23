@@ -35,8 +35,8 @@ const ERR_MSG_MAPPING = {
 export class ExchangeTransferSimulator {
     private store: BalanceAndProxyAllowanceLazyStore;
     private UNLIMITED_ALLOWANCE_IN_BASE_UNITS: BigNumber;
-    constructor(token: TokenWrapper) {
-        this.store = new BalanceAndProxyAllowanceLazyStore(token);
+    constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {
+        this.store = new BalanceAndProxyAllowanceLazyStore(token, defaultBlock);
         this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS = token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     }
     /**

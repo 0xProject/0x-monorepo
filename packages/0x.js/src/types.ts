@@ -40,7 +40,10 @@ export type OrderValues = [BigNumber, BigNumber, BigNumber,
                            BigNumber, BigNumber, BigNumber];
 
 export type LogEvent = Web3.LogEntryEvent;
-export type DecodedLogEvent<ArgsType> = Web3.DecodedLogEntryEvent<ArgsType>;
+export interface DecodedLogEvent<ArgsType> {
+    isRemoved: boolean;
+    log: LogWithDecodedArgs<ArgsType>;
+}
 
 export type EventCallback<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => void;
 export type EventWatcherCallback = (log: LogEvent) => void;
@@ -348,9 +351,11 @@ export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
 }
 
+// Earliest is omitted by design. It is simply an alias for the `0` constant and
+// is thus not very helpful. Moreover, this type is used in places that only accept
+// `latest` or `pending`.
 export enum BlockParamLiteral {
     Latest = 'latest',
-    Earliest = 'earliest',
     Pending = 'pending',
 }
 

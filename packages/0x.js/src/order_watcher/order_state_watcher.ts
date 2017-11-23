@@ -44,6 +44,10 @@ interface OrderByOrderHash {
     [orderHash: string]: SignedOrder;
 }
 
+interface OrderStateByOrderHash {
+    [orderHash: string]: OrderState;
+}
+
 /**
  * This class includes all the functionality related to watching a set of orders
  * for potential changes in order validity/fillability. The orderWatcher notifies
@@ -51,6 +55,7 @@ interface OrderByOrderHash {
  * the order should be deemed invalid.
  */
 export class OrderStateWatcher {
+    private _orderStateByOrderHashCache: OrderStateByOrderHash = {};
     private _orderByOrderHash: OrderByOrderHash = {};
     private _dependentOrderHashes: DependentOrderHashes = {};
     private _callbackIfExists?: OnOrderStateChangeCallback;
@@ -69,7 +74,9 @@ export class OrderStateWatcher {
         this._web3Wrapper = web3Wrapper;
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs);
-        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(token);
+        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+            token, BlockParamLiteral.Pending,
+        );
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
@@ -109,6 +116,7 @@ export class OrderStateWatcher {
             return; // noop
         }
         delete this._orderByOrderHash[orderHash];
+        delete this._orderStateByOrderHashCache[orderHash];
         const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
         const zrxTokenAddress = await exchange.getZRXTokenAddressAsync();
         this.removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
@@ -238,6 +246,12 @@ export class OrderStateWatcher {
             const orderState = await this._orderStateUtils.getOrderStateAsync(signedOrder);
             if (_.isUndefined(this._callbackIfExists)) {
                 break; // Unsubscribe was called
+            }
+            if (_.isEqual(orderState, this._orderStateByOrderHashCache[orderHash])) {
+                // Actual order state didn't change
+                continue;
+            } else {
+                this._orderStateByOrderHashCache[orderHash] = orderState;
             }
             this._callbackIfExists(orderState);
         }
