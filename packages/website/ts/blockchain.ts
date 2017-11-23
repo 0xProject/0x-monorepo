@@ -496,7 +496,7 @@ export class Blockchain {
                 this.stopWatchingExchangeLogFillEventsAsync(); // fire and forget
                 return;
             } else {
-                if (this.doesLogEventInvolveUser(decodedLogEvent)) {
+                if (!this.doesLogEventInvolveUser(decodedLogEvent)) {
                     return; // We aren't interested in the fill event
                 }
                 this.updateLatestFillsBlockIfNeeded(decodedLogEvent.blockNumber);
@@ -519,7 +519,7 @@ export class Blockchain {
             ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues,
         );
         for (const decodedLog of decodedLogs) {
-            if (this.doesLogEventInvolveUser(decodedLog)) {
+            if (!this.doesLogEventInvolveUser(decodedLog)) {
                 continue; // We aren't interested in the fill event
             }
             this.updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
