@@ -408,7 +408,7 @@ export interface OrderStateWatcherConfig {
 }
 
 /*
- * networkId: The id of the underlying ethereum network the provider is connected to. (1-mainnet, 42-kovan, 50-testrpc)
+ * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
