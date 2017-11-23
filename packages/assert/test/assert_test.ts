@@ -184,7 +184,7 @@ describe('Assertions', () => {
         it('should not throw for valid input', () => {
             const validInputs = [
                 42,
-                0.00, // tslint:disable-line:number-literal-format
+                0,
                 21e+42,
             ];
             validInputs.forEach(input => expect(assert.isNumber.bind(assert, variableName, input)).to.not.throw());
