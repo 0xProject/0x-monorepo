@@ -3,6 +3,7 @@
 vx.x.x
 ------------------------
     * Make `DecodedLogEvent<A>` contain `LogWithDecodedArgs<A>` under log key instead of merging it in like web3 does (#234)
+    * Rename `removed` to `isRemoved` in `DecodedLogEvent<A>` (#234)
     * Modify order validation methods to validate against the `latest` block, not against the `pending` block (#236)
 
 v0.26.0
