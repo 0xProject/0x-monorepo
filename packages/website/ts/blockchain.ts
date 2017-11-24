@@ -488,6 +488,7 @@ export class Blockchain {
         const subscriptionId = await this.zeroEx.exchange.subscribeAsync(
             ExchangeEvents.LogFill, indexFilterValues,
             async (err: Error, decodedLogEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
+            const decodedLog = decodedLogEvent.log;
             if (err) {
                 // Note: it's not entirely clear from the documentation which
                 // errors will be thrown by `watch`. For now, let's log the error
@@ -496,12 +497,12 @@ export class Blockchain {
                 this.stopWatchingExchangeLogFillEventsAsync(); // fire and forget
                 return;
             } else {
-                if (!this.doesLogEventInvolveUser(decodedLogEvent)) {
+                if (!this.doesLogEventInvolveUser(decodedLog)) {
                     return; // We aren't interested in the fill event
                 }
-                this.updateLatestFillsBlockIfNeeded(decodedLogEvent.blockNumber);
-                const fill = await this.convertDecodedLogToFillAsync(decodedLogEvent);
-                if (decodedLogEvent.removed) {
+                this.updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
+                const fill = await this.convertDecodedLogToFillAsync(decodedLog);
+                if (decodedLogEvent.isRemoved) {
                     tradeHistoryStorage.removeFillFromUser(this.userAddress, this.networkId, fill);
                 } else {
                     tradeHistoryStorage.addFillToUser(this.userAddress, this.networkId, fill);
