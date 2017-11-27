@@ -1,6 +1,8 @@
 import * as _ from 'lodash';
-import {constants} from './constants';
+
 import {AsyncMethod, ZeroExError} from '../types';
+
+import {constants} from './constants';
 
 export const decorators = {
     /**

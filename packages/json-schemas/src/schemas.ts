@@ -1,10 +1,10 @@
 import {
-    numberSchema,
     addressSchema,
+    numberSchema,
 } from '../schemas/basic_type_schemas';
 import {
-    ecSignatureSchema,
     ecSignatureParameterSchema,
+    ecSignatureSchema,
 } from '../schemas/ec_signature_schema';
 import {
     indexFilterValuesSchema,
@@ -26,24 +26,25 @@ import {
     signedOrderSchema,
 } from '../schemas/order_schemas';
 import {
-    blockParamSchema,
-    subscriptionOptsSchema,
-} from '../schemas/subscription_opts_schema';
-import {
-    tokenSchema,
-} from '../schemas/token_schema';
-import {
-    signedOrdersSchema,
-} from '../schemas/signed_orders_schema';
-import {
     relayerApiErrorResponseSchema,
 } from '../schemas/relayer_api_error_response_schema';
+import {
+    relayerApiFeesPayloadSchema,
+} from '../schemas/relayer_api_fees_payload_schema';
 import {
     relayerApiFeesResponseSchema,
 } from '../schemas/relayer_api_fees_response_schema';
 import {
-    relayerApiFeesPayloadSchema,
-} from '../schemas/relayer_api_fees_payload_schema';
+    relayerApiOrderbookChannelSubscribePayload,
+    relayerApiOrderbookChannelSubscribeSchema,
+} from '../schemas/relayer_api_orberbook_channel_subscribe_schema';
+import {
+    relayerApiOrderbookChannelSnapshotPayload,
+    relayerApiOrderbookChannelSnapshotSchema,
+} from '../schemas/relayer_api_orderbook_channel_snapshot_schema';
+import {
+    relayerApiOrderbookChannelUpdateSchema,
+} from '../schemas/relayer_api_orderbook_channel_update_response_schema';
 import {
     relayerApiOrderBookResponseSchema,
 } from '../schemas/relayer_api_orderbook_response_schema';
@@ -52,20 +53,19 @@ import {
     relayerApiTokenTradeInfoSchema,
 } from '../schemas/relayer_api_token_pairs_response_schema';
 import {
+    signedOrdersSchema,
+} from '../schemas/signed_orders_schema';
+import {
+    blockParamSchema,
+    subscriptionOptsSchema,
+} from '../schemas/subscription_opts_schema';
+import {
+    tokenSchema,
+} from '../schemas/token_schema';
+import {
     jsNumber,
     txDataSchema,
 } from '../schemas/tx_data_schema';
-import {
-    relayerApiOrderbookChannelSubscribeSchema,
-    relayerApiOrderbookChannelSubscribePayload,
-} from '../schemas/relayer_api_orberbook_channel_subscribe_schema';
-import {
-    relayerApiOrderbookChannelUpdateSchema,
-} from '../schemas/relayer_api_orderbook_channel_update_response_schema';
-import {
-    relayerApiOrderbookChannelSnapshotSchema,
-    relayerApiOrderbookChannelSnapshotPayload,
-} from '../schemas/relayer_api_orderbook_channel_snapshot_schema';
 
 export const schemas = {
     numberSchema,

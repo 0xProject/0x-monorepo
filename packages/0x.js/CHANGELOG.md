@@ -2,6 +2,10 @@
 
 vx.x.x
 ------------------------
+    * Make `ZeroExConfig` required parameter of `ZeroEx` constructor (#233)
+    * Add a required property `networkId` to `ZeroExConfig` (#233)
+    * Make all `getContractAddress` functions, `zeroEx.exchange.subscribe`, `zeroEx.exchange.getZRXTokenAddress` sync (#233)
+    * Remove `ZeroExError.ContractNotFound` and replace it with contract-specific errors (#233)
     * Make `DecodedLogEvent<A>` contain `LogWithDecodedArgs<A>` under log key instead of merging it in like web3 does (#234)
     * Rename `removed` to `isRemoved` in `DecodedLogEvent<A>` (#234)
     * Modify order validation methods to validate against the `latest` block, not against the `pending` block (#236)

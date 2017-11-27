@@ -1,10 +1,12 @@
 import * as _ from 'lodash';
-import {Web3Wrapper} from '../web3_wrapper';
-import {assert} from '../utils/assert';
-import {Token, TokenRegistryContract, TokenMetadata} from '../types';
-import {constants} from '../utils/constants';
-import {ContractWrapper} from './contract_wrapper';
+
 import {artifacts} from '../artifacts';
+import {Token, TokenMetadata, TokenRegistryContract, ZeroExError} from '../types';
+import {assert} from '../utils/assert';
+import {constants} from '../utils/constants';
+import {Web3Wrapper} from '../web3_wrapper';
+
+import {ContractWrapper} from './contract_wrapper';
 
 /**
  * This class includes all the functionality related to interacting with the 0x Token Registry smart contract.
@@ -12,6 +14,18 @@ import {artifacts} from '../artifacts';
 export class TokenRegistryWrapper extends ContractWrapper {
     private _tokenRegistryContractIfExists?: TokenRegistryContract;
     private _contractAddressIfExists?: string;
+    private static _createTokenFromMetadata(metadata: TokenMetadata): Token|undefined {
+        if (metadata[0] === constants.NULL_ADDRESS) {
+            return undefined;
+        }
+        const token = {
+            address: metadata[0],
+            name: metadata[1],
+            symbol: metadata[2],
+            decimals: metadata[3].toNumber(),
+        };
+        return token;
+    }
     constructor(web3Wrapper: Web3Wrapper, contractAddressIfExists?: string) {
         super(web3Wrapper);
         this._contractAddressIfExists = contractAddressIfExists;
@@ -26,7 +40,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const addresses = await this.getTokenAddressesAsync();
         const tokenPromises: Array<Promise<Token|undefined>> = _.map(
             addresses,
-            (address: string) => (this.getTokenIfExistsAsync(address)),
+            async (address: string) => this.getTokenIfExistsAsync(address),
         );
         const tokens = await Promise.all(tokenPromises);
         return tokens as Token[];
@@ -49,7 +63,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
 
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenMetaData.callAsync(address);
-        const token = this._createTokenFromMetadata(metadata);
+        const token = TokenRegistryWrapper._createTokenFromMetadata(metadata);
         return token;
     }
     public async getTokenAddressBySymbolIfExistsAsync(symbol: string): Promise<string|undefined> {
@@ -74,14 +88,14 @@ export class TokenRegistryWrapper extends ContractWrapper {
         assert.isString('symbol', symbol);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenBySymbol.callAsync(symbol);
-        const token = this._createTokenFromMetadata(metadata);
+        const token = TokenRegistryWrapper._createTokenFromMetadata(metadata);
         return token;
     }
     public async getTokenByNameIfExistsAsync(name: string): Promise<Token|undefined> {
         assert.isString('name', name);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenByName.callAsync(name);
-        const token = this._createTokenFromMetadata(metadata);
+        const token = TokenRegistryWrapper._createTokenFromMetadata(metadata);
         return token;
     }
     /**
@@ -89,22 +103,11 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * that the user-passed web3 provider is connected to.
      * @returns The Ethereum address of the TokenRegistry contract being used.
      */
-    public async getContractAddressAsync(): Promise<string> {
-        const tokenRegistryInstance = await this._getTokenRegistryContractAsync();
-        const tokenRegistryAddress = tokenRegistryInstance.address;
-        return tokenRegistryAddress;
-    }
-    private _createTokenFromMetadata(metadata: TokenMetadata): Token|undefined {
-        if (metadata[0] === constants.NULL_ADDRESS) {
-            return undefined;
-        }
-        const token = {
-            address: metadata[0],
-            name: metadata[1],
-            symbol: metadata[2],
-            decimals: metadata[3].toNumber(),
-        };
-        return token;
+    public getContractAddress(): string {
+        const contractAddress = this._getContractAddress(
+            artifacts.TokenRegistryArtifact, this._contractAddressIfExists,
+        );
+        return contractAddress;
     }
     private _invalidateContractInstance(): void {
         delete this._tokenRegistryContractIfExists;
@@ -116,7 +119,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenRegistryContract>(
             artifacts.TokenRegistryArtifact, this._contractAddressIfExists,
         );
-        this._tokenRegistryContractIfExists = contractInstance as TokenRegistryContract;
+        this._tokenRegistryContractIfExists = contractInstance;
         return this._tokenRegistryContractIfExists;
     }
 }

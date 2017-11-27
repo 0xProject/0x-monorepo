@@ -1,27 +1,30 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import * as chai from 'chai';
+import 'mocha';
+import * as Web3 from 'web3';
+
 import {
-    ZeroEx,
-    Token,
-    SignedOrder,
-    SubscriptionOpts,
-    ExchangeEvents,
+    DecodedLogEvent,
     ExchangeContractErrs,
-    OrderCancellationRequest,
-    OrderFillRequest,
-    LogFillContractEventArgs,
+    ExchangeEvents,
     LogCancelContractEventArgs,
     LogEvent,
-    DecodedLogEvent,
+    LogFillContractEventArgs,
+    OrderCancellationRequest,
+    OrderFillRequest,
+    SignedOrder,
+    SubscriptionOpts,
+    Token,
+    ZeroEx,
 } from '../src';
-import {DoneCallback, BlockParamLiteral} from '../src/types';
+import {BlockParamLiteral, DoneCallback} from '../src/types';
+
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
 import {FillScenarios} from './utils/fill_scenarios';
 import {TokenUtils} from './utils/token_utils';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -38,10 +41,13 @@ describe('ExchangeWrapper', () => {
     let zrxTokenAddress: string;
     let fillScenarios: FillScenarios;
     let exchangeContractAddress: string;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
-        exchangeContractAddress = await zeroEx.exchange.getContractAddressAsync();
+        zeroEx = new ZeroEx(web3.currentProvider, config);
+        exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);
@@ -613,7 +619,7 @@ describe('ExchangeWrapper', () => {
             });
         });
     });
-    describe('#subscribeAsync', () => {
+    describe('#subscribe', () => {
         const indexFilterValues = {};
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
         let makerTokenAddress: string;
@@ -652,7 +658,7 @@ describe('ExchangeWrapper', () => {
                     expect(logEvent.log.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
-                await zeroEx.exchange.subscribeAsync(
+                zeroEx.exchange.subscribe(
                     ExchangeEvents.LogFill, indexFilterValues, callback,
                 );
                 await zeroEx.exchange.fillOrderAsync(
@@ -668,7 +674,7 @@ describe('ExchangeWrapper', () => {
                     expect(logEvent.log.event).to.be.equal(ExchangeEvents.LogCancel);
                     done();
                 };
-                await zeroEx.exchange.subscribeAsync(
+                zeroEx.exchange.subscribe(
                     ExchangeEvents.LogCancel, indexFilterValues, callback,
                 );
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerAmountInBaseUnits);
@@ -680,18 +686,18 @@ describe('ExchangeWrapper', () => {
                 const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
-                await zeroEx.exchange.subscribeAsync(
+                zeroEx.exchange.subscribe(
                     ExchangeEvents.LogFill, indexFilterValues, callbackNeverToBeCalled,
                 );
 
                 const newProvider = web3Factory.getRpcProvider();
-                await zeroEx.setProviderAsync(newProvider);
+                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
 
                 const callback = (err: Error, logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
                     expect(logEvent.log.event).to.be.equal(ExchangeEvents.LogFill);
                     done();
                 };
-                await zeroEx.exchange.subscribeAsync(
+                zeroEx.exchange.subscribe(
                     ExchangeEvents.LogFill, indexFilterValues, callback,
                 );
                 await zeroEx.exchange.fillOrderAsync(
@@ -705,7 +711,7 @@ describe('ExchangeWrapper', () => {
                 const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
-                const subscriptionToken = await zeroEx.exchange.subscribeAsync(
+                const subscriptionToken = zeroEx.exchange.subscribe(
                     ExchangeEvents.LogFill, indexFilterValues, callbackNeverToBeCalled,
                 );
                 zeroEx.exchange.unsubscribe(subscriptionToken);
@@ -740,8 +746,8 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#getZRXTokenAddressAsync', () => {
-        it('gets the same token as is in token registry', async () => {
-            const zrxAddress = await zeroEx.exchange.getZRXTokenAddressAsync();
+        it('gets the same token as is in token registry', () => {
+            const zrxAddress = zeroEx.exchange.getZRXTokenAddress();
             const zrxToken = tokenUtils.getProtocolTokenOrThrow();
             expect(zrxAddress).to.equal(zrxToken.address);
         });
@@ -821,4 +827,4 @@ describe('ExchangeWrapper', () => {
             expect(args.maker).to.be.equal(differentMakerAddress);
         });
     });
-});
+}); // tslint:disable:max-file-line-count

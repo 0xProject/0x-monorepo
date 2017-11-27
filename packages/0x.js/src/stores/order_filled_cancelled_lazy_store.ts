@@ -1,6 +1,7 @@
+import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import {BigNumber} from 'bignumber.js';
+
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {BlockParamLiteral} from '../types';
 
@@ -10,10 +11,10 @@ import {BlockParamLiteral} from '../types';
 export class OrderFilledCancelledLazyStore {
     private exchange: ExchangeWrapper;
     private filledTakerAmount: {
-        [orderHash: string]: BigNumber,
+        [orderHash: string]: BigNumber;
     };
     private cancelledTakerAmount: {
-        [orderHash: string]: BigNumber,
+        [orderHash: string]: BigNumber;
     };
     constructor(exchange: ExchangeWrapper) {
         this.exchange = exchange;

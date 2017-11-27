@@ -1,9 +1,10 @@
-import * as _ from 'lodash';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
-import {ZeroExError, Artifact, TransactionReceipt} from './types';
+import * as _ from 'lodash';
+import * as Web3 from 'web3';
+
 import {Contract} from './contract';
+import {Artifact, ArtifactContractName, TransactionReceipt, ZeroExError} from './types';
 
 interface RawLogEntry {
     logIndex: string|null;
@@ -16,12 +17,21 @@ interface RawLogEntry {
     topics: string[];
 }
 
+const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {[contractName: string]: ZeroExError} = {
+    ZRX: ZeroExError.ZRXContractDoesNotExist,
+    EtherToken: ZeroExError.EtherTokenContractDoesNotExist,
+    Token: ZeroExError.TokenContractDoesNotExist,
+    TokenRegistry: ZeroExError.TokenRegistryContractDoesNotExist,
+    TokenTransferProxy: ZeroExError.TokenTransferProxyContractDoesNotExist,
+    Exchange: ZeroExError.ExchangeContractDoesNotExist,
+};
+
 export class Web3Wrapper {
     private web3: Web3;
+    private networkId: number;
     private defaults: Partial<Web3.TxData>;
-    private networkIdIfExists?: number;
     private jsonRpcRequestId: number;
-    constructor(provider: Web3.Provider, defaults?: Partial<Web3.TxData>) {
+    constructor(provider: Web3.Provider, networkId: number, defaults?: Partial<Web3.TxData>) {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
@@ -29,12 +39,13 @@ export class Web3Wrapper {
             (provider as any).sendAsync = (provider as any).send;
         }
         this.web3 = new Web3();
+        this.networkId = networkId;
         this.web3.setProvider(provider);
         this.defaults = defaults || {};
         this.jsonRpcRequestId = 0;
     }
-    public setProvider(provider: Web3.Provider) {
-        delete this.networkIdIfExists;
+    public setProvider(provider: Web3.Provider, networkId: number) {
+        this.networkId = networkId;
         this.web3.setProvider(provider);
     }
     public isAddress(address: string): boolean {
@@ -58,37 +69,24 @@ export class Web3Wrapper {
     public getCurrentProvider(): Web3.Provider {
         return this.web3.currentProvider;
     }
-    public async getNetworkIdIfExistsAsync(): Promise<number|undefined> {
-        if (!_.isUndefined(this.networkIdIfExists)) {
-          return this.networkIdIfExists;
-        }
-
-        try {
-            const networkId = await this.getNetworkAsync();
-            this.networkIdIfExists = Number(networkId);
-            return this.networkIdIfExists;
-        } catch (err) {
-            return undefined;
-        }
+    public getNetworkId(): number {
+        return this.networkId;
     }
     public async getContractInstanceFromArtifactAsync<A extends Web3.ContractInstance>(artifact: Artifact,
                                                                                        address?: string): Promise<A> {
         let contractAddress: string;
         if (_.isUndefined(address)) {
-            const networkIdIfExists = await this.getNetworkIdIfExistsAsync();
-            if (_.isUndefined(networkIdIfExists)) {
-                throw new Error(ZeroExError.NoNetworkId);
-            }
-            if (_.isUndefined(artifact.networks[networkIdIfExists])) {
+            const networkId = this.getNetworkId();
+            if (_.isUndefined(artifact.networks[networkId])) {
                 throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
             }
-            contractAddress = artifact.networks[networkIdIfExists].address.toLowerCase();
+            contractAddress = artifact.networks[networkId].address.toLowerCase();
         } else {
             contractAddress = address;
         }
         const doesContractExist = await this.doesContractExistAtAddressAsync(contractAddress);
         if (!doesContractExist) {
-            throw new Error(ZeroExError.ContractDoesNotExist);
+            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
         }
         const contractInstance = this.getContractInstance<A>(
             artifact.abi, contractAddress,

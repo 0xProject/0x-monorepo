@@ -1,11 +1,13 @@
-import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {Web3Wrapper} from '../web3_wrapper';
-import {ContractWrapper} from './contract_wrapper';
-import {TokenWrapper} from './token_wrapper';
+import * as _ from 'lodash';
+
+import {artifacts} from '../artifacts';
 import {EtherTokenContract, ZeroExError} from '../types';
 import {assert} from '../utils/assert';
-import {artifacts} from '../artifacts';
+import {Web3Wrapper} from '../web3_wrapper';
+
+import {ContractWrapper} from './contract_wrapper';
+import {TokenWrapper} from './token_wrapper';
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
@@ -53,7 +55,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
 
-        const wethContractAddress = await this.getContractAddressAsync();
+        const wethContractAddress = this.getContractAddress();
         const WETHBalanceInBaseUnits = await this._tokenWrapper.getBalanceAsync(wethContractAddress, withdrawer);
         assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.InsufficientWEthBalanceForWithdrawal);
 
@@ -67,9 +69,11 @@ export class EtherTokenWrapper extends ContractWrapper {
      * Retrieves the Wrapped Ether token contract address
      * @return  The Wrapped Ether token contract address
      */
-    public async getContractAddressAsync(): Promise<string> {
-        const wethContract = await this._getEtherTokenContractAsync();
-        return wethContract.address;
+    public getContractAddress(): string {
+        const contractAddress = this._getContractAddress(
+            artifacts.EtherTokenArtifact, this._contractAddressIfExists,
+        );
+        return contractAddress;
     }
     private _invalidateContractInstance(): void {
         delete this._etherTokenContractIfExists;
@@ -81,7 +85,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<EtherTokenContract>(
             artifacts.EtherTokenArtifact, this._contractAddressIfExists,
         );
-        this._etherTokenContractIfExists = contractInstance as EtherTokenContract;
+        this._etherTokenContractIfExists = contractInstance;
         return this._etherTokenContractIfExists;
     }
 }

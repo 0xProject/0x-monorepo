@@ -1,6 +1,7 @@
+import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import {BigNumber} from 'bignumber.js';
+
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {BlockParamLiteral} from '../types';
 
@@ -12,13 +13,13 @@ export class BalanceAndProxyAllowanceLazyStore {
     private defaultBlock: BlockParamLiteral;
     private balance: {
         [tokenAddress: string]: {
-            [userAddress: string]: BigNumber,
-        },
+            [userAddress: string]: BigNumber;
+        };
     };
     private proxyAllowance: {
         [tokenAddress: string]: {
-            [userAddress: string]: BigNumber,
-        },
+            [userAddress: string]: BigNumber;
+        };
     };
     constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {
         this.token = token;

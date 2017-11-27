@@ -6,6 +6,8 @@ import {JSONRPCPayload} from '../types';
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class EmptyWalletSubProvider {
+    // This method needs to be here to satisfy the interface but linter wants it to be static.
+    // tslint:disable-next-line:prefer-function-over-method
     public handleRequest(payload: JSONRPCPayload, next: () => void, end: (err: Error|null, result: any) => void) {
         switch (payload.method) {
             case 'eth_accounts':
@@ -18,6 +20,7 @@ export class EmptyWalletSubProvider {
         }
     }
     // Required to implement this method despite not needing it for this subprovider
+    // tslint:disable-next-line:prefer-function-over-method
     public setEngine(engine: any) {
         // noop
     }

@@ -1,11 +1,13 @@
-import 'mocha';
-import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
-import { chaiSetup } from './utils/chai_setup';
-import { RemainingFillableCalculator } from '../src/order_watcher/remaining_fillable_calculator';
-import { SignedOrder, ECSignature } from '../src/types';
-import { TokenUtils } from './utils/token_utils';
+import * as chai from 'chai';
+import 'mocha';
+
 import { ZeroEx } from '../src/0x';
+import { RemainingFillableCalculator } from '../src/order_watcher/remaining_fillable_calculator';
+import { ECSignature, SignedOrder } from '../src/types';
+
+import { chaiSetup } from './utils/chai_setup';
+import { TokenUtils } from './utils/token_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;

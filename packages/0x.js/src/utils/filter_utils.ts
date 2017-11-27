@@ -1,8 +1,9 @@
-import * as _ from 'lodash';
-import * as Web3 from 'web3';
-import * as uuid from 'uuid/v4';
 import * as ethUtil from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
+import * as _ from 'lodash';
+import * as uuid from 'uuid/v4';
+import * as Web3 from 'web3';
+
 import {ContractEvents, IndexedFilterValues, SubscriptionOpts} from '../types';
 
 const TOPIC_LENGTH = 32;

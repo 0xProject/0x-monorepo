@@ -1,23 +1,25 @@
-import 'mocha';
-import * as dirtyChai from 'dirty-chai';
+import {BigNumber} from 'bignumber.js';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as dirtyChai from 'dirty-chai';
 import * as fetchMock from 'fetch-mock';
-import {BigNumber} from 'bignumber.js';
+import 'mocha';
+
 import {HttpClient} from '../src/index';
+
 import {feesResponse} from './fixtures/standard_relayer_api/fees';
+import * as feesResponseJSON from './fixtures/standard_relayer_api/fees.json';
 import {
     orderResponse,
 } from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
-import {ordersResponse} from './fixtures/standard_relayer_api/orders';
-import {tokenPairsResponse} from './fixtures/standard_relayer_api/token_pairs';
-import {orderbookResponse} from './fixtures/standard_relayer_api/orderbook';
-import * as feesResponseJSON from './fixtures/standard_relayer_api/fees.json';
 // tslint:disable-next-line:max-line-length
 import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f.json';
-import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
-import * as tokenPairsResponseJSON from './fixtures/standard_relayer_api/token_pairs.json';
+import {orderbookResponse} from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
+import {ordersResponse} from './fixtures/standard_relayer_api/orders';
+import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
+import {tokenPairsResponse} from './fixtures/standard_relayer_api/token_pairs';
+import * as tokenPairsResponseJSON from './fixtures/standard_relayer_api/token_pairs.json';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);

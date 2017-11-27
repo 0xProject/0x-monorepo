@@ -1,11 +1,14 @@
-import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {ZeroEx, ExchangeContractErrs, Token} from '../src';
-import {TradeSide, TransferType, BlockParamLiteral} from '../src/types';
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import * as chai from 'chai';
+
+import {ExchangeContractErrs, Token, ZeroEx} from '../src';
+import {BlockParamLiteral, TradeSide, TransferType} from '../src/types';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
+
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -13,7 +16,10 @@ const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('ExchangeTransferSimulator', () => {
     const web3 = web3Factory.create();
-    const zeroEx = new ZeroEx(web3.currentProvider);
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
+    const zeroEx = new ZeroEx(web3.currentProvider, config);
     const transferAmount = new BigNumber(5);
     let userAddresses: string[];
     let tokens: Token[];

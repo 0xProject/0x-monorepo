@@ -1,8 +1,9 @@
-import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
-import {ExchangeContractErrs, TradeSide, TransferType, BlockParamLiteral} from '../types';
+import * as _ from 'lodash';
+
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
+import {BlockParamLiteral, ExchangeContractErrs, TradeSide, TransferType} from '../types';
 
 enum FailureReason {
     Balance = 'balance',
@@ -35,6 +36,11 @@ const ERR_MSG_MAPPING = {
 export class ExchangeTransferSimulator {
     private store: BalanceAndProxyAllowanceLazyStore;
     private UNLIMITED_ALLOWANCE_IN_BASE_UNITS: BigNumber;
+    private static throwValidationError(failureReason: FailureReason, tradeSide: TradeSide,
+                                        transferType: TransferType): never {
+        const errMsg = ERR_MSG_MAPPING[failureReason][tradeSide][transferType];
+        throw new Error(errMsg);
+    }
     constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {
         this.store = new BalanceAndProxyAllowanceLazyStore(token, defaultBlock);
         this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS = token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
@@ -54,10 +60,10 @@ export class ExchangeTransferSimulator {
         const balance = await this.store.getBalanceAsync(tokenAddress, from);
         const proxyAllowance = await this.store.getProxyAllowanceAsync(tokenAddress, from);
         if (proxyAllowance.lessThan(amountInBaseUnits)) {
-            this.throwValidationError(FailureReason.ProxyAllowance, tradeSide, transferType);
+            ExchangeTransferSimulator.throwValidationError(FailureReason.ProxyAllowance, tradeSide, transferType);
         }
         if (balance.lessThan(amountInBaseUnits)) {
-            this.throwValidationError(FailureReason.Balance, tradeSide, transferType);
+            ExchangeTransferSimulator.throwValidationError(FailureReason.Balance, tradeSide, transferType);
         }
         await this.decreaseProxyAllowanceAsync(tokenAddress, from, amountInBaseUnits);
         await this.decreaseBalanceAsync(tokenAddress, from, amountInBaseUnits);
@@ -79,10 +85,5 @@ export class ExchangeTransferSimulator {
                                        amountInBaseUnits: BigNumber): Promise<void> {
         const balance = await this.store.getBalanceAsync(tokenAddress, userAddress);
         this.store.setBalance(tokenAddress, userAddress, balance.minus(amountInBaseUnits));
-    }
-    private throwValidationError(failureReason: FailureReason, tradeSide: TradeSide,
-                                 transferType: TransferType): Promise<never> {
-        const errMsg = ERR_MSG_MAPPING[failureReason][tradeSide][transferType];
-        throw new Error(errMsg);
     }
 }

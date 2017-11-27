@@ -1,8 +1,9 @@
-import * as _ from 'lodash';
-import * as WebSocket from 'websocket';
+import {SignedOrder} from '0x.js';
 import {assert} from '@0xproject/assert';
 import {schemas} from '@0xproject/json-schemas';
-import {SignedOrder} from '0x.js';
+import * as _ from 'lodash';
+import * as WebSocket from 'websocket';
+
 import {
     OrderbookChannel,
     OrderbookChannelHandler,

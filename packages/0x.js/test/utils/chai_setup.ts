@@ -1,7 +1,7 @@
 import * as chai from 'chai';
-import * as dirtyChai from 'dirty-chai';
-import ChaiBigNumber = require('chai-bignumber');
 import chaiAsPromised = require('chai-as-promised');
+import ChaiBigNumber = require('chai-bignumber');
+import * as dirtyChai from 'dirty-chai';
 
 export const chaiSetup = {
     configure() {

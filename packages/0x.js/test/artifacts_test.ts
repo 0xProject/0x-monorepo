@@ -1,8 +1,10 @@
-import * as fs from 'fs';
 import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
+import * as fs from 'fs';
 import HDWalletProvider = require('truffle-hdwallet-provider');
+
 import {ZeroEx} from '../src';
+
+import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
 
 chaiSetup.configure();
@@ -18,15 +20,18 @@ describe('Artifacts', () => {
         const packageJSON = JSON.parse(packageJSONContent);
         const mnemonic = packageJSON.config.mnemonic;
         const web3Provider = new HDWalletProvider(mnemonic, kovanRpcUrl);
-        const zeroEx = new ZeroEx(web3Provider);
+        const config = {
+            networkId: constants.KOVAN_NETWORK_ID,
+        };
+        const zeroEx = new ZeroEx(web3Provider, config);
         it('token registry contract is deployed', async () => {
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
         }).timeout(TIMEOUT);
         it('proxy contract is deployed', async () => {
-            await (zeroEx.token as any)._getTokenTransferProxyAddressAsync();
+            await (zeroEx.proxy as any)._getTokenTransferProxyContractAsync();
         }).timeout(TIMEOUT);
         it('exchange contract is deployed', async () => {
-            await zeroEx.exchange.getContractAddressAsync();
+            await (zeroEx.exchange as any)._getExchangeContractAsync();
         }).timeout(TIMEOUT);
     });
     describe('contracts are deployed on ropsten', () => {
@@ -35,15 +40,18 @@ describe('Artifacts', () => {
         const packageJSON = JSON.parse(packageJSONContent);
         const mnemonic = packageJSON.config.mnemonic;
         const web3Provider = new HDWalletProvider(mnemonic, ropstenRpcUrl);
-        const zeroEx = new ZeroEx(web3Provider);
+        const config = {
+            networkId: constants.ROPSTEN_NETWORK_ID,
+        };
+        const zeroEx = new ZeroEx(web3Provider, config);
         it('token registry contract is deployed', async () => {
             await (zeroEx.tokenRegistry as any)._getTokenRegistryContractAsync();
         }).timeout(TIMEOUT);
         it('proxy contract is deployed', async () => {
-            await (zeroEx.token as any)._getTokenTransferProxyAddressAsync();
+            await (zeroEx.proxy as any)._getTokenTransferProxyContractAsync();
         }).timeout(TIMEOUT);
         it('exchange contract is deployed', async () => {
-            await zeroEx.exchange.getContractAddressAsync();
+            await (zeroEx.exchange as any)._getExchangeContractAsync();
         }).timeout(TIMEOUT);
     });
 });

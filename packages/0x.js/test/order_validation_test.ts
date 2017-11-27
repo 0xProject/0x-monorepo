@@ -1,16 +1,19 @@
-import * as chai from 'chai';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
+import * as chai from 'chai';
 import * as Sinon from 'sinon';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {ZeroEx, SignedOrder, Token, ExchangeContractErrs, ZeroExError} from '../src';
-import {TradeSide, TransferType, BlockParamLiteral} from '../src/types';
-import {TokenUtils} from './utils/token_utils';
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
-import {FillScenarios} from './utils/fill_scenarios';
-import {OrderValidationUtils} from '../src/utils/order_validation_utils';
+import * as Web3 from 'web3';
+
+import {ExchangeContractErrs, SignedOrder, Token, ZeroEx, ZeroExError} from '../src';
+import {BlockParamLiteral, TradeSide, TransferType} from '../src/types';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
+import {OrderValidationUtils} from '../src/utils/order_validation_utils';
+
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {FillScenarios} from './utils/fill_scenarios';
+import {TokenUtils} from './utils/token_utils';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -34,10 +37,13 @@ describe('OrderValidation', () => {
     let orderValidationUtils: OrderValidationUtils;
     const fillableAmount = new BigNumber(5);
     const fillTakerAmount = new BigNumber(5);
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
-        exchangeContractAddress = await zeroEx.exchange.getContractAddressAsync();
+        zeroEx = new ZeroEx(web3.currentProvider, config);
+        exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
@@ -110,7 +116,7 @@ describe('OrderValidation', () => {
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
             );
             // 27 <--> 28
-            signedOrder.ecSignature.v = 27 + (28 - signedOrder.ecSignature.v);
+            signedOrder.ecSignature.v = (28 - signedOrder.ecSignature.v) + 27;
             return expect(zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(
                 signedOrder, fillableAmount, takerAddress,
             )).to.be.rejectedWith(ZeroExError.InvalidSignature);
@@ -226,7 +232,7 @@ describe('OrderValidation', () => {
                 makerTokenAddress, takerTokenAddress, makerFee, takerFee,
                 makerAddress, takerAddress, fillableAmount, feeRecipient,
             );
-            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, fillableAmount, takerAddress, zrxTokenAddress,
             );
             expect(transferFromAsync.callCount).to.be.equal(4);
@@ -262,7 +268,7 @@ describe('OrderValidation', () => {
                 makerTokenAddress, takerTokenAddress, makerFee, takerFee,
                 makerAddress, ZeroEx.NULL_ADDRESS, fillableAmount, feeRecipient,
             );
-            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, fillableAmount, takerAddress, zrxTokenAddress,
             );
             expect(transferFromAsync.callCount).to.be.equal(4);
@@ -297,7 +303,7 @@ describe('OrderValidation', () => {
             const signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, makerTokenAmount, takerTokenAmount,
             );
-            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, takerTokenAmount, takerAddress, zrxTokenAddress,
             );
             expect(transferFromAsync.callCount).to.be.equal(4);
@@ -312,7 +318,7 @@ describe('OrderValidation', () => {
                 fillableAmount, ZeroEx.NULL_ADDRESS,
             );
             const fillTakerTokenAmount = fillableAmount.div(2).round(0);
-            await orderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
                 exchangeTransferSimulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress,
             );
             const makerPartialFee = makerFee.div(2);

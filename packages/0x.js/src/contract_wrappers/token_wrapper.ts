@@ -1,23 +1,26 @@
-import * as _ from 'lodash';
-import BigNumber from 'bignumber.js';
 import {schemas} from '@0xproject/json-schemas';
-import {Web3Wrapper} from '../web3_wrapper';
-import {assert} from '../utils/assert';
-import {constants} from '../utils/constants';
-import {ContractWrapper} from './contract_wrapper';
-import {AbiDecoder} from '../utils/abi_decoder';
+import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
+
 import {artifacts} from '../artifacts';
 import {
-    TokenContract,
-    ZeroExError,
-    TokenEvents,
-    IndexedFilterValues,
-    SubscriptionOpts,
-    MethodOpts,
-    LogWithDecodedArgs,
     EventCallback,
+    IndexedFilterValues,
+    LogWithDecodedArgs,
+    MethodOpts,
+    SubscriptionOpts,
+    TokenContract,
     TokenContractEventArgs,
+    TokenEvents,
+    ZeroExError,
 } from '../types';
+import {AbiDecoder} from '../utils/abi_decoder';
+import {assert} from '../utils/assert';
+import {constants} from '../utils/constants';
+import {Web3Wrapper} from '../web3_wrapper';
+
+import {ContractWrapper} from './contract_wrapper';
+import {TokenTransferProxyWrapper} from './token_transfer_proxy_wrapper';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
 
@@ -29,12 +32,12 @@ const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
 export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
-    private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
+    private _tokenTransferProxyWrapper: TokenTransferProxyWrapper;
     constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
-                tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
+                tokenTransferProxyWrapper: TokenTransferProxyWrapper) {
         super(web3Wrapper, abiDecoder);
         this._tokenContractsByAddress = {};
-        this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
+        this._tokenTransferProxyWrapper = tokenTransferProxyWrapper;
     }
     /**
      * Retrieves an owner's ERC20 token balance.
@@ -76,8 +79,8 @@ export class TokenWrapper extends ContractWrapper {
         // Hack: for some reason default estimated gas amount causes `base fee exceeds gas limit` exception
         // on testrpc. Probably related to https://github.com/ethereumjs/testrpc/issues/294
         // TODO: Debug issue in testrpc and submit a PR, then remove this hack
-        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const gas = networkIdIfExists === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
+        const networkId = this._web3Wrapper.getNetworkId();
+        const gas = networkId === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
         const txHash = await tokenContract.approve.sendTransactionAsync(spenderAddress, amountInBaseUnits, {
             from: ownerAddress,
             gas,
@@ -133,7 +136,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
-        const proxyAddress = await this._getTokenTransferProxyAddressAsync();
+        const proxyAddress = this._tokenTransferProxyWrapper.getContractAddress();
         const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, methodOpts);
         return allowanceInBaseUnits;
     }
@@ -152,7 +155,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
-        const proxyAddress = await this._getTokenTransferProxyAddressAsync();
+        const proxyAddress = this._tokenTransferProxyWrapper.getContractAddress();
         const txHash = await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
         return txHash;
     }
@@ -290,7 +293,7 @@ export class TokenWrapper extends ContractWrapper {
         );
         return logs;
     }
-    private _invalidateContractInstancesAsync(): void {
+    private _invalidateContractInstances(): void {
         this.unsubscribeAll();
         this._tokenContractsByAddress = {};
     }
@@ -302,12 +305,8 @@ export class TokenWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenContract>(
             artifacts.TokenArtifact, tokenAddress,
         );
-        tokenContract = contractInstance as TokenContract;
+        tokenContract = contractInstance;
         this._tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
-    }
-    private async _getTokenTransferProxyAddressAsync(): Promise<string> {
-        const tokenTransferProxyContractAddress = await this._tokenTransferProxyContractAddressFetcher();
-        return tokenTransferProxyContractAddress;
     }
 }

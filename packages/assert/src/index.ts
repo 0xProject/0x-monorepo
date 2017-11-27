@@ -1,11 +1,11 @@
+import {
+    Schema,
+    SchemaValidator,
+} from '@0xproject/json-schemas';
 import BigNumber from 'bignumber.js';
 import * as ethereum_address from 'ethereum-address';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
-import {
-    SchemaValidator,
-    Schema,
-} from '@0xproject/json-schemas';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
@@ -62,7 +62,7 @@ export const assert = {
         this.assert(_.isBoolean(value), this.typeAssertionMessage(variableName, 'boolean', value));
     },
     isWeb3Provider(variableName: string, value: any): void {
-        const isWeb3Provider = _.isFunction((value as any).send) || _.isFunction((value as any).sendAsync);
+        const isWeb3Provider = _.isFunction((value).send) || _.isFunction((value).sendAsync);
         this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Web3.Provider', value));
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema): void {

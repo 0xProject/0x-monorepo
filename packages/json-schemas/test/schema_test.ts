@@ -1,10 +1,11 @@
-import 'mocha';
-import forEach = require('lodash.foreach');
-import * as dirtyChai from 'dirty-chai';
-import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
+import * as chai from 'chai';
+import * as dirtyChai from 'dirty-chai';
 import promisify = require('es6-promisify');
-import {SchemaValidator, schemas} from '../src/index';
+import forEach = require('lodash.foreach');
+import 'mocha';
+
+import {schemas, SchemaValidator} from '../src/index';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
@@ -969,4 +970,4 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, txDataSchema, shouldFail);
         });
     });
-});
+}); // tslint:disable:max-file-line-count
