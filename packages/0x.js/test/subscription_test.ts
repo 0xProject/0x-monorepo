@@ -19,6 +19,7 @@ import {BlockParamLiteral, DoneCallback} from '../src/types';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
+import {reportCallbackErrors} from './utils/report_callback_errors';
 import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
 
@@ -71,14 +72,16 @@ describe('SubscriptionTest', () => {
         it('Should receive the Error when an error occurs while fetching the block', (done: DoneCallback) => {
             (async () => {
                 const errMsg = 'Error fetching block';
-                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                    expect(err).to.be.equal(errMsg);
-                    expect(logEvent).to.be.undefined();
-                    done();
-                };
+                const callback = reportCallbackErrors(done)(
+                    (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                        expect(err.message).to.be.equal(errMsg);
+                        expect(logEvent).to.be.undefined();
+                        done();
+                    },
+                );
                 stubs = [
                   Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws(errMsg),
+                   .throws(new Error(errMsg)),
                 ];
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
@@ -88,14 +91,16 @@ describe('SubscriptionTest', () => {
         it('Should receive the Error when an error occurs while reconciling the new block', (done: DoneCallback) => {
             (async () => {
                 const errMsg = 'Error fetching logs';
-                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                    expect(err).to.be.equal(errMsg);
-                    expect(logEvent).to.be.undefined();
-                    done();
-                };
+                const callback = reportCallbackErrors(done)(
+                    (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                        expect(err.message).to.be.equal(errMsg);
+                        expect(logEvent).to.be.undefined();
+                        done();
+                    },
+                );
                 stubs = [
                   Sinon.stub((zeroEx as any)._web3Wrapper, 'getLogsAsync')
-                   .throws(errMsg),
+                   .throws(new Error(errMsg)),
                 ];
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
@@ -109,7 +114,7 @@ describe('SubscriptionTest', () => {
                     tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 stubs = [
                   Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws('JSON RPC error'),
+                   .throws(new Error('JSON RPC error')),
                 ];
                 zeroEx.token.unsubscribeAll();
                 done();
