@@ -124,6 +124,7 @@ describe('ExchangeWrapper', () => {
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
                     return expect(zeroEx.exchange.batchFillOrKillAsync(orderFillRequests, takerAddress, {
                         shouldValidate: false,
+                        gasLimit: 200000, // If we don't pass this gas estimation will fail
                     })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
