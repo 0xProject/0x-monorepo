@@ -61,10 +61,10 @@ export class Contract implements Web3.ContractInstance {
                 if (this.isTxData(lastArg)) {
                     txData = args.pop();
                 }
-                // Gas amounts priorities:
-                // 1 - method level
-                // 2 - Library defaults
-                // 3 - estimate
+                // Gas amount sourced with the following priorities:
+                // 1. Optional param passed it to public method call
+                // 2. Global config passed in at library instantiation
+                // 3. Gas estimate calculation + safety margin
                 const removeUndefinedProperties = _.pickBy;
                 txData = {
                     ...removeUndefinedProperties(this.defaults),
