@@ -5,6 +5,8 @@ import * as Web3 from 'web3';
 
 import {AbiType} from './types';
 
+const GAS_MARGIN = 30000;
+
 export class Contract implements Web3.ContractInstance {
     public address: string;
     public abi: Web3.ContractAbi;
@@ -63,21 +65,23 @@ export class Contract implements Web3.ContractInstance {
                 // 1 - method level
                 // 2 - Library defaults
                 // 3 - estimate
+                const removeUndefinedProperties = _.pickBy;
                 txData = {
-                    ...this.defaults,
-                    ...txData,
+                    ...removeUndefinedProperties(this.defaults),
+                    ...removeUndefinedProperties(txData),
                 };
                 if (_.isUndefined(txData.gas)) {
-                    const estimatedGas = await estimateGasAsync.apply(this.contract, [...args, txData]);
-                    txData.gas = estimatedGas;
-                }
-                const callback = (err: Error, data: any) => {
-                    if (_.isNull(err)) {
-                        resolve(data);
-                    } else {
+                    try {
+                        const estimatedGas = await estimateGasAsync.apply(this.contract, [...args, txData]);
+                        const gas = estimatedGas + GAS_MARGIN;
+                        txData.gas = gas;
+                        console.log('withGas', txData);
+                    } catch (err) {
                         reject(err);
+                        return;
                     }
-                };
+                }
+                const callback = (err: Error, data: any) => _.isNull(err) ? resolve(data) : reject(err);
                 args.push(txData);
                 args.push(callback);
                 web3CbStyleFunction.apply(this.contract, args);
