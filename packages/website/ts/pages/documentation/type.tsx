@@ -17,6 +17,14 @@ const typeToUrl: {[typeName: string]: string} = {
     Web3: constants.WEB3_DOCS_URL,
     Provider: constants.WEB3_PROVIDER_DOCS_URL,
     BigNumber: constants.BIGNUMBERJS_GITHUB_URL,
+    DecodedLogEntryEvent: constants.WEB3_DECODED_LOG_ENTRY_EVENT_URL,
+    LogEntryEvent: constants.WEB3_LOG_ENTRY_EVENT_URL,
+};
+
+const typePrefix: {[typeName: string]: string} = {
+    Provider: 'Web3',
+    DecodedLogEntryEvent: 'Web3',
+    LogEntryEvent: 'Web3',
 };
 
 const typeToSection: {[typeName: string]: string} = {
@@ -119,6 +127,7 @@ export function Type(props: TypeProps): any {
     });
 
     const typeNameUrlIfExists = typeToUrl[(typeName as string)];
+    const typePrefixIfExists = typePrefix[(typeName as string)];
     const sectionNameIfExists = typeToSection[(typeName as string)];
     if (!_.isUndefined(typeNameUrlIfExists)) {
         typeName = (
@@ -128,7 +137,7 @@ export function Type(props: TypeProps): any {
                 className="text-decoration-none"
                 style={{color: colors.lightBlueA700}}
             >
-                {typeName}
+                {!_.isUndefined(typePrefixIfExists) ? `${typePrefixIfExists}.` : ''}{typeName}
             </a>
         );
     } else if ((isReference || isArray) &&

@@ -78,7 +78,10 @@ export const constants = {
     ETH_DECIMAL_PLACES: 18,
     MINT_AMOUNT: new BigNumber('100000000000000000000'),
     WEB3_DOCS_URL: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
-    WEB3_PROVIDER_DOCS_URL: 'https://github.com/ethereum/wiki/wiki/JavaScript-API#example-7',
+    WEB3_PROVIDER_DOCS_URL: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
+    WEB3_DECODED_LOG_ENTRY_EVENT_URL:
+        'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
+    WEB3_LOG_ENTRY_EVENT_URL: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
     ZEROEX_CHAT_URL: 'https://chat.0xproject.com',
     // Projects
     ETHFINEX_URL: 'https://www.bitfinex.com/ethfinex',
