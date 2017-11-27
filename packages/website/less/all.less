@@ -1,0 +1,136 @@
+body {
+    font-family: 'Roboto';
+}
+
+.robotoMono {
+    font-family: 'Roboto Mono';
+}
+
+a {
+    color: black;
+}
+
+#faq {
+    li {
+        padding-bottom: 5px;
+    }
+
+    a {
+        color: rgb(66, 66, 66);
+    }
+}
+
+#landing {
+    .h1, .h2, .h3, .h4 {
+        font-family: 'Roboto Mono';
+    }
+}
+
+
+#portal {
+    h1, h2, h3, h4 {
+        font-weight: 100;
+    }
+}
+
+#documentation {
+    p {
+        line-height: 1.5;
+    }
+
+    .comment {
+        p {
+            margin: 0px;
+        }
+    }
+
+    .typeTooltip {
+        border: 1px solid lightgray;
+        opacity: 1;
+    }
+}
+
+/*
+ * Adds always visible scrollbars on OSX so that user knows the content is scrollable
+ * Source: https://davidwalsh.name/osx-overflow
+ */
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
+// Hack: For some reason the animation applied to the material-ui textfield causes the overflow
+// applied to other elements to fail while the animation is underway. Adding this class to the
+// affected component fixes the issue
+// Source: http://stackoverflow.com/questions/14383632/webkit-border-radius-and-overflow-bug-when-using-any-animation-transition
+.transitionFix {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+}
+
+.thin {
+    font-weight: 100;
+}
+
+code {
+    font-family: 'Roboto';
+    background-color: #f3f4f4;
+    color: rgb(36, 41, 46);
+    padding: 3px;
+
+    &.hljs {
+        background-color: #dde4e9 !important; // blue gray
+        border-left: 5px solid #0091EA !important; // colors.lightBlueA700
+        padding: 30px;
+    }
+}
+
+#wiki {
+    p, blockquote, ul, ol, dl, li, table, pre {
+        margin: 15px 0;
+    }
+
+    ol, ul {
+        padding-bottom: 20px;
+    }
+
+    table {
+        padding: 0;
+        border-collapse: collapse;
+    }
+    table tr {
+        border-top: 1px solid #cccccc;
+        background-color: white;
+        margin: 0;
+        padding: 0;
+    }
+    table tr:nth-child(2n) {
+        background-color: #f8f8f8;
+    }
+    table tr th {
+        font-weight: bold;
+        border: 1px solid #cccccc;
+        text-align: left;
+        margin: 0;
+        padding: 6px 13px;
+    }
+    table tr td {
+        border: 1px solid #cccccc;
+        text-align: left;
+        margin: 0;
+        padding: 6px 13px;
+    }
+    table tr th :first-child, table tr td :first-child {
+        margin-top: 0;
+    }
+    table tr th :last-child, table tr td :last-child {
+        margin-bottom: 0;
+    }
+}
