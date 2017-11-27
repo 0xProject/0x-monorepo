@@ -5,6 +5,7 @@ const publishRelease = require('publish-release');
 
 const publishReleaseAsync = promisify(publishRelease);
 const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS;
+const generatedDocsDirectoryName = 'generated_docs';
 
 module.exports = {
     getLatestTagAndVersionAsync: function(subPackageName) {
@@ -48,4 +49,5 @@ module.exports = {
         const releaseName = subPackageName + ' v' + version;
         return releaseName;
     },
+    generatedDocsDirectoryName,
 };
