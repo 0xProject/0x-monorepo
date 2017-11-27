@@ -434,7 +434,7 @@ describe('TokenWrapper', () => {
         let tokenAddress: string;
         let tokenTransferProxyAddress: string;
         const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: BlockParamLiteral.Earliest,
+            fromBlock: 0,
             toBlock: BlockParamLiteral.Latest,
         };
         let txHash: string;

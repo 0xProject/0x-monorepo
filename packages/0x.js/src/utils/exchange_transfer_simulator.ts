@@ -41,8 +41,8 @@ export class ExchangeTransferSimulator {
         const errMsg = ERR_MSG_MAPPING[failureReason][tradeSide][transferType];
         throw new Error(errMsg);
     }
-    constructor(token: TokenWrapper) {
-        this.store = new BalanceAndProxyAllowanceLazyStore(token);
+    constructor(token: TokenWrapper, defaultBlock: BlockParamLiteral) {
+        this.store = new BalanceAndProxyAllowanceLazyStore(token, defaultBlock);
         this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS = token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     }
     /**

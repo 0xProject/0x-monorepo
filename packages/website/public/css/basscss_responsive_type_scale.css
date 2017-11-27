@@ -1,0 +1,35 @@
+/* Basscss Responsive Type Scale */
+/* Modified by Fabio Berger to include xs prefix */
+
+@media (max-width: 52em) { /* Modified by Fabio Berger to max-width from min-width */
+  .sm-h00 { font-size: 4rem }
+  .sm-h0 { font-size: 3rem }
+  .sm-h1 { font-size: 2rem }
+  .sm-h2 { font-size: 1.5rem }
+  .sm-h3 { font-size: 1.25rem }
+  .sm-h4 { font-size: 1rem }
+  .sm-h5 { font-size: .875rem }
+  .sm-h6 { font-size: .75rem }
+}
+
+@media (min-width: 52em) {
+  .md-h00 { font-size: 4rem }
+  .md-h0 { font-size: 3rem }
+  .md-h1 { font-size: 2rem }
+  .md-h2 { font-size: 1.5rem }
+  .md-h3 { font-size: 1.25rem }
+  .md-h4 { font-size: 1rem }
+  .md-h5 { font-size: .875rem }
+  .md-h6 { font-size: .75rem }
+}
+
+@media (min-width: 64em) {
+  .lg-h00 { font-size: 4rem }
+  .lg-h0 { font-size: 3rem }
+  .lg-h1 { font-size: 2rem }
+  .lg-h2 { font-size: 1.5rem }
+  .lg-h3 { font-size: 1.25rem }
+  .lg-h4 { font-size: 1rem }
+  .lg-h5 { font-size: .875rem }
+  .lg-h6 { font-size: .75rem }
+}

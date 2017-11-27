@@ -185,16 +185,12 @@ describe('OrderStateWatcher', () => {
                 const orderHash = ZeroEx.getOrderHashHex(signedOrder);
                 zeroEx.orderStateWatcher.addOrder(signedOrder);
 
-                let eventCount = 0;
                 const callback = reportCallbackErrors(done)((orderState: OrderState) => {
-                    eventCount++;
                     expect(orderState.isValid).to.be.false();
                     const invalidOrderState = orderState as OrderStateInvalid;
                     expect(invalidOrderState.orderHash).to.be.equal(orderHash);
                     expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderRemainingFillAmountZero);
-                    if (eventCount === 2) {
-                        done();
-                    }
+                    done();
                 });
                 zeroEx.orderStateWatcher.subscribe(callback);
 
@@ -217,9 +213,7 @@ describe('OrderStateWatcher', () => {
                 const orderHash = ZeroEx.getOrderHashHex(signedOrder);
                 zeroEx.orderStateWatcher.addOrder(signedOrder);
 
-                let eventCount = 0;
                 const callback = reportCallbackErrors(done)((orderState: OrderState) => {
-                    eventCount++;
                     expect(orderState.isValid).to.be.true();
                     const validOrderState = orderState as OrderStateValid;
                     expect(validOrderState.orderHash).to.be.equal(orderHash);
@@ -231,9 +225,7 @@ describe('OrderStateWatcher', () => {
                     expect(orderRelevantState.remainingFillableTakerTokenAmount).to.be.bignumber.equal(
                         remainingFillable);
                     expect(orderRelevantState.makerBalance).to.be.bignumber.equal(remainingMakerBalance);
-                    if (eventCount === 2) {
-                        done();
-                    }
+                    done();
                 });
                 zeroEx.orderStateWatcher.subscribe(callback);
                 const shouldThrowOnInsufficientBalanceOrAllowance = true;
@@ -272,9 +264,7 @@ describe('OrderStateWatcher', () => {
                     const fillAmountInBaseUnits = ZeroEx.toBaseUnitAmount(new BigNumber(2), decimals);
                     const orderHash = ZeroEx.getOrderHashHex(signedOrder);
                     zeroEx.orderStateWatcher.addOrder(signedOrder);
-                    let eventCount = 0;
                     const callback = reportCallbackErrors(done)((orderState: OrderState) => {
-                        eventCount++;
                         expect(orderState.isValid).to.be.true();
                         const validOrderState = orderState as OrderStateValid;
                         expect(validOrderState.orderHash).to.be.equal(orderHash);
@@ -283,9 +273,7 @@ describe('OrderStateWatcher', () => {
                             ZeroEx.toBaseUnitAmount(new BigNumber(16), decimals));
                         expect(orderRelevantState.remainingFillableTakerTokenAmount).to.be.bignumber.equal(
                             ZeroEx.toBaseUnitAmount(new BigNumber(8), decimals));
-                        if (eventCount === 2) {
-                            done();
-                        }
+                        done();
                     });
                     zeroEx.orderStateWatcher.subscribe(callback);
                     const shouldThrowOnInsufficientBalanceOrAllowance = true;

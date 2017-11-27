@@ -3,6 +3,11 @@ import * as chai from 'chai';
 
 import {ExchangeContractErrs, Token, ZeroEx} from '../src';
 import {TradeSide, TransferType} from '../src/types';
+import {chaiSetup} from './utils/chai_setup';
+import {web3Factory} from './utils/web3_factory';
+import {ZeroEx, ExchangeContractErrs, Token} from '../src';
+import {TradeSide, TransferType, BlockParamLiteral} from '../src/types';
+import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
 
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
@@ -43,7 +48,7 @@ describe('ExchangeTransferSimulator', () => {
     });
     describe('#transferFromAsync', () => {
         beforeEach(() => {
-            exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token);
+            exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token, BlockParamLiteral.Latest);
         });
         it('throws if the user doesn\'t have enough allowance', async () => {
             return expect(exchangeTransferSimulator.transferFromAsync(

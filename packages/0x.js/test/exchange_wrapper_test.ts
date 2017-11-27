@@ -760,7 +760,7 @@ describe('ExchangeWrapper', () => {
         const fillableAmount = new BigNumber(5);
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
         const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: BlockParamLiteral.Earliest,
+            fromBlock: 0,
             toBlock: BlockParamLiteral.Latest,
         };
         let txHash: string;

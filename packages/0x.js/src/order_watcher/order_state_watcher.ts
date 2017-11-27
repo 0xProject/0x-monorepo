@@ -76,7 +76,9 @@ export class OrderStateWatcher {
         this._web3Wrapper = web3Wrapper;
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs);
-        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(token);
+        this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+            token, BlockParamLiteral.Pending,
+        );
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
         this._orderStateUtils = new OrderStateUtils(
             this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,

@@ -8,6 +8,11 @@ import {TradeSide, TransferType} from '../src/types';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
 import {OrderValidationUtils} from '../src/utils/order_validation_utils';
 
+import {chaiSetup} from './utils/chai_setup';
+import {web3Factory} from './utils/web3_factory';
+import {ZeroEx, SignedOrder, Token, ExchangeContractErrs, ZeroExError} from '../src';
+import {TradeSide, TransferType, BlockParamLiteral} from '../src/types';
+import {TokenUtils} from './utils/token_utils';
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
@@ -221,7 +226,7 @@ describe('OrderValidation', () => {
             return Sinon.match((value: BigNumber) => value.eq(expected));
         };
         beforeEach('create exchangeTransferSimulator', async () => {
-            exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token);
+            exchangeTransferSimulator = new ExchangeTransferSimulator(zeroEx.token, BlockParamLiteral.Latest);
             transferFromAsync = Sinon.spy();
             exchangeTransferSimulator.transferFromAsync = transferFromAsync as any;
         });

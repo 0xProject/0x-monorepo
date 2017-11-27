@@ -63,4 +63,8 @@ lib/
 _bundles
 
 # generated documentation
-docs/
+generated_docs/
+
+TODO.md
+
+packages/website/public/bundle*
