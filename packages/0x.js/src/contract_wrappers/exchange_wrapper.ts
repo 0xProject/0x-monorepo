@@ -176,7 +176,9 @@ export class ExchangeWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
-        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
+                               SHOULD_VALIDATE_BY_DEFAULT :
+                               orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -235,7 +237,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
+                               SHOULD_VALIDATE_BY_DEFAULT :
+                               orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -312,7 +316,9 @@ export class ExchangeWrapper extends ContractWrapper {
                                        ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
+                               SHOULD_VALIDATE_BY_DEFAULT :
+                               orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -379,7 +385,9 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
+                               SHOULD_VALIDATE_BY_DEFAULT :
+                               orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -430,7 +438,9 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
+                               SHOULD_VALIDATE_BY_DEFAULT :
+                               orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
@@ -488,7 +498,9 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
+                               SHOULD_VALIDATE_BY_DEFAULT :
+                               orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const orderHash = utils.getOrderHashHex(order);
             const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
@@ -532,7 +544,9 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
-        const shouldValidate = orderTransactionOpts.shouldValidate || SHOULD_VALIDATE_BY_DEFAULT;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
+                               SHOULD_VALIDATE_BY_DEFAULT :
+                               orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             for (const orderCancellationRequest of orderCancellationRequests) {
                 const orderHash = utils.getOrderHashHex(orderCancellationRequest.order);
