@@ -153,7 +153,7 @@ export class ContractWrapper {
             // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
             if (!_.isUndefined(this._blockAndLogStreamer)) {
                 // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-                this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
+                await this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
             }
         } catch (err) {
             const filterTokens = _.keys(this._filterCallbacks);

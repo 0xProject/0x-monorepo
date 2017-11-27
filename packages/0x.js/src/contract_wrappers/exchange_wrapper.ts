@@ -5,6 +5,7 @@ import * as Web3 from 'web3';
 
 import {artifacts} from '../artifacts';
 import {
+    BlockParamLiteral,
     DecodedLogArgs,
     ECSignature,
     EventCallback,
@@ -26,10 +27,9 @@ import {
     OrderTransactionOpts,
     OrderValues,
     RawLog,
-    EventCallback,
-    ExchangeContractEventArgs,
-    DecodedLogArgs,
-    BlockParamLiteral,
+    SignedOrder,
+    SubscriptionOpts,
+    ValidateOrderFillableOpts,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {assert} from '../utils/assert';

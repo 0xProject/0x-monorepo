@@ -2,12 +2,7 @@ import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 
 import {ExchangeContractErrs, Token, ZeroEx} from '../src';
-import {TradeSide, TransferType} from '../src/types';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {ZeroEx, ExchangeContractErrs, Token} from '../src';
-import {TradeSide, TransferType, BlockParamLiteral} from '../src/types';
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {BlockParamLiteral, TradeSide, TransferType} from '../src/types';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
 
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
