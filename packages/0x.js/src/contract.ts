@@ -5,7 +5,7 @@ import * as Web3 from 'web3';
 
 import {AbiType} from './types';
 
-const GAS_MARGIN = 30000;
+const GAS_MARGIN = 300000;
 
 export class Contract implements Web3.ContractInstance {
     public address: string;
@@ -75,7 +75,6 @@ export class Contract implements Web3.ContractInstance {
                         const estimatedGas = await estimateGasAsync.apply(this.contract, [...args, txData]);
                         const gas = estimatedGas + GAS_MARGIN;
                         txData.gas = gas;
-                        console.log('withGas', txData);
                     } catch (err) {
                         reject(err);
                         return;
