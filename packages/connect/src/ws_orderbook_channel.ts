@@ -8,19 +8,10 @@ import {
     OrderbookChannelHandler,
     OrderbookChannelMessageTypes,
     OrderbookChannelSubscriptionOpts,
+    WebsocketClientEventType,
+    WebsocketConnectionEventType,
 } from './types';
 import {orderbookChannelMessageParsers} from './utils/orderbook_channel_message_parsers';
-
-enum ConnectionEventType {
-    Close = 'close',
-    Error = 'error',
-    Message = 'message',
-}
-
-enum ClientEventType {
-    Connect = 'connect',
-    ConnectFailed = 'connectFailed',
-}
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
@@ -63,13 +54,13 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             if (!_.isUndefined(error)) {
                 handler.onError(this, error);
             } else if (!_.isUndefined(connection) && connection.connected) {
-                connection.on(ConnectionEventType.Error, wsError => {
+                connection.on(WebsocketConnectionEventType.Error, wsError => {
                     handler.onError(this, wsError);
                 });
-                connection.on(ConnectionEventType.Close, () => {
+                connection.on(WebsocketConnectionEventType.Close, () => {
                     handler.onClose(this);
                 });
-                connection.on(ConnectionEventType.Message, message => {
+                connection.on(WebsocketConnectionEventType.Message, message => {
                     this._handleWebSocketMessage(message, handler);
                 });
                 connection.sendUTF(JSON.stringify(subscribeMessage));
@@ -88,11 +79,11 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         if (!_.isUndefined(this.connectionIfExists) && this.connectionIfExists.connected) {
             callback(undefined, this.connectionIfExists);
         } else {
-            this.client.on(ClientEventType.Connect, connection => {
+            this.client.on(WebsocketClientEventType.Connect, connection => {
                 this.connectionIfExists = connection;
                 callback(undefined, this.connectionIfExists);
             });
-            this.client.on(ClientEventType.ConnectFailed, error => {
+            this.client.on(WebsocketClientEventType.ConnectFailed, error => {
                 callback(error, undefined);
             });
             this.client.connect(this.apiEndpointUrl);

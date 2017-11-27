@@ -9,6 +9,8 @@ import {
     Client,
     FeesRequest,
     FeesResponse,
+    HttpRequestOptions,
+    HttpRequestType,
     OrderbookRequest,
     OrderbookResponse,
     OrdersRequest,
@@ -22,16 +24,6 @@ import {typeConverters} from './utils/type_converters';
 BigNumber.config({
     EXPONENTIAL_AT: 1000,
 });
-
-interface RequestOptions {
-    params?: object;
-    payload?: object;
-}
-
-enum RequestType {
-    Get = 'GET',
-    Post = 'POST',
-}
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
@@ -61,7 +53,7 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const tokenPairs = await this._requestAsync('/token_pairs', RequestType.Get, requestOpts);
+        const tokenPairs = await this._requestAsync('/token_pairs', HttpRequestType.Get, requestOpts);
         assert.doesConformToSchema(
             'tokenPairs', tokenPairs, schemas.relayerApiTokenPairsResponseSchema);
         _.each(tokenPairs, (tokenPair: object) => {
@@ -86,7 +78,7 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const orders = await this._requestAsync(`/orders`, RequestType.Get, requestOpts);
+        const orders = await this._requestAsync(`/orders`, HttpRequestType.Get, requestOpts);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         _.each(orders, (order: object) => typeConverters.convertOrderStringFieldsToBigNumber(order));
         return orders;
@@ -98,7 +90,7 @@ export class HttpClient implements Client {
      */
     public async getOrderAsync(orderHash: string): Promise<SignedOrder> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        const order = await this._requestAsync(`/order/${orderHash}`, RequestType.Get);
+        const order = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get);
         assert.doesConformToSchema('order', order, schemas.signedOrderSchema);
         typeConverters.convertOrderStringFieldsToBigNumber(order);
         return order;
@@ -113,7 +105,7 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const orderBook = await this._requestAsync('/orderbook', RequestType.Get, requestOpts);
+        const orderBook = await this._requestAsync('/orderbook', HttpRequestType.Get, requestOpts);
         assert.doesConformToSchema('orderBook', orderBook, schemas.relayerApiOrderBookResponseSchema);
         typeConverters.convertOrderbookStringFieldsToBigNumber(orderBook);
         return orderBook;
@@ -134,7 +126,7 @@ export class HttpClient implements Client {
         const requestOpts = {
             payload: request,
         };
-        const fees = await this._requestAsync('/fees', RequestType.Post, requestOpts);
+        const fees = await this._requestAsync('/fees', HttpRequestType.Post, requestOpts);
         assert.doesConformToSchema('fees', fees, schemas.relayerApiFeesResponseSchema);
         typeConverters.convertStringsFieldsToBigNumbers(fees, ['makerFee', 'takerFee']);
         return fees;
@@ -148,9 +140,10 @@ export class HttpClient implements Client {
         const requestOpts = {
             payload: signedOrder,
         };
-        await this._requestAsync('/order', RequestType.Post, requestOpts);
+        await this._requestAsync('/order', HttpRequestType.Post, requestOpts);
     }
-    private async _requestAsync(path: string, requestType: RequestType, requestOptions?: RequestOptions): Promise<any> {
+    private async _requestAsync(path: string, requestType: HttpRequestType,
+                                requestOptions?: HttpRequestOptions): Promise<any> {
         const params = _.get(requestOptions, 'params');
         const payload = _.get(requestOptions, 'payload');
         let query = '';
