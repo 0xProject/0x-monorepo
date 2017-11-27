@@ -145,8 +145,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                     className="flex pb1 mb2"
                     style={{borderBottom: '1px solid #f0f4f7'}}
                 >
-                    <div className="col lg-col-1 md-col-1 sm-hide xs-hide" />
-                    <div className="col lg-col-3 md-col-3 sm-col-12 col-12">
+                    <div className="pl2 col lg-col-4 md-col-4 sm-col-12 col-12">
                         <div className="bold">
                             {parameter.name}
                         </div>

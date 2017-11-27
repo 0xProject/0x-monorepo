@@ -8,10 +8,12 @@ interface SourceLinkProps {
     version: string;
 }
 
+const SUB_PKG = '0x.js';
+
 export function SourceLink(props: SourceLinkProps) {
-    const source = props.source;
-    const githubUrl = constants.GITHUB_0X_JS_URL;
-    const sourceCodeUrl = `${githubUrl}/blob/v${props.version}/${source.fileName}#L${source.line}`;
+    const src = props.source;
+    const url = constants.GITHUB_0X_JS_URL;
+    const sourceCodeUrl = `${url}/blob/${SUB_PKG}%40${props.version}/packages/${SUB_PKG}/${src.fileName}#L${src.line}`;
     return (
         <div className="pt2" style={{fontSize: 14}}>
             <a
