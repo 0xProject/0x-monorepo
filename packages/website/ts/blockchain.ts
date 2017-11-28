@@ -217,7 +217,7 @@ export class Blockchain {
                 this.web3Wrapper.destroy();
                 const shouldPollUserAddress = false;
                 this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, this.networkId, shouldPollUserAddress);
-                await this.zeroEx.setProviderAsync(provider);
+                this.zeroEx.setProvider(provider, networkId);
                 await this.postInstantiationOrUpdatingProviderZeroExAsync();
                 break;
             }
@@ -229,7 +229,7 @@ export class Blockchain {
                 provider = this.cachedProvider;
                 const shouldPollUserAddress = true;
                 this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, this.networkId, shouldPollUserAddress);
-                await this.zeroEx.setProviderAsync(provider);
+                this.zeroEx.setProvider(provider, this.networkId);
                 await this.postInstantiationOrUpdatingProviderZeroExAsync();
                 delete this.ledgerSubProvider;
                 delete this.cachedProvider;
@@ -612,7 +612,7 @@ export class Blockchain {
         return tokenByAddress;
     }
     private async onPageLoadInitFireAndForgetAsync() {
-        await this.onPageLoadAsync(); // wait for page to load
+        await Blockchain.onPageLoadAsync(); // wait for page to load
 
         // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
         // order to properly instantiate the web3Wrapper. Since we must use the async call, we cannot
@@ -630,8 +630,10 @@ export class Blockchain {
             }
         }
 
-        const provider = await this.getProviderAsync(injectedWeb3, networkId);
-        this.zeroEx = new ZeroEx(provider);
+        const provider = await Blockchain.getProviderAsync(injectedWeb3, networkId);
+        this.zeroEx = new ZeroEx(provider, {
+            networkId,
+        });
         this.updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
         this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, networkId, shouldPollUserAddress);
@@ -641,12 +643,12 @@ export class Blockchain {
     // of the ZeroEx instance.
     private async postInstantiationOrUpdatingProviderZeroExAsync() {
         utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        this.exchangeAddress = await this.zeroEx.exchange.getContractAddressAsync();
+        this.exchangeAddress = await this.zeroEx.exchange.getContractAddress();
     }
     private updateProviderName(injectedWeb3: Web3) {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
         const providerName = doesInjectedWeb3Exist ?
-                             this.getNameGivenProvider(injectedWeb3.currentProvider) :
+                             Blockchain.getNameGivenProvider(injectedWeb3.currentProvider) :
                              constants.PUBLIC_PROVIDER_NAME;
         this.dispatcher.updateInjectedProviderName(providerName);
     }

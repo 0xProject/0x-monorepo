@@ -680,7 +680,7 @@ describe('ExchangeWrapper', () => {
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerAmountInBaseUnits);
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
+        it('Outstanding subscriptions are cancelled when zeroEx.setProvider called', (done: DoneCallback) => {
             (async () => {
 
                 const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {

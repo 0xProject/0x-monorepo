@@ -398,7 +398,7 @@ describe('TokenWrapper', () => {
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
+        it('Outstanding subscriptions are cancelled when zeroEx.setProvider called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
