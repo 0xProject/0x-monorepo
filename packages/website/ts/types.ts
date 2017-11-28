@@ -662,6 +662,7 @@ export enum WebsitePaths {
     About = '/about',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
+    Connect = '/docs/connect',
 }
 
 export interface DocsMenu {
