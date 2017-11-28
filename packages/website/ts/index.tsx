@@ -88,15 +88,6 @@ const LazySmartContractsDocumentation = createLazyComponent(
     ),
 );
 
-const docs = class Documentation extends
-    React.Component<any, any> {
-        public render() {
-            return (
-                <div>hlwkdjaeljdflajfesli</div>
-            );
-        }
-    };
-
 const store: ReduxStore<State> = createStore(reducer);
 render(
     <Router>
