@@ -1,17 +1,21 @@
-import {JSONRPCPayload} from '../types';
+import {JSONRPCPayload} from '../../../src/types';
 
 /*
  * This class implements the web3-provider-engine subprovider interface and returns
- * that the provider has no addresses when queried.
+ * the constant gas estimate when queried.
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
-export class EmptyWalletSubProvider {
+export class FakeGasEstimateProvider {
+    private constantGasAmount: number;
+    constructor(constantGasAmount: number) {
+        this.constantGasAmount = constantGasAmount;
+    }
     // This method needs to be here to satisfy the interface but linter wants it to be static.
     // tslint:disable-next-line:prefer-function-over-method
     public handleRequest(payload: JSONRPCPayload, next: () => void, end: (err: Error|null, result: any) => void) {
         switch (payload.method) {
-            case 'eth_accounts':
-                end(null, []);
+            case 'eth_estimateGas':
+                end(null, this.constantGasAmount);
                 return;
 
             default:

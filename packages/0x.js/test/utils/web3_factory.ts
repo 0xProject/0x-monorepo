@@ -7,7 +7,8 @@ import * as Web3 from 'web3';
 import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import {EmptyWalletSubProvider} from '../../src/subproviders/empty_wallet_subprovider';
+import {EmptyWalletSubProvider} from './subproviders/empty_wallet_subprovider';
+import {FakeGasEstimateProvider} from './subproviders/fake_gas_estimate_subprovider';
 
 import {constants} from './constants';
 
@@ -24,6 +25,7 @@ export const web3Factory = {
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubProvider());
         }
+        provider.addProvider(new FakeGasEstimateProvider(constants.GAS_ESTIMATE));
         provider.addProvider(new RpcSubprovider({
             rpcUrl,
         }));

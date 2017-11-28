@@ -58,7 +58,7 @@ export class Contract implements Web3.ContractInstance {
             const promise = new Promise(async (resolve, reject) => {
                 const lastArg = args[args.length - 1];
                 let txData: Partial<Web3.TxData> = {};
-                if (this.isTxData(lastArg)) {
+                if (!_.isUndefined(lastArg) && this.isTxData(lastArg)) {
                     txData = args.pop();
                 }
                 // Gas amount sourced with the following priorities:
