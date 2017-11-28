@@ -71,7 +71,7 @@ export class OrderStateWatcher {
     private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
     private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
     private _cleanupJobInterval: number;
-    private _cleanupJobIntervalId: NodeJS.Timer;
+    private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
     constructor(
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, token: TokenWrapper, exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
@@ -146,7 +146,7 @@ export class OrderStateWatcher {
         this._callbackIfExists = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
         this._expirationWatcher.subscribe(this._onOrderExpired.bind(this));
-        this._cleanupJobIntervalId = intervalUtils.setAsyncExcludingInterval(
+        this._cleanupJobIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             this._cleanupAsync.bind(this), this._cleanupJobInterval,
         );
     }
@@ -154,7 +154,7 @@ export class OrderStateWatcher {
      * Ends an orderStateWatcher subscription.
      */
     public unsubscribe(): void {
-        if (_.isUndefined(this._callbackIfExists)) {
+        if (_.isUndefined(this._callbackIfExists) || _.isUndefined(this._cleanupJobIntervalIdIfExists)) {
             throw new Error(ZeroExError.SubscriptionNotFound);
         }
         this._balanceAndProxyAllowanceLazyStore.deleteAll();
@@ -162,7 +162,7 @@ export class OrderStateWatcher {
         delete this._callbackIfExists;
         this._eventWatcher.unsubscribe();
         this._expirationWatcher.unsubscribe();
-        intervalUtils.clearAsyncExcludingInterval(this._cleanupJobIntervalId);
+        intervalUtils.clearAsyncExcludingInterval(this._cleanupJobIntervalIdIfExists);
     }
     private async _cleanupAsync(): Promise<void> {
         for (const orderHash of _.keys(this._orderByOrderHash)) {
