@@ -335,6 +335,7 @@ export class Documentation extends
                         version={this.props.docsVersion}
                         source={property.source}
                         baseUrl={this.props.docsInfo.packageUrl}
+                        subPackageName={this.props.docsInfo.subPackageName}
                     />
                 }
                 {property.comment &&

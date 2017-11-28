@@ -13,6 +13,7 @@ import {
 export class DocsInfo {
     public packageName: string;
     public packageUrl: string;
+    public subPackageName?: string;
     public websitePath: string;
     public docsJsonRoot: string;
     public menu: DocsMenu;
@@ -22,6 +23,7 @@ export class DocsInfo {
     constructor(config: DocsInfoConfig) {
         this.packageName = config.packageName;
         this.packageUrl = config.packageUrl;
+        this.subPackageName = config.subPackageName;
         this.websitePath = config.websitePath;
         this.docsJsonRoot = config.docsJsonRoot;
         this.sections = config.sections;
