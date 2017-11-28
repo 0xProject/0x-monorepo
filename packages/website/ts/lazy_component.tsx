@@ -56,6 +56,9 @@ export const createLazyComponent = (componentName: string, lazyImport: () => Pro
         const reactComponentPromise = (async (): Promise<React.ComponentClass<any>> => {
             const mod = await lazyImport();
             const component = mod[componentName];
+            if (_.isUndefined(component)) {
+                throw new Error(`Did not find exported component: ${componentName}`);
+            }
             return component;
         })();
         return (

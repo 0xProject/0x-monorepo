@@ -1,6 +1,14 @@
 import compareVersions = require('compare-versions');
 import * as _ from 'lodash';
-import {DocsInfoConfig, DocsMenu, SectionsMap} from 'ts/types';
+import {
+    DocAgnosticFormat,
+    DocsInfoConfig,
+    DocsMenu,
+    DoxityDocObj,
+    MenuSubsectionsBySection,
+    SectionsMap,
+    TypeDocNode,
+} from 'ts/types';
 
 export class DocsInfo {
     public packageName: string;
@@ -48,5 +56,50 @@ export class DocsInfo {
             }
         });
         return finalMenu;
+    }
+    public getMenuSubsectionsBySection(docAgnosticFormat?: DocAgnosticFormat): MenuSubsectionsBySection {
+        const menuSubsectionsBySection = {} as MenuSubsectionsBySection;
+        if (_.isUndefined(docAgnosticFormat)) {
+            return menuSubsectionsBySection;
+        }
+
+        const docSections = _.keys(this.sections);
+        _.each(docSections, sectionName => {
+            const docSection = docAgnosticFormat[sectionName];
+            if (_.isUndefined(docSection)) {
+                return; // no-op
+            }
+
+            if (!_.isUndefined(this.sections.types) && sectionName === this.sections.types) {
+                const sortedTypesNames = _.sortBy(docSection.types, 'name');
+                const typeNames = _.map(sortedTypesNames, t => t.name);
+                menuSubsectionsBySection[sectionName] = typeNames;
+            } else {
+                let eventNames: string[] = [];
+                if (!_.isUndefined(docSection.events)) {
+                    const sortedEventNames = _.sortBy(docSection.events, 'name');
+                    eventNames = _.map(sortedEventNames, m => m.name);
+                }
+                const sortedMethodNames = _.sortBy(docSection.methods, 'name');
+                const methodNames = _.map(sortedMethodNames, m => m.name);
+                menuSubsectionsBySection[sectionName] = [...methodNames, ...eventNames];
+            }
+        });
+        return menuSubsectionsBySection;
+    }
+    public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat) {
+        if (_.isUndefined(this.sections.types)) {
+            return {};
+        }
+
+        const typeDocSection = docAgnosticFormat[this.sections.types];
+        const typeDefinitionByName = _.keyBy(typeDocSection.types, 'name');
+        return typeDefinitionByName;
+    }
+    public isVisibleConstructor(sectionName: string): boolean {
+        return _.includes(this.docsInfo.visibleConstructors, sectionName);
+    }
+    public convertToDocAgnosticFormat(docObj: DoxityDocObj|TypeDocNode): DocAgnosticFormat {
+        return this.docsInfo.convertToDocAgnosticFormatFn(docObj, this);
     }
 }

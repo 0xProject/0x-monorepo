@@ -53,32 +53,7 @@ export const typeDocUtils = {
         }
         return undefined;
     },
-    getMenuSubsectionsBySection(
-        sections: SectionsMap, docAgnosticFormat?: DocAgnosticFormat,
-    ): MenuSubsectionsBySection {
-        const menuSubsectionsBySection = {} as MenuSubsectionsBySection;
-        if (_.isUndefined(docAgnosticFormat)) {
-            return menuSubsectionsBySection;
-        }
-
-        const docSections = _.keys(sections);
-        _.each(docSections, sectionName => {
-            const docSection = docAgnosticFormat[sectionName];
-            if (_.isUndefined(docSection)) {
-                return; // no-op
-            }
-
-            if (!_.isUndefined(sections.types) && sectionName === sections.types) {
-                const typeNames = _.map(docSection.types, t => t.name);
-                menuSubsectionsBySection[sectionName] = typeNames;
-            } else {
-                const methodNames = _.map(docSection.methods, m => m.name);
-                menuSubsectionsBySection[sectionName] = methodNames;
-            }
-        });
-        return menuSubsectionsBySection;
-    },
-    convertToDocAgnosticFormat(docsInfo: DocsInfo, typeDocJson: TypeDocNode): DocAgnosticFormat {
+    convertToDocAgnosticFormat(typeDocJson: TypeDocNode, docsInfo: DocsInfo): DocAgnosticFormat {
         const subMenus = _.values(docsInfo.getMenu());
         const orderedSectionNames = _.flatten(subMenus);
         const docAgnosticFormat: DocAgnosticFormat = {};

@@ -680,6 +680,8 @@ export interface DocsInfoConfig {
   menu: DocsMenu;
   sections: SectionsMap;
   sectionNameToMarkdown: {[sectionName: string]: string};
+  visibleConstructors: string[];
+  convertToDocAgnosticFormatFn: (docObj: DoxityDocObj|TypeDocNode, docsInfo?: any) => DocAgnosticFormat;
   publicTypes?: string[];
   sectionNameToModulePath?: {[sectionName: string]: string[]};
   menuSubsectionToVersionWhenIntroduced?: {[sectionName: string]: string};

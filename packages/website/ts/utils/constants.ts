@@ -33,7 +33,6 @@ export const constants = {
     FEE_RECIPIENT_ADDRESS: '0x0000000000000000000000000000000000000000',
     FIREFOX_U2F_ADDON: 'https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/',
     GITHUB_URL: 'https://github.com/0xProject',
-    GITHUB_CONTRACTS_URL: 'https://github.com/0xProject/contracts',
     GITHUB_WIKI_URL: 'https://github.com/0xProject/wiki',
     HTTP_NO_CONTENT_STATUS_CODE: 204,
     ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY: 'didAcceptPortalDisclaimer',
