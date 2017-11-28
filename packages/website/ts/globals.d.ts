@@ -126,7 +126,7 @@ declare function isMobile(): boolean;
 declare module 'is-mobile' {
     export = isMobile;
 }
-
+// tslint:disable:max-classes-per-file
 // web3-provider-engine declarations
 declare class Subprovider {}
 declare module 'web3-provider-engine/subproviders/subprovider' {
@@ -148,7 +148,9 @@ declare module 'web3-provider-engine/subproviders/hooked-wallet' {
 
 declare interface Artifact {
     abi: any;
-    networks: {[networkId: number]: {
-        address: string;
-    }};
+    networks: {
+        [networkId: number]: {
+            address: string;
+        };
+    };
 }
