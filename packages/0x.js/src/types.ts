@@ -406,11 +406,13 @@ export interface JSONRPCPayload {
  * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Defaults: 200
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
  * of an orders expiration. Defaults: 0
+ * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Defaults: 1h
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;
     eventPollingIntervalMs?: number;
     expirationMarginMs?: number;
+    cleanupJobIntervalMs?: number;
 }
 
 /*
