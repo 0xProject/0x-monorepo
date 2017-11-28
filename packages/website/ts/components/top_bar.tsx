@@ -34,7 +34,7 @@ interface TopBarProps {
     menu?: DocsMenu;
     menuSubsectionsBySection?: MenuSubsectionsBySection;
     shouldFullWidth?: boolean;
-    docPath?: string;
+    docsInfo?: DocsInfo;
     style?: React.CSSProperties;
     isNightVersion?: boolean;
 }
@@ -110,6 +110,13 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 className="text-decoration-none"
             >
                 <MenuItem style={{fontSize: styles.menuItem.fontSize}} primaryText="Smart Contracts" />
+            </Link>,
+            <Link
+                key="subMenuItem-0xconnect"
+                to={WebsitePaths.Connect}
+                className="text-decoration-none"
+            >
+                <MenuItem style={{fontSize: styles.menuItem.fontSize}} primaryText="0x Connect" />
             </Link>,
             <a
                 key="subMenuItem-standard-relayer-api"
@@ -235,6 +242,11 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         <MenuItem className="py2">0x.js Docs</MenuItem>
                     </Link>
                 }
+                {!this.isViewingConnectDocs() &&
+                    <Link to={WebsitePaths.Connect} className="text-decoration-none">
+                        <MenuItem className="py2">0x Connect Docs</MenuItem>
+                    </Link>
+                }
                 {!this.isViewingSmartContractsDocs() &&
                     <Link to={WebsitePaths.SmartContracts} className="text-decoration-none">
                         <MenuItem className="py2">Smart Contract Docs</MenuItem>
@@ -274,11 +286,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         );
     }
     private renderDocsMenu() {
-        if (!this.isViewing0xjsDocs() && !this.isViewingSmartContractsDocs() || _.isUndefined(this.props.menu)) {
+        if (!this.isViewing0xjsDocs() && !this.isViewingSmartContractsDocs() && !this.isViewingConnectDocs()
+            ||  _.isUndefined(this.props.menu)) {
             return;
         }
 
-        const sectionTitle = this.isViewing0xjsDocs() ? '0x.js Docs' : 'Smart contract Docs';
+        const sectionTitle = `${this.props.docsInfo.packageName} Docs`;
         return (
             <div className="lg-hide md-hide">
                 <div className="pl1 py1" style={{backgroundColor: SECTION_HEADER_COLOR}}>{sectionTitle}</div>
@@ -288,7 +301,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this.onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
-                    docPath={this.props.docPath}
+                    docPath={this.props.docsInfo.websitePath}
                     versions={this.props.availableDocVersions}
                 />
             </div>
@@ -362,6 +375,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private isViewing0xjsDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs);
     }
+    private isViewingConnectDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.Connect);
+    }
     private isViewingSmartContractsDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.SmartContracts);
     }
@@ -370,6 +386,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     }
     private shouldDisplayBottomBar() {
         return this.isViewingWiki() || this.isViewing0xjsDocs() || this.isViewingFAQ() ||
-               this.isViewingSmartContractsDocs();
+               this.isViewingSmartContractsDocs() || this.isViewingConnectDocs();
     }
 }

@@ -120,7 +120,7 @@ export class Documentation extends
                     menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     shouldFullWidth={true}
-                    docPath={this.props.docsInfo.websitePath}
+                    docsInfo={this.props.docsInfo}
                 />
                 {_.isUndefined(this.state.docAgnosticFormat) ?
                     <div
