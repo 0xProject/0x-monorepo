@@ -194,6 +194,7 @@ export const constants = {
         'MethodOpts',
         'ValidateOrderFillableOpts',
         'OrderTransactionOpts',
+        'TransactionOpts',
         'ContractEventArg',
         'LogEvent',
         'LogEntry',

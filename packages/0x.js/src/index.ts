@@ -32,6 +32,7 @@ export {
     LogWithDecodedArgs,
     MethodOpts,
     OrderTransactionOpts,
+    TransactionOpts,
     FilterObject,
     LogEvent,
     DecodedLogEvent,

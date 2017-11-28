@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.27.1 - _November 28, 2017_
+------------------------
+    * Export `TransactionOpts` type
+
 v0.27.0 - _November 28, 2017_
 ------------------------
     * Make `ZeroExConfig` required parameter of `ZeroEx` constructor (#233)
