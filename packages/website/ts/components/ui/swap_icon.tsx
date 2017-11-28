@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
+import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {constants} from 'ts/utils/constants';
-import {colors} from 'material-ui/styles';
 
 interface SwapIconProps {
     swapTokensFn: () => void;

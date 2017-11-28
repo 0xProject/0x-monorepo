@@ -1,25 +1,25 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import {
-    Link as ScrollLink,
-    animateScroll,
-} from 'react-scroll';
-import {Link} from 'react-router-dom';
-import {HashLink} from 'react-router-hash-link';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import {colors} from 'material-ui/styles';
+import * as React from 'react';
+import {Link} from 'react-router-dom';
+import {HashLink} from 'react-router-hash-link';
+import {
+    animateScroll,
+    Link as ScrollLink,
+} from 'react-scroll';
 import ReactTooltip = require('react-tooltip');
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
-import {Identicon} from 'ts/components/ui/identicon';
-import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
 import {PortalMenu} from 'ts/components/portal_menu';
-import {Styles, TypeDocNode, MenuSubsectionsBySection, WebsitePaths, Docs} from 'ts/types';
 import {TopBarMenuItem} from 'ts/components/top_bar_menu_item';
 import {DropDownMenuItem} from 'ts/components/ui/drop_down_menu_item';
+import {Identicon} from 'ts/components/ui/identicon';
+import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
+import {Docs, MenuSubsectionsBySection, Styles, TypeDocNode, WebsitePaths} from 'ts/types';
+import {configs} from 'ts/utils/configs';
+import {constants} from 'ts/utils/constants';
+import {typeDocUtils} from 'ts/utils/typedoc_utils';
 
 const CUSTOM_DARK_GRAY = '#231F20';
 const SECTION_HEADER_COLOR = 'rgb(234, 234, 234)';
@@ -135,8 +135,15 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </a>,
         ];
         const bottomBorderStyle = this.shouldDisplayBottomBar() ? styles.bottomBar : {};
-        const fullWithClassNames = isFullWidthPage ? 'pr4' : '';
+        const fullWidthClasses = isFullWidthPage ? 'pr4' : '';
         const logoUrl = isNightVersion ? '/images/protocol_logo_white.png' : '/images/protocol_logo_black.png';
+        const menuClasses = `col col-${isFullWidthPage ? '4' : '5'} ${fullWidthClasses} lg-pr0 md-pr2 sm-hide xs-hide`;
+        const menuIconStyle = {
+            fontSize: 25,
+            color: isNightVersion ? 'white' : 'black',
+            cursor: 'pointer',
+            paddingTop: 16,
+        };
         return (
             <div style={{...styles.topBar, ...bottomBorderStyle, ...this.props.style}} className="pb1">
                 <div className={parentClassNames}>
@@ -148,7 +155,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     <div className={`col col-${isFullWidthPage ? '8' : '9'} lg-hide md-hide`} />
                     <div className={`col col-${isFullWidthPage ? '6' : '5'} sm-hide xs-hide`} />
                     {!this.isViewingPortal() &&
-                        <div className={`col col-${isFullWidthPage ? '4' : '5'} ${fullWithClassNames} lg-pr0 md-pr2 sm-hide xs-hide`}>
+                        <div
+                            className={menuClasses}
+                        >
                             <div className="flex justify-between">
                                 <DropDownMenuItem
                                     title="Developers"
@@ -188,9 +197,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         <div
                             className={`col ${isFullWidthPage ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}
                         >
-                            <div
-                                style={{fontSize: 25, color: isNightVersion ? 'white' : 'black', cursor: 'pointer', paddingTop: 16}}
-                            >
+                            <div style={menuIconStyle}>
                                 <i
                                     className="zmdi zmdi-menu"
                                     onClick={this.onMenuButtonClick.bind(this)}

@@ -1,15 +1,15 @@
-import * as _ from 'lodash';
-import * as React from 'react';
 import BigNumber from 'bignumber.js';
-import {utils} from 'ts/utils/utils';
-import {colors} from 'material-ui/styles';
-import {constants} from 'ts/utils/constants';
-import {configs} from 'ts/utils/configs';
-import TextField from 'material-ui/TextField';
+import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
+import {colors} from 'material-ui/styles';
+import TextField from 'material-ui/TextField';
+import * as React from 'react';
 import {CopyIcon} from 'ts/components/ui/copy_icon';
-import {SideToAssetToken, SignatureData, Order, TokenByAddress, WebsitePaths} from 'ts/types';
+import {Order, SideToAssetToken, SignatureData, TokenByAddress, WebsitePaths} from 'ts/types';
+import {configs} from 'ts/utils/configs';
+import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
+import {utils} from 'ts/utils/utils';
 
 interface OrderJSONProps {
     exchangeContractIfExists: string;
@@ -36,6 +36,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
         this.state = {
             shareLink: '',
         };
+        // tslint:disable-next-line:no-floating-promises
         this.setShareLinkAsync();
     }
     public render() {
@@ -149,7 +150,7 @@ You can see and fill it here: ${this.state.shareLink}`);
             await errorReporter.reportAsync(new Error(`Bitly returned non-200: ${JSON.stringify(response)}`));
             return '';
         }
-        return (bodyObj as any).data.url;
+        return (bodyObj).data.url;
     }
     private getOrderUrl() {
         const order = utils.generateOrder(this.props.networkId, this.props.exchangeContractIfExists,

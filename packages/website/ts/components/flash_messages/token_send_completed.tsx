@@ -1,7 +1,7 @@
-import * as React from 'react';
-import * as _ from 'lodash';
-import BigNumber from 'bignumber.js';
 import {ZeroEx} from '0x.js';
+import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
+import * as React from 'react';
 import {Token} from 'ts/types';
 import {utils} from 'ts/utils/utils';
 

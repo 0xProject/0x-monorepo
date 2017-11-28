@@ -1,10 +1,10 @@
-import * as React from 'react';
+import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
-import {utils} from 'ts/utils/utils';
-import BigNumber from 'bignumber.js';
 import * as moment from 'moment';
+import * as React from 'react';
+import {utils} from 'ts/utils/utils';
 
 interface ExpirationInputProps {
     orderExpiryTimestamp: BigNumber;

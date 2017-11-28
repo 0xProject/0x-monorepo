@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 import Snackbar from 'material-ui/Snackbar';
+import * as React from 'react';
 import {Dispatcher} from 'ts/redux/dispatcher';
 
 const SHOW_DURATION_MS = 4000;

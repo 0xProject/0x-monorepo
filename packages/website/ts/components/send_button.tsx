@@ -1,15 +1,15 @@
-import * as _ from 'lodash';
 import {ZeroEx} from '0x.js';
-import * as React from 'react';
 import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
-import {BlockchainCallErrs, Token, TokenState} from 'ts/types';
-import {SendDialog} from 'ts/components/dialogs/send_dialog';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {errorReporter} from 'ts/utils/error_reporter';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
+import {SendDialog} from 'ts/components/dialogs/send_dialog';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {BlockchainCallErrs, Token, TokenState} from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import {errorReporter} from 'ts/utils/error_reporter';
+import {utils} from 'ts/utils/utils';
 
 interface SendButtonProps {
     token: Token;

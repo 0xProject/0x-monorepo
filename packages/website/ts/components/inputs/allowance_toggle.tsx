@@ -1,12 +1,12 @@
-import * as _ from 'lodash';
-import * as React from 'react';
 import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {Dispatcher} from 'ts/redux/dispatcher';
-import {Token, TokenState, BalanceErrs} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import {BalanceErrs, Token, TokenState} from 'ts/types';
 import {errorReporter} from 'ts/utils/error_reporter';
+import {utils} from 'ts/utils/utils';
 
 const DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1);
 

@@ -1,26 +1,26 @@
+import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {Store as ReduxStore, Dispatch} from 'redux';
-import {State} from 'ts/redux/reducer';
-import {constants} from 'ts/utils/constants';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {
-    Side,
-    HashData,
-    TokenByAddress,
-    BlockchainErrs,
-    Fill,
-    Order,
-    ScreenWidths,
-    TokenStateByAddress,
-} from 'ts/types';
+import {Dispatch, Store as ReduxStore} from 'redux';
 import {
     Portal as PortalComponent,
     PortalAllProps as PortalComponentAllProps,
     PortalPassedProps as PortalComponentPassedProps,
 } from 'ts/components/portal';
-import BigNumber from 'bignumber.js';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {State} from 'ts/redux/reducer';
+import {
+    BlockchainErrs,
+    Fill,
+    HashData,
+    Order,
+    ScreenWidths,
+    Side,
+    TokenByAddress,
+    TokenStateByAddress,
+} from 'ts/types';
+import {constants} from 'ts/utils/constants';
 
 interface MapStateToProps {
     blockchainErr: BlockchainErrs;

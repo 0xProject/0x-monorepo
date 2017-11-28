@@ -1,16 +1,16 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
-import {KindString, CustomType, TypeDocTypes, CustomTypeChild, HeaderSizes} from 'ts/types';
-import {Type} from 'ts/pages/documentation/type';
-import {Interface} from 'ts/pages/documentation/interface';
+import {Comment} from 'ts/pages/documentation/comment';
 import {CustomEnum} from 'ts/pages/documentation/custom_enum';
 import {Enum} from 'ts/pages/documentation/enum';
+import {Interface} from 'ts/pages/documentation/interface';
 import {MethodSignature} from 'ts/pages/documentation/method_signature';
+import {Type} from 'ts/pages/documentation/type';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
-import {Comment} from 'ts/pages/documentation/comment';
+import {CustomType, CustomTypeChild, HeaderSizes, KindString, TypeDocTypes} from 'ts/types';
+import {constants} from 'ts/utils/constants';
 import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import {utils} from 'ts/utils/utils';
 
 const KEYWORD_COLOR = '#a81ca6';
 

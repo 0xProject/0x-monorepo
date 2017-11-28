@@ -1,46 +1,46 @@
+import findVersions = require('find-versions');
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
+import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
-import findVersions = require('find-versions');
-import semverSort = require('semver-sort');
-import {colors} from 'material-ui/styles';
-import CircularProgress from 'material-ui/CircularProgress';
 import {
     scroller,
 } from 'react-scroll';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {
-    SmartContractsDocSections,
-    Styles,
-    DoxityDocObj,
-    TypeDefinitionByName,
-    DocAgnosticFormat,
-    SolidityMethod,
-    Property,
-    CustomType,
-    MenuSubsectionsBySection,
-    Event,
-    Docs,
-    AddressByContractName,
-    Networks,
-    EtherscanLinkSuffixes,
-} from 'ts/types';
+import semverSort = require('semver-sort');
 import {TopBar} from 'ts/components/top_bar';
-import {utils} from 'ts/utils/utils';
-import {docUtils} from 'ts/utils/doc_utils';
-import {constants} from 'ts/utils/constants';
+import {Badge} from 'ts/components/ui/badge';
+import {Comment} from 'ts/pages/documentation/comment';
+import {EventDefinition} from 'ts/pages/documentation/event_definition';
 import {MethodBlock} from 'ts/pages/documentation/method_block';
 import {SourceLink} from 'ts/pages/documentation/source_link';
 import {Type} from 'ts/pages/documentation/type';
 import {TypeDefinition} from 'ts/pages/documentation/type_definition';
-import {MarkdownSection} from 'ts/pages/shared/markdown_section';
-import {Comment} from 'ts/pages/documentation/comment';
-import {Badge} from 'ts/components/ui/badge';
-import {EventDefinition} from 'ts/pages/documentation/event_definition';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
-import {SectionHeader} from 'ts/pages/shared/section_header';
+import {MarkdownSection} from 'ts/pages/shared/markdown_section';
 import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
+import {SectionHeader} from 'ts/pages/shared/section_header';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {
+    AddressByContractName,
+    CustomType,
+    DocAgnosticFormat,
+    Docs,
+    DoxityDocObj,
+    EtherscanLinkSuffixes,
+    Event,
+    MenuSubsectionsBySection,
+    Networks,
+    Property,
+    SmartContractsDocSections,
+    SolidityMethod,
+    Styles,
+    TypeDefinitionByName,
+} from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import {docUtils} from 'ts/utils/doc_utils';
 import {doxityUtils} from 'ts/utils/doxity_utils';
+import {utils} from 'ts/utils/utils';
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/smart_contracts/introduction');
 /* tslint:enable:no-var-requires */
@@ -104,6 +104,7 @@ export class SmartContractsDocumentation extends
         const lastSegment = pathName.substr(pathName.lastIndexOf('/') + 1);
         const versions = findVersions(lastSegment);
         const preferredVersionIfExists = versions.length > 0 ? versions[0] : undefined;
+        // tslint:disable-next-line:no-floating-promises
         this.fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
     }
     public render() {

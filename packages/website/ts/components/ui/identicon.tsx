@@ -1,7 +1,7 @@
+import blockies = require('blockies');
 import * as _ from 'lodash';
 import * as React from 'react';
 import {constants} from 'ts/utils/constants';
-import blockies = require('blockies');
 
 interface IdenticonProps {
     address: string;

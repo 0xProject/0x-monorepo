@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
 import {colors} from 'material-ui/styles';
+import * as React from 'react';
+import * as CopyToClipboard from 'react-copy-to-clipboard';
+import * as ReactDOM from 'react-dom';
 import ReactTooltip = require('react-tooltip');
 
 interface CopyIconProps {

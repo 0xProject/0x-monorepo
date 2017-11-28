@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import Paper from 'material-ui/Paper';
 import Divider from 'material-ui/Divider';
-import {utils} from 'ts/utils/utils';
-import {Fill, TokenByAddress} from 'ts/types';
+import Paper from 'material-ui/Paper';
+import * as React from 'react';
 import {TradeHistoryItem} from 'ts/components/trade_history/trade_history_item';
 import {tradeHistoryStorage} from 'ts/local_storage/trade_history_storage';
+import {Fill, TokenByAddress} from 'ts/types';
+import {utils} from 'ts/utils/utils';
 
 const FILL_POLLING_INTERVAL = 1000;
 

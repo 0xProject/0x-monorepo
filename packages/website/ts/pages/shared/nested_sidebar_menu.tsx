@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import {colors} from 'material-ui/styles';
-import {utils} from 'ts/utils/utils';
-import {constants} from 'ts/utils/constants';
-import {VersionDropDown} from 'ts/pages/shared/version_drop_down';
-import {ZeroExJsDocSections, Styles, MenuSubsectionsBySection, Docs} from 'ts/types';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import * as React from 'react';
 import {Link as ScrollLink} from 'react-scroll';
+import {VersionDropDown} from 'ts/pages/shared/version_drop_down';
+import {Docs, MenuSubsectionsBySection, Styles, ZeroExJsDocSections} from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import {utils} from 'ts/utils/utils';
 
 interface NestedSidebarMenuProps {
     topLevelMenu: {[topLevel: string]: string[]};

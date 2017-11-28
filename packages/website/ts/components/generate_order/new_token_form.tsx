@@ -1,15 +1,15 @@
+import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import * as React from 'react';
 import {colors} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
-import {constants} from 'ts/utils/constants';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
-import {Token, TokenState, TokenByAddress, AlertTypes} from 'ts/types';
 import {AddressInput} from 'ts/components/inputs/address_input';
 import {Alert} from 'ts/components/ui/alert';
 import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
 import {RequiredLabel} from 'ts/components/ui/required_label';
-import BigNumber from 'bignumber.js';
+import {AlertTypes, Token, TokenByAddress, TokenState} from 'ts/types';
+import {constants} from 'ts/utils/constants';
 
 interface NewTokenFormProps {
     blockchain: Blockchain;

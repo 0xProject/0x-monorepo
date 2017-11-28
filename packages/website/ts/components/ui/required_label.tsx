@@ -1,5 +1,5 @@
-import * as React from 'react';
 import {colors} from 'material-ui/styles';
+import * as React from 'react';
 
 export interface RequiredLabelProps {
     label: string|React.ReactNode;

@@ -1,6 +1,6 @@
-import * as React from 'react';
-import {colors} from 'material-ui/styles';
 import CircularProgress from 'material-ui/CircularProgress';
+import {colors} from 'material-ui/styles';
+import * as React from 'react';
 
 export interface SimpleLoadingProps {
     message: string;

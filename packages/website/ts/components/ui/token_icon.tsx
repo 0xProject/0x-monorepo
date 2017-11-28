@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Token} from 'ts/types';
 import {Identicon} from 'ts/components/ui/identicon';
+import {Token} from 'ts/types';
 
 interface TokenIconProps {
     token: Token;

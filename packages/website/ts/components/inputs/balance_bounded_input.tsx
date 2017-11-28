@@ -1,12 +1,12 @@
-import * as _ from 'lodash';
-import * as React from 'react';
 import BigNumber from 'bignumber.js';
-import {ValidatedBigNumberCallback, InputErrMsg, WebsitePaths} from 'ts/types';
-import TextField from 'material-ui/TextField';
-import {RequiredLabel} from 'ts/components/ui/required_label';
+import * as _ from 'lodash';
 import {colors} from 'material-ui/styles';
-import {utils} from 'ts/utils/utils';
+import TextField from 'material-ui/TextField';
+import * as React from 'react';
 import {Link} from 'react-router-dom';
+import {RequiredLabel} from 'ts/components/ui/required_label';
+import {InputErrMsg, ValidatedBigNumberCallback, WebsitePaths} from 'ts/types';
+import {utils} from 'ts/utils/utils';
 
 interface BalanceBoundedInputProps {
     label?: string;

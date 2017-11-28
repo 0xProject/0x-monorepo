@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
+import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
-import {colors} from 'material-ui/styles';
 import {EtherscanLinkSuffixes} from 'ts/types';
 import {utils} from 'ts/utils/utils';
 

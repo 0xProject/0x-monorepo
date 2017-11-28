@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import {EnumValue, TypeDocNode} from 'ts/types';
 import {utils} from 'ts/utils/utils';
-import {TypeDocNode, EnumValue} from 'ts/types';
 
 const STRING_ENUM_CODE_PREFIX = ' strEnum(';
 

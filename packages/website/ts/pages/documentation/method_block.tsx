@@ -1,23 +1,23 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import * as ReactMarkdown from 'react-markdown';
 import {Chip} from 'material-ui/Chip';
 import {colors} from 'material-ui/styles';
+import * as React from 'react';
+import * as ReactMarkdown from 'react-markdown';
+import {Comment} from 'ts/pages/documentation/comment';
+import {MethodSignature} from 'ts/pages/documentation/method_signature';
+import {SourceLink} from 'ts/pages/documentation/source_link';
+import {AnchorTitle} from 'ts/pages/shared/anchor_title';
 import {
-    TypeDocNode,
+    HeaderSizes,
+    Parameter,
+    SolidityMethod,
     Styles,
     TypeDefinitionByName,
+    TypeDocNode,
     TypescriptMethod,
-    SolidityMethod,
-    Parameter,
-    HeaderSizes,
 } from 'ts/types';
-import {utils} from 'ts/utils/utils';
-import {SourceLink} from 'ts/pages/documentation/source_link';
-import {MethodSignature} from 'ts/pages/documentation/method_signature';
-import {AnchorTitle} from 'ts/pages/shared/anchor_title';
-import {Comment} from 'ts/pages/documentation/comment';
 import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import {utils} from 'ts/utils/utils';
 
 interface MethodBlockProps {
     method: SolidityMethod|TypescriptMethod;

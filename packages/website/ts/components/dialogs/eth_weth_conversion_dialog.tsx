@@ -1,12 +1,12 @@
-import * as React from 'react';
+import BigNumber from 'bignumber.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import RadioButtonGroup from 'material-ui/RadioButton/RadioButtonGroup';
 import RadioButton from 'material-ui/RadioButton';
-import {Side, Token, TokenState} from 'ts/types';
-import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
+import RadioButtonGroup from 'material-ui/RadioButton/RadioButtonGroup';
+import * as React from 'react';
 import {EthAmountInput} from 'ts/components/inputs/eth_amount_input';
-import BigNumber from 'bignumber.js';
+import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
+import {Side, Token, TokenState} from 'ts/types';
 
 interface EthWethConversionDialogProps {
     onComplete: (direction: Side, value: BigNumber) => void;

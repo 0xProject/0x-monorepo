@@ -1,37 +1,37 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-import {ZeroEx, Order} from '0x.js';
+import {Order, ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
-import {Blockchain} from 'ts/blockchain';
-import Divider from 'material-ui/Divider';
+import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
+import Divider from 'material-ui/Divider';
 import {colors} from 'material-ui/styles';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {utils} from 'ts/utils/utils';
-import {SchemaValidator} from 'ts/schemas/validator';
-import {orderSchema} from 'ts/schemas/order_schema';
-import {Alert} from 'ts/components/ui/alert';
-import {OrderJSON} from 'ts/components/order_json';
-import {IdenticonAddressInput} from 'ts/components/inputs/identicon_address_input';
-import {TokenInput} from 'ts/components/inputs/token_input';
-import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
-import {HashInput} from 'ts/components/inputs/hash_input';
+import * as React from 'react';
+import {Blockchain} from 'ts/blockchain';
 import {ExpirationInput} from 'ts/components/inputs/expiration_input';
-import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
-import {errorReporter} from 'ts/utils/error_reporter';
+import {HashInput} from 'ts/components/inputs/hash_input';
+import {IdenticonAddressInput} from 'ts/components/inputs/identicon_address_input';
+import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
+import {TokenInput} from 'ts/components/inputs/token_input';
+import {OrderJSON} from 'ts/components/order_json';
+import {Alert} from 'ts/components/ui/alert';
 import {HelpTooltip} from 'ts/components/ui/help_tooltip';
+import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
 import {SwapIcon} from 'ts/components/ui/swap_icon';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {orderSchema} from 'ts/schemas/order_schema';
+import {SchemaValidator} from 'ts/schemas/validator';
 import {
+    AlertTypes,
+    BlockchainErrs,
+    HashData,
     Side,
     SideToAssetToken,
     SignatureData,
-    HashData,
+    Token,
     TokenByAddress,
     TokenStateByAddress,
-    BlockchainErrs,
-    Token,
-    AlertTypes,
 } from 'ts/types';
+import {errorReporter} from 'ts/utils/error_reporter';
+import {utils} from 'ts/utils/utils';
 
 enum SigningState {
     UNSIGNED,

@@ -5,6 +5,7 @@
   "rules": {
       "no-implicit-dependencies": false,
       "no-object-literal-type-assertion": false,
-      "completed-docs": false
+      "completed-docs": false,
+      "prefer-function-over-method": false
   }
 }

@@ -1,44 +1,44 @@
-import * as _ from 'lodash';
-import * as React from 'react';
+import {Order as ZeroExOrder, ZeroEx} from '0x.js';
 import * as accounting from 'accounting';
-import {Link} from 'react-router-dom';
-import {ZeroEx, Order as ZeroExOrder} from '0x.js';
-import * as moment from 'moment';
 import BigNumber from 'bignumber.js';
-import Paper from 'material-ui/Paper';
-import {Card, CardText, CardHeader} from 'material-ui/Card';
+import * as _ from 'lodash';
+import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
-import TextField from 'material-ui/TextField';
+import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
-import {utils} from 'ts/utils/utils';
-import {constants} from 'ts/utils/constants';
+import TextField from 'material-ui/TextField';
+import * as moment from 'moment';
+import * as React from 'react';
+import {Link} from 'react-router-dom';
+import {Blockchain} from 'ts/blockchain';
+import {TrackTokenConfirmationDialog} from 'ts/components/dialogs/track_token_confirmation_dialog';
+import {FillOrderJSON} from 'ts/components/fill_order_json';
+import {FillWarningDialog} from 'ts/components/fill_warning_dialog';
+import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
+import {Alert} from 'ts/components/ui/alert';
+import {EthereumAddress} from 'ts/components/ui/ethereum_address';
+import {Identicon} from 'ts/components/ui/identicon';
+import {VisualOrder} from 'ts/components/visual_order';
+import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {orderSchema} from 'ts/schemas/order_schema';
+import {SchemaValidator} from 'ts/schemas/validator';
 import {
+    AlertTypes,
+    BlockchainErrs,
+    ContractResponse,
+    ExchangeContractErrs,
+    Order,
+    OrderToken,
     Side,
+    Token,
     TokenByAddress,
     TokenStateByAddress,
-    Order,
-    BlockchainErrs,
-    OrderToken,
-    Token,
-    ExchangeContractErrs,
-    AlertTypes,
-    ContractResponse,
     WebsitePaths,
 } from 'ts/types';
-import {Alert} from 'ts/components/ui/alert';
-import {Identicon} from 'ts/components/ui/identicon';
-import {EthereumAddress} from 'ts/components/ui/ethereum_address';
-import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
-import {FillWarningDialog} from 'ts/components/fill_warning_dialog';
-import {FillOrderJSON} from 'ts/components/fill_order_json';
-import {VisualOrder} from 'ts/components/visual_order';
-import {SchemaValidator} from 'ts/schemas/validator';
-import {orderSchema} from 'ts/schemas/order_schema';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {Blockchain} from 'ts/blockchain';
+import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
-import {TrackTokenConfirmationDialog} from 'ts/components/dialogs/track_token_confirmation_dialog';
+import {utils} from 'ts/utils/utils';
 
 const CUSTOM_LIGHT_GRAY = '#BBBBBB';
 
@@ -100,6 +100,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     }
     public componentWillMount() {
         if (!_.isEmpty(this.state.orderJSON)) {
+            // tslint:disable-next-line:no-floating-promises
             this.validateFillOrderFireAndForgetAsync(this.state.orderJSON);
         }
     }
@@ -351,6 +352,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 isFillWarningDialogOpen: true,
             });
         } else {
+            // tslint:disable-next-line:no-floating-promises
             this.onFillOrderClickFireAndForgetAsync();
         }
     }
@@ -359,6 +361,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             isFillWarningDialogOpen: false,
         });
         if (!didUserCancel) {
+            // tslint:disable-next-line:no-floating-promises
             this.onFillOrderClickFireAndForgetAsync();
         }
     }
@@ -371,6 +374,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             didOrderValidationRun: _.isEmpty(orderJSON) && _.isEmpty(this.state.orderJSONErrMsg),
             didFillOrderSucceed: false,
         });
+        // tslint:disable-next-line:no-floating-promises
         this.validateFillOrderFireAndForgetAsync(orderJSON);
     }
     private async checkForUntrackedTokensAndAskToAdd() {
@@ -563,7 +567,9 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 await this.props.blockchain.validateFillOrderThrowIfInvalidAsync(
                     signedOrder, takerFillAmount, this.props.userAddress);
             } catch (err) {
-                globalErrMsg = this.props.blockchain.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.taker.address);
+                globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(
+                    err.message, parsedOrder.taker.address,
+                );
             }
         }
         if (!_.isEmpty(globalErrMsg)) {
@@ -652,7 +658,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             await this.props.blockchain.validateCancelOrderThrowIfInvalidAsync(
                 signedOrder, availableTakerTokenAmount);
         } catch (err) {
-            globalErrMsg = this.props.blockchain.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.taker.address);
+            globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.taker.address);
         }
         if (!_.isEmpty(globalErrMsg)) {
             this.setState({
@@ -711,4 +717,4 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             tokensToTrack: [],
         });
     }
-}
+} // tslint:disable:max-file-line-count

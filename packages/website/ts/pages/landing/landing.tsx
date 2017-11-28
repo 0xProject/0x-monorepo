@@ -1,15 +1,15 @@
 import * as _ from 'lodash';
+import RaisedButton from 'material-ui/RaisedButton';
+import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import {Link} from 'react-router-dom';
-import RaisedButton from 'material-ui/RaisedButton';
-import {colors} from 'material-ui/styles';
+import {Footer} from 'ts/components/footer';
+import {TopBar} from 'ts/components/top_bar';
+import {ScreenWidths, Styles, WebsitePaths} from 'ts/types';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
-import {Styles, WebsitePaths, ScreenWidths} from 'ts/types';
 import {utils} from 'ts/utils/utils';
-import {TopBar} from 'ts/components/top_bar';
-import {Footer} from 'ts/components/footer';
 
 interface BoxContent {
     title: string;
@@ -840,4 +840,4 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             });
         }
     }
-}
+} // tslint:disable:max-file-line-count

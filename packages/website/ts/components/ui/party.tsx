@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
+import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
-import {colors} from 'material-ui/styles';
+import {EthereumAddress} from 'ts/components/ui/ethereum_address';
 import {Identicon} from 'ts/components/ui/identicon';
 import {EtherscanLinkSuffixes} from 'ts/types';
 import {utils} from 'ts/utils/utils';
-import {EthereumAddress} from 'ts/components/ui/ethereum_address';
 
 const MIN_ADDRESS_WIDTH = 60;
 const IMAGE_DIMENSION = 100;

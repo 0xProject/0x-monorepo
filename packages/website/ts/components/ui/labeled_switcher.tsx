@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 import {colors} from 'material-ui/styles';
+import * as React from 'react';
 
 const CUSTOM_BLUE = '#63A6F1';
 
@@ -61,12 +61,9 @@ export class LabeledSwitcher extends React.Component<LabeledSwitcherProps, Label
         this.setState({
             isLeftSelected: isLeft,
         });
-        let didSucceed;
-        if (isLeft) {
-            didSucceed = await this.props.onLeftLabelClickAsync();
-        } else {
-            didSucceed = await this.props.onRightLabelClickAsync();
-        }
+        const didSucceed = isLeft ?
+                           await this.props.onLeftLabelClickAsync() :
+                           await this.props.onRightLabelClickAsync();
         if (!didSucceed) {
             this.setState({
                 isLeftSelected: !isLeft,

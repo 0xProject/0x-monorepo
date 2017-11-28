@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {CustomType, TypeDocTypes} from 'ts/types';
-import {Type} from 'ts/pages/documentation/type';
 import {MethodSignature} from 'ts/pages/documentation/method_signature';
+import {Type} from 'ts/pages/documentation/type';
+import {CustomType, TypeDocTypes} from 'ts/types';
 
 interface InterfaceProps {
     type: CustomType;

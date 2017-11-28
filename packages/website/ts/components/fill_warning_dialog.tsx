@@ -1,7 +1,7 @@
-import * as React from 'react';
-import {colors} from 'material-ui/styles';
-import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import {colors} from 'material-ui/styles';
+import * as React from 'react';
 
 interface FillWarningDialogProps {
     isOpen: boolean;
@@ -16,10 +16,12 @@ export function FillWarningDialog(props: FillWarningDialogProps) {
             titleStyle={{fontWeight: 100, color: colors.red500}}
             actions={[
                 <FlatButton
+                    key="fillWarningCancel"
                     label="Cancel"
                     onTouchTap={props.onToggleDialog.bind(this, didCancel)}
                 />,
                 <FlatButton
+                    key="fillWarningContinue"
                     label="Fill Order"
                     onTouchTap={props.onToggleDialog.bind(this, !didCancel)}
                 />,

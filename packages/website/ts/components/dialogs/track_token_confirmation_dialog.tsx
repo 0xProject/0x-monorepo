@@ -1,14 +1,14 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import {colors} from 'material-ui/styles';
-import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
-import {constants} from 'ts/utils/constants';
+import FlatButton from 'material-ui/FlatButton';
+import {colors} from 'material-ui/styles';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
-import {Dispatcher} from 'ts/redux/dispatcher';
 import {TrackTokenConfirmation} from 'ts/components/track_token_confirmation';
 import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
+import {Dispatcher} from 'ts/redux/dispatcher';
 import {Token, TokenByAddress} from 'ts/types';
+import {constants} from 'ts/utils/constants';
 
 interface TrackTokenConfirmationDialogProps {
     tokens: Token[];
@@ -41,10 +41,12 @@ export class TrackTokenConfirmationDialog extends
                 titleStyle={{fontWeight: 100}}
                 actions={[
                     <FlatButton
+                        key="trackNo"
                         label="No"
                         onTouchTap={this.onTrackConfirmationRespondedAsync.bind(this, false)}
                     />,
                     <FlatButton
+                        key="trackYes"
                         label="Yes"
                         onTouchTap={this.onTrackConfirmationRespondedAsync.bind(this, true)}
                     />,

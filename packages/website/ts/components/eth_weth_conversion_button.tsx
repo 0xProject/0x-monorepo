@@ -1,16 +1,15 @@
-import * as _ from 'lodash';
 import {ZeroEx} from '0x.js';
-import * as React from 'react';
 import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
-import {BlockchainCallErrs, TokenState} from 'ts/types';
-import {EthWethConversionDialog} from 'ts/components/dialogs/eth_weth_conversion_dialog';
-import {Side, Token} from 'ts/types';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {errorReporter} from 'ts/utils/error_reporter';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
+import {EthWethConversionDialog} from 'ts/components/dialogs/eth_weth_conversion_dialog';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {BlockchainCallErrs, Side, Token, TokenState} from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import {errorReporter} from 'ts/utils/error_reporter';
+import {utils} from 'ts/utils/utils';
 
 interface EthWethConversionButtonProps {
     ethToken: Token;

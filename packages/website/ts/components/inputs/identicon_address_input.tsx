@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 import {colors} from 'material-ui/styles';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
-import {Identicon} from 'ts/components/ui/identicon';
-import {RequiredLabel} from 'ts/components/ui/required_label';
 import {AddressInput} from 'ts/components/inputs/address_input';
+import {Identicon} from 'ts/components/ui/identicon';
 import {InputLabel} from 'ts/components/ui/input_label';
+import {RequiredLabel} from 'ts/components/ui/required_label';
 
 interface IdenticonAddressInputProps {
     initialAddress: string;

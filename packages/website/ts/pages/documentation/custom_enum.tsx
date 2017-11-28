@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {utils} from 'ts/utils/utils';
 import {CustomType} from 'ts/types';
+import {utils} from 'ts/utils/utils';
 
 const STRING_ENUM_CODE_PREFIX = ' strEnum(';
 

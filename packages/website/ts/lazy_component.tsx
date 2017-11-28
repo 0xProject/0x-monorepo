@@ -1,5 +1,5 @@
-import * as React from 'react';
 import * as _ from 'lodash';
+import * as React from 'react';
 
 interface LazyComponentProps {
     reactComponentPromise: Promise<React.ComponentClass<any>>;
@@ -22,10 +22,12 @@ export class LazyComponent extends React.Component<LazyComponentProps, LazyCompo
         };
     }
     public componentWillMount() {
+        // tslint:disable-next-line:no-floating-promises
         this.loadComponentFireAndForgetAsync(this.props);
     }
     public componentWillReceiveProps(nextProps: LazyComponentProps) {
         if (nextProps.reactComponentPromise !== this.props.reactComponentPromise) {
+            // tslint:disable-next-line:no-floating-promises
             this.loadComponentFireAndForgetAsync(nextProps);
         }
     }

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {Styles, HeaderSizes} from 'ts/types';
-import {utils} from 'ts/utils/utils';
-import {constants} from 'ts/utils/constants';
 import {Link as ScrollLink} from 'react-scroll';
+import {HeaderSizes, Styles} from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import {utils} from 'ts/utils/utils';
 
 const headerSizeToScrollOffset: {[headerSize: string]: number} = {
     h2: -20,
@@ -59,11 +59,7 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
     public render() {
         let opacity = 0;
         if (this.props.shouldShowAnchor) {
-            if (this.state.isHovering) {
-                opacity = 0.6;
-            } else {
-                opacity = 1;
-            }
+            opacity = this.state.isHovering ? 0.6 : 1;
         }
         return (
             <div className="relative flex" style={{...styles[this.props.headerSize], ...styles.headers}}>

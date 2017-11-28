@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {colors} from 'material-ui/styles';
-import {constants} from 'ts/utils/constants';
-import {configs} from 'ts/utils/configs';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {BlockchainErrs} from 'ts/types';
+import {configs} from 'ts/utils/configs';
+import {constants} from 'ts/utils/constants';
 
 interface BlockchainErrDialogProps {
     blockchain: Blockchain;
@@ -21,6 +21,7 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
     public render() {
         const dialogActions = [
             <FlatButton
+                key="blockchainErrOk"
                 label="Ok"
                 primary={true}
                 onTouchTap={this.props.toggleDialogFn.bind(this.props.toggleDialogFn, false)}

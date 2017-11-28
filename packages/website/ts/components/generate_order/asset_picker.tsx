@@ -1,26 +1,26 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import {colors} from 'material-ui/styles';
 import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import GridList from 'material-ui/GridList/GridList';
 import GridTile from 'material-ui/GridList/GridTile';
-import FlatButton from 'material-ui/FlatButton';
-import {utils} from 'ts/utils/utils';
+import {colors} from 'material-ui/styles';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {
-    Token,
-    AssetToken,
-    TokenByAddress,
-    Styles,
-    TokenState,
-    DialogConfigs,
-    TokenVisibility,
-} from 'ts/types';
 import {NewTokenForm} from 'ts/components/generate_order/new_token_form';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
 import {TrackTokenConfirmation} from 'ts/components/track_token_confirmation';
 import {TokenIcon} from 'ts/components/ui/token_icon';
+import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {
+    AssetToken,
+    DialogConfigs,
+    Styles,
+    Token,
+    TokenByAddress,
+    TokenState,
+    TokenVisibility,
+} from 'ts/types';
+import {utils} from 'ts/utils/utils';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;

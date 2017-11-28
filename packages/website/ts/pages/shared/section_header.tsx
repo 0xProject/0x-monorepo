@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {Element as ScrollElement} from 'react-scroll';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
-import {utils} from 'ts/utils/utils';
 import {HeaderSizes} from 'ts/types';
+import {utils} from 'ts/utils/utils';
 
 interface SectionHeaderProps {
     sectionName: string;

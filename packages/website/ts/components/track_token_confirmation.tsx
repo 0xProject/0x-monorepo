@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import {colors} from 'material-ui/styles';
-import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
-import {utils} from 'ts/utils/utils';
+import FlatButton from 'material-ui/FlatButton';
+import {colors} from 'material-ui/styles';
+import * as React from 'react';
 import {Party} from 'ts/components/ui/party';
 import {Token, TokenByAddress} from 'ts/types';
+import {utils} from 'ts/utils/utils';
 
 interface TrackTokenConfirmationProps {
     tokens: Token[];

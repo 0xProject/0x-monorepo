@@ -1,14 +1,14 @@
-import * as _ from 'lodash';
-import * as React from 'react';
+import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
-import * as ReactTooltip from 'react-tooltip';
-import * as moment from 'moment';
+import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import {colors} from 'material-ui/styles';
-import {ZeroEx} from '0x.js';
-import {TokenByAddress, Fill, Token, EtherscanLinkSuffixes} from 'ts/types';
-import {Party} from 'ts/components/ui/party';
+import * as moment from 'moment';
+import * as React from 'react';
+import * as ReactTooltip from 'react-tooltip';
 import {EtherScanIcon} from 'ts/components/ui/etherscan_icon';
+import {Party} from 'ts/components/ui/party';
+import {EtherscanLinkSuffixes, Fill, Token, TokenByAddress} from 'ts/types';
 
 const PRECISION = 5;
 const IDENTICON_DIAMETER = 40;

@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+import Popover from 'material-ui/Popover';
 import * as React from 'react';
+import {Link} from 'react-router-dom';
 import {
     Link as ScrollLink,
 } from 'react-scroll';
-import {Link} from 'react-router-dom';
-import Popover from 'material-ui/Popover';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
 import {Styles, WebsitePaths} from 'ts/types';
 
 const CHECK_CLOSE_POPOVER_INTERVAL_MS = 300;

@@ -1,8 +1,8 @@
-import * as _ from 'lodash';
-import * as React from 'react';
 import {isAddress} from 'ethereum-address';
-import TextField from 'material-ui/TextField';
+import * as _ from 'lodash';
 import {colors} from 'material-ui/styles';
+import TextField from 'material-ui/TextField';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {RequiredLabel} from 'ts/components/ui/required_label';
 

@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
+import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Link as ScrollLink} from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
-import {colors} from 'material-ui/styles';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
-import {constants} from 'ts/utils/constants';
-import {Type as TypeDef, TypeDocTypes, TypeDefinitionByName} from 'ts/types';
-import {utils} from 'ts/utils/utils';
 import {TypeDefinition} from 'ts/pages/documentation/type_definition';
+import {Type as TypeDef, TypeDefinitionByName, TypeDocTypes} from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import {utils} from 'ts/utils/utils';
 
 const BUILT_IN_TYPE_COLOR = '#e69d00';
 const STRING_LITERAL_COLOR = '#4da24b';

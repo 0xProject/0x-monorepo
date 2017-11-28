@@ -1,9 +1,9 @@
+import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
-import {ZeroEx} from '0x.js';
-import {ValidatedBigNumberCallback} from 'ts/types';
 import {BalanceBoundedInput} from 'ts/components/inputs/balance_bounded_input';
+import {ValidatedBigNumberCallback} from 'ts/types';
 import {constants} from 'ts/utils/constants';
 
 interface EthAmountInputProps {

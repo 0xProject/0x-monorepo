@@ -1,7 +1,7 @@
-import * as React from 'react';
-import {colors} from 'material-ui/styles';
-import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import {colors} from 'material-ui/styles';
+import * as React from 'react';
 import {constants} from 'ts/utils/constants';
 
 interface U2fNotSupportedDialogProps {
@@ -16,6 +16,7 @@ export function U2fNotSupportedDialog(props: U2fNotSupportedDialogProps) {
             titleStyle={{fontWeight: 100}}
             actions={[
                 <FlatButton
+                    key="u2fNo"
                     label="Ok"
                     onTouchTap={props.onToggleDialog.bind(this)}
                 />,

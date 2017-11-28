@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {HashLink} from 'react-router-hash-link';
-import {Styles, WebsitePaths} from 'ts/types';
 import {
   Link,
 } from 'react-router-dom';
+import {HashLink} from 'react-router-hash-link';
 import {
     Link as ScrollLink,
 } from 'react-scroll';
+import {Styles, WebsitePaths} from 'ts/types';
 import {constants} from 'ts/utils/constants';
 
 interface MenuItemsBySection {

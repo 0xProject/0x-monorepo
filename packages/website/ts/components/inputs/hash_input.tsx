@@ -1,8 +1,8 @@
+import {Order, ZeroEx} from '0x.js';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {ZeroEx, Order} from '0x.js';
-import {FakeTextField} from 'ts/components/ui/fake_text_field';
 import ReactTooltip = require('react-tooltip');
+import {Blockchain} from 'ts/blockchain';
+import {FakeTextField} from 'ts/components/ui/fake_text_field';
 import {HashData, Styles} from 'ts/types';
 import {constants} from 'ts/utils/constants';
 

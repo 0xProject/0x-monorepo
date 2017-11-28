@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
+import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {Styles} from 'ts/types';
 import {constants} from 'ts/utils/constants';
-import {colors} from 'material-ui/styles';
 
 interface MenuItemProps {
     to: string;

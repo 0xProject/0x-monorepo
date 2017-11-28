@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import {utils} from 'ts/utils/utils';
-import {Token} from 'ts/types';
-import {Blockchain} from 'ts/blockchain';
 import RaisedButton from 'material-ui/RaisedButton';
+import * as React from 'react';
+import {Blockchain} from 'ts/blockchain';
+import {Token} from 'ts/types';
+import {utils} from 'ts/utils/utils';
 
 const COMPLETE_STATE_SHOW_LENGTH_MS = 2000;
 
@@ -11,7 +11,7 @@ enum ButtonState {
   READY,
   LOADING,
   COMPLETE,
-};
+}
 
 interface LifeCycleRaisedButtonProps {
     isHidden?: boolean;
@@ -49,7 +49,7 @@ export class LifeCycleRaisedButton extends
         this.didUnmount = true;
     }
     public render() {
-        if (this.props.isHidden === true) {
+        if (this.props.isHidden) {
             return <span />;
         }
 
@@ -83,7 +83,7 @@ export class LifeCycleRaisedButton extends
         this.setState({
             buttonState: ButtonState.LOADING,
         });
-        const didSucceed = await this.props.onClickAsyncFn();
+        const didSucceed = this.props.onClickAsyncFn();
         if (this.didUnmount) {
             return; // noop since unmount called before async callback returned.
         }

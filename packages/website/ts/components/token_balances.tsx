@@ -1,53 +1,53 @@
-import * as _ from 'lodash';
-import * as React from 'react';
 import {ZeroEx} from '0x.js';
+import BigNumber from 'bignumber.js';
 import DharmaLoanFrame from 'dharma-loan-frame';
-import {colors} from 'material-ui/styles';
+import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import {colors} from 'material-ui/styles';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import {
     Table,
     TableBody,
     TableHeader,
-    TableRow,
     TableHeaderColumn,
+    TableRow,
     TableRowColumn,
 } from 'material-ui/Table';
-import ReactTooltip = require('react-tooltip');
-import BigNumber from 'bignumber.js';
-import firstBy = require('thenby');
 import QueryString = require('query-string');
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {
-    TokenByAddress,
-    TokenStateByAddress,
-    Token,
-    BlockchainErrs,
-    BalanceErrs,
-    Styles,
-    ScreenWidths,
-    EtherscanLinkSuffixes,
-    BlockchainCallErrs,
-    TokenVisibility,
-} from 'ts/types';
+import * as React from 'react';
+import ReactTooltip = require('react-tooltip');
+import firstBy = require('thenby');
 import {Blockchain} from 'ts/blockchain';
-import {utils} from 'ts/utils/utils';
-import {constants} from 'ts/utils/constants';
-import {configs} from 'ts/utils/configs';
-import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
-import {HelpTooltip} from 'ts/components/ui/help_tooltip';
-import {errorReporter} from 'ts/utils/error_reporter';
-import {AllowanceToggle} from 'ts/components/inputs/allowance_toggle';
 import {EthWethConversionButton} from 'ts/components/eth_weth_conversion_button';
-import {SendButton} from 'ts/components/send_button';
 import {AssetPicker} from 'ts/components/generate_order/asset_picker';
+import {AllowanceToggle} from 'ts/components/inputs/allowance_toggle';
+import {SendButton} from 'ts/components/send_button';
+import {HelpTooltip} from 'ts/components/ui/help_tooltip';
+import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
 import {TokenIcon} from 'ts/components/ui/token_icon';
 import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {
+    BalanceErrs,
+    BlockchainCallErrs,
+    BlockchainErrs,
+    EtherscanLinkSuffixes,
+    ScreenWidths,
+    Styles,
+    Token,
+    TokenByAddress,
+    TokenStateByAddress,
+    TokenVisibility,
+} from 'ts/types';
+import {configs} from 'ts/utils/configs';
+import {constants} from 'ts/utils/constants';
+import {errorReporter} from 'ts/utils/error_reporter';
+import {utils} from 'ts/utils/utils';
 
 const ETHER_ICON_PATH = '/images/ether.png';
 const ETHER_TOKEN_SYMBOL = 'WETH';
@@ -665,6 +665,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 isZRXSpinnerVisible: true,
                 currentZrxBalance: zrxTokenState.balance,
             });
+            // tslint:disable-next-line:no-floating-promises
             this.props.blockchain.pollTokenBalanceAsync(zrxToken);
         }
         return true;
@@ -696,4 +697,4 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isAddingToken: false,
         });
     }
-}
+} // tslint:disable:max-file-line-count

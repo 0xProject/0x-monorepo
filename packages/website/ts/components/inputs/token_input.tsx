@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 import Paper from 'material-ui/Paper';
 import {colors} from 'material-ui/styles';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {AssetToken, Side, TokenByAddress, BlockchainErrs, Token, TokenState} from 'ts/types';
 import {AssetPicker} from 'ts/components/generate_order/asset_picker';
 import {InputLabel} from 'ts/components/ui/input_label';
 import {TokenIcon} from 'ts/components/ui/token_icon';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {AssetToken, BlockchainErrs, Side, Token, TokenByAddress, TokenState} from 'ts/types';
 
 const TOKEN_ICON_DIMENSION = 80;
 

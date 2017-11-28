@@ -1,5 +1,5 @@
-import * as React from 'react';
 import {colors} from 'material-ui/styles';
+import * as React from 'react';
 import {AlertTypes} from 'ts/types';
 
 const CUSTOM_GREEN = 'rgb(137, 199, 116)';

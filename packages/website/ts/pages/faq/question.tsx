@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
+import * as React from 'react';
 
 export interface QuestionProps {
     prompt: string;

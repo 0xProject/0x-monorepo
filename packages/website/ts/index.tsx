@@ -1,24 +1,24 @@
 // Polyfills
 import 'whatwg-fetch';
 
+import BigNumber from 'bignumber.js';
+import {colors, getMuiTheme, MuiThemeProvider} from 'material-ui/styles';
 import * as React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
-import {createStore, Store as ReduxStore} from 'redux';
-import BigNumber from 'bignumber.js';
-import {constants} from 'ts/utils/constants';
-import {Landing} from 'ts/pages/landing/landing';
-import {FAQ} from 'ts/pages/faq/faq';
-import {About} from 'ts/pages/about/about';
-import {Wiki} from 'ts/pages/wiki/wiki';
-import {NotFound} from 'ts/pages/not_found';
-import {createLazyComponent} from 'ts/lazy_component';
-import {State, reducer} from 'ts/redux/reducer';
-import {colors, getMuiTheme, MuiThemeProvider} from 'material-ui/styles';
-import {Switch, BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
-import {tradeHistoryStorage} from 'ts/local_storage/trade_history_storage';
+import {BrowserRouter as Router, Link, Redirect, Route, Switch} from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
+import {createStore, Store as ReduxStore} from 'redux';
+import {createLazyComponent} from 'ts/lazy_component';
+import {tradeHistoryStorage} from 'ts/local_storage/trade_history_storage';
+import {About} from 'ts/pages/about/about';
+import {FAQ} from 'ts/pages/faq/faq';
+import {Landing} from 'ts/pages/landing/landing';
+import {NotFound} from 'ts/pages/not_found';
+import {Wiki} from 'ts/pages/wiki/wiki';
+import {reducer, State} from 'ts/redux/reducer';
 import {WebsitePaths} from 'ts/types';
+import {constants} from 'ts/utils/constants';
 injectTapEventPlugin();
 
 // By default BigNumber's `toString` method converts to exponential notation if the value has
@@ -75,15 +75,17 @@ const muiTheme = getMuiTheme({
 // At the same time webpack statically parses for System.import() to determine bundle chunk split points
 // so each lazy import needs it's own `System.import()` declaration.
 const LazyPortal = createLazyComponent(
-    'Portal', () => System.import<any>(/* webpackChunkName: "portal" */'ts/containers/portal'),
+    'Portal', async () => System.import<any>(/* webpackChunkName: "portal" */'ts/containers/portal'),
 );
 const LazyZeroExJSDocumentation = createLazyComponent(
     'ZeroExJSDocumentation',
-    () => System.import<any>(/* webpackChunkName: "zeroExDocs" */'ts/containers/zero_ex_js_documentation'),
+    async () => System.import<any>(/* webpackChunkName: "zeroExDocs" */'ts/containers/zero_ex_js_documentation'),
 );
 const LazySmartContractsDocumentation = createLazyComponent(
     'SmartContractsDocumentation',
-    () => System.import<any>(/* webpackChunkName: "smartContractDocs" */'ts/containers/smart_contracts_documentation'),
+    async () => System.import<any>(
+        /* webpackChunkName: "smartContractDocs" */'ts/containers/smart_contracts_documentation',
+    ),
 );
 
 const store: ReduxStore<State> = createStore(reducer);

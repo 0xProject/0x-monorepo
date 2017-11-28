@@ -1,17 +1,17 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import * as DocumentTitle from 'react-document-title';
 import RaisedButton from 'material-ui/RaisedButton';
 import {colors} from 'material-ui/styles';
-import {Styles, ProfileInfo} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import * as React from 'react';
+import * as DocumentTitle from 'react-document-title';
 import {Link} from 'react-router-dom';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
+import {Profile} from 'ts/pages/about/profile';
 import {Question} from 'ts/pages/faq/question';
+import {ProfileInfo, Styles} from 'ts/types';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
-import {Profile} from 'ts/pages/about/profile';
+import {utils} from 'ts/utils/utils';
 
 const CUSTOM_BACKGROUND_COLOR = '#F0F0F0';
 const CUSTOM_GRAY = '#4C4C4C';

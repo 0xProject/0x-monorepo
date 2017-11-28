@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
-import * as React from 'react';
-import * as DocumentTitle from 'react-document-title';
 import RaisedButton from 'material-ui/RaisedButton';
 import {colors} from 'material-ui/styles';
-import {Styles, FAQSection, FAQQuestion, WebsitePaths} from 'ts/types';
+import * as React from 'react';
+import * as DocumentTitle from 'react-document-title';
 import {Link} from 'react-router-dom';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
 import {Question} from 'ts/pages/faq/question';
+import {FAQQuestion, FAQSection, Styles, WebsitePaths} from 'ts/types';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 

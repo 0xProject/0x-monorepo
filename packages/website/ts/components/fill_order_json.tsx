@@ -1,13 +1,13 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-import BigNumber from 'bignumber.js';
 import {ZeroEx} from '0x.js';
+import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
-import {Side, TokenByAddress} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
+import {Side, TokenByAddress} from 'ts/types';
 import {constants} from 'ts/utils/constants';
+import {utils} from 'ts/utils/utils';
 
 interface FillOrderJSONProps {
     blockchain: Blockchain;

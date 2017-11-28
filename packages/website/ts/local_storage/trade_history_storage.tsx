@@ -1,10 +1,10 @@
+import BigNumber from 'bignumber.js';
+import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
+import {localStorage} from 'ts/local_storage/local_storage';
 import {Fill} from 'ts/types';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
-import {localStorage} from 'ts/local_storage/local_storage';
-import ethUtil = require('ethereumjs-util');
-import BigNumber from 'bignumber.js';
 
 const FILLS_KEY = 'fills';
 const FILLS_LATEST_BLOCK = 'fillsLatestBlock';

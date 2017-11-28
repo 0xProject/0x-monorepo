@@ -5,7 +5,7 @@
   "scripts": {
     "build": "NODE_ENV=production webpack; exit 0;",
     "clean": "shx rm -f public/bundle*",
-    "lint": "tslint --project . 'ts/**/*.ts'",
+    "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
     "dev": "webpack-dev-server --content-base public --https",
     "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../website/contracts; done;",
     "deploy_staging": "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",

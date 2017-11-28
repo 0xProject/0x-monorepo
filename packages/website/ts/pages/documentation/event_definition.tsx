@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
-import {Event, EventArg, HeaderSizes} from 'ts/types';
 import {Type} from 'ts/pages/documentation/type';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
+import {Event, EventArg, HeaderSizes} from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import {utils} from 'ts/utils/utils';
 
 const KEYWORD_COLOR = '#a81ca6';
 const CUSTOM_GREEN = 'rgb(77, 162, 75)';

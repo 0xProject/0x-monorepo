@@ -1,15 +1,15 @@
+import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {Store as ReduxStore, Dispatch} from 'redux';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
+import {Dispatch, Store as ReduxStore} from 'redux';
 import {Blockchain} from 'ts/blockchain';
 import {
     ZeroExJSDocumentation as ZeroExJSDocumentationComponent,
     ZeroExJSDocumentationAllProps,
 } from 'ts/pages/documentation/zero_ex_js_documentation';
-import BigNumber from 'bignumber.js';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {State} from 'ts/redux/reducer';
 
 interface ConnectedState {
     docsVersion: string;

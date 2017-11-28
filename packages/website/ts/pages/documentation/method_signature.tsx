@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {TypescriptMethod, SolidityMethod, TypeDefinitionByName, Parameter} from 'ts/types';
 import {Type} from 'ts/pages/documentation/type';
+import {Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod} from 'ts/types';
 
 interface MethodSignatureProps {
     method: TypescriptMethod|SolidityMethod;

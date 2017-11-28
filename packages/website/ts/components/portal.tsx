@@ -1,44 +1,44 @@
+import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import * as React from 'react';
-import * as DocumentTitle from 'react-document-title';
-import {Switch, Route} from 'react-router-dom';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
-import {utils} from 'ts/utils/utils';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import {colors} from 'material-ui/styles';
-import {GenerateOrderForm} from 'ts/containers/generate_order_form';
-import {TokenBalances} from 'ts/components/token_balances';
+import * as React from 'react';
+import * as DocumentTitle from 'react-document-title';
+import {Route, Switch} from 'react-router-dom';
+import {Blockchain} from 'ts/blockchain';
+import {BlockchainErrDialog} from 'ts/components/dialogs/blockchain_err_dialog';
 import {PortalDisclaimerDialog} from 'ts/components/dialogs/portal_disclaimer_dialog';
 import {FillOrder} from 'ts/components/fill_order';
-import {Blockchain} from 'ts/blockchain';
-import {SchemaValidator} from 'ts/schemas/validator';
-import {orderSchema} from 'ts/schemas/order_schema';
-import {localStorage} from 'ts/local_storage/local_storage';
+import {Footer} from 'ts/components/footer';
+import {PortalMenu} from 'ts/components/portal_menu';
+import {TokenBalances} from 'ts/components/token_balances';
+import {TopBar} from 'ts/components/top_bar';
 import {TradeHistory} from 'ts/components/trade_history/trade_history';
+import {FlashMessage} from 'ts/components/ui/flash_message';
+import {Loading} from 'ts/components/ui/loading';
+import {GenerateOrderForm} from 'ts/containers/generate_order_form';
+import {localStorage} from 'ts/local_storage/local_storage';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {State} from 'ts/redux/reducer';
+import {orderSchema} from 'ts/schemas/order_schema';
+import {SchemaValidator} from 'ts/schemas/validator';
 import {
-    HashData,
-    TokenByAddress,
     BlockchainErrs,
-    Order,
     Fill,
+    HashData,
+    Order,
+    ScreenWidths,
     Side,
     Styles,
-    ScreenWidths,
     Token,
+    TokenByAddress,
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
-import {TopBar} from 'ts/components/top_bar';
-import {Footer} from 'ts/components/footer';
-import {Loading} from 'ts/components/ui/loading';
-import {PortalMenu} from 'ts/components/portal_menu';
-import {BlockchainErrDialog} from 'ts/components/dialogs/blockchain_err_dialog';
-import BigNumber from 'bignumber.js';
-import {FlashMessage} from 'ts/components/ui/flash_message';
+import {configs} from 'ts/utils/configs';
+import {constants} from 'ts/utils/constants';
+import {utils} from 'ts/utils/utils';
 
 const THROTTLE_TIMEOUT = 100;
 
@@ -131,16 +131,19 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     }
     public componentWillReceiveProps(nextProps: PortalAllProps) {
         if (nextProps.networkId !== this.state.prevNetworkId) {
+            // tslint:disable-next-line:no-floating-promises
             this.blockchain.networkIdUpdatedFireAndForgetAsync(nextProps.networkId);
             this.setState({
                 prevNetworkId: nextProps.networkId,
             });
         }
         if (nextProps.userAddress !== this.state.prevUserAddress) {
+            // tslint:disable-next-line:no-floating-promises
             this.blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
             if (!_.isEmpty(nextProps.userAddress) &&
                 nextProps.blockchainIsLoaded) {
                 const tokens = _.values(nextProps.tokenByAddress);
+                // tslint:disable-next-line:no-floating-promises
                 this.updateBalanceAndAllowanceWithLoadingScreenAsync(tokens);
             }
             this.setState({
@@ -148,6 +151,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             });
         }
         if (nextProps.nodeVersion !== this.state.prevNodeVersion) {
+            // tslint:disable-next-line:no-floating-promises
             this.blockchain.nodeVersionUpdatedFireAndForgetAsync(nextProps.nodeVersion);
         }
     }

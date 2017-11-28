@@ -1,20 +1,19 @@
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
+import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
-import {colors} from 'material-ui/styles';
-import CircularProgress from 'material-ui/CircularProgress';
 import {
     scroller,
 } from 'react-scroll';
-import {Styles, Article, ArticlesBySection} from 'ts/types';
 import {TopBar} from 'ts/components/top_bar';
-import {HeaderSizes, WebsitePaths} from 'ts/types';
-import {utils} from 'ts/utils/utils';
-import {constants} from 'ts/utils/constants';
-import {configs} from 'ts/utils/configs';
+import {MarkdownSection} from 'ts/pages/shared/markdown_section';
 import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
 import {SectionHeader} from 'ts/pages/shared/section_header';
-import {MarkdownSection} from 'ts/pages/shared/markdown_section';
+import {Article, ArticlesBySection, HeaderSizes, Styles, WebsitePaths} from 'ts/types';
+import {configs} from 'ts/utils/configs';
+import {constants} from 'ts/utils/constants';
+import {utils} from 'ts/utils/utils';
 
 const WIKI_NOT_READY_BACKOUT_TIMEOUT_MS = 5000;
 
@@ -55,6 +54,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         };
     }
     public componentWillMount() {
+        // tslint:disable-next-line:no-floating-promises
         this.fetchArticlesBySectionAsync();
     }
     public componentWillUnmount() {
@@ -180,6 +180,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         if (response.status === constants.HTTP_NO_CONTENT_STATUS_CODE) {
             // We need to backoff and try fetching again later
             this.wikiBackoffTimeoutId = window.setTimeout(() => {
+                // tslint:disable-next-line:no-floating-promises
                 this.fetchArticlesBySectionAsync();
             }, WIKI_NOT_READY_BACKOUT_TIMEOUT_MS);
             return;
