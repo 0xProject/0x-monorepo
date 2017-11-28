@@ -1,5 +1,5 @@
-import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
+import BigNumber from 'bignumber.js';
 
 // Utility function to create a K:V from a list of strings
 // Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
@@ -16,7 +16,7 @@ export enum GenerateOrderSteps {
   RemainingConfigs,
   SignTransaction,
   CopyAndShare,
-}
+};
 
 export const Side = strEnum([
   'receive',
@@ -45,11 +45,11 @@ export interface Token {
     decimals: number;
     isTracked: boolean;
     isRegistered: boolean;
-}
+};
 
 export interface TokenByAddress {
     [address: string]: Token;
-}
+};
 
 export interface TokenState {
     allowance: BigNumber;
@@ -58,7 +58,7 @@ export interface TokenState {
 
 export interface TokenStateByAddress {
     [address: string]: TokenState;
-}
+};
 
 export interface AssetToken {
     address?: string;
@@ -67,14 +67,14 @@ export interface AssetToken {
 
 export interface SideToAssetToken {
     [side: string]: AssetToken;
-}
+};
 
 export interface SignatureData {
     hash: string;
     r: string;
     s: string;
     v: number;
-}
+};
 
 export interface HashData {
     depositAmount: BigNumber;
@@ -138,7 +138,7 @@ export enum BalanceErrs {
     wethConversionFailed,
     sendFailed,
     allowanceSettingFailed,
-}
+};
 
 export const ActionTypes = strEnum([
     // Portal
@@ -566,7 +566,7 @@ export interface TxParams {
 
 export interface PublicNodeUrlsByNetworkId {
     [networkId: number]: string[];
-}
+};
 
 export interface JSONRPCPayload {
     params: any[];
@@ -690,4 +690,3 @@ export enum WebsitePaths {
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
 }
-// tslint:disable:max-file-line-count

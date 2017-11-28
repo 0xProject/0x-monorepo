@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "description": "Website and 0x portal dapp",
   "scripts": {
-    "lint": "tslint --project . 'ts/*.ts'",
     "build": "NODE_ENV=production webpack; exit 0;",
     "clean": "shx rm -f public/bundle*",
     "dev": "webpack-dev-server --content-base public --https",

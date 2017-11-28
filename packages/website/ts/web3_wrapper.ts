@@ -1,8 +1,8 @@
+import * as _ from 'lodash';
+import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
 import promisify = require('es6-promisify');
-import * as _ from 'lodash';
 import {Dispatcher} from 'ts/redux/dispatcher';
-import Web3 = require('web3');
 
 export class Web3Wrapper {
     private dispatcher: Dispatcher;
@@ -21,7 +21,6 @@ export class Web3Wrapper {
         this.web3 = new Web3();
         this.web3.setProvider(provider);
 
-        // tslint:disable-next-line:no-floating-promises
         this.startEmittingNetworkConnectionAndUserBalanceStateAsync();
     }
     public isAddress(address: string) {
@@ -36,7 +35,7 @@ export class Web3Wrapper {
         if (_.isEmpty(addresses)) {
             return '';
         }
-        return (addresses)[0];
+        return (addresses as string[])[0];
     }
     public async getNodeVersionAsync() {
         const nodeVersion = await promisify(this.web3.version.getNode)();

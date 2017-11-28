@@ -5,7 +5,7 @@
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
   "scripts": {
-    "lint": "tslint --project . 'src/*.ts' 'test/*.ts'",
+    "lint": "tslint --project . src/*.ts test/*.ts",
     "test": "run-s clean build run_mocha",
     "test:circleci": "yarn test",
     "run_mocha": "mocha lib/test/**/*_test.js",

@@ -1,44 +1,44 @@
-import {Order as ZeroExOrder, ZeroEx} from '0x.js';
-import * as accounting from 'accounting';
-import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
-import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
-import * as moment from 'moment';
 import * as React from 'react';
+import * as accounting from 'accounting';
 import {Link} from 'react-router-dom';
-import {Blockchain} from 'ts/blockchain';
-import {TrackTokenConfirmationDialog} from 'ts/components/dialogs/track_token_confirmation_dialog';
-import {FillOrderJSON} from 'ts/components/fill_order_json';
-import {FillWarningDialog} from 'ts/components/fill_warning_dialog';
-import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
-import {Alert} from 'ts/components/ui/alert';
-import {EthereumAddress} from 'ts/components/ui/ethereum_address';
-import {Identicon} from 'ts/components/ui/identicon';
-import {VisualOrder} from 'ts/components/visual_order';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {orderSchema} from 'ts/schemas/order_schema';
-import {SchemaValidator} from 'ts/schemas/validator';
+import {ZeroEx, Order as ZeroExOrder} from '0x.js';
+import * as moment from 'moment';
+import BigNumber from 'bignumber.js';
+import Paper from 'material-ui/Paper';
+import {Card, CardText, CardHeader} from 'material-ui/Card';
+import Divider from 'material-ui/Divider';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
+import {utils} from 'ts/utils/utils';
+import {constants} from 'ts/utils/constants';
 import {
-    AlertTypes,
-    BlockchainErrs,
-    ContractResponse,
-    ExchangeContractErrs,
-    Order,
-    OrderToken,
     Side,
-    Token,
     TokenByAddress,
     TokenStateByAddress,
+    Order,
+    BlockchainErrs,
+    OrderToken,
+    Token,
+    ExchangeContractErrs,
+    AlertTypes,
+    ContractResponse,
     WebsitePaths,
 } from 'ts/types';
-import {constants} from 'ts/utils/constants';
+import {Alert} from 'ts/components/ui/alert';
+import {Identicon} from 'ts/components/ui/identicon';
+import {EthereumAddress} from 'ts/components/ui/ethereum_address';
+import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
+import {FillWarningDialog} from 'ts/components/fill_warning_dialog';
+import {FillOrderJSON} from 'ts/components/fill_order_json';
+import {VisualOrder} from 'ts/components/visual_order';
+import {SchemaValidator} from 'ts/schemas/validator';
+import {orderSchema} from 'ts/schemas/order_schema';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {Blockchain} from 'ts/blockchain';
 import {errorReporter} from 'ts/utils/error_reporter';
-import {utils} from 'ts/utils/utils';
+import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
+import {TrackTokenConfirmationDialog} from 'ts/components/dialogs/track_token_confirmation_dialog';
 
 const CUSTOM_LIGHT_GRAY = '#BBBBBB';
 
@@ -76,31 +76,6 @@ interface FillOrderState {
 
 export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     private validator: SchemaValidator;
-    private static formatCurrencyAmount(amount: BigNumber, decimals: number): number {
-        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
-        const roundedUnitAmount = Math.round(unitAmount.toNumber() * 100000) / 100000;
-        return roundedUnitAmount;
-    }
-    private static renderFillSuccessMsg() {
-        return (
-            <div>
-                Order successfully filled. See the trade details in your{' '}
-                <Link
-                    to={`${WebsitePaths.Portal}/trades`}
-                    style={{color: 'white'}}
-                >
-                    trade history
-                </Link>
-            </div>
-        );
-    }
-    private static renderCancelSuccessMsg() {
-        return (
-            <div>
-                Order successfully cancelled.
-            </div>
-        );
-    }
     constructor(props: FillOrderProps) {
         super(props);
         this.state = {
@@ -244,7 +219,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         let orderReceiveAmount = 0;
         if (!_.isUndefined(this.props.orderFillAmount)) {
             const orderReceiveAmountBigNumber = exchangeRate.mul(this.props.orderFillAmount);
-            orderReceiveAmount = FillOrder.formatCurrencyAmount(orderReceiveAmountBigNumber, makerToken.decimals);
+            orderReceiveAmount = this.formatCurrencyAmount(orderReceiveAmountBigNumber, makerToken.decimals);
         }
         const isUserMaker = !_.isUndefined(this.state.parsedOrder) &&
                           this.state.parsedOrder.maker.address === this.props.userAddress;
@@ -324,7 +299,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                             {this.state.didCancelOrderSucceed &&
                                 <Alert
                                     type={AlertTypes.SUCCESS}
-                                    message={FillOrder.renderCancelSuccessMsg()}
+                                    message={this.renderCancelSuccessMsg()}
                                 />
                             }
                         </div> :
@@ -341,12 +316,32 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                             {this.state.didFillOrderSucceed &&
                                 <Alert
                                     type={AlertTypes.SUCCESS}
-                                    message={FillOrder.renderFillSuccessMsg()}
+                                    message={this.renderFillSuccessMsg()}
                                 />
                             }
                         </div>
                     }
                 </div>
+            </div>
+        );
+    }
+    private renderFillSuccessMsg() {
+        return (
+            <div>
+                Order successfully filled. See the trade details in your{' '}
+                <Link
+                    to={`${WebsitePaths.Portal}/trades`}
+                    style={{color: 'white'}}
+                >
+                    trade history
+                </Link>
+            </div>
+        );
+    }
+    private renderCancelSuccessMsg() {
+        return (
+            <div>
+                Order successfully cancelled.
             </div>
         );
     }
@@ -568,7 +563,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 await this.props.blockchain.validateFillOrderThrowIfInvalidAsync(
                     signedOrder, takerFillAmount, this.props.userAddress);
             } catch (err) {
-                globalErrMsg = Blockchain.toHumanReadableErrorMsg(err.message, parsedOrder.taker.address);
+                globalErrMsg = this.props.blockchain.toHumanReadableErrorMsg(err.message, parsedOrder.taker.address);
             }
         }
         if (!_.isEmpty(globalErrMsg)) {
@@ -657,7 +652,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             await this.props.blockchain.validateCancelOrderThrowIfInvalidAsync(
                 signedOrder, availableTakerTokenAmount);
         } catch (err) {
-            globalErrMsg = Blockchain.toHumanReadableErrorMsg(err.message, parsedOrder.taker.address);
+            globalErrMsg = this.props.blockchain.toHumanReadableErrorMsg(err.message, parsedOrder.taker.address);
         }
         if (!_.isEmpty(globalErrMsg)) {
             this.setState({
@@ -694,6 +689,11 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             return;
         }
     }
+    private formatCurrencyAmount(amount: BigNumber, decimals: number): number {
+        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+        const roundedUnitAmount = Math.round(unitAmount.toNumber() * 100000) / 100000;
+        return roundedUnitAmount;
+    }
     private onToggleTrackConfirmDialog(didConfirmTokenTracking: boolean) {
         if (!didConfirmTokenTracking) {
             this.setState({
@@ -711,4 +711,4 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             tokensToTrack: [],
         });
     }
-} // tslint:disable:max-file-line-count
+}
