@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import {Comment} from 'ts/pages/documentation/comment';
 import {CustomEnum} from 'ts/pages/documentation/custom_enum';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {Enum} from 'ts/pages/documentation/enum';
 import {Interface} from 'ts/pages/documentation/interface';
 import {MethodSignature} from 'ts/pages/documentation/method_signature';
@@ -17,6 +18,7 @@ const KEYWORD_COLOR = '#a81ca6';
 interface TypeDefinitionProps {
     customType: CustomType;
     shouldAddId?: boolean;
+    docsInfo: DocsInfo;
 }
 
 interface TypeDefinitionState {
@@ -35,7 +37,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
     }
     public render() {
         const customType = this.props.customType;
-        if (!typeDocUtils.isPublicType(customType.name)) {
+        if (!this.props.docsInfo.isPublicType(customType.name)) {
             return null; // no-op
         }
 
@@ -47,6 +49,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 codeSnippet = (
                     <Interface
                         type={customType}
+                        docsInfo={this.props.docsInfo}
                     />
                 );
                 break;
@@ -81,11 +84,12 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                     <span>
                         <span style={{color: KEYWORD_COLOR}}>type</span> {customType.name} ={' '}
                         {customType.type.typeDocType !== TypeDocTypes.Reflection ?
-                            <Type type={customType.type} /> :
+                            <Type type={customType.type} docsInfo={this.props.docsInfo} /> :
                             <MethodSignature
                                 method={customType.type.method}
                                 shouldHideMethodName={true}
                                 shouldUseArrowSyntax={true}
+                                docsInfo={this.props.docsInfo}
                             />
                         }
                     </span>

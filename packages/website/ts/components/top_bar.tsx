@@ -15,8 +15,9 @@ import {PortalMenu} from 'ts/components/portal_menu';
 import {TopBarMenuItem} from 'ts/components/top_bar_menu_item';
 import {DropDownMenuItem} from 'ts/components/ui/drop_down_menu_item';
 import {Identicon} from 'ts/components/ui/identicon';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
-import {Docs, MenuSubsectionsBySection, Styles, TypeDocNode, WebsitePaths} from 'ts/types';
+import {DocsMenu, MenuSubsectionsBySection, Styles, TypeDocNode, WebsitePaths} from 'ts/types';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {typeDocUtils} from 'ts/utils/typedoc_utils';
@@ -30,9 +31,10 @@ interface TopBarProps {
     location: Location;
     docsVersion?: string;
     availableDocVersions?: string[];
+    menu?: DocsMenu;
     menuSubsectionsBySection?: MenuSubsectionsBySection;
     shouldFullWidth?: boolean;
-    doc?: Docs;
+    docPath?: string;
     style?: React.CSSProperties;
     isNightVersion?: boolean;
 }
@@ -272,25 +274,21 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         );
     }
     private renderDocsMenu() {
-        if (!this.isViewing0xjsDocs() && !this.isViewingSmartContractsDocs()) {
+        if (!this.isViewing0xjsDocs() && !this.isViewingSmartContractsDocs() || _.isUndefined(this.props.menu)) {
             return;
         }
-
-        const topLevelMenu = this.isViewing0xjsDocs() ?
-            typeDocUtils.getFinal0xjsMenu(this.props.docsVersion) :
-            constants.menuSmartContracts;
 
         const sectionTitle = this.isViewing0xjsDocs() ? '0x.js Docs' : 'Smart contract Docs';
         return (
             <div className="lg-hide md-hide">
                 <div className="pl1 py1" style={{backgroundColor: SECTION_HEADER_COLOR}}>{sectionTitle}</div>
                 <NestedSidebarMenu
-                    topLevelMenu={topLevelMenu}
+                    topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this.onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
-                    doc={this.props.doc}
+                    docPath={this.props.docPath}
                     versions={this.props.availableDocVersions}
                 />
             </div>

@@ -11,6 +11,7 @@ import semverSort = require('semver-sort');
 import {TopBar} from 'ts/components/top_bar';
 import {Badge} from 'ts/components/ui/badge';
 import {Comment} from 'ts/pages/documentation/comment';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {EventDefinition} from 'ts/pages/documentation/event_definition';
 import {MethodBlock} from 'ts/pages/documentation/method_block';
 import {SourceLink} from 'ts/pages/documentation/source_link';
@@ -26,16 +27,17 @@ import {
     CustomType,
     DocAgnosticFormat,
     Docs,
+    DocsInfoConfig,
     DoxityDocObj,
     EtherscanLinkSuffixes,
     Event,
     MenuSubsectionsBySection,
     Networks,
     Property,
-    SmartContractsDocSections,
     SolidityMethod,
     Styles,
     TypeDefinitionByName,
+    WebsitePaths,
 } from 'ts/types';
 import {constants} from 'ts/utils/constants';
 import {docUtils} from 'ts/utils/doc_utils';
@@ -46,14 +48,36 @@ const IntroMarkdown = require('md/docs/smart_contracts/introduction');
 /* tslint:enable:no-var-requires */
 
 const SCROLL_TO_TIMEOUT = 500;
+const SCROLL_TOP_ID = 'docsScrollTop';
 const CUSTOM_PURPLE = '#690596';
 const CUSTOM_RED = '#e91751';
 const CUSTOM_TURQUOIS = '#058789';
-const DOC_JSON_ROOT = constants.S3_SMART_CONTRACTS_DOCUMENTATION_JSON_ROOT;
 
-const sectionNameToMarkdown = {
-    [SmartContractsDocSections.Introduction]: IntroMarkdown,
+const sections = constants.smartContractDocSections;
+
+const docsInfoConfig: DocsInfoConfig = {
+    packageName: '0x Smart Contracts',
+    packageUrl: 'https://github.com/0xProject/contracts',
+    websitePath: WebsitePaths.SmartContracts,
+    docsJsonRoot: 'https://s3.amazonaws.com/smart-contracts-docs-json',
+    menu: {
+        introduction: [
+            sections.Introduction,
+        ],
+        contracts: [
+            sections.Exchange,
+            sections.TokenRegistry,
+            sections.ZRXToken,
+            sections.EtherToken,
+            sections.TokenTransferProxy,
+        ],
+    },
+    sectionNameToMarkdown: {
+        [sections.Introduction]: IntroMarkdown,
+    },
+    sections,
 };
+
 const networkNameToColor: {[network: string]: string} = {
     [Networks.kovan]: CUSTOM_PURPLE,
     [Networks.ropsten]: CUSTOM_RED,
@@ -90,6 +114,7 @@ const styles: Styles = {
         marginLeft: 20,
     },
 };
+const docsInfo = new DocsInfo(docsInfoConfig);
 
 export class SmartContractsDocumentation extends
     React.Component<SmartContractsDocumentationAllProps, SmartContractsDocumentationState> {
@@ -119,9 +144,10 @@ export class SmartContractsDocumentation extends
                     location={this.props.location}
                     docsVersion={this.props.docsVersion}
                     availableDocVersions={this.props.availableDocVersions}
+                    menu={docsInfo.getMenu(this.props.docsVersion)}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     shouldFullWidth={true}
-                    doc={Docs.SmartContracts}
+                    docPath={docsInfo.websitePath}
                 />
                 {_.isUndefined(this.state.docAgnosticFormat) ?
                     <div
@@ -150,9 +176,9 @@ export class SmartContractsDocumentation extends
                                 <NestedSidebarMenu
                                     selectedVersion={this.props.docsVersion}
                                     versions={this.props.availableDocVersions}
-                                    topLevelMenu={constants.menuSmartContracts}
+                                    topLevelMenu={docsInfo.getMenu()}
                                     menuSubsectionsBySection={menuSubsectionsBySection}
-                                    doc={Docs.SmartContracts}
+                                    docPath={docsInfo.websitePath}
                                 />
                             </div>
                         </div>
@@ -162,7 +188,7 @@ export class SmartContractsDocumentation extends
                                 style={styles.mainContainers}
                                 className="absolute"
                             >
-                                <div id="smartContractsDocs" />
+                                <div id={SCROLL_TOP_ID} />
                                 <h1 className="md-pl2 sm-pl3">
                                     <a href={constants.GITHUB_CONTRACTS_URL} target="_blank">
                                         0x Smart Contracts
@@ -177,19 +203,19 @@ export class SmartContractsDocumentation extends
         );
     }
     private renderDocumentation(): React.ReactNode {
-        const subMenus = _.values(constants.menuSmartContracts);
+        const subMenus = _.values(docsInfo.getMenu());
         const orderedSectionNames = _.flatten(subMenus);
         // Since smart contract method params are all base types, no need to pass
         // down the typeDefinitionByName
         const typeDefinitionByName = {};
-        const sections = _.map(orderedSectionNames, this.renderSection.bind(this, typeDefinitionByName));
+        const renderedSections = _.map(orderedSectionNames, this.renderSection.bind(this, typeDefinitionByName));
 
-        return sections;
+        return renderedSections;
     }
     private renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
         const docSection = this.state.docAgnosticFormat[sectionName];
 
-        const markdownFileIfExists = sectionNameToMarkdown[sectionName];
+        const markdownFileIfExists = docsInfo.sectionNameToMarkdown[sectionName];
         if (!_.isUndefined(markdownFileIfExists)) {
             return (
                 <MarkdownSection
@@ -219,6 +245,7 @@ export class SmartContractsDocumentation extends
                 <EventDefinition
                     key={`event-${event.name}-${i}`}
                     event={event}
+                    docsInfo={docsInfo}
                 />
             );
         });
@@ -293,7 +320,7 @@ export class SmartContractsDocumentation extends
                                typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
         const constructorDefs = _.map(constructors, constructor => {
             return this.renderMethodBlocks(
-                constructor, SmartContractsDocSections.zeroEx, constructor.isConstructor, typeDefinitionByName,
+                constructor, docsInfo.sections.zeroEx, constructor.isConstructor, typeDefinitionByName,
             );
         });
         return (
@@ -309,12 +336,13 @@ export class SmartContractsDocumentation extends
                 className="pb3"
             >
                 <code className="hljs">
-                    {property.name}: <Type type={property.type} />
+                    {property.name}: <Type type={property.type} docsInfo={docsInfo} />
                 </code>
                 {property.source &&
                     <SourceLink
                         version={this.props.docsVersion}
                         source={property.source}
+                        baseUrl={docsInfo.packageUrl}
                     />
                 }
                 {property.comment &&
@@ -334,6 +362,7 @@ export class SmartContractsDocumentation extends
                method={method}
                typeDefinitionByName={typeDefinitionByName}
                libraryVersion={this.props.docsVersion}
+               docsInfo={docsInfo}
             />
         );
     }
@@ -341,7 +370,7 @@ export class SmartContractsDocumentation extends
         const hashWithPrefix = this.props.location.hash;
         let hash = hashWithPrefix.slice(1);
         if (_.isEmpty(hash)) {
-            hash = 'smartContractsDocs'; // scroll to the top
+            hash = SCROLL_TOP_ID; // scroll to the top
         }
 
         scroller.scrollTo(hash, {duration: 0, offset: 0, containerId: 'documentation'});
@@ -352,14 +381,14 @@ export class SmartContractsDocumentation extends
             return menuSubsectionsBySection;
         }
 
-        const docSections = _.keys(SmartContractsDocSections);
+        const docSections = _.keys(docsInfo.sections);
         _.each(docSections, sectionName => {
             const docSection = docAgnosticFormat[sectionName];
             if (_.isUndefined(docSection)) {
                 return; // no-op
             }
 
-            if (sectionName === SmartContractsDocSections.types) {
+            if (sectionName === docsInfo.sections.types) {
                 const sortedTypesNames = _.sortBy(docSection.types, 'name');
                 const typeNames = _.map(sortedTypesNames, t => t.name);
                 menuSubsectionsBySection[sectionName] = typeNames;
@@ -374,7 +403,7 @@ export class SmartContractsDocumentation extends
         return menuSubsectionsBySection;
     }
     private async fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
-        const versionToFileName = await docUtils.getVersionToFileNameAsync(DOC_JSON_ROOT);
+        const versionToFileName = await docUtils.getVersionToFileNameAsync(docsInfo.docsJsonRoot);
         const versions = _.keys(versionToFileName);
         this.props.dispatcher.updateAvailableDocVersions(versions);
         const sortedVersions = semverSort.desc(versions);
@@ -390,7 +419,7 @@ export class SmartContractsDocumentation extends
         this.props.dispatcher.updateCurrentDocsVersion(versionToFetch);
 
         const versionFileNameToFetch = versionToFileName[versionToFetch];
-        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFileNameToFetch, DOC_JSON_ROOT);
+        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFileNameToFetch, docsInfo.docsJsonRoot);
         const docAgnosticFormat = doxityUtils.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
 
         this.setState({

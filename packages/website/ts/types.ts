@@ -468,33 +468,6 @@ export interface CustomTypeChild {
     defaultValue?: string;
 }
 
-export const ZeroExJsDocSections = strEnum([
-  'introduction',
-  'installation',
-  'testrpc',
-  'async',
-  'errors',
-  'versioning',
-  'zeroEx',
-  'exchange',
-  'token',
-  'tokenRegistry',
-  'etherToken',
-  'proxy',
-  'types',
-]);
-export type ZeroExJsDocSections = keyof typeof ZeroExJsDocSections;
-
-export const SmartContractsDocSections = strEnum([
-  'Introduction',
-  'Exchange',
-  'TokenTransferProxy',
-  'TokenRegistry',
-  'ZRXToken',
-  'EtherToken',
-]);
-export type SmartContractsDocSections = keyof typeof SmartContractsDocSections;
-
 export interface FAQQuestion {
     prompt: string;
     answer: React.ReactNode;
@@ -689,4 +662,27 @@ export enum WebsitePaths {
     About = '/about',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
-} // tslint:disable:max-file-line-count
+}
+
+export interface DocsMenu {
+    [sectionName: string]: string[];
+}
+
+export interface SectionsMap {
+    [sectionName: string]: string;
+}
+
+export interface DocsInfoConfig {
+  packageName: string;
+  packageUrl: string;
+  websitePath: string;
+  docsJsonRoot: string;
+  menu: DocsMenu;
+  sections: SectionsMap;
+  sectionNameToMarkdown: {[sectionName: string]: string};
+  publicTypes?: string[];
+  sectionNameToModulePath?: {[sectionName: string]: string[]};
+  menuSubsectionToVersionWhenIntroduced?: {[sectionName: string]: string};
+}
+
+// tslint:disable:max-file-line-count

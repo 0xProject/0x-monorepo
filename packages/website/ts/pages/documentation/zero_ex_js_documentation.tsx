@@ -16,6 +16,7 @@ import semverSort = require('semver-sort');
 import {TopBar} from 'ts/components/top_bar';
 import {Loading} from 'ts/components/ui/loading';
 import {Comment} from 'ts/pages/documentation/comment';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {MethodBlock} from 'ts/pages/documentation/method_block';
 import {SourceLink} from 'ts/pages/documentation/source_link';
 import {Type} from 'ts/pages/documentation/type';
@@ -29,6 +30,7 @@ import {
     CustomType,
     DocAgnosticFormat,
     Docs,
+    DocsInfoConfig,
     KindString,
     Property,
     ScreenWidths,
@@ -36,7 +38,7 @@ import {
     TypeDefinitionByName,
     TypeDocNode,
     TypescriptMethod,
-    ZeroExJsDocSections,
+    WebsitePaths,
 } from 'ts/types';
 import {constants} from 'ts/utils/constants';
 import {docUtils} from 'ts/utils/doc_utils';
@@ -51,15 +53,126 @@ const versioningMarkdown = require('md/docs/0xjs/versioning');
 /* tslint:enable:no-var-requires */
 
 const SCROLL_TO_TIMEOUT = 500;
-const DOC_JSON_ROOT = constants.S3_0XJS_DOCUMENTATION_JSON_ROOT;
+const SCROLL_TOP_ID = 'docsScrollTop';
 
-const sectionNameToMarkdown = {
-    [ZeroExJsDocSections.introduction]: IntroMarkdown,
-    [ZeroExJsDocSections.installation]: InstallationMarkdown,
-    [ZeroExJsDocSections.async]: AsyncMarkdown,
-    [ZeroExJsDocSections.errors]: ErrorsMarkdown,
-    [ZeroExJsDocSections.versioning]: versioningMarkdown,
+const zeroExJsDocSections = {
+    introduction: 'introduction',
+    installation: 'installation',
+    testrpc: 'testrpc',
+    async: 'async',
+    errors: 'errors',
+    versioning: 'versioning',
+    zeroEx: 'zeroEx',
+    exchange: 'exchange',
+    token: 'token',
+    tokenRegistry: 'tokenRegistry',
+    etherToken: 'etherToken',
+    proxy: 'proxy',
+    types: 'types',
 };
+
+const docsInfoConfig: DocsInfoConfig = {
+    packageName: '0x.js',
+    packageUrl: 'https://github.com/0xProject/0x.js',
+    websitePath: WebsitePaths.ZeroExJs,
+    docsJsonRoot: 'https://s3.amazonaws.com/0xjs-docs-jsons',
+    menu: {
+        introduction: [
+            zeroExJsDocSections.introduction,
+        ],
+        install: [
+            zeroExJsDocSections.installation,
+        ],
+        topics: [
+            zeroExJsDocSections.async,
+            zeroExJsDocSections.errors,
+            zeroExJsDocSections.versioning,
+        ],
+        zeroEx: [
+            zeroExJsDocSections.zeroEx,
+        ],
+        contracts: [
+            zeroExJsDocSections.exchange,
+            zeroExJsDocSections.token,
+            zeroExJsDocSections.tokenRegistry,
+            zeroExJsDocSections.etherToken,
+            zeroExJsDocSections.proxy,
+        ],
+        types: [
+            zeroExJsDocSections.types,
+        ],
+    },
+    sectionNameToMarkdown: {
+        [zeroExJsDocSections.introduction]: IntroMarkdown,
+        [zeroExJsDocSections.installation]: InstallationMarkdown,
+        [zeroExJsDocSections.async]: AsyncMarkdown,
+        [zeroExJsDocSections.errors]: ErrorsMarkdown,
+        [zeroExJsDocSections.versioning]: versioningMarkdown,
+    },
+    // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
+    // currently no way to extract the re-exported types from index.ts via TypeDoc :(
+    publicTypes: [
+        'Order',
+        'SignedOrder',
+        'ECSignature',
+        'ZeroExError',
+        'EventCallback',
+        'EventCallbackAsync',
+        'EventCallbackSync',
+        'ExchangeContractErrs',
+        'ContractEvent',
+        'Token',
+        'ExchangeEvents',
+        'IndexedFilterValues',
+        'SubscriptionOpts',
+        'BlockParam',
+        'OrderFillOrKillRequest',
+        'OrderCancellationRequest',
+        'OrderFillRequest',
+        'ContractEventEmitter',
+        'Web3Provider',
+        'ContractEventArgs',
+        'LogCancelArgs',
+        'LogFillArgs',
+        'LogErrorContractEventArgs',
+        'LogFillContractEventArgs',
+        'LogCancelContractEventArgs',
+        'TokenEvents',
+        'ExchangeContractEventArgs',
+        'TransferContractEventArgs',
+        'ApprovalContractEventArgs',
+        'TokenContractEventArgs',
+        'ZeroExConfig',
+        'TransactionReceiptWithDecodedLogs',
+        'LogWithDecodedArgs',
+        'DecodedLogArgs',
+        'MethodOpts',
+        'ValidateOrderFillableOpts',
+        'OrderTransactionOpts',
+        'ContractEventArg',
+        'LogEvent',
+        'LogEntry',
+        'DecodedLogEvent',
+    ],
+    sectionNameToModulePath: {
+        [zeroExJsDocSections.zeroEx]: ['"src/0x"'],
+        [zeroExJsDocSections.exchange]: ['"src/contract_wrappers/exchange_wrapper"'],
+        [zeroExJsDocSections.tokenRegistry]: ['"src/contract_wrappers/token_registry_wrapper"'],
+        [zeroExJsDocSections.token]: ['"src/contract_wrappers/token_wrapper"'],
+        [zeroExJsDocSections.etherToken]: ['"src/contract_wrappers/ether_token_wrapper"'],
+        [zeroExJsDocSections.proxy]: [
+            '"src/contract_wrappers/proxy_wrapper"',
+            '"src/contract_wrappers/token_transfer_proxy_wrapper"',
+        ],
+        [zeroExJsDocSections.types]: ['"src/types"'],
+    },
+    menuSubsectionToVersionWhenIntroduced: {
+        [zeroExJsDocSections.etherToken]: '0.7.1',
+        [zeroExJsDocSections.proxy]: '0.8.0',
+    },
+    sections: zeroExJsDocSections,
+};
+const docsInfo = new DocsInfo(docsInfoConfig);
 
 export interface ZeroExJSDocumentationPassedProps {
     source: string;
@@ -113,20 +226,21 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
         this.fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
     }
     public render() {
-        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
-                                         ? {}
-                                         : typeDocUtils.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
+        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat) ?
+                {} :
+                typeDocUtils.getMenuSubsectionsBySection(docsInfo.sections, this.state.docAgnosticFormat);
         return (
             <div>
-                <DocumentTitle title="0x.js Documentation"/>
+                <DocumentTitle title={`${docsInfo.packageName} Documentation`}/>
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
                     docsVersion={this.props.docsVersion}
                     availableDocVersions={this.props.availableDocVersions}
+                    menu={docsInfo.getMenu(this.props.docsVersion)}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     shouldFullWidth={true}
-                    doc={Docs.ZeroExJs}
+                    docPath={docsInfo.websitePath}
                 />
                 {_.isUndefined(this.state.docAgnosticFormat) ?
                     <div
@@ -155,9 +269,9 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
                                 <NestedSidebarMenu
                                     selectedVersion={this.props.docsVersion}
                                     versions={this.props.availableDocVersions}
-                                    topLevelMenu={typeDocUtils.getFinal0xjsMenu(this.props.docsVersion)}
+                                    topLevelMenu={docsInfo.getMenu(this.props.docsVersion)}
                                     menuSubsectionsBySection={menuSubsectionsBySection}
-                                    doc={Docs.ZeroExJs}
+                                    docPath={docsInfo.websitePath}
                                 />
                             </div>
                         </div>
@@ -167,10 +281,10 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
                                 style={styles.mainContainers}
                                 className="absolute"
                             >
-                                <div id="zeroExJSDocs" />
+                                <div id={SCROLL_TOP_ID} />
                                 <h1 className="md-pl2 sm-pl3">
-                                    <a href={constants.GITHUB_0X_JS_URL} target="_blank">
-                                        0x.js
+                                    <a href={docsInfo.packageUrl} target="_blank">
+                                        {docsInfo.packageName}
                                     </a>
                                 </h1>
                                 {this.renderDocumentation()}
@@ -182,10 +296,10 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
         );
     }
     private renderDocumentation(): React.ReactNode {
-        const typeDocSection = this.state.docAgnosticFormat[ZeroExJsDocSections.types];
+        const typeDocSection = this.state.docAgnosticFormat[docsInfo.sections.types];
         const typeDefinitionByName = _.keyBy(typeDocSection.types, 'name');
 
-        const subMenus = _.values(constants.menu0xjs);
+        const subMenus = _.values(docsInfo.getMenu());
         const orderedSectionNames = _.flatten(subMenus);
         const sections = _.map(orderedSectionNames, this.renderSection.bind(this, typeDefinitionByName));
 
@@ -194,7 +308,7 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
     private renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
         const docSection = this.state.docAgnosticFormat[sectionName];
 
-        const markdownFileIfExists = sectionNameToMarkdown[sectionName];
+        const markdownFileIfExists = docsInfo.sectionNameToMarkdown[sectionName];
         if (!_.isUndefined(markdownFileIfExists)) {
             return (
                 <MarkdownSection
@@ -214,6 +328,7 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
                 <TypeDefinition
                     key={`type-${customType.name}`}
                     customType={customType}
+                    docsInfo={docsInfo}
                 />
             );
         });
@@ -231,7 +346,7 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
                 <Comment
                     comment={docSection.comment}
                 />
-                {sectionName === ZeroExJsDocSections.zeroEx && docSection.constructors.length > 0 &&
+                {sectionName === docsInfo.sections.zeroEx && docSection.constructors.length > 0 &&
                     <div>
                         <h2 className="thin">Constructor</h2>
                         {this.renderZeroExConstructors(docSection.constructors, typeDefinitionByName)}
@@ -261,7 +376,7 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
                                      typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
         const constructorDefs = _.map(constructors, constructor => {
             return this.renderMethodBlocks(
-                constructor, ZeroExJsDocSections.zeroEx, constructor.isConstructor, typeDefinitionByName,
+                constructor, docsInfo.sections.zeroEx, constructor.isConstructor, typeDefinitionByName,
             );
         });
         return (
@@ -277,11 +392,12 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
                 className="pb3"
             >
                 <code className="hljs">
-                    {property.name}: <Type type={property.type} />
+                    {property.name}: <Type type={property.type} docsInfo={docsInfo} />
                 </code>
                 <SourceLink
                     version={this.props.docsVersion}
                     source={property.source}
+                    baseUrl={docsInfo.packageUrl}
                 />
                 {property.comment &&
                     <Comment
@@ -300,6 +416,7 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
                method={method}
                typeDefinitionByName={typeDefinitionByName}
                libraryVersion={this.props.docsVersion}
+               docsInfo={docsInfo}
             />
         );
     }
@@ -307,13 +424,13 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
         const hashWithPrefix = this.props.location.hash;
         let hash = hashWithPrefix.slice(1);
         if (_.isEmpty(hash)) {
-            hash = 'zeroExJSDocs'; // scroll to the top
+            hash = SCROLL_TOP_ID; // scroll to the top
         }
 
         scroller.scrollTo(hash, {duration: 0, offset: 0, containerId: 'documentation'});
     }
     private async fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
-        const versionToFileName = await docUtils.getVersionToFileNameAsync(DOC_JSON_ROOT);
+        const versionToFileName = await docUtils.getVersionToFileNameAsync(docsInfo.docsJsonRoot);
         const versions = _.keys(versionToFileName);
         this.props.dispatcher.updateAvailableDocVersions(versions);
         const sortedVersions = semverSort.desc(versions);
@@ -329,8 +446,12 @@ export class ZeroExJSDocumentation extends React.Component<ZeroExJSDocumentation
         this.props.dispatcher.updateCurrentDocsVersion(versionToFetch);
 
         const versionFileNameToFetch = versionToFileName[versionToFetch];
-        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFileNameToFetch, DOC_JSON_ROOT);
-        const docAgnosticFormat = typeDocUtils.convertToDocAgnosticFormat((versionDocObj as TypeDocNode));
+        const versionDocObj = await docUtils.getJSONDocFileAsync(
+            versionFileNameToFetch, docsInfo.docsJsonRoot,
+        );
+        const docAgnosticFormat = typeDocUtils.convertToDocAgnosticFormat(
+            docsInfo, (versionDocObj as TypeDocNode),
+        );
 
         this.setState({
             docAgnosticFormat,

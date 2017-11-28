@@ -3,6 +3,7 @@ import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Link as ScrollLink} from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {TypeDefinition} from 'ts/pages/documentation/type_definition';
 import {Type as TypeDef, TypeDefinitionByName, TypeDocTypes} from 'ts/types';
 import {constants} from 'ts/utils/constants';
@@ -38,6 +39,7 @@ const typeToSection: {[typeName: string]: string} = {
 
 interface TypeProps {
     type: TypeDef;
+    docsInfo: DocsInfo;
     typeDefinitionByName?: TypeDefinitionByName;
 }
 
@@ -70,6 +72,7 @@ export function Type(props: TypeProps): any {
                                 key={key}
                                 type={arg.elementType}
                                 typeDefinitionByName={props.typeDefinitionByName}
+                                docsInfo={props.docsInfo}
                             />[]
                         </span>
                     );
@@ -79,6 +82,7 @@ export function Type(props: TypeProps): any {
                             key={`type-${arg.name}-${arg.value}-${arg.typeDocType}`}
                             type={arg}
                             typeDefinitionByName={props.typeDefinitionByName}
+                            docsInfo={props.docsInfo}
                         />
                     );
                     return subType;
@@ -102,6 +106,7 @@ export function Type(props: TypeProps): any {
                         key={`type-${t.name}-${t.value}-${t.typeDocType}`}
                         type={t}
                         typeDefinitionByName={props.typeDefinitionByName}
+                        docsInfo={props.docsInfo}
                     />
                 );
             });
@@ -141,7 +146,7 @@ export function Type(props: TypeProps): any {
             </a>
         );
     } else if ((isReference || isArray) &&
-                (typeDocUtils.isPublicType(typeName as string) ||
+                (props.docsInfo.isPublicType(typeName as string) ||
                 !_.isUndefined(sectionNameIfExists))) {
         const id = Math.random().toString();
         const typeDefinitionAnchorId = _.isUndefined(sectionNameIfExists) ? typeName : sectionNameIfExists;
@@ -176,7 +181,11 @@ export function Type(props: TypeProps): any {
                         id={id}
                         className="typeTooltip"
                     >
-                        <TypeDefinition customType={typeDefinition} shouldAddId={false} />
+                        <TypeDefinition
+                            customType={typeDefinition}
+                            shouldAddId={false}
+                            docsInfo={props.docsInfo}
+                        />
                     </ReactTooltip>
                 </span>
             }
