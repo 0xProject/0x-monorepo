@@ -48,7 +48,7 @@ function renderParameters(
     const parameters = method.parameters;
     const params = _.map(parameters, (p: Parameter) => {
         const isOptional = p.isOptional;
-        const t = (
+        const type = (
             <Type
                 type={p.type}
                 typeDefinitionByName={typeDefinitionByName}
@@ -57,7 +57,7 @@ function renderParameters(
         );
         return (
             <span key={`param-${p.type}-${p.name}`}>
-                {p.name}{isOptional && '?'}: {t}
+                {p.name}{isOptional && '?'}: {type}
             </span>
         );
     });

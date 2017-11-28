@@ -55,7 +55,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
     private renderEventCode() {
         const indexed = <span style={{color: CUSTOM_GREEN}}> indexed</span>;
         const eventArgs = _.map(this.props.event.eventArgs, (eventArg: EventArg) => {
-            const t = (
+            const type = (
                 <Type
                     type={eventArg.type}
                     docsInfo={this.props.docsInfo}
@@ -63,7 +63,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             );
             return (
                 <span key={`eventArg-${eventArg.name}`}>
-                    {eventArg.name}{eventArg.isIndexed ? indexed : ''}:  {t},
+                    {eventArg.name}{eventArg.isIndexed ? indexed : ''}:  {type},
                 </span>
             );
         });
