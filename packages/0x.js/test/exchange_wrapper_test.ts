@@ -124,7 +124,6 @@ describe('ExchangeWrapper', () => {
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
                     return expect(zeroEx.exchange.batchFillOrKillAsync(orderFillRequests, takerAddress, {
                         shouldValidate: false,
-                        gasLimit: 200000, // If we don't pass this gas estimation will fail
                     })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
@@ -184,7 +183,6 @@ describe('ExchangeWrapper', () => {
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
                     return expect(zeroEx.exchange.fillOrKillOrderAsync(signedOrder, emptyFillableAmount, takerAddress, {
                         shouldValidate: false,
-                        gasLimit: 200000, // If we don't pass this gas estimation will fail
                     })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
@@ -364,7 +362,6 @@ describe('ExchangeWrapper', () => {
                     return expect(zeroEx.exchange.batchFillOrdersAsync(
                         orderFillBatch, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress, {
                             shouldValidate: false,
-                            gasLimit: 200000, // If we don't pass this gas estimation will fail
                     })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
@@ -422,7 +419,6 @@ describe('ExchangeWrapper', () => {
                     return expect(zeroEx.exchange.fillOrdersUpToAsync(
                         signedOrders, emptyFillUpToAmount, shouldThrowOnInsufficientBalanceOrAllowance, takerAddress, {
                             shouldValidate: false,
-                            gasLimit: 200000, // If we don't pass this gas estimation will fail
                     })).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
@@ -471,7 +467,6 @@ describe('ExchangeWrapper', () => {
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
                     return expect(zeroEx.exchange.cancelOrderAsync(signedOrder, emptyCancelTakerTokenAmount, {
                         shouldValidate: false,
-                        gasLimit: 200000, // If we don't pass this gas estimation will fail
                     })).to.not.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
             });
@@ -547,7 +542,6 @@ describe('ExchangeWrapper', () => {
                 it('should not validate when orderTransactionOptions specify not to validate', async () => {
                     return expect(zeroEx.exchange.batchCancelOrdersAsync(cancelBatch, {
                         shouldValidate: false,
-                        gasLimit: 200000, // If we don't pass this gas estimation will fail
                     })).to.not.be.rejectedWith(ExchangeContractErrs.OrderCancelAmountZero);
                 });
             });
