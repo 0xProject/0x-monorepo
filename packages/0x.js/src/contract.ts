@@ -5,7 +5,9 @@ import * as Web3 from 'web3';
 
 import {AbiType} from './types';
 
-const GAS_MARGIN = 300000;
+// HACK: Gas estimates on testrpc don't take into account gas refunds.
+// Our calls can trigger max 8 gas refunds for SSTORE per transaction for 15k gas each which gives 120k.
+const GAS_MARGIN = 120000;
 
 export class Contract implements Web3.ContractInstance {
     public address: string;
