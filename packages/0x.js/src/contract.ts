@@ -5,6 +5,10 @@ import * as Web3 from 'web3';
 
 import {AbiType} from './types';
 
+// HACK: Gas estimates on testrpc don't take into account gas refunds.
+// Our calls can trigger max 8 gas refunds for SSTORE per transaction for 15k gas each which gives 120k.
+const GAS_MARGIN = 120000;
+
 export class Contract implements Web3.ContractInstance {
     public address: string;
     public abi: Web3.ContractAbi;
@@ -34,9 +38,10 @@ export class Contract implements Web3.ContractInstance {
             } else {
                 const cbStyleFunction = this.contract[functionAbi.name];
                 const cbStyleEstimateGasFunction = this.contract[functionAbi.name].estimateGas;
+                const estimateGasAsync = promisify(cbStyleEstimateGasFunction, this.contract);
                 this[functionAbi.name] = {
-                    estimateGasAsync: promisify(cbStyleEstimateGasFunction, this.contract),
-                    sendTransactionAsync: this.promisifyWithDefaultParams(cbStyleFunction),
+                    estimateGasAsync,
+                    sendTransactionAsync: this.promisifyWithDefaultParams(cbStyleFunction, estimateGasAsync),
                 };
             }
         });
@@ -47,28 +52,40 @@ export class Contract implements Web3.ContractInstance {
             this[eventAbi.name] = this.contract[eventAbi.name];
         });
     }
-    private promisifyWithDefaultParams(fn: (...args: any[]) => void): (...args: any[]) => Promise<any> {
+    private promisifyWithDefaultParams(
+        web3CbStyleFunction: (...args: any[]) => void,
+        estimateGasAsync: (...args: any[]) => Promise<number>,
+    ): (...args: any[]) => Promise<any> {
         const promisifiedWithDefaultParams = async (...args: any[]) => {
-            const promise = new Promise((resolve, reject) => {
+            const promise = new Promise(async (resolve, reject) => {
                 const lastArg = args[args.length - 1];
                 let txData: Partial<Web3.TxData> = {};
-                if (this.isTxData(lastArg)) {
+                if (!_.isUndefined(lastArg) && this.isTxData(lastArg)) {
                     txData = args.pop();
                 }
+                // Gas amount sourced with the following priorities:
+                // 1. Optional param passed in to public method call
+                // 2. Global config passed in at library instantiation
+                // 3. Gas estimate calculation + safety margin
+                const removeUndefinedProperties = _.pickBy;
                 txData = {
-                    ...this.defaults,
-                    ...txData,
+                    ...removeUndefinedProperties(this.defaults),
+                    ...removeUndefinedProperties(txData),
                 };
-                const callback = (err: Error, data: any) => {
-                    if (_.isNull(err)) {
-                        resolve(data);
-                    } else {
+                if (_.isUndefined(txData.gas)) {
+                    try {
+                        const estimatedGas = await estimateGasAsync.apply(this.contract, [...args, txData]);
+                        const gas = estimatedGas + GAS_MARGIN;
+                        txData.gas = gas;
+                    } catch (err) {
                         reject(err);
+                        return;
                     }
-                };
+                }
+                const callback = (err: Error, data: any) => _.isNull(err) ? resolve(data) : reject(err);
                 args.push(txData);
                 args.push(callback);
-                fn.apply(this.contract, args);
+                web3CbStyleFunction.apply(this.contract, args);
             });
             return promise;
         };

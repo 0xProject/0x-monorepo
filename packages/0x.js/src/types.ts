@@ -332,6 +332,7 @@ export interface TxOpts {
     from: string;
     gas?: number;
     value?: BigNumber;
+    gasPrice?: BigNumber;
 }
 
 export interface TokenAddressBySymbol {
@@ -484,11 +485,20 @@ export interface MethodOpts {
 }
 
 /*
- * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
- * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc.
+ * gasPrice: Gas price in Wei to use for a transaction
+ * gasLimit: The amount of gas to send with a transaction
  */
-export interface OrderTransactionOpts {
-    shouldValidate: boolean;
+export interface TransactionOpts {
+    gasPrice?: BigNumber;
+    gasLimit?: number;
+}
+
+/*
+ * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default: true
+ */
+export interface OrderTransactionOpts extends TransactionOpts {
+    shouldValidate?: boolean;
 }
 
 export type FilterObject = Web3.FilterObject;

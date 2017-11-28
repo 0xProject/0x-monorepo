@@ -61,7 +61,7 @@
     "copyfiles": "^1.2.0",
     "coveralls": "^3.0.0",
     "dirty-chai": "^2.0.1",
-    "ethereumjs-testrpc": "4.0.1",
+    "ethereumjs-testrpc": "6.0.3",
     "json-loader": "^0.5.4",
     "mocha": "^4.0.0",
     "npm-run-all": "^4.0.2",
