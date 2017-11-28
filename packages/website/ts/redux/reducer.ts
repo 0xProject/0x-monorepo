@@ -1,23 +1,23 @@
-import * as _ from 'lodash';
 import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
-import {utils} from 'ts/utils/utils';
+import * as _ from 'lodash';
 import {
-    GenerateOrderSteps,
-    Side,
-    SideToAssetToken,
-    Direction,
-    BlockchainErrs,
-    SignatureData,
-    TokenByAddress,
-    TokenStateByAddress,
-    Order,
     Action,
     ActionTypes,
-    ScreenWidths,
+    BlockchainErrs,
+    Direction,
+    GenerateOrderSteps,
+    Order,
     ProviderType,
+    ScreenWidths,
+    Side,
+    SideToAssetToken,
+    SignatureData,
+    TokenByAddress,
     TokenState,
+    TokenStateByAddress,
 } from 'ts/types';
+import {utils} from 'ts/utils/utils';
 
 // Instead of defaulting the docs version to an empty string, we pre-populate it with
 // a valid version value. This does not need to be updated however, since onLoad, it
@@ -54,7 +54,7 @@ export interface State {
     flashMessage: string|React.ReactNode;
     providerType: ProviderType;
     injectedProviderName: string;
-};
+}
 
 const INITIAL_STATE: State = {
     // Portal

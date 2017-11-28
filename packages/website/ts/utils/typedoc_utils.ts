@@ -1,25 +1,25 @@
-import * as _ from 'lodash';
 import compareVersions = require('compare-versions');
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
+import * as _ from 'lodash';
 import {
-    TypeDocNode,
-    KindString,
-    ZeroExJsDocSections,
-    MenuSubsectionsBySection,
-    TypeDocType,
-    Type,
+    CustomType,
+    CustomTypeChild,
     DocAgnosticFormat,
     DocSection,
-    TypescriptMethod,
+    IndexSignature,
+    KindString,
+    MenuSubsectionsBySection,
     Parameter,
     Property,
-    CustomType,
-    IndexSignature,
-    CustomTypeChild,
-    TypeParameter,
+    Type,
+    TypeDocNode,
+    TypeDocType,
     TypeDocTypes,
+    TypeParameter,
+    TypescriptMethod,
+    ZeroExJsDocSections,
 } from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import {utils} from 'ts/utils/utils';
 
 const TYPES_MODULE_PATH = '"src/types"';
 

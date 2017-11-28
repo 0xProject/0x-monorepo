@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import {Token, TrackedTokensByNetworkId} from 'ts/types';
 import {localStorage} from 'ts/local_storage/local_storage';
+import {Token, TrackedTokensByNetworkId} from 'ts/types';
 
 const TRACKED_TOKENS_KEY = 'trackedTokens';
 

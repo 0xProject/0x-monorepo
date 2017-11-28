@@ -1,14 +1,14 @@
-import {
-    ExchangeContractErrs,
-    PublicNodeUrlsByNetworkId,
-    ZeroExJsDocSections,
-    SmartContractsDocSections,
-    Docs,
-    ContractAddresses,
-    Networks,
-    WebsitePaths,
-} from 'ts/types';
 import BigNumber from 'bignumber.js';
+import {
+    ContractAddresses,
+    Docs,
+    ExchangeContractErrs,
+    Networks,
+    PublicNodeUrlsByNetworkId,
+    SmartContractsDocSections,
+    WebsitePaths,
+    ZeroExJsDocSections,
+} from 'ts/types';
 
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 

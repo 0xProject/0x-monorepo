@@ -1,9 +1,9 @@
-import * as _ from 'lodash';
 import findVersions = require('find-versions');
-import convert = require('xml-js');
+import * as _ from 'lodash';
+import {DoxityDocObj, S3FileObject, TypeDocNode, VersionToFileName} from 'ts/types';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
-import {VersionToFileName, S3FileObject, TypeDocNode, DoxityDocObj} from 'ts/types';
+import convert = require('xml-js');
 
 export const docUtils = {
     async getVersionToFileNameAsync(s3DocJsonRoot: string):
@@ -29,12 +29,10 @@ export const docUtils = {
             compact: true,
         });
         const responseObj = JSON.parse(responseJSONString);
-        let fileObjs: S3FileObject[];
-        if (_.isArray(responseObj.ListBucketResult.Contents)) {
-            fileObjs = responseObj.ListBucketResult.Contents as S3FileObject[];
-        } else {
-            fileObjs = [responseObj.ListBucketResult.Contents];
-        }
+        const fileObjs: S3FileObject[] = (_.isArray(responseObj.ListBucketResult.Contents)) ?
+            responseObj.ListBucketResult.Contents as S3FileObject[] :
+            [responseObj.ListBucketResult.Contents];
+
         const versionFileNames = _.map(fileObjs, fileObj => {
             return fileObj.Key._text;
         });

@@ -1,20 +1,20 @@
+import BigNumber from 'bignumber.js';
 import {Dispatch} from 'redux';
 import {State} from 'ts/redux/reducer';
 import {
-    Direction,
-    Side,
+    ActionTypes,
     AssetToken,
     BlockchainErrs,
-    Token,
-    SignatureData,
+    Direction,
     Fill,
     Order,
-    ActionTypes,
-    ScreenWidths,
     ProviderType,
+    ScreenWidths,
+    Side,
+    SignatureData,
+    Token,
     TokenStateByAddress,
 } from 'ts/types';
-import BigNumber from 'bignumber.js';
 
 export class Dispatcher {
     private dispatch: Dispatch<State>;

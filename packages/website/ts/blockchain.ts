@@ -1,59 +1,60 @@
-import * as _ from 'lodash';
-import * as React from 'react';
 import {
-    ZeroEx,
-    ZeroExError,
+    BlockParam,
+    DecodedLogEvent,
     ExchangeContractErrs,
     ExchangeContractEventArgs,
     ExchangeEvents,
-    SubscriptionOpts,
     IndexedFilterValues,
-    DecodedLogEvent,
-    BlockParam,
-    LogFillContractEventArgs,
     LogCancelContractEventArgs,
-    Token as ZeroExToken,
+    LogFillContractEventArgs,
     LogWithDecodedArgs,
-    TransactionReceiptWithDecodedLogs,
-    SignedOrder,
     Order,
+    SignedOrder,
+    SubscriptionOpts,
+    Token as ZeroExToken,
+    TransactionReceiptWithDecodedLogs,
+    ZeroEx,
+    ZeroExError,
 } from '0x.js';
 import BigNumber from 'bignumber.js';
-import Web3 = require('web3');
-import promisify = require('es6-promisify');
-import findVersions = require('find-versions');
 import compareVersions = require('compare-versions');
-import contract = require('truffle-contract');
+import promisify = require('es6-promisify');
 import ethUtil = require('ethereumjs-util');
-import ProviderEngine = require('web3-provider-engine');
-import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
-import { TransactionSubmitted } from 'ts/components/flash_messages/transaction_submitted';
+import findVersions = require('find-versions');
+import * as _ from 'lodash';
+import * as React from 'react';
+import contract = require('truffle-contract');
 import {TokenSendCompleted} from 'ts/components/flash_messages/token_send_completed';
-import {RedundantRPCSubprovider} from 'ts/subproviders/redundant_rpc_subprovider';
+import { TransactionSubmitted } from 'ts/components/flash_messages/transaction_submitted';
+import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
+import {tradeHistoryStorage} from 'ts/local_storage/trade_history_storage';
+import {Dispatcher} from 'ts/redux/dispatcher';
 import {InjectedWeb3SubProvider} from 'ts/subproviders/injected_web3_subprovider';
 import {ledgerWalletSubproviderFactory} from 'ts/subproviders/ledger_wallet_subprovider_factory';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {utils} from 'ts/utils/utils';
-import {constants} from 'ts/utils/constants';
-import {configs} from 'ts/utils/configs';
+import {RedundantRPCSubprovider} from 'ts/subproviders/redundant_rpc_subprovider';
 import {
-    BlockchainErrs,
-    Token,
-    SignatureData,
-    Side,
-    ContractResponse,
     BlockchainCallErrs,
+    BlockchainErrs,
     ContractInstance,
-    ProviderType,
-    LedgerWalletSubprovider,
+    ContractResponse,
     EtherscanLinkSuffixes,
+    LedgerWalletSubprovider,
+    ProviderType,
+    Side,
+    SignatureData,
+    Token,
     TokenByAddress,
     TokenStateByAddress,
 } from 'ts/types';
-import {Web3Wrapper} from 'ts/web3_wrapper';
+import {configs} from 'ts/utils/configs';
+import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
-import {tradeHistoryStorage} from 'ts/local_storage/trade_history_storage';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
+import {utils} from 'ts/utils/utils';
+import {Web3Wrapper} from 'ts/web3_wrapper';
+import Web3 = require('web3');
+import ProviderEngine = require('web3-provider-engine');
+import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
+
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
@@ -72,9 +73,68 @@ export class Blockchain {
     private cachedProvider: Web3.Provider;
     private ledgerSubProvider: LedgerWalletSubprovider;
     private zrxPollIntervalId: number;
+    private static async onPageLoadAsync() {
+        if (document.readyState === 'complete') {
+            return; // Already loaded
+        }
+        return new Promise((resolve, reject) => {
+            window.onload = resolve;
+        });
+    }
+    private static getNameGivenProvider(provider: Web3.Provider): string {
+        if (!_.isUndefined((provider as any).isMetaMask)) {
+            return constants.METAMASK_PROVIDER_NAME;
+        }
+
+        // HACK: We use the fact that Parity Signer's provider is an instance of their
+        // internal `Web3FrameProvider` class.
+        const isParitySigner = _.startsWith(provider.constructor.toString(), 'function Web3FrameProvider');
+        if (isParitySigner) {
+            return constants.PARITY_SIGNER_PROVIDER_NAME;
+        }
+
+        return constants.GENERIC_PROVIDER_NAME;
+    }
+    private static async getProviderAsync(injectedWeb3: Web3, networkIdIfExists: number) {
+        const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
+        const publicNodeUrlsIfExistsForNetworkId = constants.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
+        const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
+
+        let provider;
+        if (doesInjectedWeb3Exist && isPublicNodeAvailableForNetworkId) {
+            // We catch all requests involving a users account and send it to the injectedWeb3
+            // instance. All other requests go to the public hosted node.
+            provider = new ProviderEngine();
+            provider.addProvider(new InjectedWeb3SubProvider(injectedWeb3));
+            provider.addProvider(new FilterSubprovider());
+            provider.addProvider(new RedundantRPCSubprovider(
+                publicNodeUrlsIfExistsForNetworkId,
+            ));
+            provider.start();
+        } else if (doesInjectedWeb3Exist) {
+            // Since no public node for this network, all requests go to injectedWeb3 instance
+            provider = injectedWeb3.currentProvider;
+        } else {
+            // If no injectedWeb3 instance, all requests fallback to our public hosted mainnet/testnet node
+            // We do this so that users can still browse the 0x Portal DApp even if they do not have web3
+            // injected into their browser.
+            provider = new ProviderEngine();
+            provider.addProvider(new FilterSubprovider());
+            const networkId = configs.isMainnetEnabled ?
+                constants.MAINNET_NETWORK_ID :
+                constants.TESTNET_NETWORK_ID;
+            provider.addProvider(new RedundantRPCSubprovider(
+                constants.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId],
+            ));
+            provider.start();
+        }
+
+        return provider;
+    }
     constructor(dispatcher: Dispatcher, isSalePage: boolean = false) {
         this.dispatcher = dispatcher;
         this.userAddress = '';
+        // tslint:disable-next-line:no-floating-promises
         this.onPageLoadInitFireAndForgetAsync();
     }
     public async networkIdUpdatedFireAndForgetAsync(newNetworkId: number) {
@@ -216,7 +276,7 @@ export class Blockchain {
                                     signatureData: SignatureData, salt: BigNumber): SignedOrder {
         const ecSignature = signatureData;
         const exchangeContractAddress = this.getExchangeContractAddressIfExists();
-        taker = _.isEmpty(taker) ? constants.NULL_ADDRESS : taker;
+        const takerOrNullAddress = _.isEmpty(taker) ? constants.NULL_ADDRESS : taker;
         const signedOrder = {
             ecSignature,
             exchangeContractAddress,
@@ -227,7 +287,7 @@ export class Blockchain {
             makerTokenAddress,
             makerTokenAmount,
             salt,
-            taker,
+            taker: takerOrNullAddress,
             takerFee,
             takerTokenAddress,
             takerTokenAmount,
@@ -272,51 +332,6 @@ export class Blockchain {
     }
     public getExchangeContractAddressIfExists() {
         return this.exchangeAddress;
-    }
-    public toHumanReadableErrorMsg(error: ZeroExError|ExchangeContractErrs, takerAddress: string): string {
-        const ZeroExErrorToHumanReadableError: {[error: string]: string} = {
-            [ZeroExError.ContractDoesNotExist]: 'Contract does not exist',
-            [ZeroExError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
-            [ZeroExError.UnhandledError]: ' Unhandled error occured',
-            [ZeroExError.UserHasNoAssociatedAddress]: 'User has no addresses available',
-            [ZeroExError.InvalidSignature]: 'Order signature is not valid',
-            [ZeroExError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
-            [ZeroExError.InvalidJump]: 'Invalid jump occured while executing the transaction',
-            [ZeroExError.OutOfGas]: 'Transaction ran out of gas',
-            [ZeroExError.NoNetworkId]: 'No network id detected',
-        };
-        const exchangeContractErrorToHumanReadableError: {[error: string]: string} = {
-            [ExchangeContractErrs.OrderFillExpired]: 'This order has expired',
-            [ExchangeContractErrs.OrderCancelExpired]: 'This order has expired',
-            [ExchangeContractErrs.OrderCancelAmountZero]: 'Order cancel amount can\'t be 0',
-            [ExchangeContractErrs.OrderAlreadyCancelledOrFilled]:
-            'This order has already been completely filled or cancelled',
-            [ExchangeContractErrs.OrderFillAmountZero]: 'Order fill amount can\'t be 0',
-            [ExchangeContractErrs.OrderRemainingFillAmountZero]:
-            'This order has already been completely filled or cancelled',
-            [ExchangeContractErrs.OrderFillRoundingError]: 'Rounding error will occur when filling this order',
-            [ExchangeContractErrs.InsufficientTakerBalance]:
-            'Taker no longer has a sufficient balance to complete this order',
-            [ExchangeContractErrs.InsufficientTakerAllowance]:
-            'Taker no longer has a sufficient allowance to complete this order',
-            [ExchangeContractErrs.InsufficientMakerBalance]:
-            'Maker no longer has a sufficient balance to complete this order',
-            [ExchangeContractErrs.InsufficientMakerAllowance]:
-            'Maker no longer has a sufficient allowance to complete this order',
-            [ExchangeContractErrs.InsufficientTakerFeeBalance]: 'Taker no longer has a sufficient balance to pay fees',
-            [ExchangeContractErrs.InsufficientTakerFeeAllowance]:
-            'Taker no longer has a sufficient allowance to pay fees',
-            [ExchangeContractErrs.InsufficientMakerFeeBalance]: 'Maker no longer has a sufficient balance to pay fees',
-            [ExchangeContractErrs.InsufficientMakerFeeAllowance]:
-            'Maker no longer has a sufficient allowance to pay fees',
-            [ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker]:
-            `This order can only be filled by ${takerAddress}`,
-            [ExchangeContractErrs.InsufficientRemainingFillAmount]:
-            'Insufficient remaining fill amount',
-        };
-        const humanReadableErrorMsg = exchangeContractErrorToHumanReadableError[error] ||
-                                      ZeroExErrorToHumanReadableError[error];
-        return humanReadableErrorMsg;
     }
     public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                       fillTakerTokenAmount: BigNumber,
@@ -446,6 +461,7 @@ export class Blockchain {
     public destroy() {
         clearInterval(this.zrxPollIntervalId);
         this.web3Wrapper.destroy();
+        // tslint:disable-next-line:no-floating-promises
         this.stopWatchingExchangeLogFillEventsAsync(); // fire and forget
     }
     private async showEtherScanLinkAndAwaitTransactionMinedAsync(
@@ -485,7 +501,7 @@ export class Blockchain {
 
         // Start a subscription for new logs
         const exchangeAddress = this.getExchangeContractAddressIfExists();
-        const subscriptionId = await this.zeroEx.exchange.subscribeAsync(
+        const subscriptionId = this.zeroEx.exchange.subscribe(
             ExchangeEvents.LogFill, indexFilterValues,
             async (err: Error, decodedLogEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
             const decodedLog = decodedLogEvent.log;
@@ -493,7 +509,9 @@ export class Blockchain {
                 // Note: it's not entirely clear from the documentation which
                 // errors will be thrown by `watch`. For now, let's log the error
                 // to rollbar and stop watching when one occurs
+                // tslint:disable-next-line:no-floating-promises
                 errorReporter.reportAsync(err); // fire and forget
+                // tslint:disable-next-line:no-floating-promises
                 this.stopWatchingExchangeLogFillEventsAsync(); // fire and forget
                 return;
             } else {
@@ -529,7 +547,7 @@ export class Blockchain {
         }
     }
     private async convertDecodedLogToFillAsync(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
-        const args = decodedLog.args as LogFillContractEventArgs;
+        const args = decodedLog.args;
         const blockTimestamp = await this.web3Wrapper.getBlockTimestampAsync(decodedLog.blockHash);
         const fill = {
             filledTakerTokenAmount: args.filledTakerTokenAmount,
@@ -548,7 +566,7 @@ export class Blockchain {
         return fill;
     }
     private doesLogEventInvolveUser(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
-        const args = decodedLog.args as LogFillContractEventArgs;
+        const args = decodedLog.args;
         const isUserMakerOrTaker = args.maker === this.userAddress ||
                                    args.taker === this.userAddress;
         return isUserMakerOrTaker;
@@ -614,7 +632,7 @@ export class Blockchain {
 
         const provider = await this.getProviderAsync(injectedWeb3, networkId);
         this.zeroEx = new ZeroEx(provider);
-        await this.updateProviderName(injectedWeb3);
+        this.updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
         this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, networkId, shouldPollUserAddress);
         await this.postInstantiationOrUpdatingProviderZeroExAsync();
@@ -636,56 +654,6 @@ export class Blockchain {
     // the current networkId without this value going stale.
     private getBlockchainNetworkId() {
         return this.networkId;
-    }
-    private async getProviderAsync(injectedWeb3: Web3, networkIdIfExists: number) {
-        const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
-        const publicNodeUrlsIfExistsForNetworkId = constants.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
-        const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
-
-        let provider;
-        if (doesInjectedWeb3Exist && isPublicNodeAvailableForNetworkId) {
-            // We catch all requests involving a users account and send it to the injectedWeb3
-            // instance. All other requests go to the public hosted node.
-            provider = new ProviderEngine();
-            provider.addProvider(new InjectedWeb3SubProvider(injectedWeb3));
-            provider.addProvider(new FilterSubprovider());
-            provider.addProvider(new RedundantRPCSubprovider(
-                publicNodeUrlsIfExistsForNetworkId,
-            ));
-            provider.start();
-        } else if (doesInjectedWeb3Exist) {
-            // Since no public node for this network, all requests go to injectedWeb3 instance
-            provider = injectedWeb3.currentProvider;
-        } else {
-            // If no injectedWeb3 instance, all requests fallback to our public hosted mainnet/testnet node
-            // We do this so that users can still browse the 0x Portal DApp even if they do not have web3
-            // injected into their browser.
-            provider = new ProviderEngine();
-            provider.addProvider(new FilterSubprovider());
-            const networkId = configs.isMainnetEnabled ?
-                constants.MAINNET_NETWORK_ID :
-                constants.TESTNET_NETWORK_ID;
-            provider.addProvider(new RedundantRPCSubprovider(
-                constants.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId],
-            ));
-            provider.start();
-        }
-
-        return provider;
-    }
-    private getNameGivenProvider(provider: Web3.Provider): string {
-        if (!_.isUndefined((provider as any).isMetaMask)) {
-            return constants.METAMASK_PROVIDER_NAME;
-        }
-
-        // HACK: We use the fact that Parity Signer's provider is an instance of their
-        // internal `Web3FrameProvider` class.
-        const isParitySigner = _.startsWith(provider.constructor.toString(), 'function Web3FrameProvider');
-        if (isParitySigner) {
-            return constants.PARITY_SIGNER_PROVIDER_NAME;
-        }
-
-        return constants.GENERIC_PROVIDER_NAME;
     }
     private async fetchTokenInformationAsync() {
         utils.assert(!_.isUndefined(this.networkId),
@@ -776,12 +744,4 @@ export class Blockchain {
             }
         }
     }
-    private async onPageLoadAsync() {
-        if (document.readyState === 'complete') {
-            return; // Already loaded
-        }
-        return new Promise((resolve, reject) => {
-            window.onload = resolve;
-        });
-    }
-}
+} // tslint:disable:max-file-line-count

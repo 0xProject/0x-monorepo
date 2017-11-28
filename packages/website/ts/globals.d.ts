@@ -132,6 +132,8 @@ declare class Subprovider {}
 declare module 'web3-provider-engine/subproviders/subprovider' {
     export = Subprovider;
 }
+
+// tslint:disable-next-line:max-classes-per-file
 declare class RpcSubprovider {
     constructor(options: {rpcUrl: string});
     public handleRequest(payload: any, next: any, end: (err?: Error, data?: any) =>  void): void;
@@ -139,6 +141,7 @@ declare class RpcSubprovider {
 declare module 'web3-provider-engine/subproviders/rpc' {
     export = RpcSubprovider;
 }
+// tslint:disable-next-line:max-classes-per-file
 declare class HookedWalletSubprovider {
     constructor(wallet: any);
 }
@@ -148,7 +151,9 @@ declare module 'web3-provider-engine/subproviders/hooked-wallet' {
 
 declare interface Artifact {
     abi: any;
-    networks: {[networkId: number]: {
-        address: string;
-    }};
+    networks: {
+        [networkId: number]: {
+            address: string;
+        };
+    };
 }

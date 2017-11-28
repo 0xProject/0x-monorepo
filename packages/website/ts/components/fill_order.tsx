@@ -563,7 +563,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 await this.props.blockchain.validateFillOrderThrowIfInvalidAsync(
                     signedOrder, takerFillAmount, this.props.userAddress);
             } catch (err) {
-                globalErrMsg = this.props.blockchain.toHumanReadableErrorMsg(err.message, parsedOrder.taker.address);
+                globalErrMsg = this.props.blockchain.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.taker.address);
             }
         }
         if (!_.isEmpty(globalErrMsg)) {
@@ -652,7 +652,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             await this.props.blockchain.validateCancelOrderThrowIfInvalidAsync(
                 signedOrder, availableTakerTokenAmount);
         } catch (err) {
-            globalErrMsg = this.props.blockchain.toHumanReadableErrorMsg(err.message, parsedOrder.taker.address);
+            globalErrMsg = this.props.blockchain.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.taker.address);
         }
         if (!_.isEmpty(globalErrMsg)) {
             this.setState({

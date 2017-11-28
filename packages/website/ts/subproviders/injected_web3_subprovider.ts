@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import Web3 = require('web3');
 import {constants} from 'ts/utils/constants';
+import Web3 = require('web3');
 
 /*
  * This class implements the web3-provider-engine subprovider interface and forwards
@@ -38,6 +38,7 @@ export class InjectedWeb3SubProvider {
         }
     }
     // Required to implement this method despite not needing it for this subprovider
+    // tslint:disable-next-line:prefer-function-over-method
     public setEngine(engine: any) {
         // noop
     }

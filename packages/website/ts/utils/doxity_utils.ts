@@ -1,18 +1,18 @@
 import * as _ from 'lodash';
 import {
-    DoxityDocObj,
-    DoxityContractObj,
-    DoxityAbiDoc,
-    DoxityInput,
+    AbiTypes,
     DocAgnosticFormat,
     DocSection,
+    DoxityAbiDoc,
+    DoxityContractObj,
+    DoxityDocObj,
+    DoxityInput,
+    EventArg,
     Parameter,
     Property,
+    SolidityMethod,
     Type,
     TypeDocTypes,
-    EventArg,
-    AbiTypes,
-    SolidityMethod,
 } from 'ts/types';
 
 export const doxityUtils = {

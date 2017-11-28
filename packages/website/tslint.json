@@ -4,6 +4,7 @@
   ],
   "rules": {
       "no-implicit-dependencies": false,
-      "no-object-literal-type-assertion": false
+      "no-object-literal-type-assertion": false,
+      "completed-docs": false
   }
 }

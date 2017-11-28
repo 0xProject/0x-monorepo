@@ -1,11 +1,11 @@
-import * as _ from 'lodash';
-import Web3 = require('web3');
 import * as EthereumTx from 'ethereumjs-tx';
 import ethUtil = require('ethereumjs-util');
 import * as ledger from 'ledgerco';
-import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
-import {constants} from 'ts/utils/constants';
+import * as _ from 'lodash';
 import {LedgerEthConnection, SignPersonalMessageParams, TxParams} from 'ts/types';
+import {constants} from 'ts/utils/constants';
+import Web3 = require('web3');
+import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
 
 const NUM_ADDRESSES_TO_FETCH = 10;
 const ASK_FOR_ON_DEVICE_CONFIRMATION = false;

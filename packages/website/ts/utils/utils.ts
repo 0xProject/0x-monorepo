@@ -1,23 +1,24 @@
-import * as _ from 'lodash';
-import {
-    SideToAssetToken,
-    SignatureData,
-    Order,
-    Side,
-    TokenByAddress,
-    OrderParty,
-    ScreenWidths,
-    EtherscanLinkSuffixes,
-    Token,
-    Networks,
-} from 'ts/types';
-import * as moment from 'moment';
-import isMobile = require('is-mobile');
-import * as u2f from 'ts/vendor/u2f_api';
+import {ExchangeContractErrs, ZeroExError} from '0x.js';
+import BigNumber from 'bignumber.js';
 import deepEqual = require('deep-equal');
 import ethUtil = require('ethereumjs-util');
-import BigNumber from 'bignumber.js';
+import isMobile = require('is-mobile');
+import * as _ from 'lodash';
+import * as moment from 'moment';
+import {
+    EtherscanLinkSuffixes,
+    Networks,
+    Order,
+    OrderParty,
+    ScreenWidths,
+    Side,
+    SideToAssetToken,
+    SignatureData,
+    Token,
+    TokenByAddress,
+} from 'ts/types';
 import {constants} from 'ts/utils/constants';
+import * as u2f from 'ts/vendor/u2f_api';
 
 const LG_MIN_EM = 64;
 const MD_MIN_EM = 52;
@@ -101,7 +102,7 @@ export const utils = {
         console.log(message);
         /* tslint:enable */
     },
-    sleepAsync(ms: number) {
+    async sleepAsync(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
     deepEqual(actual: any, expected: any, opts?: {strict: boolean}) {
@@ -211,5 +212,54 @@ export const utils = {
         const tokenWithSameSymbolIfExists = _.find(registeredTokens, {name: token.symbol});
         const isUniqueSymbol = _.isUndefined(tokenWithSameSymbolIfExists);
         return isUniqueName && isUniqueSymbol;
+    },
+    zeroExErrToHumanReadableErrMsg(error: ZeroExError|ExchangeContractErrs, takerAddress: string): string {
+        const ZeroExErrorToHumanReadableError: {[error: string]: string} = {
+            [ZeroExError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
+            [ZeroExError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
+            [ZeroExError.TokenTransferProxyContractDoesNotExist]: 'TokenTransferProxy contract does not exist',
+            [ZeroExError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
+            [ZeroExError.TokenContractDoesNotExist]: 'Token contract does not exist',
+            [ZeroExError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
+            [ZeroExError.UnhandledError]: 'Unhandled error occured',
+            [ZeroExError.UserHasNoAssociatedAddress]: 'User has no addresses available',
+            [ZeroExError.InvalidSignature]: 'Order signature is not valid',
+            [ZeroExError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
+            [ZeroExError.InvalidJump]: 'Invalid jump occured while executing the transaction',
+            [ZeroExError.OutOfGas]: 'Transaction ran out of gas',
+            [ZeroExError.NoNetworkId]: 'No network id detected',
+        };
+        const exchangeContractErrorToHumanReadableError: {[error: string]: string} = {
+            [ExchangeContractErrs.OrderFillExpired]: 'This order has expired',
+            [ExchangeContractErrs.OrderCancelExpired]: 'This order has expired',
+            [ExchangeContractErrs.OrderCancelAmountZero]: 'Order cancel amount can\'t be 0',
+            [ExchangeContractErrs.OrderAlreadyCancelledOrFilled]:
+            'This order has already been completely filled or cancelled',
+            [ExchangeContractErrs.OrderFillAmountZero]: 'Order fill amount can\'t be 0',
+            [ExchangeContractErrs.OrderRemainingFillAmountZero]:
+            'This order has already been completely filled or cancelled',
+            [ExchangeContractErrs.OrderFillRoundingError]: 'Rounding error will occur when filling this order',
+            [ExchangeContractErrs.InsufficientTakerBalance]:
+            'Taker no longer has a sufficient balance to complete this order',
+            [ExchangeContractErrs.InsufficientTakerAllowance]:
+            'Taker no longer has a sufficient allowance to complete this order',
+            [ExchangeContractErrs.InsufficientMakerBalance]:
+            'Maker no longer has a sufficient balance to complete this order',
+            [ExchangeContractErrs.InsufficientMakerAllowance]:
+            'Maker no longer has a sufficient allowance to complete this order',
+            [ExchangeContractErrs.InsufficientTakerFeeBalance]: 'Taker no longer has a sufficient balance to pay fees',
+            [ExchangeContractErrs.InsufficientTakerFeeAllowance]:
+            'Taker no longer has a sufficient allowance to pay fees',
+            [ExchangeContractErrs.InsufficientMakerFeeBalance]: 'Maker no longer has a sufficient balance to pay fees',
+            [ExchangeContractErrs.InsufficientMakerFeeAllowance]:
+            'Maker no longer has a sufficient allowance to pay fees',
+            [ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker]:
+            `This order can only be filled by ${takerAddress}`,
+            [ExchangeContractErrs.InsufficientRemainingFillAmount]:
+            'Insufficient remaining fill amount',
+        };
+        const humanReadableErrorMsg = exchangeContractErrorToHumanReadableError[error] ||
+                                      ZeroExErrorToHumanReadableError[error];
+        return humanReadableErrorMsg;
     },
 };

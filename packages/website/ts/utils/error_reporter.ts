@@ -1,7 +1,7 @@
-import {utils} from 'ts/utils/utils';
-import {constants} from 'ts/utils/constants';
-import {configs} from 'ts/utils/configs';
 import {Environments} from 'ts/types';
+import {configs} from 'ts/utils/configs';
+import {constants} from 'ts/utils/constants';
+import {utils} from 'ts/utils/utils';
 
 // Suggested way to include Rollbar with Webpack
 // https://github.com/rollbar/rollbar.js/tree/master/examples/webpack
@@ -32,7 +32,7 @@ import Rollbar = require('../../public/js/rollbar.umd.nojson.min.js');
 const rollbar = Rollbar.init(rollbarConfig);
 
 export const errorReporter = {
-    reportAsync(err: Error): Promise<any> {
+    async reportAsync(err: Error): Promise<any> {
         if (configs.ENVIRONMENT === Environments.DEVELOPMENT) {
             return; // Let's not log development errors to rollbar
         }
