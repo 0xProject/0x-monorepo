@@ -50,6 +50,8 @@ interface OrderStateByOrderHash {
     [orderHash: string]: OrderState;
 }
 
+const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60 * 24; // 1d
+
 /**
  * This class includes all the functionality related to watching a set of orders
  * for potential changes in order validity/fillability. The orderWatcher notifies
@@ -68,6 +70,8 @@ export class OrderStateWatcher {
     private _orderStateUtils: OrderStateUtils;
     private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
     private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
+    private _cleanupJobInterval: number;
+    private _cleanupJobIntervalId: NodeJS.Timer;
     constructor(
         web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, token: TokenWrapper, exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
@@ -92,6 +96,9 @@ export class OrderStateWatcher {
         this._expirationWatcher = new ExpirationWatcher(
             expirationMarginIfExistsMs, orderExpirationCheckingIntervalMsIfExists,
         );
+        this._cleanupJobInterval = _.isUndefined(config) || _.isUndefined(config.cleanupJobIntervalMs) ?
+                                   DEFAULT_CLEANUP_JOB_INTERVAL_MS :
+                                   config.cleanupJobIntervalMs;
     }
     /**
      * Add an order to the orderStateWatcher. Before the order is added, it's
@@ -139,6 +146,9 @@ export class OrderStateWatcher {
         this._callbackIfExists = callback;
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
         this._expirationWatcher.subscribe(this._onOrderExpired.bind(this));
+        this._cleanupJobIntervalId = intervalUtils.setAsyncExcludingInterval(
+            this._cleanupAsync.bind(this), this._cleanupJobInterval,
+        );
     }
     /**
      * Ends an orderStateWatcher subscription.
@@ -152,6 +162,34 @@ export class OrderStateWatcher {
         delete this._callbackIfExists;
         this._eventWatcher.unsubscribe();
         this._expirationWatcher.unsubscribe();
+        intervalUtils.clearAsyncExcludingInterval(this._cleanupJobIntervalId);
+    }
+    private async _cleanupAsync(): Promise<void> {
+        for (const orderHash of _.keys(this._orderByOrderHash)) {
+            this._cleanupOrderDependeeState(orderHash);
+            await this._emitRevalidateOrdersAsync([orderHash]);
+        }
+    }
+    private _cleanupOrderDependeeState(orderHash: string): void {
+        const signedOrder = this._orderByOrderHash[orderHash];
+
+        this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(orderHash);
+        this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(orderHash);
+
+        this._balanceAndProxyAllowanceLazyStore.deleteBalance(signedOrder.makerTokenAddress, signedOrder.maker);
+        this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(signedOrder.makerTokenAddress, signedOrder.maker);
+        this._balanceAndProxyAllowanceLazyStore.deleteBalance(signedOrder.takerTokenAddress, signedOrder.taker);
+        this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(signedOrder.takerTokenAddress, signedOrder.taker);
+
+        const zrxTokenAddress = this._getZRXTokenAddress();
+        if (!signedOrder.makerFee.isZero()) {
+            this._balanceAndProxyAllowanceLazyStore.deleteBalance(zrxTokenAddress, signedOrder.maker);
+            this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(zrxTokenAddress, signedOrder.maker);
+        }
+        if (!signedOrder.takerFee.isZero()) {
+            this._balanceAndProxyAllowanceLazyStore.deleteBalance(zrxTokenAddress, signedOrder.taker);
+            this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(zrxTokenAddress, signedOrder.taker);
+        }
     }
     private _onOrderExpired(orderHash: string): void {
         const orderState: OrderState = {
@@ -266,8 +304,7 @@ export class OrderStateWatcher {
             this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress] = new Set();
         }
         this._dependentOrderHashes[signedOrder.maker][signedOrder.makerTokenAddress].add(orderHash);
-        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
-        const zrxTokenAddress = exchange.getZRXTokenAddress();
+        const zrxTokenAddress = this._getZRXTokenAddress();
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress])) {
             this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress] = new Set();
         }
@@ -281,5 +318,10 @@ export class OrderStateWatcher {
         if (_.isEmpty(this._dependentOrderHashes[makerAddress])) {
             delete this._dependentOrderHashes[makerAddress];
         }
+    }
+    private _getZRXTokenAddress(): string {
+        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const zrxTokenAddress = exchange.getZRXTokenAddress();
+        return zrxTokenAddress;
     }
 }
