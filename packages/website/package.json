@@ -1,6 +1,7 @@
 {
   "name": "website",
   "version": "0.0.0",
+  "private": true,
   "description": "Website and 0x portal dapp",
   "scripts": {
     "build": "NODE_ENV=production webpack; exit 0;",
