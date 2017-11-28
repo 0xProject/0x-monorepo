@@ -50,7 +50,7 @@ interface OrderStateByOrderHash {
     [orderHash: string]: OrderState;
 }
 
-const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60 * 24; // 1d
+const DEFAULT_CLEANUP_JOB_INTERVAL_MS = 1000 * 60 * 60; // 1h
 
 /**
  * This class includes all the functionality related to watching a set of orders
