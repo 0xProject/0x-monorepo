@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {Type} from 'ts/pages/documentation/type';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
 import {Event, EventArg, HeaderSizes} from 'ts/types';
@@ -11,6 +12,7 @@ const CUSTOM_GREEN = 'rgb(77, 162, 75)';
 
 interface EventDefinitionProps {
     event: Event;
+    docsInfo: DocsInfo;
 }
 
 interface EventDefinitionState {
@@ -53,9 +55,15 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
     private renderEventCode() {
         const indexed = <span style={{color: CUSTOM_GREEN}}> indexed</span>;
         const eventArgs = _.map(this.props.event.eventArgs, (eventArg: EventArg) => {
+            const type = (
+                <Type
+                    type={eventArg.type}
+                    docsInfo={this.props.docsInfo}
+                />
+            );
             return (
                 <span key={`eventArg-${eventArg.name}`}>
-                    {eventArg.name}{eventArg.isIndexed ? indexed : ''}:  <Type type={eventArg.type} />,
+                    {eventArg.name}{eventArg.isIndexed ? indexed : ''}:  {type},
                 </span>
             );
         });

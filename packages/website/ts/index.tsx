@@ -78,11 +78,11 @@ const LazyPortal = createLazyComponent(
     'Portal', async () => System.import<any>(/* webpackChunkName: "portal" */'ts/containers/portal'),
 );
 const LazyZeroExJSDocumentation = createLazyComponent(
-    'ZeroExJSDocumentation',
+    'Documentation',
     async () => System.import<any>(/* webpackChunkName: "zeroExDocs" */'ts/containers/zero_ex_js_documentation'),
 );
 const LazySmartContractsDocumentation = createLazyComponent(
-    'SmartContractsDocumentation',
+    'Documentation',
     async () => System.import<any>(
         /* webpackChunkName: "smartContractDocs" */'ts/containers/smart_contracts_documentation',
     ),

@@ -8,7 +8,7 @@ import {constants} from 'ts/utils/constants';
 interface VersionDropDownProps {
     selectedVersion: string;
     versions: string[];
-    doc: Docs;
+    docPath: string;
 }
 
 interface VersionDropDownState {}
@@ -40,7 +40,6 @@ export class VersionDropDown extends React.Component<VersionDropDownProps, Versi
         return items;
     }
     private updateSelectedVersion(e: any, index: number, value: string) {
-        const docPath = constants.docToPath[this.props.doc];
-        window.location.href = `${docPath}/${value}${window.location.hash}`;
+        window.location.href = `${this.props.docPath}/${value}${window.location.hash}`;
     }
 }

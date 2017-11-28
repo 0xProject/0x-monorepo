@@ -643,7 +643,7 @@ export class Blockchain {
     // of the ZeroEx instance.
     private async postInstantiationOrUpdatingProviderZeroExAsync() {
         utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        this.exchangeAddress = await this.zeroEx.exchange.getContractAddress();
+        this.exchangeAddress = this.zeroEx.exchange.getContractAddress();
     }
     private updateProviderName(injectedWeb3: Web3) {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);

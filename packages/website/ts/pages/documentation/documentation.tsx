@@ -11,6 +11,7 @@ import semverSort = require('semver-sort');
 import {TopBar} from 'ts/components/top_bar';
 import {Badge} from 'ts/components/ui/badge';
 import {Comment} from 'ts/pages/documentation/comment';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {EventDefinition} from 'ts/pages/documentation/event_definition';
 import {MethodBlock} from 'ts/pages/documentation/method_block';
 import {SourceLink} from 'ts/pages/documentation/source_link';
@@ -26,49 +27,46 @@ import {
     CustomType,
     DocAgnosticFormat,
     Docs,
+    DocsInfoConfig,
     DoxityDocObj,
     EtherscanLinkSuffixes,
     Event,
     MenuSubsectionsBySection,
     Networks,
     Property,
-    SmartContractsDocSections,
     SolidityMethod,
     Styles,
     TypeDefinitionByName,
+    TypeDocNode,
+    TypescriptMethod,
+    WebsitePaths,
 } from 'ts/types';
 import {constants} from 'ts/utils/constants';
 import {docUtils} from 'ts/utils/doc_utils';
-import {doxityUtils} from 'ts/utils/doxity_utils';
 import {utils} from 'ts/utils/utils';
-/* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/smart_contracts/introduction');
-/* tslint:enable:no-var-requires */
 
 const SCROLL_TO_TIMEOUT = 500;
+const SCROLL_TOP_ID = 'docsScrollTop';
 const CUSTOM_PURPLE = '#690596';
 const CUSTOM_RED = '#e91751';
 const CUSTOM_TURQUOIS = '#058789';
-const DOC_JSON_ROOT = constants.S3_SMART_CONTRACTS_DOCUMENTATION_JSON_ROOT;
 
-const sectionNameToMarkdown = {
-    [SmartContractsDocSections.Introduction]: IntroMarkdown,
-};
 const networkNameToColor: {[network: string]: string} = {
     [Networks.kovan]: CUSTOM_PURPLE,
     [Networks.ropsten]: CUSTOM_RED,
     [Networks.mainnet]: CUSTOM_TURQUOIS,
 };
 
-export interface SmartContractsDocumentationAllProps {
+export interface DocumentationAllProps {
     source: string;
     location: Location;
     dispatcher: Dispatcher;
     docsVersion: string;
     availableDocVersions: string[];
+    docsInfo: DocsInfo;
 }
 
-interface SmartContractsDocumentationState {
+interface DocumentationState {
     docAgnosticFormat?: DocAgnosticFormat;
 }
 
@@ -91,9 +89,9 @@ const styles: Styles = {
     },
 };
 
-export class SmartContractsDocumentation extends
-    React.Component<SmartContractsDocumentationAllProps, SmartContractsDocumentationState> {
-    constructor(props: SmartContractsDocumentationAllProps) {
+export class Documentation extends
+    React.Component<DocumentationAllProps, DocumentationState> {
+    constructor(props: DocumentationAllProps) {
         super(props);
         this.state = {
             docAgnosticFormat: undefined,
@@ -108,20 +106,21 @@ export class SmartContractsDocumentation extends
         this.fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
     }
     public render() {
-        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
-                                         ? {}
-                                         : this.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
+        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat) ?
+                {} :
+                this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         return (
             <div>
-                <DocumentTitle title="0x Smart Contract Documentation"/>
+                <DocumentTitle title={`${this.props.docsInfo.packageName} Documentation`}/>
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
                     docsVersion={this.props.docsVersion}
                     availableDocVersions={this.props.availableDocVersions}
+                    menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     shouldFullWidth={true}
-                    doc={Docs.SmartContracts}
+                    docPath={this.props.docsInfo.websitePath}
                 />
                 {_.isUndefined(this.state.docAgnosticFormat) ?
                     <div
@@ -150,9 +149,9 @@ export class SmartContractsDocumentation extends
                                 <NestedSidebarMenu
                                     selectedVersion={this.props.docsVersion}
                                     versions={this.props.availableDocVersions}
-                                    topLevelMenu={constants.menuSmartContracts}
+                                    topLevelMenu={this.props.docsInfo.getMenu(this.props.docsVersion)}
                                     menuSubsectionsBySection={menuSubsectionsBySection}
-                                    doc={Docs.SmartContracts}
+                                    docPath={this.props.docsInfo.websitePath}
                                 />
                             </div>
                         </div>
@@ -162,10 +161,10 @@ export class SmartContractsDocumentation extends
                                 style={styles.mainContainers}
                                 className="absolute"
                             >
-                                <div id="smartContractsDocs" />
+                                <div id={SCROLL_TOP_ID} />
                                 <h1 className="md-pl2 sm-pl3">
-                                    <a href={constants.GITHUB_CONTRACTS_URL} target="_blank">
-                                        0x Smart Contracts
+                                    <a href={this.props.docsInfo.packageUrl} target="_blank">
+                                        {this.props.docsInfo.packageName}
                                     </a>
                                 </h1>
                                 {this.renderDocumentation()}
@@ -177,19 +176,16 @@ export class SmartContractsDocumentation extends
         );
     }
     private renderDocumentation(): React.ReactNode {
-        const subMenus = _.values(constants.menuSmartContracts);
+        const subMenus = _.values(this.props.docsInfo.getMenu());
         const orderedSectionNames = _.flatten(subMenus);
-        // Since smart contract method params are all base types, no need to pass
-        // down the typeDefinitionByName
-        const typeDefinitionByName = {};
-        const sections = _.map(orderedSectionNames, this.renderSection.bind(this, typeDefinitionByName));
 
-        return sections;
+        const typeDefinitionByName = this.props.docsInfo.getTypeDefinitionsByName(this.state.docAgnosticFormat);
+        const renderedSections = _.map(orderedSectionNames, this.renderSection.bind(this, typeDefinitionByName));
+
+        return renderedSections;
     }
     private renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
-        const docSection = this.state.docAgnosticFormat[sectionName];
-
-        const markdownFileIfExists = sectionNameToMarkdown[sectionName];
+        const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdown[sectionName];
         if (!_.isUndefined(markdownFileIfExists)) {
             return (
                 <MarkdownSection
@@ -200,9 +196,21 @@ export class SmartContractsDocumentation extends
             );
         }
 
+        const docSection = this.state.docAgnosticFormat[sectionName];
         if (_.isUndefined(docSection)) {
             return null;
         }
+
+        const sortedTypes = _.sortBy(docSection.types, 'name');
+        const typeDefs = _.map(sortedTypes, customType => {
+            return (
+                <TypeDefinition
+                    key={`type-${customType.name}`}
+                    customType={customType}
+                    docsInfo={this.props.docsInfo}
+                />
+            );
+        });
 
         const sortedProperties = _.sortBy(docSection.properties, 'name');
         const propertyDefs = _.map(sortedProperties, this.renderProperty.bind(this));
@@ -219,6 +227,7 @@ export class SmartContractsDocumentation extends
                 <EventDefinition
                     key={`event-${event.name}-${i}`}
                     event={event}
+                    docsInfo={this.props.docsInfo}
                 />
             );
         });
@@ -231,7 +240,7 @@ export class SmartContractsDocumentation extends
                         <div style={{marginRight: 7}}>
                             <SectionHeader sectionName={sectionName} />
                         </div>
-                        {this.renderNetworkBadges(sectionName)}
+                        {this.renderNetworkBadgesIfExists(sectionName)}
                 </div>
                 {docSection.comment &&
                     <Comment
@@ -239,9 +248,10 @@ export class SmartContractsDocumentation extends
                     />
                 }
                 {docSection.constructors.length > 0 &&
+                 this.props.docsInfo.isVisibleConstructor(sectionName) &&
                     <div>
                         <h2 className="thin">Constructor</h2>
-                        {this.renderConstructors(docSection.constructors, typeDefinitionByName)}
+                        {this.renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
                     </div>
                 }
                 {docSection.properties.length > 0 &&
@@ -256,20 +266,28 @@ export class SmartContractsDocumentation extends
                         <div>{methodDefs}</div>
                     </div>
                 }
-                {docSection.events.length > 0 &&
+                {!_.isUndefined(docSection.events) && docSection.events.length > 0 &&
                     <div>
                         <h2 className="thin">Events</h2>
                         <div>{eventDefs}</div>
                     </div>
                 }
+                {!_.isUndefined(typeDefs) &&  typeDefs.length > 0 &&
+                    <div>
+                        <div>{typeDefs}</div>
+                    </div>
+                }
             </div>
         );
     }
-    private renderNetworkBadges(sectionName: string) {
+    private renderNetworkBadgesIfExists(sectionName: string) {
         const networkToAddressByContractName = constants.contractAddresses[this.props.docsVersion];
         const badges = _.map(networkToAddressByContractName,
             (addressByContractName: AddressByContractName, networkName: string) => {
                 const contractAddress = addressByContractName[sectionName];
+                if (_.isUndefined(contractAddress)) {
+                    return null;
+                }
                 const linkIfExists = utils.getEtherScanLinkIfExists(
                     contractAddress, constants.networkIdByName[networkName], EtherscanLinkSuffixes.address,
                 );
@@ -289,11 +307,12 @@ export class SmartContractsDocumentation extends
         });
         return badges;
     }
-    private renderConstructors(constructors: SolidityMethod[],
+    private renderConstructors(constructors: SolidityMethod[]|TypescriptMethod[],
+                               sectionName: string,
                                typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
         const constructorDefs = _.map(constructors, constructor => {
             return this.renderMethodBlocks(
-                constructor, SmartContractsDocSections.zeroEx, constructor.isConstructor, typeDefinitionByName,
+                constructor, sectionName, constructor.isConstructor, typeDefinitionByName,
             );
         });
         return (
@@ -309,12 +328,13 @@ export class SmartContractsDocumentation extends
                 className="pb3"
             >
                 <code className="hljs">
-                    {property.name}: <Type type={property.type} />
+                    {property.name}: <Type type={property.type} docsInfo={this.props.docsInfo} />
                 </code>
                 {property.source &&
                     <SourceLink
                         version={this.props.docsVersion}
                         source={property.source}
+                        baseUrl={this.props.docsInfo.packageUrl}
                     />
                 }
                 {property.comment &&
@@ -326,14 +346,15 @@ export class SmartContractsDocumentation extends
             </div>
         );
     }
-    private renderMethodBlocks(method: SolidityMethod, sectionName: string, isConstructor: boolean,
-                               typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
+    private renderMethodBlocks(method: SolidityMethod|TypescriptMethod, sectionName: string,
+                               isConstructor: boolean, typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
         return (
             <MethodBlock
-               key={`method-${method.name}`}
+               key={`method-${method.name}-${sectionName}`}
                method={method}
                typeDefinitionByName={typeDefinitionByName}
                libraryVersion={this.props.docsVersion}
+               docsInfo={this.props.docsInfo}
             />
         );
     }
@@ -341,40 +362,13 @@ export class SmartContractsDocumentation extends
         const hashWithPrefix = this.props.location.hash;
         let hash = hashWithPrefix.slice(1);
         if (_.isEmpty(hash)) {
-            hash = 'smartContractsDocs'; // scroll to the top
+            hash = SCROLL_TOP_ID; // scroll to the top
         }
 
         scroller.scrollTo(hash, {duration: 0, offset: 0, containerId: 'documentation'});
     }
-    private getMenuSubsectionsBySection(docAgnosticFormat?: DocAgnosticFormat): MenuSubsectionsBySection {
-        const menuSubsectionsBySection = {} as MenuSubsectionsBySection;
-        if (_.isUndefined(docAgnosticFormat)) {
-            return menuSubsectionsBySection;
-        }
-
-        const docSections = _.keys(SmartContractsDocSections);
-        _.each(docSections, sectionName => {
-            const docSection = docAgnosticFormat[sectionName];
-            if (_.isUndefined(docSection)) {
-                return; // no-op
-            }
-
-            if (sectionName === SmartContractsDocSections.types) {
-                const sortedTypesNames = _.sortBy(docSection.types, 'name');
-                const typeNames = _.map(sortedTypesNames, t => t.name);
-                menuSubsectionsBySection[sectionName] = typeNames;
-            } else {
-                const sortedEventNames = _.sortBy(docSection.events, 'name');
-                const eventNames = _.map(sortedEventNames, m => m.name);
-                const sortedMethodNames = _.sortBy(docSection.methods, 'name');
-                const methodNames = _.map(sortedMethodNames, m => m.name);
-                menuSubsectionsBySection[sectionName] = [...methodNames, ...eventNames];
-            }
-        });
-        return menuSubsectionsBySection;
-    }
     private async fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
-        const versionToFileName = await docUtils.getVersionToFileNameAsync(DOC_JSON_ROOT);
+        const versionToFileName = await docUtils.getVersionToFileNameAsync(this.props.docsInfo.docsJsonRoot);
         const versions = _.keys(versionToFileName);
         this.props.dispatcher.updateAvailableDocVersions(versions);
         const sortedVersions = semverSort.desc(versions);
@@ -390,8 +384,10 @@ export class SmartContractsDocumentation extends
         this.props.dispatcher.updateCurrentDocsVersion(versionToFetch);
 
         const versionFileNameToFetch = versionToFileName[versionToFetch];
-        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFileNameToFetch, DOC_JSON_ROOT);
-        const docAgnosticFormat = doxityUtils.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
+        const versionDocObj = await docUtils.getJSONDocFileAsync(
+            versionFileNameToFetch, this.props.docsInfo.docsJsonRoot,
+        );
+        const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
 
         this.setState({
             docAgnosticFormat,

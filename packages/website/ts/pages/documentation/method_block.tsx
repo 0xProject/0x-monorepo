@@ -4,6 +4,7 @@ import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import {Comment} from 'ts/pages/documentation/comment';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {MethodSignature} from 'ts/pages/documentation/method_signature';
 import {SourceLink} from 'ts/pages/documentation/source_link';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
@@ -23,6 +24,7 @@ interface MethodBlockProps {
     method: SolidityMethod|TypescriptMethod;
     libraryVersion: string;
     typeDefinitionByName: TypeDefinitionByName;
+    docsInfo: DocsInfo;
 }
 
 interface MethodBlockState {
@@ -85,12 +87,14 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                     <MethodSignature
                         method={method}
                         typeDefinitionByName={this.props.typeDefinitionByName}
+                        docsInfo={this.props.docsInfo}
                     />
                 </code>
                 {(method as TypescriptMethod).source &&
                     <SourceLink
                         version={this.props.libraryVersion}
                         source={(method as TypescriptMethod).source}
+                        baseUrl={this.props.docsInfo.packageUrl}
                     />
                 }
                 {method.comment &&
