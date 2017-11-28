@@ -5,7 +5,7 @@ import {JSONRPCPayload} from '../../../src/types';
  * the constant gas estimate when queried.
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
-export class FakeGasEstimateProvider {
+export class FakeGasEstimateSubprovider {
     private constantGasAmount: number;
     constructor(constantGasAmount: number) {
         this.constantGasAmount = constantGasAmount;

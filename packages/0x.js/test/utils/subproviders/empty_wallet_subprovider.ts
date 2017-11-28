@@ -5,7 +5,7 @@ import {JSONRPCPayload} from '../../../src/types';
  * that the provider has no addresses when queried.
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
-export class EmptyWalletSubProvider {
+export class EmptyWalletSubprovider {
     // This method needs to be here to satisfy the interface but linter wants it to be static.
     // tslint:disable-next-line:prefer-function-over-method
     public handleRequest(payload: JSONRPCPayload, next: () => void, end: (err: Error|null, result: any) => void) {
