@@ -166,11 +166,11 @@ export class OrderStateWatcher {
     }
     private async _cleanupAsync(): Promise<void> {
         for (const orderHash of _.keys(this._orderByOrderHash)) {
-            this._cleanupOrderDependeeState(orderHash);
+            this._cleanupOrderRelatedState(orderHash);
             await this._emitRevalidateOrdersAsync([orderHash]);
         }
     }
-    private _cleanupOrderDependeeState(orderHash: string): void {
+    private _cleanupOrderRelatedState(orderHash: string): void {
         const signedOrder = this._orderByOrderHash[orderHash];
 
         this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(orderHash);
