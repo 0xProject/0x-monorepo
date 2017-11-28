@@ -1,6 +1,10 @@
 # CHANGELOG
 
-vx.x.x
+v0.27.1 - _November 28, 2017_
+------------------------
+    * Export `TransactionOpts` type
+
+v0.27.0 - _November 28, 2017_
 ------------------------
     * Make `ZeroExConfig` required parameter of `ZeroEx` constructor (#233)
     * Add a required property `networkId` to `ZeroExConfig` (#233)
@@ -8,9 +12,11 @@ vx.x.x
     * Remove `ZeroExError.ContractNotFound` and replace it with contract-specific errors (#233)
     * Make `DecodedLogEvent<A>` contain `LogWithDecodedArgs<A>` under log key instead of merging it in like web3 does (#234)
     * Rename `removed` to `isRemoved` in `DecodedLogEvent<A>` (#234)
+    * Add config allowing to specify gasPrice and gasLimit for every transaction sending method (#235)
+    * All transaction sending methods now call `estimateGas` if no gas amount was supplied (#235)
     * Modify order validation methods to validate against the `latest` block, not against the `pending` block (#236)
 
-v0.26.0
+v0.26.0 - _November 21, 2017_
 ------------------------
     * Add post-formatter for logs converting `blockNumber`, `logIndex`, `transactionIndex` from hexes to numbers (#231)
     * Remove support for Async callback types when used in Subscribe functions (#222)

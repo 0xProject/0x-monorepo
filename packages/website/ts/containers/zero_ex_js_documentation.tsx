@@ -116,6 +116,7 @@ const docsInfoConfig: DocsInfoConfig = {
         'MethodOpts',
         'ValidateOrderFillableOpts',
         'OrderTransactionOpts',
+        'TransactionOpts',
         'ContractEventArg',
         'LogEvent',
         'LogEntry',

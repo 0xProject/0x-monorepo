@@ -6,6 +6,10 @@
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@types/accounting/-/accounting-0.4.1.tgz#865d9f5694fd7c438fba34eb4bc82eec6f34cdd5"
 
+"@types/bintrees@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/bintrees/-/bintrees-1.0.2.tgz#0dfdce4eeebdf90427bd35b0e79dc248b3d157a6"
+
 "@types/dateformat@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/dateformat/-/dateformat-1.0.1.tgz#2e5b235c8c55652c4fec284506d2a36fe65fe87e"
@@ -17,10 +21,6 @@
 "@types/fetch-mock@^5.12.1":
   version "5.12.2"
   resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-5.12.2.tgz#8c96517ff74303031c65c5da2d99858e34c844d2"
-
-"@types/bintrees@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@types/bintrees/-/bintrees-1.0.2.tgz#0dfdce4eeebdf90427bd35b0e79dc248b3d157a6"
 
 "@types/fs-extra@^4.0.0":
   version "4.0.5"
@@ -2888,9 +2888,9 @@ ethereumjs-blockstream@^2.0.6:
     source-map-support "0.4.14"
     uuid "3.0.1"
 
-ethereumjs-testrpc@4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/ethereumjs-testrpc/-/ethereumjs-testrpc-4.0.1.tgz#af23babff4c36008418bc6de4c80f81606896cad"
+ethereumjs-testrpc@6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/ethereumjs-testrpc/-/ethereumjs-testrpc-6.0.3.tgz#7a0b87bf3670f92f607f98fa6a78801d9741b124"
   dependencies:
     webpack "^3.0.0"
 
