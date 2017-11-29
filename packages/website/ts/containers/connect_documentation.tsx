@@ -62,6 +62,8 @@ const docsInfoConfig: DocsInfoConfig = {
         'TokenPairsItem',
         'TokenPairsRequest',
         'TokenTradeInfo',
+        'Order',
+        'SignedOrder',
     ],
     sectionNameToModulePath: {
         [connectDocSections.httpClient]: ['"src/http_client"'],
