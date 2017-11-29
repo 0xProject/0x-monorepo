@@ -1,27 +1,30 @@
-import 'mocha';
-import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
+import * as chai from 'chai';
 import promisify = require('es6-promisify');
-import {web3Factory} from './utils/web3_factory';
+import 'mocha';
+import * as Web3 from 'web3';
+
 import {
+    ApprovalContractEventArgs,
+    ContractEvent,
+    DecodedLogEvent,
+    LogEvent,
+    LogWithDecodedArgs,
+    SubscriptionOpts,
+    Token,
+    TokenContractEventArgs,
+    TokenEvents,
+    TransferContractEventArgs,
     ZeroEx,
     ZeroExError,
-    Token,
-    SubscriptionOpts,
-    TokenEvents,
-    ContractEvent,
-    TransferContractEventArgs,
-    ApprovalContractEventArgs,
-    TokenContractEventArgs,
-    LogWithDecodedArgs,
-    LogEvent,
-    DecodedLogEvent,
 } from '../src';
+import {BlockParamLiteral, DoneCallback} from '../src/types';
+
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
 import {TokenUtils} from './utils/token_utils';
-import {DoneCallback, BlockParamLiteral} from '../src/types';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -35,9 +38,12 @@ describe('TokenWrapper', () => {
     let tokenUtils: TokenUtils;
     let coinbase: string;
     let addressWithoutFunds: string;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
+        zeroEx = new ZeroEx(web3.currentProvider, config);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);
@@ -80,7 +86,7 @@ describe('TokenWrapper', () => {
             const toAddress = coinbase;
             return expect(zeroEx.token.transferAsync(
                 nonExistentTokenAddress, fromAddress, toAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+            )).to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
         });
     });
     describe('#transferFromAsync', () => {
@@ -153,7 +159,7 @@ describe('TokenWrapper', () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             return expect(zeroEx.token.transferFromAsync(
                 nonExistentTokenAddress, fromAddress, toAddress, senderAddress, new BigNumber(42),
-            )).to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+            )).to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
         });
     });
     describe('#getBalanceAsync', () => {
@@ -169,7 +175,7 @@ describe('TokenWrapper', () => {
                 const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
                 const ownerAddress = coinbase;
                 return expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress))
-                    .to.be.rejectedWith(ZeroExError.ContractDoesNotExist);
+                    .to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
             });
             it('should return a balance of 0 for a non-existent owner address', async () => {
                 const token = tokens[0];
@@ -184,7 +190,7 @@ describe('TokenWrapper', () => {
             before(async () => {
                 const hasAddresses = false;
                 const web3WithoutAccounts = web3Factory.create(hasAddresses);
-                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider);
+                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should return balance even when called with Web3 provider instance without addresses', async () => {
                     const token = tokens[0];
@@ -281,7 +287,7 @@ describe('TokenWrapper', () => {
             before(async () => {
                 const hasAddresses = false;
                 const web3WithoutAccounts = web3Factory.create(hasAddresses);
-                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider);
+                zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should get the proxy allowance', async () => {
                 const token = tokens[0];
@@ -361,10 +367,11 @@ describe('TokenWrapper', () => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
-                    expect(logEvent.logIndex).to.be.equal(0);
-                    expect(logEvent.transactionIndex).to.be.equal(0);
-                    expect(logEvent.blockNumber).to.be.a('number');
-                    const args = logEvent.args;
+                    expect(logEvent.isRemoved).to.be.false();
+                    expect(logEvent.log.logIndex).to.be.equal(0);
+                    expect(logEvent.log.transactionIndex).to.be.equal(0);
+                    expect(logEvent.log.blockNumber).to.be.a('number');
+                    const args = logEvent.log.args;
                     expect(args._from).to.be.equal(coinbase);
                     expect(args._to).to.be.equal(addressWithoutFunds);
                     expect(args._value).to.be.bignumber.equal(transferAmount);
@@ -379,7 +386,8 @@ describe('TokenWrapper', () => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     expect(logEvent).to.not.be.undefined();
-                    const args = logEvent.args;
+                    expect(logEvent.isRemoved).to.be.false();
+                    const args = logEvent.log.args;
                     expect(args._owner).to.be.equal(coinbase);
                     expect(args._spender).to.be.equal(addressWithoutFunds);
                     expect(args._value).to.be.bignumber.equal(allowanceAmount);
@@ -390,7 +398,7 @@ describe('TokenWrapper', () => {
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when zeroEx.setProviderAsync called', (done: DoneCallback) => {
+        it('Outstanding subscriptions are cancelled when zeroEx.setProvider called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
@@ -402,7 +410,7 @@ describe('TokenWrapper', () => {
                     done();
                 };
                 const newProvider = web3Factory.getRpcProvider();
-                await zeroEx.setProviderAsync(newProvider);
+                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
                 zeroEx.token.subscribe(
                     tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackToBeCalled,
                 );
@@ -426,14 +434,14 @@ describe('TokenWrapper', () => {
         let tokenAddress: string;
         let tokenTransferProxyAddress: string;
         const subscriptionOpts: SubscriptionOpts = {
-            fromBlock: BlockParamLiteral.Earliest,
+            fromBlock: 0,
             toBlock: BlockParamLiteral.Latest,
         };
         let txHash: string;
-        before(async () => {
+        before(() => {
             const token = tokens[0];
             tokenAddress = token.address;
-            tokenTransferProxyAddress = await zeroEx.proxy.getContractAddressAsync();
+            tokenTransferProxyAddress = zeroEx.proxy.getContractAddress();
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);

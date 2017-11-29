@@ -1,17 +1,23 @@
 import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
+
 import {ZeroEx} from '../src';
 import {TokenTransferProxyWrapper} from '../src/contract_wrappers/token_transfer_proxy_wrapper';
+
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
 describe('TokenTransferProxyWrapper', () => {
     let zeroEx: ZeroEx;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         const web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
+        zeroEx = new ZeroEx(web3.currentProvider, config);
     });
     describe('#isAuthorizedAsync', () => {
         it('should return false if the address is not authorized', async () => {

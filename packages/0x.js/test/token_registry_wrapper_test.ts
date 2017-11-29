@@ -1,11 +1,14 @@
+import {schemas, SchemaValidator} from '@0xproject/json-schemas';
+import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
-import * as chai from 'chai';
-import {SchemaValidator, schemas} from '@0xproject/json-schemas';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {ZeroEx, Token} from '../src';
+
+import {Token, ZeroEx} from '../src';
+
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -24,9 +27,12 @@ describe('TokenRegistryWrapper', () => {
     const registeredName = '0x Protocol Token';
     const unregisteredSymbol = 'MAL';
     const unregisteredName = 'Malicious Token';
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
     before(async () => {
         const web3 = web3Factory.create();
-        zeroEx = new ZeroEx(web3.currentProvider);
+        zeroEx = new ZeroEx(web3.currentProvider, config);
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         _.map(tokens, token => {
             tokenAddressBySymbol[token.symbol] = token.address;

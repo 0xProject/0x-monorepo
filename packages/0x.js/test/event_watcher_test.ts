@@ -1,19 +1,22 @@
-import 'mocha';
+import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
+import 'mocha';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
-import BigNumber from 'bignumber.js';
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
-import {Web3Wrapper} from '../src/web3_wrapper';
-import {EventWatcher} from '../src/order_watcher/event_watcher';
+
 import {
-    ZeroEx,
-    LogEvent,
     DecodedLogEvent,
+    LogEvent,
+    ZeroEx,
 } from '../src';
+import {EventWatcher} from '../src/order_watcher/event_watcher';
 import {DoneCallback} from '../src/types';
+import {Web3Wrapper} from '../src/web3_wrapper';
+
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -57,7 +60,7 @@ describe('EventWatcher', () => {
     before(async () => {
         web3 = web3Factory.create();
         const pollingIntervalMs = 10;
-        web3Wrapper = new Web3Wrapper(web3.currentProvider);
+        web3Wrapper = new Web3Wrapper(web3.currentProvider, constants.TESTRPC_NETWORK_ID);
         eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalMs);
     });
     afterEach(() => {

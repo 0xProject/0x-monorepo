@@ -1,9 +1,13 @@
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
+import * as Web3 from 'web3';
 
 export enum ZeroExError {
-    ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
     ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
+    ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
+    EtherTokenContractDoesNotExist = 'ETHER_TOKEN_CONTRACT_DOES_NOT_EXIST',
+    TokenTransferProxyContractDoesNotExist = 'TOKEN_TRANSFER_PROXY_CONTRACT_DOES_NOT_EXIST',
+    TokenRegistryContractDoesNotExist = 'TOKEN_REGISTRY_CONTRACT_DOES_NOT_EXIST',
+    TokenContractDoesNotExist = 'TOKEN_CONTRACT_DOES_NOT_EXIST',
     UnhandledError = 'UNHANDLED_ERROR',
     UserHasNoAssociatedAddress = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
     InvalidSignature = 'INVALID_SIGNATURE',
@@ -40,7 +44,10 @@ export type OrderValues = [BigNumber, BigNumber, BigNumber,
                            BigNumber, BigNumber, BigNumber];
 
 export type LogEvent = Web3.LogEntryEvent;
-export type DecodedLogEvent<ArgsType> = Web3.DecodedLogEntryEvent<ArgsType>;
+export interface DecodedLogEvent<ArgsType> {
+    isRemoved: boolean;
+    log: LogWithDecodedArgs<ArgsType>;
+}
 
 export type EventCallback<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => void;
 export type EventWatcherCallback = (log: LogEvent) => void;
@@ -325,6 +332,7 @@ export interface TxOpts {
     from: string;
     gas?: number;
     value?: BigNumber;
+    gasPrice?: BigNumber;
 }
 
 export interface TokenAddressBySymbol {
@@ -348,9 +356,11 @@ export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
 }
 
+// Earliest is omitted by design. It is simply an alias for the `0` constant and
+// is thus not very helpful. Moreover, this type is used in places that only accept
+// `latest` or `pending`.
 export enum BlockParamLiteral {
     Latest = 'latest',
-    Earliest = 'earliest',
     Pending = 'pending',
 }
 
@@ -378,7 +388,8 @@ export type AsyncMethod = (...args: any[]) => Promise<any>;
 /**
  * We re-export the `Web3.Provider` type specified in the Web3 Typescript typings
  * since it is the type of the `provider` argument to the `ZeroEx` constructor.
- * It is however a `Web3` library type, not a native `0x.js` type.
+ * It is however a `Web3` library type, not a native `0x.js` type. To learn more
+ * about providers, visit https://0xproject.com/wiki#Web3-Provider-Explained
  */
 export type Web3Provider = Web3.Provider;
 
@@ -396,25 +407,31 @@ export interface JSONRPCPayload {
  * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Defaults: 200
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
  * of an orders expiration. Defaults: 0
+ * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Defaults: 1h
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;
     eventPollingIntervalMs?: number;
     expirationMarginMs?: number;
+    cleanupJobIntervalMs?: number;
 }
 
 /*
+ * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
  * etherTokenContractAddress: The address of an ether token contract to use
+ * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
  */
 export interface ZeroExConfig {
-    gasPrice?: BigNumber; // Gas price to use with every transaction
+    networkId: number;
+    gasPrice?: BigNumber;
     exchangeContractAddress?: string;
     tokenRegistryContractAddress?: string;
     etherTokenContractAddress?: string;
+    tokenTransferProxyContractAddress?: string;
     orderWatcherConfig?: OrderStateWatcherConfig;
 }
 
@@ -435,11 +452,16 @@ export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
     logs: Array<LogWithDecodedArgs<DecodedLogArgs>|Web3.LogEntry>;
 }
 
+export type ArtifactContractName = 'ZRX'|'TokenTransferProxy'|'TokenRegistry'|'Token'|'Exchange'|'EtherToken';
+
 export interface Artifact {
-    abi: any;
-    networks: {[networkId: number]: {
-        address: string;
-    }};
+    contract_name: ArtifactContractName;
+    abi: Web3.ContractAbi;
+    networks: {
+        [networkId: number]: {
+            address: string;
+        };
+    };
 }
 
 /*
@@ -463,11 +485,20 @@ export interface MethodOpts {
 }
 
 /*
- * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
- * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc.
+ * gasPrice: Gas price in Wei to use for a transaction
+ * gasLimit: The amount of gas to send with a transaction
  */
-export interface OrderTransactionOpts {
-    shouldValidate: boolean;
+export interface TransactionOpts {
+    gasPrice?: BigNumber;
+    gasLimit?: number;
+}
+
+/*
+ * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default: true
+ */
+export interface OrderTransactionOpts extends TransactionOpts {
+    shouldValidate?: boolean;
 }
 
 export type FilterObject = Web3.FilterObject;
@@ -521,4 +552,4 @@ export interface TransactionReceipt {
     gasUsed: number;
     contractAddress: string|null;
     logs: Web3.LogEntry[];
-}
+} // tslint:disable:max-file-line-count

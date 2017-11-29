@@ -1,4 +1,5 @@
 import {BigNumber} from 'bignumber.js';
+
 import {TokenPairsItem} from '../../../src/types';
 
 export const tokenPairsResponse: TokenPairsItem[] = [

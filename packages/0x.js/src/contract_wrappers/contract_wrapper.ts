@@ -1,24 +1,25 @@
+import {Block, BlockAndLogStreamer} from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import {BlockAndLogStreamer, Block} from 'ethereumjs-blockstream';
-import {Web3Wrapper} from '../web3_wrapper';
-import {AbiDecoder} from '../utils/abi_decoder';
+
 import {
-    ZeroExError,
-    InternalZeroExError,
     Artifact,
-    LogWithDecodedArgs,
-    RawLog,
-    ContractEvents,
-    SubscriptionOpts,
-    IndexedFilterValues,
-    EventCallback,
     BlockParamLiteral,
     ContractEventArgs,
+    ContractEvents,
+    EventCallback,
+    IndexedFilterValues,
+    InternalZeroExError,
+    LogWithDecodedArgs,
+    RawLog,
+    SubscriptionOpts,
+    ZeroExError,
 } from '../types';
+import {AbiDecoder} from '../utils/abi_decoder';
 import {constants} from '../utils/constants';
-import {intervalUtils} from '../utils/interval_utils';
 import {filterUtils} from '../utils/filter_utils';
+import {intervalUtils} from '../utils/interval_utils';
+import {Web3Wrapper} from '../web3_wrapper';
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
@@ -95,13 +96,25 @@ export class ContractWrapper {
             await this._web3Wrapper.getContractInstanceFromArtifactAsync<ContractType>(artifact, addressIfExists);
         return contractInstance;
     }
-    private _onLogStateChanged<ArgsType extends ContractEventArgs>(removed: boolean, log: Web3.LogEntry): void {
+    protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
+        if (_.isUndefined(addressIfExists)) {
+            const networkId = this._web3Wrapper.getNetworkId();
+            const contractAddress = artifact.networks[networkId].address;
+            if (_.isUndefined(contractAddress)) {
+                throw new Error(ZeroExError.ExchangeContractDoesNotExist);
+            }
+            return contractAddress;
+        } else {
+            return addressIfExists;
+        }
+    }
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, log: Web3.LogEntry): void {
         _.forEach(this._filters, (filter: Web3.FilterObject, filterToken: string) => {
             if (filterUtils.matchesFilter(log, filter)) {
                 const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
                 const logEvent = {
-                    ...decodedLog,
-                    removed,
+                    log: decodedLog,
+                    isRemoved,
                 };
                 this._filterCallbacks[filterToken](null, logEvent);
             }
@@ -117,13 +130,13 @@ export class ContractWrapper {
         this._blockAndLogStreamInterval = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this), constants.DEFAULT_BLOCK_POLLING_INTERVAL,
         );
-        let removed = false;
+        let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogAdded(
-            this._onLogStateChanged.bind(this, removed),
+            this._onLogStateChanged.bind(this, isRemoved),
         );
-        removed = true;
+        isRemoved = true;
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogRemoved(
-            this._onLogStateChanged.bind(this, removed),
+            this._onLogStateChanged.bind(this, isRemoved),
         );
     }
     private _stopBlockAndLogStream(): void {
@@ -140,7 +153,7 @@ export class ContractWrapper {
             // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
             if (!_.isUndefined(this._blockAndLogStreamer)) {
                 // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-                this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
+                await this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
             }
         } catch (err) {
             const filterTokens = _.keys(this._filterCallbacks);

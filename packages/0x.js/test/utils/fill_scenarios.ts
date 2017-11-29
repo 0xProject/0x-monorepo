@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js';
-import {ZeroEx, Token, SignedOrder} from '../../src';
+
+import {SignedOrder, Token, ZeroEx} from '../../src';
 import {orderFactory} from '../utils/order_factory';
+
 import {constants} from './constants';
 
 export class FillScenarios {

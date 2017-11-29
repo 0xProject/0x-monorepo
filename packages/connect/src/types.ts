@@ -1,5 +1,33 @@
-import {SignedOrder} from '0x.js';
 import {BigNumber} from 'bignumber.js';
+
+// TODO: Consolidate Order, SignedOrder and ECSignature into a shared package instead of duplicating them from 0x.js
+export interface Order {
+    maker: string;
+    taker: string;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    makerTokenAmount: BigNumber;
+    takerTokenAmount: BigNumber;
+    makerTokenAddress: string;
+    takerTokenAddress: string;
+    salt: BigNumber;
+    exchangeContractAddress: string;
+    feeRecipient: string;
+    expirationUnixTimestampSec: BigNumber;
+}
+
+export interface SignedOrder extends Order {
+    ecSignature: ECSignature;
+}
+
+/**
+ * Elliptic Curve signature
+ */
+export interface ECSignature {
+    v: number;
+    r: string;
+    s: string;
+}
 
 export interface Client {
     getTokenPairsAsync: (request?: TokenPairsRequest) => Promise<TokenPairsItem[]>;
@@ -13,6 +41,19 @@ export interface Client {
 export interface OrderbookChannel {
     subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler) => void;
     close: () => void;
+}
+
+/*
+ * baseTokenAddress: The address of token designated as the baseToken in the currency pair calculation of price
+ * quoteTokenAddress: The address of token designated as the quoteToken in the currency pair calculation of price
+ * snapshot: If true, a snapshot of the orderbook will be sent before the updates to the orderbook
+ * limit: Maximum number of bids and asks in orderbook snapshot
+ */
+export interface OrderbookChannelSubscriptionOpts {
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
+    snapshot: boolean;
+    limit: number;
 }
 
 export interface OrderbookChannelHandler {
@@ -48,17 +89,15 @@ export interface UnknownOrderbookChannelMessage {
     payload: undefined;
 }
 
-/*
- * baseTokenAddress: The address of token designated as the baseToken in the currency pair calculation of price
- * quoteTokenAddress: The address of token designated as the quoteToken in the currency pair calculation of price
- * snapshot: If true, a snapshot of the orderbook will be sent before the updates to the orderbook
- * limit: Maximum number of bids and asks in orderbook snapshot
- */
-export interface OrderbookChannelSubscriptionOpts {
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    snapshot: boolean;
-    limit: number;
+export enum WebsocketConnectionEventType {
+    Close = 'close',
+    Error = 'error',
+    Message = 'message',
+}
+
+export enum WebsocketClientEventType {
+    Connect = 'connect',
+    ConnectFailed = 'connectFailed',
 }
 
 export interface TokenPairsRequest {
@@ -117,4 +156,14 @@ export interface FeesResponse {
     feeRecipient: string;
     makerFee: BigNumber;
     takerFee: BigNumber;
+}
+
+export interface HttpRequestOptions {
+    params?: object;
+    payload?: object;
+}
+
+export enum HttpRequestType {
+    Get = 'GET',
+    Post = 'POST',
 }

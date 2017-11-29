@@ -1,6 +1,6 @@
-import * as Web3 from 'web3';
 import * as _ from 'lodash';
-import {Web3Wrapper} from '../web3_wrapper';
+import * as Web3 from 'web3';
+
 import {
     BlockParamLiteral,
     EventCallback,
@@ -8,9 +8,10 @@ import {
     ZeroExError,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
-import {intervalUtils} from '../utils/interval_utils';
 import {assert} from '../utils/assert';
+import {intervalUtils} from '../utils/interval_utils';
 import {utils} from '../utils/utils';
+import {Web3Wrapper} from '../web3_wrapper';
 
 const DEFAULT_EVENT_POLLING_INTERVAL_MS = 200;
 

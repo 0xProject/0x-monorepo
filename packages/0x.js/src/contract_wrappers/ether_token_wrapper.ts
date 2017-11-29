@@ -1,11 +1,13 @@
-import * as _ from 'lodash';
 import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
+
+import {artifacts} from '../artifacts';
+import {EtherTokenContract, TransactionOpts, ZeroExError} from '../types';
+import {assert} from '../utils/assert';
 import {Web3Wrapper} from '../web3_wrapper';
+
 import {ContractWrapper} from './contract_wrapper';
 import {TokenWrapper} from './token_wrapper';
-import {EtherTokenContract, ZeroExError} from '../types';
-import {assert} from '../utils/assert';
-import {artifacts} from '../artifacts';
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
@@ -25,10 +27,13 @@ export class EtherTokenWrapper extends ContractWrapper {
      * to the depositor address. These wrapped ETH tokens can be used in 0x trades and are redeemable for 1-to-1
      * for ETH.
      * @param   amountInWei      Amount of ETH in Wei the caller wishes to deposit.
-     * @param   depositor   The hex encoded user Ethereum address that would like to make the deposit.
+     * @param   depositor        The hex encoded user Ethereum address that would like to make the deposit.
+     * @param   txOpts           Transaction parameters.
      * @return Transaction hash.
      */
-    public async depositAsync(amountInWei: BigNumber, depositor: string): Promise<string> {
+    public async depositAsync(
+        amountInWei: BigNumber, depositor: string, txOpts: TransactionOpts = {},
+    ): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
 
@@ -39,6 +44,8 @@ export class EtherTokenWrapper extends ContractWrapper {
         const txHash = await wethContract.deposit.sendTransactionAsync({
             from: depositor,
             value: amountInWei,
+            gas: txOpts.gasLimit,
+            gasPrice: txOpts.gasPrice,
         });
         return txHash;
     }
@@ -47,19 +54,24 @@ export class EtherTokenWrapper extends ContractWrapper {
      * equivalent number of wrapped ETH tokens.
      * @param   amountInWei  Amount of ETH in Wei the caller wishes to withdraw.
      * @param   withdrawer   The hex encoded user Ethereum address that would like to make the withdrawl.
+     * @param   txOpts       Transaction parameters.
      * @return Transaction hash.
      */
-    public async withdrawAsync(amountInWei: BigNumber, withdrawer: string): Promise<string> {
+    public async withdrawAsync(
+        amountInWei: BigNumber, withdrawer: string, txOpts: TransactionOpts = {},
+    ): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
 
-        const wethContractAddress = await this.getContractAddressAsync();
+        const wethContractAddress = this.getContractAddress();
         const WETHBalanceInBaseUnits = await this._tokenWrapper.getBalanceAsync(wethContractAddress, withdrawer);
         assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.InsufficientWEthBalanceForWithdrawal);
 
         const wethContract = await this._getEtherTokenContractAsync();
         const txHash = await wethContract.withdraw.sendTransactionAsync(amountInWei, {
             from: withdrawer,
+            gas: txOpts.gasLimit,
+            gasPrice: txOpts.gasPrice,
         });
         return txHash;
     }
@@ -67,9 +79,11 @@ export class EtherTokenWrapper extends ContractWrapper {
      * Retrieves the Wrapped Ether token contract address
      * @return  The Wrapped Ether token contract address
      */
-    public async getContractAddressAsync(): Promise<string> {
-        const wethContract = await this._getEtherTokenContractAsync();
-        return wethContract.address;
+    public getContractAddress(): string {
+        const contractAddress = this._getContractAddress(
+            artifacts.EtherTokenArtifact, this._contractAddressIfExists,
+        );
+        return contractAddress;
     }
     private _invalidateContractInstance(): void {
         delete this._etherTokenContractIfExists;
@@ -81,7 +95,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<EtherTokenContract>(
             artifacts.EtherTokenArtifact, this._contractAddressIfExists,
         );
-        this._etherTokenContractIfExists = contractInstance as EtherTokenContract;
+        this._etherTokenContractIfExists = contractInstance;
         return this._etherTokenContractIfExists;
     }
 }

@@ -1,11 +1,14 @@
-import 'mocha';
-import * as chai from 'chai';
-import {chaiSetup} from './utils/chai_setup';
-import * as Web3 from 'web3';
 import BigNumber from 'bignumber.js';
-import {web3Factory} from './utils/web3_factory';
+import * as chai from 'chai';
+import 'mocha';
+import * as Web3 from 'web3';
+
 import {ZeroEx, ZeroExError} from '../src';
+
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
+import {chaiSetup} from './utils/chai_setup';
+import {constants} from './utils/constants';
+import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -15,7 +18,7 @@ const blockchainLifecycle = new BlockchainLifecycle();
 // a small amount of ETH will be used to pay this gas cost. We therefore check that the difference between
 // the expected balance and actual balance (given the amount of ETH deposited), only deviates by the amount
 // required to pay gas costs.
-const MAX_REASONABLE_GAS_COST_IN_WEI = 62237;
+const MAX_REASONABLE_GAS_COST_IN_WEI = 62517;
 
 describe('EtherTokenWrapper', () => {
     let web3: Web3;
@@ -28,13 +31,14 @@ describe('EtherTokenWrapper', () => {
     const gasPrice = new BigNumber(1);
     const zeroExConfig = {
         gasPrice,
+        networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
-        wethContractAddress = await zeroEx.etherToken.getContractAddressAsync();
+        wethContractAddress = zeroEx.etherToken.getContractAddress();
         depositWeiAmount = (zeroEx as any)._web3Wrapper.toWei(new BigNumber(5));
         decimalPlaces = 7;
     });

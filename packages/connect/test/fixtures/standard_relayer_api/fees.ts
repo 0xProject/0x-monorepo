@@ -1,4 +1,5 @@
 import {BigNumber} from 'bignumber.js';
+
 import {FeesResponse} from '../../../src/types';
 
 export const feesResponse: FeesResponse = {

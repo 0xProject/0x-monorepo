@@ -1,23 +1,27 @@
-import * as _ from 'lodash';
-import BigNumber from 'bignumber.js';
 import {schemas} from '@0xproject/json-schemas';
-import {Web3Wrapper} from '../web3_wrapper';
-import {assert} from '../utils/assert';
-import {constants} from '../utils/constants';
-import {ContractWrapper} from './contract_wrapper';
-import {AbiDecoder} from '../utils/abi_decoder';
+import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
+
 import {artifacts} from '../artifacts';
 import {
-    TokenContract,
-    ZeroExError,
-    TokenEvents,
-    IndexedFilterValues,
-    SubscriptionOpts,
-    MethodOpts,
-    LogWithDecodedArgs,
     EventCallback,
+    IndexedFilterValues,
+    LogWithDecodedArgs,
+    MethodOpts,
+    SubscriptionOpts,
+    TokenContract,
     TokenContractEventArgs,
+    TokenEvents,
+    TransactionOpts,
+    ZeroExError,
 } from '../types';
+import {AbiDecoder} from '../utils/abi_decoder';
+import {assert} from '../utils/assert';
+import {constants} from '../utils/constants';
+import {Web3Wrapper} from '../web3_wrapper';
+
+import {ContractWrapper} from './contract_wrapper';
+import {TokenTransferProxyWrapper} from './token_transfer_proxy_wrapper';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
 
@@ -29,12 +33,12 @@ const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
 export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
-    private _tokenTransferProxyContractAddressFetcher: () => Promise<string>;
+    private _tokenTransferProxyWrapper: TokenTransferProxyWrapper;
     constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
-                tokenTransferProxyContractAddressFetcher: () => Promise<string>) {
+                tokenTransferProxyWrapper: TokenTransferProxyWrapper) {
         super(web3Wrapper, abiDecoder);
         this._tokenContractsByAddress = {};
-        this._tokenTransferProxyContractAddressFetcher = tokenTransferProxyContractAddressFetcher;
+        this._tokenTransferProxyWrapper = tokenTransferProxyWrapper;
     }
     /**
      * Retrieves an owner's ERC20 token balance.
@@ -63,24 +67,21 @@ export class TokenWrapper extends ContractWrapper {
      *                              for spenderAddress.
      * @param   spenderAddress      The hex encoded user Ethereum address who will be able to spend the set allowance.
      * @param   amountInBaseUnits   The allowance amount you would like to set.
+     * @param   txOpts              Transaction parameters.
      * @return Transaction hash.
      */
     public async setAllowanceAsync(tokenAddress: string, ownerAddress: string, spenderAddress: string,
-                                   amountInBaseUnits: BigNumber): Promise<string> {
+                                   amountInBaseUnits: BigNumber, txOpts: TransactionOpts = {}): Promise<string> {
         await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        // Hack: for some reason default estimated gas amount causes `base fee exceeds gas limit` exception
-        // on testrpc. Probably related to https://github.com/ethereumjs/testrpc/issues/294
-        // TODO: Debug issue in testrpc and submit a PR, then remove this hack
-        const networkIdIfExists = await this._web3Wrapper.getNetworkIdIfExistsAsync();
-        const gas = networkIdIfExists === constants.TESTRPC_NETWORK_ID ? ALLOWANCE_TO_ZERO_GAS_AMOUNT : undefined;
         const txHash = await tokenContract.approve.sendTransactionAsync(spenderAddress, amountInBaseUnits, {
             from: ownerAddress,
-            gas,
+            gas: txOpts.gasLimit,
+            gasPrice: txOpts.gasPrice,
         });
         return txHash;
     }
@@ -93,12 +94,13 @@ export class TokenWrapper extends ContractWrapper {
      * @param   ownerAddress        The hex encoded user Ethereum address who would like to set an allowance
      *                              for spenderAddress.
      * @param   spenderAddress      The hex encoded user Ethereum address who will be able to spend the set allowance.
+     * @param   txOpts              Transaction parameters.
      * @return Transaction hash.
      */
     public async setUnlimitedAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                            spenderAddress: string): Promise<string> {
+                                            spenderAddress: string, txOpts: TransactionOpts = {}): Promise<string> {
         const txHash = await this.setAllowanceAsync(
-            tokenAddress, ownerAddress, spenderAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+            tokenAddress, ownerAddress, spenderAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS, txOpts,
         );
         return txHash;
     }
@@ -133,7 +135,7 @@ export class TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
 
-        const proxyAddress = await this._getTokenTransferProxyAddressAsync();
+        const proxyAddress = this._tokenTransferProxyWrapper.getContractAddress();
         const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, methodOpts);
         return allowanceInBaseUnits;
     }
@@ -144,16 +146,19 @@ export class TokenWrapper extends ContractWrapper {
      * @param   ownerAddress        The hex encoded user Ethereum address who is setting an allowance
      *                              for the Proxy contract.
      * @param   amountInBaseUnits   The allowance amount specified in baseUnits.
+     * @param   txOpts              Transaction parameters.
      * @return Transaction hash.
      */
     public async setProxyAllowanceAsync(tokenAddress: string, ownerAddress: string,
-                                        amountInBaseUnits: BigNumber): Promise<string> {
+                                        amountInBaseUnits: BigNumber, txOpts: TransactionOpts = {}): Promise<string> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
-        const proxyAddress = await this._getTokenTransferProxyAddressAsync();
-        const txHash = await this.setAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits);
+        const proxyAddress = this._tokenTransferProxyWrapper.getContractAddress();
+        const txHash = await this.setAllowanceAsync(
+            tokenAddress, ownerAddress, proxyAddress, amountInBaseUnits, txOpts,
+        );
         return txHash;
     }
     /**
@@ -164,11 +169,14 @@ export class TokenWrapper extends ContractWrapper {
      * @param   tokenAddress        The hex encoded contract Ethereum address where the ERC20 token is deployed.
      * @param   ownerAddress        The hex encoded user Ethereum address who is setting an allowance
      *                              for the Proxy contract.
+     * @param   txOpts              Transaction parameters.
      * @return Transaction hash.
      */
-    public async setUnlimitedProxyAllowanceAsync(tokenAddress: string, ownerAddress: string): Promise<string> {
+    public async setUnlimitedProxyAllowanceAsync(
+        tokenAddress: string, ownerAddress: string, txOpts: TransactionOpts = {},
+    ): Promise<string> {
         const txHash = await this.setProxyAllowanceAsync(
-            tokenAddress, ownerAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+            tokenAddress, ownerAddress, this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS, txOpts,
         );
         return txHash;
     }
@@ -178,10 +186,11 @@ export class TokenWrapper extends ContractWrapper {
      * @param   fromAddress         The hex encoded user Ethereum address that will send the funds.
      * @param   toAddress           The hex encoded user Ethereum address that will receive the funds.
      * @param   amountInBaseUnits   The amount (specified in baseUnits) of the token to transfer.
+     * @param   txOpts              Transaction parameters.
      * @return Transaction hash.
      */
     public async transferAsync(tokenAddress: string, fromAddress: string, toAddress: string,
-                               amountInBaseUnits: BigNumber): Promise<string> {
+                               amountInBaseUnits: BigNumber, txOpts: TransactionOpts = {}): Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
         assert.isETHAddressHex('toAddress', toAddress);
@@ -196,6 +205,8 @@ export class TokenWrapper extends ContractWrapper {
 
         const txHash = await tokenContract.transfer.sendTransactionAsync(toAddress, amountInBaseUnits, {
             from: fromAddress,
+            gas: txOpts.gasLimit,
+            gasPrice: txOpts.gasPrice,
         });
         return txHash;
     }
@@ -210,10 +221,11 @@ export class TokenWrapper extends ContractWrapper {
      *                              `fromAddress` must have set an allowance to the `senderAddress`
      *                              before this call.
      * @param   amountInBaseUnits   The amount (specified in baseUnits) of the token to transfer.
+     * @param   txOpts              Transaction parameters.
      * @return Transaction hash.
      */
     public async transferFromAsync(tokenAddress: string, fromAddress: string, toAddress: string,
-                                   senderAddress: string, amountInBaseUnits: BigNumber):
+                                   senderAddress: string, amountInBaseUnits: BigNumber, txOpts: TransactionOpts = {}):
                                    Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('fromAddress', fromAddress);
@@ -237,6 +249,8 @@ export class TokenWrapper extends ContractWrapper {
             fromAddress, toAddress, amountInBaseUnits,
             {
                 from: senderAddress,
+                gas: txOpts.gasLimit,
+                gasPrice: txOpts.gasPrice,
             },
         );
         return txHash;
@@ -290,7 +304,7 @@ export class TokenWrapper extends ContractWrapper {
         );
         return logs;
     }
-    private _invalidateContractInstancesAsync(): void {
+    private _invalidateContractInstances(): void {
         this.unsubscribeAll();
         this._tokenContractsByAddress = {};
     }
@@ -302,12 +316,8 @@ export class TokenWrapper extends ContractWrapper {
         const contractInstance = await this._instantiateContractIfExistsAsync<TokenContract>(
             artifacts.TokenArtifact, tokenAddress,
         );
-        tokenContract = contractInstance as TokenContract;
+        tokenContract = contractInstance;
         this._tokenContractsByAddress[tokenAddress] = tokenContract;
         return tokenContract;
-    }
-    private async _getTokenTransferProxyAddressAsync(): Promise<string> {
-        const tokenTransferProxyContractAddress = await this._tokenTransferProxyContractAddressFetcher();
-        return tokenTransferProxyContractAddress;
     }
 }

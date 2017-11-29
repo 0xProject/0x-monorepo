@@ -21,8 +21,9 @@ postpublish_utils.getLatestTagAndVersionAsync(subPackageName)
     })
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
+        const jsonFilePath = __dirname + '/../' + postpublish_utils.generatedDocsDirectoryName + '/index.json';
         return execAsync(
-            'JSON_FILE_PATH=' +  __dirname + '/../docs/index.json PROJECT_DIR=' + __dirname + '/.. yarn docs:json',
+            'JSON_FILE_PATH=' + jsonFilePath + ' PROJECT_DIR=' + __dirname + '/.. yarn docs:json',
             {
                 cwd,
             }

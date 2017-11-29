@@ -1,34 +1,35 @@
-import * as _ from 'lodash';
+import {schemas, SchemaValidator} from '@0xproject/json-schemas';
 import BigNumber from 'bignumber.js';
-import {SchemaValidator, schemas} from '@0xproject/json-schemas';
-import {bigNumberConfigs} from './bignumber_config';
 import * as ethUtil from 'ethereumjs-util';
-import {Web3Wrapper} from './web3_wrapper';
-import {constants} from './utils/constants';
-import {utils} from './utils/utils';
-import {signatureUtils} from './utils/signature_utils';
-import {assert} from './utils/assert';
-import {AbiDecoder} from './utils/abi_decoder';
-import {intervalUtils} from './utils/interval_utils';
+import * as _ from 'lodash';
+
 import {artifacts} from './artifacts';
+import {bigNumberConfigs} from './bignumber_config';
+import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
-import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
-import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
+import {TokenWrapper} from './contract_wrappers/token_wrapper';
 import {OrderStateWatcher} from './order_watcher/order_state_watcher';
-import {OrderStateUtils} from './utils/order_state_utils';
+import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 import {
     ECSignature,
-    ZeroExError,
     Order,
+    OrderStateWatcherConfig,
     SignedOrder,
+    TransactionReceiptWithDecodedLogs,
     Web3Provider,
     ZeroExConfig,
-    OrderStateWatcherConfig,
-    TransactionReceiptWithDecodedLogs,
+    ZeroExError,
 } from './types';
-import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
+import {AbiDecoder} from './utils/abi_decoder';
+import {assert} from './utils/assert';
+import {constants} from './utils/constants';
+import {intervalUtils} from './utils/interval_utils';
+import {OrderStateUtils} from './utils/order_state_utils';
+import {signatureUtils} from './utils/signature_utils';
+import {utils} from './utils/utils';
+import {Web3Wrapper} from './web3_wrapper';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -169,56 +170,48 @@ export class ZeroEx {
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Web3Provider, config?: ZeroExConfig) {
+    constructor(provider: Web3Provider, config: ZeroExConfig) {
         assert.isWeb3Provider('provider', provider);
-        if (!_.isUndefined(config)) {
-            assert.doesConformToSchema('config', config, zeroExConfigSchema);
-        }
+        assert.doesConformToSchema('config', config, zeroExConfigSchema);
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
         this._abiDecoder = new AbiDecoder(abiArrays);
-        const gasPrice = _.isUndefined(config) ? undefined : config.gasPrice;
         const defaults = {
-            gasPrice,
+            gasPrice: config.gasPrice,
         };
-        this._web3Wrapper = new Web3Wrapper(provider, defaults);
+        this._web3Wrapper = new Web3Wrapper(provider, config.networkId, defaults);
+        this.proxy = new TokenTransferProxyWrapper(
+            this._web3Wrapper,
+            config.tokenTransferProxyContractAddress,
+        );
         this.token = new TokenWrapper(
             this._web3Wrapper,
             this._abiDecoder,
-            this._getTokenTransferProxyAddressAsync.bind(this),
+            this.proxy,
         );
-        const exchageContractAddressIfExists = _.isUndefined(config) ? undefined : config.exchangeContractAddress;
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             this._abiDecoder,
             this.token,
-            exchageContractAddressIfExists,
+            config.exchangeContractAddress,
         );
-        this.proxy = new TokenTransferProxyWrapper(
-            this._web3Wrapper,
-            this._getTokenTransferProxyAddressAsync.bind(this),
-        );
-        const tokenRegistryContractAddressIfExists = _.isUndefined(config) ?
-                                                     undefined :
-                                                     config.tokenRegistryContractAddress;
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, tokenRegistryContractAddressIfExists);
-        const etherTokenContractAddressIfExists = _.isUndefined(config) ? undefined : config.etherTokenContractAddress;
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, etherTokenContractAddressIfExists);
-        const orderWatcherConfig = _.isUndefined(config) ? undefined : config.orderWatcherConfig;
+        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, config.tokenRegistryContractAddress);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, config.etherTokenContractAddress);
         this.orderStateWatcher = new OrderStateWatcher(
-            this._web3Wrapper, this._abiDecoder, this.token, this.exchange, orderWatcherConfig,
+            this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config.orderWatcherConfig,
         );
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
      * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
      * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
+     * @param   networkId   The id of the network your provider is connected to
      */
-    public async setProviderAsync(provider: Web3Provider) {
-        this._web3Wrapper.setProvider(provider);
-        await (this.exchange as any)._invalidateContractInstancesAsync();
+    public setProvider(provider: Web3Provider, networkId: number): void {
+        this._web3Wrapper.setProvider(provider, networkId);
+        (this.exchange as any)._invalidateContractInstances();
         (this.tokenRegistry as any)._invalidateContractInstance();
-        await (this.token as any)._invalidateContractInstancesAsync();
+        (this.token as any)._invalidateContractInstances();
         (this.proxy as any)._invalidateContractInstance();
         (this.etherToken as any)._invalidateContractInstance();
     }
