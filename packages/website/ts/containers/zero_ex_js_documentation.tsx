@@ -39,7 +39,7 @@ const zeroExJsDocSections = {
 };
 
 const docsInfoConfig: DocsInfoConfig = {
-    packageName: '0x.js',
+    displayName: '0x.js',
     packageUrl: 'https://github.com/0xProject/0x.js',
     subPackageName: '0x.js',
     websitePath: WebsitePaths.ZeroExJs,

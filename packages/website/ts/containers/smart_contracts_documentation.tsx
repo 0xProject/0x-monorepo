@@ -20,7 +20,7 @@ const IntroMarkdown = require('md/docs/smart_contracts/introduction');
 const sections = constants.smartContractDocSections;
 
 const docsInfoConfig: DocsInfoConfig = {
-    packageName: '0x Smart Contracts',
+    displayName: '0x Smart Contracts',
     packageUrl: 'https://github.com/0xProject/contracts',
     websitePath: WebsitePaths.SmartContracts,
     docsJsonRoot: 'https://s3.amazonaws.com/smart-contracts-docs-json',

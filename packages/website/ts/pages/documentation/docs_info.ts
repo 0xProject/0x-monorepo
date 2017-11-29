@@ -11,7 +11,7 @@ import {
 } from 'ts/types';
 
 export class DocsInfo {
-    public packageName: string;
+    public displayName: string;
     public packageUrl: string;
     public subPackageName?: string;
     public websitePath: string;
@@ -21,7 +21,7 @@ export class DocsInfo {
     public sectionNameToMarkdown: {[sectionName: string]: string};
     private docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
-        this.packageName = config.packageName;
+        this.displayName = config.displayName;
         this.packageUrl = config.packageUrl;
         this.subPackageName = config.subPackageName;
         this.websitePath = config.websitePath;

@@ -27,7 +27,7 @@ const connectDocSections = {
 };
 
 const docsInfoConfig: DocsInfoConfig = {
-    packageName: '0x Connect',
+    displayName: '0x Connect',
     subPackageName: 'connect',
     packageUrl: 'https://github.com/0xProject/0x.js',
     websitePath: WebsitePaths.Connect,

@@ -291,7 +291,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             return;
         }
 
-        const sectionTitle = `${this.props.docsInfo.packageName} Docs`;
+        const sectionTitle = `${this.props.docsInfo.displayName} Docs`;
         return (
             <div className="lg-hide md-hide">
                 <div className="pl1 py1" style={{backgroundColor: SECTION_HEADER_COLOR}}>{sectionTitle}</div>

@@ -674,7 +674,7 @@ export interface SectionsMap {
 }
 
 export interface DocsInfoConfig {
-  packageName: string;
+  displayName: string;
   packageUrl: string;
   websitePath: string;
   docsJsonRoot: string;

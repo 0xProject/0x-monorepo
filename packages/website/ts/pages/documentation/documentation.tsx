@@ -111,7 +111,7 @@ export class Documentation extends
                 this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         return (
             <div>
-                <DocumentTitle title={`${this.props.docsInfo.packageName} Documentation`}/>
+                <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`}/>
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
@@ -164,7 +164,7 @@ export class Documentation extends
                                 <div id={SCROLL_TOP_ID} />
                                 <h1 className="md-pl2 sm-pl3">
                                     <a href={this.props.docsInfo.packageUrl} target="_blank">
-                                        {this.props.docsInfo.packageName}
+                                        {this.props.docsInfo.displayName}
                                     </a>
                                 </h1>
                                 {this.renderDocumentation()}
