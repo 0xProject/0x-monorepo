@@ -1,6 +1,6 @@
 # CHANGELOG
 
-vx.x.x
+v0.2.0 - _November 29, 2017_
 ------------------------
     * Add SignedOrder and TokenTradeInfo to the public interface
     * Add ECSignature and Order to the public interface
