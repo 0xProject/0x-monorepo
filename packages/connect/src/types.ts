@@ -1,6 +1,8 @@
 import {SignedOrder} from '0x.js';
 import {BigNumber} from 'bignumber.js';
 
+export type SignedOrder = SignedOrder;
+
 export interface Client {
     getTokenPairsAsync: (request?: TokenPairsRequest) => Promise<TokenPairsItem[]>;
     getOrdersAsync: (request?: OrdersRequest) => Promise<SignedOrder[]>;
