@@ -1,4 +1,3 @@
-import {SignedOrder} from '0x.js';
 import {assert} from '@0xproject/assert';
 import {schemas} from '@0xproject/json-schemas';
 import {BigNumber} from 'bignumber.js';
@@ -16,6 +15,7 @@ import {
     OrderbookRequest,
     OrderbookResponse,
     OrdersRequest,
+    SignedOrder,
     TokenPairsItem,
     TokenPairsRequest,
 } from './types';

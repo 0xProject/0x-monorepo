@@ -1,4 +1,3 @@
-import {SignedOrder} from '0x.js';
 import {assert} from '@0xproject/assert';
 import {schemas} from '@0xproject/json-schemas';
 import * as _ from 'lodash';
@@ -9,6 +8,7 @@ import {
     OrderbookChannelHandler,
     OrderbookChannelMessageTypes,
     OrderbookChannelSubscriptionOpts,
+    SignedOrder,
     WebsocketClientEventType,
     WebsocketConnectionEventType,
 } from './types';
