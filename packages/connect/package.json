@@ -1,6 +1,6 @@
 {
   "name": "@0xproject/connect",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A javascript library for interacting with the standard relayer api",
   "keywords": [
     "connect",
@@ -36,7 +36,6 @@
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/connect/README.md",
   "dependencies": {
-    "0x.js": "^0.27.1",
     "@0xproject/assert": "^0.0.6",
     "@0xproject/json-schemas": "^0.6.9",
     "bignumber.js": "~4.1.0",

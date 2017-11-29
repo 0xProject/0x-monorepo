@@ -1,4 +1,3 @@
-import {SignedOrder} from '0x.js';
 import {assert} from '@0xproject/assert';
 import {schemas} from '@0xproject/json-schemas';
 import {BigNumber} from 'bignumber.js';
@@ -16,6 +15,7 @@ import {
     OrderbookRequest,
     OrderbookResponse,
     OrdersRequest,
+    SignedOrder,
     TokenPairsItem,
     TokenPairsRequest,
 } from './types';
@@ -34,7 +34,7 @@ export class HttpClient implements Client {
     private apiEndpointUrl: string;
     /**
      * Instantiates a new HttpClient instance
-     * @param   url    The base url for making API calls
+     * @param   url    The relayer API base HTTP url you would like to interact with
      * @return  An instance of HttpClient
      */
     constructor(url: string) {
