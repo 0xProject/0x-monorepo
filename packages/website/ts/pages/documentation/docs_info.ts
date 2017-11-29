@@ -47,6 +47,11 @@ export class DocsInfo {
         }
 
         const finalMenu = _.cloneDeep(this.docsInfo.menu);
+        if (_.isUndefined(finalMenu.contracts)) {
+            return finalMenu;
+        }
+
+        // TODO: refactor to include more sections then simply the `contracts` section
         finalMenu.contracts = _.filter(finalMenu.contracts, (contractName: string) => {
             const versionIntroducedIfExists = this.docsInfo.menuSubsectionToVersionWhenIntroduced[contractName];
             if (!_.isUndefined(versionIntroducedIfExists)) {
