@@ -1,0 +1,97 @@
+import BigNumber from 'bignumber.js';
+import * as _ from 'lodash';
+import * as React from 'react';
+import {connect} from 'react-redux';
+import {Dispatch, Store as ReduxStore} from 'redux';
+import {Blockchain} from 'ts/blockchain';
+import {DocsInfo} from 'ts/pages/documentation/docs_info';
+import {
+    Documentation as DocumentationComponent,
+    DocumentationAllProps,
+} from 'ts/pages/documentation/documentation';
+import {Dispatcher} from 'ts/redux/dispatcher';
+import {State} from 'ts/redux/reducer';
+import {DocsInfoConfig, WebsitePaths} from 'ts/types';
+import {typeDocUtils} from 'ts/utils/typedoc_utils';
+
+/* tslint:disable:no-var-requires */
+const IntroMarkdown = require('md/docs/connect/introduction');
+const InstallationMarkdown = require('md/docs/connect/installation');
+/* tslint:enable:no-var-requires */
+
+const connectDocSections = {
+    introduction: 'introduction',
+    installation: 'installation',
+    httpClient: 'httpClient',
+    types: 'types',
+};
+
+const docsInfoConfig: DocsInfoConfig = {
+    displayName: '0x Connect',
+    subPackageName: 'connect',
+    packageUrl: 'https://github.com/0xProject/0x.js',
+    websitePath: WebsitePaths.Connect,
+    docsJsonRoot: 'https://s3.amazonaws.com/connect-docs-jsons',
+    menu: {
+        introduction: [
+            connectDocSections.introduction,
+        ],
+        install: [
+            connectDocSections.installation,
+        ],
+        httpClient: [
+            connectDocSections.httpClient,
+        ],
+        types: [
+            connectDocSections.types,
+        ],
+    },
+    sectionNameToMarkdown: {
+        [connectDocSections.introduction]: IntroMarkdown,
+        [connectDocSections.installation]: InstallationMarkdown,
+    },
+    // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
+    // currently no way to extract the re-exported types from index.ts via TypeDoc :(
+    publicTypes: [
+        'Client',
+        'FeesRequest',
+        'FeesResponse',
+        'OrderbookRequest',
+        'OrderbookResponse',
+        'OrdersRequest',
+        'TokenPairsItem',
+        'TokenPairsRequest',
+    ],
+    sectionNameToModulePath: {
+        [connectDocSections.httpClient]: ['"src/http_client"'],
+        [connectDocSections.types]: ['"src/types"'],
+    },
+    menuSubsectionToVersionWhenIntroduced: {},
+    sections: connectDocSections,
+    visibleConstructors: [connectDocSections.httpClient],
+    convertToDocAgnosticFormatFn: typeDocUtils.convertToDocAgnosticFormat.bind(typeDocUtils),
+};
+const docsInfo = new DocsInfo(docsInfoConfig);
+
+interface ConnectedState {
+    docsVersion: string;
+    availableDocVersions: string[];
+    docsInfo: DocsInfo;
+}
+
+interface ConnectedDispatch {
+    dispatcher: Dispatcher;
+}
+
+const mapStateToProps = (state: State, ownProps: DocumentationAllProps): ConnectedState => ({
+    docsVersion: state.docsVersion,
+    availableDocVersions: state.availableDocVersions,
+    docsInfo,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
+    dispatcher: new Dispatcher(dispatch),
+});
+
+export const Documentation: React.ComponentClass<DocumentationAllProps> =
+  connect(mapStateToProps, mapDispatchToProps)(DocumentationComponent);

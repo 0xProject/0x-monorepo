@@ -42,6 +42,10 @@ const menuItemsBySection: MenuItemsBySection = {
             path: WebsitePaths.SmartContracts,
         },
         {
+            title: '0x Connect',
+            path: WebsitePaths.Connect,
+        },
+        {
             title: 'Whitepaper',
             path: WebsitePaths.Whitepaper,
             isExternal: true,

@@ -87,6 +87,12 @@ const LazySmartContractsDocumentation = createLazyComponent(
         /* webpackChunkName: "smartContractDocs" */'ts/containers/smart_contracts_documentation',
     ),
 );
+const LazyConnectDocumentation = createLazyComponent(
+    'Documentation',
+    async () => System.import<any>(
+        /* webpackChunkName: "connectDocs" */'ts/containers/connect_documentation',
+    ),
+);
 
 const store: ReduxStore<State> = createStore(reducer);
 render(
@@ -103,6 +109,7 @@ render(
                             <Route path={`${WebsitePaths.About}`} component={About as any} />
                             <Route path={`${WebsitePaths.Wiki}`} component={Wiki as any} />
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
+                            <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
                             <Route
                                 path={`${WebsitePaths.SmartContracts}/:version?`}
                                 component={LazySmartContractsDocumentation}

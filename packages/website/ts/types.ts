@@ -662,6 +662,7 @@ export enum WebsitePaths {
     About = '/about',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
+    Connect = '/docs/connect',
 }
 
 export interface DocsMenu {
@@ -673,7 +674,7 @@ export interface SectionsMap {
 }
 
 export interface DocsInfoConfig {
-  packageName: string;
+  displayName: string;
   packageUrl: string;
   websitePath: string;
   docsJsonRoot: string;
@@ -682,6 +683,7 @@ export interface DocsInfoConfig {
   sectionNameToMarkdown: {[sectionName: string]: string};
   visibleConstructors: string[];
   convertToDocAgnosticFormatFn: (docObj: DoxityDocObj|TypeDocNode, docsInfo?: any) => DocAgnosticFormat;
+  subPackageName?: string;
   publicTypes?: string[];
   sectionNameToModulePath?: {[sectionName: string]: string[]};
   menuSubsectionToVersionWhenIntroduced?: {[sectionName: string]: string};

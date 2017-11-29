@@ -11,8 +11,9 @@ import {
 } from 'ts/types';
 
 export class DocsInfo {
-    public packageName: string;
+    public displayName: string;
     public packageUrl: string;
+    public subPackageName?: string;
     public websitePath: string;
     public docsJsonRoot: string;
     public menu: DocsMenu;
@@ -20,8 +21,9 @@ export class DocsInfo {
     public sectionNameToMarkdown: {[sectionName: string]: string};
     private docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
-        this.packageName = config.packageName;
+        this.displayName = config.displayName;
         this.packageUrl = config.packageUrl;
+        this.subPackageName = config.subPackageName;
         this.websitePath = config.websitePath;
         this.docsJsonRoot = config.docsJsonRoot;
         this.sections = config.sections;
@@ -45,6 +47,11 @@ export class DocsInfo {
         }
 
         const finalMenu = _.cloneDeep(this.docsInfo.menu);
+        if (_.isUndefined(finalMenu.contracts)) {
+            return finalMenu;
+        }
+
+        // TODO: refactor to include more sections then simply the `contracts` section
         finalMenu.contracts = _.filter(finalMenu.contracts, (contractName: string) => {
             const versionIntroducedIfExists = this.docsInfo.menuSubsectionToVersionWhenIntroduced[contractName];
             if (!_.isUndefined(versionIntroducedIfExists)) {

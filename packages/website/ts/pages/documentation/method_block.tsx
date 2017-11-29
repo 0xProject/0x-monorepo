@@ -95,6 +95,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                         version={this.props.libraryVersion}
                         source={(method as TypescriptMethod).source}
                         baseUrl={this.props.docsInfo.packageUrl}
+                        subPackageName={this.props.docsInfo.subPackageName}
                     />
                 }
                 {method.comment &&
