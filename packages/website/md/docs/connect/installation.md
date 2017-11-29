@@ -12,4 +12,4 @@ import {HttpRelayerClient} from '@0xproject/connect';
 
 ### Wiki
 
-Check out our [@0xproject/connect introduction tutorial](https://0xproject.com/wiki#Intro-Tutorial:Connect) for articles on how to get 0x.js setup with TestRPC, Infura and more!
+Check out our [0x connect introduction tutorial](https://0xproject.com/wiki#Intro-Tutorial:Connect) for articles on how to get 0x.js setup with TestRPC, Infura and more!
