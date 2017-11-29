@@ -34,7 +34,7 @@ export class HttpClient implements Client {
     private apiEndpointUrl: string;
     /**
      * Instantiates a new HttpClient instance
-     * @param   url    The base url for making API calls
+     * @param   url    The relayer API base HTTP url you would like to interact with
      * @return  An instance of HttpClient
      */
     constructor(url: string) {

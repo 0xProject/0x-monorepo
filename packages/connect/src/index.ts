@@ -6,6 +6,8 @@ export {
     OrderbookRequest,
     OrderbookResponse,
     OrdersRequest,
+    SignedOrder,
     TokenPairsItem,
     TokenPairsRequest,
+    TokenTradeInfo,
 } from './types';
