@@ -7,24 +7,24 @@ import {BalancesByOwner, ContractInstance} from './types';
 bigNumberConfigs.configure();
 
 export class Balances {
-  private tokenContractInstances: ContractInstance[];
-  private ownerAddresses: string[];
-  constructor(tokenContractInstances: ContractInstance[], ownerAddresses: string[]) {
-    this.tokenContractInstances = tokenContractInstances;
-    this.ownerAddresses = ownerAddresses;
-  }
-  public async getAsync(): Promise<BalancesByOwner> {
-    const balancesByOwner: BalancesByOwner = {};
-    for (const tokenContractInstance of this.tokenContractInstances) {
-      for (const ownerAddress of this.ownerAddresses) {
-        let balance = await tokenContractInstance.balanceOf(ownerAddress);
-        balance = new BigNumber(balance);
-        if (_.isUndefined(balancesByOwner[ownerAddress])) {
-          balancesByOwner[ownerAddress] = {};
-        }
-        balancesByOwner[ownerAddress][tokenContractInstance.address] = balance;
-      }
+    private tokenContractInstances: ContractInstance[];
+    private ownerAddresses: string[];
+    constructor(tokenContractInstances: ContractInstance[], ownerAddresses: string[]) {
+        this.tokenContractInstances = tokenContractInstances;
+        this.ownerAddresses = ownerAddresses;
     }
-    return balancesByOwner;
-  }
+    public async getAsync(): Promise<BalancesByOwner> {
+        const balancesByOwner: BalancesByOwner = {};
+        for (const tokenContractInstance of this.tokenContractInstances) {
+            for (const ownerAddress of this.ownerAddresses) {
+                let balance = await tokenContractInstance.balanceOf(ownerAddress);
+                balance = new BigNumber(balance);
+                if (_.isUndefined(balancesByOwner[ownerAddress])) {
+                    balancesByOwner[ownerAddress] = {};
+                }
+                balancesByOwner[ownerAddress][tokenContractInstance.address] = balance;
+            }
+        }
+        return balancesByOwner;
+    }
 }
