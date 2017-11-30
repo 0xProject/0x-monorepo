@@ -68,3 +68,4 @@ generated_docs/
 TODO.md
 
 packages/website/public/bundle*
+transpiled/
