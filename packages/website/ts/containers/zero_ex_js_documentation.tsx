@@ -35,6 +35,7 @@ const zeroExJsDocSections = {
     tokenRegistry: 'tokenRegistry',
     etherToken: 'etherToken',
     proxy: 'proxy',
+    orderWatcher: 'orderWatcher',
     types: 'types',
 };
 
@@ -65,6 +66,9 @@ const docsInfoConfig: DocsInfoConfig = {
             zeroExJsDocSections.tokenRegistry,
             zeroExJsDocSections.etherToken,
             zeroExJsDocSections.proxy,
+        ],
+        orderWatcher: [
+            zeroExJsDocSections.orderWatcher,
         ],
         types: [
             zeroExJsDocSections.types,
@@ -122,6 +126,12 @@ const docsInfoConfig: DocsInfoConfig = {
         'LogEvent',
         'LogEntry',
         'DecodedLogEvent',
+        'EventWatcherCallback',
+        'OnOrderStateChangeCallback',
+        'OrderStateValid',
+        'OrderStateInvalid',
+        'OrderState',
+        'FilterObject',
     ],
     sectionNameToModulePath: {
         [zeroExJsDocSections.zeroEx]: ['"src/0x"'],
@@ -133,11 +143,13 @@ const docsInfoConfig: DocsInfoConfig = {
             '"src/contract_wrappers/proxy_wrapper"',
             '"src/contract_wrappers/token_transfer_proxy_wrapper"',
         ],
+        [zeroExJsDocSections.orderWatcher]: ['"src/order_watcher/order_state_watcher"'],
         [zeroExJsDocSections.types]: ['"src/types"'],
     },
     menuSubsectionToVersionWhenIntroduced: {
         [zeroExJsDocSections.etherToken]: '0.7.1',
         [zeroExJsDocSections.proxy]: '0.8.0',
+        [zeroExJsDocSections.orderWatcher]: '0.27.1',
     },
     sections: zeroExJsDocSections,
     visibleConstructors: [zeroExJsDocSections.zeroEx],
