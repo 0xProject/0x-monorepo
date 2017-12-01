@@ -7,17 +7,7 @@ import {ContractInstance, TransactionDataParams} from './types';
 
 export class MultiSigWrapper {
     private multiSig: ContractInstance;
-    constructor(multiSigContractInstance: ContractInstance) {
-        this.multiSig = multiSigContractInstance;
-    }
-    public async submitTransactionAsync(destination: string, from: string,
-                                        dataParams: TransactionDataParams,
-                                        value: number = 0) {
-        const {name, abi, args = []} = dataParams;
-        const encoded = this.encodeFnArgs(name, abi, args);
-        return this.multiSig.submitTransaction(destination, value, encoded, {from});
-    }
-    public encodeFnArgs(name: string, abi: Web3.AbiDefinition[], args: any[]) {
+    public static encodeFnArgs(name: string, abi: Web3.AbiDefinition[], args: any[]) {
         const abiEntity = _.find(abi, {name}) as Web3.MethodAbi;
         if (_.isUndefined(abiEntity)) {
             throw new Error(`Did not find abi entry for name: ${name}`);
@@ -30,5 +20,15 @@ export class MultiSigWrapper {
             return ethUtil.setLengthLeft(targetBuff, 32).toString('hex');
         });
         return funcSig + argsData.join('');
+    }
+    constructor(multiSigContractInstance: ContractInstance) {
+        this.multiSig = multiSigContractInstance;
+    }
+    public async submitTransactionAsync(destination: string, from: string,
+                                        dataParams: TransactionDataParams,
+                                        value: number = 0) {
+        const {name, abi, args = []} = dataParams;
+        const encoded = MultiSigWrapper.encodeFnArgs(name, abi, args);
+        return this.multiSig.submitTransaction(destination, value, encoded, {from});
     }
 }

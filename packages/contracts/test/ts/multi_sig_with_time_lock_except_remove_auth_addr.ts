@@ -42,13 +42,13 @@ contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: s
 
     describe('isFunctionRemoveAuthorizedAddress', () => {
         it('should throw if data is not for removeAuthorizedAddress', async () => {
-            const data = multiSigWrapper.encodeFnArgs('addAuthorizedAddress', PROXY_ABI, [owners[0]]);
+            const data = MultiSigWrapper.encodeFnArgs('addAuthorizedAddress', PROXY_ABI, [owners[0]]);
             return expect(multiSig.isFunctionRemoveAuthorizedAddress.call(data))
                 .to.be.rejectedWith(constants.INVALID_OPCODE);
         });
 
         it('should return true if data is for removeAuthorizedAddress', async () => {
-            const data = multiSigWrapper.encodeFnArgs('removeAuthorizedAddress', PROXY_ABI, [owners[0]]);
+            const data = MultiSigWrapper.encodeFnArgs('removeAuthorizedAddress', PROXY_ABI, [owners[0]]);
             const isFunctionRemoveAuthorizedAddress = await multiSig.isFunctionRemoveAuthorizedAddress.call(data);
             expect(isFunctionRemoveAuthorizedAddress).to.be.true();
         });

@@ -20,77 +20,6 @@ import {utils} from './utils/utils';
 
 const SOLIDITY_FILE_EXTENSION = '.sol';
 
-/**
- * Recursively retrieves Solidity source code from directory.
- * @param  dirPath Directory to search.
- * @return Mapping of contract name to contract source.
- */
-async function getContractSourcesAsync(dirPath: string): Promise<ContractSources> {
-    let dirContents: string[] = [];
-    try {
-        dirContents = await fsWrapper.readdirAsync(dirPath);
-    } catch (err) {
-        throw new Error(`No directory found at ${dirPath}`);
-    }
-    let sources: ContractSources = {};
-    for (const name of dirContents) {
-        const contentPath = `${dirPath}/${name}`;
-        if (path.extname(name) === SOLIDITY_FILE_EXTENSION) {
-            try {
-                const opts = {
-                    encoding: 'utf8',
-                };
-                sources[name] = await fsWrapper.readFileAsync(contentPath, opts);
-                utils.consoleLog(`Reading ${name} source...`);
-            } catch (err) {
-                utils.consoleLog(`Could not find file at ${contentPath}`);
-            }
-        } else {
-            try {
-                const nestedSources = await getContractSourcesAsync(contentPath);
-                sources = {
-                    ...sources,
-                    ...nestedSources,
-                };
-            } catch (err) {
-                utils.consoleLog(`${contentPath} is not a directory or ${SOLIDITY_FILE_EXTENSION} file`);
-            }
-        }
-    }
-    return sources;
-}
-/**
- * Searches Solidity source code for compiler version.
- * @param  source Source code of contract.
- * @return Solc compiler version.
- */
-function parseSolidityVersion(source: string): string {
-    const solcVersionMatch = source.match(/(?:solidity\s\^?)([0-9]{1,2}[.][0-9]{1,2}[.][0-9]{1,2})/);
-    if (_.isNull(solcVersionMatch)) {
-        throw new Error('Could not find Solidity version in source');
-    }
-    const solcVersion = solcVersionMatch[1];
-    return solcVersion;
-}
-/**
- * Normalizes the path found in the error message.
- * Example: converts 'base/Token.sol:6:46: Warning: Unused local variable'
- *          to 'Token.sol:6:46: Warning: Unused local variable'
- * This is used to prevent logging the same error multiple times.
- * @param  errMsg An error message from the compiled output.
- * @return The error message with directories truncated from the contract path.
- */
-function getNormalizedErrMsg(errMsg: string): string {
-    const errPathMatch = errMsg.match(/(.*\.sol)/);
-    if (_.isNull(errPathMatch)) {
-        throw new Error('Could not find a path in error message');
-    }
-    const errPath = errPathMatch[0];
-    const baseContract = path.basename(errPath);
-    const normalizedErrMsg = errMsg.replace(errPath, baseContract);
-    return normalizedErrMsg;
-}
-
 export class Compiler {
     private contractsDir: string;
     private networkId: number;
@@ -98,7 +27,81 @@ export class Compiler {
     private artifactsDir: string;
     private contractSourcesIfExists?: ContractSources;
     private solcErrors: Set<string>;
-
+    /**
+     * Recursively retrieves Solidity source code from directory.
+     * @param  dirPath Directory to search.
+     * @return Mapping of contract name to contract source.
+     */
+    private static async getContractSourcesAsync(dirPath: string): Promise<ContractSources> {
+        let dirContents: string[] = [];
+        try {
+            dirContents = await fsWrapper.readdirAsync(dirPath);
+        } catch (err) {
+            throw new Error(`No directory found at ${dirPath}`);
+        }
+        let sources: ContractSources = {};
+        for (const name of dirContents) {
+            const contentPath = `${dirPath}/${name}`;
+            if (path.extname(name) === SOLIDITY_FILE_EXTENSION) {
+                try {
+                    const opts = {
+                        encoding: 'utf8',
+                    };
+                    sources[name] = await fsWrapper.readFileAsync(contentPath, opts);
+                    utils.consoleLog(`Reading ${name} source...`);
+                } catch (err) {
+                    utils.consoleLog(`Could not find file at ${contentPath}`);
+                }
+            } else {
+                try {
+                    const nestedSources = await Compiler.getContractSourcesAsync(contentPath);
+                    sources = {
+                        ...sources,
+                        ...nestedSources,
+                    };
+                } catch (err) {
+                    utils.consoleLog(`${contentPath} is not a directory or ${SOLIDITY_FILE_EXTENSION} file`);
+                }
+            }
+        }
+        return sources;
+    }
+    /**
+     * Searches Solidity source code for compiler version.
+     * @param  source Source code of contract.
+     * @return Solc compiler version.
+     */
+    private static parseSolidityVersion(source: string): string {
+        const solcVersionMatch = source.match(/(?:solidity\s\^?)([0-9]{1,2}[.][0-9]{1,2}[.][0-9]{1,2})/);
+        if (_.isNull(solcVersionMatch)) {
+            throw new Error('Could not find Solidity version in source');
+        }
+        const solcVersion = solcVersionMatch[1];
+        return solcVersion;
+    }
+    /**
+     * Normalizes the path found in the error message.
+     * Example: converts 'base/Token.sol:6:46: Warning: Unused local variable'
+     *          to 'Token.sol:6:46: Warning: Unused local variable'
+     * This is used to prevent logging the same error multiple times.
+     * @param  errMsg An error message from the compiled output.
+     * @return The error message with directories truncated from the contract path.
+     */
+    private static getNormalizedErrMsg(errMsg: string): string {
+        const errPathMatch = errMsg.match(/(.*\.sol)/);
+        if (_.isNull(errPathMatch)) {
+            throw new Error('Could not find a path in error message');
+        }
+        const errPath = errPathMatch[0];
+        const baseContract = path.basename(errPath);
+        const normalizedErrMsg = errMsg.replace(errPath, baseContract);
+        return normalizedErrMsg;
+    }
+    /**
+     * Instantiates a new instance of the Compiler class.
+     * @param opts Options specifying directories, network, and optimization settings.
+     * @return An instance of the Compiler class.
+     */
     constructor(opts: CompilerOptions) {
         this.contractsDir = opts.contractsDir;
         this.networkId = opts.networkId;
@@ -111,7 +114,7 @@ export class Compiler {
      */
     public async compileAllAsync(): Promise<void> {
         await this.createArtifactsDirIfDoesNotExistAsync();
-        this.contractSourcesIfExists = await getContractSourcesAsync(this.contractsDir);
+        this.contractSourcesIfExists = await Compiler.getContractSourcesAsync(this.contractsDir);
 
         const contractBaseNames = _.keys(this.contractSourcesIfExists);
         const compiledContractPromises = _.map(contractBaseNames, async (contractBaseName: string): Promise<void> => {
@@ -163,7 +166,7 @@ export class Compiler {
         const input = {
             [contractBaseName]: source,
         };
-        const solcVersion = parseSolidityVersion(source);
+        const solcVersion = Compiler.parseSolidityVersion(source);
         const fullSolcVersion = binPaths[solcVersion];
         const solcBinPath = `./../solc/solc_bin/${fullSolcVersion}`;
         const solcBin = require(solcBinPath);
@@ -179,7 +182,7 @@ export class Compiler {
 
         if (!_.isUndefined(compiled.errors)) {
             _.each(compiled.errors, errMsg => {
-                const normalizedErrMsg = getNormalizedErrMsg(errMsg);
+                const normalizedErrMsg = Compiler.getNormalizedErrMsg(errMsg);
                 this.solcErrors.add(normalizedErrMsg);
             });
         }
