@@ -13,7 +13,7 @@ Contracts
 
 ### Installing Dependencies
 
-Install [Node v6.9.1](https://nodejs.org/en/download/releases/)
+Install [Node](https://nodejs.org/en/download/releases/)
 
 Install [yarn](https://yarnpkg.com/lang/en/docs/install/) in order to install the project dependencies more deterministically.
 

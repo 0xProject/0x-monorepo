@@ -128,10 +128,6 @@
   version "4.14.85"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.85.tgz#a16fbf942422f6eca5622b6910492c496c35069b"
 
-"@types/lodash@^4.14.63":
-  version "4.14.86"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.86.tgz#6788d3d75032c46322ff1c144c948cf8117c405b"
-
 "@types/marked@0.0.28":
   version "0.0.28"
   resolved "https://registry.yarnpkg.com/@types/marked/-/marked-0.0.28.tgz#44ba754e9fa51432583e8eb30a7c4dd249b52faa"
@@ -168,10 +164,6 @@
 "@types/node@^7.0.8":
   version "7.0.48"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.48.tgz#24bfdc0aa82e8f6dbd017159c58094a2e06d0abb"
-
-"@types/node@^8.0.51":
-  version "8.0.53"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.53.tgz#396b35af826fa66aad472c8cb7b8d5e277f4e6d8"
 
 "@types/query-string@^5.0.0", "@types/query-string@^5.0.1":
   version "5.0.1"
@@ -1654,7 +1646,7 @@ chai-as-promised-typescript-typings@0.0.3, chai-as-promised-typescript-typings@^
   dependencies:
     chai-typescript-typings "^0.0.0"
 
-chai-as-promised@^7.1.0, chai-as-promised@^7.1.1:
+chai-as-promised@^7.1.0:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/chai-as-promised/-/chai-as-promised-7.1.1.tgz#08645d825deb8696ee61725dbf590c012eb00ca0"
   dependencies:
@@ -1672,7 +1664,7 @@ chai-typescript-typings@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/chai-typescript-typings/-/chai-typescript-typings-0.0.1.tgz#433dee303b0b2978ad0dd03129df0a5afb791274"
 
-chai@^4.0.1, chai@^4.1.1, chai@^4.1.2:
+chai@^4.0.1, chai@^4.1.1:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.1.2.tgz#0f64584ba642f0f2ace2806279f4f06ca23ad73c"
   dependencies:
@@ -3024,12 +3016,6 @@ ethereumjs-blockstream@^2.0.6:
     immutable "3.8.1"
     source-map-support "0.4.14"
     uuid "3.0.1"
-
-ethereumjs-testrpc@4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/ethereumjs-testrpc/-/ethereumjs-testrpc-4.0.1.tgz#af23babff4c36008418bc6de4c80f81606896cad"
-  dependencies:
-    webpack "^3.0.0"
 
 ethereumjs-testrpc@6.0.3:
   version "6.0.3"
@@ -8376,14 +8362,6 @@ types-ethereumjs-util@0xProject/types-ethereumjs-util:
     buffer "^5.0.6"
     rlp "^2.0.0"
 
-types-ethereumjs-util@machinomy/types-ethereumjs-util:
-  version "0.0.5"
-  resolved "https://codeload.github.com/machinomy/types-ethereumjs-util/tar.gz/b89e8b21d022f4bff1c2bb1922db30931efdb842"
-  dependencies:
-    bn.js "^4.11.7"
-    buffer "^5.0.6"
-    rlp "^2.0.0"
-
 typescript@2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
@@ -8730,6 +8708,12 @@ web3-typescript-typings@^0.7.1:
   dependencies:
     bignumber.js "^4.0.2"
 
+web3-typescript-typings@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.7.2.tgz#5312bb786936a9c91381eee7af3d02ac21cf13b3"
+  dependencies:
+    bignumber.js "^4.0.2"
+
 web3-utils@^1.0.0-beta.26:
   version "1.0.0-beta.26"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.0.0-beta.26.tgz#f04ad8c144b1781c6b20c2818e0532cb9e6dca15"
@@ -8742,9 +8726,9 @@ web3-utils@^1.0.0-beta.26:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-web3@0.20.2, web3@^0.20.0:
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/web3/-/web3-0.20.2.tgz#c54dac5fc0e377399c04c1a6ecbb12e4513278d6"
+web3@0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/web3/-/web3-0.20.0.tgz#aabbbe35fe6cabe811659087a55cc86e99336c74"
   dependencies:
     bignumber.js "git+https://github.com/frozeman/bignumber.js-nolookahead.git"
     crypto-js "^3.1.4"
@@ -8766,6 +8750,16 @@ web3@^0.18.0, web3@^0.18.2:
   resolved "https://registry.yarnpkg.com/web3/-/web3-0.18.4.tgz#81ec1784145491f2eaa8955b31c06049e07c5e7d"
   dependencies:
     bignumber.js "git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2"
+    crypto-js "^3.1.4"
+    utf8 "^2.1.1"
+    xhr2 "*"
+    xmlhttprequest "*"
+
+web3@^0.20.0:
+  version "0.20.2"
+  resolved "https://registry.yarnpkg.com/web3/-/web3-0.20.2.tgz#c54dac5fc0e377399c04c1a6ecbb12e4513278d6"
+  dependencies:
+    bignumber.js "git+https://github.com/frozeman/bignumber.js-nolookahead.git"
     crypto-js "^3.1.4"
     utf8 "^2.1.1"
     xhr2 "*"
