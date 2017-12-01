@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "outDir": "./lib/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es6",
+        "baseUrl": ".",
+        "allowJs": true
+    },
+    "include": [
+        "../../node_modules/types-ethereumjs-util/index.d.ts",
+        "../../node_modules/web3-typescript-typings/index.d.ts",
+        "../../node_modules/chai-typescript-typings/index.d.ts",
+        "../../node_modules/chai-as-promised-typescript-typings/index.d.ts",
+        "../../node_modules/types-ethereumjs-util/index.d.ts",
+        "../../node_modules/types-bn/index.d.ts",
+        "./globals.d.ts",
+        "./util/**/*",
+        "./test/**/*",
+        "./migrations/**/*",
+        "./deploy/**/*"
+    ],
+    "exclude": [
+        "./deploy/solc/solc_bin"
+    ]
+}
