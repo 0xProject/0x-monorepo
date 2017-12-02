@@ -10,7 +10,7 @@ export function promisify<T>(
         ...args: any[],
         // HACK: This can't be properly typed without variadic kinds https://github.com/Microsoft/TypeScript/issues/5453
     ) => void,
-    target: any,
+    target?: any,
 ): (...callArgs: any[]) => Promise<T> {
     const promisifiedFunction = async (...callArgs: any[]): Promise<T> => {
         return new Promise<T>((resolve, reject) => {
