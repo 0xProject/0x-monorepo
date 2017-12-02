@@ -1,10 +1,9 @@
 import BigNumber from 'bignumber.js';
-import promisify = require('es6-promisify');
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import {Contract} from './contract';
 import {Artifact, ArtifactContractName, TransactionReceipt, TxData, ZeroExError} from './types';
+import {promisify} from './utils/promisify';
 
 interface RawLogEntry {
     logIndex: string|null;
@@ -59,11 +58,11 @@ export class Web3Wrapper {
         return _.includes(addresses, senderAddress);
     }
     public async getNodeVersionAsync(): Promise<string> {
-        const nodeVersion = await promisify(this.web3.version.getNode)();
+        const nodeVersion = await promisify<string>(this.web3.version.getNode)();
         return nodeVersion;
     }
     public async getTransactionReceiptAsync(txHash: string): Promise<TransactionReceipt> {
-        const transactionReceipt = await promisify(this.web3.eth.getTransactionReceipt)(txHash);
+        const transactionReceipt = await promisify<TransactionReceipt>(this.web3.eth.getTransactionReceipt)(txHash);
         if (!_.isNull(transactionReceipt)) {
             transactionReceipt.status = this.normalizeTxReceiptStatus(transactionReceipt.status);
         }
@@ -102,26 +101,26 @@ export class Web3Wrapper {
         return balanceWei;
     }
     public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
-        let balanceInWei = await promisify(this.web3.eth.getBalance)(owner);
+        let balanceInWei = await promisify<BigNumber>(this.web3.eth.getBalance)(owner);
         balanceInWei = new BigNumber(balanceInWei);
         return balanceInWei;
     }
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
-        const code = await promisify(this.web3.eth.getCode)(address);
+        const code = await promisify<string>(this.web3.eth.getCode)(address);
         // Regex matches 0x0, 0x00, 0x in order to accommodate poorly implemented clients
         const codeIsEmpty = /^0x0{0,40}$/i.test(code);
         return !codeIsEmpty;
     }
     public async signTransactionAsync(address: string, message: string): Promise<string> {
-        const signData = await promisify(this.web3.eth.sign)(address, message);
+        const signData = await promisify<string>(this.web3.eth.sign)(address, message);
         return signData;
     }
     public async getBlockNumberAsync(): Promise<number> {
-        const blockNumber = await promisify(this.web3.eth.getBlockNumber)();
+        const blockNumber = await promisify<number>(this.web3.eth.getBlockNumber)();
         return blockNumber;
     }
     public async getBlockAsync(blockParam: string|Web3.BlockParam): Promise<Web3.BlockWithoutTransactionData> {
-        const block = await promisify(this.web3.eth.getBlock)(blockParam);
+        const block = await promisify<Web3.BlockWithoutTransactionData>(this.web3.eth.getBlock)(blockParam);
         return block;
     }
     public async getBlockTimestampAsync(blockParam: string|Web3.BlockParam): Promise<number> {
@@ -129,7 +128,7 @@ export class Web3Wrapper {
         return timestamp;
     }
     public async getAvailableAddressesAsync(): Promise<string[]> {
-        const addresses: string[] = await promisify(this.web3.eth.getAccounts)();
+        const addresses = await promisify<string[]>(this.web3.eth.getAccounts)();
         return addresses;
     }
     public async getLogsAsync(filter: Web3.FilterObject): Promise<Web3.LogEntry[]> {
@@ -161,12 +160,12 @@ export class Web3Wrapper {
         return web3ContractInstance;
     }
     private async getNetworkAsync(): Promise<number> {
-        const networkId = await promisify(this.web3.version.getNetwork)();
+        const networkId = await promisify<number>(this.web3.version.getNetwork)();
         return networkId;
     }
     private async sendRawPayloadAsync<A>(payload: Web3.JSONRPCRequestPayload): Promise<A> {
         const sendAsync = this.web3.currentProvider.sendAsync.bind(this.web3.currentProvider);
-        const response = await promisify(sendAsync)(payload);
+        const response = await promisify<Web3.JSONRPCResponsePayload>(sendAsync)(payload);
         const result = response.result;
         return result;
     }

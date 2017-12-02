@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
-import promisify = require('es6-promisify');
 import 'mocha';
 import * as Web3 from 'web3';
 
@@ -19,6 +18,8 @@ import {
     ZeroExError,
 } from '../src';
 import {BlockParamLiteral, DoneCallback} from '../src/types';
+import {promisify} from '../src/utils/promisify';
+import {Web3Wrapper} from '../src/web3_wrapper';
 
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';
@@ -38,12 +39,14 @@ describe('TokenWrapper', () => {
     let tokenUtils: TokenUtils;
     let coinbase: string;
     let addressWithoutFunds: string;
+    let web3Wrapper: Web3Wrapper;
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
+        web3Wrapper = new Web3Wrapper(web3.currentProvider, config.networkId);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);
@@ -237,8 +240,10 @@ describe('TokenWrapper', () => {
             await zeroEx.token.setAllowanceAsync(zrx.address, coinbase, userWithNormalAllowance, transferAmount);
             await zeroEx.token.setUnlimitedAllowanceAsync(zrx.address, coinbase, userWithUnlimitedAllowance);
 
-            const initBalanceWithNormalAllowance = await promisify(web3.eth.getBalance)(userWithNormalAllowance);
-            const initBalanceWithUnlimitedAllowance = await promisify(web3.eth.getBalance)(userWithUnlimitedAllowance);
+            const initBalanceWithNormalAllowance = await web3Wrapper.getBalanceInWeiAsync(userWithNormalAllowance);
+            const initBalanceWithUnlimitedAllowance = await web3Wrapper.getBalanceInWeiAsync(
+                userWithUnlimitedAllowance,
+            );
 
             await zeroEx.token.transferFromAsync(
                 zrx.address, coinbase, userWithNormalAllowance, userWithNormalAllowance, transferAmount,
@@ -247,8 +252,10 @@ describe('TokenWrapper', () => {
                 zrx.address, coinbase, userWithUnlimitedAllowance, userWithUnlimitedAllowance, transferAmount,
             );
 
-            const finalBalanceWithNormalAllowance = await promisify(web3.eth.getBalance)(userWithNormalAllowance);
-            const finalBalanceWithUnlimitedAllowance = await promisify(web3.eth.getBalance)(userWithUnlimitedAllowance);
+            const finalBalanceWithNormalAllowance = await web3Wrapper.getBalanceInWeiAsync(userWithNormalAllowance);
+            const finalBalanceWithUnlimitedAllowance = await web3Wrapper.getBalanceInWeiAsync(
+                userWithUnlimitedAllowance,
+            );
 
             const normalGasCost = initBalanceWithNormalAllowance.minus(finalBalanceWithNormalAllowance);
             const unlimitedGasCost = initBalanceWithUnlimitedAllowance.minus(finalBalanceWithUnlimitedAllowance);
