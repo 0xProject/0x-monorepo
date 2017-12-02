@@ -1,3 +1,7 @@
+/**
+ * This file is auto-generated using https://github.com/0xProject/0x.js/tree/development/packages/typed-contracts. Don't edit directly.
+ * Templates can be found at https://github.com/0xProject/0x.js/tree/development/packages/typed-contracts-templates.
+ */
 import {BigNumber} from 'bignumber.js';
 import * as Web3 from 'web3';
 
