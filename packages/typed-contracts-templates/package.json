@@ -1,0 +1,14 @@
+{
+  "name": "@0xproject/typed-contracts-templates",
+  "version": "0.0.0",
+  "description": "Handlebars templates to generate TS contract wrappers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xProject/0x.js.git"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/0xProject/0x.js/issues"
+  },
+  "homepage": "https://github.com/0xProject/0x.js/packages/typed-contracts-templates/README.md"
+}
