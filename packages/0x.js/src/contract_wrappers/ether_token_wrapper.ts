@@ -2,11 +2,12 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
-import {EtherTokenContract, TransactionOpts, ZeroExError} from '../types';
+import {TransactionOpts, ZeroExError} from '../types';
 import {assert} from '../utils/assert';
 import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
+import {EtherTokenContract} from './generated/ether_token';
 import {TokenWrapper} from './token_wrapper';
 
 /**
@@ -92,9 +93,10 @@ export class EtherTokenWrapper extends ContractWrapper {
         if (!_.isUndefined(this._etherTokenContractIfExists)) {
             return this._etherTokenContractIfExists;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync<EtherTokenContract>(
+        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
             artifacts.EtherTokenArtifact, this._contractAddressIfExists,
         );
+        const contractInstance = new EtherTokenContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
         this._etherTokenContractIfExists = contractInstance;
         return this._etherTokenContractIfExists;
     }

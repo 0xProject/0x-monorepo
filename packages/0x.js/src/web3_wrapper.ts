@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import {Contract} from './contract';
-import {Artifact, ArtifactContractName, TransactionReceipt, ZeroExError} from './types';
+import {Artifact, ArtifactContractName, TransactionReceipt, TxData, ZeroExError} from './types';
 
 interface RawLogEntry {
     logIndex: string|null;
@@ -29,9 +29,9 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {[contractName: string]: ZeroExError} = 
 export class Web3Wrapper {
     private web3: Web3;
     private networkId: number;
-    private defaults: Partial<Web3.TxData>;
+    private defaults: Partial<TxData>;
     private jsonRpcRequestId: number;
-    constructor(provider: Web3.Provider, networkId: number, defaults?: Partial<Web3.TxData>) {
+    constructor(provider: Web3.Provider, networkId: number, defaults?: Partial<TxData>) {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
@@ -43,6 +43,9 @@ export class Web3Wrapper {
         this.web3.setProvider(provider);
         this.defaults = defaults || {};
         this.jsonRpcRequestId = 0;
+    }
+    public getContractDefaults(): Partial<TxData> {
+        return this.defaults;
     }
     public setProvider(provider: Web3.Provider, networkId: number) {
         this.networkId = networkId;
@@ -72,8 +75,9 @@ export class Web3Wrapper {
     public getNetworkId(): number {
         return this.networkId;
     }
-    public async getContractInstanceFromArtifactAsync<A extends Web3.ContractInstance>(artifact: Artifact,
-                                                                                       address?: string): Promise<A> {
+    public async getContractInstanceFromArtifactAsync(
+        artifact: Artifact, address?: string,
+    ): Promise<Web3.ContractInstance> {
         let contractAddress: string;
         if (_.isUndefined(address)) {
             const networkId = this.getNetworkId();
@@ -88,7 +92,7 @@ export class Web3Wrapper {
         if (!doesContractExist) {
             throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
         }
-        const contractInstance = this.getContractInstance<A>(
+        const contractInstance = this.getContractInstance(
             artifact.abi, contractAddress,
         );
         return contractInstance;
@@ -152,10 +156,9 @@ export class Web3Wrapper {
         const formattedLogs = _.map(rawLogs, this.formatLog.bind(this));
         return formattedLogs;
     }
-    private getContractInstance<A extends Web3.ContractInstance>(abi: Web3.ContractAbi, address: string): A {
+    private getContractInstance(abi: Web3.ContractAbi, address: string): Web3.ContractInstance {
         const web3ContractInstance = this.web3.eth.contract(abi).at(address);
-        const contractInstance = new Contract(web3ContractInstance, this.defaults) as any as A;
-        return contractInstance;
+        return web3ContractInstance;
     }
     private async getNetworkAsync(): Promise<number> {
         const networkId = await promisify(this.web3.version.getNetwork)();

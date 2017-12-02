@@ -9,7 +9,6 @@ import {
     DecodedLogArgs,
     ECSignature,
     EventCallback,
-    ExchangeContract,
     ExchangeContractErrCodes,
     ExchangeContractErrs,
     ExchangeContractEventArgs,
@@ -40,6 +39,7 @@ import {utils} from '../utils/utils';
 import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
+import {ExchangeContract} from './generated/exchange';
 import {TokenWrapper} from './token_wrapper';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;
@@ -789,9 +789,10 @@ export class ExchangeWrapper extends ContractWrapper {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync<ExchangeContract>(
+        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
             artifacts.ExchangeArtifact, this._contractAddressIfExists,
         );
+        const contractInstance = new ExchangeContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
         this._exchangeContractIfExists = contractInstance;
         return this._exchangeContractIfExists;
     }
