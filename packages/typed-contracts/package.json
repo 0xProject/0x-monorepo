@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "lint": "tslint --project . 'src/*.ts'",
+    "lint": "tslint --project . 'src/**/*.ts'",
     "clean": "shx rm -rf lib",
     "build": "tsc"
   },

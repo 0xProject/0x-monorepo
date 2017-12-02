@@ -12,7 +12,7 @@ export function promisify<T>(
     ) => void,
     target: any,
 ): (...callArgs: any[]) => Promise<T> {
-    const promisifiedFunction = (...callArgs: any[]): Promise<T> => {
+    const promisifiedFunction = async (...callArgs: any[]): Promise<T> => {
         return new Promise<T>((resolve, reject) => {
             const callback = (err: Error|null, data?: T) => {
                 _.isNull(err) ? resolve(data) : reject(err);
