@@ -20,7 +20,8 @@ contract ERC20Token is Token {
     /// @param _value Amount to transfer.
     /// @return Success of transfer.
     function transferFrom(address _from, address _to, uint _value) returns (bool) {
-        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]); 
+        uint allowance = allowed[_from][msg.sender];
+        require(balances[_from] >= _value && allowance >= _value && balances[_to] + _value >= balances[_to]); 
         balances[_to] += _value;
         balances[_from] -= _value;
         if (allowance < MAX_UINT) {

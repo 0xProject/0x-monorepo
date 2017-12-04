@@ -18,10 +18,10 @@
 
 pragma solidity 0.4.11;
 
-import "./ERC20Token.sol";
+import "./../base/ERC20Token.sol";
 import "./../base/SafeMath.sol";
 
-contract EtherToken is ERC20Token, SafeMath {
+contract EtherToken_v2 is ERC20Token, SafeMath {
 
     string constant public name = "Ether Token";
     string constant public symbol = "WETH";
@@ -53,6 +53,6 @@ contract EtherToken is ERC20Token, SafeMath {
         balances[msg.sender] = safeSub(balances[msg.sender], amount);
         totalSupply = safeSub(totalSupply, amount);
         require(msg.sender.send(amount));
-        Tranfer(msg.sender, address(0), msg.value);
+        Transfer(msg.sender, address(0), amount);
     }
 }
