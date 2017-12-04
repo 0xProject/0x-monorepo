@@ -1,0 +1,33 @@
+{
+  "name": "@0xproject/monorepo-scripts",
+  "version": "0.0.0",
+  "description": "Helper scripts for the monorepo",
+  "scripts": {
+    "deps_versions": "node ./lib/deps_versions.js",
+    "lint": "tslint --project . 'src/**/*.ts'",
+    "clean": "shx rm -rf lib",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xProject/0x.js.git"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/0xProject/0x.js/issues"
+  },
+  "homepage": "https://github.com/0xProject/0x.js/packages/monorepo-scripts/README.md",
+  "devDependencies": {
+    "@0xproject/tslint-config": "^0.2.0",
+    "@types/glob": "^5.0.33",
+    "@types/node": "^8.0.53",
+    "shx": "^0.2.2",
+    "tslint": "5.8.0",
+    "typescript": "~2.6.1"
+  },
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "glob": "^7.1.2",
+    "lodash": "^4.17.4"
+  }
+}
