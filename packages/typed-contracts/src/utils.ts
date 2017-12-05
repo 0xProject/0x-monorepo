@@ -31,7 +31,7 @@ export const utils = {
                     return tsType;
                 }
             }
-            throw new Error(`Unknown type ${solType}`);
+            throw new Error(`Unknown Solidity type found: ${solType}`);
         }
     },
     log(...args: any[]): void {
