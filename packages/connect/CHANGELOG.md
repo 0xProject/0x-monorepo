@@ -2,7 +2,7 @@
 
 vx.x.x
 ------------------------
-    * Expose WebSocketOrderbookChannel and associated types to public interface
+    * Expose WebSocketOrderbookChannel and associated types to public interface (#251)
 
 v0.2.0 - _November 29, 2017_
 ------------------------
