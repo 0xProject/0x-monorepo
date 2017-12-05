@@ -42,7 +42,7 @@ export const utils = {
         return name;
     },
     getNamedContent(filename: string): {name: string; content: string} {
-        const name = path.parse(filename).name;
+        const name = utils.getPartialNameFromFileName(filename);
         try {
             const content = fs.readFileSync(filename).toString();
             return {
