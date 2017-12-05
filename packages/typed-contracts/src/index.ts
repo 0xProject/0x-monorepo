@@ -76,7 +76,7 @@ for (const abiFileName of abiFileNames) {
                 input.name = 'index';
             }
         });
-        // This will make temlates simpler
+        // This will make templates simpler
         (methodAbi.outputs as any).singleReturnValue = methodAbi.outputs.length === 1;
     });
     const templateData = {
