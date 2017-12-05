@@ -52,7 +52,8 @@ const template = Handlebars.compile(mainTemplate.content);
 const abiFileNames = globSync(args.abiGlob);
 if (_.isEmpty(abiFileNames)) {
     utils.log(`${chalk.red(`No ABI files found.`)}`);
-    utils.log(`Please make sure you've passed a correct folder and they have ${chalk.bold('*.json')} extensions`);
+    utils.log(`Please make sure you've passed the correct folder name and that the files have
+               ${chalk.bold('*.json')} extensions`);
     process.exit(1);
 } else {
     utils.log(`Found ${chalk.green(`${abiFileNames.length}`)} ${chalk.bold('ABI')} files`);
