@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.11;
 
-import "./../base/ERC20Token.sol";
+import "./../tokens/ERC20Token.sol";
 import "./../base/SafeMath.sol";
 
 contract EtherToken_v2 is ERC20Token, SafeMath {
