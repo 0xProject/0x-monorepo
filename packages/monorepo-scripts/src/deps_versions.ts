@@ -15,6 +15,8 @@ interface VersionsByDependency {
     [depName: string]: Versions;
 }
 
+const PACKAGE_JSON_GLOB = '../*/package.json';
+
 function log(...args: any[]) {
     console.log(...args); // tslint:disable-line:no-console
 }
@@ -34,7 +36,7 @@ function getPackageName(path: string): string {
     return packageName;
 }
 
-const files = globSync('../*/package.json');
+const files = globSync(PACKAGE_JSON_GLOB);
 const versionsByDependency: VersionsByDependency = {};
 files.map(path => {
     const packageName = getPackageName(path);
