@@ -28,6 +28,7 @@ describe('LedgerSubprovider', () => {
     let ledgerSubprovider: LedgerSubprovider;
     before(async () => {
         const ledgerEthereumClientFactoryAsync = async () => {
+            // tslint:disable:no-object-literal-type-assertion
             const ledgerEthClient = {
                 getAddress_async: async () => {
                     return {
@@ -54,6 +55,7 @@ describe('LedgerSubprovider', () => {
                     close_async: _.noop,
                 } as LedgerCommunicationClient,
             };
+            // tslint:enable:no-object-literal-type-assertion
             return ledgerEthClient;
         };
         ledgerSubprovider = new LedgerSubprovider({
