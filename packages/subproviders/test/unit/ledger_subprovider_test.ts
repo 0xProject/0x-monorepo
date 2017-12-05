@@ -17,7 +17,7 @@ import {
     LedgerGetAddressResult,
     LedgerSubproviderErrors,
 } from '../../src/types';
-import { chaiSetup } from '../chai_setup';
+import {chaiSetup} from '../chai_setup';
 import {reportCallbackErrors} from '../utils/report_callback_errors';
 
 const expect = chai.expect;
