@@ -69,6 +69,11 @@ for (const abiFileName of abiFileNames) {
     const ABI = _.isArray(parsedContent) ?
                 parsedContent : // ABI file
                 parsedContent.abi; // Truffle contracts file
+    if (_.isUndefined(ABI)) {
+        utils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
+        utils.log(`Please make sure your ABI file is either an array with ABI entries or an object with the abi key`);
+        process.exit(1);
+    }
     const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_METHOD) as Web3.MethodAbi[];
     _.map(methodAbis, methodAbi => {
         _.map(methodAbi.inputs, input => {
