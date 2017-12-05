@@ -67,8 +67,8 @@ for (const abiFileName of abiFileNames) {
                 parsedContent : // ABI file
                 parsedContent.abi; // Truffle contracts file
     const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === 'function') as Web3.MethodAbi[];
-    methodAbis.map(methodAbi => {
-        methodAbi.inputs.map(input => {
+    _.map(methodAbis, methodAbi => {
+        _.map(methodAbi.inputs, input => {
             if (_.isEmpty(input.name)) {
                 // Auto-generated getters don't have parameter names
                 input.name = 'index';
