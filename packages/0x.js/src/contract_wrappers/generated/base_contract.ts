@@ -3,8 +3,6 @@ import * as Web3 from 'web3';
 
 import {TxData, TxDataPayable} from '../../types';
 
-// TODO: Gas Margin
-// TODO: Abi check
 export class BaseContract {
     protected web3ContractInstance: Web3.ContractInstance;
     protected defaults: Partial<TxData>;
