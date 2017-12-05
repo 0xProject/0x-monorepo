@@ -15,6 +15,7 @@ import {ParamKind} from './types';
 import {utils} from './utils';
 
 const ABI_TYPE_METHOD = 'function';
+const MAIN_TEMPLATE_NAME = 'contract.mustache';
 
 const args = yargs
     .option('abiGlob', {
@@ -49,7 +50,7 @@ for (const partialTemplateFileName of partialTemplateFileNames) {
     Handlebars.registerPartial(namedContent.name, namedContent.content);
 }
 
-const mainTemplate = utils.getNamedContent(`${args.templates}/contract.mustache`);
+const mainTemplate = utils.getNamedContent(`${args.templates}/${MAIN_TEMPLATE_NAME}`);
 const template = Handlebars.compile(mainTemplate.content);
 const abiFileNames = globSync(args.abiGlob);
 if (_.isEmpty(abiFileNames)) {
