@@ -13,11 +13,12 @@ For the example of the generated [wrapper files](https://github.com/0xProject/0x
 ```
 abi-gen
 Options:
-  --help       Show help                                               [boolean]
-  --version    Show version number                                     [boolean]
-  --abiGlob    Glob pattern to search for ABI JSON files     [string] [required]
-  --templates  Folder where to search for templates          [string] [required]
-  --output     Folder where to put the output files          [string] [required]
+  --help           Show help                                           [boolean]
+  --version        Show version number                                 [boolean]
+  --abiGlob        Glob pattern to search for ABI JSON files [string] [required]
+  --templates      Folder where to search for templates      [string] [required]
+  --output         Folder where to put the output files      [string] [required]
+  --fileExtension  The extension of the output file          [string] [required]
 ```
 ## ABI files
 You're required to pass a [glob](https://en.wikipedia.org/wiki/Glob_(programming) template where your abi files are located.
