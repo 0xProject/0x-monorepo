@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/abi-gen/README.md",
   "dependencies": {
-    "@types/handlebars": "^4.0.36",
     "bignumber.js": "^5.0.0",
     "chalk": "^2.3.0",
     "glob": "^7.1.2",
@@ -34,6 +33,7 @@
     "yargs": "^10.0.3"
   },
   "devDependencies": {
+    "@types/handlebars": "^4.0.36",
     "@0xproject/tslint-config": "^0.2.0",
     "@types/glob": "^5.0.33",
     "@types/mkdirp": "^0.5.1",
