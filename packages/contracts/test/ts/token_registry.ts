@@ -58,7 +58,7 @@ contract('TokenRegistry', (accounts: string[]) => {
 
     describe('addToken', () => {
         it('should throw when not called by owner', async () => {
-            return expect(tokenRegWrapper.addTokenAsync(token1, notOwner)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(tokenRegWrapper.addTokenAsync(token1, notOwner)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should add token metadata when called by owner', async () => {
@@ -70,11 +70,11 @@ contract('TokenRegistry', (accounts: string[]) => {
         it('should throw if token already exists', async () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
 
-            return expect(tokenRegWrapper.addTokenAsync(token1, owner)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(tokenRegWrapper.addTokenAsync(token1, owner)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if token address is null', async () => {
-            return expect(tokenRegWrapper.addTokenAsync(nullToken, owner)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(tokenRegWrapper.addTokenAsync(nullToken, owner)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if name already exists', async () => {
@@ -82,7 +82,7 @@ contract('TokenRegistry', (accounts: string[]) => {
             const duplicateNameToken = _.assign({}, token2, {name: token1.name});
 
             return expect(tokenRegWrapper.addTokenAsync(duplicateNameToken, owner))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if symbol already exists', async () => {
@@ -90,7 +90,7 @@ contract('TokenRegistry', (accounts: string[]) => {
             const duplicateSymbolToken = _.assign({}, token2, {symbol: token1.symbol});
 
             return expect(tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
     });
 
@@ -116,7 +116,7 @@ contract('TokenRegistry', (accounts: string[]) => {
         describe('setTokenName', () => {
             it('should throw when not called by owner', async () => {
                 return expect(tokenReg.setTokenName(token1.address, token2.name, {from: notOwner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
 
             it('should change the token name when called by owner', async () => {
@@ -137,19 +137,19 @@ contract('TokenRegistry', (accounts: string[]) => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
 
                 return expect(tokenReg.setTokenName(token1.address, token2.name, {from: owner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
 
             it('should throw if token does not exist', async () => {
                 return expect(tokenReg.setTokenName(nullToken.address, token2.name, {from: owner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
         });
 
         describe('setTokenSymbol', () => {
             it('should throw when not called by owner', async () => {
                 return expect(tokenReg.setTokenSymbol(token1.address, token2.symbol, {from: notOwner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
 
             it('should change the token symbol when called by owner', async () => {
@@ -170,12 +170,12 @@ contract('TokenRegistry', (accounts: string[]) => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
 
                 return expect(tokenReg.setTokenSymbol(token1.address, token2.symbol, {from: owner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
 
             it('should throw if token does not exist', async () => {
                 return expect(tokenReg.setTokenSymbol(nullToken.address, token2.symbol, {from: owner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
         });
 
@@ -183,7 +183,7 @@ contract('TokenRegistry', (accounts: string[]) => {
             it('should throw if not called by owner', async () => {
                 const index = 0;
                 return expect(tokenReg.removeToken(token1.address, index, {from: notOwner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
 
             it('should remove token metadata when called by owner', async () => {
@@ -197,14 +197,14 @@ contract('TokenRegistry', (accounts: string[]) => {
             it('should throw if token does not exist', async () => {
                 const index = 0;
                 return expect(tokenReg.removeToken(nullToken.address, index, {from: owner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
 
             it('should throw if token at given index does not match address', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
                 const incorrectIndex = 0;
                 return expect(tokenReg.removeToken(token2.address, incorrectIndex, {from: owner}))
-                    .to.be.rejectedWith(constants.INVALID_OPCODE);
+                    .to.be.rejectedWith(constants.REVERT);
             });
 
         });
