@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import * as yargs from 'yargs';
 
-import * as toSnakeCase from 'to-snake-case';
+import toSnakeCase = require('to-snake-case');
 import * as Web3 from 'web3';
 
 import {ParamKind} from './types';
