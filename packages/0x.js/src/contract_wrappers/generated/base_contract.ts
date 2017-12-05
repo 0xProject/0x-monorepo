@@ -20,7 +20,7 @@ export class BaseContract {
         const txDataWithDefaults = {
             ...removeUndefinedProperties(this.defaults),
             ...removeUndefinedProperties(txData as any),
-            // HACK: TS can't prove that T is speadable.
+            // HACK: TS can't prove that T is spreadable.
             // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
         };
         if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
