@@ -39,12 +39,6 @@ declare module 'compare-versions' {
     export = compareVersions;
 }
 
-// es6-promisify declarations
-declare function promisify(original: any, settings?: any): ((...arg: any[]) => Promise<any>);
-declare module 'es6-promisify' {
-    export = promisify;
-}
-
 declare module 'ethereumjs-abi' {
     const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
 }

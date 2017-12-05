@@ -9,7 +9,6 @@ import {
     LogWithDecodedArgs,
     MethodOpts,
     SubscriptionOpts,
-    TokenContract,
     TokenContractEventArgs,
     TokenEvents,
     TransactionOpts,
@@ -21,6 +20,7 @@ import {constants} from '../utils/constants';
 import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
+import {TokenContract} from './generated/token';
 import {TokenTransferProxyWrapper} from './token_transfer_proxy_wrapper';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
@@ -313,8 +313,11 @@ export class TokenWrapper extends ContractWrapper {
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync<TokenContract>(
+        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
             artifacts.TokenArtifact, tokenAddress,
+        );
+        const contractInstance = new TokenContract(
+            web3ContractInstance, this._web3Wrapper.getContractDefaults(),
         );
         tokenContract = contractInstance;
         this._tokenContractsByAddress[tokenAddress] = tokenContract;

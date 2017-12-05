@@ -22,9 +22,10 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     private apiEndpointUrl: string;
     private client: WebSocket.client;
     private connectionIfExists?: WebSocket.connection;
+    private subscriptionCounter = 0;
     /**
      * Instantiates a new WebSocketOrderbookChannel instance
-     * @param   url                 The base url for making API calls
+     * @param   url                 The relayer API base WS url you would like to interact with
      * @return  An instance of WebSocketOrderbookChannel
      */
     constructor(url: string) {
@@ -46,23 +47,25 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         assert.isFunction('handler.onUpdate', _.get(handler, 'onUpdate'));
         assert.isFunction('handler.onError', _.get(handler, 'onError'));
         assert.isFunction('handler.onClose', _.get(handler, 'onClose'));
+        this.subscriptionCounter += 1;
         const subscribeMessage = {
             type: 'subscribe',
             channel: 'orderbook',
+            requestId: this.subscriptionCounter,
             payload: subscriptionOpts,
         };
         this._getConnection((error, connection) => {
             if (!_.isUndefined(error)) {
-                handler.onError(this, error);
+                handler.onError(this, subscriptionOpts, error);
             } else if (!_.isUndefined(connection) && connection.connected) {
                 connection.on(WebsocketConnectionEventType.Error, wsError => {
-                    handler.onError(this, wsError);
+                    handler.onError(this, subscriptionOpts, wsError);
                 });
                 connection.on(WebsocketConnectionEventType.Close, () => {
                     handler.onClose(this);
                 });
                 connection.on(WebsocketConnectionEventType.Message, message => {
-                    this._handleWebSocketMessage(message, handler);
+                    this._handleWebSocketMessage(subscribeMessage.requestId, subscriptionOpts, message, handler);
                 });
                 connection.sendUTF(JSON.stringify(subscribeMessage));
             }
@@ -90,30 +93,34 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             this.client.connect(this.apiEndpointUrl);
         }
     }
-    private _handleWebSocketMessage(message: WebSocket.IMessage, handler: OrderbookChannelHandler): void {
+    private _handleWebSocketMessage(requestId: number, subscriptionOpts: OrderbookChannelSubscriptionOpts,
+                                    message: WebSocket.IMessage, handler: OrderbookChannelHandler): void {
         if (!_.isUndefined(message.utf8Data)) {
             try {
                 const utf8Data = message.utf8Data;
                 const parserResult = orderbookChannelMessageParsers.parser(utf8Data);
                 const type = parserResult.type;
-                switch (parserResult.type) {
-                    case (OrderbookChannelMessageTypes.Snapshot): {
-                        handler.onSnapshot(this, parserResult.payload);
-                        break;
-                    }
-                    case (OrderbookChannelMessageTypes.Update): {
-                        handler.onUpdate(this, parserResult.payload);
-                        break;
-                    }
-                    default: {
-                        handler.onError(this, new Error(`Message has missing a type parameter: ${utf8Data}`));
+                if (parserResult.requestId === requestId) {
+                    switch (parserResult.type) {
+                        case (OrderbookChannelMessageTypes.Snapshot): {
+                            handler.onSnapshot(this, subscriptionOpts, parserResult.payload);
+                            break;
+                        }
+                        case (OrderbookChannelMessageTypes.Update): {
+                            handler.onUpdate(this, subscriptionOpts, parserResult.payload);
+                            break;
+                        }
+                        default: {
+                            handler.onError(
+                                this, subscriptionOpts, new Error(`Message has missing a type parameter: ${utf8Data}`));
+                        }
                     }
                 }
             } catch (error) {
-                handler.onError(this, error);
+                handler.onError(this, subscriptionOpts, error);
             }
         } else {
-            handler.onError(this, new Error(`Message does not contain utf8Data`));
+            handler.onError(this, subscriptionOpts, new Error(`Message does not contain utf8Data`));
         }
     }
 }
