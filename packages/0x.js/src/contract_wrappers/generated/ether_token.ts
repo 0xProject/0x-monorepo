@@ -1,5 +1,5 @@
 /**
- * This file is auto-generated using @0xproject/abi-gen. Don't edit directly.
+ * This file is auto-generated using abi-gen. Don't edit directly.
  * Templates can be found at https://github.com/0xProject/0x.js/tree/development/packages/abi-gen-templates.
  */
 import {BigNumber} from 'bignumber.js';
