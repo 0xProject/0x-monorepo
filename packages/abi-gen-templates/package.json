@@ -1,5 +1,5 @@
 {
-  "name": "@0xproject/abi-gen-templates",
+  "name": "abi-gen-templates",
   "version": "0.0.0",
   "description": "Handlebars templates to generate TS contract wrappers",
   "repository": {
