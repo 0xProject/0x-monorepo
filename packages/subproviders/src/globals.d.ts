@@ -30,7 +30,7 @@ declare module 'ledgerco' {
 declare module 'semaphore-async-await' {
     class Semaphore {
         constructor(permits: number);
-        public wait(): void;
+        public wait(): Promise<void>;
         public signal(): void;
     }
     export default Semaphore;

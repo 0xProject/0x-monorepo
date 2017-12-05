@@ -17,12 +17,20 @@ export {
     LedgerCommunicationClient,
 } from './types';
 
+/**
+ * A factory method for creating a LedgerEthereumClient usable in a browser context.
+ * @return LedgerEthereumClient A browser client
+ */
 export async function ledgerEthereumBrowserClientFactoryAsync(): Promise<LedgerEthereumClient> {
     const ledgerConnection = await LedgerBrowserCommunication.create_async();
     const ledgerEthClient = new LedgerEthereumClientFn(ledgerConnection);
     return ledgerEthClient;
 }
 
+/**
+ * A factory for creating a LedgerEthereumClient usable in a Node.js context.
+ * @return LedgerEthereumClient A Node.js client
+ */
 export async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumClient> {
     const ledgerConnection = await LedgerNodeCommunication.create_async();
     const ledgerEthClient = new LedgerEthereumClientFn(ledgerConnection);

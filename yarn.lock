@@ -149,7 +149,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/mocha@^2.2.41", "@types/mocha@^2.2.42":
+"@types/mocha@^2.2.41", "@types/mocha@^2.2.42", "@types/mocha@^2.2.44":
   version "2.2.44"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.44.tgz#1d4a798e53f35212fd5ad4d04050620171cd5b5e"
 
@@ -1355,7 +1355,7 @@ bn.js@4.11.7:
   version "4.11.7"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.7.tgz#ddb048e50d9482790094c13eb3fcfc833ce7ab46"
 
-bn.js@4.11.8, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.10.0, bn.js@^4.11.3, bn.js@^4.11.6, bn.js@^4.11.7, bn.js@^4.4.0, bn.js@^4.8.0:
+bn.js@4.11.8, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.10.0, bn.js@^4.11.3, bn.js@^4.11.6, bn.js@^4.11.7, bn.js@^4.11.8, bn.js@^4.4.0, bn.js@^4.8.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
 
@@ -8743,12 +8743,6 @@ web3-provider-engine@^8.4.0:
     web3 "^0.16.0"
     xhr "^2.2.0"
     xtend "^4.0.1"
-
-web3-typescript-typings@^0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.7.2.tgz#5312bb786936a9c91381eee7af3d02ac21cf13b3"
-  dependencies:
-    bignumber.js "^4.0.2"
 
 web3-typescript-typings@^0.7.2:
   version "0.7.2"
