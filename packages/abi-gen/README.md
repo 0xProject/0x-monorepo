@@ -1,13 +1,14 @@
 # Typed contracts
 
-This package allows you to generate TS contract wrappers from ABI files.
+This package allows you to generate contract wrappers in any language from ABI files.
+It's heavily inspired by [Geth abigen](https://github.com/ethereum/go-ethereum/wiki/Native-DApps:-Go-bindings-to-Ethereum-contracts) but takes a different approach.
 You can write your custom handlebars templates which will allow you to seamlessly integrate the generated code into your existing codebase with existing conventions.
 
 For the example of the generated [wrapper files](https://github.com/0xProject/0x.js/tree/development/packages/0x.js/src/contract_wrappers/generated) check out 0x.js.
 [Here](https://github.com/0xProject/0x.js/tree/development/packages/abi-gen-templates) are the templates used to generate those files.
 
 ## Instalation
-`yarn add -g @0xproject/abi-gen`
+`yarn add -g abi-gen`
 ## Usage
 ```
 abi-gen
