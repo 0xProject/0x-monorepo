@@ -57,9 +57,12 @@ export interface OrderbookChannelSubscriptionOpts {
 }
 
 export interface OrderbookChannelHandler {
-    onSnapshot: (channel: OrderbookChannel, snapshot: OrderbookResponse) => void;
-    onUpdate: (channel: OrderbookChannel, order: SignedOrder) => void;
-    onError: (channel: OrderbookChannel, err: Error) => void;
+    onSnapshot: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts,
+                 snapshot: OrderbookResponse) => void;
+    onUpdate: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts,
+               order: SignedOrder) => void;
+    onError: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts,
+              err: Error) => void;
     onClose: (channel: OrderbookChannel) => void;
 }
 
@@ -76,16 +79,19 @@ export enum OrderbookChannelMessageTypes {
 
 export interface SnapshotOrderbookChannelMessage {
     type: OrderbookChannelMessageTypes.Snapshot;
+    requestId: number;
     payload: OrderbookResponse;
 }
 
 export interface UpdateOrderbookChannelMessage {
     type: OrderbookChannelMessageTypes.Update;
+    requestId: number;
     payload: SignedOrder;
 }
 
 export interface UnknownOrderbookChannelMessage {
     type: OrderbookChannelMessageTypes.Unknown;
+    requestId: number;
     payload: undefined;
 }
 

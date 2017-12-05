@@ -5,13 +5,13 @@ const orderJSONString = JSON.stringify(orderResponseJSON);
 export const updateOrderbookChannelMessage = `{
     "type": "update",
     "channel": "orderbook",
-    "channelId": 1,
+    "requestId": 1,
     "payload": ${orderJSONString}
 }`;
 
 export const malformedUpdateOrderbookChannelMessage = `{
     "type": "update",
     "channel": "orderbook",
-    "channelId": 1,
+    "requestId": 1,
     "payload": {}
 }`;

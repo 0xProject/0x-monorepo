@@ -41,11 +41,21 @@ describe('orderbookChannelMessageParsers', () => {
         it('throws when message does not include a type', () => {
             const typelessMessage = `{
                 "channel": "orderbook",
-                "channelId": 1,
+                "requestId": 1,
                 "payload": {}
             }`;
             const badCall = () => orderbookChannelMessageParsers.parser(typelessMessage);
             expect(badCall).throws(`Message is missing a type parameter: ${typelessMessage}`);
+        });
+        it('throws when type is not a string', () => {
+            const messageWithBadType = `{
+                "type": 1,
+                "channel": "orderbook",
+                "requestId": 1,
+                "payload": {}
+            }`;
+            const badCall = () => orderbookChannelMessageParsers.parser(messageWithBadType);
+            expect(badCall).throws('Expected type to be of type string, encountered: 1');
         });
         it('throws when snapshot message has malformed payload', () => {
             const badCall = () =>
