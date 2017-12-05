@@ -763,4 +763,4 @@ contract('Exchange', (accounts: string[]) => {
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
     });
-});
+}); // tslint:disable-line:max-file-line-count

@@ -1,0 +1,15 @@
+public {{this.name}} = {
+    async callAsync(
+    {{> typed_params inputs=inputs}}
+        defaultBlock?: Web3.BlockParam,
+    ): Promise<{{> return_type outputs=outputs}}> {
+        const self = this as {{contractName}}Contract;
+        const result = await promisify<{{> return_type outputs=outputs}}>(
+            self.web3ContractInstance.{{this.name}}.call,
+            self.web3ContractInstance,
+        )(
+            {{> params inputs=inputs}}
+        );
+        return result;
+    },
+};

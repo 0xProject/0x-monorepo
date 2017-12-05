@@ -90,11 +90,13 @@ export class ContractWrapper {
         const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
-    protected async _instantiateContractIfExistsAsync<ContractType extends Web3.ContractInstance>(
-        artifact: Artifact, addressIfExists?: string): Promise<ContractType> {
-        const contractInstance =
-            await this._web3Wrapper.getContractInstanceFromArtifactAsync<ContractType>(artifact, addressIfExists);
-        return contractInstance;
+    protected async _instantiateContractIfExistsAsync(
+        artifact: Artifact, addressIfExists?: string,
+    ): Promise<Web3.ContractInstance> {
+        const web3ContractInstance = await this._web3Wrapper.getContractInstanceFromArtifactAsync(
+            artifact, addressIfExists,
+        );
+        return web3ContractInstance;
     }
     protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
         if (_.isUndefined(addressIfExists)) {
