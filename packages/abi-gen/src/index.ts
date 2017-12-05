@@ -33,11 +33,16 @@ const args = yargs
         type: 'string',
         demand: true,
     })
+    .option('fileExtension', {
+        describe: 'The extension of the output file',
+        type: 'string',
+        demand: true,
+    })
     .argv;
 
 function writeOutputFile(name: string, renderedTsCode: string): void {
     const fileName = toSnakeCase(name);
-    const filePath = `${args.output}/${fileName}.ts`;
+    const filePath = `${args.output}/${fileName}.${args.fileExtension}`;
     fs.writeFileSync(filePath, renderedTsCode);
     utils.log(`Created: ${chalk.bold(filePath)}`);
 }
