@@ -31,15 +31,10 @@ function getDependencies(path: string): Dependencies {
     return dependencies;
 }
 
-function getPackageName(path: string): string {
-    const [dotDot, packageName, packageJSON] = path.split('/');
-    return packageName;
-}
-
 const files = globSync(PACKAGE_JSON_GLOB);
 const versionsByDependency: VersionsByDependency = {};
 files.map(path => {
-    const packageName = getPackageName(path);
+    const [_1, packageName, _2] = path.split('/');
     const dependencies = getDependencies(path);
     _.map(dependencies, (version: string, depName: string) => {
         if (_.isUndefined(versionsByDependency[depName])) {
