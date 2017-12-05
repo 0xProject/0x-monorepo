@@ -14,6 +14,8 @@ import * as Web3 from 'web3';
 import {ParamKind} from './types';
 import {utils} from './utils';
 
+const ABI_TYPE_METHOD = 'function';
+
 const args = yargs
     .option('abiGlob', {
         describe: 'Glob pattern to search for ABI JSON files',
@@ -66,7 +68,7 @@ for (const abiFileName of abiFileNames) {
     const ABI = _.isArray(parsedContent) ?
                 parsedContent : // ABI file
                 parsedContent.abi; // Truffle contracts file
-    const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === 'function') as Web3.MethodAbi[];
+    const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_METHOD) as Web3.MethodAbi[];
     _.map(methodAbis, methodAbi => {
         _.map(methodAbi.inputs, input => {
             if (_.isEmpty(input.name)) {
