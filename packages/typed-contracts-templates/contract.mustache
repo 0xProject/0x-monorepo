@@ -12,7 +12,7 @@ import {promisify} from '../../utils/promisify';
 import {BaseContract} from './base_contract';
 
 export class {{contractName}}Contract extends BaseContract {
-{{#each methodAbis}}
+{{#each methods}}
     {{#this.constant}}
     {{> call contractName=../contractName}}
     {{/this.constant}}

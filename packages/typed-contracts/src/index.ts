@@ -11,7 +11,7 @@ import * as yargs from 'yargs';
 import toSnakeCase = require('to-snake-case');
 import * as Web3 from 'web3';
 
-import {ParamKind} from './types';
+import {ContextData, ParamKind} from './types';
 import {utils} from './utils';
 
 const ABI_TYPE_METHOD = 'function';
@@ -51,7 +51,7 @@ for (const partialTemplateFileName of partialTemplateFileNames) {
 }
 
 const mainTemplate = utils.getNamedContent(`${args.templates}/${MAIN_TEMPLATE_NAME}`);
-const template = Handlebars.compile(mainTemplate.content);
+const template = Handlebars.compile<ContextData>(mainTemplate.content);
 const abiFileNames = globSync(args.abiGlob);
 if (_.isEmpty(abiFileNames)) {
     utils.log(`${chalk.red(`No ABI files found.`)}`);
@@ -75,7 +75,7 @@ for (const abiFileName of abiFileNames) {
         process.exit(1);
     }
     const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_METHOD) as Web3.MethodAbi[];
-    _.map(methodAbis, methodAbi => {
+    const methodsData = _.map(methodAbis, methodAbi => {
         _.map(methodAbi.inputs, input => {
             if (_.isEmpty(input.name)) {
                 // Auto-generated getters don't have parameter names
@@ -83,12 +83,16 @@ for (const abiFileName of abiFileNames) {
             }
         });
         // This will make templates simpler
-        (methodAbi.outputs as any).singleReturnValue = methodAbi.outputs.length === 1;
+        const methodData = {
+            ...methodAbi,
+            singleReturnValue: methodAbi.outputs.length === 1,
+        };
+        return methodData;
     });
-    const templateData = {
+    const contextData = {
         contractName: namedContent.name,
-        methodAbis,
+        methods: methodsData,
     };
-    const renderedTsCode = template(templateData);
+    const renderedTsCode = template(contextData);
     writeOutputFile(namedContent.name, renderedTsCode);
 }
