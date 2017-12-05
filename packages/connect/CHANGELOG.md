@@ -1,5 +1,9 @@
 # CHANGELOG
 
+vx.x.x
+------------------------
+    * Expose WebSocketOrderbookChannel and associated types to public interface
+
 v0.2.0 - _November 29, 2017_
 ------------------------
     * Add SignedOrder and TokenTradeInfo to the public interface

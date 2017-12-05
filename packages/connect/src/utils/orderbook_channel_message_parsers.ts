@@ -15,28 +15,24 @@ export const orderbookChannelMessageParsers = {
         const messageObj = JSON.parse(utf8Data);
         const type: string = _.get(messageObj, 'type');
         assert.assert(!_.isUndefined(type), `Message is missing a type parameter: ${utf8Data}`);
+        assert.isString('type', type);
         switch (type) {
             case (OrderbookChannelMessageTypes.Snapshot): {
                 assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrderbookChannelSnapshotSchema);
                 const orderbook = messageObj.payload;
                 typeConverters.convertOrderbookStringFieldsToBigNumber(orderbook);
-                return {
-                    type,
-                    payload: orderbook,
-                };
+                return messageObj;
             }
             case (OrderbookChannelMessageTypes.Update): {
                 assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrderbookChannelUpdateSchema);
                 const order = messageObj.payload;
                 typeConverters.convertOrderStringFieldsToBigNumber(order);
-                return {
-                    type,
-                    payload: order,
-                };
+                return messageObj;
             }
             default: {
                 return {
                     type: OrderbookChannelMessageTypes.Unknown,
+                    requestId: 0,
                     payload: undefined,
                 };
             }

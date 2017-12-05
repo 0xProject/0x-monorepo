@@ -4,9 +4,10 @@ export const relayerApiOrderbookChannelSubscribeSchema = {
     properties: {
         type: {enum: ['subscribe']},
         channel: {enum: ['orderbook']},
+        requestId: {type: 'number'},
         payload: {$ref: '/RelayerApiOrderbookChannelSubscribePayload'},
     },
-    required: ['type', 'channel', 'payload'],
+    required: ['type', 'channel', 'requestId', 'payload'],
 };
 
 export const relayerApiOrderbookChannelSubscribePayload = {
