@@ -51,7 +51,6 @@ declare module 'web3-provider-engine/subproviders/rpc' {
     }
     export = RpcSubprovider;
 }
-
 declare module 'web3-provider-engine' {
   class Web3ProviderEngine {
     public on(event: string, handler: () => void): void;
