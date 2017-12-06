@@ -40,7 +40,7 @@ export class RedundantRPCSubprovider extends Subprovider {
             const data = await RedundantRPCSubprovider.firstSuccessAsync(rpcsCopy, payload, next);
             end(null, data);
         } catch (err) {
-            end(new Error('testing'));
+            end(err);
         }
 
     }
