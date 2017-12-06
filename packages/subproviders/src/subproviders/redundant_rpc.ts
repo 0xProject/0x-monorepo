@@ -1,9 +1,10 @@
 import promisify = require('es6-promisify');
 import * as _ from 'lodash';
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
-import Subprovider = require('web3-provider-engine/subproviders/subprovider');
 
 import {JSONRPCPayload} from '../types';
+
+import {Subprovider} from './subprovider';
 
 export class RedundantRPCSubprovider extends Subprovider {
     private rpcs: RpcSubprovider[];
