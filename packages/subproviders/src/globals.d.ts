@@ -1,12 +1,9 @@
 /// <reference types='chai-typescript-typings' />
 /// <reference types='chai-as-promised-typescript-typings' />
-declare module 'bn.js';
 declare module 'dirty-chai';
 declare module 'ledgerco';
 declare module 'ethereumjs-tx';
 declare module 'es6-promisify';
-declare module 'ethereum-address';
-declare module 'debug';
 
 // tslint:disable:max-classes-per-file
 // tslint:disable:class-name
