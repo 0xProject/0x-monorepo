@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
-import * as mocha from 'mocha';
 import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
