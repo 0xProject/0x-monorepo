@@ -1,5 +1,4 @@
 import {promisify} from '@0xproject/utils';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 

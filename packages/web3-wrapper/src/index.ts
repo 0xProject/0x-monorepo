@@ -74,12 +74,6 @@ export class Web3Wrapper {
         balanceInWei = new BigNumber(balanceInWei);
         return balanceInWei;
     }
-    public async getBalanceInEthAsync(owner: string): Promise<BigNumber> {
-        const balanceInWei = await this.getBalanceInWeiAsync(owner);
-        const balanceEthOldBigNumber = this.web3.fromWei(balanceInWei, 'ether');
-        const balanceEth = new BigNumber(balanceEthOldBigNumber);
-        return balanceEth;
-    }
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
         const code = await promisify<string>(this.web3.eth.getCode)(address);
         // Regex matches 0x0, 0x00, 0x in order to accommodate poorly implemented clients

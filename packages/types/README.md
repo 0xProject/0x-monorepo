@@ -1,10 +1,10 @@
-Web3 wrapper
+0x types
 ------
 
-Wrapped version of web3 with nicer interface to be used across 0x projects and packages
+TS types shared across 0x projects and packages
 
 ## Install
 
 ```bash
-yarn add @0xproject/web3-wrapper
+yarn add -D @0xproject/types
 ```

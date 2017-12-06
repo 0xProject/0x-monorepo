@@ -1,4 +1,3 @@
-import {TxData} from '@0xproject/types';
 import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 import * as path from 'path';

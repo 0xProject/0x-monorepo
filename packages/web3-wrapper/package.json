@@ -20,6 +20,7 @@
   "homepage": "https://github.com/0xProject/0x.js/packages/web3-wrapper/README.md",
   "devDependencies": {
     "@0xproject/tslint-config": "^0.2.0",
+    "@0xproject/types": "^0.0.1",
     "@types/lodash": "^4.14.86",
     "npm-run-all": "^4.1.2",
     "shx": "^0.2.2",
@@ -29,7 +30,6 @@
   },
   "dependencies": {
     "@0xproject/utils": "^0.0.1",
-    "@0xproject/types": "^0.0.1",
     "bignumber.js": "~4.1.0",
     "lodash": "^4.17.4",
     "web3": "^0.20.0"
