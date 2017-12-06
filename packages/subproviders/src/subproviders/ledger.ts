@@ -179,9 +179,9 @@ export class LedgerSubprovider extends Subprovider {
         const tx = new EthereumTx(txParams);
 
         // Set the EIP155 bits
-        tx.raw[6] = Buffer.from([this._networkId]);  // v
-        tx.raw[7] = Buffer.from([]);         // r
-        tx.raw[8] = Buffer.from([]);         // s
+        tx.raw[6] = Buffer.from([this._networkId]); // v
+        tx.raw[7] = Buffer.from([]); // r
+        tx.raw[8] = Buffer.from([]); // s
 
         const txHex = tx.serialize().toString('hex');
         try {
