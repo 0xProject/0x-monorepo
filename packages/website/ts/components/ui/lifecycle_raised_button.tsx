@@ -83,7 +83,7 @@ export class LifeCycleRaisedButton extends
         this.setState({
             buttonState: ButtonState.LOADING,
         });
-        const didSucceed = this.props.onClickAsyncFn();
+        const didSucceed = await this.props.onClickAsyncFn();
         if (this.didUnmount) {
             return; // noop since unmount called before async callback returned.
         }
