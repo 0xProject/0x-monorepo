@@ -8,6 +8,8 @@ declare module 'es6-promisify';
 // tslint:disable:max-classes-per-file
 // tslint:disable:class-name
 // tslint:disable:completed-docs
+
+// Ledgerco declarations
 declare module 'ledgerco' {
     interface comm {
         close_async: Promise<void>;
@@ -21,6 +23,11 @@ declare module 'ledgerco' {
         public create_async: Promise<void>;
         public close_async: Promise<void>;
     }
+}
+
+// ethereum-address declarations
+declare module 'ethereum-address' {
+    export const isAddress: (address: string) => boolean;
 }
 
 // Semaphore-async-await declarations
