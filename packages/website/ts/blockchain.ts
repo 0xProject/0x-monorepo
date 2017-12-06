@@ -511,7 +511,6 @@ export class Blockchain {
         const subscriptionId = this.zeroEx.exchange.subscribe(
             ExchangeEvents.LogFill, indexFilterValues,
             async (err: Error, decodedLogEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
-            const decodedLog = decodedLogEvent.log;
             if (err) {
                 // Note: it's not entirely clear from the documentation which
                 // errors will be thrown by `watch`. For now, let's log the error
@@ -522,6 +521,7 @@ export class Blockchain {
                 this.stopWatchingExchangeLogFillEventsAsync(); // fire and forget
                 return;
             } else {
+                const decodedLog = decodedLogEvent.log;
                 if (!this.doesLogEventInvolveUser(decodedLog)) {
                     return; // We aren't interested in the fill event
                 }

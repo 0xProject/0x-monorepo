@@ -30,7 +30,7 @@
   "homepage": "https://github.com/0xProject/0x.js/packages/tslint-config/README.md",
   "devDependencies": {
     "tslint": "5.8.0",
-    "typescript": "2.6.1"
+    "typescript": "~2.6.1"
   },
   "dependencies": {
     "tslint-react": "^3.2.0"
