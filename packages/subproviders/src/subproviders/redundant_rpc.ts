@@ -34,13 +34,13 @@ export class RedundantRPCSubprovider extends Subprovider {
         });
     }
     public async handleRequest(payload: JSONRPCPayload, next: () => void,
-                               end: (err?: Error, data?: any) =>  void): Promise<void> {
+                               end: (err: Error|null, data?: any) =>  void): Promise<void> {
         const rpcsCopy = this.rpcs.slice();
         try {
             const data = await RedundantRPCSubprovider.firstSuccessAsync(rpcsCopy, payload, next);
-            end(undefined, data);
+            end(null, data);
         } catch (err) {
-            end(err);
+            end(new Error('testing'));
         }
 
     }
