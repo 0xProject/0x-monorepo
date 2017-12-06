@@ -73,7 +73,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
                                 /> :
                                 <div
                                     className="mx-auto"
-                                    style={{height: IMAGE_DIMENSION, width: IMAGE_DIMENSION}}
+                                    style={{height: identiconDiameter, width: identiconDiameter}}
                                 >
                                     <Identicon
                                         address={this.props.address}
