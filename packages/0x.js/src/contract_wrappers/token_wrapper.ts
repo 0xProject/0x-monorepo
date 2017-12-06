@@ -1,4 +1,5 @@
 import {schemas} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
@@ -17,7 +18,6 @@ import {
 import {AbiDecoder} from '../utils/abi_decoder';
 import {assert} from '../utils/assert';
 import {constants} from '../utils/constants';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
 import {TokenContract} from './generated/token';

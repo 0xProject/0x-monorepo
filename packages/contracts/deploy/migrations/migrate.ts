@@ -1,3 +1,4 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -5,7 +6,6 @@ import * as Web3 from 'web3';
 import {Deployer} from './../src/deployer';
 import {constants} from './../src/utils/constants';
 import {Token} from './../src/utils/types';
-import {Web3Wrapper} from './../src/utils/web3_wrapper';
 import {tokenInfo} from './config/token_info';
 
 export const migrator = {

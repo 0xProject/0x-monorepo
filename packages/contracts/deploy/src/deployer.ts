@@ -1,4 +1,6 @@
-import promisify = require('es6-promisify');
+import {TxData} from '@0xproject/types';
+import {promisify} from '@0xproject/utils';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
@@ -11,7 +13,6 @@ import {
     DeployerOptions,
 } from './utils/types';
 import {utils} from './utils/utils';
-import {Web3Wrapper} from './utils/web3_wrapper';
 
 // Gas added to gas estimate to make sure there is sufficient gas for deployment.
 const EXTRA_GAS = 200000;
@@ -21,7 +22,7 @@ export class Deployer {
     private artifactsDir: string;
     private jsonrpcPort: number;
     private networkId: number;
-    private defaults: Partial<Web3.TxData>;
+    private defaults: Partial<TxData>;
 
     constructor(opts: DeployerOptions) {
         this.artifactsDir = opts.artifactsDir;
@@ -30,7 +31,7 @@ export class Deployer {
         const jsonrpcUrl = `http://localhost:${this.jsonrpcPort}`;
         const web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
         this.defaults = opts.defaults;
-        this.web3Wrapper = new Web3Wrapper(web3Provider, this.defaults);
+        this.web3Wrapper = new Web3Wrapper(web3Provider, this.networkId, this.defaults);
     }
     /**
      * Loads contract artifact and deploys contract with given arguments.
@@ -171,7 +172,7 @@ export class Deployer {
         const block = await this.web3Wrapper.getBlockAsync('latest');
         let gas: number;
         try {
-            const gasEstimate: number = await this.web3Wrapper.estimateGasAsync({data});
+            const gasEstimate: number = await this.web3Wrapper.estimateGasAsync(data);
             gas = Math.min(gasEstimate + EXTRA_GAS, block.gasLimit);
         } catch (err) {
             gas = block.gasLimit;

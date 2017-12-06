@@ -1,3 +1,5 @@
+import {TxData} from '@0xproject/types';
+import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as yargs from 'yargs';
@@ -46,10 +48,10 @@ async function onMigrateCommand(argv: CliOptions): Promise<void> {
     await commands.compileAsync(compilerOpts);
 
     const defaults = {
-        gasPrice: argv.gasPrice,
+        gasPrice: new BigNumber(argv.gasPrice),
         from: argv.account,
     };
-    const deployerOpts: DeployerOptions = {
+    const deployerOpts = {
         artifactsDir: argv.artifactsDir,
         jsonrpcPort: argv.jsonrpcPort,
         networkId: networkIdIfExists,
@@ -72,7 +74,7 @@ async function onDeployCommand(argv: CliOptions): Promise<void> {
     await commands.compileAsync(compilerOpts);
 
     const defaults = {
-        gasPrice: argv.gasPrice,
+        gasPrice: new BigNumber(argv.gasPrice),
         from: argv.account,
     };
     const deployerOpts: DeployerOptions = {

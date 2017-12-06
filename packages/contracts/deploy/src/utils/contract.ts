@@ -1,5 +1,5 @@
 import {schemas, SchemaValidator} from '@0xproject/json-schemas';
-import promisify = require('es6-promisify');
+import {promisify} from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 

@@ -1,10 +1,10 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
 import {TransactionOpts, ZeroExError} from '../types';
 import {assert} from '../utils/assert';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
 import {EtherTokenContract} from './generated/ether_token';

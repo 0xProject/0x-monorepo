@@ -1,3 +1,4 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import {Block, BlockAndLogStreamer} from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -19,7 +20,15 @@ import {AbiDecoder} from '../utils/abi_decoder';
 import {constants} from '../utils/constants';
 import {filterUtils} from '../utils/filter_utils';
 import {intervalUtils} from '../utils/interval_utils';
-import {Web3Wrapper} from '../web3_wrapper';
+
+const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {[contractName: string]: ZeroExError} = {
+    ZRX: ZeroExError.ZRXContractDoesNotExist,
+    EtherToken: ZeroExError.EtherTokenContractDoesNotExist,
+    Token: ZeroExError.TokenContractDoesNotExist,
+    TokenRegistry: ZeroExError.TokenRegistryContractDoesNotExist,
+    TokenTransferProxy: ZeroExError.TokenTransferProxyContractDoesNotExist,
+    Exchange: ZeroExError.ExchangeContractDoesNotExist,
+};
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
@@ -93,10 +102,24 @@ export class ContractWrapper {
     protected async _instantiateContractIfExistsAsync(
         artifact: Artifact, addressIfExists?: string,
     ): Promise<Web3.ContractInstance> {
-        const web3ContractInstance = await this._web3Wrapper.getContractInstanceFromArtifactAsync(
-            artifact, addressIfExists,
+        let contractAddress: string;
+        if (_.isUndefined(addressIfExists)) {
+            const networkId = this._web3Wrapper.getNetworkId();
+            if (_.isUndefined(artifact.networks[networkId])) {
+                throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
+            }
+            contractAddress = artifact.networks[networkId].address.toLowerCase();
+        } else {
+            contractAddress = addressIfExists;
+        }
+        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
+        if (!doesContractExist) {
+            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
+        }
+        const contractInstance = this._web3Wrapper.getContractInstance(
+            artifact.abi, contractAddress,
         );
-        return web3ContractInstance;
+        return contractInstance;
     }
     protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
         if (_.isUndefined(addressIfExists)) {

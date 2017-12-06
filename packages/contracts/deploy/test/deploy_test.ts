@@ -19,7 +19,7 @@ const compilerOpts: CompilerOptions = {
     optimizerEnabled: constants.optimizerEnabled,
 };
 const compiler = new Compiler(compilerOpts);
-const deployerOpts: DeployerOptions = {
+const deployerOpts = {
     artifactsDir,
     networkId: constants.networkId,
     jsonrpcPort: constants.jsonrpcPort,

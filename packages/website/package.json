@@ -27,7 +27,6 @@
     "dateformat": "^2.0.0",
     "deep-equal": "^1.0.1",
     "dharma-loan-frame": "^0.0.12",
-    "es6-promisify": "^5.0.0",
     "ethereum-address": "^0.0.4",
     "ethereumjs-tx": "^1.3.3",
     "ethereumjs-util": "^5.1.1",

@@ -1,7 +1,7 @@
+import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
-import promisify = require('es6-promisify');
 import forEach = require('lodash.foreach');
 import 'mocha';
 

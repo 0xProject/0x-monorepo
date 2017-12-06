@@ -1,6 +1,6 @@
+import {promisify} from '@0xproject/utils';
 import {BigNumber} from 'bignumber.js';
 import * as chai from 'chai';
-import promisify = require('es6-promisify');
 import Web3 = require('web3');
 
 import * as multiSigWalletJSON from '../../build/contracts/MultiSigWalletWithTimeLock.json';
@@ -64,8 +64,8 @@ contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
         it('should set confirmation time with enough confirmations', async () => {
             const res = await multiSig.confirmTransaction(txId, {from: owners[1]});
             expect(res.logs).to.have.length(2);
-            const blockNum = await promisify(web3.eth.getBlockNumber)();
-            const blockInfo = await promisify(web3.eth.getBlock)(blockNum);
+            const blockNum = await promisify<number>(web3.eth.getBlockNumber)();
+            const blockInfo = await promisify<Web3.BlockWithoutTransactionData>(web3.eth.getBlock)(blockNum);
             const timestamp = new BigNumber(blockInfo.timestamp);
             const confirmationTimeBigNum = new BigNumber(await multiSig.confirmationTimes.call(txId));
 

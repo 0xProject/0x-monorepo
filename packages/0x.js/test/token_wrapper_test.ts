@@ -1,3 +1,5 @@
+import {promisify} from '@0xproject/utils';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import 'mocha';
@@ -18,8 +20,6 @@ import {
     ZeroExError,
 } from '../src';
 import {BlockParamLiteral, DoneCallback} from '../src/types';
-import {promisify} from '../src/utils/promisify';
-import {Web3Wrapper} from '../src/web3_wrapper';
 
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';

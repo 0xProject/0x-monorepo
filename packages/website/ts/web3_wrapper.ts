@@ -1,8 +1,8 @@
+import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
-import promisify = require('es6-promisify');
 import * as _ from 'lodash';
 import {Dispatcher} from 'ts/redux/dispatcher';
-import Web3 = require('web3');
+import * as Web3 from 'web3';
 
 export class Web3Wrapper {
     private dispatcher: Dispatcher;
@@ -28,7 +28,7 @@ export class Web3Wrapper {
         return this.web3.isAddress(address);
     }
     public async getAccountsAsync(): Promise<string[]> {
-        const addresses = await promisify(this.web3.eth.getAccounts)();
+        const addresses = await promisify<string[]>(this.web3.eth.getAccounts)();
         return addresses;
     }
     public async getFirstAccountIfExistsAsync() {
@@ -38,8 +38,8 @@ export class Web3Wrapper {
         }
         return (addresses)[0];
     }
-    public async getNodeVersionAsync() {
-        const nodeVersion = await promisify(this.web3.version.getNode)();
+    public async getNodeVersionAsync(): Promise<string> {
+        const nodeVersion = await promisify<string>(this.web3.version.getNode)();
         return nodeVersion;
     }
     public getProviderObj() {
@@ -54,24 +54,24 @@ export class Web3Wrapper {
         }
     }
     public async getBalanceInEthAsync(owner: string): Promise<BigNumber> {
-        const balanceInWei: BigNumber = await promisify(this.web3.eth.getBalance)(owner);
+        const balanceInWei: BigNumber = await promisify<BigNumber>(this.web3.eth.getBalance)(owner);
         const balanceEthOldBigNumber = this.web3.fromWei(balanceInWei, 'ether');
         const balanceEth = new BigNumber(balanceEthOldBigNumber);
         return balanceEth;
     }
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
-        const code = await promisify(this.web3.eth.getCode)(address);
+        const code = await promisify<string>(this.web3.eth.getCode)(address);
         // Regex matches 0x0, 0x00, 0x in order to accomodate poorly implemented clients
         const zeroHexAddressRegex = /^0[xX][0]*$/;
         const didFindCode = _.isNull(code.match(zeroHexAddressRegex));
         return didFindCode;
     }
     public async signTransactionAsync(address: string, message: string): Promise<string> {
-        const signData = await promisify(this.web3.eth.sign)(address, message);
+        const signData = await promisify<string>(this.web3.eth.sign)(address, message);
         return signData;
     }
     public async getBlockTimestampAsync(blockHash: string): Promise<number> {
-        const {timestamp} = await promisify(this.web3.eth.getBlock)(blockHash);
+        const {timestamp} = await promisify<Web3.BlockWithoutTransactionData>(this.web3.eth.getBlock)(blockHash);
         return timestamp;
     }
     public destroy() {

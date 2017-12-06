@@ -1,4 +1,5 @@
 import {schemas} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -36,7 +37,6 @@ import {decorators} from '../utils/decorators';
 import {ExchangeTransferSimulator} from '../utils/exchange_transfer_simulator';
 import {OrderValidationUtils} from '../utils/order_validation_utils';
 import {utils} from '../utils/utils';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
 import {ExchangeContract} from './generated/exchange';

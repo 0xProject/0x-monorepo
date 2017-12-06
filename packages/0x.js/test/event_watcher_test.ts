@@ -1,3 +1,4 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -12,7 +13,6 @@ import {
 } from '../src';
 import {EventWatcher} from '../src/order_watcher/event_watcher';
 import {DoneCallback} from '../src/types';
-import {Web3Wrapper} from '../src/web3_wrapper';
 
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
