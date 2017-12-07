@@ -35,7 +35,7 @@ describe('LedgerSubprovider', () => {
                     };
                 },
                 signPersonalMessage_async: async () => {
-                    const ecSignature: ECSignature = {
+                    const ecSignature = {
                         v: 28,
                         r: 'a6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae49148',
                         s: '0652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d0',
@@ -43,7 +43,7 @@ describe('LedgerSubprovider', () => {
                     return ecSignature;
                 },
                 signTransaction_async: async (derivationPath: string, txHex: string) => {
-                    const ecSignature: ECSignatureString = {
+                    const ecSignature = {
                         v: '77',
                         r: '88a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98b',
                         s: '019f4a4b9a107d1e6752bf7f701e275f28c13791d6e76af895b07373462cefaa',
