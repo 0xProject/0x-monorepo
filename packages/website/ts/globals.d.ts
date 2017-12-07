@@ -163,5 +163,3 @@ declare interface Artifact {
         };
     };
 }
-
-// tslint:enable:max-classes-per-file
