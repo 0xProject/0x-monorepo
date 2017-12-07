@@ -182,7 +182,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(LedgerSubproviderErrors.DataNotValidHexForSignPersonalMessage);
+                    expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
                 });
                 provider.sendAsync(payload, callback);
