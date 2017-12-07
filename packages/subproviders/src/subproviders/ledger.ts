@@ -1,6 +1,7 @@
+import {assert} from '@0xproject/assert';
 import promisify = require('es6-promisify');
 import {isAddress} from 'ethereum-address';
-import * as EthereumTx from 'ethereumjs-tx';
+import EthereumTx from 'ethereumjs-tx';
 import ethUtil = require('ethereumjs-util');
 import * as ledger from 'ledgerco';
 import * as _ from 'lodash';
@@ -53,9 +54,7 @@ export class LedgerSubprovider extends Subprovider {
         if (_.isUndefined(msgParams.data)) {
             throw new Error(LedgerSubproviderErrors.DataMissingForSignPersonalMessage);
         }
-        if (!LedgerSubprovider.isValidHex(msgParams.data)) {
-            throw new Error(LedgerSubproviderErrors.DataNotValidHexForSignPersonalMessage);
-        }
+        assert.isHexString('data', msgParams.data);
     }
     private static validateSender(sender: string) {
         if (_.isUndefined(sender) || !isAddress(sender)) {
