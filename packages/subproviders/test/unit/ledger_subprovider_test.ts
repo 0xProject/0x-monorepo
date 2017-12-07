@@ -19,6 +19,7 @@ import {
 import {chaiSetup} from '../chai_setup';
 import {reportCallbackErrors} from '../utils/report_callback_errors';
 
+chaiSetup.configure();
 const expect = chai.expect;
 const FAKE_ADDRESS = '0x9901c66f2d4b95f7074b553da78084d708beca70';
 
