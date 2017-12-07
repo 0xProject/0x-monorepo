@@ -11,9 +11,10 @@
     "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
     "run_mocha_unit": "mocha lib/test/unit/**/*_test.js --timeout 10000 --bail --exit",
     "run_mocha_integration": "mocha lib/test/integration/**/*_test.js --timeout 10000 --bail --exit",
-    "test": "run-s test:unit test:integration",
-    "test:unit": "run-s clean build:commonjs run_mocha_unit",
-    "test:integration": "run-s clean build:commonjs run_mocha_integration"
+    "test": "npm run test:unit",
+    "test:all": "run-s test:unit test:integration",
+    "test:unit": "run-s clean build run_mocha_unit",
+    "test:integration": "run-s clean build run_mocha_integration"
   },
   "dependencies": {
     "@0xproject/assert": "^0.0.6",
