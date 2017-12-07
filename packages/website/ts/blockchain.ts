@@ -628,19 +628,24 @@ export class Blockchain {
         // In addition, if the user has an injectedWeb3 instance that is disconnected from a backing
         // Ethereum node, this call will throw. We need to handle this case gracefully
         const injectedWeb3 = (window as any).web3;
-        let networkId: number;
+        let networkIdIfExists: number;
         if (!_.isUndefined(injectedWeb3)) {
             try {
-                networkId = _.parseInt(await promisify(injectedWeb3.version.getNetwork)());
+                networkIdIfExists = _.parseInt(await promisify(injectedWeb3.version.getNetwork)());
             } catch (err) {
                 // Ignore error and proceed with networkId undefined
             }
         }
 
-        const provider = await Blockchain.getProviderAsync(injectedWeb3, networkId);
-        this.zeroEx = new ZeroEx(provider, {
+        const provider = await Blockchain.getProviderAsync(injectedWeb3, networkIdIfExists);
+        const networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists :
+                            configs.isMainnetEnabled ?
+                                constants.MAINNET_NETWORK_ID :
+                                constants.TESTNET_NETWORK_ID;
+        const zeroExConfigs = {
             networkId,
-        });
+        };
+        this.zeroEx = new ZeroEx(provider, zeroExConfigs);
         this.updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
         this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, networkId, shouldPollUserAddress);
