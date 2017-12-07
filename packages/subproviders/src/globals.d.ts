@@ -17,7 +17,7 @@ declare module 'ethereumjs-tx' {
         public serialize(): Buffer;
         constructor(txParams: any);
     }
-    export default EthereumTx;
+    export = EthereumTx;
 }
 
 // Ledgerco declarations

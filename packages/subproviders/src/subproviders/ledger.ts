@@ -1,7 +1,7 @@
 import {assert} from '@0xproject/assert';
 import promisify = require('es6-promisify');
 import {isAddress} from 'ethereum-address';
-import EthereumTx from 'ethereumjs-tx';
+import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import * as ledger from 'ledgerco';
 import * as _ from 'lodash';
