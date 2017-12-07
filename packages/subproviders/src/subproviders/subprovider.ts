@@ -12,6 +12,7 @@ import {
 export class Subprovider {
     private engine: any;
     private currentBlock: any;
+    // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
     private static getRandomId() {
         const extraDigits = 3;
         // 13 time digits
