@@ -16,11 +16,11 @@
 
 */
 
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
 import "./TokenTransferProxy.sol";
-import "./base/Token.sol";
-import "./base/SafeMath.sol";
+import "./tokens/Token.sol";
+import "./lib/SafeMath.sol";
 
 /// @title Exchange - Facilitates exchange of ERC20 tokens.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>

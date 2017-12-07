@@ -9,7 +9,7 @@ import {ContractInstance} from '../../util/types';
 
 import {chaiSetup} from './utils/chai_setup';
 
-const {DummyToken} = new Artifacts(artifacts);
+const {DummyTokenV2} = new Artifacts(artifacts);
 const web3: Web3 = (global as any).web3;
 chaiSetup.configure();
 const expect = chai.expect;
@@ -24,7 +24,7 @@ contract('ERC20Token', (accounts: string[]) => {
     let token: ContractInstance;
 
     beforeEach(async () => {
-        token = await DummyToken.new({from: owner});
+        token = await DummyTokenV2.new({from: owner});
         await token.mint(MAX_MINT_VALUE, {from: owner});
         tokenAddress = token.address;
     });
@@ -33,7 +33,7 @@ contract('ERC20Token', (accounts: string[]) => {
         it('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
-            return expect(token.transfer.call(owner, spender, amountToTransfer, {from: spender}))
+            return expect(token.transfer.call(spender, amountToTransfer, {from: owner}))
                 .to.be.rejectedWith(constants.REVERT);
         });
 

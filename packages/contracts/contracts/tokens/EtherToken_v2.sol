@@ -16,12 +16,12 @@
 
 */
 
-pragma solidity 0.4.11;
+pragma solidity 0.4.18;
 
-import "./../tokens/ERC20Token.sol";
-import "./../base/SafeMath.sol";
+import "./ERC20Token.sol";
+import "./../lib/SafeMath_v2.sol";
 
-contract EtherToken_v2 is ERC20Token, SafeMath {
+contract EtherToken_v2 is ERC20Token, SafeMath_v2 {
 
     string constant public name = "Ether Token";
     string constant public symbol = "WETH";

@@ -1,11 +1,13 @@
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
-import "./../base/StandardToken.sol";
+import "./../tokens/StandardToken.sol";
 
 contract MaliciousToken is StandardToken {
     uint8 stateToUpdate = 1;  // Not null so that change only requires 5000 gas
 
-    function updateState() internal {
+    function updateState() 
+        internal 
+    {
         stateToUpdate++;
     }
 

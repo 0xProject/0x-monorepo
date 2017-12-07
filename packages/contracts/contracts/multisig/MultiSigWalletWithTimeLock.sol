@@ -16,9 +16,9 @@
 
 */
 
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
-import "./base/MultiSigWallet.sol";
+import "./MultiSigWallet.sol";
 
 /// @title Multisignature wallet with time lock- Allows multiple parties to execute a transaction after a time lock has passed.
 /// @author Amir Bandeali - <amir@0xProject.com>

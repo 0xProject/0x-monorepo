@@ -1,9 +1,9 @@
-pragma solidity ^0.4.11;
+pragma solidity 0.4.18;
 
-import "./Mintable.sol";
-import "./../lib/Ownable.sol";
+import "./Mintable_v2.sol";
+import "./../lib/Ownable_v2.sol";
 
-contract DummyToken is Mintable, Ownable {
+contract DummyToken_v2 is Mintable_v2, Ownable_v2 {
     string public name;
     string public symbol;
     uint public decimals;
@@ -13,6 +13,7 @@ contract DummyToken is Mintable, Ownable {
         string _symbol,
         uint _decimals,
         uint _totalSupply)
+        public
     {
         name = _name;
         symbol = _symbol;
@@ -21,7 +22,8 @@ contract DummyToken is Mintable, Ownable {
         balances[msg.sender] = _totalSupply;
     }
 
-    function setBalance(address _target, uint _value)
+    function setBalance(address _target, uint _value) 
+        public
         onlyOwner 
     {
         uint currBalance = balanceOf(_target);

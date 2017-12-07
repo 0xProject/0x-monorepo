@@ -1,13 +1,13 @@
-pragma solidity ^0.4.11;
+pragma solidity 0.4.18;
 
-import "./../tokens/UnlimitedAllowanceToken.sol";
-import "./../lib/SafeMath.sol";
+import "./../tokens/ERC20Token.sol";
+import "./../lib/SafeMath_v2.sol";
 
 /*
  * Mintable
  * Base contract that creates a mintable UnlimitedAllowanceToken
  */
-contract Mintable is UnlimitedAllowanceToken, SafeMath {
+contract Mintable_v2 is ERC20Token, SafeMath_v2 {
     function mint(uint _value) 
         public
     {
