@@ -47,12 +47,12 @@ contract EtherToken_v2 is ERC20Token, SafeMath_v2 {
 
     /// @dev Sells tokens in exchange for Ether, exchanging them 1:1.
     /// @param amount Number of tokens to sell.
-    function withdraw(uint amount)
+    function withdraw(uint _value)
         public
     {
-        balances[msg.sender] = safeSub(balances[msg.sender], amount);
-        totalSupply = safeSub(totalSupply, amount);
-        require(msg.sender.send(amount));
-        Transfer(msg.sender, address(0), amount);
+        balances[msg.sender] = safeSub(balances[msg.sender], _value);
+        totalSupply = safeSub(totalSupply, _value);
+        require(msg.sender.send(_value));
+        Transfer(msg.sender, address(0), _value);
     }
 }
