@@ -80,15 +80,10 @@ describe('LedgerSubprovider', () => {
         describe('failure cases', () => {
             it('cannot open multiple simultaneous connections to the Ledger device', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                try {
-                    const result = await Promise.all([
-                        ledgerSubprovider.getAccountsAsync(),
-                        ledgerSubprovider.signPersonalMessageAsync(data),
-                    ]);
-                    throw new Error('Multiple simultaneous calls succeeded when they should have failed');
-                } catch (err) {
-                    expect(err.message).to.be.equal(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
-                }
+                return expect(Promise.all([
+                    ledgerSubprovider.getAccountsAsync(),
+                    ledgerSubprovider.signPersonalMessageAsync(data),
+                ])).to.be.rejectedWith(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
             });
         });
     });
