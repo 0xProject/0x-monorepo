@@ -41,7 +41,7 @@ describe('LedgerSubprovider', () => {
         });
         it('signs a personal message', async () => {
             const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync({data});
+            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
             expect(ecSignatureHex.length).to.be.equal(132);
             expect(ecSignatureHex.substr(0, 2)).to.be.equal('0x');
         });

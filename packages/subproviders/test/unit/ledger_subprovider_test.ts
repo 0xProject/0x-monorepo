@@ -71,8 +71,7 @@ describe('LedgerSubprovider', () => {
             });
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                const msgParams = {data};
-                const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(msgParams);
+                const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
                 // tslint:disable-next-line:max-line-length
                 expect(ecSignatureHex).to.be.equal('0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001');
             });
@@ -80,11 +79,10 @@ describe('LedgerSubprovider', () => {
         describe('failure cases', () => {
             it('cannot open multiple simultaneous connections to the Ledger device', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                const msgParams = {data};
                 try {
                     const result = await Promise.all([
                         ledgerSubprovider.getAccountsAsync(),
-                        ledgerSubprovider.signPersonalMessageAsync(msgParams),
+                        ledgerSubprovider.signPersonalMessageAsync(data),
                     ]);
                     throw new Error('Multiple simultaneous calls succeeded when they should have failed');
                 } catch (err) {
@@ -157,21 +155,6 @@ describe('LedgerSubprovider', () => {
             });
         });
         describe('failure cases', () => {
-            it('should throw if `from` param missing when calling personal_sign', (done: DoneCallback) => {
-                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                const payload = {
-                    jsonrpc: '2.0',
-                    method: 'personal_sign',
-                    params: [messageHex], // Missing from param
-                    id: 1,
-                };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
-                    expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(LedgerSubproviderErrors.FromAddressMissingOrInvalid);
-                    done();
-                });
-                provider.sendAsync(payload, callback);
-            });
             it('should throw if `data` param not hex when calling personal_sign', (done: DoneCallback) => {
                 const nonHexMessage = 'hello world';
                 const payload = {
