@@ -2,8 +2,6 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 export interface LedgerCommunicationClient {
-    exchange: (apduHex: string, statusList: number[]) => Promise<any[]>;
-    setScrambleKey: (key: string) => void;
     close_async: () => Promise<void>;
 }
 
@@ -74,10 +72,6 @@ export interface LedgerWalletSubprovider {
     setPathIndex: (pathIndex: number) => void;
 }
 
-export interface SignPersonalMessageParams {
-    data: string;
-}
-
 export interface PartialTxParams {
     nonce: string;
     gasPrice?: string;
@@ -109,7 +103,6 @@ export enum LedgerSubproviderErrors {
     TooOldLedgerFirmware = 'TOO_OLD_LEDGER_FIRMWARE',
     FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
     DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
-    DataNotValidHexForSignPersonalMessage = 'DATA_NOT_VALID_HEX_FOR_SIGN_PERSONAL_MESSAGE',
     SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
     MultipleOpenConnectionsDisallowed = 'MULTIPLE_OPEN_CONNECTIONS_DISALLOWED',
 }

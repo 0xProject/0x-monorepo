@@ -20,6 +20,7 @@ import {
 import {chaiSetup} from '../chai_setup';
 import {reportCallbackErrors} from '../utils/report_callback_errors';
 
+chaiSetup.configure();
 const expect = chai.expect;
 
 const TEST_RPC_ACCOUNT_0 = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
@@ -41,7 +42,7 @@ describe('LedgerSubprovider', () => {
         });
         it('signs a personal message', async () => {
             const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync({data});
+            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
             expect(ecSignatureHex.length).to.be.equal(132);
             expect(ecSignatureHex.substr(0, 2)).to.be.equal('0x');
         });

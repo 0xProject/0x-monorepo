@@ -20,7 +20,7 @@ interface LifeCycleRaisedButtonProps {
     labelReady: React.ReactNode|string;
     labelLoading: React.ReactNode|string;
     labelComplete: React.ReactNode|string;
-    onClickAsyncFn: () => boolean;
+    onClickAsyncFn: () => Promise<boolean>;
     backgroundColor?: string;
     labelColor?: string;
 }

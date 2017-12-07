@@ -19,6 +19,7 @@ import {
 import {chaiSetup} from '../chai_setup';
 import {reportCallbackErrors} from '../utils/report_callback_errors';
 
+chaiSetup.configure();
 const expect = chai.expect;
 const FAKE_ADDRESS = '0x9901c66f2d4b95f7074b553da78084d708beca70';
 
@@ -35,7 +36,7 @@ describe('LedgerSubprovider', () => {
                     };
                 },
                 signPersonalMessage_async: async () => {
-                    const ecSignature: ECSignature = {
+                    const ecSignature = {
                         v: 28,
                         r: 'a6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae49148',
                         s: '0652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d0',
@@ -43,7 +44,7 @@ describe('LedgerSubprovider', () => {
                     return ecSignature;
                 },
                 signTransaction_async: async (derivationPath: string, txHex: string) => {
-                    const ecSignature: ECSignatureString = {
+                    const ecSignature = {
                         v: '77',
                         r: '88a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98b',
                         s: '019f4a4b9a107d1e6752bf7f701e275f28c13791d6e76af895b07373462cefaa',
@@ -71,8 +72,7 @@ describe('LedgerSubprovider', () => {
             });
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                const msgParams = {data};
-                const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(msgParams);
+                const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
                 // tslint:disable-next-line:max-line-length
                 expect(ecSignatureHex).to.be.equal('0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001');
             });
@@ -80,16 +80,10 @@ describe('LedgerSubprovider', () => {
         describe('failure cases', () => {
             it('cannot open multiple simultaneous connections to the Ledger device', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                const msgParams = {data};
-                try {
-                    const result = await Promise.all([
-                        ledgerSubprovider.getAccountsAsync(),
-                        ledgerSubprovider.signPersonalMessageAsync(msgParams),
-                    ]);
-                    throw new Error('Multiple simultaneous calls succeeded when they should have failed');
-                } catch (err) {
-                    expect(err.message).to.be.equal(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
-                }
+                return expect(Promise.all([
+                    ledgerSubprovider.getAccountsAsync(),
+                    ledgerSubprovider.signPersonalMessageAsync(data),
+                ])).to.be.rejectedWith(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
             });
         });
     });
@@ -157,21 +151,6 @@ describe('LedgerSubprovider', () => {
             });
         });
         describe('failure cases', () => {
-            it('should throw if `from` param missing when calling personal_sign', (done: DoneCallback) => {
-                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                const payload = {
-                    jsonrpc: '2.0',
-                    method: 'personal_sign',
-                    params: [messageHex], // Missing from param
-                    id: 1,
-                };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
-                    expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(LedgerSubproviderErrors.FromAddressMissingOrInvalid);
-                    done();
-                });
-                provider.sendAsync(payload, callback);
-            });
             it('should throw if `data` param not hex when calling personal_sign', (done: DoneCallback) => {
                 const nonHexMessage = 'hello world';
                 const payload = {
@@ -182,7 +161,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(LedgerSubproviderErrors.DataNotValidHexForSignPersonalMessage);
+                    expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
                 });
                 provider.sendAsync(payload, callback);

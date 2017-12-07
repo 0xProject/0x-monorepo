@@ -29,7 +29,7 @@ In order to run the integration tests, make sure you have a Ledger Nano S availa
 
 - Plug it into your computer
 - Unlock the device
-- Open the Ethereum app
+- Open the on-device Ethereum app
 - Make sure "browser support" is disabled
 
 Then run:

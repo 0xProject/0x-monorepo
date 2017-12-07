@@ -1,6 +1,7 @@
+import {assert} from '@0xproject/assert';
 import promisify = require('es6-promisify');
 import {isAddress} from 'ethereum-address';
-import * as EthereumTx from 'ethereumjs-tx';
+import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import * as ledger from 'ledgerco';
 import * as _ from 'lodash';
@@ -14,7 +15,6 @@ import {
     LedgerSubproviderErrors,
     PartialTxParams,
     ResponseWithTxParams,
-    SignPersonalMessageParams,
 } from '../types';
 
 import {Subprovider} from './subprovider';
@@ -45,17 +45,6 @@ export class LedgerSubprovider extends Subprovider {
         const nonPrefixed = data.slice(2);
         const isValid = nonPrefixed.match(HEX_REGEX);
         return isValid;
-    }
-    private static validatePersonalMessage(msgParams: PartialTxParams) {
-        if (_.isUndefined(msgParams.from) || !isAddress(msgParams.from)) {
-            throw new Error(LedgerSubproviderErrors.FromAddressMissingOrInvalid);
-        }
-        if (_.isUndefined(msgParams.data)) {
-            throw new Error(LedgerSubproviderErrors.DataMissingForSignPersonalMessage);
-        }
-        if (!LedgerSubprovider.isValidHex(msgParams.data)) {
-            throw new Error(LedgerSubproviderErrors.DataNotValidHexForSignPersonalMessage);
-        }
     }
     private static validateSender(sender: string) {
         if (_.isUndefined(sender) || !isAddress(sender)) {
@@ -132,17 +121,13 @@ export class LedgerSubprovider extends Subprovider {
                 return;
 
             case 'personal_sign':
-                // non-standard "extraParams" to be appended to our "msgParams" obj
-                // good place for metadata
-                const extraParams = payload.params[2] || {};
-                const msgParams = _.assign({}, extraParams, {
-                    from: payload.params[1],
-                    data: payload.params[0],
-                });
-
+                const data = payload.params[0];
                 try {
-                    LedgerSubprovider.validatePersonalMessage(msgParams);
-                    const ecSignatureHex = await this.signPersonalMessageAsync(msgParams);
+                    if (_.isUndefined(data)) {
+                        throw new Error(LedgerSubproviderErrors.DataMissingForSignPersonalMessage);
+                    }
+                    assert.isHexString('data', data);
+                    const ecSignatureHex = await this.signPersonalMessageAsync(data);
                     end(null, ecSignatureHex);
                 } catch (err) {
                     end(err);
@@ -208,12 +193,12 @@ export class LedgerSubprovider extends Subprovider {
             throw err;
         }
     }
-    public async signPersonalMessageAsync(msgParams: SignPersonalMessageParams): Promise<string> {
+    public async signPersonalMessageAsync(data: string): Promise<string> {
         this._ledgerClientIfExists = await this.createLedgerClientAsync();
         try {
             const derivationPath = this.getDerivationPath();
             const result = await this._ledgerClientIfExists.signPersonalMessage_async(
-                derivationPath, ethUtil.stripHexPrefix(msgParams.data));
+                derivationPath, ethUtil.stripHexPrefix(data));
             const v = result.v - 27;
             let vHex = v.toString(16);
             if (vHex.length < 2) {
@@ -251,7 +236,7 @@ export class LedgerSubprovider extends Subprovider {
         this._ledgerClientIfExists = undefined;
         this._connectionLock.signal();
     }
-    private async sendTransactionAsync(txParams: PartialTxParams): Promise<any> {
+    private async sendTransactionAsync(txParams: PartialTxParams): Promise<Web3.JSONRPCResponsePayload> {
         await this._nonceLock.wait();
         try {
             // fill in the extras
