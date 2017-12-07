@@ -15,7 +15,6 @@ import {
     LedgerSubproviderErrors,
     PartialTxParams,
     ResponseWithTxParams,
-    SignPersonalMessageParams,
 } from '../types';
 
 import {Subprovider} from './subprovider';

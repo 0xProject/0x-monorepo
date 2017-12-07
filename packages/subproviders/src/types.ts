@@ -72,10 +72,6 @@ export interface LedgerWalletSubprovider {
     setPathIndex: (pathIndex: number) => void;
 }
 
-export interface SignPersonalMessageParams {
-    data: string;
-}
-
 export interface PartialTxParams {
     nonce: string;
     gasPrice?: string;
