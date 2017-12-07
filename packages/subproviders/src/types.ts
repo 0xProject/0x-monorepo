@@ -2,8 +2,6 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 export interface LedgerCommunicationClient {
-    exchange: (apduHex: string, statusList: number[]) => Promise<any[]>;
-    setScrambleKey: (key: string) => void;
     close_async: () => Promise<void>;
 }
 
