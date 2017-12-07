@@ -4,6 +4,7 @@ import * as chai from 'chai';
 import Web3 = require('web3');
 
 import {Artifacts} from '../../util/artifacts';
+import {constants} from '../../util/constants';
 import {ContractInstance} from '../../util/types';
 
 import {chaiSetup} from './utils/chai_setup';
@@ -25,9 +26,10 @@ contract('ZRXToken', (accounts: string[]) => {
 
     beforeEach(async () => {
         zeroEx = new ZeroEx(web3.currentProvider, {
-                exchangeContractAddress: Exchange.address,
+            exchangeContractAddress: Exchange.address,
+            networkId: constants.TESTRPC_NETWORK_ID,
         });
-        zrxAddress = await zeroEx.exchange.getZRXTokenAddressAsync();
+        zrxAddress = zeroEx.exchange.getZRXTokenAddress();
         zrx = await ZRXToken.at(zrxAddress);
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });

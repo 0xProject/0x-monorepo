@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import Web3 = require('web3');
 
 import {Artifacts} from '../../util/artifacts';
+import {constants} from '../../util/constants';
 
 import {chaiSetup} from './utils/chai_setup';
 
@@ -22,11 +23,13 @@ contract('EtherToken', (accounts: string[]) => {
     const gasPrice = ZeroEx.toBaseUnitAmount(new BigNumber(20), 9);
     let zeroEx: ZeroEx;
     let etherTokenAddress: string;
+
     before(async () => {
         etherTokenAddress = EtherToken.address;
         zeroEx = new ZeroEx(web3.currentProvider, {
-                gasPrice,
-                etherTokenContractAddress: etherTokenAddress,
+            gasPrice,
+            etherTokenContractAddress: etherTokenAddress,
+            networkId: constants.TESTRPC_NETWORK_ID,
         });
     });
 

@@ -15,7 +15,10 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 contract('ERC20Token', (accounts: string[]) => {
-    const zeroEx = new ZeroEx(web3.currentProvider);
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
+    const zeroEx = new ZeroEx(web3.currentProvider, config);
     const owner = accounts[0];
     const spender = accounts[1];
 

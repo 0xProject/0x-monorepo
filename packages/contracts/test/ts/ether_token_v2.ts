@@ -5,6 +5,7 @@ import promisify = require('es6-promisify');
 import Web3 = require('web3');
 
 import {Artifacts} from '../../util/artifacts';
+import {constants} from '../../util/constants';
 
 import {chaiSetup} from './utils/chai_setup';
 
@@ -26,8 +27,9 @@ contract('EtherTokenV2', (accounts: string[]) => {
         const etherToken = await EtherTokenV2.new();
         etherTokenAddress = etherToken.address;
         zeroEx = new ZeroEx(web3.currentProvider, {
-                gasPrice,
-                etherTokenContractAddress: etherTokenAddress,
+            gasPrice,
+            etherTokenContractAddress: etherTokenAddress,
+            networkId: constants.TESTRPC_NETWORK_ID,
         });
     });
 
@@ -76,7 +78,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const expectedFrom = ZeroEx.NULL_ADDRESS;
             const expectedTo = account;
             const expectedValue = ethToDeposit;
-            const logArgs = logs[0].args;
+            const logArgs = (logs[0] as any).args;
             expect(logArgs._from).to.equal(expectedFrom);
             expect(logArgs._to).to.equal(expectedTo);
             expect(logArgs._value).to.be.bignumber.equal(ethToDeposit);
@@ -128,7 +130,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const expectedFrom = account;
             const expectedTo = ZeroEx.NULL_ADDRESS;
             const expectedValue = ethTokensToWithdraw;
-            const logArgs = logs[0].args;
+            const logArgs = (logs[0] as any).args;
             expect(logArgs._from).to.equal(expectedFrom);
             expect(logArgs._to).to.equal(expectedTo);
             expect(logArgs._value).to.be.bignumber.equal(ethTokensToWithdraw);

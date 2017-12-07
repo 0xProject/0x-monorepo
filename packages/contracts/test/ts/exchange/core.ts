@@ -59,6 +59,7 @@ contract('Exchange', (accounts: string[]) => {
         exWrapper = new ExchangeWrapper(exchange);
         zeroEx = new ZeroEx(web3.currentProvider, {
             exchangeContractAddress: exchange.address,
+            networkId: constants.TESTRPC_NETWORK_ID,
         });
 
         const [repAddress, dgdAddress, zrxAddress] = await Promise.all([
