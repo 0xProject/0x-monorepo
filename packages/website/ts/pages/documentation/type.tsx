@@ -35,6 +35,7 @@ const typeToSection: {[typeName: string]: string} = {
     EtherTokenWrapper: 'etherToken',
     ProxyWrapper: 'proxy',
     TokenTransferProxyWrapper: 'proxy',
+    OrderStateWatcher: 'orderWatcher',
 };
 
 interface TypeProps {

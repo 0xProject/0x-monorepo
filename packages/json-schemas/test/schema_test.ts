@@ -1,7 +1,7 @@
+import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
-import promisify = require('es6-promisify');
 import forEach = require('lodash.foreach');
 import 'mocha';
 
@@ -432,6 +432,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -442,6 +443,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -454,8 +456,19 @@ describe('Schema', () => {
                     const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
                     const testCases = [
                         {
+                            type: 'subscribe',
+                            channel: 'orderbook',
+                            payload: {
+                                baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                snapshot: true,
+                                limit: 100,
+                            },
+                        },
+                        {
                             type: 'foo',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -464,6 +477,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'bar',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -472,6 +486,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: checksummedAddress,
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -480,6 +495,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: checksummedAddress,
@@ -488,6 +504,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                             },
@@ -495,6 +512,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                             },
@@ -502,6 +520,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -512,6 +531,7 @@ describe('Schema', () => {
                         {
                             type: 'subscribe',
                             channel: 'orderbook',
+                            requestId: 1,
                             payload: {
                                 baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 quoteTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
@@ -530,7 +550,7 @@ describe('Schema', () => {
                         {
                             type: 'snapshot',
                             channel: 'orderbook',
-                            channelId: 2,
+                            requestId: 2,
                             payload: {
                                 bids: [],
                                 asks: [],
@@ -539,7 +559,7 @@ describe('Schema', () => {
                         {
                             type: 'snapshot',
                             channel: 'orderbook',
-                            channelId: 2,
+                            requestId: 2,
                             payload: {
                                 bids: [
                                     signedOrder,
@@ -557,7 +577,7 @@ describe('Schema', () => {
                         {
                             type: 'foo',
                             channel: 'orderbook',
-                            channelId: 2,
+                            requestId: 2,
                             payload: {
                                 bids: [
                                     signedOrder,
@@ -570,7 +590,7 @@ describe('Schema', () => {
                         {
                             type: 'snapshot',
                             channel: 'bar',
-                            channelId: 2,
+                            requestId: 2,
                             payload: {
                                 bids: [
                                     signedOrder,
@@ -595,7 +615,7 @@ describe('Schema', () => {
                         {
                             type: 'snapshot',
                             channel: 'orderbook',
-                            channelId: '2',
+                            requestId: '2',
                             payload: {
                                 bids: [
                                     signedOrder,
@@ -608,7 +628,7 @@ describe('Schema', () => {
                         {
                             type: 'snapshot',
                             channel: 'orderbook',
-                            channelId: 2,
+                            requestId: 2,
                             payload: {
                                 bids: [
                                     signedOrder,
@@ -618,7 +638,7 @@ describe('Schema', () => {
                         {
                             type: 'snapshot',
                             channel: 'orderbook',
-                            channelId: 2,
+                            requestId: 2,
                             payload: {
                                 asks: [
                                     signedOrder,
@@ -628,7 +648,7 @@ describe('Schema', () => {
                         {
                             type: 'snapshot',
                             channel: 'orderbook',
-                            channelId: 2,
+                            requestId: 2,
                             payload: {
                                 bids: [
                                     signedOrder,
@@ -641,7 +661,7 @@ describe('Schema', () => {
                         {
                             type: 'snapshot',
                             channel: 'orderbook',
-                            channelId: 2,
+                            requestId: 2,
                             payload: {
                                 bids: [
                                     {},
@@ -662,7 +682,7 @@ describe('Schema', () => {
                         {
                             type: 'update',
                             channel: 'orderbook',
-                            channelId: 2,
+                            requestId: 2,
                             payload: signedOrder,
                         },
                     ];
@@ -673,16 +693,19 @@ describe('Schema', () => {
                         {
                             type: 'foo',
                             channel: 'orderbook',
+                            requestId: 2,
                             payload: signedOrder,
                         },
                         {
                             type: 'update',
                             channel: 'bar',
+                            requestId: 2,
                             payload: signedOrder,
                         },
                         {
                             type: 'update',
                             channel: 'orderbook',
+                            requestId: 2,
                             payload: {},
                         },
                     ];

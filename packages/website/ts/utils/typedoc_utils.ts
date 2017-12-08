@@ -220,7 +220,7 @@ export const typeDocUtils = {
         let callPath = (!_.isUndefined(sections.zeroEx) && sectionName !== sections.zeroEx) ?
             `${topLevelInterface}${sectionName}.` :
             topLevelInterface;
-        callPath = isConstructor ? '' : callPath;
+        callPath = isConstructor || entity.name === '__type' ? '' : callPath;
 
         const parameters = _.map(signature.parameters, param => {
             return typeDocUtils._convertParameter(param, sections, sectionName);

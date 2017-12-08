@@ -1,4 +1,5 @@
 import {schemas} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
@@ -9,7 +10,6 @@ import {
     LogWithDecodedArgs,
     MethodOpts,
     SubscriptionOpts,
-    TokenContract,
     TokenContractEventArgs,
     TokenEvents,
     TransactionOpts,
@@ -18,9 +18,9 @@ import {
 import {AbiDecoder} from '../utils/abi_decoder';
 import {assert} from '../utils/assert';
 import {constants} from '../utils/constants';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
+import {TokenContract} from './generated/token';
 import {TokenTransferProxyWrapper} from './token_transfer_proxy_wrapper';
 
 const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
@@ -34,9 +34,9 @@ export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenTransferProxyWrapper: TokenTransferProxyWrapper;
-    constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder,
                 tokenTransferProxyWrapper: TokenTransferProxyWrapper) {
-        super(web3Wrapper, abiDecoder);
+        super(web3Wrapper, networkId, abiDecoder);
         this._tokenContractsByAddress = {};
         this._tokenTransferProxyWrapper = tokenTransferProxyWrapper;
     }
@@ -313,8 +313,11 @@ export class TokenWrapper extends ContractWrapper {
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync<TokenContract>(
+        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
             artifacts.TokenArtifact, tokenAddress,
+        );
+        const contractInstance = new TokenContract(
+            web3ContractInstance, this._web3Wrapper.getContractDefaults(),
         );
         tokenContract = contractInstance;
         this._tokenContractsByAddress[tokenAddress] = tokenContract;

@@ -1,10 +1,11 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
-import {TokenTransferProxyContract, ZeroExError} from '../types';
-import {Web3Wrapper} from '../web3_wrapper';
+import {ZeroExError} from '../types';
 
 import {ContractWrapper} from './contract_wrapper';
+import {TokenTransferProxyContract} from './generated/token_transfer_proxy';
 
 /**
  * This class includes the functionality related to interacting with the TokenTransferProxy contract.
@@ -12,8 +13,8 @@ import {ContractWrapper} from './contract_wrapper';
 export class TokenTransferProxyWrapper extends ContractWrapper {
     private _tokenTransferProxyContractIfExists?: TokenTransferProxyContract;
     private _contractAddressIfExists?: string;
-    constructor(web3Wrapper: Web3Wrapper, contractAddressIfExists?: string) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, contractAddressIfExists?: string) {
+        super(web3Wrapper, networkId);
         this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
@@ -53,8 +54,11 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         if (!_.isUndefined(this._tokenTransferProxyContractIfExists)) {
             return this._tokenTransferProxyContractIfExists;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync<TokenTransferProxyContract>(
+        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
             artifacts.TokenTransferProxyArtifact, this._contractAddressIfExists,
+        );
+        const contractInstance = new TokenTransferProxyContract(
+            web3ContractInstance, this._web3Wrapper.getContractDefaults(),
         );
         this._tokenTransferProxyContractIfExists = contractInstance;
         return this._tokenTransferProxyContractIfExists;

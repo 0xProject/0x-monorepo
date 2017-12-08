@@ -1,4 +1,5 @@
 import {schemas} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -9,7 +10,6 @@ import {
     DecodedLogArgs,
     ECSignature,
     EventCallback,
-    ExchangeContract,
     ExchangeContractErrCodes,
     ExchangeContractErrs,
     ExchangeContractEventArgs,
@@ -37,9 +37,9 @@ import {decorators} from '../utils/decorators';
 import {ExchangeTransferSimulator} from '../utils/exchange_transfer_simulator';
 import {OrderValidationUtils} from '../utils/order_validation_utils';
 import {utils} from '../utils/utils';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
+import {ExchangeContract} from './generated/exchange';
 import {TokenWrapper} from './token_wrapper';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;
@@ -84,9 +84,9 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder,
                 tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
-        super(web3Wrapper, abiDecoder);
+        super(web3Wrapper, networkId, abiDecoder);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
         this._contractAddressIfExists = contractAddressIfExists;
@@ -789,9 +789,10 @@ export class ExchangeWrapper extends ContractWrapper {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
         }
-        const contractInstance = await this._instantiateContractIfExistsAsync<ExchangeContract>(
+        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
             artifacts.ExchangeArtifact, this._contractAddressIfExists,
         );
+        const contractInstance = new ExchangeContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
         this._exchangeContractIfExists = contractInstance;
         return this._exchangeContractIfExists;
     }

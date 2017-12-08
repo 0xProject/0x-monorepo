@@ -5,6 +5,6 @@ const orderJSONString = JSON.stringify(orderResponseJSON);
 export const unknownOrderbookChannelMessage = `{
     "type": "superGoodUpdate",
     "channel": "orderbook",
-    "channelId": 1,
+    "requestId": 1,
     "payload": ${orderJSONString}
 }`;

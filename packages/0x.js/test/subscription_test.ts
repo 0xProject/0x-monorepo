@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
-import promisify = require('es6-promisify');
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';

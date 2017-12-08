@@ -7,7 +7,7 @@
     "scripts": {
         "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "lerna:run": "lerna run",
-        "lerna:publish": "lerna run clean; lerna run build; lerna publish --registry=https://registry.npmjs.org/"
+        "lerna:publish": "yarn install; lerna run clean; lerna run build; lerna publish --registry=https://registry.npmjs.org/"
     },
     "config": {
       "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
@@ -17,6 +17,6 @@
         "async-child-process": "^1.1.1",
         "semver-sort": "^0.0.4",
         "publish-release": "0xproject/publish-release",
-        "es6-promisify": "^5.0.0"
+        "ethereumjs-testrpc": "6.0.3"
     }
 }

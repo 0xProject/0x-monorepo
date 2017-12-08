@@ -20,7 +20,7 @@ interface LifeCycleRaisedButtonProps {
     labelReady: React.ReactNode|string;
     labelLoading: React.ReactNode|string;
     labelComplete: React.ReactNode|string;
-    onClickAsyncFn: () => boolean;
+    onClickAsyncFn: () => Promise<boolean>;
     backgroundColor?: string;
     labelColor?: string;
 }
@@ -83,7 +83,7 @@ export class LifeCycleRaisedButton extends
         this.setState({
             buttonState: ButtonState.LOADING,
         });
-        const didSucceed = this.props.onClickAsyncFn();
+        const didSucceed = await this.props.onClickAsyncFn();
         if (this.didUnmount) {
             return; // noop since unmount called before async callback returned.
         }

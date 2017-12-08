@@ -1,3 +1,4 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -10,7 +11,6 @@ import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
 import {DoneCallback, Token} from '../src/types';
 import {constants} from '../src/utils/constants';
 import {utils} from '../src/utils/utils';
-import {Web3Wrapper} from '../src/web3_wrapper';
 
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';

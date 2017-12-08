@@ -1,3 +1,4 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import {Block, BlockAndLogStreamer} from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -19,10 +20,19 @@ import {AbiDecoder} from '../utils/abi_decoder';
 import {constants} from '../utils/constants';
 import {filterUtils} from '../utils/filter_utils';
 import {intervalUtils} from '../utils/interval_utils';
-import {Web3Wrapper} from '../web3_wrapper';
+
+const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {[contractName: string]: ZeroExError} = {
+    ZRX: ZeroExError.ZRXContractDoesNotExist,
+    EtherToken: ZeroExError.EtherTokenContractDoesNotExist,
+    Token: ZeroExError.TokenContractDoesNotExist,
+    TokenRegistry: ZeroExError.TokenRegistryContractDoesNotExist,
+    TokenTransferProxy: ZeroExError.TokenTransferProxyContractDoesNotExist,
+    Exchange: ZeroExError.ExchangeContractDoesNotExist,
+};
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
+    private _networkId: number;
     private _abiDecoder?: AbiDecoder;
     private _blockAndLogStreamer: BlockAndLogStreamer|undefined;
     private _blockAndLogStreamInterval: NodeJS.Timer;
@@ -30,8 +40,9 @@ export class ContractWrapper {
     private _filterCallbacks: {[filterToken: string]: EventCallback<ContractEventArgs>};
     private _onLogAddedSubscriptionToken: string|undefined;
     private _onLogRemovedSubscriptionToken: string|undefined;
-    constructor(web3Wrapper: Web3Wrapper, abiDecoder?: AbiDecoder) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder?: AbiDecoder) {
         this._web3Wrapper = web3Wrapper;
+        this._networkId = networkId;
         this._abiDecoder = abiDecoder;
         this._filters = {};
         this._filterCallbacks = {};
@@ -90,16 +101,30 @@ export class ContractWrapper {
         const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
-    protected async _instantiateContractIfExistsAsync<ContractType extends Web3.ContractInstance>(
-        artifact: Artifact, addressIfExists?: string): Promise<ContractType> {
-        const contractInstance =
-            await this._web3Wrapper.getContractInstanceFromArtifactAsync<ContractType>(artifact, addressIfExists);
+    protected async _instantiateContractIfExistsAsync(
+        artifact: Artifact, addressIfExists?: string,
+    ): Promise<Web3.ContractInstance> {
+        let contractAddress: string;
+        if (_.isUndefined(addressIfExists)) {
+            if (_.isUndefined(artifact.networks[this._networkId])) {
+                throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
+            }
+            contractAddress = artifact.networks[this._networkId].address.toLowerCase();
+        } else {
+            contractAddress = addressIfExists;
+        }
+        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
+        if (!doesContractExist) {
+            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
+        }
+        const contractInstance = this._web3Wrapper.getContractInstance(
+            artifact.abi, contractAddress,
+        );
         return contractInstance;
     }
     protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
         if (_.isUndefined(addressIfExists)) {
-            const networkId = this._web3Wrapper.getNetworkId();
-            const contractAddress = artifact.networks[networkId].address;
+            const contractAddress = artifact.networks[this._networkId].address;
             if (_.isUndefined(contractAddress)) {
                 throw new Error(ZeroExError.ExchangeContractDoesNotExist);
             }
