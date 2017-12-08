@@ -1,6 +1,6 @@
 # CHANGELOG
 
-vx.x.x
+v0.3.0 - _December 8, 2017_
 ------------------------
     * Expose WebSocketOrderbookChannel and associated types to public interface (#251)
     * Remove tokenA and tokenB fields from OrdersRequest (#256)
