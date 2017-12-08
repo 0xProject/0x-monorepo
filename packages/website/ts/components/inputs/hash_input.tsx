@@ -1,4 +1,5 @@
 import {Order, ZeroEx} from '0x.js';
+import * as _ from 'lodash';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import {Blockchain} from 'ts/blockchain';
@@ -49,7 +50,7 @@ export class HashInput extends React.Component<HashInputProps, HashInputState> {
             exchangeContractAddress,
             expirationUnixTimestampSec: hashData.orderExpiryTimestamp,
             feeRecipient: hashData.feeRecipientAddress,
-            maker: hashData.orderMakerAddress,
+            maker: _.isEmpty(hashData.orderMakerAddress) ? constants.NULL_ADDRESS : hashData.orderMakerAddress,
             makerFee: hashData.makerFee,
             makerTokenAddress: hashData.depositTokenContractAddr,
             makerTokenAmount: hashData.depositAmount,
