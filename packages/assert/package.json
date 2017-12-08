@@ -39,7 +39,7 @@
   "dependencies": {
     "@0xproject/json-schemas": "^0.6.10",
     "bignumber.js": "~4.1.0",
-    "ethereum-address": "^0.0.4",
+    "js-sha3": "^0.7.0",
     "lodash": "^4.17.4",
     "valid-url": "^1.0.9"
   }

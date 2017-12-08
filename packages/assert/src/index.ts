@@ -3,9 +3,10 @@ import {
     SchemaValidator,
 } from '@0xproject/json-schemas';
 import BigNumber from 'bignumber.js';
-import * as ethereum_address from 'ethereum-address';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
+
+import {addressUtils} from './address_utils';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
@@ -35,9 +36,9 @@ export const assert = {
             this.typeAssertionMessage(variableName, 'HexString', value));
     },
     isETHAddressHex(variableName: string, value: string): void {
-        this.assert(ethereum_address.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
+        this.assert(addressUtils.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
         this.assert(
-            ethereum_address.isAddress(value) && value.toLowerCase() === value,
+            addressUtils.isAddress(value) && value.toLowerCase() === value,
             `Checksummed addresses are not supported. Convert ${variableName} to lower case before passing`,
         );
     },
