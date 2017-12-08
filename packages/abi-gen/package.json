@@ -1,6 +1,6 @@
 {
   "name": "abi-gen",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Generate contract wrappers from ABI and handlebars templates",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -33,9 +33,9 @@
     "yargs": "^10.0.3"
   },
   "devDependencies": {
-    "@types/handlebars": "^4.0.36",
     "@0xproject/tslint-config": "^0.2.0",
     "@types/glob": "^5.0.33",
+    "@types/handlebars": "^4.0.36",
     "@types/mkdirp": "^0.5.1",
     "@types/node": "^8.0.53",
     "@types/yargs": "^8.0.2",

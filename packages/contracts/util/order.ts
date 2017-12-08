@@ -1,5 +1,5 @@
+import {promisify} from '@0xproject/utils';
 import {BigNumber} from 'bignumber.js';
-import promisify = require('es6-promisify');
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import Web3 = require('web3');
@@ -33,7 +33,7 @@ export class Order {
     }
     public async signAsync() {
         const orderHash = this.getOrderHash();
-        const signature = await promisify(web3.eth.sign)(this.params.maker, orderHash);
+        const signature = await promisify<string>(web3.eth.sign)(this.params.maker, orderHash);
         const {v, r, s} = ethUtil.fromRpcSig(signature);
         this.params = _.assign(this.params, {
             orderHashHex: orderHash,

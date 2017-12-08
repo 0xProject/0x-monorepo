@@ -1,4 +1,4 @@
-import promisify = require('es6-promisify');
+import {promisify} from '@0xproject/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import * as path from 'path';

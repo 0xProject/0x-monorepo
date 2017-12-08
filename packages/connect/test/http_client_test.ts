@@ -61,12 +61,12 @@ describe('HttpClient', () => {
             const orders = await relayerClient.getOrdersAsync();
             expect(orders).to.be.deep.equal(ordersResponse);
         });
-        it('gets specfic orders for request', async () => {
+        it('gets specific orders for request', async () => {
             const tokenAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
             const ordersRequest = {
-                tokenA: tokenAddress,
+                tokenAddress,
             };
-            const urlWithQuery = `${url}?tokenA=${tokenAddress}`;
+            const urlWithQuery = `${url}?tokenAddress=${tokenAddress}`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync(ordersRequest);
             expect(orders).to.be.deep.equal(ordersResponse);

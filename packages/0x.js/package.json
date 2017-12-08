@@ -46,8 +46,7 @@
   },
   "devDependencies": {
     "@0xproject/tslint-config": "^0.2.0",
-    "abi-gen": "^0.0.0",
-    "abi-gen-templates": "^0.0.0",
+    "@0xproject/types": "^0.0.1",
     "@types/bintrees": "^1.0.2",
     "@types/jsonschema": "^1.1.1",
     "@types/lodash": "^4.14.86",
@@ -55,6 +54,8 @@
     "@types/node": "^8.0.53",
     "@types/sinon": "^2.2.2",
     "@types/uuid": "^3.4.2",
+    "abi-gen": "^0.0.1",
+    "abi-gen-templates": "^0.0.1",
     "awesome-typescript-loader": "^3.1.3",
     "chai": "^4.0.1",
     "chai-as-promised": "^7.1.0",
@@ -87,6 +88,8 @@
   "dependencies": {
     "@0xproject/assert": "^0.0.6",
     "@0xproject/json-schemas": "^0.6.9",
+    "@0xproject/utils": "^0.0.1",
+    "@0xproject/web3-wrapper": "^0.0.1",
     "bignumber.js": "~4.1.0",
     "bintrees": "^1.0.2",
     "bn.js": "^4.11.8",

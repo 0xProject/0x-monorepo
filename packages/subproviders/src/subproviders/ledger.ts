@@ -142,6 +142,7 @@ export class LedgerSubprovider extends Subprovider {
     public async getAccountsAsync(): Promise<string[]> {
         this._ledgerClientIfExists = await this.createLedgerClientAsync();
 
+        // TODO: replace with generating addresses without hitting Ledger
         const accounts = [];
         for (let i = 0; i < NUM_ADDRESSES_TO_FETCH; i++) {
             try {

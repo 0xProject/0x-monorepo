@@ -1,10 +1,10 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
 import {TransactionOpts, ZeroExError} from '../types';
 import {assert} from '../utils/assert';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
 import {EtherTokenContract} from './generated/ether_token';
@@ -18,8 +18,9 @@ export class EtherTokenWrapper extends ContractWrapper {
     private _etherTokenContractIfExists?: EtherTokenContract;
     private _tokenWrapper: TokenWrapper;
     private _contractAddressIfExists?: string;
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, tokenWrapper: TokenWrapper,
+                contractAddressIfExists?: string) {
+        super(web3Wrapper, networkId);
         this._tokenWrapper = tokenWrapper;
         this._contractAddressIfExists = contractAddressIfExists;
     }

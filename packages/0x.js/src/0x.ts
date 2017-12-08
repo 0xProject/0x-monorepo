@@ -1,4 +1,5 @@
 import {schemas, SchemaValidator} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -29,7 +30,6 @@ import {intervalUtils} from './utils/interval_utils';
 import {OrderStateUtils} from './utils/order_state_utils';
 import {signatureUtils} from './utils/signature_utils';
 import {utils} from './utils/utils';
-import {Web3Wrapper} from './web3_wrapper';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
@@ -179,24 +179,31 @@ export class ZeroEx {
         const defaults = {
             gasPrice: config.gasPrice,
         };
-        this._web3Wrapper = new Web3Wrapper(provider, config.networkId, defaults);
+        this._web3Wrapper = new Web3Wrapper(provider, defaults);
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
+            config.networkId,
             config.tokenTransferProxyContractAddress,
         );
         this.token = new TokenWrapper(
             this._web3Wrapper,
+            config.networkId,
             this._abiDecoder,
             this.proxy,
         );
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
+            config.networkId,
             this._abiDecoder,
             this.token,
             config.exchangeContractAddress,
         );
-        this.tokenRegistry = new TokenRegistryWrapper(this._web3Wrapper, config.tokenRegistryContractAddress);
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.token, config.etherTokenContractAddress);
+        this.tokenRegistry = new TokenRegistryWrapper(
+            this._web3Wrapper, config.networkId, config.tokenRegistryContractAddress,
+        );
+        this.etherToken = new EtherTokenWrapper(
+            this._web3Wrapper, config.networkId, this.token, config.etherTokenContractAddress,
+        );
         this.orderStateWatcher = new OrderStateWatcher(
             this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config.orderWatcherConfig,
         );
