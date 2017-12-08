@@ -20,7 +20,7 @@ Requires Node version 6.9.5 or higher.
 Add the following to your `/etc/hosts` file:
 
 ```
-127.0.0.1 0xproject.dev
+127.0.0.1 0xproject.localhost
 ```
 
 Clone the [0x contracts repo](https://github.com/0xProject/contracts) into the same parent directory as this project.
@@ -45,7 +45,7 @@ Start dev server:
 yarn run dev
 ```
 
-Visit [0xproject.dev:3572](http://0xproject.dev:3572) in your browser.
+Visit [0xproject.localhost:3572](http://0xproject.localhost:3572) in your browser.
 
 
 ##### Recommended Atom packages:
