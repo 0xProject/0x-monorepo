@@ -3,6 +3,7 @@
 vx.x.x
 ------------------------
     * Expose WebSocketOrderbookChannel and associated types to public interface (#251)
+    * Remove tokenA and tokenB fields from OrdersRequest (#256)
 
 v0.2.0 - _November 29, 2017_
 ------------------------
