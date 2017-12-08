@@ -106,6 +106,7 @@ export class LedgerSubprovider extends Subprovider {
                     const result = await this.sendTransactionAsync(txParams);
                     end(null, result);
                 } catch (err) {
+                    console.log('err', err);
                     end(err);
                 }
                 return;
@@ -253,6 +254,7 @@ export class LedgerSubprovider extends Subprovider {
             this._nonceLock.signal();
             return result;
         } catch (err) {
+            console.log('err', JSON.stringify(err));
             this._nonceLock.signal();
             throw err;
         }
