@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "contracts",
   "version": "1.0.0",
   "description": "Smart contract components of 0x protocol",
