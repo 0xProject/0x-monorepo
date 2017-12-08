@@ -146,7 +146,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.raw.length).to.be.equal(206);
+                    expect(response.result.raw.length).to.be.equal(192);
                     expect(response.result.raw.substr(0, 2)).to.be.equal('0x');
                     done();
                 });
