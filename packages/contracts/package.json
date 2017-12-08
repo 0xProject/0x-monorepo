@@ -13,7 +13,7 @@
     "clean": "rm -rf ./lib",
     "migrate:truffle": "npm run build; truffle migrate",
     "migrate": "npm run build; node lib/deploy/cli.js migrate",
-    "lint": "tslint --project . 'migrations/*.ts' 'test/**/*.ts' 'util/*.ts' 'deploy/**/*.ts'",
+    "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
     "test:deployer": "npm run build; mocha lib/deploy/test/*_test.js"
   },
   "repository": {
@@ -28,6 +28,7 @@
   "homepage": "https://github.com/0xProject/0x.js/packages/contracts/README.md",
   "devDependencies": {
     "@0xproject/tslint-config": "^0.2.0",
+    "@0xproject/types": "^0.0.1",
     "@types/bluebird": "^3.5.3",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/lodash": "^4.14.86",
@@ -53,11 +54,12 @@
   },
   "dependencies": {
     "0x.js": "^0.22.6",
+    "@0xproject/web3-wrapper": "^0.0.1",
     "@0xproject/json-schemas": "^0.6.9",
+    "@0xproject/utils": "^0.0.1",
     "bignumber.js": "~4.1.0",
     "bluebird": "^3.5.0",
     "bn.js": "^4.11.8",
-    "es6-promisify": "^5.0.0",
     "ethereumjs-abi": "^0.6.4",
     "ethereumjs-util": "^5.1.1",
     "isomorphic-fetch": "^2.2.1",

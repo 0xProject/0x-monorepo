@@ -2,12 +2,12 @@
  * This file is auto-generated using abi-gen. Don't edit directly.
  * Templates can be found at https://github.com/0xProject/0x.js/tree/development/packages/abi-gen-templates.
  */
+import {promisify} from '@0xproject/utils';
 import {BigNumber} from 'bignumber.js';
 import * as Web3 from 'web3';
 
 import {TxData, TxDataPayable} from '../../types';
 import {classUtils} from '../../utils/class_utils';
-import {promisify} from '../../utils/promisify';
 
 import {BaseContract} from './base_contract';
 

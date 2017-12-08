@@ -1,0 +1,32 @@
+{
+  "name": "@0xproject/types",
+  "version": "0.0.1",
+  "description": "0x types",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "shx rm -rf lib",
+    "lint": "tslint --project . 'src/**/*.ts'"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xProject/0x.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/0xProject/0x.js/issues"
+  },
+  "homepage": "https://github.com/0xProject/0x.js/packages/types/README.md",
+  "devDependencies": {
+    "@0xproject/tslint-config": "^0.2.0",
+    "bignumber.js": "^5.0.0",
+    "shx": "^0.2.2",
+    "tslint": "5.8.0",
+    "typescript": "~2.6.1"
+  },
+  "dependencies": {
+    "bignumber.js": "~4.1.0",
+    "web3": "^0.20.0"
+  }
+}

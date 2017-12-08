@@ -1,3 +1,4 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -19,7 +20,6 @@ import {
 } from '../src';
 import {OrderStateWatcher} from '../src/order_watcher/order_state_watcher';
 import {DoneCallback} from '../src/types';
-import {Web3Wrapper} from '../src/web3_wrapper';
 
 import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';

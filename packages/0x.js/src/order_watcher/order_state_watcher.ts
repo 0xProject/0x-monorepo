@@ -1,4 +1,5 @@
 import {schemas} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import {ZeroEx} from '../0x';
@@ -31,7 +32,6 @@ import {assert} from '../utils/assert';
 import {intervalUtils} from '../utils/interval_utils';
 import {OrderStateUtils} from '../utils/order_state_utils';
 import {utils} from '../utils/utils';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {EventWatcher} from './event_watcher';
 import {ExpirationWatcher} from './expiration_watcher';

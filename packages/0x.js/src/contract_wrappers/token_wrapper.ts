@@ -1,4 +1,5 @@
 import {schemas} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
@@ -17,7 +18,6 @@ import {
 import {AbiDecoder} from '../utils/abi_decoder';
 import {assert} from '../utils/assert';
 import {constants} from '../utils/constants';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
 import {TokenContract} from './generated/token';
@@ -34,9 +34,9 @@ export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenTransferProxyWrapper: TokenTransferProxyWrapper;
-    constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder,
                 tokenTransferProxyWrapper: TokenTransferProxyWrapper) {
-        super(web3Wrapper, abiDecoder);
+        super(web3Wrapper, networkId, abiDecoder);
         this._tokenContractsByAddress = {};
         this._tokenTransferProxyWrapper = tokenTransferProxyWrapper;
     }

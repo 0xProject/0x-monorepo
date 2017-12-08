@@ -16,9 +16,9 @@ import {
     ZeroEx,
     ZeroExError,
 } from '0x.js';
+import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import compareVersions = require('compare-versions');
-import promisify = require('es6-promisify');
 import ethUtil = require('ethereumjs-util');
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
@@ -65,7 +65,7 @@ export class Blockchain {
     public nodeVersion: string;
     private zeroEx: ZeroEx;
     private dispatcher: Dispatcher;
-    private web3Wrapper: Web3Wrapper;
+    private web3Wrapper?: Web3Wrapper;
     private exchangeAddress: string;
     private tokenTransferProxy: ContractInstance;
     private tokenRegistry: ContractInstance;
@@ -624,7 +624,7 @@ export class Blockchain {
         let networkIdIfExists: number;
         if (!_.isUndefined(injectedWeb3)) {
             try {
-                networkIdIfExists = _.parseInt(await promisify(injectedWeb3.version.getNetwork)());
+                networkIdIfExists = _.parseInt(await promisify<string>(injectedWeb3.version.getNetwork)());
             } catch (err) {
                 // Ignore error and proceed with networkId undefined
             }

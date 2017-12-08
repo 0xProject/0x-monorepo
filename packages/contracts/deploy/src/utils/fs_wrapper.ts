@@ -1,11 +1,11 @@
-import promisify = require('es6-promisify');
+import {promisify} from '@0xproject/utils';
 import * as fs from 'fs';
 
 export const fsWrapper = {
-    readdirAsync: promisify(fs.readdir),
-    readFileAsync: promisify(fs.readFile),
-    writeFileAsync: promisify(fs.writeFile),
-    mkdirAsync: promisify(fs.mkdir),
+    readdirAsync: promisify<string[]>(fs.readdir),
+    readFileAsync: promisify<string>(fs.readFile),
+    writeFileAsync: promisify<undefined>(fs.writeFile),
+    mkdirAsync: promisify<undefined>(fs.mkdir),
     doesPathExistSync: fs.existsSync,
-    removeFileAsync: promisify(fs.unlink),
+    removeFileAsync: promisify<undefined>(fs.unlink),
 };
