@@ -16,6 +16,7 @@
         "lerna": "^2.5.1",
         "async-child-process": "^1.1.1",
         "semver-sort": "^0.0.4",
-        "publish-release": "0xproject/publish-release"
+        "publish-release": "0xproject/publish-release",
+        "ethereumjs-testrpc": "6.0.3"
     }
 }

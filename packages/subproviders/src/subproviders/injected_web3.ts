@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import {constants} from 'ts/utils/constants';
 import Web3 = require('web3');
+import Web3ProviderEngine = require('web3-provider-engine');
 
 /*
  * This class implements the web3-provider-engine subprovider interface and forwards
@@ -8,12 +8,14 @@ import Web3 = require('web3');
  * web3 instance in their browser.
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
-export class InjectedWeb3SubProvider {
+export class InjectedWeb3Subprovider {
     private injectedWeb3: Web3;
     constructor(injectedWeb3: Web3) {
         this.injectedWeb3 = injectedWeb3;
     }
-    public handleRequest(payload: any, next: () => void, end: (err: Error, result: any) => void) {
+    public handleRequest(
+        payload: Web3.JSONRPCRequestPayload, next: () => void, end: (err: Error|null, result: any) => void,
+    ) {
         switch (payload.method) {
             case 'web3_clientVersion':
                 this.injectedWeb3.version.getNode(end);
@@ -39,7 +41,7 @@ export class InjectedWeb3SubProvider {
     }
     // Required to implement this method despite not needing it for this subprovider
     // tslint:disable-next-line:prefer-function-over-method
-    public setEngine(engine: any) {
+    public setEngine(engine: Web3ProviderEngine) {
         // noop
     }
 }

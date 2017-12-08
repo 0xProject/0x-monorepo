@@ -1,15 +1,17 @@
 import {promisify} from '@0xproject/utils';
 import * as _ from 'lodash';
-import {JSONRPCPayload} from 'ts/types';
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
-import Subprovider = require('web3-provider-engine/subproviders/subprovider');
+
+import {JSONRPCPayload} from '../types';
+
+import {Subprovider} from './subprovider';
 
 export class RedundantRPCSubprovider extends Subprovider {
     private rpcs: RpcSubprovider[];
     private static async firstSuccessAsync(
         rpcs: RpcSubprovider[], payload: JSONRPCPayload, next: () => void,
     ): Promise<any> {
-        let lastErr;
+        let lastErr: Error|undefined;
         for (const rpc of rpcs) {
             try {
                 const data = await promisify(rpc.handleRequest.bind(rpc))(payload, next);
@@ -19,7 +21,9 @@ export class RedundantRPCSubprovider extends Subprovider {
                 continue;
             }
         }
-        throw Error(lastErr);
+        if (!_.isUndefined(lastErr)) {
+            throw lastErr;
+        }
     }
     constructor(endpoints: string[]) {
         super();
@@ -30,7 +34,7 @@ export class RedundantRPCSubprovider extends Subprovider {
         });
     }
     public async handleRequest(payload: JSONRPCPayload, next: () => void,
-                               end: (err?: Error, data?: any) =>  void): Promise<void> {
+                               end: (err: Error|null, data?: any) =>  void): Promise<void> {
         const rpcsCopy = this.rpcs.slice();
         try {
             const data = await RedundantRPCSubprovider.firstSuccessAsync(rpcsCopy, payload, next);

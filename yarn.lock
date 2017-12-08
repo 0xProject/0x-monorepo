@@ -2183,9 +2183,13 @@ conventional-recommended-bump@^1.0.1:
     meow "^3.3.0"
     object-assign "^4.0.1"
 
-convert-source-map@^1.1.0, convert-source-map@^1.3.0, convert-source-map@^1.5.0:
+convert-source-map@^1.1.0, convert-source-map@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.5.0.tgz#9acd70851c6d5dfdd93d9282e5edf94a03ff46b5"
+
+convert-source-map@^1.3.0:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.5.1.tgz#b8278097b9bc229365de5c62cf5fcaed8b5599e5"
 
 cookie-signature@1.0.6:
   version "1.0.6"
@@ -4737,7 +4741,7 @@ lcov-parse@^0.0.10:
 
 ledgerco@0xProject/ledger-node-js-api:
   version "1.1.3"
-  resolved "https://codeload.github.com/0xProject/ledger-node-js-api/tar.gz/dc2024bac997bf023f12203f118d10ba84d15ded"
+  resolved "https://codeload.github.com/0xProject/ledger-node-js-api/tar.gz/24aed21b8b362f2afc86faa578f38955ae2319ba"
   dependencies:
     async "2.1.4"
     node-hid "0.5.4"
@@ -5443,11 +5447,11 @@ mute-stream@0.0.7, mute-stream@~0.0.4:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@^2.0.5, nan@^2.0.8, nan@^2.2.1, nan@^2.3.0, nan@^2.3.3:
+nan@^2.0.5, nan@^2.2.1, nan@^2.3.0, nan@^2.3.3:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
 
-nan@^2.4.0:
+nan@^2.0.8, nan@^2.4.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
 
@@ -7298,6 +7302,10 @@ selfsigned@^1.9.1:
   dependencies:
     node-forge "0.6.33"
 
+semaphore-async-await@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/semaphore-async-await/-/semaphore-async-await-1.5.1.tgz#857bef5e3644601ca4b9570b87e9df5ca12974fa"
+
 semaphore@>=1.0.1, semaphore@^1.0.3:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/semaphore/-/semaphore-1.1.0.tgz#aaad8b86b20fe8e9b32b16dc2ee682a8cd26a8aa"
@@ -8385,8 +8393,16 @@ types-bn@^0.0.1:
     bn.js "4.11.7"
 
 types-ethereumjs-util@0xProject/types-ethereumjs-util:
-  version "0.0.5"
-  resolved "https://codeload.github.com/0xProject/types-ethereumjs-util/tar.gz/b9ae55d2c2711d89f63f7fc53a78579f2d4fbd74"
+  version "0.0.6"
+  resolved "https://codeload.github.com/0xProject/types-ethereumjs-util/tar.gz/a3b236df39d9fbfcb3b832a1fea7110649eeb616"
+  dependencies:
+    bn.js "^4.11.7"
+    buffer "^5.0.6"
+    rlp "^2.0.0"
+
+types-ethereumjs-util@0xproject/types-ethereumjs-util:
+  version "0.0.6"
+  resolved "https://codeload.github.com/0xproject/types-ethereumjs-util/tar.gz/a3b236df39d9fbfcb3b832a1fea7110649eeb616"
   dependencies:
     bn.js "^4.11.7"
     buffer "^5.0.6"
@@ -8396,7 +8412,7 @@ typescript@2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
 
-typescript@^2.4.1, typescript@~2.6.1:
+typescript@~2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.1.tgz#ef39cdea27abac0b500242d6726ab90e0c846631"
 

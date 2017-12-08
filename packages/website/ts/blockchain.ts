@@ -16,6 +16,13 @@ import {
     ZeroEx,
     ZeroExError,
 } from '0x.js';
+import {
+    InjectedWeb3Subprovider,
+    ledgerEthereumBrowserClientFactoryAsync,
+    LedgerSubprovider,
+    LedgerWalletSubprovider,
+    RedundantRPCSubprovider,
+} from '@0xproject/subproviders';
 import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import compareVersions = require('compare-versions');
@@ -25,20 +32,16 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import contract = require('truffle-contract');
 import {TokenSendCompleted} from 'ts/components/flash_messages/token_send_completed';
-import { TransactionSubmitted } from 'ts/components/flash_messages/transaction_submitted';
+import {TransactionSubmitted} from 'ts/components/flash_messages/transaction_submitted';
 import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
 import {tradeHistoryStorage} from 'ts/local_storage/trade_history_storage';
 import {Dispatcher} from 'ts/redux/dispatcher';
-import {InjectedWeb3SubProvider} from 'ts/subproviders/injected_web3_subprovider';
-import {ledgerWalletSubproviderFactory} from 'ts/subproviders/ledger_wallet_subprovider_factory';
-import {RedundantRPCSubprovider} from 'ts/subproviders/redundant_rpc_subprovider';
 import {
     BlockchainCallErrs,
     BlockchainErrs,
     ContractInstance,
     ContractResponse,
     EtherscanLinkSuffixes,
-    LedgerWalletSubprovider,
     ProviderType,
     Side,
     SignatureData,
@@ -71,7 +74,7 @@ export class Blockchain {
     private tokenRegistry: ContractInstance;
     private userAddress: string;
     private cachedProvider: Web3.Provider;
-    private ledgerSubProvider: LedgerWalletSubprovider;
+    private ledgerSubprovider: LedgerWalletSubprovider;
     private zrxPollIntervalId: number;
     private static async onPageLoadAsync() {
         if (document.readyState === 'complete') {
@@ -105,7 +108,7 @@ export class Blockchain {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
             provider = new ProviderEngine();
-            provider.addProvider(new InjectedWeb3SubProvider(injectedWeb3));
+            provider.addProvider(new InjectedWeb3Subprovider(injectedWeb3));
             provider.addProvider(new FilterSubprovider());
             provider.addProvider(new RedundantRPCSubprovider(
                 publicNodeUrlsIfExistsForNetworkId,
@@ -168,23 +171,23 @@ export class Blockchain {
         return !_.isUndefined(tokenIfExists);
     }
     public getLedgerDerivationPathIfExists(): string {
-        if (_.isUndefined(this.ledgerSubProvider)) {
+        if (_.isUndefined(this.ledgerSubprovider)) {
             return undefined;
         }
-        const path = this.ledgerSubProvider.getPath();
+        const path = this.ledgerSubprovider.getPath();
         return path;
     }
     public updateLedgerDerivationPathIfExists(path: string) {
-        if (_.isUndefined(this.ledgerSubProvider)) {
+        if (_.isUndefined(this.ledgerSubprovider)) {
             return; // noop
         }
-        this.ledgerSubProvider.setPath(path);
+        this.ledgerSubprovider.setPath(path);
     }
     public updateLedgerDerivationIndex(pathIndex: number) {
-        if (_.isUndefined(this.ledgerSubProvider)) {
+        if (_.isUndefined(this.ledgerSubprovider)) {
             return; // noop
         }
-        this.ledgerSubProvider.setPathIndex(pathIndex);
+        this.ledgerSubprovider.setPathIndex(pathIndex);
     }
     public async providerTypeUpdatedFireAndForgetAsync(providerType: ProviderType) {
         utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
@@ -204,8 +207,12 @@ export class Blockchain {
                 this.dispatcher.updateUserAddress(''); // Clear old userAddress
 
                 provider = new ProviderEngine();
-                this.ledgerSubProvider = ledgerWalletSubproviderFactory(this.getBlockchainNetworkId.bind(this));
-                provider.addProvider(this.ledgerSubProvider);
+                const ledgerWalletConfigs = {
+                    networkId: this.networkId,
+                    ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
+                };
+                this.ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
+                provider.addProvider(this.ledgerSubprovider);
                 provider.addProvider(new FilterSubprovider());
                 const networkId = configs.isMainnetEnabled ?
                     constants.MAINNET_NETWORK_ID :
@@ -231,7 +238,7 @@ export class Blockchain {
                 this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, this.networkId, shouldPollUserAddress);
                 this.zeroEx.setProvider(provider, this.networkId);
                 await this.postInstantiationOrUpdatingProviderZeroExAsync();
-                delete this.ledgerSubProvider;
+                delete this.ledgerSubprovider;
                 delete this.cachedProvider;
                 break;
             }
@@ -656,11 +663,6 @@ export class Blockchain {
                              Blockchain.getNameGivenProvider(injectedWeb3.currentProvider) :
                              constants.PUBLIC_PROVIDER_NAME;
         this.dispatcher.updateInjectedProviderName(providerName);
-    }
-    // This is only ever called by the LedgerWallet subprovider in order to retrieve
-    // the current networkId without this value going stale.
-    private getBlockchainNetworkId() {
-        return this.networkId;
     }
     private async fetchTokenInformationAsync() {
         utils.assert(!_.isUndefined(this.networkId),

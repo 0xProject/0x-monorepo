@@ -3,7 +3,6 @@ declare module 'react-router-hash-link';
 declare module 'truffle-contract';
 declare module 'ethereumjs-util';
 declare module 'keccak';
-declare module 'web3-provider-engine';
 declare module 'whatwg-fetch';
 declare module 'react-html5video';
 declare module 'web3-provider-engine/subproviders/filters';
@@ -20,6 +19,8 @@ declare module '*.json' {
     export default json;
     /* tslint:enable */
 }
+
+// tslint:disable:max-classes-per-file
 
 // find-version declarations
 declare function findVersions(version: string): string[];
@@ -131,21 +132,26 @@ declare class Subprovider {}
 declare module 'web3-provider-engine/subproviders/subprovider' {
     export = Subprovider;
 }
-
-// tslint:disable-next-line:max-classes-per-file
-declare class RpcSubprovider {
-    constructor(options: {rpcUrl: string});
-    public handleRequest(payload: any, next: any, end: (err?: Error, data?: any) =>  void): void;
-}
 declare module 'web3-provider-engine/subproviders/rpc' {
+    import * as Web3 from 'web3';
+    class RpcSubprovider {
+        constructor(options: {rpcUrl: string});
+        public handleRequest(
+            payload: Web3.JSONRPCRequestPayload, next: () => void, end: (err: Error|null, data?: any) =>  void,
+        ): void;
+    }
     export = RpcSubprovider;
 }
-// tslint:disable-next-line:max-classes-per-file
-declare class HookedWalletSubprovider {
-    constructor(wallet: any);
-}
-declare module 'web3-provider-engine/subproviders/hooked-wallet' {
-    export = HookedWalletSubprovider;
+declare module 'web3-provider-engine' {
+  class Web3ProviderEngine {
+    public on(event: string, handler: () => void): void;
+    public send(payload: any): void;
+    public sendAsync(payload: any, callback: (error: any, response: any) => void): void;
+    public addProvider(provider: any): void;
+    public start(): void;
+    public stop(): void;
+  }
+  export = Web3ProviderEngine;
 }
 
 declare interface Artifact {
