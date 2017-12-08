@@ -27,7 +27,6 @@ export {
     ContractEventArg,
     Web3Provider,
     ZeroExConfig,
-    TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
     MethodOpts,
@@ -42,3 +41,7 @@ export {
     OrderStateInvalid,
     OrderState,
 } from './types';
+
+export {
+    TransactionReceipt,
+} from '@0xproject/types';
