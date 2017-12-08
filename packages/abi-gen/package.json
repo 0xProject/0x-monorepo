@@ -1,5 +1,5 @@
 {
-  "name": "abi-gen",
+  "name": "@0xproject/abi-gen",
   "version": "0.0.1",
   "description": "Generate contract wrappers from ABI and handlebars templates",
   "main": "lib/index.js",
