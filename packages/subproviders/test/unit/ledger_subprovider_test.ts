@@ -134,6 +134,9 @@ describe('LedgerSubprovider', () => {
                 const tx = {
                     to: '0xafa3f8684e54059998bc3a7b0d2b0da075154d66',
                     value: '0x00',
+                    gasPrice: '0x00',
+                    nonce: '0x00',
+                    gas: '0x00',
                 };
                 const payload = {
                     jsonrpc: '2.0',
