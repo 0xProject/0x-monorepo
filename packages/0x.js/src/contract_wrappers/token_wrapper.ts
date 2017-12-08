@@ -34,9 +34,9 @@ export class TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: {[address: string]: TokenContract};
     private _tokenTransferProxyWrapper: TokenTransferProxyWrapper;
-    constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder,
                 tokenTransferProxyWrapper: TokenTransferProxyWrapper) {
-        super(web3Wrapper, abiDecoder);
+        super(web3Wrapper, networkId, abiDecoder);
         this._tokenContractsByAddress = {};
         this._tokenTransferProxyWrapper = tokenTransferProxyWrapper;
     }

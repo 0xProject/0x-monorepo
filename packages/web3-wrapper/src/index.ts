@@ -17,10 +17,9 @@ interface RawLogEntry {
 
 export class Web3Wrapper {
     private web3: Web3;
-    private networkId: number;
     private defaults: Partial<TxData>;
     private jsonRpcRequestId: number;
-    constructor(provider: Web3.Provider, networkId: number, defaults?: Partial<TxData>) {
+    constructor(provider: Web3.Provider, defaults?: Partial<TxData>) {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
@@ -28,7 +27,6 @@ export class Web3Wrapper {
             (provider as any).sendAsync = (provider as any).send;
         }
         this.web3 = new Web3();
-        this.networkId = networkId;
         this.web3.setProvider(provider);
         this.defaults = defaults || {};
         this.jsonRpcRequestId = 0;
@@ -37,7 +35,6 @@ export class Web3Wrapper {
         return this.defaults;
     }
     public setProvider(provider: Web3.Provider, networkId: number) {
-        this.networkId = networkId;
         this.web3.setProvider(provider);
     }
     public isAddress(address: string): boolean {
@@ -51,6 +48,11 @@ export class Web3Wrapper {
         const nodeVersion = await promisify<string>(this.web3.version.getNode)();
         return nodeVersion;
     }
+    public async getNetworkIdAsync(): Promise<number> {
+        const networkIdStr = await promisify<string>(this.web3.version.getNetwork)();
+        const networkId = _.parseInt(networkIdStr);
+        return networkId;
+    }
     public async getTransactionReceiptAsync(txHash: string): Promise<TransactionReceipt> {
         const transactionReceipt = await promisify<TransactionReceipt>(this.web3.eth.getTransactionReceipt)(txHash);
         if (!_.isNull(transactionReceipt)) {
@@ -60,9 +62,6 @@ export class Web3Wrapper {
     }
     public getCurrentProvider(): Web3.Provider {
         return this.web3.currentProvider;
-    }
-    public getNetworkId(): number {
-        return this.networkId;
     }
     public toWei(ethAmount: BigNumber): BigNumber {
         const balanceWei = this.web3.toWei(ethAmount, 'ether');

@@ -27,8 +27,8 @@ export class TokenRegistryWrapper extends ContractWrapper {
         };
         return token;
     }
-    constructor(web3Wrapper: Web3Wrapper, contractAddressIfExists?: string) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, contractAddressIfExists?: string) {
+        super(web3Wrapper, networkId);
         this._contractAddressIfExists = contractAddressIfExists;
     }
     /**

@@ -18,8 +18,9 @@ export class EtherTokenWrapper extends ContractWrapper {
     private _etherTokenContractIfExists?: EtherTokenContract;
     private _tokenWrapper: TokenWrapper;
     private _contractAddressIfExists?: string;
-    constructor(web3Wrapper: Web3Wrapper, tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, tokenWrapper: TokenWrapper,
+                contractAddressIfExists?: string) {
+        super(web3Wrapper, networkId);
         this._tokenWrapper = tokenWrapper;
         this._contractAddressIfExists = contractAddressIfExists;
     }

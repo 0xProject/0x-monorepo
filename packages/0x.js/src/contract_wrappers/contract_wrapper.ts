@@ -32,6 +32,7 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {[contractName: string]: ZeroExError} = 
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
+    private _networkId: number;
     private _abiDecoder?: AbiDecoder;
     private _blockAndLogStreamer: BlockAndLogStreamer|undefined;
     private _blockAndLogStreamInterval: NodeJS.Timer;
@@ -39,8 +40,9 @@ export class ContractWrapper {
     private _filterCallbacks: {[filterToken: string]: EventCallback<ContractEventArgs>};
     private _onLogAddedSubscriptionToken: string|undefined;
     private _onLogRemovedSubscriptionToken: string|undefined;
-    constructor(web3Wrapper: Web3Wrapper, abiDecoder?: AbiDecoder) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder?: AbiDecoder) {
         this._web3Wrapper = web3Wrapper;
+        this._networkId = networkId;
         this._abiDecoder = abiDecoder;
         this._filters = {};
         this._filterCallbacks = {};
@@ -104,11 +106,10 @@ export class ContractWrapper {
     ): Promise<Web3.ContractInstance> {
         let contractAddress: string;
         if (_.isUndefined(addressIfExists)) {
-            const networkId = this._web3Wrapper.getNetworkId();
-            if (_.isUndefined(artifact.networks[networkId])) {
+            if (_.isUndefined(artifact.networks[this._networkId])) {
                 throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
             }
-            contractAddress = artifact.networks[networkId].address.toLowerCase();
+            contractAddress = artifact.networks[this._networkId].address.toLowerCase();
         } else {
             contractAddress = addressIfExists;
         }
@@ -123,8 +124,7 @@ export class ContractWrapper {
     }
     protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
         if (_.isUndefined(addressIfExists)) {
-            const networkId = this._web3Wrapper.getNetworkId();
-            const contractAddress = artifact.networks[networkId].address;
+            const contractAddress = artifact.networks[this._networkId].address;
             if (_.isUndefined(contractAddress)) {
                 throw new Error(ZeroExError.ExchangeContractDoesNotExist);
             }

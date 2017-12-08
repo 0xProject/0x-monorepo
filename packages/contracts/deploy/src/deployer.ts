@@ -31,7 +31,7 @@ export class Deployer {
         const jsonrpcUrl = `http://localhost:${this.jsonrpcPort}`;
         const web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
         this.defaults = opts.defaults;
-        this.web3Wrapper = new Web3Wrapper(web3Provider, this.networkId, this.defaults);
+        this.web3Wrapper = new Web3Wrapper(web3Provider, this.defaults);
     }
     /**
      * Loads contract artifact and deploys contract with given arguments.
