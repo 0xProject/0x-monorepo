@@ -45,6 +45,7 @@
     "node": ">=6.0.0"
   },
   "devDependencies": {
+    "@0xproject/abi-gen": "^0.0.1",
     "@0xproject/tslint-config": "^0.2.0",
     "@0xproject/types": "^0.0.1",
     "@types/bintrees": "^1.0.2",
@@ -54,7 +55,6 @@
     "@types/node": "^8.0.53",
     "@types/sinon": "^2.2.2",
     "@types/uuid": "^3.4.2",
-    "abi-gen": "^0.0.1",
     "abi-gen-templates": "^0.0.1",
     "awesome-typescript-loader": "^3.1.3",
     "chai": "^4.0.1",
