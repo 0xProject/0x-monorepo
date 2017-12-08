@@ -1,3 +1,4 @@
+import {TxData} from '@0xproject/types';
 import * as Web3 from 'web3';
 
 export enum AbiType {
@@ -54,7 +55,7 @@ export interface DeployerOptions {
     artifactsDir: string;
     jsonrpcPort: number;
     networkId: number;
-    defaults: Partial<Web3.TxData>;
+    defaults: Partial<TxData>;
 }
 
 export interface ContractSources {

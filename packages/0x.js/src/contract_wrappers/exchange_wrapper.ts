@@ -1,4 +1,5 @@
 import {schemas} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -36,7 +37,6 @@ import {decorators} from '../utils/decorators';
 import {ExchangeTransferSimulator} from '../utils/exchange_transfer_simulator';
 import {OrderValidationUtils} from '../utils/order_validation_utils';
 import {utils} from '../utils/utils';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
 import {ExchangeContract} from './generated/exchange';
@@ -84,9 +84,9 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder,
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder,
                 tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
-        super(web3Wrapper, abiDecoder);
+        super(web3Wrapper, networkId, abiDecoder);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
         this._contractAddressIfExists = contractAddressIfExists;

@@ -1,9 +1,8 @@
+import {TransactionReceipt, TxData} from '@0xproject/types';
+import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-
-import {Artifact, ArtifactContractName, TransactionReceipt, TxData, ZeroExError} from './types';
-import {promisify} from './utils/promisify';
 
 interface RawLogEntry {
     logIndex: string|null;
@@ -16,21 +15,11 @@ interface RawLogEntry {
     topics: string[];
 }
 
-const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {[contractName: string]: ZeroExError} = {
-    ZRX: ZeroExError.ZRXContractDoesNotExist,
-    EtherToken: ZeroExError.EtherTokenContractDoesNotExist,
-    Token: ZeroExError.TokenContractDoesNotExist,
-    TokenRegistry: ZeroExError.TokenRegistryContractDoesNotExist,
-    TokenTransferProxy: ZeroExError.TokenTransferProxyContractDoesNotExist,
-    Exchange: ZeroExError.ExchangeContractDoesNotExist,
-};
-
 export class Web3Wrapper {
     private web3: Web3;
-    private networkId: number;
     private defaults: Partial<TxData>;
     private jsonRpcRequestId: number;
-    constructor(provider: Web3.Provider, networkId: number, defaults?: Partial<TxData>) {
+    constructor(provider: Web3.Provider, defaults?: Partial<TxData>) {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
@@ -38,7 +27,6 @@ export class Web3Wrapper {
             (provider as any).sendAsync = (provider as any).send;
         }
         this.web3 = new Web3();
-        this.networkId = networkId;
         this.web3.setProvider(provider);
         this.defaults = defaults || {};
         this.jsonRpcRequestId = 0;
@@ -47,7 +35,6 @@ export class Web3Wrapper {
         return this.defaults;
     }
     public setProvider(provider: Web3.Provider, networkId: number) {
-        this.networkId = networkId;
         this.web3.setProvider(provider);
     }
     public isAddress(address: string): boolean {
@@ -61,6 +48,11 @@ export class Web3Wrapper {
         const nodeVersion = await promisify<string>(this.web3.version.getNode)();
         return nodeVersion;
     }
+    public async getNetworkIdAsync(): Promise<number> {
+        const networkIdStr = await promisify<string>(this.web3.version.getNetwork)();
+        const networkId = _.parseInt(networkIdStr);
+        return networkId;
+    }
     public async getTransactionReceiptAsync(txHash: string): Promise<TransactionReceipt> {
         const transactionReceipt = await promisify<TransactionReceipt>(this.web3.eth.getTransactionReceipt)(txHash);
         if (!_.isNull(transactionReceipt)) {
@@ -71,37 +63,13 @@ export class Web3Wrapper {
     public getCurrentProvider(): Web3.Provider {
         return this.web3.currentProvider;
     }
-    public getNetworkId(): number {
-        return this.networkId;
-    }
-    public async getContractInstanceFromArtifactAsync(
-        artifact: Artifact, address?: string,
-    ): Promise<Web3.ContractInstance> {
-        let contractAddress: string;
-        if (_.isUndefined(address)) {
-            const networkId = this.getNetworkId();
-            if (_.isUndefined(artifact.networks[networkId])) {
-                throw new Error(ZeroExError.ContractNotDeployedOnNetwork);
-            }
-            contractAddress = artifact.networks[networkId].address.toLowerCase();
-        } else {
-            contractAddress = address;
-        }
-        const doesContractExist = await this.doesContractExistAtAddressAsync(contractAddress);
-        if (!doesContractExist) {
-            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
-        }
-        const contractInstance = this.getContractInstance(
-            artifact.abi, contractAddress,
-        );
-        return contractInstance;
-    }
     public toWei(ethAmount: BigNumber): BigNumber {
         const balanceWei = this.web3.toWei(ethAmount, 'ether');
         return balanceWei;
     }
     public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
         let balanceInWei = await promisify<BigNumber>(this.web3.eth.getBalance)(owner);
+        // Rewrap in a new BigNumber
         balanceInWei = new BigNumber(balanceInWei);
         return balanceInWei;
     }
@@ -155,13 +123,17 @@ export class Web3Wrapper {
         const formattedLogs = _.map(rawLogs, this.formatLog.bind(this));
         return formattedLogs;
     }
-    private getContractInstance(abi: Web3.ContractAbi, address: string): Web3.ContractInstance {
-        const web3ContractInstance = this.web3.eth.contract(abi).at(address);
+    public getContractFromAbi(abi: Web3.ContractAbi): Web3.Contract<any> {
+        const web3Contract = this.web3.eth.contract(abi);
+        return web3Contract;
+    }
+    public getContractInstance(abi: Web3.ContractAbi, address: string): Web3.ContractInstance {
+        const web3ContractInstance = this.getContractFromAbi(abi).at(address);
         return web3ContractInstance;
     }
-    private async getNetworkAsync(): Promise<number> {
-        const networkId = await promisify<number>(this.web3.version.getNetwork)();
-        return networkId;
+    public async estimateGasAsync(data: string): Promise<number> {
+        const gas = await promisify<number>(this.web3.eth.estimateGas)({data});
+        return gas;
     }
     private async sendRawPayloadAsync<A>(payload: Web3.JSONRPCRequestPayload): Promise<A> {
         const sendAsync = this.web3.currentProvider.sendAsync.bind(this.web3.currentProvider);

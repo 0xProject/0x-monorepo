@@ -1,6 +1,6 @@
 const execAsync = require('async-child-process').execAsync;
 const semverSort = require('semver-sort');
-const promisify = require('es6-promisify');
+import {promisify} from '@0xproject/utils';
 const publishRelease = require('publish-release');
 
 const publishReleaseAsync = promisify(publishRelease);

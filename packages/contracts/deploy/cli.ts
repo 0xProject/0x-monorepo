@@ -1,9 +1,11 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
+import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 import * as path from 'path';
+import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
 import {commands} from './src/commands';
-import {network} from './src/utils/network';
 import {
     CliOptions,
     CompilerOptions,
@@ -36,23 +38,26 @@ async function onCompileCommand(args: CliOptions): Promise<void> {
  * @param argv Instance of process.argv provided by yargs.
  */
 async function onMigrateCommand(argv: CliOptions): Promise<void> {
-    const networkIdIfExists = await network.getNetworkIdIfExistsAsync(argv.jsonrpcPort);
+    const url = `http://localhost:${argv.jsonrpcPort}`;
+    const web3Provider = new Web3.providers.HttpProvider(url);
+    const web3Wrapper = new Web3Wrapper(web3Provider);
+    const networkId = await web3Wrapper.getNetworkIdAsync();
     const compilerOpts: CompilerOptions = {
         contractsDir: argv.contractsDir,
-        networkId: networkIdIfExists,
+        networkId,
         optimizerEnabled: argv.shouldOptimize ? 1 : 0,
         artifactsDir: argv.artifactsDir,
     };
     await commands.compileAsync(compilerOpts);
 
     const defaults = {
-        gasPrice: argv.gasPrice,
+        gasPrice: new BigNumber(argv.gasPrice),
         from: argv.account,
     };
-    const deployerOpts: DeployerOptions = {
+    const deployerOpts = {
         artifactsDir: argv.artifactsDir,
         jsonrpcPort: argv.jsonrpcPort,
-        networkId: networkIdIfExists,
+        networkId,
         defaults,
     };
     await commands.migrateAsync(deployerOpts);
@@ -62,23 +67,26 @@ async function onMigrateCommand(argv: CliOptions): Promise<void> {
  * @param argv Instance of process.argv provided by yargs.
  */
 async function onDeployCommand(argv: CliOptions): Promise<void> {
-    const networkIdIfExists = await network.getNetworkIdIfExistsAsync(argv.jsonrpcPort);
+    const url = `http://localhost:${argv.jsonrpcPort}`;
+    const web3Provider = new Web3.providers.HttpProvider(url);
+    const web3Wrapper = new Web3Wrapper(web3Provider);
+    const networkId = await web3Wrapper.getNetworkIdAsync();
     const compilerOpts: CompilerOptions = {
         contractsDir: argv.contractsDir,
-        networkId: networkIdIfExists,
+        networkId,
         optimizerEnabled: argv.shouldOptimize ? 1 : 0,
         artifactsDir: argv.artifactsDir,
     };
     await commands.compileAsync(compilerOpts);
 
     const defaults = {
-        gasPrice: argv.gasPrice,
+        gasPrice: new BigNumber(argv.gasPrice),
         from: argv.account,
     };
     const deployerOpts: DeployerOptions = {
         artifactsDir: argv.artifactsDir,
         jsonrpcPort: argv.jsonrpcPort,
-        networkId: networkIdIfExists,
+        networkId,
         defaults,
     };
     const deployerArgsString = argv.args;

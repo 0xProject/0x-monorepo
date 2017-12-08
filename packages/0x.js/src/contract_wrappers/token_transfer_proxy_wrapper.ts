@@ -1,8 +1,8 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
 import {ZeroExError} from '../types';
-import {Web3Wrapper} from '../web3_wrapper';
 
 import {ContractWrapper} from './contract_wrapper';
 import {TokenTransferProxyContract} from './generated/token_transfer_proxy';
@@ -13,8 +13,8 @@ import {TokenTransferProxyContract} from './generated/token_transfer_proxy';
 export class TokenTransferProxyWrapper extends ContractWrapper {
     private _tokenTransferProxyContractIfExists?: TokenTransferProxyContract;
     private _contractAddressIfExists?: string;
-    constructor(web3Wrapper: Web3Wrapper, contractAddressIfExists?: string) {
-        super(web3Wrapper);
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, contractAddressIfExists?: string) {
+        super(web3Wrapper, networkId);
         this._contractAddressIfExists = contractAddressIfExists;
     }
     /**

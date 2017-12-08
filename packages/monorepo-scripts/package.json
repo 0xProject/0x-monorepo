@@ -1,6 +1,6 @@
 {
   "name": "@0xproject/monorepo-scripts",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Helper scripts for the monorepo",
   "scripts": {

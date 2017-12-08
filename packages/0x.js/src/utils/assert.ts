@@ -1,12 +1,12 @@
 import {assert as sharedAssert} from '@0xproject/assert';
 import {Schema, SchemaValidator} from '@0xproject/json-schemas';
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import {ECSignature} from '../types';
 import {signatureUtils} from '../utils/signature_utils';
-import {Web3Wrapper} from '../web3_wrapper';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 

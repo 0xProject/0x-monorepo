@@ -5,7 +5,7 @@
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
   "scripts": {
-    "lint": "tslint --project . src/*.ts test/*.ts",
+    "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
     "test": "run-s clean build run_mocha",
     "test:circleci": "yarn test",
     "run_mocha": "mocha lib/test/**/*_test.js",
@@ -23,12 +23,12 @@
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/json-schemas/README.md",
   "dependencies": {
-    "es6-promisify": "^5.0.0",
     "jsonschema": "^1.2.0",
     "lodash.values": "^4.3.0"
   },
   "devDependencies": {
     "@0xproject/tslint-config": "^0.2.0",
+    "@0xproject/utils": "^0.0.1",
     "@types/lodash.foreach": "^4.5.3",
     "@types/lodash.values": "^4.3.3",
     "@types/mocha": "^2.2.42",

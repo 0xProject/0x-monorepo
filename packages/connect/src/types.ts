@@ -63,7 +63,7 @@ export interface OrderbookChannelHandler {
                order: SignedOrder) => void;
     onError: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts,
               err: Error) => void;
-    onClose: (channel: OrderbookChannel) => void;
+    onClose: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
 }
 
 export type OrderbookChannelMessage =
@@ -128,8 +128,6 @@ export interface OrdersRequest {
     tokenAddress?: string;
     makerTokenAddress?: string;
     takerTokenAddress?: string;
-    tokenA?: string;
-    tokenB?: string;
     maker?: string;
     taker?: string;
     trader?: string;
