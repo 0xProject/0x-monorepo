@@ -1,7 +1,7 @@
 {
   "name": "abi-gen-templates",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Handlebars templates to generate TS contract wrappers",
   "repository": {
     "type": "git",
