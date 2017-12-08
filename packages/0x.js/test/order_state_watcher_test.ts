@@ -1,3 +1,4 @@
+import {BlockchainLifecycle} from '@0xproject/dev-utils';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
@@ -21,7 +22,6 @@ import {
 import {OrderStateWatcher} from '../src/order_watcher/order_state_watcher';
 import {DoneCallback} from '../src/types';
 
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
 import {FillScenarios} from './utils/fill_scenarios';
@@ -33,7 +33,7 @@ const TIMEOUT_MS = 150;
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('OrderStateWatcher', () => {
     let web3: Web3;

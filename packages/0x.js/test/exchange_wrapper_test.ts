@@ -1,3 +1,4 @@
+import {BlockchainLifecycle} from '@0xproject/dev-utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import 'mocha';
@@ -19,7 +20,6 @@ import {
 } from '../src';
 import {BlockParamLiteral, DoneCallback} from '../src/types';
 
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
 import {FillScenarios} from './utils/fill_scenarios';
@@ -28,7 +28,7 @@ import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 const NON_EXISTENT_ORDER_HASH = '0x79370342234e7acd6bbeac335bd3bb1d368383294b64b8160a00f4060e4d3777';
 

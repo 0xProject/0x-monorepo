@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/contracts/README.md",
   "devDependencies": {
+    "@0xproject/dev-utils": "^0.0.1",
     "@0xproject/tslint-config": "^0.2.1",
     "@0xproject/types": "^0.1.0",
     "@types/bluebird": "^3.5.3",
