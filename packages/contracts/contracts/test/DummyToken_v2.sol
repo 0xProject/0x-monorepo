@@ -8,7 +8,7 @@ contract DummyToken_v2 is Mintable_v2, Ownable_v2 {
     string public symbol;
     uint public decimals;
 
-    function DummyToken(
+    function DummyToken_v2(
         string _name,
         string _symbol,
         uint _decimals,

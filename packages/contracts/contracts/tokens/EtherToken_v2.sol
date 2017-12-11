@@ -18,10 +18,10 @@
 
 pragma solidity 0.4.18;
 
-import "./ERC20Token.sol";
+import "./UnlimitedAllowanceToken_v2.sol";
 import "./../lib/SafeMath_v2.sol";
 
-contract EtherToken_v2 is ERC20Token, SafeMath_v2 {
+contract EtherToken_v2 is UnlimitedAllowanceToken_v2, SafeMath_v2 {
 
     string constant public name = "Ether Token";
     string constant public symbol = "WETH";
@@ -46,7 +46,7 @@ contract EtherToken_v2 is ERC20Token, SafeMath_v2 {
     }
 
     /// @dev Sells tokens in exchange for Ether, exchanging them 1:1.
-    /// @param amount Number of tokens to sell.
+    /// @param _value Number of tokens to sell.
     function withdraw(uint _value)
         public
     {

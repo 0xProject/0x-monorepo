@@ -14,7 +14,7 @@ const web3: Web3 = (global as any).web3;
 chaiSetup.configure();
 const expect = chai.expect;
 
-contract('ERC20Token', (accounts: string[]) => {
+contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
