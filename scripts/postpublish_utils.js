@@ -1,7 +1,7 @@
 const execAsync = require('async-child-process').execAsync;
 const semverSort = require('semver-sort');
-import {promisify} from '@0xproject/utils';
 const publishRelease = require('publish-release');
+const promisify = require('@0xproject/utils').promisify;
 
 const publishReleaseAsync = promisify(publishRelease);
 const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS;
@@ -37,7 +37,7 @@ module.exports = {
             repo: '0x.js',
             tag: tag,
             name: releaseName,
-            notes: 'TODO',
+            notes: 'N/A',
             draft: false,
             prerelease: false,
             reuseRelease: true,
