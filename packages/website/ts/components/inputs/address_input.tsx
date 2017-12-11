@@ -1,4 +1,4 @@
-import {isAddress} from 'ethereum-address';
+import {addressUtils} from '@0xproject/utils';
 import * as _ from 'lodash';
 import {colors} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';

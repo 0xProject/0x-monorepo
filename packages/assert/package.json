@@ -22,6 +22,9 @@
     "url": "https://github.com/0xProject/0x.js/issues"
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/assert/README.md",
+  "dependencies": {
+    "@0xProject/utils": "^0.0.1"
+  },
   "devDependencies": {
     "@0xproject/tslint-config": "^0.2.1",
     "@types/lodash": "^4.14.86",

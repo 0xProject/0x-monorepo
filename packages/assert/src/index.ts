@@ -2,11 +2,10 @@ import {
     Schema,
     SchemaValidator,
 } from '@0xproject/json-schemas';
+import {addressUtils} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
-
-import {addressUtils} from './address_utils';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
