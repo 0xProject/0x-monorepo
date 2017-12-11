@@ -19,7 +19,7 @@
 pragma solidity 0.4.18;
 
 import "./UnlimitedAllowanceToken_v2.sol";
-import "./../lib/SafeMath_v2.sol";
+import "./../utils/SafeMath_v2.sol";
 
 contract EtherToken_v2 is UnlimitedAllowanceToken_v2, SafeMath_v2 {
 

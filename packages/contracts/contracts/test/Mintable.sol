@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 import "./../tokens/UnlimitedAllowanceToken.sol";
-import "./../lib/SafeMath.sol";
+import "./../utils/SafeMath.sol";
 
 /*
  * Mintable

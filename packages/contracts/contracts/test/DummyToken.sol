@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 import "./Mintable.sol";
-import "./../lib/Ownable.sol";
+import "./../utils/Ownable.sol";
 
 contract DummyToken is Mintable, Ownable {
     string public name;
