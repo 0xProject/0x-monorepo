@@ -18,7 +18,7 @@
   "author": "Fabio Berger",
   "license": "Apache-2.0",
   "dependencies": {
-    "0x.js": "0xproject/0x.js/packages/0x.js#0x.js@0.27.1",
+    "0x.js": "0.27.1",
     "@0xproject/subproviders": "^0.1.0",
     "accounting": "^0.4.1",
     "basscss": "^8.0.3",
@@ -28,7 +28,6 @@
     "dateformat": "^2.0.0",
     "deep-equal": "^1.0.1",
     "dharma-loan-frame": "^0.0.12",
-    "ethereum-address": "^0.0.4",
     "ethereumjs-tx": "^1.3.3",
     "ethereumjs-util": "^5.1.1",
     "find-versions": "^2.0.0",

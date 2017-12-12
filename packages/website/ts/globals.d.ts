@@ -55,11 +55,6 @@ interface System {
 }
 declare var System: System;
 
-// ethereum-address declarations
-declare module 'ethereum-address' {
-    export const isAddress: (address: string) => boolean;
-}
-
 // jsonschema declarations
 // Source: https://github.com/tdegrunt/jsonschema/blob/master/lib/index.d.ts
 declare interface Schema {

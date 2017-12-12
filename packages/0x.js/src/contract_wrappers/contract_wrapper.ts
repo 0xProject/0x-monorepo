@@ -34,7 +34,7 @@ export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     private _networkId: number;
     private _abiDecoder?: AbiDecoder;
-    private _blockAndLogStreamer: BlockAndLogStreamer|undefined;
+    private _blockAndLogStreamerIfExists: BlockAndLogStreamer|undefined;
     private _blockAndLogStreamInterval: NodeJS.Timer;
     private _filters: {[filterToken: string]: Web3.FilterObject};
     private _filterCallbacks: {[filterToken: string]: EventCallback<ContractEventArgs>};
@@ -46,7 +46,7 @@ export class ContractWrapper {
         this._abiDecoder = abiDecoder;
         this._filters = {};
         this._filterCallbacks = {};
-        this._blockAndLogStreamer = undefined;
+        this._blockAndLogStreamerIfExists = undefined;
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
@@ -77,7 +77,7 @@ export class ContractWrapper {
         address: string, eventName: ContractEvents, indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
         callback: EventCallback<ArgsType>): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
-        if (_.isUndefined(this._blockAndLogStreamer)) {
+        if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
             this._startBlockAndLogStream();
         }
         const filterToken = filterUtils.generateUUID();
@@ -146,39 +146,43 @@ export class ContractWrapper {
         });
     }
     private _startBlockAndLogStream(): void {
-        this._blockAndLogStreamer = new BlockAndLogStreamer(
+        if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
+            throw new Error(ZeroExError.SubscriptionAlreadyPresent);
+        }
+        this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
             this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
         );
         const catchAllLogFilter = {};
-        this._blockAndLogStreamer.addLogFilter(catchAllLogFilter);
+        this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
         this._blockAndLogStreamInterval = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this), constants.DEFAULT_BLOCK_POLLING_INTERVAL,
         );
         let isRemoved = false;
-        this._onLogAddedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogAdded(
+        this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
             this._onLogStateChanged.bind(this, isRemoved),
         );
         isRemoved = true;
-        this._onLogRemovedSubscriptionToken = this._blockAndLogStreamer.subscribeToOnLogRemoved(
+        this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
             this._onLogStateChanged.bind(this, isRemoved),
         );
     }
     private _stopBlockAndLogStream(): void {
-        (this._blockAndLogStreamer as BlockAndLogStreamer).unsubscribeFromOnLogAdded(
-            this._onLogAddedSubscriptionToken as string);
-        (this._blockAndLogStreamer as BlockAndLogStreamer).unsubscribeFromOnLogRemoved(
-            this._onLogRemovedSubscriptionToken as string);
+        if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
+            throw new Error(ZeroExError.SubscriptionNotFound);
+        }
+        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
+        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
         intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamInterval);
-        delete this._blockAndLogStreamer;
+        delete this._blockAndLogStreamerIfExists;
     }
     private async _reconcileBlockAsync(): Promise<void> {
         try {
             const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
             // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
-            if (!_.isUndefined(this._blockAndLogStreamer)) {
+            if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
                 // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-                await this._blockAndLogStreamer.reconcileNewBlock(latestBlock as any as Block);
+                await this._blockAndLogStreamerIfExists.reconcileNewBlock(latestBlock as any as Block);
             }
         } catch (err) {
             const filterTokens = _.keys(this._filterCallbacks);

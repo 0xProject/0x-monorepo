@@ -1,6 +1,6 @@
 import {assert} from '@0xproject/assert';
+import {addressUtils} from '@0xproject/utils';
 import promisify = require('es6-promisify');
-import {isAddress} from 'ethereum-address';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import * as ledger from 'ledgerco';
@@ -47,7 +47,7 @@ export class LedgerSubprovider extends Subprovider {
         return isValid;
     }
     private static validateSender(sender: string) {
-        if (_.isUndefined(sender) || !isAddress(sender)) {
+        if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
             throw new Error(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
         }
     }

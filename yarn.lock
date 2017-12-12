@@ -9,26 +9,6 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
-"0x.js@0xproject/0x.js/packages/0x.js#0x.js@0.27.1":
-  version "0.27.1"
-  resolved "https://registry.yarnpkg.com/0x.js/-/0x.js-0.27.1.tgz#e0dff70e257efbb7f54dddb55dddf2dce0b971ab"
-  dependencies:
-    "@0xproject/assert" "^0.0.6"
-    "@0xproject/json-schemas" "^0.6.9"
-    bignumber.js "~4.1.0"
-    bintrees "^1.0.2"
-    bn.js "4.11.8"
-    compare-versions "^3.0.1"
-    es6-promisify "^5.0.0"
-    ethereumjs-abi "^0.6.4"
-    ethereumjs-blockstream "^2.0.6"
-    ethereumjs-util "^5.1.1"
-    find-versions "^2.0.0"
-    js-sha3 "^0.6.1"
-    lodash "^4.17.4"
-    uuid "^3.1.0"
-    web3 "^0.20.0"
-
 "0x.js@^0.22.6":
   version "0.22.6"
   resolved "https://registry.yarnpkg.com/0x.js/-/0x.js-0.22.6.tgz#bc3ff79b6d71f8cf7fae3c78b2c776cfa79c193a"
@@ -46,6 +26,16 @@
     publish-release "^1.3.3"
     uuid "^3.1.0"
     web3 "^0.20.0"
+
+"@0xproject/assert@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@0xproject/assert/-/assert-0.0.6.tgz#773616620314f40ace11a9c4c65cc95398d2c178"
+  dependencies:
+    "@0xproject/json-schemas" "^0.6.9"
+    bignumber.js "~4.1.0"
+    ethereum-address "^0.0.4"
+    lodash "^4.17.4"
+    valid-url "^1.0.9"
 
 "@types/accounting@^0.4.1":
   version "0.4.1"
@@ -1355,7 +1345,7 @@ bn.js@4.11.7:
   version "4.11.7"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.7.tgz#ddb048e50d9482790094c13eb3fcfc833ce7ab46"
 
-bn.js@4.11.8, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.10.0, bn.js@^4.11.3, bn.js@^4.11.6, bn.js@^4.11.7, bn.js@^4.11.8, bn.js@^4.4.0, bn.js@^4.8.0:
+bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.10.0, bn.js@^4.11.3, bn.js@^4.11.6, bn.js@^4.11.7, bn.js@^4.11.8, bn.js@^4.4.0, bn.js@^4.8.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
 
@@ -4537,6 +4527,10 @@ js-sha3@^0.3.1:
 js-sha3@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.6.1.tgz#5b89f77a7477679877f58c4a075240934b1f95c0"
+
+js-sha3@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"

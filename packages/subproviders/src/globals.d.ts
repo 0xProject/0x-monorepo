@@ -54,11 +54,6 @@ declare module 'ledgerco' {
     }
 }
 
-// ethereum-address declarations
-declare module 'ethereum-address' {
-    export const isAddress: (address: string) => boolean;
-}
-
 // Semaphore-async-await declarations
 declare module 'semaphore-async-await' {
     class Semaphore {
