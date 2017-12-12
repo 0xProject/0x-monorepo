@@ -25,6 +25,7 @@ contract EtherToken_v2 is UnlimitedAllowanceToken_v2, SafeMath_v2 {
 
     string constant public name = "Ether Token";
     string constant public symbol = "WETH";
+    string constant public version = "2.0.0"; // version 1.0.0 deployed on mainnet at 0x2956356cd2a2bf3202f771f50d3d14a367b48070
     uint8 constant public decimals = 18;
 
     /// @dev Fallback to calling deposit when ether is sent directly to contract.
