@@ -1,4 +1,4 @@
-import {isAddress} from 'ethereum-address';
+import {addressUtils} from '@0xproject/utils';
 import * as _ from 'lodash';
 import {colors} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
@@ -62,7 +62,7 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
     }
     private onOrderTakerAddressUpdated(e: any) {
         const address = e.target.value.toLowerCase();
-        const isValidAddress = isAddress(address) || address === '';
+        const isValidAddress = addressUtils.isAddress(address) || address === '';
         const errMsg = isValidAddress ? '' : 'Invalid ethereum address';
         this.setState({
             address,

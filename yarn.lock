@@ -27,6 +27,16 @@
     uuid "^3.1.0"
     web3 "^0.20.0"
 
+"@0xproject/assert@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@0xproject/assert/-/assert-0.0.6.tgz#773616620314f40ace11a9c4c65cc95398d2c178"
+  dependencies:
+    "@0xproject/json-schemas" "^0.6.9"
+    bignumber.js "~4.1.0"
+    ethereum-address "^0.0.4"
+    lodash "^4.17.4"
+    valid-url "^1.0.9"
+
 "@types/accounting@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@types/accounting/-/accounting-0.4.1.tgz#865d9f5694fd7c438fba34eb4bc82eec6f34cdd5"
@@ -4517,6 +4527,10 @@ js-sha3@^0.3.1:
 js-sha3@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.6.1.tgz#5b89f77a7477679877f58c4a075240934b1f95c0"
+
+js-sha3@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
