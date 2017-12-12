@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "bignumber.js": "~4.1.0",
+    "js-sha3": "^0.7.0",
     "lodash": "^4.17.4"
   }
 }
