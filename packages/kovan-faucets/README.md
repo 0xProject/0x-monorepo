@@ -25,8 +25,6 @@ export FAUCET_ROLLBAR_ACCESS_KEY={GET_THIS_FROM_ROLLBAR_ACCOUNT_SETTINGS}
 
 Note: The above public/private keys exist when running `testrpc` with the following option `--mnemonic concert load couple harbor equip island argue ramp clarify fence smart topic`.
 
-The real production key with kovan ETH exist in 1password
-
 ```
 npm run dev
 ```

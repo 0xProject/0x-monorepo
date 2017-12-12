@@ -1,5 +1,6 @@
-import {configs} from './configs';
 import * as EthereumTx from 'ethereumjs-tx';
+
+import {configs} from './configs';
 
 type Callback = (err: Error, accounts: any) => void;
 

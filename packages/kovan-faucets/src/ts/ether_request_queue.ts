@@ -1,9 +1,10 @@
-import * as _ from 'lodash';
 import promisify = require('es6-promisify');
-import {utils} from './utils';
+import * as _ from 'lodash';
+
 import {configs} from './configs';
-import {RequestQueue} from './request_queue';
 import {errorReporter} from './error_reporter';
+import {RequestQueue} from './request_queue';
+import {utils} from './utils';
 
 const DISPENSE_AMOUNT_ETHER = 0.1;
 

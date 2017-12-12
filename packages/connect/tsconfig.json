@@ -7,8 +7,7 @@
       "sourceMap": true,
       "declaration": true,
       "noImplicitAny": true,
-      "strictNullChecks": true,
-      "types": [ "fetch-mock", "lodash", "mocha", "query-string", "websocket" ]
+      "strictNullChecks": true
     },
     "include": [
       "./src/**/*",

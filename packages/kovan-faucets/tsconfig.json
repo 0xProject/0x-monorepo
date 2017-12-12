@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "outDir": "./transpiled/",
-    "sourceMap": true,
-    "noImplicitAny": true,
     "module": "commonjs",
     "target": "es5",
-    "baseUrl": "./src/",
-    "types": [ "body-parser", "es6-promise", "express", "lodash" ]
+    "lib": [ "es2015", "dom" ],
+    "outDir": "lib",
+    "sourceMap": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
   },
   "include": [
     "../../node_modules/web3-typescript-typings/index.d.ts",

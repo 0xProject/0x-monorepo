@@ -41,12 +41,15 @@ export class RequestQueue {
                 return;
             }
             const recipientAddress = this.queue.shift();
+                // tslint:disable-next-line:no-floating-promises
             this.processNextRequestFireAndForgetAsync(recipientAddress);
+
         }, this.queueIntervalMs);
     }
     protected stop() {
         clearInterval(this.queueIntervalId);
     }
+    // tslint:disable-next-line:prefer-function-over-method
     protected async processNextRequestFireAndForgetAsync(recipientAddress: string) {
         throw new Error('Expected processNextRequestFireAndForgetAsync to be implemented by a superclass');
     }

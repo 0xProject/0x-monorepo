@@ -1,15 +1,17 @@
-import * as _ from 'lodash';
 import * as express from 'express';
-import {EtherRequestQueue} from './ether_request_queue';
-import {ZRXRequestQueue} from './zrx_request_queue';
-import {configs} from './configs';
-import {utils} from './utils';
-import ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
-import NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
-import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
-import {idManagement} from './id_management';
+import * as _ from 'lodash';
 import * as Web3 from 'web3';
+import ProviderEngine = require('web3-provider-engine');
+import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
+import NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
+import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
+
+import {configs} from './configs';
+import {EtherRequestQueue} from './ether_request_queue';
+import {idManagement} from './id_management';
+import {utils} from './utils';
+import {ZRXRequestQueue} from './zrx_request_queue';
+
 // HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
 // because they are using the wrong XHR package.
 // Issue: https://github.com/trufflesuite/truffle-contract/issues/14
@@ -71,6 +73,7 @@ export class Handler {
         });
         res.status(200).send(payload);
     }
+    // tslint:disable-next-line:prefer-function-over-method
     private createProviderEngine(rpcUrl: string) {
         const engine = new ProviderEngine();
         engine.addProvider(new NonceSubprovider());

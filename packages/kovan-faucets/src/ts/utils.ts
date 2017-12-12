@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
 import * as express from 'express';
+import * as _ from 'lodash';
 
 export const utils = {
     consoleLog(message: string) {

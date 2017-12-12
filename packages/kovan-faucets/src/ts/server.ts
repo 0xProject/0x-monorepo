@@ -1,7 +1,8 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
-import {Handler} from './handler';
+
 import {errorReporter} from './error_reporter';
+import {Handler} from './handler';
 
 // Setup the errorReporter to catch uncaught exceptions and unhandled rejections
 errorReporter.setup();

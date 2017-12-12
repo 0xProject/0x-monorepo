@@ -3,19 +3,11 @@ const nodemon = require('nodemon');
 const path = require('path');
 const webpack = require('webpack');
 const fs = require('fs');
-
-const nodeModules = {};
-fs.readdirSync('node_modules')
-  .filter(function(x) {
-    return ['.bin'].indexOf(x) === -1;
-  })
-  .forEach(function(mod) {
-    nodeModules[mod] = 'commonjs ' + mod;
-  });
+const nodeExternals = require('webpack-node-externals');
 
 const config = {
     target: 'node',
-    entry: ['./src/ts/server.ts'],
+    entry: [path.join(__dirname, '/src/ts/server.ts')],
     output: {
         path: path.join(__dirname, '/bin'),
         filename: 'server.js',
@@ -51,7 +43,9 @@ const config = {
             entryOnly: false,
         }),
     ],
-    externals: nodeModules,
+    externals: nodeExternals({
+        modulesDir: path.join(__dirname, '../../node_modules')
+    }),
     watchOptions: {
         ignored: /bin|node_modules|transpiled/
     },

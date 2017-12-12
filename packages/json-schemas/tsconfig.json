@@ -7,8 +7,7 @@
     "sourceMap": true,
     "declaration": true,
     "noImplicitAny": true,
-    "strictNullChecks": true,
-    "types": [ "lodash.foreach", "lodash.values", "mocha"]
+    "strictNullChecks": true
   },
   "include": [
     "./src/**/*",

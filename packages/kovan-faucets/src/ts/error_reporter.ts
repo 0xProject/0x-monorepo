@@ -1,8 +1,9 @@
-import * as fs from 'fs';
 import * as express from 'express';
-import {utils} from './utils';
-import {configs} from './configs';
+import * as fs from 'fs';
 import rollbar = require('rollbar');
+
+import {configs} from './configs';
+import {utils} from './utils';
 
 export const errorReporter = {
     setup() {
@@ -18,7 +19,7 @@ export const errorReporter = {
             process.exit(1);
         });
     },
-    reportAsync(err: Error, req?: express.Request): Promise<any> {
+    async reportAsync(err: Error, req?: express.Request): Promise<any> {
         if (configs.ENVIRONMENT === 'development') {
             return; // Do not log development environment errors
         }
