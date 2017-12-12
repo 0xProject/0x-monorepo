@@ -104,7 +104,8 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;
             expect(ethTokensToWithdraw).to.not.be.bignumber.equal(0);
-            const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account);
+            const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account,
+                                                                 {gasLimit: constants.MAX_ETHERTOKEN_WITHDRAW_GAS});
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
@@ -121,7 +122,8 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;
             expect(ethTokensToWithdraw).to.not.be.bignumber.equal(0);
-            const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account);
+            const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account,
+                                                                 {gasLimit: constants.MAX_ETHERTOKEN_WITHDRAW_GAS});
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const logs = receipt.logs;
