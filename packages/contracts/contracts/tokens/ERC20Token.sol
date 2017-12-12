@@ -56,3 +56,4 @@ contract ERC20Token is Token_v2 {
     mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
+

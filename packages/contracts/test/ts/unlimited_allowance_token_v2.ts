@@ -92,8 +92,9 @@ contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer,
-                                                 {gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS});
+            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+            });
 
             const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
             expect(initSpenderAllowance).to.be.bignumber.equal(newSpenderAllowance);
@@ -104,8 +105,9 @@ contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer,
-                                                 {gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS});
+            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+            });
 
             const newOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const newSpenderBalance = await zeroEx.token.getBalanceAsync(tokenAddress, spender);
@@ -119,8 +121,9 @@ contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer,
-                                                 {gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS});
+            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+            });
 
             const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
             expect(newSpenderAllowance).to.be.bignumber.equal(0);
