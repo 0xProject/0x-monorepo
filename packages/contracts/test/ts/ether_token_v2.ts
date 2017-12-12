@@ -1,7 +1,7 @@
 import {ZeroEx, ZeroExError} from '0x.js';
+import {promisify} from '@0xproject/utils';
 import {BigNumber} from 'bignumber.js';
 import * as chai from 'chai';
-import promisify = require('es6-promisify');
 import Web3 = require('web3');
 
 import {Artifacts} from '../../util/artifacts';
@@ -33,9 +33,9 @@ contract('EtherTokenV2', (accounts: string[]) => {
         });
     });
 
-    const sendTransactionAsync = promisify(web3.eth.sendTransaction);
+    const sendTransactionAsync = promisify<string>(web3.eth.sendTransaction);
     const getEthBalanceAsync = async (owner: string) => {
-        const balanceStr = await promisify(web3.eth.getBalance)(owner);
+        const balanceStr = await promisify<string>(web3.eth.getBalance)(owner);
         const balance = new BigNumber(balanceStr);
         return balance;
     };
