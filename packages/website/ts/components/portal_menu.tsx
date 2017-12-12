@@ -50,6 +50,14 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                 >
                     {this.renderMenuItemWithIcon('Trade history', 'zmdi-format-list-bulleted')}
                 </MenuItem>
+                <MenuItem
+                    style={this.props.menuItemStyle}
+                    className="py2"
+                    to={`${WebsitePaths.Portal}/weth`}
+                    onClick={this.props.onClick.bind(this)}
+                >
+                    {this.renderMenuItemWithIcon('ETH wrapper', 'zmdi-circle-o')}
+                </MenuItem>
             </div>
         );
     }

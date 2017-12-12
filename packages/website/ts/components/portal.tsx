@@ -9,6 +9,7 @@ import {Route, Switch} from 'react-router-dom';
 import {Blockchain} from 'ts/blockchain';
 import {BlockchainErrDialog} from 'ts/components/dialogs/blockchain_err_dialog';
 import {PortalDisclaimerDialog} from 'ts/components/dialogs/portal_disclaimer_dialog';
+import {EthWrappers} from 'ts/components/eth_wrappers';
 import {FillOrder} from 'ts/components/fill_order';
 import {Footer} from 'ts/components/footer';
 import {PortalMenu} from 'ts/components/portal_menu';
@@ -206,6 +207,10 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                                         {this.props.blockchainIsLoaded ?
                                             <Switch>
                                                 <Route
+                                                    path={`${WebsitePaths.Portal}/weth`}
+                                                    render={this.renderEthWrapper.bind(this)}
+                                                />
+                                                <Route
                                                     path={`${WebsitePaths.Portal}/fill`}
                                                     render={this.renderFillOrder.bind(this)}
                                                 />
@@ -248,6 +253,19 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 </div>
                 <Footer location={this.props.location} />
             </div>
+        );
+    }
+    private renderEthWrapper() {
+        return (
+            <EthWrappers
+                networkId={this.props.networkId}
+                blockchain={this.blockchain}
+                dispatcher={this.props.dispatcher}
+                tokenByAddress={this.props.tokenByAddress}
+                tokenStateByAddress={this.props.tokenStateByAddress}
+                userAddress={this.props.userAddress}
+                userEtherBalance={this.props.userEtherBalance}
+            />
         );
     }
     private renderTradeHistory() {

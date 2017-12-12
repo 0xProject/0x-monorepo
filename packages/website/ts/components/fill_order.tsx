@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import * as moment from 'moment';

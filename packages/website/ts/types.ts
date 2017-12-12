@@ -683,4 +683,14 @@ export interface DocsInfoConfig {
   menuSubsectionToVersionWhenIntroduced?: {[sectionName: string]: string};
 }
 
+export interface TimestampMsRange {
+    startTimestampMs: number;
+    endTimestampMs: number;
+}
+
+export interface OutdatedWrappedEther {
+    address: string;
+    timestampMsRangeByNetworkId: {[networkId: number]: TimestampMsRange};
+}
+
 // tslint:disable:max-file-line-count

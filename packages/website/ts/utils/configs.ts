@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {Environments} from 'ts/types';
+import {Environments, OutdatedWrappedEther} from 'ts/types';
 
 const BASE_URL = window.location.origin;
 const isDevelopment = _.includes(BASE_URL, 'https://0xproject.dev:3572') ||
@@ -15,4 +15,15 @@ export const configs = {
     defaultTrackedTokenSymbols: ['WETH', 'ZRX'],
     lastLocalStorageFillClearanceDate: '2017-11-22',
     isMainnetEnabled: true,
+    outdatedWrappedEthers: [
+        {
+            address: '0x05d090b51c40b020eab3bfcb6a2dff130df22e9c',
+            timestampMsRangeByNetworkId: {
+                42: {
+                    startTimestampMs: 1501614680000,
+                    endTimestampMs: 1513106129000,
+                },
+            },
+        } as OutdatedWrappedEther,
+    ],
 };
