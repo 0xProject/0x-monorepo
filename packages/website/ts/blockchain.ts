@@ -468,8 +468,7 @@ export class Blockchain {
     public destroy() {
         clearInterval(this.zrxPollIntervalId);
         this.web3Wrapper.destroy();
-        // tslint:disable-next-line:no-floating-promises
-        this.stopWatchingExchangeLogFillEventsAsync(); // fire and forget
+        this.stopWatchingExchangeLogFillEvents();
     }
     private async showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
@@ -485,7 +484,7 @@ export class Blockchain {
     }
     private async rehydrateStoreWithContractEvents() {
         // Ensure we are only ever listening to one set of events
-        await this.stopWatchingExchangeLogFillEventsAsync();
+        this.stopWatchingExchangeLogFillEvents();
 
         if (!this.doesUserAddressExist()) {
             return; // short-circuit
@@ -517,8 +516,6 @@ export class Blockchain {
                 // to rollbar and stop watching when one occurs
                 // tslint:disable-next-line:no-floating-promises
                 errorReporter.reportAsync(err); // fire and forget
-                // tslint:disable-next-line:no-floating-promises
-                this.stopWatchingExchangeLogFillEventsAsync(); // fire and forget
                 return;
             } else {
                 const decodedLog = decodedLogEvent.log;
@@ -593,7 +590,7 @@ export class Blockchain {
             tradeHistoryStorage.setFillsLatestBlock(this.userAddress, this.networkId, blockNumberToSet);
         }
     }
-    private async stopWatchingExchangeLogFillEventsAsync() {
+    private stopWatchingExchangeLogFillEvents(): void {
         this.zeroEx.exchange.unsubscribeAll();
     }
     private async getTokenRegistryTokensByAddressAsync(): Promise<TokenByAddress> {
