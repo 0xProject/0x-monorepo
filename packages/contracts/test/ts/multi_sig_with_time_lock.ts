@@ -44,7 +44,7 @@ contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
     describe('changeTimeLock', () => {
         it('should throw when not called by wallet', async () => {
             return expect(multiSig.changeTimeLock(SECONDS_TIME_LOCKED, {from: owners[0]}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw without enough confirmations', async () => {
@@ -58,7 +58,7 @@ contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
             const subRes = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
 
             txId = subRes.logs[0].args.transactionId.toNumber();
-            return expect(multiSig.executeTransaction(txId)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(multiSig.executeTransaction(txId)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should set confirmation time with enough confirmations', async () => {
@@ -97,7 +97,7 @@ contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
             const confRes = await multiSig.confirmTransaction(txId, {from: owners[1]});
             expect(confRes.logs).to.have.length(2);
 
-            return expect(multiSig.executeTransaction(txId)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(multiSig.executeTransaction(txId)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should execute if it has enough confirmations and is past the time lock', async () => {

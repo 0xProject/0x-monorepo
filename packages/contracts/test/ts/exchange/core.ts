@@ -59,6 +59,7 @@ contract('Exchange', (accounts: string[]) => {
         exWrapper = new ExchangeWrapper(exchange);
         zeroEx = new ZeroEx(web3.currentProvider, {
             exchangeContractAddress: exchange.address,
+            networkId: constants.TESTRPC_NETWORK_ID,
         });
 
         const [repAddress, dgdAddress, zrxAddress] = await Promise.all([
@@ -422,7 +423,7 @@ contract('Exchange', (accounts: string[]) => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
 
-            return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if signature is invalid', async () => {
@@ -432,7 +433,7 @@ contract('Exchange', (accounts: string[]) => {
 
             order.params.r = ethUtil.bufferToHex(ethUtil.sha3('invalidR'));
             order.params.s = ethUtil.bufferToHex(ethUtil.sha3('invalidS'));
-            return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if makerTokenAmount is 0', async () => {
@@ -440,7 +441,7 @@ contract('Exchange', (accounts: string[]) => {
                 makerTokenAmount: new BigNumber(0),
             });
 
-            return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if takerTokenAmount is 0', async () => {
@@ -448,14 +449,14 @@ contract('Exchange', (accounts: string[]) => {
                 takerTokenAmount: new BigNumber(0),
             });
 
-            return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if fillTakerTokenAmount is 0', async () => {
             order = await orderFactory.newSignedOrderAsync();
 
             return expect(exWrapper.fillOrderAsync(order, taker, {fillTakerTokenAmount: new BigNumber(0)}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if maker balances are too low to fill order and \
@@ -478,7 +479,7 @@ contract('Exchange', (accounts: string[]) => {
             });
 
             return expect(exWrapper.fillOrderAsync(order, taker, {shouldThrowOnInsufficientBalanceOrAllowance: true}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if taker balances are too low to fill order and \
@@ -501,7 +502,7 @@ contract('Exchange', (accounts: string[]) => {
             });
 
             return expect(exWrapper.fillOrderAsync(order, taker, {shouldThrowOnInsufficientBalanceOrAllowance: true}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if maker allowances are too low to fill order and \
@@ -520,7 +521,7 @@ contract('Exchange', (accounts: string[]) => {
        async () => {
             await rep.approve(TokenTransferProxy.address, 0, {from: maker});
             expect(exWrapper.fillOrderAsync(order, taker, {shouldThrowOnInsufficientBalanceOrAllowance: true}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
             await rep.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {from: maker});
         });
 
@@ -540,7 +541,7 @@ contract('Exchange', (accounts: string[]) => {
        async () => {
             await dgd.approve(TokenTransferProxy.address, 0, {from: taker});
             expect(exWrapper.fillOrderAsync(order, taker, {shouldThrowOnInsufficientBalanceOrAllowance: true}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
             await dgd.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {from: taker});
         });
 
@@ -610,7 +611,7 @@ contract('Exchange', (accounts: string[]) => {
             });
 
             return expect(exWrapper.fillOrderAsync(order, taker, {shouldThrowOnInsufficientBalanceOrAllowance: false}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if an order is expired', async () => {
@@ -651,7 +652,7 @@ contract('Exchange', (accounts: string[]) => {
         });
 
         it('should throw if not sent by maker', async () => {
-            return expect(exWrapper.cancelOrderAsync(order, taker)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(exWrapper.cancelOrderAsync(order, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if makerTokenAmount is 0', async () => {
@@ -659,7 +660,7 @@ contract('Exchange', (accounts: string[]) => {
                 makerTokenAmount: new BigNumber(0),
             });
 
-            return expect(exWrapper.cancelOrderAsync(order, maker)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(exWrapper.cancelOrderAsync(order, maker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if takerTokenAmount is 0', async () => {
@@ -667,14 +668,14 @@ contract('Exchange', (accounts: string[]) => {
                 takerTokenAmount: new BigNumber(0),
             });
 
-            return expect(exWrapper.cancelOrderAsync(order, maker)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(exWrapper.cancelOrderAsync(order, maker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if cancelTakerTokenAmount is 0', async () => {
             order = await orderFactory.newSignedOrderAsync();
 
             return expect(exWrapper.cancelOrderAsync(order, maker, {cancelTakerTokenAmount: new BigNumber(0)}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should be able to cancel a full order', async () => {

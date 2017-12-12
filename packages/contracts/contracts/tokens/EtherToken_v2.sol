@@ -16,15 +16,16 @@
 
 */
 
-pragma solidity ^0.4.11;
+pragma solidity 0.4.18;
 
-import "./UnlimitedAllowanceToken.sol";
-import "./../utils/SafeMath.sol";
+import "./UnlimitedAllowanceToken_v2.sol";
+import "./../utils/SafeMath_v2.sol";
 
-contract EtherToken is UnlimitedAllowanceToken, SafeMath {
+contract EtherToken_v2 is UnlimitedAllowanceToken_v2, SafeMath_v2 {
 
     string constant public name = "Ether Token";
     string constant public symbol = "WETH";
+    string constant public version = "2.0.0"; // version 1.0.0 deployed on mainnet at 0x2956356cd2a2bf3202f771f50d3d14a367b48070
     uint8 constant public decimals = 18;
 
     /// @dev Fallback to calling deposit when ether is sent directly to contract.
@@ -42,16 +43,18 @@ contract EtherToken is UnlimitedAllowanceToken, SafeMath {
     {
         balances[msg.sender] = safeAdd(balances[msg.sender], msg.value);
         totalSupply = safeAdd(totalSupply, msg.value);
+        Transfer(address(0), msg.sender, msg.value);
     }
 
     /// @dev Sells tokens in exchange for Ether, exchanging them 1:1.
-    /// @param amount Number of tokens to sell.
-    function withdraw(uint amount)
+    /// @param _value Number of tokens to sell.
+    function withdraw(uint _value)
         public
     {
-        balances[msg.sender] = safeSub(balances[msg.sender], amount);
-        totalSupply = safeSub(totalSupply, amount);
-        require(msg.sender.send(amount));
+        balances[msg.sender] = safeSub(balances[msg.sender], _value);
+        totalSupply = safeSub(totalSupply, _value);
+        require(msg.sender.send(_value));
+        Transfer(msg.sender, address(0), _value);
     }
 }
 

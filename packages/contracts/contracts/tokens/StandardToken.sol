@@ -1,4 +1,4 @@
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
 import "./Token.sol";
 
@@ -42,3 +42,4 @@ contract StandardToken is Token {
     mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
+

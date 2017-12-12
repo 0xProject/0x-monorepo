@@ -4,6 +4,7 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import {Artifacts} from '../../util/artifacts';
+import {constants} from '../../util/constants';
 import {ContractInstance} from '../../util/types';
 
 import {chaiSetup} from './utils/chai_setup';
@@ -14,7 +15,10 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 contract('UnlimitedAllowanceToken', (accounts: string[]) => {
-    const zeroEx = new ZeroEx(web3.currentProvider);
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
+    const zeroEx = new ZeroEx(web3.currentProvider, config);
     const owner = accounts[0];
     const spender = accounts[1];
 
@@ -81,7 +85,9 @@ contract('UnlimitedAllowanceToken', (accounts: string[]) => {
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer);
+            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+            });
 
             const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
             expect(initSpenderAllowance).to.be.bignumber.equal(newSpenderAllowance);
@@ -92,7 +98,9 @@ contract('UnlimitedAllowanceToken', (accounts: string[]) => {
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer);
+            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+            });
 
             const newOwnerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const newSpenderBalance = await zeroEx.token.getBalanceAsync(tokenAddress, spender);
@@ -106,7 +114,9 @@ contract('UnlimitedAllowanceToken', (accounts: string[]) => {
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, initSpenderAllowance);
-            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer);
+            await zeroEx.token.transferFromAsync(tokenAddress, owner, spender, spender, amountToTransfer, {
+                gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
+            });
 
             const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(tokenAddress, owner, spender);
             expect(newSpenderAllowance).to.be.bignumber.equal(0);

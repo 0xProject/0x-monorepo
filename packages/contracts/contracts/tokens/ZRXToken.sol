@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
 import "./UnlimitedAllowanceToken.sol";
 
@@ -31,3 +31,4 @@ contract ZRXToken is UnlimitedAllowanceToken {
         balances[msg.sender] = totalSupply;
     }
 }
+
