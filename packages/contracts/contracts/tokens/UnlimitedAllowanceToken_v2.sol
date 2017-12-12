@@ -44,3 +44,4 @@ contract UnlimitedAllowanceToken_v2 is ERC20Token {
         return true;
     }
 }
+

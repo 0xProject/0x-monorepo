@@ -35,3 +35,4 @@ contract DummyToken_v2 is Mintable_v2, Ownable_v2 {
         balances[_target] = _value;
     }
 }
+

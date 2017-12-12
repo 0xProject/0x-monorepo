@@ -31,3 +31,4 @@ contract ZRXToken is UnlimitedAllowanceToken {
         balances[msg.sender] = totalSupply;
     }
 }
+

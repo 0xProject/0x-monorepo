@@ -29,3 +29,4 @@ contract MaliciousToken is StandardToken {
         return allowed[_owner][_spender];
     }
 }
+

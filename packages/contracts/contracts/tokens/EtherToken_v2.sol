@@ -56,3 +56,4 @@ contract EtherToken_v2 is UnlimitedAllowanceToken_v2, SafeMath_v2 {
         Transfer(msg.sender, address(0), _value);
     }
 }
+

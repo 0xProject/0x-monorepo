@@ -50,3 +50,4 @@ contract UnlimitedAllowanceToken is StandardToken {
         }
     }
 }
+

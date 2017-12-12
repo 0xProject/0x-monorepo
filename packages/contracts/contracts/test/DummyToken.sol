@@ -33,3 +33,4 @@ contract DummyToken is Mintable, Ownable {
         balances[_target] = _value;
     }
 }
+

@@ -54,3 +54,4 @@ contract EtherToken is UnlimitedAllowanceToken, SafeMath {
         require(msg.sender.send(amount));
     }
 }
+

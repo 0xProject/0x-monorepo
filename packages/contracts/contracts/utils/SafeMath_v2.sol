@@ -71,3 +71,4 @@ contract SafeMath_v2 {
         return a < b ? a : b;
     }
 }
+

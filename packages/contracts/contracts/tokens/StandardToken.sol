@@ -42,3 +42,4 @@ contract StandardToken is Token {
     mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
+

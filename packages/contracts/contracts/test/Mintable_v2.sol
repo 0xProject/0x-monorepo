@@ -16,3 +16,4 @@ contract Mintable_v2 is UnlimitedAllowanceToken_v2, SafeMath_v2 {
         totalSupply = safeAdd(totalSupply, _value);
     }
 }
+

@@ -130,3 +130,4 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
         ConfirmationTimeSet(transactionId, confirmationTime);
     }
 }
+
