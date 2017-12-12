@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@0xproject/json-schemas": "^0.6.10",
-    "@0xProject/utils": "^0.0.1",
+    "@0xproject/utils": "^0.1.0",
     "bignumber.js": "~4.1.0",
     "lodash": "^4.17.4",
     "valid-url": "^1.0.9"
