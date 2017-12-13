@@ -2,12 +2,17 @@ import {ZeroEx} from '0x.js';
 import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import {configs} from './configs';
 import {errorReporter} from './error_reporter';
 import {RequestQueue} from './request_queue';
 import {utils} from './utils';
+
+// HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
+// because they are using the wrong XHR package.
+// Issue: https://github.com/trufflesuite/truffle-contract/issues/14
+// tslint:disable-next-line:ordered-imports
+import * as Web3 from 'web3';
 
 const DISPENSE_AMOUNT_ZRX = new BigNumber(0.1);
 const QUEUE_INTERVAL_MS = 5000;

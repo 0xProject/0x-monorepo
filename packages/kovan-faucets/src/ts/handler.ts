@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 import ProviderEngine = require('web3-provider-engine');
 import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
 import NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
@@ -11,6 +10,12 @@ import {EtherRequestQueue} from './ether_request_queue';
 import {idManagement} from './id_management';
 import {utils} from './utils';
 import {ZRXRequestQueue} from './zrx_request_queue';
+
+// HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
+// because they are using the wrong XHR package.
+// Issue: https://github.com/trufflesuite/truffle-contract/issues/14
+// tslint:disable-next-line:ordered-imports
+import * as Web3 from 'web3';
 
 export class Handler {
     private etherRequestQueue: EtherRequestQueue;
