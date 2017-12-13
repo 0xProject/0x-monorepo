@@ -34,3 +34,4 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 | [`@0xproject/types`](/packages/types) | [![npm](https://img.shields.io/npm/v/@0xproject/types.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/types) | Shared types |
 | [`@0xproject/utils`](/packages/utils) | [![npm](https://img.shields.io/npm/v/@0xproject/utils.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/utils) | Shared utils |
 | [`@0xproject/web3-wrapper`](/packages/web3-wrapper) | [![npm](https://img.shields.io/npm/v/@0xproject/web3-wrapper.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/web3-wrapper) | Web3 wrapper |
+| [`@0xproject/kovan_faucets`](/packages/kovan-faucets) | | A faucet micro-service that dispenses test ERC20 tokens or Ether |
