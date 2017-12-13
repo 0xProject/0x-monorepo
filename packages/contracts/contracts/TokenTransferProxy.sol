@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
-import "./base/Token.sol";
-import "./base/Ownable.sol";
+import "./tokens/Token.sol";
+import "./utils/Ownable.sol";
 
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
@@ -113,3 +113,4 @@ contract TokenTransferProxy is Ownable {
         return authorities;
     }
 }
+

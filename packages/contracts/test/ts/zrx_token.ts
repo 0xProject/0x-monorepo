@@ -4,6 +4,7 @@ import * as chai from 'chai';
 import Web3 = require('web3');
 
 import {Artifacts} from '../../util/artifacts';
+import {constants} from '../../util/constants';
 import {ContractInstance} from '../../util/types';
 
 import {chaiSetup} from './utils/chai_setup';
@@ -25,9 +26,10 @@ contract('ZRXToken', (accounts: string[]) => {
 
     beforeEach(async () => {
         zeroEx = new ZeroEx(web3.currentProvider, {
-                exchangeContractAddress: Exchange.address,
+            exchangeContractAddress: Exchange.address,
+            networkId: constants.TESTRPC_NETWORK_ID,
         });
-        zrxAddress = await zeroEx.exchange.getZRXTokenAddressAsync();
+        zrxAddress = zeroEx.exchange.getZRXTokenAddress();
         zrx = await ZRXToken.at(zrxAddress);
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });
@@ -92,12 +94,14 @@ contract('ZRXToken', (accounts: string[]) => {
         it('should return false if owner has insufficient balance', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
-            let txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer);
+            let txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer,
+                                                              {gasLimit: constants.MAX_TOKEN_APPROVE_GAS});
             await zeroEx.awaitTransactionMinedAsync(txHash);
             const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, {from: spender});
             expect(didReturnTrue).to.be.false();
             // Reset allowance
-            txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, new BigNumber(0));
+            txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, new BigNumber(0),
+                                                          {gasLimit: constants.MAX_TOKEN_APPROVE_GAS});
             await zeroEx.awaitTransactionMinedAsync(txHash);
         });
 
@@ -125,7 +129,8 @@ contract('ZRXToken', (accounts: string[]) => {
             const initSpenderAllowance = MAX_UINT;
             let txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, initSpenderAllowance);
             await zeroEx.awaitTransactionMinedAsync(txHash);
-            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer);
+            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer,
+                                                          {gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS});
             await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(zrxAddress, owner, spender);
@@ -142,7 +147,8 @@ contract('ZRXToken', (accounts: string[]) => {
             const initSpenderAllowance = initOwnerBalance;
             let txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, initSpenderAllowance);
             await zeroEx.awaitTransactionMinedAsync(txHash);
-            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer);
+            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer,
+                                                          {gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS});
             await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const newOwnerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
@@ -158,7 +164,8 @@ contract('ZRXToken', (accounts: string[]) => {
             const initSpenderAllowance = initOwnerBalance;
             let txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, initSpenderAllowance);
             await zeroEx.awaitTransactionMinedAsync(txHash);
-            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer);
+            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer,
+                                                          {gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS});
             await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const newSpenderAllowance = await zeroEx.token.getAllowanceAsync(zrxAddress, owner, spender);

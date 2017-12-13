@@ -133,7 +133,7 @@ contract('Exchange', (accounts: string[]) => {
             });
 
             return expect(exWrapper.fillOrKillOrderAsync(order, taker))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if entire fillTakerTokenAmount not filled', async () => {
@@ -143,7 +143,7 @@ contract('Exchange', (accounts: string[]) => {
             await exWrapper.fillOrderAsync(order, from, {fillTakerTokenAmount: order.params.takerTokenAmount.div(2)});
 
             return expect(exWrapper.fillOrKillOrderAsync(order, taker))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
     });
 
@@ -237,7 +237,7 @@ contract('Exchange', (accounts: string[]) => {
                 await exWrapper.fillOrKillOrderAsync(orders[0], taker);
 
                 return expect(exWrapper.batchFillOrKillOrdersAsync(orders, taker, {fillTakerTokenAmounts}))
-                        .to.be.rejectedWith(constants.INVALID_OPCODE);
+                        .to.be.rejectedWith(constants.REVERT);
             });
         });
 
@@ -302,7 +302,7 @@ contract('Exchange', (accounts: string[]) => {
                 return expect(
                         exWrapper.fillOrdersUpToAsync(
                             orders, taker, {fillTakerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1000), 18)}),
-                ).to.be.rejectedWith(constants.INVALID_OPCODE);
+                ).to.be.rejectedWith(constants.REVERT);
             });
         });
 

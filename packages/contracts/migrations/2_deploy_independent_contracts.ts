@@ -4,6 +4,7 @@ const {
     MultiSigWalletWithTimeLock,
     TokenTransferProxy,
     EtherToken,
+    EtherTokenV2,
     TokenRegistry,
 } = new Artifacts(artifacts);
 
@@ -28,11 +29,13 @@ module.exports = (deployer: any, network: string, accounts: string[]) => {
             deployer.deploy(MultiSigWalletWithTimeLock, config.owners,
                             config.confirmationsRequired, config.secondsRequired)
             .then(() => {
-                    return deployer.deploy(TokenTransferProxy);
+                return deployer.deploy(TokenTransferProxy);
             }).then(() => {
-                    return deployer.deploy(TokenRegistry);
+                return deployer.deploy(TokenRegistry);
             }).then(() => {
-                    return deployer.deploy(EtherToken);
+                return deployer.deploy(EtherToken);
+            }).then(() => {
+                return deployer.deploy(EtherTokenV2);
             });
     } else {
         deployer.deploy([

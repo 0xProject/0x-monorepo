@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
 import "./UnlimitedAllowanceToken.sol";
-import "./../base/SafeMath.sol";
+import "./../utils/SafeMath.sol";
 
 contract EtherToken is UnlimitedAllowanceToken, SafeMath {
 
@@ -54,3 +54,4 @@ contract EtherToken is UnlimitedAllowanceToken, SafeMath {
         require(msg.sender.send(amount));
     }
 }
+

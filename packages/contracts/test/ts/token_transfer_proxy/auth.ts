@@ -23,7 +23,7 @@ contract('TokenTransferProxy', (accounts: string[]) => {
     describe('addAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
             return expect(tokenTransferProxy.addAuthorizedAddress(notOwner, {from: notOwner}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should allow owner to add an authorized address', async () => {
@@ -36,14 +36,14 @@ contract('TokenTransferProxy', (accounts: string[]) => {
 
         it('should throw if owner attempts to authorize a duplicate address', async () => {
             return expect(tokenTransferProxy.addAuthorizedAddress(authorized, {from: owner}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
     });
 
     describe('removeAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
             return expect(tokenTransferProxy.removeAuthorizedAddress(authorized, {from: notOwner}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should allow owner to remove an authorized address', async () => {
@@ -57,7 +57,7 @@ contract('TokenTransferProxy', (accounts: string[]) => {
 
         it('should throw if owner attempts to remove an address that is not authorized', async () => {
             return expect(tokenTransferProxy.removeAuthorizedAddress(notAuthorized, {from: owner}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
     });
 

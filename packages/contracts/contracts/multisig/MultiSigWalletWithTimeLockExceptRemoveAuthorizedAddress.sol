@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
 import "./MultiSigWalletWithTimeLock.sol";
 
@@ -80,3 +80,4 @@ contract MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress is MultiSigWall
         return true;
     }
 }
+

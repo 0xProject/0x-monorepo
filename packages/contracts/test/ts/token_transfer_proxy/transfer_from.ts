@@ -46,7 +46,7 @@ contract('TokenTransferProxy', (accounts: string[]) => {
     describe('transferFrom', () => {
         it('should throw when called by an unauthorized address', async () => {
             expect(tokenTransferProxy.transferFrom(rep.address, accounts[0], accounts[1], 1000, {from: notAuthorized}))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should allow an authorized address to transfer', async () => {

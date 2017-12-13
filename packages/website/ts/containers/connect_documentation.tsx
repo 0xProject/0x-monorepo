@@ -23,6 +23,7 @@ const connectDocSections = {
     introduction: 'introduction',
     installation: 'installation',
     httpClient: 'httpClient',
+    webSocketOrderbookChannel: 'webSocketOrderbookChannel',
     types: 'types',
 };
 
@@ -42,6 +43,9 @@ const docsInfoConfig: DocsInfoConfig = {
         httpClient: [
             connectDocSections.httpClient,
         ],
+        webSocketOrderbookChannel: [
+            connectDocSections.webSocketOrderbookChannel,
+        ],
         types: [
             connectDocSections.types,
         ],
@@ -56,6 +60,9 @@ const docsInfoConfig: DocsInfoConfig = {
         'Client',
         'FeesRequest',
         'FeesResponse',
+        'OrderbookChannel',
+        'OrderbookChannelHandler',
+        'OrderbookChannelSubscriptionOpts',
         'OrderbookRequest',
         'OrderbookResponse',
         'OrdersRequest',
@@ -64,14 +71,19 @@ const docsInfoConfig: DocsInfoConfig = {
         'TokenTradeInfo',
         'Order',
         'SignedOrder',
+        'ECSignature',
     ],
     sectionNameToModulePath: {
         [connectDocSections.httpClient]: ['"src/http_client"'],
+        [connectDocSections.webSocketOrderbookChannel]: ['"src/ws_orderbook_channel"'],
         [connectDocSections.types]: ['"src/types"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: connectDocSections,
-    visibleConstructors: [connectDocSections.httpClient],
+    visibleConstructors: [
+        connectDocSections.httpClient,
+        connectDocSections.webSocketOrderbookChannel,
+    ],
     convertToDocAgnosticFormatFn: typeDocUtils.convertToDocAgnosticFormat.bind(typeDocUtils),
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
