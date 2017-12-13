@@ -21,7 +21,10 @@ export FAUCET_ENVIRONMENT=development
 export DISPENSER_ADDRESS=0x5409ed021d9299bf6814279a6a1411a7e866a631
 export DISPENSER_PRIVATE_KEY=f2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d
 export FAUCET_ROLLBAR_ACCESS_KEY={GET_THIS_FROM_ROLLBAR_ACCOUNT_SETTINGS}
+export INFURA_API_KEY={GET_THIS_FROM_INFURA}
 ```
+
+Infura API Key can be requested here: https://infura.io/register.html
 
 Note: The above public/private keys exist when running `testrpc` with the following option `--mnemonic concert load couple harbor equip island argue ramp clarify fence smart topic`.
 
@@ -31,13 +34,14 @@ npm run dev
 
 ## Endpoints
 
-```GET /rain/:recipient_address```
+```GET /ether/:recipient```
 
 Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
 
-```GET /queue```
+```GET /zrx/:recipient```
 
-Returns the status of the queue
+Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
+
 
 ```javascript
 {

@@ -1,14 +1,13 @@
-import * as EthereumTx from 'ethereumjs-tx';
+import EthereumTx = require('ethereumjs-tx');
 
 import {configs} from './configs';
+import {utils} from './utils';
 
 type Callback = (err: Error, accounts: any) => void;
 
 export const idManagement = {
     getAccounts(callback: Callback) {
-        /* tslint:disable */
-        console.log('configs.DISPENSER_ADDRESS', configs.DISPENSER_ADDRESS);
-        /* tslint:enable */
+        utils.consoleLog(`configs.DISPENSER_ADDRESS: ${configs.DISPENSER_ADDRESS}`);
         callback(null, [
             configs.DISPENSER_ADDRESS,
         ]);
@@ -17,9 +16,7 @@ export const idManagement = {
         callback(null, true);
     },
     signTransaction(txData: object, callback: Callback) {
-        /* tslint:disable */
-        let tx = new EthereumTx(txData);
-        /* tslint:enable */
+        const tx = new EthereumTx(txData);
         const privateKeyBuffer = new Buffer(configs.DISPENSER_PRIVATE_KEY, 'hex');
         tx.sign(privateKeyBuffer);
         const rawTx = `0x${tx.serialize().toString('hex')}`;

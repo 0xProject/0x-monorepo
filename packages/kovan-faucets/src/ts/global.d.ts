@@ -1,7 +1,4 @@
-declare module 'elliptic';
 declare module 'rollbar';
-declare module 'ethereumjs-tx';
-declare module 'es6-promisify';
 declare module 'web3-provider-engine';
 declare module 'web3-provider-engine/subproviders/rpc';
 declare module 'web3-provider-engine/subproviders/nonce-tracker';
@@ -12,4 +9,18 @@ declare module '*.json' {
     /* tslint:disable */
     export default json;
     /* tslint:enable */
+}
+
+// Ethereumjs-tx declarations
+declare module 'ethereumjs-tx' {
+    class EthereumTx {
+        public raw: Buffer[];
+        public r: Buffer;
+        public s: Buffer;
+        public v: Buffer;
+        public serialize(): Buffer;
+        public sign(buffer: Buffer): void;        
+        constructor(txParams: any);
+    }
+    export = EthereumTx;
 }

@@ -1,4 +1,4 @@
-import promisify = require('es6-promisify');
+import {promisify} from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import {configs} from './configs';

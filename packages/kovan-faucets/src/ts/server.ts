@@ -17,10 +17,8 @@ app.use((req, res, next) => {
 
 const handler = new Handler();
 app.get('/ping', (req: express.Request, res: express.Response) => { res.status(200).send('pong'); });
-app.get('/rain/:recipient', handler.dispenseEther.bind(handler)); // Deprecated gracefully
 app.get('/ether/:recipient', handler.dispenseEther.bind(handler));
 app.get('/zrx/:recipient', handler.dispenseZRX.bind(handler));
-app.get('/queue', handler.getQueueInfo.bind(handler)); // Deprecated gracefully
 
 // Log to rollbar any errors unhandled by handlers
 app.use(errorReporter.errorHandler());

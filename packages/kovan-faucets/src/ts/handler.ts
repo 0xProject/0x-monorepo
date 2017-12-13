@@ -12,11 +12,6 @@ import {idManagement} from './id_management';
 import {utils} from './utils';
 import {ZRXRequestQueue} from './zrx_request_queue';
 
-// HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
-// because they are using the wrong XHR package.
-// Issue: https://github.com/trufflesuite/truffle-contract/issues/14
-delete (global as any).XMLHttpRequest;
-
 export class Handler {
     private etherRequestQueue: EtherRequestQueue;
     private zrxRequestQueue: ZRXRequestQueue;
