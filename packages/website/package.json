@@ -1,5 +1,5 @@
 {
-  "name": "website",
+  "name": "@0xproject/website",
   "version": "0.0.2",
   "private": true,
   "description": "Website and 0x portal dapp",
