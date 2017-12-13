@@ -22,7 +22,15 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 | Package | Version | Description |
 |--------|-------|------------|
 | [`0x.js`](/packages/0x.js) | [![npm](https://img.shields.io/npm/v/0x.js.svg?maxAge=2592000)](https://www.npmjs.com/package/0x.js) | A Javascript library for interacting with the 0x protocol |
-| [`@0xproject/assert`](/packages/assert) | [![npm](https://img.shields.io/npm/v/@0xproject/assert.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/assert) | Standard type and schema assertions |
 | [`@0xproject/connect`](/packages/connect) | [![npm](https://img.shields.io/npm/v/@0xproject/connect.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/connect) | A Javascript library for interacting with the standard relayer api |
+| [`@0xproject/contracts`](/packages/contracts) | | Smart contracts |
+| [`@0xproject/website`](/packages/website) | | 0x website |
+| [`@0xproject/subproviders`](/packages/subproviders) | [![npm](https://img.shields.io/npm/v/@0xproject/subproviders.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/subproviders) | Web3 subproviders |
+| [`@0xproject/abi-gen`](/packages/abi-gen) | [![npm](https://img.shields.io/npm/v/@0xproject/abi-gen.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/abi-gen) | Tool to generate TS code from ABI |
+| [`@0xproject/assert`](/packages/assert) | [![npm](https://img.shields.io/npm/v/@0xproject/assert.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/assert) | Standard type and schema assertions |
 | [`@0xproject/json-schemas`](/packages/json-schemas) | [![npm](https://img.shields.io/npm/v/@0xproject/json-schemas.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/json-schemas) | 0x-related json schemas |
+| [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts) | | Shared monorepo scripts |
 | [`@0xproject/tslint-config`](/packages/tslint-config) | [![npm](https://img.shields.io/npm/v/@0xproject/tslint-config.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/tslint-config) | Custom 0x project TSLint rules |
+| [`@0xproject/types`](/packages/types) | [![npm](https://img.shields.io/npm/v/@0xproject/types.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/types) | Shared types |
+| [`@0xproject/utils`](/packages/utils) | [![npm](https://img.shields.io/npm/v/@0xproject/utils.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/utils) | Shared utils |
+| [`@0xproject/web3-wrapper`](/packages/web3-wrapper) | [![npm](https://img.shields.io/npm/v/@0xproject/web3-wrapper.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/web3-wrapper) | Web3 wrapper |
