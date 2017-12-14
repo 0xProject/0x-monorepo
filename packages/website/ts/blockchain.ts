@@ -602,8 +602,6 @@ export class Blockchain {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
             // TODO: Refactor this out and pull the iconUrl directly from the TokenRegistry
             const iconUrl = constants.iconUrlBySymbol[t.symbol];
-            // TEMPORARY HACK: Swap out for new WETH address
-            const address = t.symbol === 'WETH' ? '0x739E78d6bEbbDF24105a5145fA04436589d1CBd9' : t.address;
             const token: Token = {
                 iconUrl,
                 address: t.address,
