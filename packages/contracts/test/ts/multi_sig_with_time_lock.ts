@@ -1,13 +1,14 @@
+import {RPC} from '@0xproject/dev-utils';
 import {promisify} from '@0xproject/utils';
 import {BigNumber} from 'bignumber.js';
 import * as chai from 'chai';
 import Web3 = require('web3');
 
 import * as multiSigWalletJSON from '../../build/contracts/MultiSigWalletWithTimeLock.json';
+import * as truffleConf from '../../truffle.js';
 import {Artifacts} from '../../util/artifacts';
 import {constants} from '../../util/constants';
 import {MultiSigWrapper} from '../../util/multi_sig_wrapper';
-import {RPC} from '../../util/rpc';
 import {ContractInstance} from '../../util/types';
 
 import {chaiSetup} from './utils/chai_setup';
@@ -38,7 +39,8 @@ contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
 
         const secondsTimeLocked = await multiSig.secondsTimeLocked.call();
         initialSecondsTimeLocked = secondsTimeLocked.toNumber();
-        rpc = new RPC();
+        const rpcUrl = `http://${truffleConf.networks.development.host}:${truffleConf.networks.development.port}`;
+        rpc = new RPC(rpcUrl);
     });
 
     describe('changeTimeLock', () => {

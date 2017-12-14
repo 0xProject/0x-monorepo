@@ -1,10 +1,10 @@
+import {intervalUtils} from '@0xproject/utils';
 import {BigNumber} from 'bignumber.js';
 import {RBTree} from 'bintrees';
 import * as _ from 'lodash';
 
 import {ZeroEx} from '../0x';
 import {SignedOrder, ZeroExError} from '../types';
-import {intervalUtils} from '../utils/interval_utils';
 import {utils} from '../utils/utils';
 
 const DEFAULT_EXPIRATION_MARGIN_MS = 0;

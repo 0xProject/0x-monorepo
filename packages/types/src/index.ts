@@ -8,6 +8,10 @@ export interface TxData {
     nonce?: number;
 }
 
+export interface TxDataPayable extends TxData {
+    value?: BigNumber;
+}
+
 export interface TransactionReceipt {
     blockHash: string;
     blockNumber: number;

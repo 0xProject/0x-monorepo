@@ -3,8 +3,8 @@ import {RPC} from './rpc';
 export class BlockchainLifecycle {
     private rpc: RPC;
     private snapshotIdsStack: number[];
-    constructor() {
-        this.rpc = new RPC();
+    constructor(url: string) {
+        this.rpc = new RPC(url);
         this.snapshotIdsStack = [];
     }
     // TODO: In order to run these tests on an actual node, we should check if we are running against
