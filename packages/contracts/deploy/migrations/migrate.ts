@@ -11,6 +11,8 @@ import {tokenInfo} from './config/token_info';
 export const migrator = {
     /**
      * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
+     * Some operations might be completed in parallel, but we don't do that on purpose.
+     * That way the addresses are deterministic.
      * @param deployer Deployer instance.
      */
     async runMigrationsAsync(deployer: Deployer): Promise<void> {
