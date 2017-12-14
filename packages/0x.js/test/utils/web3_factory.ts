@@ -21,13 +21,12 @@ export const web3Factory = {
     },
     getRpcProvider(hasAddresses: boolean = true): Web3.Provider {
         const provider = new ProviderEngine();
-        const rpcUrl = `http://${constants.RPC_HOST}:${constants.RPC_PORT}`;
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubprovider());
         }
         provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_ESTIMATE));
         provider.addProvider(new RpcSubprovider({
-            rpcUrl,
+            rpcUrl: constants.RPC_URL,
         }));
         provider.start();
         return provider;

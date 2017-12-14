@@ -1,7 +1,7 @@
+import {bigNumberConfigs} from '@0xproject/utils';
 import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 
-import {bigNumberConfigs} from './bignumber_config';
 import {BalancesByOwner, ContractInstance} from './types';
 
 bigNumberConfigs.configure();

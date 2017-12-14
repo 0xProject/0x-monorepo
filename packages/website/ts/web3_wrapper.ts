@@ -1,4 +1,4 @@
-import {promisify} from '@0xproject/utils';
+import {intervalUtils, promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import {Dispatcher} from 'ts/redux/dispatcher';
@@ -9,7 +9,7 @@ export class Web3Wrapper {
     private web3: Web3;
     private prevNetworkId: number;
     private shouldPollUserAddress: boolean;
-    private watchNetworkAndBalanceIntervalId: number;
+    private watchNetworkAndBalanceIntervalId: NodeJS.Timer;
     private prevUserEtherBalanceInEth: BigNumber;
     private prevUserAddress: string;
     constructor(dispatcher: Dispatcher, provider: Web3.Provider, networkIdIfExists: number,
@@ -98,7 +98,7 @@ export class Web3Wrapper {
         let prevNodeVersion: string;
         this.prevUserEtherBalanceInEth = new BigNumber(0);
         this.dispatcher.updateNetworkId(this.prevNetworkId);
-        this.watchNetworkAndBalanceIntervalId = window.setInterval(async () => {
+        this.watchNetworkAndBalanceIntervalId = intervalUtils.setAsyncExcludingInterval(async () => {
             // Check for network state changes
             const currentNetworkId = await this.getNetworkIdIfExists();
             if (currentNetworkId !== this.prevNetworkId) {

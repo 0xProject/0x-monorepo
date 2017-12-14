@@ -5,7 +5,7 @@ jobs:
     docker:
       - image: circleci/node:6.12
     environment:
-      CONTRACTS_COMMIT_HASH: '78fe8dd'
+      CONTRACTS_COMMIT_HASH: '6bda6a2'
     steps:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV

@@ -1,9 +1,14 @@
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 
 import {SignedOrder, Token, ZeroEx} from '../../src';
+import {artifacts} from '../../src/artifacts';
+import {DummyTokenContract} from '../../src/contract_wrappers/generated/dummy_token';
 import {orderFactory} from '../utils/order_factory';
 
 import {constants} from './constants';
+
+const INITIAL_COINBASE_TOKEN_SUPPLY_IN_UNITS = new BigNumber(100);
 
 export class FillScenarios {
     private zeroEx: ZeroEx;
@@ -20,6 +25,23 @@ export class FillScenarios {
         this.coinbase = userAddresses[0];
         this.zrxTokenAddress = zrxTokenAddress;
         this.exchangeContractAddress = exchangeContractAddress;
+    }
+    public async initTokenBalancesAsync() {
+        const web3Wrapper = (this.zeroEx as any)._web3Wrapper as Web3Wrapper;
+        for (const token of this.tokens) {
+            if (token.symbol !== 'ZRX' && token.symbol !== 'WETH') {
+                const contractInstance = web3Wrapper.getContractInstance(
+                    artifacts.DummyTokenArtifact.abi, token.address,
+                );
+                const defaults = {};
+                const dummyToken = new DummyTokenContract(contractInstance, defaults);
+                const tokenSupply = ZeroEx.toBaseUnitAmount(INITIAL_COINBASE_TOKEN_SUPPLY_IN_UNITS, token.decimals);
+                const txHash = await dummyToken.setBalance.sendTransactionAsync(this.coinbase, tokenSupply, {
+                    from: this.coinbase,
+                });
+                await this.zeroEx.awaitTransactionMinedAsync(txHash);
+            }
+        }
     }
     public async createFillableSignedOrderAsync(makerTokenAddress: string, takerTokenAddress: string,
                                                 makerAddress: string, takerAddress: string,

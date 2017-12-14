@@ -1,3 +1,4 @@
+import {intervalUtils} from '@0xproject/utils';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import {Block, BlockAndLogStreamer} from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
@@ -19,7 +20,6 @@ import {
 import {AbiDecoder} from '../utils/abi_decoder';
 import {constants} from '../utils/constants';
 import {filterUtils} from '../utils/filter_utils';
-import {intervalUtils} from '../utils/interval_utils';
 
 const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {[contractName: string]: ZeroExError} = {
     ZRX: ZeroExError.ZRXContractDoesNotExist,

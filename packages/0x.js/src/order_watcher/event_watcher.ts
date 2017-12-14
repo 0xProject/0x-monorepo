@@ -1,3 +1,4 @@
+import {intervalUtils} from '@0xproject/utils';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -10,7 +11,6 @@ import {
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
 import {assert} from '../utils/assert';
-import {intervalUtils} from '../utils/interval_utils';
 import {utils} from '../utils/utils';
 
 const DEFAULT_EVENT_POLLING_INTERVAL_MS = 200;

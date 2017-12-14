@@ -1,3 +1,4 @@
+import {BlockchainLifecycle} from '@0xproject/dev-utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as Sinon from 'sinon';
@@ -8,7 +9,6 @@ import {BlockParamLiteral, TradeSide, TransferType} from '../src/types';
 import {ExchangeTransferSimulator} from '../src/utils/exchange_transfer_simulator';
 import {OrderValidationUtils} from '../src/utils/order_validation_utils';
 
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
 import {FillScenarios} from './utils/fill_scenarios';
@@ -17,7 +17,7 @@ import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('OrderValidation', () => {
     let web3: Web3;
@@ -50,7 +50,7 @@ describe('OrderValidation', () => {
         tokenUtils = new TokenUtils(tokens);
         zrxTokenAddress = tokenUtils.getProtocolTokenOrThrow().address;
         fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress);
-        const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+        const [makerToken, takerToken] = tokenUtils.getDummyTokens();
         makerTokenAddress = makerToken.address;
         takerTokenAddress = takerToken.address;
         orderValidationUtils = new OrderValidationUtils(zeroEx.token, zeroEx.exchange);
@@ -185,7 +185,7 @@ describe('OrderValidation', () => {
         const cancelAmount = new BigNumber(3);
         beforeEach(async () => {
             [coinbase, makerAddress, takerAddress] = userAddresses;
-            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            const [makerToken, takerToken] = tokenUtils.getDummyTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(

@@ -1,15 +1,12 @@
 import * as ethUtil from 'ethereumjs-util';
 import * as request from 'request-promise-native';
 
-import {constants} from './constants';
-
 export class RPC {
-    private host: string;
+    private url: string;
     private port: number;
     private id: number;
-    constructor() {
-        this.host = constants.RPC_HOST;
-        this.port = constants.RPC_PORT;
+    constructor(url: string) {
+        this.url = url;
         this.id = 0;
     }
     public async takeSnapshotAsync(): Promise<number> {
@@ -26,6 +23,12 @@ export class RPC {
         const payload = this.toPayload(method, params);
         const didRevert = await this.sendAsync(payload);
         return didRevert;
+    }
+    public async increaseTimeAsync(time: number) {
+        const method = 'evm_increaseTime';
+        const params = [time];
+        const payload = this.toPayload(method, params);
+        return this.sendAsync(payload);
     }
     public async mineBlockAsync(): Promise<void> {
         const method = 'evm_mine';
@@ -45,7 +48,7 @@ export class RPC {
     private async sendAsync(payload: string): Promise<any> {
         const opts = {
             method: 'POST',
-            uri: `http://${this.host}:${this.port}`,
+            uri: this.url,
             body: payload,
             headers: {
                 'content-type': 'application/json',

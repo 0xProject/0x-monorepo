@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import {InternalZeroExError, Token} from '../../src/types';
 
 const PROTOCOL_TOKEN_SYMBOL = 'ZRX';
+const WETH_TOKEN_SYMBOL = 'WETH';
 
 export class TokenUtils {
     private tokens: Token[];
@@ -16,10 +17,10 @@ export class TokenUtils {
         }
         return zrxToken;
     }
-    public getNonProtocolTokens(): Token[] {
-        const nonProtocolTokens = _.filter(this.tokens, token => {
-            return token.symbol !== PROTOCOL_TOKEN_SYMBOL;
+    public getDummyTokens(): Token[] {
+        const dummyTokens = _.filter(this.tokens, token => {
+            return !_.includes([PROTOCOL_TOKEN_SYMBOL, WETH_TOKEN_SYMBOL], token.symbol);
         });
-        return nonProtocolTokens;
+        return dummyTokens;
     }
 }

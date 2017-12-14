@@ -23,7 +23,7 @@ import {
     LedgerWalletSubprovider,
     RedundantRPCSubprovider,
 } from '@0xproject/subproviders';
-import {promisify} from '@0xproject/utils';
+import {intervalUtils, promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import compareVersions = require('compare-versions');
 import ethUtil = require('ethereumjs-util');
@@ -75,7 +75,7 @@ export class Blockchain {
     private userAddress: string;
     private cachedProvider: Web3.Provider;
     private ledgerSubprovider: LedgerWalletSubprovider;
-    private zrxPollIntervalId: number;
+    private zrxPollIntervalId: NodeJS.Timer;
     private static async onPageLoadAsync() {
         if (document.readyState === 'complete') {
             return; // Already loaded
@@ -359,7 +359,7 @@ export class Blockchain {
 
         const [currBalance] = await this.getTokenBalanceAndAllowanceAsync(this.userAddress, token.address);
 
-        this.zrxPollIntervalId = window.setInterval(async () => {
+        this.zrxPollIntervalId = intervalUtils.setAsyncExcludingInterval(async () => {
             const [balance] = await this.getTokenBalanceAndAllowanceAsync(this.userAddress, token.address);
             if (!balance.eq(currBalance)) {
                 this.dispatcher.replaceTokenBalanceByAddress(token.address, balance);
