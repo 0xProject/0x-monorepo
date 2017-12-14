@@ -29,9 +29,7 @@ export class FillScenarios {
     public async initTokenBalancesAsync() {
         const web3Wrapper = (this.zeroEx as any)._web3Wrapper as Web3Wrapper;
         for (const token of this.tokens) {
-            if (token.symbol === 'WETH') {
-                // _.noop
-            } else if (token.symbol !== 'ZRX') {
+            if (token.symbol !== 'ZRX' && token.symbol !== 'WETH') {
                 const contractInstance = web3Wrapper.getContractInstance(
                     artifacts.DummyTokenArtifact.abi, token.address,
                 );
@@ -41,8 +39,6 @@ export class FillScenarios {
                     from: this.coinbase,
                 });
                 await this.zeroEx.awaitTransactionMinedAsync(txHash);
-            } else {
-                // no-op
             }
         }
     }
