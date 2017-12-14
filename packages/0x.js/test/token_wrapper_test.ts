@@ -1,5 +1,5 @@
-import {promisify} from '@0xproject/utils';
 import {BlockchainLifecycle} from '@0xproject/dev-utils';
+import {promisify} from '@0xproject/utils';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';

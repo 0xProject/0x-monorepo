@@ -1,5 +1,5 @@
 import {schemas, SchemaValidator} from '@0xproject/json-schemas';
-import {intervalUtils, bigNumberConfigs} from '@0xproject/utils';
+import {bigNumberConfigs, intervalUtils} from '@0xproject/utils';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
