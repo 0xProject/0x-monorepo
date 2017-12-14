@@ -19,7 +19,7 @@ declare module 'ethereumjs-tx' {
         public s: Buffer;
         public v: Buffer;
         public serialize(): Buffer;
-        public sign(buffer: Buffer): void;        
+        public sign(buffer: Buffer): void;
         constructor(txParams: any);
     }
     export = EthereumTx;
