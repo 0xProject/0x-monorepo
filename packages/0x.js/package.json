@@ -31,7 +31,7 @@
     "test:commonjs": "run-s build:commonjs run_mocha",
     "pretest:umd": "run-s clean build:umd:dev build:commonjs",
     "substitute_umd_bundle": "shx mv _bundles/* lib/src",
-    "run_mocha": "mocha lib/test/**/*_test.js --timeout 5000 --bail --exit"
+    "run_mocha": "mocha lib/test/**/*_test.js --timeout 10000 --bail --exit"
   },
   "config": {
     "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken"
