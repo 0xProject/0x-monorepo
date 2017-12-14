@@ -687,9 +687,11 @@ export interface TimestampMsRange {
     endTimestampMs: number;
 }
 
-export interface OutdatedWrappedEther {
-    address: string;
-    timestampMsRangeByNetworkId: {[networkId: number]: TimestampMsRange};
+export interface OutdatedWrappedEtherByNetworkId {
+    [networkId: number]: {
+        address: string;
+        timestampMsRange: TimestampMsRange;
+    };
 }
 
 // tslint:disable:max-file-line-count
