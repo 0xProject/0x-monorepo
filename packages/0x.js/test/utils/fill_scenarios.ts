@@ -33,7 +33,8 @@ export class FillScenarios {
                 const contractInstance = web3Wrapper.getContractInstance(
                     artifacts.DummyTokenArtifact.abi, token.address,
                 );
-                const dummyToken = new DummyTokenContract(contractInstance, {});
+                const defaults = {};
+                const dummyToken = new DummyTokenContract(contractInstance, defaults);
                 const tokenSupply = ZeroEx.toBaseUnitAmount(INITIAL_COINBASE_TOKEN_SUPPLY_IN_UNITS, token.decimals);
                 const txHash = await dummyToken.setBalance.sendTransactionAsync(this.coinbase, tokenSupply, {
                     from: this.coinbase,
