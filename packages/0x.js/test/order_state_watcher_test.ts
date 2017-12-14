@@ -65,7 +65,8 @@ describe('OrderStateWatcher', () => {
         tokenUtils = new TokenUtils(tokens);
         zrxTokenAddress = tokenUtils.getProtocolTokenOrThrow().address;
         fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress);
-        [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+        await fillScenarios.initTokenBalancesAsync();
+        [makerToken, takerToken] = tokenUtils.getDummyTokens();
         web3Wrapper = (zeroEx as any)._web3Wrapper;
     });
     beforeEach(async () => {

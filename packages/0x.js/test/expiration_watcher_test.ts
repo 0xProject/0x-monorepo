@@ -57,7 +57,7 @@ describe('ExpirationWatcher', () => {
         fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress);
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
-        const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+        const [makerToken, takerToken] = tokenUtils.getDummyTokens();
         makerTokenAddress = makerToken.address;
         takerTokenAddress = takerToken.address;
     });
