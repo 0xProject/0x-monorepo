@@ -1,10 +1,21 @@
 import * as _ from 'lodash';
 import {localStorage} from 'ts/local_storage/local_storage';
 import {Token, TrackedTokensByNetworkId} from 'ts/types';
+import {configs} from 'ts/utils/configs';
 
 const TRACKED_TOKENS_KEY = 'trackedTokens';
+const TRACKED_TOKENS_CLEAR_KEY = 'lastClearTrackedTokensDate';
 
 export const trackedTokenStorage = {
+    // Clear trackedTokens localStorage if we've updated the config variable in an update
+    // that introduced a backward incompatible change requiring the tracked tokens to be re-set
+    clearIfRequired() {
+        const lastClearFillDate = localStorage.getItemIfExists(TRACKED_TOKENS_CLEAR_KEY);
+        if (lastClearFillDate !== configs.lastLocalStorageTrackedTokenClearanceDate) {
+            localStorage.removeItem(TRACKED_TOKENS_KEY);
+        }
+        localStorage.setItem(TRACKED_TOKENS_CLEAR_KEY, configs.lastLocalStorageTrackedTokenClearanceDate);
+    },
     addTrackedTokenToUser(userAddress: string, networkId: number, token: Token) {
         const trackedTokensByUserAddress = this.getTrackedTokensByUserAddress();
         let trackedTokensByNetworkId = trackedTokensByUserAddress[userAddress];
