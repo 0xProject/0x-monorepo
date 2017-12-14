@@ -7,6 +7,7 @@
     "adjacent-overload-signatures": true,
     "arrow-parens": [true, "ban-single-arg-parens"],
     "arrow-return-shorthand": true,
+    "async-suffix": true,
     "await-promise": true,
     "binary-expression-operand-order": true,
     "callable-types": true,
@@ -101,5 +102,6 @@
     "jsx-self-close": true,
     "jsx-wrap-multiline": false,
     "jsx-no-bind": false
-  }
+  },
+  "rulesDirectory": "lib"
 }
