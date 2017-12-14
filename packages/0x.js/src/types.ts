@@ -385,4 +385,5 @@ export interface OrderStateInvalid {
 
 export type OrderState = OrderStateValid|OrderStateInvalid;
 
-export type OnOrderStateChangeCallback = (orderState: OrderState) => void; // tslint:disable:max-file-line-count
+export type OnOrderStateChangeCallback = (orderState: OrderState) => void;
+// tslint:disable:max-file-line-count
