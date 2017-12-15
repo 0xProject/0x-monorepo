@@ -5,7 +5,6 @@ import * as _ from 'lodash';
 import {
     OrderbookChannelMessage,
     OrderbookChannelMessageTypes,
-    SignedOrder,
 } from '../types';
 
 import {typeConverters} from './type_converters';

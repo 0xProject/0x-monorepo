@@ -1,4 +1,3 @@
-import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
@@ -16,7 +15,6 @@ const {
     addressSchema,
     ecSignatureSchema,
     ecSignatureParameterSchema,
-    indexFilterValuesSchema,
     orderCancellationRequestsSchema,
     orderFillOrKillRequestsSchema,
     orderFillRequestsSchema,

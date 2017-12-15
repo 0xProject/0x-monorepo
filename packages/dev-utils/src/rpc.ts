@@ -3,7 +3,6 @@ import * as request from 'request-promise-native';
 
 export class RPC {
     private url: string;
-    private port: number;
     private id: number;
     constructor(url: string) {
         this.url = url;

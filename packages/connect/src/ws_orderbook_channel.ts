@@ -8,7 +8,6 @@ import {
     OrderbookChannelHandler,
     OrderbookChannelMessageTypes,
     OrderbookChannelSubscriptionOpts,
-    SignedOrder,
     WebsocketClientEventType,
     WebsocketConnectionEventType,
 } from './types';
@@ -99,7 +98,6 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             try {
                 const utf8Data = message.utf8Data;
                 const parserResult = orderbookChannelMessageParsers.parser(utf8Data);
-                const type = parserResult.type;
                 if (parserResult.requestId === requestId) {
                     switch (parserResult.type) {
                         case (OrderbookChannelMessageTypes.Snapshot): {

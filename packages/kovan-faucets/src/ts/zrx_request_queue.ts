@@ -1,5 +1,4 @@
 import {ZeroEx} from '0x.js';
-import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 

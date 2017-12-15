@@ -1,4 +1,3 @@
-import {BigNumber} from 'bignumber.js';
 import BN = require('bn.js');
 import ABI = require('ethereumjs-abi');
 import ethUtil = require('ethereumjs-util');
