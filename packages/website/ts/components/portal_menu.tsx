@@ -56,7 +56,7 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                     to={`${WebsitePaths.Portal}/weth`}
                     onClick={this.props.onClick.bind(this)}
                 >
-                    {this.renderMenuItemWithIcon('ETH wrapper', 'zmdi-circle-o')}
+                    {this.renderMenuItemWithIcon('Wrap ETH', 'zmdi-circle-o')}
                 </MenuItem>
             </div>
         );
