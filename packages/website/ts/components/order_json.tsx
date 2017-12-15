@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
+import {Paper} from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import {CopyIcon} from 'ts/components/ui/copy_icon';

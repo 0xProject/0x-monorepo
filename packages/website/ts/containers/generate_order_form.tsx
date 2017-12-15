@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
 import {connect} from 'react-redux';
