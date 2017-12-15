@@ -9,7 +9,6 @@ import {Alert} from 'ts/components/ui/alert';
 import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
 import {RequiredLabel} from 'ts/components/ui/required_label';
 import {AlertTypes, Token, TokenByAddress, TokenState} from 'ts/types';
-import {constants} from 'ts/utils/constants';
 
 interface NewTokenFormProps {
     blockchain: Blockchain;

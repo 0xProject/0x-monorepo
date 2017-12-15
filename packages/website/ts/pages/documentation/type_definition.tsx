@@ -9,8 +9,6 @@ import {MethodSignature} from 'ts/pages/documentation/method_signature';
 import {Type} from 'ts/pages/documentation/type';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
 import {CustomType, CustomTypeChild, HeaderSizes, KindString, TypeDocTypes} from 'ts/types';
-import {constants} from 'ts/utils/constants';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
 import {utils} from 'ts/utils/utils';
 
 const KEYWORD_COLOR = '#a81ca6';

@@ -62,16 +62,7 @@ interface GenerateOrderFormState {
     signingState: SigningState;
 }
 
-const style = {
-    paper: {
-        display: 'inline-block',
-        position: 'relative',
-        textAlign: 'center',
-        width: '100%',
-    },
-};
-
-export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, any> {
+export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, GenerateOrderFormState> {
     private validator: SchemaValidator;
     constructor(props: GenerateOrderFormProps) {
         super(props);
@@ -287,7 +278,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
         if (_.isUndefined(exchangeContractAddr)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             this.setState({
-                isSigning: false,
+                signingState: SigningState.UNSIGNED,
             });
             return false;
         }

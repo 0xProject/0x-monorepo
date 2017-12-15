@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 import {Artifacts} from '../util/artifacts';
 import {constants} from '../util/constants';
-import {ContractInstance, Token, TokenInfoByNetwork} from '../util/types';
+import {ContractInstance, Token} from '../util/types';
 
 import {tokenInfo} from './config/token_info';
 const {

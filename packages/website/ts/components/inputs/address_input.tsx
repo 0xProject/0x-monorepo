@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import {colors} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
 import {RequiredLabel} from 'ts/components/ui/required_label';
 
 interface AddressInputProps {

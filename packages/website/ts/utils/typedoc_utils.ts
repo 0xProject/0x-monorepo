@@ -5,21 +5,17 @@ import {
     CustomTypeChild,
     DocAgnosticFormat,
     DocSection,
-    DocsMenu,
     IndexSignature,
     KindString,
-    MenuSubsectionsBySection,
     Parameter,
     Property,
     SectionsMap,
     Type,
     TypeDocNode,
     TypeDocType,
-    TypeDocTypes,
     TypeParameter,
     TypescriptMethod,
 } from 'ts/types';
-import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
 export const typeDocUtils = {

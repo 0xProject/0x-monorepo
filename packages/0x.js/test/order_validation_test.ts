@@ -34,7 +34,6 @@ describe('OrderValidation', () => {
     let makerAddress: string;
     let takerAddress: string;
     let feeRecipient: string;
-    let orderValidationUtils: OrderValidationUtils;
     const fillableAmount = new BigNumber(5);
     const fillTakerAmount = new BigNumber(5);
     const config = {
@@ -53,7 +52,6 @@ describe('OrderValidation', () => {
         const [makerToken, takerToken] = tokenUtils.getDummyTokens();
         makerTokenAddress = makerToken.address;
         takerTokenAddress = takerToken.address;
-        orderValidationUtils = new OrderValidationUtils(zeroEx.token, zeroEx.exchange);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -181,7 +179,6 @@ describe('OrderValidation', () => {
     });
     describe('validateCancelOrderAndThrowIfInvalidAsync', () => {
         let signedOrder: SignedOrder;
-        let orderHashHex: string;
         const cancelAmount = new BigNumber(3);
         beforeEach(async () => {
             [coinbase, makerAddress, takerAddress] = userAddresses;
@@ -191,7 +188,6 @@ describe('OrderValidation', () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
             );
-            orderHashHex = ZeroEx.getOrderHashHex(signedOrder);
         });
         it('should throw when cancel amount is zero', async () => {
             const zeroCancelAmount = new BigNumber(0);
@@ -204,7 +200,6 @@ describe('OrderValidation', () => {
                 makerTokenAddress, takerTokenAddress, makerAddress, takerAddress,
                 fillableAmount, expirationInPast,
             );
-            orderHashHex = ZeroEx.getOrderHashHex(expiredSignedOrder);
             return expect(zeroEx.exchange.validateCancelOrderThrowIfInvalidAsync(expiredSignedOrder, cancelAmount))
                 .to.be.rejectedWith(ExchangeContractErrs.OrderCancelExpired);
         });

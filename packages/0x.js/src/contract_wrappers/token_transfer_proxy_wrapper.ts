@@ -2,7 +2,6 @@ import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
-import {ZeroExError} from '../types';
 
 import {ContractWrapper} from './contract_wrapper';
 import {TokenTransferProxyContract} from './generated/token_transfer_proxy';

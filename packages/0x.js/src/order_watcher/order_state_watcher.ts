@@ -4,7 +4,6 @@ import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import {ZeroEx} from '../0x';
-import {artifacts} from '../artifacts';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
@@ -25,7 +24,6 @@ import {
     SignedOrder,
     TokenEvents,
     TransferContractEventArgs,
-    Web3Provider,
     ZeroExError,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';

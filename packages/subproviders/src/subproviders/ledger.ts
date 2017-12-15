@@ -1,9 +1,7 @@
 import {assert} from '@0xproject/assert';
 import {addressUtils} from '@0xproject/utils';
-import promisify = require('es6-promisify');
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
-import * as ledger from 'ledgerco';
 import * as _ from 'lodash';
 import Semaphore from 'semaphore-async-await';
 import Web3 = require('web3');
@@ -23,7 +21,6 @@ const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
 const NUM_ADDRESSES_TO_FETCH = 10;
 const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = false;
-const HEX_REGEX = /^[0-9A-Fa-f]+$/g;
 
 export class LedgerSubprovider extends Subprovider {
     private _nonceLock: Semaphore;
@@ -34,18 +31,6 @@ export class LedgerSubprovider extends Subprovider {
     private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
-    private static isValidHex(data: string) {
-        if (!_.isString(data)) {
-            return false;
-        }
-        const isHexPrefixed = data.slice(0, 2) === '0x';
-        if (!isHexPrefixed) {
-            return false;
-        }
-        const nonPrefixed = data.slice(2);
-        const isValid = nonPrefixed.match(HEX_REGEX);
-        return isValid;
-    }
     private static validateSender(sender: string) {
         if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
             throw new Error(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);

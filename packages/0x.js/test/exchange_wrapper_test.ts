@@ -9,7 +9,6 @@ import {
     ExchangeContractErrs,
     ExchangeEvents,
     LogCancelContractEventArgs,
-    LogEvent,
     LogFillContractEventArgs,
     OrderCancellationRequest,
     OrderFillRequest,

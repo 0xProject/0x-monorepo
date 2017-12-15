@@ -11,6 +11,7 @@ import {chaiSetup} from '../chai_setup';
 import {reportCallbackErrors} from '../utils/report_callback_errors';
 
 const expect = chai.expect;
+chaiSetup.configure();
 
 describe('RedundantRpcSubprovider', () => {
     let provider: Web3ProviderEngine;

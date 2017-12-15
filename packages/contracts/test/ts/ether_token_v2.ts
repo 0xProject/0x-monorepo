@@ -81,7 +81,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const logArgs = (logs[0] as any).args;
             expect(logArgs._from).to.equal(expectedFrom);
             expect(logArgs._to).to.equal(expectedTo);
-            expect(logArgs._value).to.be.bignumber.equal(ethToDeposit);
+            expect(logArgs._value).to.be.bignumber.equal(expectedValue);
         });
     });
 
@@ -120,7 +120,6 @@ contract('EtherTokenV2', (accounts: string[]) => {
 
         it('should log 1 event with correct arguments', async () => {
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
-            const initEthBalance = await getEthBalanceAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;
             expect(ethTokensToWithdraw).to.not.be.bignumber.equal(0);
             const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account, {
@@ -137,7 +136,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const logArgs = (logs[0] as any).args;
             expect(logArgs._from).to.equal(expectedFrom);
             expect(logArgs._to).to.equal(expectedTo);
-            expect(logArgs._value).to.be.bignumber.equal(ethTokensToWithdraw);
+            expect(logArgs._value).to.be.bignumber.equal(expectedValue);
         });
     });
 

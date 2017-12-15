@@ -1,14 +1,14 @@
 import {assert as sharedAssert} from '@0xproject/assert';
-import {Schema, SchemaValidator} from '@0xproject/json-schemas';
+// We need those two unused imports because they're actually used by sharedAssert which gets injected here
+// tslint:disable-next-line:no-unused-variable
+import {Schema} from '@0xproject/json-schemas';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
-import BigNumber from 'bignumber.js';
+// tslint:disable-next-line:no-unused-variable
+import * as BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import {ECSignature} from '../types';
 import {signatureUtils} from '../utils/signature_utils';
-
-const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
 export const assert = {
     ...sharedAssert,

@@ -1,7 +1,6 @@
 import {
     BlockParam,
     DecodedLogEvent,
-    ExchangeContractErrs,
     ExchangeContractEventArgs,
     ExchangeEvents,
     IndexedFilterValues,
@@ -14,7 +13,6 @@ import {
     Token as ZeroExToken,
     TransactionReceiptWithDecodedLogs,
     ZeroEx,
-    ZeroExError,
 } from '0x.js';
 import {
     InjectedWeb3Subprovider,
@@ -25,9 +23,6 @@ import {
 } from '@0xproject/subproviders';
 import {intervalUtils, promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
-import compareVersions = require('compare-versions');
-import ethUtil = require('ethereumjs-util');
-import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import * as React from 'react';
 import contract = require('truffle-contract');
@@ -40,7 +35,6 @@ import {
     BlockchainCallErrs,
     BlockchainErrs,
     ContractInstance,
-    ContractResponse,
     EtherscanLinkSuffixes,
     ProviderType,
     Side,
@@ -60,7 +54,6 @@ import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
 
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
-const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 45730;
 const BLOCK_NUMBER_BACK_TRACK = 50;
 
 export class Blockchain {
@@ -70,8 +63,6 @@ export class Blockchain {
     private dispatcher: Dispatcher;
     private web3Wrapper?: Web3Wrapper;
     private exchangeAddress: string;
-    private tokenTransferProxy: ContractInstance;
-    private tokenRegistry: ContractInstance;
     private userAddress: string;
     private cachedProvider: Web3.Provider;
     private ledgerSubprovider: LedgerWalletSubprovider;
@@ -506,8 +497,7 @@ export class Blockchain {
         await this.fetchHistoricalExchangeLogFillEventsAsync(indexFilterValues);
 
         // Start a subscription for new logs
-        const exchangeAddress = this.getExchangeContractAddressIfExists();
-        const subscriptionId = this.zeroEx.exchange.subscribe(
+        this.zeroEx.exchange.subscribe(
             ExchangeEvents.LogFill, indexFilterValues,
             async (err: Error, decodedLogEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
             if (err) {

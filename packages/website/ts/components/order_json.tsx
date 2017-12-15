@@ -1,11 +1,9 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import Paper from 'material-ui/Paper';
-import {colors} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import {CopyIcon} from 'ts/components/ui/copy_icon';
-import {Order, SideToAssetToken, SignatureData, TokenByAddress, WebsitePaths} from 'ts/types';
+import {SideToAssetToken, SignatureData, TokenByAddress, WebsitePaths} from 'ts/types';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';

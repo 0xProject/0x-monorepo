@@ -22,3 +22,5 @@ export const Comment: React.SFC<CommentProps> = (props: CommentProps) => {
         </div>
     );
 };
+
+Comment.defaultProps = defaultProps;

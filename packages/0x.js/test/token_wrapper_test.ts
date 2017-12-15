@@ -1,5 +1,4 @@
 import {BlockchainLifecycle} from '@0xproject/dev-utils';
-import {promisify} from '@0xproject/utils';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
@@ -8,13 +7,9 @@ import * as Web3 from 'web3';
 
 import {
     ApprovalContractEventArgs,
-    ContractEvent,
     DecodedLogEvent,
-    LogEvent,
-    LogWithDecodedArgs,
     SubscriptionOpts,
     Token,
-    TokenContractEventArgs,
     TokenEvents,
     TransferContractEventArgs,
     ZeroEx,
@@ -71,8 +66,7 @@ describe('TokenWrapper', () => {
             const toAddress = addressWithoutFunds;
             const preBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             expect(preBalance).to.be.bignumber.equal(0);
-            const txHash = await zeroEx.token.transferAsync(token.address, fromAddress, toAddress, transferAmount);
-            const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
+            await zeroEx.token.transferAsync(token.address, fromAddress, toAddress, transferAmount);
             const postBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });
@@ -354,7 +348,6 @@ describe('TokenWrapper', () => {
     });
     describe('#subscribe', () => {
         const indexFilterValues = {};
-        const shouldThrowOnInsufficientBalanceOrAllowance = true;
         let tokenAddress: string;
         const transferAmount = new BigNumber(42);
         const allowanceAmount = new BigNumber(42);

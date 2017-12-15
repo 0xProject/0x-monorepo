@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
-import {Styles} from 'ts/types';
 
 const CUSTOM_DARK_GRAY = '#231F20';
 const DEFAULT_STYLE = {

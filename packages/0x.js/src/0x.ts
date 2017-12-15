@@ -16,7 +16,6 @@ import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 import {
     ECSignature,
     Order,
-    OrderStateWatcherConfig,
     SignedOrder,
     TransactionReceiptWithDecodedLogs,
     Web3Provider,
@@ -26,7 +25,6 @@ import {
 import {AbiDecoder} from './utils/abi_decoder';
 import {assert} from './utils/assert';
 import {constants} from './utils/constants';
-import {OrderStateUtils} from './utils/order_state_utils';
 import {signatureUtils} from './utils/signature_utils';
 import {utils} from './utils/utils';
 

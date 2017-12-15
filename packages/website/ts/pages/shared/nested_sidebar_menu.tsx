@@ -4,9 +4,8 @@ import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Link as ScrollLink} from 'react-scroll';
 import {VersionDropDown} from 'ts/pages/shared/version_drop_down';
-import {Docs, MenuSubsectionsBySection, Styles} from 'ts/types';
+import {MenuSubsectionsBySection, Styles} from 'ts/types';
 import {constants} from 'ts/utils/constants';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
 import {utils} from 'ts/utils/utils';
 
 interface NestedSidebarMenuProps {

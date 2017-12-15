@@ -6,14 +6,11 @@ import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import {
-    ECSignature,
     LedgerSubprovider,
 } from '../../src';
 import {
     DoneCallback,
-    ECSignatureString,
     LedgerCommunicationClient,
-    LedgerGetAddressResult,
     LedgerSubproviderErrors,
 } from '../../src/types';
 import {chaiSetup} from '../chai_setup';

@@ -227,8 +227,6 @@ contract('Exchange', (accounts: string[]) => {
 
             it('should throw if a single order does not fill the expected amount', async () => {
                 const fillTakerTokenAmounts: BigNumber[] = [];
-                const makerToken = rep.address;
-                const takerToken = dgd.address;
                 orders.forEach(order => {
                     const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
                     fillTakerTokenAmounts.push(fillTakerTokenAmount);
@@ -311,7 +309,7 @@ contract('Exchange', (accounts: string[]) => {
                 const cancelTakerTokenAmounts = _.map(orders, order => order.params.takerTokenAmount);
                 await exWrapper.batchCancelOrdersAsync(orders, maker, {cancelTakerTokenAmounts});
 
-                const res = await exWrapper.batchFillOrdersAsync(
+                await exWrapper.batchFillOrdersAsync(
                         orders, taker, {fillTakerTokenAmounts: cancelTakerTokenAmounts});
                 const newBalances = await dmyBalances.getAsync();
                 expect(balances).to.be.deep.equal(newBalances);

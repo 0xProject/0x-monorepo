@@ -1,7 +1,6 @@
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import {DoxityDocObj, S3FileObject, TypeDocNode, VersionToFileName} from 'ts/types';
-import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 import convert = require('xml-js');
 

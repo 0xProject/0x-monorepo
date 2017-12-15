@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import {ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx, ZeroExError} from '../src';
+import {ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx} from '../src';
 
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';

@@ -4,10 +4,7 @@ import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {Type} from 'ts/pages/documentation/type';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
 import {Event, EventArg, HeaderSizes} from 'ts/types';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
 
-const KEYWORD_COLOR = '#a81ca6';
 const CUSTOM_GREEN = 'rgb(77, 162, 75)';
 
 interface EventDefinitionProps {
