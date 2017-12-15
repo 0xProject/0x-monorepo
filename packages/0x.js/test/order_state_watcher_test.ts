@@ -234,6 +234,7 @@ describe('OrderStateWatcher', () => {
                 const callback = reportCallbackErrors(done)((orderState: OrderState) => {
                     done();
                 });
+                zeroEx.orderStateWatcher.addOrder(signedOrder);
                 zeroEx.orderStateWatcher.subscribe(callback);
                 await zeroEx.token.setProxyAllowanceAsync(zrxTokenAddress, maker, new BigNumber(0));
             })().catch(done);
