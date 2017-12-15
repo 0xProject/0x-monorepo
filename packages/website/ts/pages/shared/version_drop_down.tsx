@@ -2,8 +2,6 @@ import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
-import {Docs} from 'ts/types';
-import {constants} from 'ts/utils/constants';
 
 interface VersionDropDownProps {
     selectedVersion: string;

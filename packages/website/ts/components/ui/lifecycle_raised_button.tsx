@@ -1,8 +1,6 @@
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {Token} from 'ts/types';
 import {utils} from 'ts/utils/utils';
 
 const COMPLETE_STATE_SHOW_LENGTH_MS = 2000;

@@ -42,6 +42,8 @@ export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSi
     );
 };
 
+MethodSignature.defaultProps = defaultProps;
+
 function renderParameters(
     method: TypescriptMethod|SolidityMethod, docsInfo: DocsInfo, typeDefinitionByName?: TypeDefinitionByName,
 ) {

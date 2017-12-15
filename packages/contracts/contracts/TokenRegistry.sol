@@ -16,9 +16,9 @@
 
 */
 
-pragma solidity 0.4.11;
+pragma solidity ^0.4.11;
 
-import "./base/Ownable.sol";
+import "./utils/Ownable.sol";
 
 /// @title Token Registry - Stores metadata associated with ERC20 tokens. See ERC22 https://github.com/ethereum/EIPs/issues/22
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
@@ -306,3 +306,4 @@ contract TokenRegistry is Ownable {
         return tokenAddresses;
     }
 }
+

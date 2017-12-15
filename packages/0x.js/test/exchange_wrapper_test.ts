@@ -1,3 +1,4 @@
+import {BlockchainLifecycle} from '@0xproject/dev-utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import 'mocha';
@@ -8,7 +9,6 @@ import {
     ExchangeContractErrs,
     ExchangeEvents,
     LogCancelContractEventArgs,
-    LogEvent,
     LogFillContractEventArgs,
     OrderCancellationRequest,
     OrderFillRequest,
@@ -19,7 +19,6 @@ import {
 } from '../src';
 import {BlockParamLiteral, DoneCallback} from '../src/types';
 
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
 import {FillScenarios} from './utils/fill_scenarios';
@@ -28,7 +27,7 @@ import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 const NON_EXISTENT_ORDER_HASH = '0x79370342234e7acd6bbeac335bd3bb1d368383294b64b8160a00f4060e4d3777';
 
@@ -53,6 +52,7 @@ describe('ExchangeWrapper', () => {
         tokenUtils = new TokenUtils(tokens);
         zrxTokenAddress = tokenUtils.getProtocolTokenOrThrow().address;
         fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress);
+        await fillScenarios.initTokenBalancesAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -71,7 +71,7 @@ describe('ExchangeWrapper', () => {
         before(async () => {
             [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
             tokens = await zeroEx.tokenRegistry.getTokensAsync();
-            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            const [makerToken, takerToken] = tokenUtils.getDummyTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
         });
@@ -201,7 +201,7 @@ describe('ExchangeWrapper', () => {
         before(async () => {
             [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
             tokens = await zeroEx.tokenRegistry.getTokensAsync();
-            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            const [makerToken, takerToken] = tokenUtils.getDummyTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
         });
@@ -436,7 +436,7 @@ describe('ExchangeWrapper', () => {
         const cancelAmount = new BigNumber(3);
         beforeEach(async () => {
             [coinbase, makerAddress, takerAddress] = userAddresses;
-            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            const [makerToken, takerToken] = tokenUtils.getDummyTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
@@ -557,7 +557,8 @@ describe('ExchangeWrapper', () => {
         let orderHash: string;
         before(() => {
             takerAddress = userAddresses[1];
-            const [makerToken, takerToken] = tokens;
+            tokenUtils = new TokenUtils(tokens);
+            const [makerToken, takerToken] = tokenUtils.getDummyTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
         });
@@ -633,7 +634,7 @@ describe('ExchangeWrapper', () => {
         const cancelTakerAmountInBaseUnits = new BigNumber(1);
         before(() => {
             [coinbase, makerAddress, takerAddress] = userAddresses;
-            const [makerToken, takerToken] = tokens;
+            const [makerToken, takerToken] = tokenUtils.getDummyTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
         });
@@ -731,7 +732,7 @@ describe('ExchangeWrapper', () => {
         const fillableAmount = new BigNumber(5);
         before(async () => {
             [, makerAddress, takerAddress] = userAddresses;
-            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            const [makerToken, takerToken] = tokenUtils.getDummyTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
         });
@@ -766,7 +767,7 @@ describe('ExchangeWrapper', () => {
         let txHash: string;
         before(async () => {
             [, makerAddress, takerAddress] = userAddresses;
-            const [makerToken, takerToken] = tokenUtils.getNonProtocolTokens();
+            const [makerToken, takerToken] = tokenUtils.getDummyTokens();
             makerTokenAddress = makerToken.address;
             takerTokenAddress = takerToken.address;
         });

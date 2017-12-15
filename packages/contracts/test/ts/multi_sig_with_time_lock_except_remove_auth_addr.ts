@@ -44,7 +44,7 @@ contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: s
         it('should throw if data is not for removeAuthorizedAddress', async () => {
             const data = MultiSigWrapper.encodeFnArgs('addAuthorizedAddress', PROXY_ABI, [owners[0]]);
             return expect(multiSig.isFunctionRemoveAuthorizedAddress.call(data))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should return true if data is for removeAuthorizedAddress', async () => {
@@ -64,7 +64,7 @@ contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: s
             const res = await multiSigWrapper.submitTransactionAsync(validDestination, owners[0], dataParams);
             const txId = res.logs[0].args.transactionId.toString();
 
-            return expect(multiSig.executeRemoveAuthorizedAddress(txId)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(multiSig.executeRemoveAuthorizedAddress(txId)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if tx destination is not the tokenTransferProxy', async () => {
@@ -81,7 +81,7 @@ contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: s
             const isConfirmed = await multiSig.isConfirmed.call(txId);
             expect(isConfirmed).to.be.true();
 
-            return expect(multiSig.executeRemoveAuthorizedAddress(txId)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(multiSig.executeRemoveAuthorizedAddress(txId)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if tx data is not for removeAuthorizedAddress', async () => {
@@ -96,7 +96,7 @@ contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: s
             const isConfirmed = await multiSig.isConfirmed.call(txId);
             expect(isConfirmed).to.be.true();
 
-            return expect(multiSig.executeRemoveAuthorizedAddress(txId)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(multiSig.executeRemoveAuthorizedAddress(txId)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should execute removeAuthorizedAddress for valid tokenTransferProxy if fully confirmed', async () => {
@@ -131,7 +131,7 @@ contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: s
             const tx = await multiSig.transactions.call(txId);
             const isExecuted = tx[3];
             expect(isExecuted).to.be.true();
-            return expect(multiSig.executeRemoveAuthorizedAddress(txId)).to.be.rejectedWith(constants.INVALID_OPCODE);
+            return expect(multiSig.executeRemoveAuthorizedAddress(txId)).to.be.rejectedWith(constants.REVERT);
         });
     });
 });

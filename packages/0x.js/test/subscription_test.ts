@@ -1,3 +1,4 @@
+import {BlockchainLifecycle} from '@0xproject/dev-utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -11,27 +12,23 @@ import {
     Token,
     TokenEvents,
     ZeroEx,
-    ZeroExError,
 } from '../src';
-import {BlockParamLiteral, DoneCallback} from '../src/types';
+import {DoneCallback} from '../src/types';
 
-import {BlockchainLifecycle} from './utils/blockchain_lifecycle';
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
 import {reportCallbackErrors} from './utils/report_callback_errors';
-import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('SubscriptionTest', () => {
     let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let tokens: Token[];
-    let tokenUtils: TokenUtils;
     let coinbase: string;
     let addressWithoutFunds: string;
     const config = {
@@ -42,7 +39,6 @@ describe('SubscriptionTest', () => {
         zeroEx = new ZeroEx(web3.currentProvider, config);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
-        tokenUtils = new TokenUtils(tokens);
         coinbase = userAddresses[0];
         addressWithoutFunds = userAddresses[1];
     });
@@ -54,9 +50,7 @@ describe('SubscriptionTest', () => {
     });
     describe('#subscribe', () => {
         const indexFilterValues = {};
-        const shouldThrowOnInsufficientBalanceOrAllowance = true;
         let tokenAddress: string;
-        const transferAmount = new BigNumber(42);
         const allowanceAmount = new BigNumber(42);
         let stubs: Sinon.SinonStub[] = [];
         before(() => {

@@ -3,11 +3,7 @@ import * as React from 'react';
 import {
   Link,
 } from 'react-router-dom';
-import {HashLink} from 'react-router-hash-link';
-import {
-    Link as ScrollLink,
-} from 'react-scroll';
-import {Styles, WebsitePaths} from 'ts/types';
+import {WebsitePaths} from 'ts/types';
 import {constants} from 'ts/utils/constants';
 
 interface MenuItemsBySection {
@@ -228,32 +224,5 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 {title}
             </div>
         );
-    }
-    private renderHomepageLink(title: string) {
-        const hash = title.toLowerCase();
-        if (this.props.location.pathname === WebsitePaths.Home) {
-            return (
-                <ScrollLink
-                    style={linkStyle}
-                    to={hash}
-                    smooth={true}
-                    offset={0}
-                    duration={constants.HOME_SCROLL_DURATION_MS}
-                    containerId="home"
-                >
-                    {title}
-                </ScrollLink>
-            );
-        } else {
-            return (
-                <HashLink
-                    to={`/#${hash}`}
-                    className="text-decoration-none"
-                    style={linkStyle}
-                >
-                    {title}
-                </HashLink>
-            );
-        }
     }
 }

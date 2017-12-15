@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {Dispatch, Store as ReduxStore} from 'redux';
+import {Dispatch} from 'redux';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {
     Documentation as DocumentationComponent,

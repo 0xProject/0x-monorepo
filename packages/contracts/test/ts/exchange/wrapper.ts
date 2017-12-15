@@ -133,7 +133,7 @@ contract('Exchange', (accounts: string[]) => {
             });
 
             return expect(exWrapper.fillOrKillOrderAsync(order, taker))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if entire fillTakerTokenAmount not filled', async () => {
@@ -143,7 +143,7 @@ contract('Exchange', (accounts: string[]) => {
             await exWrapper.fillOrderAsync(order, from, {fillTakerTokenAmount: order.params.takerTokenAmount.div(2)});
 
             return expect(exWrapper.fillOrKillOrderAsync(order, taker))
-                .to.be.rejectedWith(constants.INVALID_OPCODE);
+                .to.be.rejectedWith(constants.REVERT);
         });
     });
 
@@ -227,8 +227,6 @@ contract('Exchange', (accounts: string[]) => {
 
             it('should throw if a single order does not fill the expected amount', async () => {
                 const fillTakerTokenAmounts: BigNumber[] = [];
-                const makerToken = rep.address;
-                const takerToken = dgd.address;
                 orders.forEach(order => {
                     const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
                     fillTakerTokenAmounts.push(fillTakerTokenAmount);
@@ -237,7 +235,7 @@ contract('Exchange', (accounts: string[]) => {
                 await exWrapper.fillOrKillOrderAsync(orders[0], taker);
 
                 return expect(exWrapper.batchFillOrKillOrdersAsync(orders, taker, {fillTakerTokenAmounts}))
-                        .to.be.rejectedWith(constants.INVALID_OPCODE);
+                        .to.be.rejectedWith(constants.REVERT);
             });
         });
 
@@ -302,7 +300,7 @@ contract('Exchange', (accounts: string[]) => {
                 return expect(
                         exWrapper.fillOrdersUpToAsync(
                             orders, taker, {fillTakerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1000), 18)}),
-                ).to.be.rejectedWith(constants.INVALID_OPCODE);
+                ).to.be.rejectedWith(constants.REVERT);
             });
         });
 
@@ -311,7 +309,7 @@ contract('Exchange', (accounts: string[]) => {
                 const cancelTakerTokenAmounts = _.map(orders, order => order.params.takerTokenAmount);
                 await exWrapper.batchCancelOrdersAsync(orders, maker, {cancelTakerTokenAmounts});
 
-                const res = await exWrapper.batchFillOrdersAsync(
+                await exWrapper.batchFillOrdersAsync(
                         orders, taker, {fillTakerTokenAmounts: cancelTakerTokenAmounts});
                 const newBalances = await dmyBalances.getAsync();
                 expect(balances).to.be.deep.equal(newBalances);

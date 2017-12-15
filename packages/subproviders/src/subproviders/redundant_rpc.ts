@@ -33,6 +33,7 @@ export class RedundantRPCSubprovider extends Subprovider {
             });
         });
     }
+    // tslint:disable-next-line:async-suffix
     public async handleRequest(payload: JSONRPCPayload, next: () => void,
                                end: (err: Error|null, data?: any) =>  void): Promise<void> {
         const rpcsCopy = this.rpcs.slice();

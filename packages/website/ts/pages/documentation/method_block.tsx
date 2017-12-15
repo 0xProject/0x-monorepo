@@ -1,8 +1,6 @@
 import * as _ from 'lodash';
-import {Chip} from 'material-ui/Chip';
 import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import * as ReactMarkdown from 'react-markdown';
 import {Comment} from 'ts/pages/documentation/comment';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {MethodSignature} from 'ts/pages/documentation/method_signature';
@@ -14,11 +12,9 @@ import {
     SolidityMethod,
     Styles,
     TypeDefinitionByName,
-    TypeDocNode,
     TypescriptMethod,
 } from 'ts/types';
 import {typeDocUtils} from 'ts/utils/typedoc_utils';
-import {utils} from 'ts/utils/utils';
 
 interface MethodBlockProps {
     method: SolidityMethod|TypescriptMethod;

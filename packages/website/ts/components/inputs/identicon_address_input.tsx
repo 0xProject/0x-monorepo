@@ -1,7 +1,5 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
 import {AddressInput} from 'ts/components/inputs/address_input';
 import {Identicon} from 'ts/components/ui/identicon';
 import {InputLabel} from 'ts/components/ui/input_label';

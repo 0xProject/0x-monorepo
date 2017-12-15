@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
 import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
@@ -21,17 +20,13 @@ import {Loading} from 'ts/components/ui/loading';
 import {GenerateOrderForm} from 'ts/containers/generate_order_form';
 import {localStorage} from 'ts/local_storage/local_storage';
 import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
 import {orderSchema} from 'ts/schemas/order_schema';
 import {SchemaValidator} from 'ts/schemas/validator';
 import {
     BlockchainErrs,
-    Fill,
     HashData,
     Order,
     ScreenWidths,
-    Side,
-    Styles,
     Token,
     TokenByAddress,
     TokenStateByAddress,
@@ -70,28 +65,6 @@ interface PortalAllState {
     prevUserAddress: string;
     hasAcceptedDisclaimer: boolean;
 }
-
-const styles: Styles = {
-    button: {
-        color: 'white',
-    },
-    headline: {
-        fontSize: 20,
-        fontWeight: 400,
-        marginBottom: 12,
-        paddingTop: 16,
-    },
-    inkBar: {
-        background: colors.amber600,
-    },
-    menuItem: {
-        padding: '0px 16px 0px 48px',
-    },
-    tabItemContainer: {
-        background: colors.blueGrey500,
-        borderRadius: '4px 4px 0 0',
-    },
-};
 
 export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     private blockchain: Blockchain;

@@ -15,6 +15,7 @@
     "migrate:truffle": "npm run build; truffle migrate",
     "migrate": "npm run build; node lib/deploy/cli.js migrate",
     "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
+    "test:circleci": "yarn test; yarn test:deployer",
     "test:deployer": "npm run build; mocha lib/deploy/test/*_test.js"
   },
   "repository": {
@@ -28,10 +29,10 @@
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/contracts/README.md",
   "devDependencies": {
+    "@0xproject/dev-utils": "^0.0.1",
     "@0xproject/tslint-config": "^0.2.1",
     "@0xproject/types": "^0.1.0",
     "@types/bluebird": "^3.5.3",
-    "@types/isomorphic-fetch": "^0.0.34",
     "@types/lodash": "^4.14.86",
     "@types/node": "^8.0.53",
     "@types/request-promise-native": "^1.0.2",
@@ -45,7 +46,7 @@
     "dirty-chai": "^2.0.1",
     "mocha": "^4.0.1",
     "solc": "^0.4.18",
-    "truffle": "3.4.3",
+    "truffle": "^4.0.1",
     "tslint": "5.8.0",
     "types-bn": "^0.0.1",
     "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
@@ -54,7 +55,7 @@
     "yargs": "^10.0.3"
   },
   "dependencies": {
-    "0x.js": "^0.22.6",
+    "0x.js": "~0.27.2",
     "@0xproject/json-schemas": "^0.6.10",
     "@0xproject/utils": "^0.1.0",
     "@0xproject/web3-wrapper": "^0.1.0",

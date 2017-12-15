@@ -15,9 +15,7 @@ import {
     ExchangeContractEventArgs,
     ExchangeEvents,
     IndexedFilterValues,
-    LogCancelContractEventArgs,
     LogErrorContractEventArgs,
-    LogFillContractEventArgs,
     LogWithDecodedArgs,
     MethodOpts,
     Order,
@@ -26,7 +24,6 @@ import {
     OrderFillRequest,
     OrderTransactionOpts,
     OrderValues,
-    RawLog,
     SignedOrder,
     SubscriptionOpts,
     ValidateOrderFillableOpts,
@@ -88,7 +85,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
         super(web3Wrapper, networkId, abiDecoder);
         this._tokenWrapper = tokenWrapper;
-        this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
+        this._orderValidationUtils = new OrderValidationUtils(this);
         this._contractAddressIfExists = contractAddressIfExists;
     }
     /**

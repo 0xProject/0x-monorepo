@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 
 import {ZeroEx} from '../src';
-import {TokenTransferProxyWrapper} from '../src/contract_wrappers/token_transfer_proxy_wrapper';
 
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';

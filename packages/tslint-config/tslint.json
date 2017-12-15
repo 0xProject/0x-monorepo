@@ -1,12 +1,14 @@
 {
   "extends": [
     "tslint:latest",
-    "tslint-react"
+    "tslint-react",
+    "tslint-eslint-rules"
   ],
   "rules": {
     "adjacent-overload-signatures": true,
     "arrow-parens": [true, "ban-single-arg-parens"],
     "arrow-return-shorthand": true,
+    "async-suffix": true,
     "await-promise": true,
     "binary-expression-operand-order": true,
     "callable-types": true,
@@ -50,8 +52,10 @@
     "no-string-throw": true,
     "no-submodule-imports": false,
     "no-unnecessary-type-assertion": true,
+    "no-unused-variable": [true, {"ignore-pattern": "^_\\d*"}],
     "no-implicit-dependencies": [true, "dev"],
     "number-literal-format": true,
+    "object-curly-spacing": [true, "never"],
     "object-literal-sort-keys": false,
     "ordered-imports": [
         true,
@@ -101,5 +105,6 @@
     "jsx-self-close": true,
     "jsx-wrap-multiline": false,
     "jsx-no-bind": false
-  }
+  },
+  "rulesDirectory": "lib"
 }

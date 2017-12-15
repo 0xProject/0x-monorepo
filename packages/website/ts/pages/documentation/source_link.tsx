@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Source} from 'ts/types';
-import {constants} from 'ts/utils/constants';
 
 interface SourceLinkProps {
     source: Source;

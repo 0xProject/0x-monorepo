@@ -1,5 +1,4 @@
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
-import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
@@ -7,15 +6,12 @@ import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 
 import {
-    DecodedLogEvent,
     LogEvent,
-    ZeroEx,
 } from '../src';
 import {EventWatcher} from '../src/order_watcher/event_watcher';
 import {DoneCallback} from '../src/types';
 
 import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
 import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
@@ -26,7 +22,6 @@ describe('EventWatcher', () => {
     let stubs: Sinon.SinonStub[] = [];
     let eventWatcher: EventWatcher;
     let web3Wrapper: Web3Wrapper;
-    const numConfirmations = 0;
     const logA: Web3.LogEntry = {
         address: '0x71d271f8b14adef568f8f28f1587ce7271ac4ca5',
         blockHash: null,

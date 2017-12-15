@@ -17,12 +17,26 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Greenkeeper badge](https://badges.greenkeeper.io/0xProject/0x.js.svg?token=7c22e5c72acf39d3ead8d29c5d9bb38f9096df3e643024dcedd53ab732847be1&ts=1496426342666)](https://greenkeeper.io/)
 
-### Core Packages
+### Published Packages
 
 | Package | Version | Description |
-|--------|-------|------------|
-| [`0x.js`](/packages/0x.js) | [![npm](https://img.shields.io/npm/v/0x.js.svg?maxAge=2592000)](https://www.npmjs.com/package/0x.js) | A Javascript library for interacting with the 0x protocol |
-| [`@0xproject/assert`](/packages/assert) | [![npm](https://img.shields.io/npm/v/@0xproject/assert.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/assert) | Standard type and schema assertions |
-| [`@0xproject/connect`](/packages/connect) | [![npm](https://img.shields.io/npm/v/@0xproject/connect.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/connect) | A Javascript library for interacting with the standard relayer api |
-| [`@0xproject/json-schemas`](/packages/json-schemas) | [![npm](https://img.shields.io/npm/v/@0xproject/json-schemas.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/json-schemas) | 0x-related json schemas |
-| [`@0xproject/tslint-config`](/packages/tslint-config) | [![npm](https://img.shields.io/npm/v/@0xproject/tslint-config.svg?maxAge=2592000)](https://www.npmjs.com/package/@0xproject/tslint-config) | Custom 0x project TSLint rules |
+|---------|---------|-------------|
+| [`0x.js`](/packages/0x.js) | [![npm](https://img.shields.io/npm/v/0x.js.svg)](https://www.npmjs.com/package/0x.js) | A Javascript library for interacting with the 0x protocol |
+| [`@0xproject/abi-gen`](/packages/abi-gen) | [![npm](https://img.shields.io/npm/v/@0xproject/abi-gen.svg)](https://www.npmjs.com/package/@0xproject/abi-gen) | Tool to generate TS code from ABI |
+| [`@0xproject/assert`](/packages/assert) | [![npm](https://img.shields.io/npm/v/@0xproject/assert.svg)](https://www.npmjs.com/package/@0xproject/assert) | Standard type and schema assertions |
+| [`@0xproject/connect`](/packages/connect) | [![npm](https://img.shields.io/npm/v/@0xproject/connect.svg)](https://www.npmjs.com/package/@0xproject/connect) | A Javascript library for interacting with the standard relayer api |
+| [`@0xproject/json-schemas`](/packages/json-schemas) | [![npm](https://img.shields.io/npm/v/@0xproject/json-schemas.svg)](https://www.npmjs.com/package/@0xproject/json-schemas) | 0x-related json schemas |
+| [`@0xproject/subproviders`](/packages/subproviders) | [![npm](https://img.shields.io/npm/v/@0xproject/subproviders.svg)](https://www.npmjs.com/package/@0xproject/subproviders) | Web3 subproviders |
+| [`@0xproject/tslint-config`](/packages/tslint-config) | [![npm](https://img.shields.io/npm/v/@0xproject/tslint-config.svg)](https://www.npmjs.com/package/@0xproject/tslint-config) | Custom 0x project TSLint rules |
+| [`@0xproject/types`](/packages/types) | [![npm](https://img.shields.io/npm/v/@0xproject/types.svg)](https://www.npmjs.com/package/@0xproject/types) | Shared types |
+| [`@0xproject/utils`](/packages/utils) | [![npm](https://img.shields.io/npm/v/@0xproject/utils.svg)](https://www.npmjs.com/package/@0xproject/utils) | Shared utils |
+| [`@0xproject/web3-wrapper`](/packages/web3-wrapper) | [![npm](https://img.shields.io/npm/v/@0xproject/web3-wrapper.svg)](https://www.npmjs.com/package/@0xproject/web3-wrapper) | Web3 wrapper |
+
+### Private Packages
+
+| Package | Description |
+|---------|-------------|
+| [`@0xproject/contracts`](/packages/contracts) | Smart contracts |
+| [`@0xproject/kovan_faucets`](/packages/kovan-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether |
+| [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts) | Shared monorepo scripts |
+| [`@0xproject/website`](/packages/website) | 0x website |

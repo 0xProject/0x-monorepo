@@ -1,11 +1,11 @@
 import {schemas, SchemaValidator} from '@0xproject/json-schemas';
+import {bigNumberConfigs, intervalUtils} from '@0xproject/utils';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import {artifacts} from './artifacts';
-import {bigNumberConfigs} from './bignumber_config';
 import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
 import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
 import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
@@ -16,7 +16,6 @@ import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 import {
     ECSignature,
     Order,
-    OrderStateWatcherConfig,
     SignedOrder,
     TransactionReceiptWithDecodedLogs,
     Web3Provider,
@@ -26,8 +25,6 @@ import {
 import {AbiDecoder} from './utils/abi_decoder';
 import {assert} from './utils/assert';
 import {constants} from './utils/constants';
-import {intervalUtils} from './utils/interval_utils';
-import {OrderStateUtils} from './utils/order_state_utils';
 import {signatureUtils} from './utils/signature_utils';
 import {utils} from './utils/utils';
 
