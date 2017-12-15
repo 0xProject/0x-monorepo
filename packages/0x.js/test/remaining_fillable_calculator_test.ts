@@ -7,7 +7,6 @@ import { RemainingFillableCalculator } from '../src/order_watcher/remaining_fill
 import { ECSignature, SignedOrder } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { TokenUtils } from './utils/token_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;

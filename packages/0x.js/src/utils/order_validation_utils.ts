@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 
 import {ZeroEx} from '../0x';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
-import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {ExchangeContractErrs, Order, SignedOrder, TradeSide, TransferType, ZeroExError} from '../types';
 import {constants} from '../utils/constants';
 import {utils} from '../utils/utils';
@@ -11,7 +10,6 @@ import {utils} from '../utils/utils';
 import {ExchangeTransferSimulator} from './exchange_transfer_simulator';
 
 export class OrderValidationUtils {
-    private tokenWrapper: TokenWrapper;
     private exchangeWrapper: ExchangeWrapper;
     public static validateCancelOrderThrowIfInvalid(
         order: Order, cancelTakerTokenAmount: BigNumber, unavailableTakerTokenAmount: BigNumber,
@@ -84,8 +82,7 @@ export class OrderValidationUtils {
                                      .round(0);
         return fillMakerTokenAmount;
     }
-    constructor(tokenWrapper: TokenWrapper, exchangeWrapper: ExchangeWrapper) {
-        this.tokenWrapper = tokenWrapper;
+    constructor(exchangeWrapper: ExchangeWrapper) {
         this.exchangeWrapper = exchangeWrapper;
     }
     public async validateOrderFillableOrThrowAsync(

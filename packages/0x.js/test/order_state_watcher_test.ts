@@ -1,5 +1,4 @@
 import {BlockchainLifecycle} from '@0xproject/dev-utils';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -7,19 +6,15 @@ import 'mocha';
 import * as Web3 from 'web3';
 
 import {
-    DecodedLogEvent,
     ExchangeContractErrs,
-    LogEvent,
     OrderState,
     OrderStateInvalid,
     OrderStateValid,
     SignedOrder,
     Token,
     ZeroEx,
-    ZeroExConfig,
     ZeroExError,
 } from '../src';
-import {OrderStateWatcher} from '../src/order_watcher/order_state_watcher';
 import {DoneCallback} from '../src/types';
 
 import {chaiSetup} from './utils/chai_setup';
@@ -48,7 +43,6 @@ describe('OrderStateWatcher', () => {
     let takerToken: Token;
     let maker: string;
     let taker: string;
-    let web3Wrapper: Web3Wrapper;
     let signedOrder: SignedOrder;
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
@@ -67,7 +61,6 @@ describe('OrderStateWatcher', () => {
         fillScenarios = new FillScenarios(zeroEx, userAddresses, tokens, zrxTokenAddress, exchangeContractAddress);
         await fillScenarios.initTokenBalancesAsync();
         [makerToken, takerToken] = tokenUtils.getDummyTokens();
-        web3Wrapper = (zeroEx as any)._web3Wrapper;
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -142,7 +135,6 @@ describe('OrderStateWatcher', () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerToken.address, takerToken.address, maker, taker, fillableAmount,
                 );
-                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
                 zeroEx.orderStateWatcher.addOrder(signedOrder);
                 const callback = reportCallbackErrors(done)((orderState: OrderState) => {
                     throw new Error('OrderState callback fired for irrelevant order');
@@ -151,7 +143,6 @@ describe('OrderStateWatcher', () => {
                 const notTheMaker = userAddresses[0];
                 const anyRecipient = taker;
                 const transferAmount = new BigNumber(2);
-                const notTheMakerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, notTheMaker);
                 await zeroEx.token.transferAsync(makerToken.address, notTheMaker, anyRecipient, transferAmount);
                 setTimeout(() => {
                     done();
@@ -208,8 +199,6 @@ describe('OrderStateWatcher', () => {
                 );
 
                 const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-                const takerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, taker);
-
                 const fillAmountInBaseUnits = new BigNumber(2);
                 const orderHash = ZeroEx.getOrderHashHex(signedOrder);
                 zeroEx.orderStateWatcher.addOrder(signedOrder);
@@ -242,8 +231,6 @@ describe('OrderStateWatcher', () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
                     makerToken.address, takerToken.address, makerFee, takerFee, maker, taker, fillableAmount,
                     taker);
-                const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-                zeroEx.orderStateWatcher.addOrder(signedOrder);
                 const callback = reportCallbackErrors(done)((orderState: OrderState) => {
                     done();
                 });
@@ -260,8 +247,6 @@ describe('OrderStateWatcher', () => {
                         makerToken.address, takerToken.address, maker, taker, makerFillableAmount,
                         takerFillableAmount,
                     );
-                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-                    const takerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, taker);
                     const fillAmountInBaseUnits = ZeroEx.toBaseUnitAmount(new BigNumber(2), decimals);
                     const orderHash = ZeroEx.getOrderHashHex(signedOrder);
                     zeroEx.orderStateWatcher.addOrder(signedOrder);
@@ -288,8 +273,6 @@ describe('OrderStateWatcher', () => {
                     signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                         makerToken.address, takerToken.address, maker, taker, fillableAmount,
                     );
-
-                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
 
                     const changedMakerApprovalAmount = ZeroEx.toBaseUnitAmount(new BigNumber(3), decimals);
                     zeroEx.orderStateWatcher.addOrder(signedOrder);
@@ -343,8 +326,6 @@ describe('OrderStateWatcher', () => {
                         makerToken.address, takerToken.address, makerFee, takerFee, maker,
                         taker, fillableAmount, feeRecipient);
 
-                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-
                     const remainingTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(4), decimals);
                     const transferTokenAmount = makerFee.sub(remainingTokenAmount);
                     zeroEx.orderStateWatcher.addOrder(signedOrder);
@@ -370,10 +351,7 @@ describe('OrderStateWatcher', () => {
                         makerToken.address, takerToken.address, makerFee, takerFee, maker,
                         taker, fillableAmount, feeRecipient);
 
-                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-
                     const remainingFeeAmount = ZeroEx.toBaseUnitAmount(new BigNumber(3), decimals);
-                    const transferFeeAmount = makerFee.sub(remainingFeeAmount);
 
                     const remainingTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(4), decimals);
                     const transferTokenAmount = makerFee.sub(remainingTokenAmount);
@@ -401,7 +379,6 @@ describe('OrderStateWatcher', () => {
                         makerToken.address, takerToken.address, makerFee, takerFee, maker,
                         taker, fillableAmount, feeRecipient);
 
-                    const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
                     zeroEx.orderStateWatcher.addOrder(signedOrder);
 
                     const callback = reportCallbackErrors(done)((orderState: OrderState) => {
@@ -434,7 +411,6 @@ describe('OrderStateWatcher', () => {
                 });
                 zeroEx.orderStateWatcher.subscribe(callback);
 
-                const shouldThrowOnInsufficientBalanceOrAllowance = true;
                 await zeroEx.exchange.cancelOrderAsync(signedOrder, fillableAmount);
             })().catch(done);
         });
@@ -465,9 +441,6 @@ describe('OrderStateWatcher', () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                     makerToken.address, takerToken.address, maker, taker, fillableAmount,
                 );
-
-                const makerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, maker);
-                const takerBalance = await zeroEx.token.getBalanceAsync(makerToken.address, taker);
 
                 const cancelAmountInBaseUnits = new BigNumber(2);
                 const orderHash = ZeroEx.getOrderHashHex(signedOrder);

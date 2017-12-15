@@ -23,8 +23,6 @@ import {ContractWrapper} from './contract_wrapper';
 import {TokenContract} from './generated/token';
 import {TokenTransferProxyWrapper} from './token_transfer_proxy_wrapper';
 
-const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
-
 /**
  * This class includes all the functionality related to interacting with ERC20 token contracts.
  * All ERC20 method calls are supported, along with some convenience methods for getting/setting allowances
