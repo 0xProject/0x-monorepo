@@ -576,7 +576,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     private renderDharmaLoanFrame() {
         if (utils.isUserOnMobile()) {
             return (
-                <h4 style={{ textAlign: 'center' }}>
+                <h4 style={{textAlign: 'center'}}>
                     We apologize -- Dharma loan requests are not available on
                     mobile yet.  Please try again through your desktop browser.
                 </h4>

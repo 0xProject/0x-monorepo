@@ -124,7 +124,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 className="text-decoration-none"
                 href={constants.GITHUB_URL}
             >
-                <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="GitHub" />
+                <MenuItem style={{fontSize: styles.menuItem.fontSize}} primaryText="GitHub" />
             </a>,
             <a
                 key="subMenuItem-whitePaper"
