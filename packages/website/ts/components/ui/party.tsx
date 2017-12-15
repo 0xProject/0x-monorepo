@@ -7,7 +7,6 @@ import {Identicon} from 'ts/components/ui/identicon';
 import {EtherscanLinkSuffixes} from 'ts/types';
 import {utils} from 'ts/utils/utils';
 
-const MIN_ADDRESS_WIDTH = 60;
 const IMAGE_DIMENSION = 100;
 const IDENTICON_DIAMETER = 95;
 const CHECK_MARK_GREEN = 'rgb(0, 195, 62)';
@@ -33,10 +32,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
     public render() {
         const label = this.props.label;
         const address = this.props.address;
-        const tooltipId = `${label}-${address}-tooltip`;
         const identiconDiameter = this.props.identiconDiameter;
-        const addressWidth = identiconDiameter > MIN_ADDRESS_WIDTH ?
-                             identiconDiameter : MIN_ADDRESS_WIDTH;
         const emptyIdenticonStyles = {
             width: identiconDiameter,
             height: identiconDiameter,

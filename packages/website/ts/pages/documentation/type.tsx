@@ -7,7 +7,6 @@ import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {TypeDefinition} from 'ts/pages/documentation/type_definition';
 import {Type as TypeDef, TypeDefinitionByName, TypeDocTypes} from 'ts/types';
 import {constants} from 'ts/utils/constants';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
 import {utils} from 'ts/utils/utils';
 
 const BUILT_IN_TYPE_COLOR = '#e69d00';
@@ -48,10 +47,8 @@ interface TypeProps {
 // <Type /> components (e.g when rendering the union type).
 export function Type(props: TypeProps): any {
     const type = props.type;
-    const isIntrinsic = type.typeDocType === TypeDocTypes.Intrinsic;
     const isReference = type.typeDocType === TypeDocTypes.Reference;
     const isArray = type.typeDocType === TypeDocTypes.Array;
-    const isStringLiteral = type.typeDocType === TypeDocTypes.StringLiteral;
     let typeNameColor = 'inherit';
     let typeName: string|React.ReactNode;
     let typeArgs: React.ReactNode[] = [];

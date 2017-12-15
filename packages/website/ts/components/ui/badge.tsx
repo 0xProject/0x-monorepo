@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Styles} from 'ts/types';
 

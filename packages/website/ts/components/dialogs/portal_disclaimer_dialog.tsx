@@ -2,7 +2,6 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import {constants} from 'ts/utils/constants';
 
 interface PortalDisclaimerDialogProps {
     isOpen: boolean;

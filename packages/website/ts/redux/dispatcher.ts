@@ -6,7 +6,6 @@ import {
     AssetToken,
     BlockchainErrs,
     Direction,
-    Fill,
     Order,
     ProviderType,
     ScreenWidths,

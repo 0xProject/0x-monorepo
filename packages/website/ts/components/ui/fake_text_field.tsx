@@ -1,4 +1,3 @@
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {InputLabel} from 'ts/components/ui/input_label';
 import {Styles} from 'ts/types';

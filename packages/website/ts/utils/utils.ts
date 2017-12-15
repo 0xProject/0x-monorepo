@@ -1,7 +1,6 @@
 import {ExchangeContractErrs, ZeroExError} from '0x.js';
 import BigNumber from 'bignumber.js';
 import deepEqual = require('deep-equal');
-import ethUtil = require('ethereumjs-util');
 import isMobile = require('is-mobile');
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -9,7 +8,6 @@ import {
     EtherscanLinkSuffixes,
     Networks,
     Order,
-    OrderParty,
     ScreenWidths,
     Side,
     SideToAssetToken,
@@ -110,9 +108,9 @@ export const utils = {
     },
     getColSize(items: number) {
         const bassCssGridSize = 12; // Source: http://basscss.com/#basscss-grid
-        const colSize = 12 / items;
+        const colSize = bassCssGridSize / items;
         if (!_.isInteger(colSize)) {
-            throw new Error('Number of cols must be divisible by 12');
+            throw new Error(`Number of cols must be divisible by ${bassCssGridSize}`);
         }
         return colSize;
     },

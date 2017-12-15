@@ -17,35 +17,27 @@ import {MethodBlock} from 'ts/pages/documentation/method_block';
 import {SourceLink} from 'ts/pages/documentation/source_link';
 import {Type} from 'ts/pages/documentation/type';
 import {TypeDefinition} from 'ts/pages/documentation/type_definition';
-import {AnchorTitle} from 'ts/pages/shared/anchor_title';
 import {MarkdownSection} from 'ts/pages/shared/markdown_section';
 import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
 import {SectionHeader} from 'ts/pages/shared/section_header';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {
     AddressByContractName,
-    CustomType,
     DocAgnosticFormat,
-    Docs,
-    DocsInfoConfig,
     DoxityDocObj,
     EtherscanLinkSuffixes,
     Event,
-    MenuSubsectionsBySection,
     Networks,
     Property,
     SolidityMethod,
     Styles,
     TypeDefinitionByName,
-    TypeDocNode,
     TypescriptMethod,
-    WebsitePaths,
 } from 'ts/types';
 import {constants} from 'ts/utils/constants';
 import {docUtils} from 'ts/utils/doc_utils';
 import {utils} from 'ts/utils/utils';
 
-const SCROLL_TO_TIMEOUT = 500;
 const SCROLL_TOP_ID = 'docsScrollTop';
 const CUSTOM_PURPLE = '#690596';
 const CUSTOM_RED = '#e91751';

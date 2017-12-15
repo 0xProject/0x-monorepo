@@ -4,10 +4,7 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
-import * as moment from 'moment';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {Blockchain} from 'ts/blockchain';
@@ -19,18 +16,13 @@ import {Alert} from 'ts/components/ui/alert';
 import {EthereumAddress} from 'ts/components/ui/ethereum_address';
 import {Identicon} from 'ts/components/ui/identicon';
 import {VisualOrder} from 'ts/components/visual_order';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {orderSchema} from 'ts/schemas/order_schema';
 import {SchemaValidator} from 'ts/schemas/validator';
 import {
     AlertTypes,
     BlockchainErrs,
-    ContractResponse,
-    ExchangeContractErrs,
     Order,
-    OrderToken,
-    Side,
     Token,
     TokenByAddress,
     TokenStateByAddress,
@@ -531,8 +523,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         });
 
         const parsedOrder = this.state.parsedOrder;
-        const orderHash = parsedOrder.signature.hash;
-        const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
         const takerFillAmount = this.props.orderFillAmount;
 
         if (_.isUndefined(this.props.userAddress)) {

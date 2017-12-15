@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {Dispatch, Store as ReduxStore} from 'redux';
+import {Dispatch} from 'redux';
 import {
     Portal as PortalComponent,
     PortalAllProps as PortalComponentAllProps,
@@ -12,7 +12,6 @@ import {Dispatcher} from 'ts/redux/dispatcher';
 import {State} from 'ts/redux/reducer';
 import {
     BlockchainErrs,
-    Fill,
     HashData,
     Order,
     ScreenWidths,
@@ -22,23 +21,22 @@ import {
 } from 'ts/types';
 import {constants} from 'ts/utils/constants';
 
-interface MapStateToProps {
+interface ConnectedState {
     blockchainErr: BlockchainErrs;
     blockchainIsLoaded: boolean;
     hashData: HashData;
     networkId: number;
     nodeVersion: string;
-    orderFillAmount: number;
+    orderFillAmount: BigNumber;
     tokenByAddress: TokenByAddress;
     tokenStateByAddress: TokenStateByAddress;
-    userEtherBalance: number;
+    userEtherBalance: BigNumber;
     screenWidth: ScreenWidths;
     shouldBlockchainErrDialogBeOpen: boolean;
     userAddress: string;
     userSuppliedOrderCache: Order;
+    flashMessage?: string|React.ReactNode;
 }
-
-interface ConnectedState {}
 
 interface ConnectedDispatch {
     dispatcher: Dispatcher;

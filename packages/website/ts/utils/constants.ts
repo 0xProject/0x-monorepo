@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import {
     ContractAddresses,
     Docs,
-    ExchangeContractErrs,
     Networks,
     PublicNodeUrlsByNetworkId,
     WebsitePaths,

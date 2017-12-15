@@ -6,8 +6,7 @@ import DocumentTitle = require('react-document-title');
 import {Link} from 'react-router-dom';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
-import {ScreenWidths, Styles, WebsitePaths} from 'ts/types';
-import {configs} from 'ts/utils/configs';
+import {ScreenWidths, WebsitePaths} from 'ts/types';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
@@ -269,7 +268,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
         const isMediumScreen = this.state.screenWidth === ScreenWidths.MD;
         const projectList = _.map(projects, (project: Project, i: number) => {
-            const colWidth = isSmallScreen ? 3 : isMediumScreen ? 4 : 2 - (i % 2);
+            const colWidth = isSmallScreen ? 3 : (isMediumScreen ? 4 : 2 - (i % 2));
             return (
                 <div
                     key={`project-${project.logoFileName}`}
@@ -470,11 +469,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private renderBuildingBlocksSection() {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
-        const underlineStyle: React.CSSProperties = {
-            height: isSmallScreen ? 18 : 23,
-            lineHeight: 'none',
-            borderBottom: '2px solid #979797',
-        };
         const descriptionStyle: React.CSSProperties = {
             fontFamily: 'Roboto Mono',
             lineHeight: isSmallScreen ? 1.5 : 2,
@@ -606,21 +600,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         });
         return assets;
     }
-    private renderLink(label: string, path: string, color: string, style?: React.CSSProperties) {
-        return (
-            <div
-                style={{borderBottom: `1px solid ${color}`, paddingBottom: 1, height: 20, lineHeight: 1.7, ...style}}
-            >
-                <Link
-                    to={path}
-                    className="text-decoration-none"
-                    style={{color, fontFamily: 'Roboto Mono'}}
-                >
-                    {label}
-                </Link>
-            </div>
-        );
-    }
     private renderInfoBoxes() {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
         const boxStyle: React.CSSProperties = {
@@ -676,7 +655,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private renderUseCases() {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
-        const isMediumScreen = this.state.screenWidth === ScreenWidths.MD;
 
         const useCases: UseCase[] = [
             {

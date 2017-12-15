@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Link} from 'react-router-dom';
 import {MenuItem} from 'ts/components/ui/menu_item';
 import {WebsitePaths} from 'ts/types';
 

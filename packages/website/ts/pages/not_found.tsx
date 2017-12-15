@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Link} from 'react-router-dom';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
 import {Styles} from 'ts/types';

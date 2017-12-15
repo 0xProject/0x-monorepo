@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import {Party} from 'ts/components/ui/party';
 import {AssetToken, Token, TokenByAddress} from 'ts/types';
-import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
 const PRECISION = 5;

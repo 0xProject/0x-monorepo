@@ -1,15 +1,11 @@
 import * as _ from 'lodash';
-import RaisedButton from 'material-ui/RaisedButton';
 import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import {Link} from 'react-router-dom';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
 import {Profile} from 'ts/pages/about/profile';
-import {Question} from 'ts/pages/faq/question';
 import {ProfileInfo, Styles} from 'ts/types';
-import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
@@ -236,7 +232,7 @@ export class About extends React.Component<AboutProps, AboutState> {
     }
     private renderProfiles(profiles: ProfileInfo[]) {
         const numIndiv = profiles.length;
-        const colSize = utils.getColSize(profiles.length);
+        const colSize = utils.getColSize(numIndiv);
         return _.map(profiles, profile => {
             return (
                 <div

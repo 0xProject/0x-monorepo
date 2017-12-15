@@ -18,7 +18,6 @@ import {
     TableRow,
     TableRowColumn,
 } from 'material-ui/Table';
-import QueryString = require('query-string');
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');

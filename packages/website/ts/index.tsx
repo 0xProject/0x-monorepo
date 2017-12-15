@@ -6,7 +6,7 @@ import {colors, getMuiTheme, MuiThemeProvider} from 'material-ui/styles';
 import * as React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
-import {BrowserRouter as Router, Link, Redirect, Route, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 import {createStore, Store as ReduxStore} from 'redux';
 import {createLazyComponent} from 'ts/lazy_component';
