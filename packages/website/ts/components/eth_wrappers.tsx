@@ -91,6 +91,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         const etherToken = _.find(tokens, {symbol: 'WETH'});
         const etherTokenState = this.props.tokenStateByAddress[etherToken.address];
         const wethBalance = ZeroEx.toUnitAmount(etherTokenState.balance, 18);
+        const isBidirectional = true;
         return (
             <div className="clearfix lg-px4 md-px4 sm-px2" style={{minHeight: 600}}>
                 <div className="relative">
@@ -113,7 +114,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 <Divider />
                 <div>
                     <div className="py2">
-                        Wrap ETH into an ERC20-compliant Ether token
+                        Wrap ETH into an ERC20-compliant Ether token. 1 ETH = 1 WETH.
                     </div>
                     <div>
                         <Table
@@ -124,8 +125,8 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                 <TableRow>
                                     <TableHeaderColumn>ETH Token</TableHeaderColumn>
                                     <TableHeaderColumn>Balance</TableHeaderColumn>
-                                    <TableHeaderColumn>
-                                        {'ETH <-> WETH'}
+                                    <TableHeaderColumn className="center">
+                                        {this.renderActionColumnTitle(isBidirectional)}
                                     </TableHeaderColumn>
                                 </TableRow>
                             </TableHeader>
@@ -145,7 +146,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     <TableRowColumn>
                                         {this.props.userEtherBalance.toFixed(PRECISION)} ETH
                                     </TableRowColumn>
-                                    <TableRowColumn style={{paddingLeft: 3}}>
+                                    <TableRowColumn>
                                         <EthWethConversionButton
                                             isOutdatedWrappedEther={false}
                                             direction={Side.deposit}
@@ -172,7 +173,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     <TableRowColumn>
                                         {wethBalance.toFixed(PRECISION)} WETH
                                     </TableRowColumn>
-                                    <TableRowColumn style={{paddingLeft: 3}}>
+                                    <TableRowColumn>
                                         <EthWethConversionButton
                                             isOutdatedWrappedEther={false}
                                             direction={Side.receive}
@@ -211,8 +212,8 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                 <TableRow>
                                     <TableHeaderColumn>WETH Version</TableHeaderColumn>
                                     <TableHeaderColumn>Balance</TableHeaderColumn>
-                                    <TableHeaderColumn>
-                                        {'WETH -> ETH'}
+                                    <TableHeaderColumn className="center">
+                                        {this.renderActionColumnTitle(!isBidirectional)}
                                     </TableHeaderColumn>
                                 </TableRow>
                             </TableHeader>
@@ -222,6 +223,28 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         </Table>
                     </div>
                 </div>
+            </div>
+        );
+    }
+    private renderActionColumnTitle(isBidirectional: boolean) {
+        let iconClass = 'zmdi-long-arrow-right';
+        let leftSymbol = 'WETH';
+        let rightSymbol = 'ETH';
+        if (isBidirectional) {
+            iconClass = 'zmdi-swap';
+            leftSymbol = 'ETH';
+            rightSymbol = 'WETH';
+        }
+        return (
+            <div className="flex mx-auto" style={{width: 85}}>
+                <div style={{paddingTop: 3}}>{leftSymbol}</div>
+                <div className="px1">
+                    <i
+                        style={{fontSize: 18}}
+                        className={`zmdi ${iconClass}`}
+                    />
+                </div>
+                <div style={{paddingTop: 3}}>{rightSymbol}</div>
             </div>
         );
     }
@@ -267,7 +290,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                             <i className="zmdi zmdi-spinner zmdi-hc-spin" />
                         }
                     </TableRowColumn>
-                    <TableRowColumn style={{paddingLeft: 3}}>
+                    <TableRowColumn>
                         <EthWethConversionButton
                             isDisabled={!isStateLoaded}
                             isOutdatedWrappedEther={true}

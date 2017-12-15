@@ -53,7 +53,7 @@ export class EthWethConversionDialog extends
                 title={title}
                 titleStyle={{fontWeight: 100}}
                 actions={convertDialogActions}
-                contentStyle={{width: 600}}
+                contentStyle={{width: 448}}
                 open={this.props.isOpen}
             >
                 {this.renderConversionDialogBody()}
@@ -70,7 +70,7 @@ export class EthWethConversionDialog extends
                 <div className="pb2">
                     {explanation}
                 </div>
-                <div className="mx-auto" style={{maxWidth: 332}}>
+                <div className="mx-auto" style={{maxWidth: 312}}>
                     <div className="flex">
                         {this.renderCurrency(isWrappedVersion)}
                         <div style={{paddingTop: 68}}>
@@ -83,7 +83,7 @@ export class EthWethConversionDialog extends
                     </div>
                     <div
                         className="pt2 mx-auto"
-                        style={{width: 235}}
+                        style={{width: 245}}
                     >
                         {this.props.direction === Side.receive ?
                             <TokenAmountInput
@@ -131,7 +131,7 @@ export class EthWethConversionDialog extends
                 <div className="center py2">
                     <img src={iconUrl} style={{width: 60}} />
                 </div>
-                <div className="center">
+                <div className="center" style={{fontSize: 12}}>
                     ({symbol})
                 </div>
             </div>
