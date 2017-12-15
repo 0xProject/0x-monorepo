@@ -592,9 +592,22 @@ export class Blockchain {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
             // TODO: Refactor this out and pull the iconUrl directly from the TokenRegistry
             const iconUrl = constants.iconUrlBySymbol[t.symbol];
+            // HACK: Temporarily we hijack the WETH addresses fetched from the tokenRegistry
+            // so that we can take our time with actually updating it. This ensures that when
+            // we deploy the new WETH page, everyone will re-fill their trackedTokens with the
+            // new canonical WETH.
+            // TODO: Remove this hack once we've updated the TokenRegistries
+            let address = t.address;
+            if (t.symbol === 'WETH') {
+                if (this.networkId === 1) {
+                    address = '0xe495bcacaf29a0eb00fb67b86e9cd2a994dd55d8';
+                } else if (this.networkId === 42) {
+                    address = '0x739e78d6bebbdf24105a5145fa04436589d1cbd9';
+                }
+            }
             const token: Token = {
                 iconUrl,
-                address: t.address,
+                address,
                 name: t.name,
                 symbol: t.symbol,
                 decimals: t.decimals,
