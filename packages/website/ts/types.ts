@@ -135,7 +135,6 @@ export enum BalanceErrs {
     faucetRequestFailed,
     faucetQueueIsFull,
     mintingFailed,
-    wethConversionFailed,
     sendFailed,
     allowanceSettingFailed,
 }
@@ -681,6 +680,18 @@ export interface DocsInfoConfig {
   publicTypes?: string[];
   sectionNameToModulePath?: {[sectionName: string]: string[]};
   menuSubsectionToVersionWhenIntroduced?: {[sectionName: string]: string};
+}
+
+export interface TimestampMsRange {
+    startTimestampMs: number;
+    endTimestampMs: number;
+}
+
+export interface OutdatedWrappedEtherByNetworkId {
+    [networkId: number]: {
+        address: string;
+        timestampMsRange: TimestampMsRange;
+    };
 }
 
 // tslint:disable:max-file-line-count

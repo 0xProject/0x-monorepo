@@ -10,6 +10,7 @@ import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 import {createStore, Store as ReduxStore} from 'redux';
 import {createLazyComponent} from 'ts/lazy_component';
+import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
 import {tradeHistoryStorage} from 'ts/local_storage/trade_history_storage';
 import {About} from 'ts/pages/about/about';
 import {FAQ} from 'ts/pages/faq/faq';
@@ -29,6 +30,7 @@ BigNumber.config({
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
+trackedTokenStorage.clearIfRequired();
 
 const CUSTOM_GREY = 'rgb(39, 39, 39)';
 const CUSTOM_GREEN = 'rgb(102, 222, 117)';

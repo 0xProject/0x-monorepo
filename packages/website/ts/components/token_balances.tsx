@@ -22,7 +22,6 @@ import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 import {Blockchain} from 'ts/blockchain';
-import {EthWethConversionButton} from 'ts/components/eth_weth_conversion_button';
 import {AssetPicker} from 'ts/components/generate_order/asset_picker';
 import {AllowanceToggle} from 'ts/components/inputs/allowance_toggle';
 import {SendButton} from 'ts/components/send_button';
@@ -424,16 +423,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             onClickAsyncFn={this.onMintTestTokensAsync.bind(this, token)}
                         />
                     }
-                    {token.symbol === ETHER_TOKEN_SYMBOL &&
-                        <EthWethConversionButton
-                            blockchain={this.props.blockchain}
-                            dispatcher={this.props.dispatcher}
-                            ethToken={this.getWrappedEthToken()}
-                            ethTokenState={tokenState}
-                            userEtherBalance={this.props.userEtherBalance}
-                            onError={this.onEthWethConversionFailed.bind(this)}
-                        />
-                    }
                     {token.symbol === ZRX_TOKEN_SYMBOL && this.props.networkId === constants.TESTNET_NETWORK_ID &&
                         <LifeCycleRaisedButton
                             labelReady="Request"
@@ -485,11 +474,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         }
         this.setState({
             isTokenPickerOpen: false,
-        });
-    }
-    private onEthWethConversionFailed() {
-        this.setState({
-            errorType: BalanceErrs.wethConversionFailed,
         });
     }
     private onSendFailed() {
@@ -547,14 +531,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 return (
                     <div>
                         Minting your test tokens failed unexpectedly. Please refresh the page and try again.
-                    </div>
-                );
-
-            case BalanceErrs.wethConversionFailed:
-                return (
-                    <div>
-                        Converting between Ether and Ether Tokens failed unexpectedly.
-                        Please refresh the page and try again.
                     </div>
                 );
 
@@ -678,11 +654,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         this.setState({
             isDharmaDialogVisible: !this.state.isDharmaDialogVisible,
         });
-    }
-    private getWrappedEthToken() {
-        const tokens = _.values(this.props.tokenByAddress);
-        const wrappedEthToken = _.find(tokens, {symbol: ETHER_TOKEN_SYMBOL});
-        return wrappedEthToken;
     }
     private onAddTokenClicked() {
         this.setState({
