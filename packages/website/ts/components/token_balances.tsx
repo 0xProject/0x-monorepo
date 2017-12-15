@@ -655,11 +655,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isDharmaDialogVisible: !this.state.isDharmaDialogVisible,
         });
     }
-    private getWrappedEthToken() {
-        const tokens = _.values(this.props.tokenByAddress);
-        const wrappedEthToken = _.find(tokens, {symbol: ETHER_TOKEN_SYMBOL});
-        return wrappedEthToken;
-    }
     private onAddTokenClicked() {
         this.setState({
             isTokenPickerOpen: true,

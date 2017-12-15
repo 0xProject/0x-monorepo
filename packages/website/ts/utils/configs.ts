@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import {
     Environments,
     OutdatedWrappedEtherByNetworkId,
-    TimestampMsRange,
 } from 'ts/types';
 
 const BASE_URL = window.location.origin;

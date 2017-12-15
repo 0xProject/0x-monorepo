@@ -2,8 +2,6 @@ import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
 import {colors} from 'material-ui/styles';
 import {
     Table,
@@ -17,8 +15,6 @@ import * as moment from 'moment';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {EthWethConversionButton} from 'ts/components/eth_weth_conversion_button';
-import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {
     OutdatedWrappedEtherByNetworkId,
@@ -30,8 +26,6 @@ import {
 } from 'ts/types';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
-import {errorReporter} from 'ts/utils/error_reporter';
-import {utils} from 'ts/utils/utils';
 
 const PRECISION = 5;
 const DATE_FORMAT = 'D/M/YY';
@@ -39,7 +33,6 @@ const LIGHT_GRAY = '#A5A5A5';
 const ICON_DIMENSION = 40;
 const ETHER_ICON_PATH = '/images/ether.png';
 const OUTDATED_WETH_ICON_PATH = '/images/wrapped_eth_gray.png';
-const ETHER_TOKEN_SYMBOL = 'WETH';
 
 interface OutdatedWETHAddressToIsStateLoaded {
     [address: string]: boolean;
