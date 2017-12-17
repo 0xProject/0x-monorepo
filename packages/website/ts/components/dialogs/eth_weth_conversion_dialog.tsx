@@ -109,7 +109,16 @@ export class EthWethConversionDialog extends
                             className="pt1"
                             style={{fontSize: 12}}
                         >
-                            1 ETH = 1 WETH
+                            <div className="left">1 ETH = 1 WETH</div>
+                            {this.props.direction === Side.receive &&
+                                <div
+                                    className="right"
+                                    onClick={this.onMaxClick.bind(this)}
+                                    style={{color: DARK_BLUE, textDecoration: 'underline', cursor: 'pointer'}}
+                                >
+                                    Max
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -136,6 +145,11 @@ export class EthWethConversionDialog extends
                 </div>
             </div>
         );
+    }
+    private onMaxClick() {
+        this.setState({
+            value: this.props.tokenState.balance,
+        });
     }
     private onValueChange(isValid: boolean, amount?: BigNumber) {
         this.setState({
