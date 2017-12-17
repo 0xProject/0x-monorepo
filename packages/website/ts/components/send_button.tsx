@@ -76,8 +76,8 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
             } else if (!_.includes(errMsg, 'User denied transaction')) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
-                await errorReporter.reportAsync(err);
                 this.props.onError();
+                await errorReporter.reportAsync(err);
             }
         }
         this.setState({
