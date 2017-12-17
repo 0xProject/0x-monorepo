@@ -83,6 +83,7 @@ export const constants = {
     WEB3_DECODED_LOG_ENTRY_EVENT_URL:
         'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
     WEB3_LOG_ENTRY_EVENT_URL: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
+    WETH_IO_URL: 'https://weth.io/',
     ZEROEX_CHAT_URL: 'https://chat.0xproject.com',
     // Projects
     ETHFINEX_URL: 'https://www.bitfinex.com/ethfinex',

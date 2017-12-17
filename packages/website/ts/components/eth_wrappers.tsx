@@ -99,7 +99,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                     <div className="absolute" style={{top: 0, right: 0}}>
                         <a
                             target="_blank"
-                            href="https://weth.io/"
+                            href={constants.WETH_IO_URL}
                             style={{color: LIGHT_GRAY}}
                         >
                             <div className="flex">
