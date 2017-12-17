@@ -28,7 +28,6 @@ contract('EtherToken', (accounts: string[]) => {
         etherTokenAddress = EtherToken.address;
         zeroEx = new ZeroEx(web3.currentProvider, {
             gasPrice,
-            etherTokenContractAddress: etherTokenAddress,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
     });
@@ -45,7 +44,7 @@ contract('EtherToken', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethToDeposit = initEthBalance.plus(1);
 
-            return expect(zeroEx.etherToken.depositAsync(ethToDeposit, account))
+            return expect(zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account))
                 .to.be.rejectedWith(ZeroExError.InsufficientEthBalanceForDeposit);
         });
 
@@ -55,7 +54,7 @@ contract('EtherToken', (accounts: string[]) => {
 
             const ethToDeposit = new BigNumber(web3.toWei(1, 'ether'));
 
-            const txHash = await zeroEx.etherToken.depositAsync(ethToDeposit, account);
+            const txHash = await zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
@@ -72,7 +71,7 @@ contract('EtherToken', (accounts: string[]) => {
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
             const ethTokensToWithdraw = initEthTokenBalance.plus(1);
 
-            return expect(zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account))
+            return expect(zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account))
                 .to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
         });
 
@@ -81,7 +80,7 @@ contract('EtherToken', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;
             expect(ethTokensToWithdraw).to.not.be.bignumber.equal(0);
-            const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account, {
+            const txHash = await zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account, {
                 gasLimit: constants.MAX_ETHERTOKEN_WITHDRAW_GAS,
             });
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
