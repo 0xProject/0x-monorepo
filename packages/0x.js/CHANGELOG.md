@@ -1,5 +1,9 @@
 # CHANGELOG
 
+v0.28.0 - _TBD_
+------------------------
+* Add `etherTokenAddress` arg to `depositAsync` and `withdrawAsync` methods on `EtherToken` wrapper. (#267)
+
 v0.27.1 - _November 28, 2017_
 ------------------------
     * Export `TransactionOpts` type
