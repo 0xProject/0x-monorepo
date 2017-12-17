@@ -268,7 +268,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             const balanceInEthIfExists = isStateLoaded ?
                                          ZeroEx.toUnitAmount(outdatedEtherTokenState.balance, 18).toFixed(PRECISION) :
                                          undefined;
-            const onConversionSuccessful = this.onOutdatedConversionSuccessfulAsync.bind(this, outdatedWETHIfExists.address);
+            const onConversionSuccessful = this.onOutdatedConversionSuccessfulAsync.bind(
+                this, outdatedWETHIfExists.address,
+            );
             const etherscanUrl = utils.getEtherScanLinkIfExists(
                 outdatedWETHIfExists.address, this.props.networkId, EtherscanLinkSuffixes.address,
             );
@@ -384,7 +386,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         const outdatedWETHAddresses = _.compact(_.map(configs.outdatedWrappedEthers, outdatedWrappedEtherByNetwork => {
             const  outdatedWrappedEtherIfExists = outdatedWrappedEtherByNetwork[this.props.networkId];
             if (_.isUndefined(outdatedWrappedEtherIfExists)) {
-                return undefined
+                return undefined;
             }
             const address = outdatedWrappedEtherIfExists.address;
             return address;
