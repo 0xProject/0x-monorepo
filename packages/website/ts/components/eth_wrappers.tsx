@@ -246,8 +246,11 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
     private renderOutdatedWeths(etherToken: Token, etherTokenState: TokenState) {
         const rows = _.map(configs.outdatedWrappedEthers,
                         (outdatedWETHByNetworkId: OutdatedWrappedEtherByNetworkId) => {
-            const outdatedWETH = outdatedWETHByNetworkId[this.props.networkId];
-            const timestampMsRange = outdatedWETH.timestampMsRange;
+            const outdatedWETHIfExists = outdatedWETHByNetworkId[this.props.networkId];
+            if (_.isUndefined(outdatedWETHIfExists)) {
+                return null; // noop
+            }
+            const timestampMsRange = outdatedWETHIfExists.timestampMsRange;
             let dateRange: string;
             if (!_.isUndefined(timestampMsRange)) {
                 const startMoment = moment(timestampMsRange.startTimestampMs);
@@ -258,20 +261,20 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             }
             const outdatedEtherToken = {
                 ...etherToken,
-                address: outdatedWETH.address,
+                address: outdatedWETHIfExists.address,
             };
-            const isStateLoaded = this.state.outdatedWETHAddressToIsStateLoaded[outdatedWETH.address];
-            const outdatedEtherTokenState = this.state.outdatedWETHStateByAddress[outdatedWETH.address];
+            const isStateLoaded = this.state.outdatedWETHAddressToIsStateLoaded[outdatedWETHIfExists.address];
+            const outdatedEtherTokenState = this.state.outdatedWETHStateByAddress[outdatedWETHIfExists.address];
             const balanceInEthIfExists = isStateLoaded ?
                                          ZeroEx.toUnitAmount(outdatedEtherTokenState.balance, 18).toFixed(PRECISION) :
                                          undefined;
-            const onConversionSuccessful = this.onOutdatedConversionSuccessfulAsync.bind(this, outdatedWETH.address);
+            const onConversionSuccessful = this.onOutdatedConversionSuccessfulAsync.bind(this, outdatedWETHIfExists.address);
             const etherscanUrl = utils.getEtherScanLinkIfExists(
-                outdatedWETH.address, this.props.networkId, EtherscanLinkSuffixes.address,
+                outdatedWETHIfExists.address, this.props.networkId, EtherscanLinkSuffixes.address,
             );
             const tokenLabel = this.renderToken(dateRange, outdatedEtherToken.address, OUTDATED_WETH_ICON_PATH);
             return (
-                <TableRow key={`weth-${outdatedWETH.address}`}>
+                <TableRow key={`weth-${outdatedWETHIfExists.address}`}>
                     <TableRowColumn className="py1">
                         {this.renderTokenLink(tokenLabel, etherscanUrl)}
                     </TableRowColumn>
@@ -378,9 +381,14 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         });
     }
     private getOutdatedWETHAddresses(): string[] {
-        const outdatedWETHAddresses = _.map(configs.outdatedWrappedEthers, outdatedWrappedEther => {
-            return outdatedWrappedEther[this.props.networkId].address;
-        });
+        const outdatedWETHAddresses = _.compact(_.map(configs.outdatedWrappedEthers, outdatedWrappedEtherByNetwork => {
+            const  outdatedWrappedEtherIfExists = outdatedWrappedEtherByNetwork[this.props.networkId];
+            if (_.isUndefined(outdatedWrappedEtherIfExists)) {
+                return undefined
+            }
+            const address = outdatedWrappedEtherIfExists.address;
+            return address;
+        }));
         return outdatedWETHAddresses;
     }
 } // tslint:disable:max-file-line-count
