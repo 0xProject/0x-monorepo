@@ -34,6 +34,7 @@ export const constants = {
     GITHUB_URL: 'https://github.com/0xProject',
     GITHUB_WIKI_URL: 'https://github.com/0xProject/wiki',
     HTTP_NO_CONTENT_STATUS_CODE: 204,
+    DISMISS_WETH_NOTICE_LOCAL_STORAGE_KEY: 'hasDismissedWethNotice',
     ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY: 'didAcceptPortalDisclaimer',
     LINKEDIN_0X_URL: 'https://www.linkedin.com/company/0x',
     LEDGER_PROVIDER_NAME: 'Ledger',

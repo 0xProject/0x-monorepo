@@ -8,6 +8,7 @@ import {Route, Switch} from 'react-router-dom';
 import {Blockchain} from 'ts/blockchain';
 import {BlockchainErrDialog} from 'ts/components/dialogs/blockchain_err_dialog';
 import {PortalDisclaimerDialog} from 'ts/components/dialogs/portal_disclaimer_dialog';
+import {WrappedEthSectionNoticeDialog} from 'ts/components/dialogs/wrapped_eth_section_notice_dialog';
 import {EthWrappers} from 'ts/components/eth_wrappers';
 import {FillOrder} from 'ts/components/fill_order';
 import {Footer} from 'ts/components/footer';
@@ -63,22 +64,39 @@ interface PortalAllState {
     prevNetworkId: number;
     prevNodeVersion: string;
     prevUserAddress: string;
-    hasAcceptedDisclaimer: boolean;
+    prevPathname: string;
+    isDisclaimerDialogOpen: boolean;
+    isWethNoticeDialogOpen: boolean;
 }
 
 export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     private blockchain: Blockchain;
     private sharedOrderIfExists: Order;
     private throttledScreenWidthUpdate: () => void;
+    public static hasAlreadyDismissedWethNotice() {
+        const didDismissWethNotice = localStorage.getItemIfExists(constants.DISMISS_WETH_NOTICE_LOCAL_STORAGE_KEY);
+        const hasAlreadyDismissedWethNotice = !_.isUndefined(didDismissWethNotice) &&
+                                              !_.isEmpty(didDismissWethNotice);
+        return hasAlreadyDismissedWethNotice;
+    }
     constructor(props: PortalAllProps) {
         super(props);
         this.sharedOrderIfExists = this.getSharedOrderIfExists();
         this.throttledScreenWidthUpdate = _.throttle(this.updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
+
+        const isViewingBalances = _.includes(props.location.pathname, `${WebsitePaths.Portal}/balances`);
+        const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
+
+        const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY);
+        const hasAcceptedDisclaimer = !_.isUndefined(didAcceptPortalDisclaimer) &&
+                                      !_.isEmpty(didAcceptPortalDisclaimer);
         this.state = {
             prevNetworkId: this.props.networkId,
             prevNodeVersion: this.props.nodeVersion,
             prevUserAddress: this.props.userAddress,
-            hasAcceptedDisclaimer: false,
+            prevPathname: this.props.location.pathname,
+            isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
+            isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
         };
     }
     public componentDidMount() {
@@ -87,12 +105,6 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     }
     public componentWillMount() {
         this.blockchain = new Blockchain(this.props.dispatcher);
-        const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY);
-        const hasAcceptedDisclaimer = !_.isUndefined(didAcceptPortalDisclaimer) &&
-                                      !_.isEmpty(didAcceptPortalDisclaimer);
-        this.setState({
-            hasAcceptedDisclaimer,
-        });
     }
     public componentWillUnmount() {
         this.blockchain.destroy();
@@ -127,6 +139,14 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         if (nextProps.nodeVersion !== this.state.prevNodeVersion) {
             // tslint:disable-next-line:no-floating-promises
             this.blockchain.nodeVersionUpdatedFireAndForgetAsync(nextProps.nodeVersion);
+        }
+        if (nextProps.location.pathname !== this.state.prevPathname) {
+            const isViewingBalances = _.includes(nextProps.location.pathname, `${WebsitePaths.Portal}/balances`);
+            const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
+            this.setState({
+                prevPathname: nextProps.location.pathname,
+                isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
+            });
         }
     }
     public render() {
@@ -215,8 +235,12 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         toggleDialogFn={updateShouldBlockchainErrDialogBeOpen}
                         networkId={this.props.networkId}
                     />
+                    <WrappedEthSectionNoticeDialog
+                        isOpen={this.state.isWethNoticeDialogOpen}
+                        onToggleDialog={this.onWethNoticeAccepted.bind(this)}
+                    />
                     <PortalDisclaimerDialog
-                        isOpen={!this.state.hasAcceptedDisclaimer}
+                        isOpen={this.state.isDisclaimerDialogOpen}
                         onToggleDialog={this.onPortalDisclaimerAccepted.bind(this)}
                     />
                     <FlashMessage
@@ -297,7 +321,13 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     private onPortalDisclaimerAccepted() {
         localStorage.setItem(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY, 'set');
         this.setState({
-            hasAcceptedDisclaimer: true,
+            isDisclaimerDialogOpen: false,
+        });
+    }
+    private onWethNoticeAccepted() {
+        localStorage.setItem(constants.DISMISS_WETH_NOTICE_LOCAL_STORAGE_KEY, 'set');
+        this.setState({
+            isWethNoticeDialogOpen: false,
         });
     }
     private getSharedOrderIfExists(): Order {
