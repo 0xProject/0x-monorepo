@@ -244,14 +244,6 @@ describe('ZeroEx library', () => {
             const zeroExWithWrongExchangeAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
             expect(zeroExWithWrongExchangeAddress.exchange.getContractAddress()).to.be.equal(ZeroEx.NULL_ADDRESS);
         });
-        it('allows to specify ether token contract address', async () => {
-            const zeroExConfig = {
-                etherTokenContractAddress: ZeroEx.NULL_ADDRESS,
-                networkId: constants.TESTRPC_NETWORK_ID,
-            };
-            const zeroExWithWrongEtherTokenAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
-            expect(zeroExWithWrongEtherTokenAddress.etherToken.getContractAddress()).to.be.equal(ZeroEx.NULL_ADDRESS);
-        });
         it('allows to specify token registry token contract address', async () => {
             const zeroExConfig = {
                 tokenRegistryContractAddress: ZeroEx.NULL_ADDRESS,
