@@ -50,10 +50,7 @@ export class ContractWrapper {
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
-    /**
-     * Cancels all existing subscriptions
-     */
-    public unsubscribeAll(): void {
+    protected unsubscribeAll(): void {
         const filterTokens = _.keys(this._filterCallbacks);
         _.each(filterTokens, filterToken => {
             this._unsubscribe(filterToken);

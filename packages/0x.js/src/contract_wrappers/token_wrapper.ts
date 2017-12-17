@@ -282,6 +282,12 @@ export class TokenWrapper extends ContractWrapper {
         this._unsubscribe(subscriptionToken);
     }
     /**
+     * Cancels all existing subscriptions
+     */
+    public unsubscribeAll(): void {
+        super.unsubscribeAll();
+    }
+    /**
      * Gets historical logs without creating a subscription
      * @param   tokenAddress        An address of the token that emmited the logs.
      * @param   eventName           The token contract event you would like to subscribe to.
