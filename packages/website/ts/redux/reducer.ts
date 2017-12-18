@@ -94,250 +94,293 @@ const INITIAL_STATE: State = {
 export function reducer(state: State = INITIAL_STATE, action: Action) {
     switch (action.type) {
         // Portal
-        case ActionTypes.RESET_STATE:
+        case ActionTypes.ResetState:
             return INITIAL_STATE;
 
-        case ActionTypes.UPDATE_ORDER_SALT: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateOrderSalt: {
+            return {
+                ...state,
                 orderSalt: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_NODE_VERSION: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateNodeVersion: {
+            return {
+                ...state,
                 nodeVersion: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_ORDER_FILL_AMOUNT: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateOrderFillAmount: {
+            return {
+                ...state,
                 orderFillAmount: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_SHOULD_BLOCKCHAIN_ERR_DIALOG_BE_OPEN: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateShouldBlockchainErrDialogBeOpen: {
+            return {
+                ...state,
                 shouldBlockchainErrDialogBeOpen: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_USER_ETHER_BALANCE: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateUserEtherBalance: {
+            return {
+                ...state,
                 userEtherBalance: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_USER_SUPPLIED_ORDER_CACHE: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateUserSuppliedOrderCache: {
+            return {
+                ...state,
                 userSuppliedOrderCache: action.data,
-            });
+            };
         }
 
-        case ActionTypes.CLEAR_TOKEN_BY_ADDRESS: {
-            return _.assign({}, state, {
+        case ActionTypes.ClearTokenByAddress: {
+            return {
+                ...state,
                 tokenByAddress: {},
-            });
+            };
         }
 
-        case ActionTypes.ADD_TOKEN_TO_TOKEN_BY_ADDRESS: {
+        case ActionTypes.AddTokenToTokenByAddress: {
             const newTokenByAddress = state.tokenByAddress;
             newTokenByAddress[action.data.address] = action.data;
-            return _.assign({}, state, {
+            return {
+                ...state,
                 tokenByAddress: newTokenByAddress,
-            });
+            };
         }
 
-        case ActionTypes.REMOVE_TOKEN_TO_TOKEN_BY_ADDRESS: {
+        case ActionTypes.RemoveTokenFromTokenByAddress: {
             const newTokenByAddress = state.tokenByAddress;
             delete newTokenByAddress[action.data.address];
-            return _.assign({}, state, {
+            return {
+                ...state,
                 tokenByAddress: newTokenByAddress,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_TOKEN_BY_ADDRESS: {
+        case ActionTypes.UpdateTokenByAddress: {
             const tokenByAddress = state.tokenByAddress;
             const tokens = action.data;
             _.each(tokens, token => {
-                const updatedToken = _.assign({}, tokenByAddress[token.address], token);
+                const updatedToken = {
+                    ...tokenByAddress[token.address],
+                    ...token,
+                };
                 tokenByAddress[token.address] = updatedToken;
             });
-            return _.assign({}, state, {
+            return {
+                ...state,
                 tokenByAddress,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_TOKEN_STATE_BY_ADDRESS: {
+        case ActionTypes.UpdateTokenStateByAddress: {
             const tokenStateByAddress = state.tokenStateByAddress;
             const updatedTokenStateByAddress = action.data;
             _.each(updatedTokenStateByAddress, (tokenState: TokenState, address: string) => {
-                const updatedTokenState = _.assign({}, tokenStateByAddress[address], tokenState);
+                const updatedTokenState = {
+                    ...tokenStateByAddress[address],
+                    ...tokenState,
+                };
                 tokenStateByAddress[address] = updatedTokenState;
             });
-            return _.assign({}, state, {
+            return {
+                ...state,
                 tokenStateByAddress,
-            });
+            };
         }
 
-        case ActionTypes.REMOVE_FROM_TOKEN_STATE_BY_ADDRESS: {
+        case ActionTypes.RemoveFromTokenStateByAddress: {
             const tokenStateByAddress = state.tokenStateByAddress;
             const tokenAddress = action.data;
             delete tokenStateByAddress[tokenAddress];
-            return _.assign({}, state, {
+            return {
+                ...state,
                 tokenStateByAddress,
-            });
+            };
         }
 
-        case ActionTypes.REPLACE_TOKEN_ALLOWANCE_BY_ADDRESS: {
+        case ActionTypes.ReplaceTokenAllowanceByAddress: {
             const tokenStateByAddress = state.tokenStateByAddress;
             const allowance = action.data.allowance;
             const tokenAddress = action.data.address;
-            tokenStateByAddress[tokenAddress] = _.assign({}, tokenStateByAddress[tokenAddress], {
+            tokenStateByAddress[tokenAddress] = {
+                ...tokenStateByAddress[tokenAddress],
                 allowance,
-            });
-            return _.assign({}, state, {
+            };
+            return {
+                ...state,
                 tokenStateByAddress,
-            });
+            };
         }
 
-        case ActionTypes.REPLACE_TOKEN_BALANCE_BY_ADDRESS: {
+        case ActionTypes.ReplaceTokenBalanceByAddress: {
             const tokenStateByAddress = state.tokenStateByAddress;
             const balance = action.data.balance;
             const tokenAddress = action.data.address;
-            tokenStateByAddress[tokenAddress] = _.assign({}, tokenStateByAddress[tokenAddress], {
+            tokenStateByAddress[tokenAddress] = {
+                ...tokenStateByAddress[tokenAddress],
                 balance,
-            });
-            return _.assign({}, state, {
+            };
+            return {
+                ...state,
                 tokenStateByAddress,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_TOKEN_BALANCE_BY_ADDRESS: {
+        case ActionTypes.UpdateTokenBalanceByAddress: {
             const tokenStateByAddress = state.tokenStateByAddress;
             const balanceDelta = action.data.balanceDelta;
             const tokenAddress = action.data.address;
             const currBalance = tokenStateByAddress[tokenAddress].balance;
-            tokenStateByAddress[tokenAddress] = _.assign({}, tokenStateByAddress[tokenAddress], {
+            tokenStateByAddress[tokenAddress] = {
+                ...tokenStateByAddress[tokenAddress],
                 balance: currBalance.plus(balanceDelta),
-            });
-            return _.assign({}, state, {
+            };
+            return {
+                ...state,
                 tokenStateByAddress,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_ORDER_SIGNATURE_DATA: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateOrderSignatureData: {
+            return {
+                ...state,
                 orderSignatureData: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_SCREEN_WIDTH: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateScreenWidth: {
+            return {
+                ...state,
                 screenWidth: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_BLOCKCHAIN_IS_LOADED: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateBlockchainIsLoaded: {
+            return {
+                ...state,
                 blockchainIsLoaded: action.data,
-            });
+            };
         }
 
-        case ActionTypes.BLOCKCHAIN_ERR_ENCOUNTERED: {
-            return _.assign({}, state, {
+        case ActionTypes.BlockchainErrEncountered: {
+            return {
+                ...state,
                 blockchainErr: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_NETWORK_ID: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateNetworkId: {
+            return {
+                ...state,
                 networkId: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_CHOSEN_ASSET_TOKEN: {
-            const newSideToAssetToken = _.assign({}, state.sideToAssetToken, {
+        case ActionTypes.UpdateChosenAssetToken: {
+            const newSideToAssetToken = {
+                ...state.sideToAssetToken,
                 [action.data.side]: action.data.token,
-            });
-            return _.assign({}, state, {
+            };
+            return {
+                ...state,
                 sideToAssetToken: newSideToAssetToken,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS: {
+        case ActionTypes.UpdateChosenAssetTokenAddress: {
             const newAssetToken = state.sideToAssetToken[action.data.side];
             newAssetToken.address = action.data.address;
-            const newSideToAssetToken = _.assign({}, state.sideToAssetToken, {
+            const newSideToAssetToken = {
+                ...state.sideToAssetToken,
                 [action.data.side]: newAssetToken,
-            });
-            return _.assign({}, state, {
+            };
+            return {
+                ...state,
                 sideToAssetToken: newSideToAssetToken,
-            });
+            };
         }
 
-        case ActionTypes.SWAP_ASSET_TOKENS: {
-            const newSideToAssetToken = _.assign({}, state.sideToAssetToken, {
+        case ActionTypes.SwapAssetTokens: {
+            const newSideToAssetToken = {
                 [Side.Deposit]: state.sideToAssetToken[Side.Receive],
                 [Side.Receive]: state.sideToAssetToken[Side.Deposit],
-            });
-            return _.assign({}, state, {
+            };
+            return {
+                ...state,
                 sideToAssetToken: newSideToAssetToken,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_ORDER_EXPIRY: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateOrderExpiry: {
+            return {
+                ...state,
                 orderExpiryTimestamp: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_ORDER_TAKER_ADDRESS: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateOrderTakerAddress: {
+            return {
+                ...state,
                 orderTakerAddress: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_USER_ADDRESS: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateUserAddress: {
+            return {
+                ...state,
                 userAddress: action.data,
-            });
+            };
         }
 
         // Docs
-        case ActionTypes.UPDATE_LIBRARY_VERSION: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateLibraryVersion: {
+            return {
+                ...state,
                 docsVersion: action.data,
-            });
+            };
         }
-        case ActionTypes.UPDATE_AVAILABLE_LIBRARY_VERSIONS: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateAvailableLibraryVersions: {
+            return {
+                ...state,
                 availableDocVersions: action.data,
-            });
+            };
         }
 
         // Shared
-        case ActionTypes.SHOW_FLASH_MESSAGE: {
-            return _.assign({}, state, {
+        case ActionTypes.ShowFlashMessage: {
+            return {
+                ...state,
                 flashMessage: action.data,
-            });
+            };
         }
 
-        case ActionTypes.HIDE_FLASH_MESSAGE: {
-            return _.assign({}, state, {
+        case ActionTypes.HideFlashMessage: {
+            return {
+                ...state,
                 flashMessage: undefined,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_PROVIDER_TYPE: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateProviderType: {
+            return {
+                ...state,
                 providerType: action.data,
-            });
+            };
         }
 
-        case ActionTypes.UPDATE_INJECTED_PROVIDER_NAME: {
-            return _.assign({}, state, {
+        case ActionTypes.UpdateInjectedProviderName: {
+            return {
+                ...state,
                 injectedProviderName: action.data,
-            });
+            };
         }
 
         default:
