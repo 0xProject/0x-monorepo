@@ -3,6 +3,10 @@ import {
     numberSchema,
 } from '../schemas/basic_type_schemas';
 import {
+    blockParamSchema,
+    blockRangeSchema,
+} from '../schemas/block_range_schema';
+import {
     ecSignatureParameterSchema,
     ecSignatureSchema,
 } from '../schemas/ec_signature_schema';
@@ -55,10 +59,6 @@ import {
 import {
     signedOrdersSchema,
 } from '../schemas/signed_orders_schema';
-import {
-    blockParamSchema,
-    blockRangeSchema,
-} from '../schemas/block_range_schema';
 import {
     tokenSchema,
 } from '../schemas/token_schema';
