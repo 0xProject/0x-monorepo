@@ -181,7 +181,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderHero() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const buttonLabelStyle: React.CSSProperties = {
             textTransform: 'none',
             fontSize: isSmallScreen ? 12 : 14,
@@ -265,8 +265,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderProjects() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
-        const isMediumScreen = this.state.screenWidth === ScreenWidths.MD;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
+        const isMediumScreen = this.state.screenWidth === ScreenWidths.Md;
         const projectList = _.map(projects, (project: Project, i: number) => {
             const colWidth = isSmallScreen ? 3 : (isMediumScreen ? 4 : 2 - (i % 2));
             return (
@@ -329,7 +329,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderTokenizationSection() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
             <div
                 className="clearfix lg-py4 md-py4 sm-pb4 sm-pt2"
@@ -382,7 +382,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderProtocolSection() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
             <div
                 className="clearfix lg-py4 md-py4 sm-pt4"
@@ -468,7 +468,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderBuildingBlocksSection() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const descriptionStyle: React.CSSProperties = {
             fontFamily: 'Roboto Mono',
             lineHeight: isSmallScreen ? 1.5 : 2,
@@ -540,7 +540,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderBlockChipImage() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
             <div className="col lg-col-6 md-col-6 col-12 sm-center">
                 <img
@@ -551,7 +551,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderTokenCloud() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
             <div className="col lg-col-6 md-col-6 col-12 center">
                 <img
@@ -562,7 +562,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderAssetTypes() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const assetTypes: AssetType[] = [
             {
                 title: 'Currency',
@@ -601,7 +601,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return assets;
     }
     private renderInfoBoxes() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const boxStyle: React.CSSProperties = {
             maxWidth: 252,
             height: 386,
@@ -654,7 +654,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderUseCases() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
 
         const useCases: UseCase[] = [
             {
@@ -765,7 +765,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderCallToAction() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const buttonLabelStyle: React.CSSProperties = {
             textTransform: 'none',
             fontSize: 15,

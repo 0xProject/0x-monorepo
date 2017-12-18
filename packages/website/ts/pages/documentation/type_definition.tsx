@@ -76,7 +76,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 );
                 break;
 
-            case KindString['Type alias']:
+            case KindString.TypeAlias:
                 typePrefix = 'Type Alias';
                 codeSnippet = (
                     <span>

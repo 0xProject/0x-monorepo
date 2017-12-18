@@ -281,7 +281,7 @@ export class Documentation extends
                     return null;
                 }
                 const linkIfExists = utils.getEtherScanLinkIfExists(
-                    contractAddress, constants.networkIdByName[networkName], EtherscanLinkSuffixes.address,
+                    contractAddress, constants.networkIdByName[networkName], EtherscanLinkSuffixes.Address,
                 );
                 return (
                     <a

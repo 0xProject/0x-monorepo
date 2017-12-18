@@ -87,7 +87,7 @@ const INITIAL_STATE: State = {
 
     // Shared
     flashMessage: undefined,
-    providerType: ProviderType.INJECTED,
+    providerType: ProviderType.Injected,
     injectedProviderName: '',
 };
 

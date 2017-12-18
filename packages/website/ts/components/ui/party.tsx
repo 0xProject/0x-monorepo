@@ -45,7 +45,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
             height: IMAGE_DIMENSION,
         };
         const etherscanLinkIfExists = utils.getEtherScanLinkIfExists(
-            this.props.address, this.props.networkId, EtherscanLinkSuffixes.address,
+            this.props.address, this.props.networkId, EtherscanLinkSuffixes.Address,
         );
         const isRegistered = this.props.isInTokenRegistry;
         const registeredTooltipId = `${this.props.address}-${isRegistered}-registeredTooltip`;

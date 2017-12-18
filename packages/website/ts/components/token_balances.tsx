@@ -156,7 +156,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const tokenTableHeight = allTokenRowHeight < MAX_TOKEN_TABLE_HEIGHT ?
                                  allTokenRowHeight :
                                  MAX_TOKEN_TABLE_HEIGHT;
-        const isSmallScreen = this.props.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const tokenColSpan = isSmallScreen ? TOKEN_COL_SPAN_SM : TOKEN_COL_SPAN_LG;
         const dharmaLoanExplanation = 'If you need access to larger amounts of ether,<br> \
                                      you can request a loan from the Dharma Loan<br> \
@@ -311,7 +311,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             <TableHeaderColumn>
                                 Action
                             </TableHeaderColumn>
-                            {this.props.screenWidth !== ScreenWidths.SM &&
+                            {this.props.screenWidth !== ScreenWidths.Sm &&
                                 <TableHeaderColumn>
                                     Send
                                 </TableHeaderColumn>
@@ -360,7 +360,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (!this.props.blockchainIsLoaded || this.props.blockchainErr !== BlockchainErrs.NoError) {
             return '';
         }
-        const isSmallScreen = this.props.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const tokenColSpan = isSmallScreen ? TOKEN_COL_SPAN_SM : TOKEN_COL_SPAN_LG;
         const actionPaddingX = isSmallScreen ? 2 : 24;
         const allTokens = _.values(this.props.tokenByAddress);
@@ -379,7 +379,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     private renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
         const tokenState = this.props.tokenStateByAddress[token.address];
         const tokenLink = utils.getEtherScanLinkIfExists(token.address, this.props.networkId,
-                                                         EtherscanLinkSuffixes.address);
+                                                         EtherscanLinkSuffixes.Address);
         const isMintable = _.includes(configs.symbolsOfMintableTokens, token.symbol) &&
             this.props.networkId !== constants.MAINNET_NETWORK_ID;
         return (
@@ -432,7 +432,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         />
                     }
                 </TableRowColumn>
-                {this.props.screenWidth !== ScreenWidths.SM &&
+                {this.props.screenWidth !== ScreenWidths.Sm &&
                     <TableRowColumn
                         style={{paddingLeft: actionPaddingX, paddingRight: actionPaddingX}}
                     >
@@ -580,7 +580,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             return true;
         } catch (err) {
             const errMsg = '' + err;
-            if (_.includes(errMsg, BlockchainCallErrs.USER_HAS_NO_ASSOCIATED_ADDRESSES)) {
+            if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return false;
             }

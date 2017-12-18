@@ -104,7 +104,7 @@ export class EthWethConversionButton extends
             this.props.onConversionSuccessful();
         } catch (err) {
             const errMsg = '' + err;
-            if (_.includes(errMsg, BlockchainCallErrs.USER_HAS_NO_ASSOCIATED_ADDRESSES)) {
+            if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             } else if (!_.includes(errMsg, 'User denied transaction')) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);

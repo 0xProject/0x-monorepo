@@ -124,11 +124,11 @@ export const utils = {
         // This logic mirrors the CSS media queries in BassCSS for the `lg-`, `md-` and `sm-` CSS
         // class prefixes. Do not edit these.
         if (widthInEm > LG_MIN_EM) {
-            return ScreenWidths.LG;
+            return ScreenWidths.Lg;
         } else if (widthInEm > MD_MIN_EM) {
-            return ScreenWidths.MD;
+            return ScreenWidths.Md;
         } else {
-            return ScreenWidths.SM;
+            return ScreenWidths.Sm;
         }
     },
     isUserOnMobile(): boolean {

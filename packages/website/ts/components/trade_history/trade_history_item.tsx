@@ -87,7 +87,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
                             <EtherScanIcon
                                 addressOrTxHash={fill.transactionHash}
                                 networkId={this.props.networkId}
-                                etherscanLinkSuffixes={EtherscanLinkSuffixes.tx}
+                                etherscanLinkSuffixes={EtherscanLinkSuffixes.Tx}
                             />
                         </div>
                     </div>

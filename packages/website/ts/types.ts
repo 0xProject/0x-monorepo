@@ -1,15 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
-// Utility function to create a K:V from a list of strings
-// Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
-function strEnum(values: string[]): {[key: string]: string} {
-    return _.reduce(values, (result, key) => {
-        result[key] = key;
-        return result;
-    }, Object.create(null));
-}
-
 export enum Side {
     Receive = 'RECEIVE',
     Deposit = 'DEPOSIT',
@@ -229,23 +220,21 @@ export interface ContractEvent {
 
 export type InputErrMsg = React.ReactNode | string | undefined;
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
-export const ScreenWidths = strEnum([
-  'SM',
-  'MD',
-  'LG',
-]);
-export type ScreenWidths = keyof typeof ScreenWidths;
+export enum ScreenWidths {
+  Sm = 'SM',
+  Md = 'MD',
+  Lg = 'LG',
+}
 
 export enum AlertTypes {
     ERROR,
     SUCCESS,
 }
 
-export const EtherscanLinkSuffixes = strEnum([
-  'address',
-  'tx',
-]);
-export type EtherscanLinkSuffixes = keyof typeof EtherscanLinkSuffixes;
+export enum EtherscanLinkSuffixes {
+  Address = 'address',
+  Tx = 'tx',
+}
 
 export enum BlockchainErrs {
     AContractNotDeployedOnNetwork = 'A_CONTRACT_NOT_DEPLOYED_ON_NETWORK',
@@ -253,26 +242,25 @@ export enum BlockchainErrs {
     NoError = 'NO_ERROR',
 }
 
-export const BlockchainCallErrs = strEnum([
-  'CONTRACT_DOES_NOT_EXIST',
-  'USER_HAS_NO_ASSOCIATED_ADDRESSES',
-  'UNHANDLED_ERROR',
-  'TOKEN_ADDRESS_IS_INVALID',
-  'INVALID_SIGNATURE',
-]);
-export type BlockchainCallErrs = keyof typeof BlockchainCallErrs;
+export enum BlockchainCallErrs {
+  ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
+  UserHasNoAssociatedAddresses = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
+  UnhandledError = 'UNHANDLED_ERROR',
+  TokenAddressIsInvalid = 'TOKEN_ADDRESS_IS_INVALID',
+}
 
-export const KindString = strEnum([
-  'Constructor',
-  'Property',
-  'Method',
-  'Interface',
-  'Type alias',
-  'Variable',
-  'Function',
-  'Enumeration',
-]);
-export type KindString = keyof typeof KindString;
+// Exception: We don't make the values uppercase because these KindString's need to
+// match up those returned by TypeDoc
+export enum KindString {
+  Constructor = 'Constructor',
+  Property = 'Property',
+  Method = 'Method',
+  Interface = 'Interface',
+  TypeAlias = 'Type alias',
+  Variable = 'Variable',
+  Function = 'Function',
+  Enumeration = 'Enumeration',
+}
 
 export interface EnumValue {
     name: string;
@@ -468,11 +456,10 @@ export interface MenuSubsectionsBySection {
     [section: string]: string[];
 }
 
-export const ProviderType = strEnum([
-  'INJECTED',
-  'LEDGER',
-]);
-export type ProviderType = keyof typeof ProviderType;
+export enum ProviderType {
+  Injected = 'INJECTED',
+  Ledger = 'LEDGER',
+}
 
 export interface Fact {
     title: string;

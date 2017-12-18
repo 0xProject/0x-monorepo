@@ -13,7 +13,7 @@ interface EtherScanIconProps {
 
 export const EtherScanIcon = (props: EtherScanIconProps) => {
     const etherscanLinkIfExists = utils.getEtherScanLinkIfExists(
-        props.addressOrTxHash, props.networkId, EtherscanLinkSuffixes.address,
+        props.addressOrTxHash, props.networkId, EtherscanLinkSuffixes.Address,
     );
     const transactionTooltipId = `${props.addressOrTxHash}-etherscan-icon-tooltip`;
     return (
