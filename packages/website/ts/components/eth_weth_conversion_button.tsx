@@ -7,7 +7,6 @@ import {Blockchain} from 'ts/blockchain';
 import {EthWethConversionDialog} from 'ts/components/dialogs/eth_weth_conversion_dialog';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {BlockchainCallErrs, Side, Token, TokenState} from 'ts/types';
-import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
 import {utils} from 'ts/utils/utils';

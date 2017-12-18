@@ -2,7 +2,6 @@ import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
-import {colors} from 'ts/utils/colors';
 import {
     Table,
     TableBody,
@@ -24,6 +23,7 @@ import {
     TokenState,
     TokenStateByAddress,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 

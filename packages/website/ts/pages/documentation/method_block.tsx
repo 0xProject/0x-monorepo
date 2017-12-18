@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Comment} from 'ts/pages/documentation/comment';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
@@ -14,6 +13,7 @@ import {
     TypeDefinitionByName,
     TypescriptMethod,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {typeDocUtils} from 'ts/utils/typedoc_utils';
 
 interface MethodBlockProps {
@@ -31,7 +31,7 @@ const styles: Styles = {
     chip: {
         fontSize: 13,
         backgroundColor: colors.lightBlueA700,
-        color: 'white',
+        color: colors.white,
         height: 11,
         borderRadius: 14,
         marginTop: 19,

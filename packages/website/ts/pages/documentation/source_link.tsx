@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Source} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 
 interface SourceLinkProps {
     source: Source;

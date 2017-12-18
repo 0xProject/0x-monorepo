@@ -32,8 +32,8 @@ export class LifeCycleRaisedButton extends
     React.Component<LifeCycleRaisedButtonProps, LifeCycleRaisedButtonState> {
     public static defaultProps: Partial<LifeCycleRaisedButtonProps> = {
         isDisabled: false,
-        backgroundColor: 'white',
-        labelColor: colors.darkGray,
+        backgroundColor: colors.white,
+        labelColor: colors.darkGrey,
     };
     private buttonTimeoutId: number;
     private didUnmount: boolean;

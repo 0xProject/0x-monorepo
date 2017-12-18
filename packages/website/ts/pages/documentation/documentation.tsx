@@ -1,7 +1,6 @@
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import {
@@ -34,7 +33,7 @@ import {
     TypeDefinitionByName,
     TypescriptMethod,
 } from 'ts/types';
-import {configs} from 'ts/utils/configs';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {docUtils} from 'ts/utils/doc_utils';
 import {utils} from 'ts/utils/utils';
@@ -286,7 +285,7 @@ export class Documentation extends
                         key={`badge-${networkName}-${sectionName}`}
                         href={linkIfExists}
                         target="_blank"
-                        style={{color: 'white', textDecoration: 'none'}}
+                        style={{color: colors.white, textDecoration: 'none'}}
                     >
                         <Badge
                             title={networkName}

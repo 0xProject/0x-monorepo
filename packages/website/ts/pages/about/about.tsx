@@ -1,16 +1,15 @@
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
 import {Profile} from 'ts/pages/about/profile';
 import {ProfileInfo, Styles} from 'ts/types';
-import {configs} from 'ts/utils/configs';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
-const DARKEST_GRAY = colors.darkestGray;
+const DARKEST_GRAY = colors.darkestGrey;
 
 const teamRow1: ProfileInfo[] = [
     {
@@ -152,12 +151,12 @@ export class About extends React.Component<AboutProps, AboutState> {
     }
     public render() {
         return (
-            <div style={{backgroundColor: colors.lightGrey}}>
+            <div style={{backgroundColor: colors.lightestGrey}}>
                 <DocumentTitle title="0x About Us"/>
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
-                    style={{backgroundColor: colors.lightGrey}}
+                    style={{backgroundColor: colors.lightestGrey}}
                 />
                 <div
                     id="about"

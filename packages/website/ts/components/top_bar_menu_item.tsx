@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import {colors} from 'ts/utils/colors';
 
 const DEFAULT_STYLE = {
-    color: colors.darkestGray,
+    color: colors.darkestGrey,
 };
 
 interface TopBarMenuItemProps {
@@ -36,7 +36,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         } : {};
         const menuItemColor = this.props.isNightVersion ? 'white' : this.props.style.color;
         const linkColor = _.isUndefined(menuItemColor) ?
-            colors.darkestGray :
+            colors.darkestGrey :
             menuItemColor;
         return (
             <div

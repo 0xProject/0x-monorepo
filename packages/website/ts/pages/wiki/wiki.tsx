@@ -143,7 +143,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                         headerSize={HeaderSizes.H2}
                         githubLink={githubLink}
                     />
-                    <div className="mb4 mt3 p3 center" style={{backgroundColor: colors.lightGrey}}>
+                    <div className="mb4 mt3 p3 center" style={{backgroundColor: colors.lightestGrey}}>
                         See a way to make this article better?{' '}
                         <a
                             href={githubLink}

@@ -49,7 +49,7 @@ export function Profile(props: ProfileProps) {
                 {!_.isUndefined(props.profileInfo.title) &&
                     <div
                         className="pt1 center"
-                        style={{fontSize: 14, fontFamily: 'Roboto Mono', color: colors.darkGray}}
+                        style={{fontSize: 14, fontFamily: 'Roboto Mono', color: colors.darkGrey}}
                     >
                         {props.profileInfo.title.toUpperCase()}
                     </div>

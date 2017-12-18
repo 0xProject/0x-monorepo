@@ -98,7 +98,7 @@ const menuItemsBySection: MenuItemsBySection = {
     ],
 };
 const linkStyle = {
-    color: 'white',
+    color: colors.white,
     cursor: 'pointer',
 };
 
@@ -116,8 +116,8 @@ interface FooterState {}
 export class Footer extends React.Component<FooterProps, FooterState> {
     public render() {
         return (
-            <div className="relative pb4 pt2" style={{backgroundColor: colors.darkerGray}}>
-                <div className="mx-auto max-width-4 md-px2 lg-px0 py4 clearfix" style={{color: 'white'}}>
+            <div className="relative pb4 pt2" style={{backgroundColor: colors.darkerGrey}}>
+                <div className="mx-auto max-width-4 md-px2 lg-px0 py4 clearfix" style={{color: colors.white}}>
                     <div className="col lg-col-4 md-col-4 col-12 left">
                         <div className="sm-mx-auto" style={{width: 148}}>
                             <div>

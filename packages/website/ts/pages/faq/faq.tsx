@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
 import {Question} from 'ts/pages/faq/question';
 import {FAQQuestion, FAQSection, Styles, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 

@@ -6,7 +6,6 @@ import {EthAmountInput} from 'ts/components/inputs/eth_amount_input';
 import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
 import {Side, Token, TokenState} from 'ts/types';
 import {colors} from 'ts/utils/colors';
-import {constants} from 'ts/utils/constants';
 
 interface EthWethConversionDialogProps {
     direction: Side;

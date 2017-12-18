@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
+import {colors} from 'ts/utils/colors';
 
 interface SwapIconProps {
     swapTokensFn: () => void;

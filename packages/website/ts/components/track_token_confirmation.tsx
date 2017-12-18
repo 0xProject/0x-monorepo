@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Party} from 'ts/components/ui/party';
 import {Token, TokenByAddress} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
 
 interface TrackTokenConfirmationProps {

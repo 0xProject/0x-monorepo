@@ -2,7 +2,6 @@
 import 'whatwg-fetch';
 
 import {bigNumberConfigs} from '@0xproject/utils';
-import BigNumber from 'bignumber.js';
 import {getMuiTheme, MuiThemeProvider} from 'material-ui/styles';
 import * as React from 'react';
 import {render} from 'react-dom';
@@ -21,7 +20,6 @@ import {Wiki} from 'ts/pages/wiki/wiki';
 import {reducer, State} from 'ts/redux/reducer';
 import {WebsitePaths} from 'ts/types';
 import {colors} from 'ts/utils/colors';
-import {constants} from 'ts/utils/constants';
 injectTapEventPlugin();
 
 bigNumberConfigs.configure();
@@ -49,16 +47,16 @@ const muiTheme = getMuiTheme({
         color: colors.grey700,
         textColor: colors.white,
         calendarTextColor: colors.white,
-        selectColor: colors.darkestGray,
+        selectColor: colors.darkestGrey,
         selectTextColor: colors.white,
     },
     timePicker: {
         color: colors.grey700,
         textColor: colors.white,
         accentColor: colors.white,
-        headerColor: colors.darkestGray,
-        selectColor: colors.darkestGray,
-        selectTextColor: colors.darkestGray,
+        headerColor: colors.darkestGrey,
+        selectColor: colors.darkestGrey,
+        selectTextColor: colors.darkestGrey,
     },
     toggle: {
         thumbOnColor: colors.limeGreen,

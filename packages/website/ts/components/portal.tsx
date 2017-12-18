@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import {Route, Switch} from 'react-router-dom';
@@ -32,6 +31,7 @@ import {
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
@@ -138,6 +138,11 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             flexDirection: 'column',
             justifyContent: 'space-between',
         };
+        const portalMenuContainerStyle: React.CSSProperties = {
+            overflow: 'hidden',
+            backgroundColor: colors.darkestGrey,
+            color: colors.white,
+        };
         return (
             <div style={portalStyle}>
                 <DocumentTitle title="0x Portal DApp"/>
@@ -171,9 +176,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                             <div className="mx-auto flex">
                                 <div
                                     className="col col-2 pr2 pt1 sm-hide xs-hide"
-                                    style={{overflow: 'hidden', backgroundColor: colors.darkestGray, color: 'white'}}
+                                    style={portalMenuContainerStyle}
                                 >
-                                    <PortalMenu menuItemStyle={{color: 'white'}} />
+                                    <PortalMenu menuItemStyle={{color: colors.white}} />
                                 </div>
                                 <div className="col col-12 lg-col-10 md-col-10 sm-col sm-col-12">
                                     <div className="py2" style={{backgroundColor: colors.grey50}}>

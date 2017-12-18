@@ -1,11 +1,11 @@
 import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {BalanceBoundedInput} from 'ts/components/inputs/balance_bounded_input';
 import {InputErrMsg, Token, TokenState, ValidatedBigNumberCallback, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 
 interface TokenAmountInputProps {
     token: Token;
@@ -59,7 +59,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     Insufficient allowance.{' '}
                     <Link
                         to={`${WebsitePaths.Portal}/balances`}
-                        style={{cursor: 'pointer', color: colors.darkestGray}}
+                        style={{cursor: 'pointer', color: colors.darkestGrey}}
                     >
                             Set allowance
                     </Link>

@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {RequiredLabel} from 'ts/components/ui/required_label';
 import {InputErrMsg, ValidatedBigNumberCallback, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
 
 interface BalanceBoundedInputProps {
@@ -133,7 +133,7 @@ export class BalanceBoundedInput extends
         const increaseBalanceText = 'Increase balance';
         const linkStyle = {
             cursor: 'pointer',
-            color: colors.darkestGray,
+            color: colors.darkestGrey,
             textDecoration: 'underline',
             display: 'inline',
         };

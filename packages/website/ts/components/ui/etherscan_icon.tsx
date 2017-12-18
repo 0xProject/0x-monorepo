@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import {EtherscanLinkSuffixes} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
 
 interface EtherScanIconProps {

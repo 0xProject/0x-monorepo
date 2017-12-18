@@ -12,7 +12,6 @@ import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
 import {DocsMenu, MenuSubsectionsBySection, Styles, WebsitePaths} from 'ts/types';
 import {colors} from 'ts/utils/colors';
-import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 
 interface TopBarProps {
@@ -44,11 +43,11 @@ const styles: Styles = {
     },
     addressPopover: {
         backgroundColor: colors.blueGrey500,
-        color: 'white',
+        color: colors.white,
         padding: 3,
     },
     topBar: {
-        backgroundColor: 'white',
+        backgroundcolor: colors.white,
         height: 59,
         width: '100%',
         position: 'fixed',
@@ -61,7 +60,7 @@ const styles: Styles = {
     },
     menuItem: {
         fontSize: 14,
-        color: colors.darkestGray,
+        color: colors.darkestGrey,
         paddingTop: 6,
         paddingBottom: 6,
         marginTop: 17,

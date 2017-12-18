@@ -32,7 +32,7 @@ export class Question extends React.Component<QuestionProps, QuestionState> {
                     <CardHeader
                         title={this.props.prompt}
                         style={{borderBottom: this.state.isExpanded ? '1px solid rgba(0, 0, 0, 0.19)' : 'none'}}
-                        titleStyle={{color: colors.darkerGray}}
+                        titleStyle={{color: colors.darkerGrey}}
                         actAsExpander={true}
                         showExpandableButton={true}
                     />

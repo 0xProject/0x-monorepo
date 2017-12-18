@@ -7,7 +7,6 @@ import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import {colors} from 'ts/utils/colors';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import {
@@ -42,6 +41,7 @@ import {
     TokenStateByAddress,
     TokenVisibility,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
@@ -334,7 +334,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 <Dialog
                     title="Request Dharma Loan"
                     titleStyle={{fontWeight: 100, backgroundColor: colors.white}}
-                    bodyStyle={{backgroundColor: colors.dharmaDarkGray}}
+                    bodyStyle={{backgroundColor: colors.dharmaDarkGrey}}
                     actionsContainerStyle={{backgroundColor: colors.white}}
                     autoScrollBodyContent={true}
                     actions={dharmaDialogActions}

@@ -1,5 +1,5 @@
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
+import {colors} from 'ts/utils/colors';
 
 export interface InputLabelProps {
     text: string | Element | React.ReactNode;

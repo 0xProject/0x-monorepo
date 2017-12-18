@@ -1,12 +1,11 @@
 import * as _ from 'lodash';
-import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Link as ScrollLink} from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {TypeDefinition} from 'ts/pages/documentation/type_definition';
 import {Type as TypeDef, TypeDefinitionByName, TypeDocTypes} from 'ts/types';
-import {configs} from 'ts/utils/configs';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
