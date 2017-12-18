@@ -111,9 +111,7 @@ const titleToIcon: {[title: string]: string} = {
     'Reddit': 'reddit.png',
 };
 
-export interface FooterProps {
-    location: Location;
-}
+export interface FooterProps {}
 
 interface FooterState {}
 

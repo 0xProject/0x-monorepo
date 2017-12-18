@@ -224,7 +224,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         flashMessage={this.props.flashMessage}
                     />
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }

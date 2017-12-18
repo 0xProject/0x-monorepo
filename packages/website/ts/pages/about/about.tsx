@@ -226,7 +226,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         </div>
                     </div>
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }

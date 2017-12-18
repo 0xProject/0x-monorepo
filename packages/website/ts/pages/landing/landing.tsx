@@ -176,7 +176,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 {this.renderBuildingBlocksSection()}
                 {this.renderUseCases()}
                 {this.renderCallToAction()}
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }

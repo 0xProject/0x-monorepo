@@ -462,7 +462,7 @@ export class FAQ extends React.Component<FAQProps, FAQState> {
                         {this.renderSections()}
                     </div>
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }
