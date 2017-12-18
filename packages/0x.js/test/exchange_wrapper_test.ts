@@ -5,6 +5,7 @@ import 'mocha';
 import * as Web3 from 'web3';
 
 import {
+    BlockRange,
     DecodedLogEvent,
     ExchangeContractErrs,
     ExchangeEvents,
@@ -13,7 +14,6 @@ import {
     OrderCancellationRequest,
     OrderFillRequest,
     SignedOrder,
-    BlockRange,
     Token,
     ZeroEx,
 } from '../src';

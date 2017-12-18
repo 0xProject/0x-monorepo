@@ -7,6 +7,7 @@ import * as Web3 from 'web3';
 import {artifacts} from '../artifacts';
 import {
     BlockParamLiteral,
+    BlockRange,
     DecodedLogArgs,
     ECSignature,
     EventCallback,
@@ -25,7 +26,6 @@ import {
     OrderTransactionOpts,
     OrderValues,
     SignedOrder,
-    BlockRange,
     ValidateOrderFillableOpts,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -616,7 +616,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Gets historical logs without creating a subscription
      * @param   eventName           The exchange contract event you would like to subscribe to.
-     * @param   blockRange    Subscriptions options that let you configure the subscription.
+     * @param   blockRange          Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters

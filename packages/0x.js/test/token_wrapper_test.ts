@@ -7,8 +7,8 @@ import * as Web3 from 'web3';
 
 import {
     ApprovalContractEventArgs,
-    DecodedLogEvent,
     BlockRange,
+    DecodedLogEvent,
     Token,
     TokenEvents,
     TransferContractEventArgs,
