@@ -214,7 +214,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         >
                             We are seeking outstanding candidates to{' '}
                             <a
-                                href={constants.ANGELLIST_URL}
+                                href={constants.URL_ANGELLIST}
                                 target="_blank"
                                 style={{color: 'black'}}
                             >

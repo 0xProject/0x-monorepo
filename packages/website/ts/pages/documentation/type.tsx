@@ -11,11 +11,11 @@ import {utils} from 'ts/utils/utils';
 
 // Some types reference other libraries. For these types, we want to link the user to the relevant documentation.
 const typeToUrl: {[typeName: string]: string} = {
-    Web3: constants.WEB3_DOCS_URL,
-    Provider: constants.WEB3_PROVIDER_DOCS_URL,
-    BigNumber: constants.BIGNUMBERJS_GITHUB_URL,
-    DecodedLogEntryEvent: constants.WEB3_DECODED_LOG_ENTRY_EVENT_URL,
-    LogEntryEvent: constants.WEB3_LOG_ENTRY_EVENT_URL,
+    Web3: constants.URL_WEB3_DOCS,
+    Provider: constants.URL_WEB3_PROVIDER_DOCS,
+    BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
+    DecodedLogEntryEvent: constants.URL_WEB3_DECODED_LOG_ENTRY_EVENT,
+    LogEntryEvent: constants.URL_WEB3_LOG_ENTRY_EVENT,
 };
 
 const typePrefix: {[typeName: string]: string} = {

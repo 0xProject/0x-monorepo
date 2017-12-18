@@ -39,7 +39,7 @@ export function U2fNotSupportedDialog(props: U2fNotSupportedDialogProps) {
                         <li>
                             Firefox with{' '}
                             <a
-                                href={constants.FIREFOX_U2F_ADDON}
+                                href={constants.URL_FIREFOX_U2F_ADDON}
                                 target="_blank"
                                 style={{textDecoration: 'underline'}}
                             >

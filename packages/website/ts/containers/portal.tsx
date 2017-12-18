@@ -56,7 +56,7 @@ const mapStateToProps = (state: State, ownProps: PortalComponentAllProps): Conne
     const hashData = {
         depositAmount,
         depositTokenContractAddr: depositAddress,
-        feeRecipientAddress: constants.FEE_RECIPIENT_ADDRESS,
+        feeRecipientAddress: constants.NULL_ADDRESS,
         makerFee: constants.MAKER_FEE,
         orderExpiryTimestamp: state.orderExpiryTimestamp,
         orderMakerAddress: state.userAddress,

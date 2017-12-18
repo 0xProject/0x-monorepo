@@ -663,4 +663,13 @@ export interface OutdatedWrappedEtherByNetworkId {
     };
 }
 
+export enum SmartContractDocSections {
+    Introduction = 'Introduction',
+    Exchange = 'Exchange',
+    TokenTransferProxy = 'TokenTransferProxy',
+    TokenRegistry = 'TokenRegistry',
+    ZRXToken = 'ZRXToken',
+    EtherToken = 'EtherToken',
+}
+
 // tslint:disable:max-file-line-count

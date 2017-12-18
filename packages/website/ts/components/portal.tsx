@@ -87,7 +87,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     }
     public componentWillMount() {
         this.blockchain = new Blockchain(this.props.dispatcher);
-        const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY);
+        const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer = !_.isUndefined(didAcceptPortalDisclaimer) &&
                                       !_.isEmpty(didAcceptPortalDisclaimer);
         this.setState({
@@ -153,7 +153,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 />
                 <div id="portal" className="mx-auto max-width-4 pt4" style={{width: '100%'}}>
                     <Paper className="mb3 mt2">
-                        {!configs.isMainnetEnabled && this.props.networkId === constants.MAINNET_NETWORK_ID  ?
+                        {!configs.IS_MAINNET_ENABLED && this.props.networkId === constants.NETWORK_ID_MAINNET  ?
                             <div className="p3 center">
                                 <div className="h2 py2">Mainnet unavailable</div>
                                 <div className="mx-auto pb2 pt2">
@@ -300,7 +300,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         );
     }
     private onPortalDisclaimerAccepted() {
-        localStorage.setItem(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY, 'set');
+        localStorage.setItem(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER, 'set');
         this.setState({
             hasAcceptedDisclaimer: true,
         });

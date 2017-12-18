@@ -77,21 +77,21 @@ export class Blockchain {
     }
     private static getNameGivenProvider(provider: Web3.Provider): string {
         if (!_.isUndefined((provider as any).isMetaMask)) {
-            return constants.METAMASK_PROVIDER_NAME;
+            return constants.PROVIDER_NAME_METAMASK;
         }
 
         // HACK: We use the fact that Parity Signer's provider is an instance of their
         // internal `Web3FrameProvider` class.
         const isParitySigner = _.startsWith(provider.constructor.toString(), 'function Web3FrameProvider');
         if (isParitySigner) {
-            return constants.PARITY_SIGNER_PROVIDER_NAME;
+            return constants.PROVIDER_NAME_PARITY_SIGNER;
         }
 
-        return constants.GENERIC_PROVIDER_NAME;
+        return constants.PROVIDER_NAME_GENERIC;
     }
     private static async getProviderAsync(injectedWeb3: Web3, networkIdIfExists: number) {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
-        const publicNodeUrlsIfExistsForNetworkId = constants.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
+        const publicNodeUrlsIfExistsForNetworkId = configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
         const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
 
         let provider;
@@ -114,11 +114,11 @@ export class Blockchain {
             // injected into their browser.
             provider = new ProviderEngine();
             provider.addProvider(new FilterSubprovider());
-            const networkId = configs.isMainnetEnabled ?
-                constants.MAINNET_NETWORK_ID :
-                constants.TESTNET_NETWORK_ID;
+            const networkId = configs.IS_MAINNET_ENABLED ?
+                constants.NETWORK_ID_MAINNET :
+                constants.NETWORK_ID_TESTNET;
             provider.addProvider(new RedundantRPCSubprovider(
-                constants.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId],
+                configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId],
             ));
             provider.start();
         }
@@ -205,11 +205,11 @@ export class Blockchain {
                 this.ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
                 provider.addProvider(this.ledgerSubprovider);
                 provider.addProvider(new FilterSubprovider());
-                const networkId = configs.isMainnetEnabled ?
-                    constants.MAINNET_NETWORK_ID :
-                    constants.TESTNET_NETWORK_ID;
+                const networkId = configs.IS_MAINNET_ENABLED ?
+                    constants.NETWORK_ID_MAINNET :
+                    constants.NETWORK_ID_TESTNET;
                 provider.addProvider(new RedundantRPCSubprovider(
-                    constants.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId],
+                    configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId],
                 ));
                 provider.start();
                 this.web3Wrapper.destroy();
@@ -591,7 +591,7 @@ export class Blockchain {
         _.each(tokenRegistryTokens, (t: ZeroExToken, i: number) => {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
             // TODO: Refactor this out and pull the iconUrl directly from the TokenRegistry
-            const iconUrl = constants.iconUrlBySymbol[t.symbol];
+            const iconUrl = configs.ICON_URL_BY_SYMBOL[t.symbol];
             // HACK: Temporarily we hijack the WETH addresses fetched from the tokenRegistry
             // so that we can take our time with actually updating it. This ensures that when
             // we deploy the new WETH page, everyone will re-fill their trackedTokens with the
@@ -639,9 +639,9 @@ export class Blockchain {
 
         const provider = await Blockchain.getProviderAsync(injectedWeb3, networkIdIfExists);
         const networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists :
-                            configs.isMainnetEnabled ?
-                                constants.MAINNET_NETWORK_ID :
-                                constants.TESTNET_NETWORK_ID;
+                            configs.IS_MAINNET_ENABLED ?
+                                constants.NETWORK_ID_MAINNET :
+                                constants.NETWORK_ID_TESTNET;
         const zeroExConfigs = {
             networkId,
         };
@@ -661,7 +661,7 @@ export class Blockchain {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
         const providerName = doesInjectedWeb3Exist ?
                              Blockchain.getNameGivenProvider(injectedWeb3.currentProvider) :
-                             constants.PUBLIC_PROVIDER_NAME;
+                             constants.PROVIDER_NAME_PUBLIC;
         this.dispatcher.updateInjectedProviderName(providerName);
     }
     private async fetchTokenInformationAsync() {
@@ -686,7 +686,7 @@ export class Blockchain {
         let trackedTokensIfExists = trackedTokenStorage.getTrackedTokensIfExists(this.userAddress, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
         if (_.isUndefined(trackedTokensIfExists)) {
-            trackedTokensIfExists = _.map(configs.defaultTrackedTokenSymbols, symbol => {
+            trackedTokensIfExists = _.map(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
                 const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
                 token.isTracked = true;
                 return token;
@@ -709,8 +709,8 @@ export class Blockchain {
         await this.updateTokenBalancesAndAllowancesAsync(trackedTokensIfExists);
 
         const mostPopularTradingPairTokens: Token[] = [
-            _.find(allTokens, {symbol: configs.defaultTrackedTokenSymbols[0]}),
-            _.find(allTokens, {symbol: configs.defaultTrackedTokenSymbols[1]}),
+            _.find(allTokens, {symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0]}),
+            _.find(allTokens, {symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[1]}),
         ];
         this.dispatcher.updateChosenAssetTokenAddress(Side.Deposit, mostPopularTradingPairTokens[0].address);
         this.dispatcher.updateChosenAssetTokenAddress(Side.Receive, mostPopularTradingPairTokens[1].address);

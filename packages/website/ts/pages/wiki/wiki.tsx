@@ -112,7 +112,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                             >
                                 <div id="0xProtocolWiki" />
                                 <h1 className="md-pl2 sm-pl3">
-                                    <a href={constants.GITHUB_WIKI_URL} target="_blank">
+                                    <a href={constants.URL_GITHUB_WIKI} target="_blank">
                                         0x Protocol Wiki
                                     </a>
                                 </h1>
@@ -134,7 +134,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
     private renderSection(sectionName: string) {
         const articles = this.state.articlesBySection[sectionName];
         const renderedArticles = _.map(articles, (article: Article) => {
-            const githubLink = `${constants.GITHUB_WIKI_URL}/edit/master/${sectionName}/${article.fileName}`;
+            const githubLink = `${constants.URL_GITHUB_WIKI}/edit/master/${sectionName}/${article.fileName}`;
             return (
                 <div key={`markdown-section-${article.title}`}>
                     <MarkdownSection

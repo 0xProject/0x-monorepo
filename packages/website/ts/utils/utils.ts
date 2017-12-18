@@ -15,6 +15,7 @@ import {
     Token,
     TokenByAddress,
 } from 'ts/types';
+import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
 
@@ -136,7 +137,7 @@ export const utils = {
         return isUserOnMobile;
     },
     getEtherScanLinkIfExists(addressOrTxHash: string, networkId: number, suffix: EtherscanLinkSuffixes): string {
-        const networkName = constants.networkNameById[networkId];
+        const networkName = constants.NETWORK_NAME_BY_ID[networkId];
         if (_.isUndefined(networkName)) {
             return undefined;
         }
@@ -182,11 +183,11 @@ export const utils = {
     },
     getCurrentEnvironment() {
         switch (location.host) {
-            case constants.DEVELOPMENT_DOMAIN:
+            case configs.DOMAIN_DEVELOPMENT:
                 return 'development';
-            case constants.STAGING_DOMAIN:
+            case configs.DOMAIN_STAGING:
                 return 'staging';
-            case constants.PRODUCTION_DOMAIN:
+            case configs.DOMAIN_PRODUCTION:
                 return 'production';
             default:
                 return 'production';

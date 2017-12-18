@@ -115,7 +115,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (!_.isUndefined(this.state.currentZrxBalance) && !nextZrxTokenBalance.eq(this.state.currentZrxBalance)) {
             if (this.state.isZRXSpinnerVisible) {
                 const receivedAmount = nextZrxTokenBalance.minus(this.state.currentZrxBalance);
-                const receiveAmountInUnits = ZeroEx.toUnitAmount(receivedAmount, 18);
+                const receiveAmountInUnits = ZeroEx.toUnitAmount(receivedAmount, constants.DECIMAL_PLACES_ZRX);
                 this.props.dispatcher.showFlashMessage(`Received ${receiveAmountInUnits.toString(10)} Kovan ZRX`);
             }
             this.setState({
@@ -144,7 +144,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 onTouchTap={this.onDharmaDialogToggle.bind(this, false)}
             />,
         ];
-        const isTestNetwork = this.props.networkId === constants.TESTNET_NETWORK_ID;
+        const isTestNetwork = this.props.networkId === constants.NETWORK_ID_TESTNET;
         const dharmaButtonColumnStyle = {
             paddingLeft: 3,
             display: isTestNetwork ? 'table-cell' : 'none',
@@ -380,8 +380,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const tokenState = this.props.tokenStateByAddress[token.address];
         const tokenLink = utils.getEtherScanLinkIfExists(token.address, this.props.networkId,
                                                          EtherscanLinkSuffixes.Address);
-        const isMintable = _.includes(configs.symbolsOfMintableTokens, token.symbol) &&
-            this.props.networkId !== constants.MAINNET_NETWORK_ID;
+        const isMintable = _.includes(configs.SYMBOLS_OF_MINTABLE_TOKENS, token.symbol) &&
+            this.props.networkId !== constants.NETWORK_ID_MAINNET;
         return (
             <TableRow key={token.address} style={{height: TOKEN_TABLE_ROW_HEIGHT}}>
                 <TableRowColumn
@@ -423,7 +423,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             onClickAsyncFn={this.onMintTestTokensAsync.bind(this, token)}
                         />
                     }
-                    {token.symbol === ZRX_TOKEN_SYMBOL && this.props.networkId === constants.TESTNET_NETWORK_ID &&
+                    {token.symbol === ZRX_TOKEN_SYMBOL && this.props.networkId === constants.NETWORK_ID_TESTNET &&
                         <LifeCycleRaisedButton
                             labelReady="Request"
                             labelLoading="Sending..."
@@ -456,7 +456,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             return;
         }
         const token = this.props.tokenByAddress[tokenAddress];
-        const isDefaultTrackedToken = _.includes(configs.defaultTrackedTokenSymbols, token.symbol);
+        const isDefaultTrackedToken = _.includes(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, token.symbol);
         if (!this.state.isAddingToken && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
@@ -507,7 +507,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 return (
                     <div>
                         Our faucet can only send test Ether to addresses on the {constants.TESTNET_NAME}
-                        {' '}testnet (networkId {constants.TESTNET_NETWORK_ID}). Please make sure you are
+                        {' '}testnet (networkId {constants.NETWORK_ID_TESTNET}). Please make sure you are
                         {' '}connected to the {constants.TESTNET_NAME} testnet and try requesting ether again.
                     </div>
                 );
@@ -604,7 +604,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
 
         // If on another network other then the testnet our faucet serves test ether
         // from, we must show user an error message
-        if (this.props.blockchain.networkId !== constants.TESTNET_NETWORK_ID) {
+        if (this.props.blockchain.networkId !== constants.NETWORK_ID_TESTNET) {
             this.setState({
                 errorType: BalanceErrs.incorrectNetworkForFaucet,
             });
@@ -614,7 +614,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         await utils.sleepAsync(ARTIFICIAL_FAUCET_REQUEST_DELAY);
 
         const segment = isEtherRequest ? 'ether' : 'zrx';
-        const response = await fetch(`${constants.ETHER_FAUCET_ENDPOINT}/${segment}/${this.props.userAddress}`);
+        const response = await fetch(`${constants.URL_ETHER_FAUCET}/${segment}/${this.props.userAddress}`);
         const responseBody = await response.text();
         if (response.status !== constants.SUCCESS_STATUS) {
             utils.consoleLog(`Unexpected status code: ${response.status} -> ${responseBody}`);

@@ -17,6 +17,7 @@ import {Blockchain} from 'ts/blockchain';
 import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {colors} from 'ts/utils/colors';
+import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
@@ -52,7 +53,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             stepIndex: LedgerSteps.CONNECT,
             userAddresses: [],
             addressBalances: [],
-            derivationPath: constants.DEFAULT_DERIVATION_PATH,
+            derivationPath: configs.DEFAULT_DERIVATION_PATH,
             derivationErrMsg: '',
         };
     }
@@ -170,7 +171,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             const balance = this.state.addressBalances[i];
             const addressTooltipId = `address-${userAddress}`;
             const balanceTooltipId = `balance-${userAddress}`;
-            const networkName = constants.networkNameById[this.props.networkId];
+            const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
             // We specifically prefix kovan ETH.
             // TODO: We should probably add prefixes for all networks
             const isKovanNetwork = networkName === 'Kovan';

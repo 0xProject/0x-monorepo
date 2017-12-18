@@ -57,25 +57,25 @@ const menuItemsBySection: MenuItemsBySection = {
         {
             title: 'Rocket.chat',
             isExternal: true,
-            path: constants.ZEROEX_CHAT_URL,
+            path: constants.URL_ZEROEX_CHAT,
             fileName: 'rocketchat.png',
         },
         {
             title: 'Blog',
             isExternal: true,
-            path: constants.BLOG_URL,
+            path: constants.URL_BLOG,
             fileName: 'medium.png',
         },
         {
             title: 'Twitter',
             isExternal: true,
-            path: constants.TWITTER_URL,
+            path: constants.URL_TWITTER,
             fileName: 'twitter.png',
         },
         {
             title: 'Reddit',
             isExternal: true,
-            path: constants.REDDIT_URL,
+            path: constants.URL_REDDIT,
             fileName: 'reddit.png',
         },
     ],
@@ -88,7 +88,7 @@ const menuItemsBySection: MenuItemsBySection = {
         {
             title: 'Careers',
             isExternal: true,
-            path: constants.ANGELLIST_URL,
+            path: constants.URL_ANGELLIST,
         },
         {
             title: 'Contact',

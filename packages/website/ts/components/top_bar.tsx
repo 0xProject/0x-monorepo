@@ -106,7 +106,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 key="subMenuItem-standard-relayer-api"
                 target="_blank"
                 className="text-decoration-none"
-                href={constants.STANDARD_RELAYER_API_GITHUB}
+                href={constants.URL_STANDARD_RELAYER_API_GITHUB}
             >
                 <MenuItem style={{fontSize: styles.menuItem.fontSize}} primaryText="Standard Relayer API" />
             </a>,
@@ -114,7 +114,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 key="subMenuItem-github"
                 target="_blank"
                 className="text-decoration-none"
-                href={constants.GITHUB_URL}
+                href={constants.URL_GITHUB_ORG}
             >
                 <MenuItem style={{fontSize: styles.menuItem.fontSize}} primaryText="GitHub" />
             </a>,
@@ -254,7 +254,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <a
                     className="text-decoration-none"
                     target="_blank"
-                    href={constants.BLOG_URL}
+                    href={constants.URL_BLOG}
                 >
                     <MenuItem className="py2">Blog</MenuItem>
                 </a>

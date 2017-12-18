@@ -65,67 +65,67 @@ const boxContents: BoxContent[] = [
 const projects: Project[] = [
     {
         logoFileName: 'ethfinex-top.png',
-        projectUrl: constants.ETHFINEX_URL,
+        projectUrl: constants.PROJECT_URL_ETHFINEX,
     },
     {
         logoFileName: 'radar_relay_top.png',
-        projectUrl: constants.RADAR_RELAY_URL,
+        projectUrl: constants.PROJECT_URL_RADAR_RELAY,
     },
     {
         logoFileName: 'paradex_top.png',
-        projectUrl: constants.PARADEX_URL,
+        projectUrl: constants.PROJECT_URL_PARADEX,
     },
     {
         logoFileName: 'the_ocean.png',
-        projectUrl: constants.OCEAN_URL,
+        projectUrl: constants.PROJECT_URL_0CEAN,
     },
     {
         logoFileName: 'dydx.png',
-        projectUrl: constants.DYDX_URL,
+        projectUrl: constants.PROJECT_URL_DYDX,
     },
     {
         logoFileName: 'melonport.png',
-        projectUrl: constants.MELONPORT_URL,
+        projectUrl: constants.PROJECT_URL_MELONPORT,
     },
     {
         logoFileName: 'maker.png',
-        projectUrl: constants.MAKER_URL,
+        projectUrl: constants.PROJECT_URL_MAKER,
     },
     {
         logoFileName: 'dharma.png',
-        projectUrl: constants.DHARMA_URL,
+        projectUrl: constants.PROJECT_URL_DHARMA,
     },
     {
         logoFileName: 'lendroid.png',
-        projectUrl: constants.LENDROID_URL,
+        projectUrl: constants.PROJECT_URL_LENDROID,
     },
     {
         logoFileName: 'district0x.png',
-        projectUrl: constants.DISTRICT_0X_URL,
+        projectUrl: constants.PROJECT_URL_DISTRICT_0X,
     },
     {
         logoFileName: 'aragon.png',
-        projectUrl: constants.ARAGON_URL,
+        projectUrl: constants.PROJECT_URL_ARAGON,
     },
     {
         logoFileName: 'blocknet.png',
-        projectUrl: constants.BLOCKNET_URL,
+        projectUrl: constants.PROJECT_URL_BLOCKNET,
     },
     {
         logoFileName: 'status.png',
-        projectUrl: constants.STATUS_URL,
+        projectUrl: constants.PROJECT_URL_STATUS,
     },
     {
         logoFileName: 'augur.png',
-        projectUrl: constants.AUGUR_URL,
+        projectUrl: constants.PROJECT_URL_AUGUR,
     },
     {
         logoFileName: 'anx.png',
-        projectUrl: constants.OPEN_ANX_URL,
+        projectUrl: constants.PROJECT_URL_OPEN_ANX,
     },
     {
         logoFileName: 'auctus.png',
-        projectUrl: constants.AUCTUS_URL,
+        projectUrl: constants.PROJECT_URL_AUCTUS,
     },
 ];
 
@@ -236,7 +236,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                     </div>
                                     <div className="col col-6 sm-center">
                                         <a
-                                            href={constants.ZEROEX_CHAT_URL}
+                                            href={constants.URL_ZEROEX_CHAT}
                                             target="_blank"
                                             className="text-decoration-none"
                                         >

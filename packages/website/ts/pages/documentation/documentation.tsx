@@ -34,6 +34,7 @@ import {
     TypescriptMethod,
 } from 'ts/types';
 import {colors} from 'ts/utils/colors';
+import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {docUtils} from 'ts/utils/doc_utils';
 import {utils} from 'ts/utils/utils';
@@ -270,7 +271,7 @@ export class Documentation extends
         );
     }
     private renderNetworkBadgesIfExists(sectionName: string) {
-        const networkToAddressByContractName = constants.contractAddresses[this.props.docsVersion];
+        const networkToAddressByContractName = configs.CONTRACT_ADDRESS[this.props.docsVersion];
         const badges = _.map(networkToAddressByContractName,
             (addressByContractName: AddressByContractName, networkName: string) => {
                 const contractAddress = addressByContractName[sectionName];
@@ -278,7 +279,7 @@ export class Documentation extends
                     return null;
                 }
                 const linkIfExists = utils.getEtherScanLinkIfExists(
-                    contractAddress, constants.networkIdByName[networkName], EtherscanLinkSuffixes.Address,
+                    contractAddress, constants.NETWORK_ID_BY_NAME[networkName], EtherscanLinkSuffixes.Address,
                 );
                 return (
                     <a
