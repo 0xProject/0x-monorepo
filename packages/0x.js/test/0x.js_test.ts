@@ -82,9 +82,9 @@ describe('ZeroEx library', () => {
         it('should return true if the signature does pertain to the dataHex & address', async () => {
             const isValidSignatureLocal = ZeroEx.isValidSignature(dataHex, signature, address);
             expect(isValidSignatureLocal).to.be.true();
-            const isValidSignatureOnContract = await (zeroEx.exchange as any)
-                ._isValidSignatureUsingContractCallAsync(dataHex, signature, address);
-            return expect(isValidSignatureOnContract).to.be.true();
+            return expect(
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, signature, address),
+            ).to.become(true);
         });
     });
     describe('#generateSalt', () => {
