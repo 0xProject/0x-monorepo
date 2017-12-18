@@ -164,7 +164,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                      minutes or less.';
         const allowanceExplanation = '0x smart contracts require access to your<br> \
                                   token balances in order to execute trades.<br> \
-                                  Toggling permissions sets an allowance for the<br> \
+                                  Toggling sets an allowance for the<br> \
                                   smart contract so you can start trading that token.';
         return (
             <div className="lg-px4 md-px4 sm-px1 pb2">
@@ -302,7 +302,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             </TableHeaderColumn>
                             <TableHeaderColumn style={{paddingLeft: 3}}>Balance</TableHeaderColumn>
                             <TableHeaderColumn>
-                                <div className="inline-block">{!isSmallScreen && 'Trade '}Permissions</div>
+                                <div className="inline-block">Allowance</div>
                                 <HelpTooltip
                                     style={{paddingLeft: 4}}
                                     explanation={allowanceExplanation}
