@@ -28,11 +28,10 @@ import {
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
 import {utils} from 'ts/utils/utils';
-
-const CUSTOM_LIGHT_GRAY = '#BBBBBB';
 
 interface FillOrderProps {
     blockchain: Blockchain;
@@ -222,7 +221,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 <div className="clearfix pb2" style={{width: '100%'}}>
                     <div className="inline left">Order details</div>
                     <div className="inline right" style={{minWidth: 208}}>
-                        <div className="col col-4 pl2" style={{color: '#BEBEBE'}}>
+                        <div className="col col-4 pl2" style={{color: colors.gray}}>
                             Maker:
                         </div>
                         <div className="col col-2 pr1">
@@ -274,7 +273,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                        </div>
                        <div
                            className="col col-5 pl1"
-                           style={{color: CUSTOM_LIGHT_GRAY, paddingTop: 39}}
+                           style={{color: colors.lightGray, paddingTop: 39}}
                        >
                            = {accounting.formatNumber(orderReceiveAmount, 6)} {makerToken.symbol}
                        </div>

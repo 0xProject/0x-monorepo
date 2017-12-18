@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import MenuItem from 'material-ui/MenuItem';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Link as ScrollLink} from 'react-scroll';
 import {VersionDropDown} from 'ts/pages/shared/version_drop_down';

@@ -2,7 +2,7 @@ import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import {
     Table,
     TableBody,
@@ -29,7 +29,6 @@ import {constants} from 'ts/utils/constants';
 
 const PRECISION = 5;
 const DATE_FORMAT = 'D/M/YY';
-const LIGHT_GRAY = '#A5A5A5';
 const ICON_DIMENSION = 40;
 const ETHER_ICON_PATH = '/images/ether.png';
 const OUTDATED_WETH_ICON_PATH = '/images/wrapped_eth_gray.png';
@@ -93,7 +92,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         <a
                             target="_blank"
                             href="https://weth.io/"
-                            style={{color: LIGHT_GRAY}}
+                            style={{color: colors.gray}}
                         >
                             <div className="flex">
                                 <div>About Wrapped ETH</div>

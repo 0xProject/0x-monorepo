@@ -1,7 +1,7 @@
 import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {BalanceBoundedInput} from 'ts/components/inputs/balance_bounded_input';

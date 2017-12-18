@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {ExpirationInput} from 'ts/components/inputs/expiration_input';

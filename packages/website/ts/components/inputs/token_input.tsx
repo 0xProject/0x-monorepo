@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {AssetPicker} from 'ts/components/generate_order/asset_picker';

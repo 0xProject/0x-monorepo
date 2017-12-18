@@ -5,8 +5,8 @@ import * as React from 'react';
 import {EthAmountInput} from 'ts/components/inputs/eth_amount_input';
 import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
 import {Side, Token, TokenState} from 'ts/types';
-
-const DARK_BLUE = '#4D5481';
+import {colors} from 'ts/utils/colors';
+import {constants} from 'ts/utils/constants';
 
 interface EthWethConversionDialogProps {
     direction: Side;
@@ -75,7 +75,7 @@ export class EthWethConversionDialog extends
                         {this.renderCurrency(isWrappedVersion)}
                         <div style={{paddingTop: 68}}>
                             <i
-                                style={{fontSize: 28, color: DARK_BLUE}}
+                                style={{fontSize: 28, color: colors.darkBlue}}
                                 className="zmdi zmdi-arrow-right"
                             />
                         </div>
@@ -124,7 +124,7 @@ export class EthWethConversionDialog extends
             <div className="mx-auto pt2">
                 <div
                     className="center"
-                    style={{color: DARK_BLUE}}
+                    style={{color: colors.darkBlue}}
                 >
                     {name}
                 </div>

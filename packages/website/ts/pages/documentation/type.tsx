@@ -1,16 +1,14 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Link as ScrollLink} from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {TypeDefinition} from 'ts/pages/documentation/type_definition';
 import {Type as TypeDef, TypeDefinitionByName, TypeDocTypes} from 'ts/types';
+import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
-
-const BUILT_IN_TYPE_COLOR = '#e69d00';
-const STRING_LITERAL_COLOR = '#4da24b';
 
 // Some types reference other libraries. For these types, we want to link the user to the relevant documentation.
 const typeToUrl: {[typeName: string]: string} = {
@@ -56,7 +54,7 @@ export function Type(props: TypeProps): any {
         case TypeDocTypes.Intrinsic:
         case TypeDocTypes.Unknown:
             typeName = type.name;
-            typeNameColor = BUILT_IN_TYPE_COLOR;
+            typeNameColor = colors.orange;
             break;
 
         case TypeDocTypes.Reference:
@@ -90,7 +88,7 @@ export function Type(props: TypeProps): any {
 
         case TypeDocTypes.StringLiteral:
             typeName = `'${type.value}'`;
-            typeNameColor = STRING_LITERAL_COLOR;
+            typeNameColor = colors.green;
             break;
 
         case TypeDocTypes.Array:

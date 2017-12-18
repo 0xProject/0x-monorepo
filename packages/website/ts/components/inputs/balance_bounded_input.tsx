@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import {Link} from 'react-router-dom';

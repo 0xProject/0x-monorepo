@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {colors} from 'material-ui/styles';
 import {
     Table,
     TableBody,
@@ -17,6 +16,7 @@ import ReactTooltip = require('react-tooltip');
 import {Blockchain} from 'ts/blockchain';
 import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
 import {Dispatcher} from 'ts/redux/dispatcher';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 

@@ -2,7 +2,7 @@ import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactTooltip from 'react-tooltip';

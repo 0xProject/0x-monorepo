@@ -3,7 +3,7 @@ import 'whatwg-fetch';
 
 import {bigNumberConfigs} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
-import {colors, getMuiTheme, MuiThemeProvider} from 'material-ui/styles';
+import {getMuiTheme, MuiThemeProvider} from 'material-ui/styles';
 import * as React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
@@ -20,6 +20,7 @@ import {NotFound} from 'ts/pages/not_found';
 import {Wiki} from 'ts/pages/wiki/wiki';
 import {reducer, State} from 'ts/redux/reducer';
 import {WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 injectTapEventPlugin();
 
@@ -29,43 +30,39 @@ bigNumberConfigs.configure();
 tradeHistoryStorage.clearIfRequired();
 trackedTokenStorage.clearIfRequired();
 
-const CUSTOM_GREY = 'rgb(39, 39, 39)';
-const CUSTOM_GREEN = 'rgb(102, 222, 117)';
-const CUSTOM_DARKER_GREEN = 'rgb(77, 197, 92)';
-
 import 'basscss/css/basscss.css';
 import 'less/all.less';
 
 const muiTheme = getMuiTheme({
     appBar: {
         height: 45,
-        color: 'white',
-        textColor: 'black',
+        color: colors.white,
+        textColor: colors.black,
     },
     palette: {
-        pickerHeaderColor: constants.CUSTOM_BLUE,
-        primary1Color: constants.CUSTOM_BLUE,
-        primary2Color: constants.CUSTOM_BLUE,
+        pickerHeaderColor: colors.lightBlue,
+        primary1Color: colors.lightBlue,
+        primary2Color: colors.lightBlue,
         textColor: colors.grey700,
     },
     datePicker: {
         color: colors.grey700,
-        textColor: 'white',
-        calendarTextColor: 'white',
-        selectColor: CUSTOM_GREY,
-        selectTextColor: 'white',
+        textColor: colors.white,
+        calendarTextColor: colors.white,
+        selectColor: colors.darkestGray,
+        selectTextColor: colors.white,
     },
     timePicker: {
         color: colors.grey700,
-        textColor: 'white',
-        accentColor: 'white',
-        headerColor: CUSTOM_GREY,
-        selectColor: CUSTOM_GREY,
-        selectTextColor: CUSTOM_GREY,
+        textColor: colors.white,
+        accentColor: colors.white,
+        headerColor: colors.darkestGray,
+        selectColor: colors.darkestGray,
+        selectTextColor: colors.darkestGray,
     },
     toggle: {
-        thumbOnColor: CUSTOM_GREEN,
-        trackOnColor: CUSTOM_DARKER_GREEN,
+        thumbOnColor: colors.limeGreen,
+        trackOnColor: colors.lightGreen,
     },
 });
 

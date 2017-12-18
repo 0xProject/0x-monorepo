@@ -1,15 +1,14 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import {EthereumAddress} from 'ts/components/ui/ethereum_address';
 import {Identicon} from 'ts/components/ui/identicon';
 import {EtherscanLinkSuffixes} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
 
 const IMAGE_DIMENSION = 100;
 const IDENTICON_DIAMETER = 95;
-const CHECK_MARK_GREEN = 'rgb(0, 195, 62)';
 
 interface PartyProps {
     label: string;
@@ -94,7 +93,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
                                 className="mx-auto"
                                 style={{fontSize: 13, width: 127}}
                             >
-                                <span style={{color: isRegistered ? CHECK_MARK_GREEN : colors.red500}}>
+                                <span style={{color: isRegistered ? colors.brightGreen : colors.red500}}>
                                     <i
                                         className={`zmdi ${isRegistered ? 'zmdi-check-circle' : 'zmdi-alert-triangle'}`}
                                     />

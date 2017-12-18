@@ -1,8 +1,6 @@
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {AlertTypes} from 'ts/types';
-
-const CUSTOM_GREEN = 'rgb(137, 199, 116)';
+import {colors} from 'ts/utils/colors';
 
 interface AlertProps {
     type: AlertTypes;
@@ -12,8 +10,8 @@ interface AlertProps {
 export function Alert(props: AlertProps) {
     const isAlert = props.type === AlertTypes.ERROR;
     const errMsgStyles = {
-        background: isAlert ? colors.red200 : CUSTOM_GREEN,
-        color: 'white',
+        background: isAlert ? colors.red200 : colors.lightestGreen,
+        color: colors.white,
         marginTop: 10,
         padding: 4,
         paddingLeft: 8,

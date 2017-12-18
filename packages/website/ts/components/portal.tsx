@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import {Route, Switch} from 'react-router-dom';
@@ -171,7 +171,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                             <div className="mx-auto flex">
                                 <div
                                     className="col col-2 pr2 pt1 sm-hide xs-hide"
-                                    style={{overflow: 'hidden', backgroundColor: 'rgb(39, 39, 39)', color: 'white'}}
+                                    style={{overflow: 'hidden', backgroundColor: colors.darkestGray, color: 'white'}}
                                 >
                                     <PortalMenu menuItemStyle={{color: 'white'}} />
                                 </div>

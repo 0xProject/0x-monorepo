@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import {Comment} from 'ts/pages/documentation/comment';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';

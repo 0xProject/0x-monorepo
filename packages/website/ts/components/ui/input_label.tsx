@@ -1,4 +1,4 @@
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 
 export interface InputLabelProps {

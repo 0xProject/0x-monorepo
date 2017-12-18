@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import {
@@ -143,7 +143,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                         headerSize={HeaderSizes.H2}
                         githubLink={githubLink}
                     />
-                    <div className="mb4 mt3 p3 center" style={{backgroundColor: '#f9f5ef'}}>
+                    <div className="mb4 mt3 p3 center" style={{backgroundColor: colors.lightestGray}}>
                         See a way to make this article better?{' '}
                         <a
                             href={githubLink}

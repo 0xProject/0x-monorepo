@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
+import {colors} from 'ts/utils/colors';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import {Footer} from 'ts/components/footer';

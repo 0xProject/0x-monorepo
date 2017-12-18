@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {BlockchainErrs} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 
