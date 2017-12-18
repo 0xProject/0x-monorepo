@@ -91,3 +91,14 @@ declare module 'web3-provider-engine' {
   }
   export = Web3ProviderEngine;
 }
+
+// hdkey declarations
+declare module 'hdkey' {
+    class HDNode {
+        public publicKey: Buffer;
+        public chainCode: Buffer;
+        public constructor();
+        public derive(path: string): HDNode;
+    }
+    export = HDNode;
+}
