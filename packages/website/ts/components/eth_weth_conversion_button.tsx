@@ -45,7 +45,7 @@ export class EthWethConversionButton extends
         const labelStyle = this.state.isEthConversionHappening ? {fontSize: 10} : {};
         let callToActionLabel;
         let inProgressLabel;
-        if (this.props.direction === Side.deposit) {
+        if (this.props.direction === Side.Deposit) {
             callToActionLabel = 'Wrap';
             inProgressLabel = 'Wrapping...';
         } else {
@@ -87,7 +87,7 @@ export class EthWethConversionButton extends
         const tokenState = this.props.ethTokenState;
         let balance = tokenState.balance;
         try {
-            if (direction === Side.deposit) {
+            if (direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(value);
                 const ethAmount = ZeroEx.toUnitAmount(value, constants.ETH_DECIMAL_PLACES);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount.toString()} ETH to WETH`);
@@ -110,7 +110,7 @@ export class EthWethConversionButton extends
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
                 await errorReporter.reportAsync(err);
-                const errorMsg = direction === Side.deposit ?
+                const errorMsg = direction === Side.Deposit ?
                                  'Failed to wrap your ETH. Please try again.' :
                                  'Failed to unwrap your WETH. Please try again.';
                 this.props.dispatcher.showFlashMessage(errorMsg);

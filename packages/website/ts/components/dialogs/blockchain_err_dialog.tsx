@@ -46,22 +46,22 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
         );
     }
     private getTitle(hasWalletAddress: boolean) {
-        if (this.props.blockchainErr === BlockchainErrs.A_CONTRACT_NOT_DEPLOYED_ON_NETWORK) {
+        if (this.props.blockchainErr === BlockchainErrs.AContractNotDeployedOnNetwork) {
             return '0x smart contracts not found';
         } else if (!hasWalletAddress) {
             return 'Enable wallet communication';
-        } else if (this.props.blockchainErr === BlockchainErrs.DISCONNECTED_FROM_ETHEREUM_NODE) {
+        } else if (this.props.blockchainErr === BlockchainErrs.DisconnectedFromEthereumNode) {
             return 'Disconnected from Ethereum network';
         } else {
             return 'Unexpected error';
         }
     }
     private renderExplanation(hasWalletAddress: boolean) {
-        if (this.props.blockchainErr === BlockchainErrs.A_CONTRACT_NOT_DEPLOYED_ON_NETWORK) {
+        if (this.props.blockchainErr === BlockchainErrs.AContractNotDeployedOnNetwork) {
             return this.renderContractsNotDeployedExplanation();
         } else if (!hasWalletAddress) {
             return this.renderNoWalletFoundExplanation();
-        } else if (this.props.blockchainErr === BlockchainErrs.DISCONNECTED_FROM_ETHEREUM_NODE) {
+        } else if (this.props.blockchainErr === BlockchainErrs.DisconnectedFromEthereumNode) {
             return this.renderDisconnectedFromNode();
         } else {
             return this.renderUnexpectedErrorExplanation();

@@ -18,18 +18,10 @@ export enum GenerateOrderSteps {
   CopyAndShare,
 }
 
-export const Side = strEnum([
-  'receive',
-  'deposit',
-]);
-export type Side = keyof typeof Side;
-
-export const BlockchainErrs = strEnum([
-  'A_CONTRACT_NOT_DEPLOYED_ON_NETWORK',
-  'DISCONNECTED_FROM_ETHEREUM_NODE',
-  'UNHANDLED_ERROR',
-]);
-export type BlockchainErrs = keyof typeof BlockchainErrs;
+export enum Side {
+    Receive = 'RECEIVE',
+    Deposit = 'DEPOSIT',
+}
 
 export const Direction = strEnum([
   'forward',
@@ -270,6 +262,12 @@ export const EtherscanLinkSuffixes = strEnum([
   'tx',
 ]);
 export type EtherscanLinkSuffixes = keyof typeof EtherscanLinkSuffixes;
+
+export enum BlockchainErrs {
+    AContractNotDeployedOnNetwork = 'A_CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    DisconnectedFromEthereumNode = 'DISCONNECTED_FROM_ETHEREUM_NODE',
+    NoError = 'NO_ERROR',
+}
 
 export const BlockchainCallErrs = strEnum([
   'CONTRACT_DOES_NOT_EXIST',

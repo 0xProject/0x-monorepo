@@ -135,11 +135,11 @@ export class Blockchain {
         const isConnected = !_.isUndefined(newNetworkId);
         if (!isConnected) {
             this.networkId = newNetworkId;
-            this.dispatcher.encounteredBlockchainError(BlockchainErrs.DISCONNECTED_FROM_ETHEREUM_NODE);
+            this.dispatcher.encounteredBlockchainError(BlockchainErrs.DisconnectedFromEthereumNode);
             this.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
         } else if (this.networkId !== newNetworkId) {
             this.networkId = newNetworkId;
-            this.dispatcher.encounteredBlockchainError('');
+            this.dispatcher.encounteredBlockchainError(BlockchainErrs.NoError);
             await this.fetchTokenInformationAsync();
             await this.rehydrateStoreWithContractEvents();
         }
@@ -712,8 +712,8 @@ export class Blockchain {
             _.find(allTokens, {symbol: configs.defaultTrackedTokenSymbols[0]}),
             _.find(allTokens, {symbol: configs.defaultTrackedTokenSymbols[1]}),
         ];
-        this.dispatcher.updateChosenAssetTokenAddress(Side.deposit, mostPopularTradingPairTokens[0].address);
-        this.dispatcher.updateChosenAssetTokenAddress(Side.receive, mostPopularTradingPairTokens[1].address);
+        this.dispatcher.updateChosenAssetTokenAddress(Side.Deposit, mostPopularTradingPairTokens[0].address);
+        this.dispatcher.updateChosenAssetTokenAddress(Side.Receive, mostPopularTradingPairTokens[1].address);
         this.dispatcher.updateBlockchainIsLoaded(true);
     }
     private async instantiateContractIfExistsAsync(artifact: any, address?: string): Promise<ContractInstance> {

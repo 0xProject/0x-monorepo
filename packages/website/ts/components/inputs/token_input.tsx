@@ -95,7 +95,7 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
         });
     }
     private onAssetClicked() {
-        if (this.props.blockchainErr !== '') {
+        if (this.props.blockchainErr !== BlockchainErrs.NoError) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;
         }

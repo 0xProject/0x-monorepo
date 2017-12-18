@@ -24,11 +24,11 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
         const tokenAddresses = _.keys(this.props.tokenByAddress);
         const exchangeContract = this.props.blockchain.getExchangeContractAddressIfExists();
         const hintSideToAssetToken = {
-            [Side.deposit]: {
+            [Side.Deposit]: {
                 amount: new BigNumber(35),
                 address: tokenAddresses[0],
             },
-            [Side.receive]: {
+            [Side.Receive]: {
                 amount: new BigNumber(89),
                 address: tokenAddresses[1],
             },

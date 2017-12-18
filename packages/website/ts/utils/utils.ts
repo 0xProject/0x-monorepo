@@ -61,8 +61,8 @@ export const utils = {
                   orderExpiryTimestamp: BigNumber, orderTakerAddress: string, orderMakerAddress: string,
                   makerFee: BigNumber, takerFee: BigNumber, feeRecipient: string,
                   signatureData: SignatureData, tokenByAddress: TokenByAddress, orderSalt: BigNumber): Order {
-        const makerToken = tokenByAddress[sideToAssetToken[Side.deposit].address];
-        const takerToken = tokenByAddress[sideToAssetToken[Side.receive].address];
+        const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
+        const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
             maker: {
                 address: orderMakerAddress,
@@ -72,7 +72,7 @@ export const utils = {
                     decimals: makerToken.decimals,
                     address: makerToken.address,
                 },
-                amount: sideToAssetToken[Side.deposit].amount.toString(),
+                amount: sideToAssetToken[Side.Deposit].amount.toString(),
                 feeAmount: makerFee.toString(),
             },
             taker: {
@@ -83,7 +83,7 @@ export const utils = {
                     decimals: takerToken.decimals,
                     address: takerToken.address,
                 },
-                amount: sideToAssetToken[Side.receive].amount.toString(),
+                amount: sideToAssetToken[Side.Receive].amount.toString(),
                 feeAmount: takerFee.toString(),
             },
             expiration: orderExpiryTimestamp.toString(),

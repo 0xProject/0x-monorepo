@@ -357,7 +357,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         );
     }
     private renderTokenTableRows() {
-        if (!this.props.blockchainIsLoaded || this.props.blockchainErr !== '') {
+        if (!this.props.blockchainIsLoaded || this.props.blockchainErr !== BlockchainErrs.NoError) {
             return '';
         }
         const isSmallScreen = this.props.screenWidth === ScreenWidths.SM;

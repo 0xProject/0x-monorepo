@@ -43,8 +43,8 @@ interface ConnectedDispatch {
 }
 
 const mapStateToProps = (state: State, ownProps: PortalComponentAllProps): ConnectedState => {
-    const receiveAssetToken = state.sideToAssetToken[Side.receive];
-    const depositAssetToken = state.sideToAssetToken[Side.deposit];
+    const receiveAssetToken = state.sideToAssetToken[Side.Receive];
+    const depositAssetToken = state.sideToAssetToken[Side.Deposit];
     const receiveAddress = !_.isUndefined(receiveAssetToken.address) ?
                           receiveAssetToken.address : constants.NULL_ADDRESS;
     const depositAddress = !_.isUndefined(depositAssetToken.address) ?

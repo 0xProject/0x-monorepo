@@ -58,7 +58,7 @@ export interface State {
 
 const INITIAL_STATE: State = {
     // Portal
-    blockchainErr: '',
+    blockchainErr: BlockchainErrs.NoError,
     blockchainIsLoaded: false,
     generateOrderStep: GenerateOrderSteps.ChooseAssets,
     networkId: undefined,
@@ -76,8 +76,8 @@ const INITIAL_STATE: State = {
     screenWidth: utils.getScreenWidth(),
     shouldBlockchainErrDialogBeOpen: false,
     sideToAssetToken: {
-        [Side.deposit]: {},
-        [Side.receive]: {},
+        [Side.Deposit]: {},
+        [Side.Receive]: {},
     },
     tokenByAddress: {},
     tokenStateByAddress: {},
@@ -294,8 +294,8 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
 
         case ActionTypes.SWAP_ASSET_TOKENS: {
             const newSideToAssetToken = _.assign({}, state.sideToAssetToken, {
-                [Side.deposit]: state.sideToAssetToken[Side.receive],
-                [Side.receive]: state.sideToAssetToken[Side.deposit],
+                [Side.Deposit]: state.sideToAssetToken[Side.Receive],
+                [Side.Receive]: state.sideToAssetToken[Side.Deposit],
             });
             return _.assign({}, state, {
                 sideToAssetToken: newSideToAssetToken,

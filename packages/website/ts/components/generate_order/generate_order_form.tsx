@@ -78,10 +78,10 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
     }
     public render() {
         const dispatcher = this.props.dispatcher;
-        const depositTokenAddress = this.props.sideToAssetToken[Side.deposit].address;
+        const depositTokenAddress = this.props.sideToAssetToken[Side.Deposit].address;
         const depositToken = this.props.tokenByAddress[depositTokenAddress];
         const depositTokenState = this.props.tokenStateByAddress[depositTokenAddress];
-        const receiveTokenAddress = this.props.sideToAssetToken[Side.receive].address;
+        const receiveTokenAddress = this.props.sideToAssetToken[Side.Receive].address;
         const receiveToken = this.props.tokenByAddress[receiveTokenAddress];
         const receiveTokenState = this.props.tokenStateByAddress[receiveTokenAddress];
         const takerExplanation = 'If a taker is specified, only they are<br> \
@@ -102,9 +102,9 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     blockchainErr={this.props.blockchainErr}
                                     dispatcher={this.props.dispatcher}
                                     label="Selling"
-                                    side={Side.deposit}
+                                    side={Side.Deposit}
                                     networkId={this.props.networkId}
-                                    assetToken={this.props.sideToAssetToken[Side.deposit]}
+                                    assetToken={this.props.sideToAssetToken[Side.Deposit]}
                                     updateChosenAssetToken={dispatcher.updateChosenAssetToken.bind(dispatcher)}
                                     tokenByAddress={this.props.tokenByAddress}
                                 />
@@ -112,8 +112,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     label="Sell amount"
                                     token={depositToken}
                                     tokenState={depositTokenState}
-                                    amount={this.props.sideToAssetToken[Side.deposit].amount}
-                                    onChange={this.onTokenAmountChange.bind(this, depositToken, Side.deposit)}
+                                    amount={this.props.sideToAssetToken[Side.Deposit].amount}
+                                    onChange={this.onTokenAmountChange.bind(this, depositToken, Side.Deposit)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                     shouldCheckBalance={true}
                                     shouldCheckAllowance={true}
@@ -133,9 +133,9 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     blockchainErr={this.props.blockchainErr}
                                     dispatcher={this.props.dispatcher}
                                     label="Buying"
-                                    side={Side.receive}
+                                    side={Side.Receive}
                                     networkId={this.props.networkId}
-                                    assetToken={this.props.sideToAssetToken[Side.receive]}
+                                    assetToken={this.props.sideToAssetToken[Side.Receive]}
                                     updateChosenAssetToken={dispatcher.updateChosenAssetToken.bind(dispatcher)}
                                     tokenByAddress={this.props.tokenByAddress}
                                 />
@@ -143,8 +143,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     label="Receive amount"
                                     token={receiveToken}
                                     tokenState={receiveTokenState}
-                                    amount={this.props.sideToAssetToken[Side.receive].amount}
-                                    onChange={this.onTokenAmountChange.bind(this, receiveToken, Side.receive)}
+                                    amount={this.props.sideToAssetToken[Side.Receive].amount}
+                                    onChange={this.onTokenAmountChange.bind(this, receiveToken, Side.Receive)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                     shouldCheckBalance={false}
                                     shouldCheckAllowance={false}
@@ -235,16 +235,16 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         });
     }
     private async onSignClickedAsync(): Promise<boolean> {
-        if (this.props.blockchainErr !== '') {
+        if (this.props.blockchainErr !== BlockchainErrs.NoError) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return false;
         }
 
         // Check if all required inputs were supplied
-        const debitToken = this.props.sideToAssetToken[Side.deposit];
+        const debitToken = this.props.sideToAssetToken[Side.Deposit];
         const debitBalance = this.props.tokenStateByAddress[debitToken.address].balance;
         const debitAllowance = this.props.tokenStateByAddress[debitToken.address].allowance;
-        const receiveAmount = this.props.sideToAssetToken[Side.receive].amount;
+        const receiveAmount = this.props.sideToAssetToken[Side.Receive].amount;
         if (!_.isUndefined(debitToken.amount) && !_.isUndefined(receiveAmount) &&
             debitToken.amount.gt(0) && receiveAmount.gt(0) &&
             this.props.userAddress !== '' &&

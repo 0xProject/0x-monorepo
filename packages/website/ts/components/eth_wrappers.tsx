@@ -142,7 +142,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     <TableRowColumn>
                                         <EthWethConversionButton
                                             isOutdatedWrappedEther={false}
-                                            direction={Side.deposit}
+                                            direction={Side.Deposit}
                                             ethToken={etherToken}
                                             ethTokenState={etherTokenState}
                                             dispatcher={this.props.dispatcher}
@@ -169,7 +169,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     <TableRowColumn>
                                         <EthWethConversionButton
                                             isOutdatedWrappedEther={false}
-                                            direction={Side.receive}
+                                            direction={Side.Receive}
                                             ethToken={etherToken}
                                             ethTokenState={etherTokenState}
                                             dispatcher={this.props.dispatcher}
@@ -287,7 +287,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         <EthWethConversionButton
                             isDisabled={!isStateLoaded}
                             isOutdatedWrappedEther={true}
-                            direction={Side.receive}
+                            direction={Side.Receive}
                             ethToken={outdatedEtherToken}
                             ethTokenState={outdatedEtherTokenState}
                             dispatcher={this.props.dispatcher}
