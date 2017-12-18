@@ -23,12 +23,12 @@ const DEFAULT_GAS_PRICE = ((10 ** 9) * 2).toString();
  * Compiles all contracts with options passed in through CLI.
  * @param argv Instance of process.argv provided by yargs.
  */
-async function onCompileCommand(args: CliOptions): Promise<void> {
+async function onCompileCommand(argv: CliOptions): Promise<void> {
     const opts: CompilerOptions = {
-        contractsDir: args.contractsDir,
-        networkId: args.networkId,
-        optimizerEnabled: args.shouldOptimize ? 1 : 0,
-        artifactsDir: args.artifactsDir,
+        contractsDir: argv.contractsDir,
+        networkId: argv.networkId,
+        optimizerEnabled: argv.shouldOptimize ? 1 : 0,
+        artifactsDir: argv.artifactsDir,
     };
     await commands.compileAsync(opts);
 }
@@ -150,11 +150,11 @@ function deployCommandBuilder(yargsInstance: any) {
         })
         .command('compile',
                  'compile contracts',
-                 _.noop,
+                 _.identity,
                  onCompileCommand)
         .command('migrate',
                  'compile and deploy contracts using migration scripts',
-                 _.noop,
+                 _.identity,
                  onMigrateCommand)
         .command('deploy',
                  'deploy a single contract with provided arguments',

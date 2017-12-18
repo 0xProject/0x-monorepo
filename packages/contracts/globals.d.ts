@@ -2,7 +2,6 @@ declare module 'bn.js';
 declare module 'ethereumjs-abi';
 declare module 'chai-bignumber';
 declare module 'dirty-chai';
-declare module 'yargs';
 
 // HACK: In order to merge the bignumber declaration added by chai-bignumber to the chai Assertion
 // interface we must use `namespace` as the Chai definitelyTyped definition does. Since we otherwise
