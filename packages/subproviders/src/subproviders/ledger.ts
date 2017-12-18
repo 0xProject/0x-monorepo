@@ -131,7 +131,7 @@ export class LedgerSubprovider extends Subprovider {
         let ledgerResponse;
         try {
             ledgerResponse = await this._ledgerClientIfExists.getAddress_async(
-                `${this._derivationPath}`, this._shouldAlwaysAskForConfirmation, SHOULD_GET_CHAIN_CODE,
+                this._derivationPath, this._shouldAlwaysAskForConfirmation, SHOULD_GET_CHAIN_CODE,
             );
         } finally {
             await this.destoryLedgerClientAsync();
