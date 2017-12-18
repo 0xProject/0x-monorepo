@@ -124,7 +124,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                                 <img src="/images/protocol_logo_white.png" height="30" />
                             </div>
                             <div
-                                style={{fontSize: 11, color: colors.gray, paddingLeft: 37, paddingTop: 2}}
+                                style={{fontSize: 11, color: colors.grey, paddingLeft: 37, paddingTop: 2}}
                             >
                                 © ZeroEx, Intl.
                             </div>
@@ -209,7 +209,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
     private renderHeader(title: string) {
         const headerStyle = {
             textTransform: 'uppercase',
-            color: colors.lightGray,
+            color: colors.grey400,
             letterSpacing: 2,
             fontFamily: 'Roboto Mono',
             fontSize: 13,

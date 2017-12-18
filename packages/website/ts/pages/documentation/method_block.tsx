@@ -150,7 +150,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                         <div className="bold">
                             {parameter.name}
                         </div>
-                        <div className="pt1" style={{color: colors.grey500, fontSize: 14}}>
+                        <div className="pt1" style={{color: colors.grey, fontSize: 14}}>
                             {isOptional && 'optional'}
                         </div>
                     </div>

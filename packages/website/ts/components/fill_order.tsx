@@ -221,7 +221,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 <div className="clearfix pb2" style={{width: '100%'}}>
                     <div className="inline left">Order details</div>
                     <div className="inline right" style={{minWidth: 208}}>
-                        <div className="col col-4 pl2" style={{color: colors.gray}}>
+                        <div className="col col-4 pl2" style={{color: colors.grey}}>
                             Maker:
                         </div>
                         <div className="col col-2 pr1">
@@ -273,7 +273,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                        </div>
                        <div
                            className="col col-5 pl1"
-                           style={{color: colors.lightGray, paddingTop: 39}}
+                           style={{color: colors.grey400, paddingTop: 39}}
                        >
                            = {accounting.formatNumber(orderReceiveAmount, 6)} {makerToken.symbol}
                        </div>

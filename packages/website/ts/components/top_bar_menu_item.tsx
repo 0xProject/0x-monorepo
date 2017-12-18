@@ -28,7 +28,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
     public render() {
         const primaryStyles = this.props.isPrimary ? {
             borderRadius: 4,
-            border: `1px solid ${this.props.isNightVersion ? colors.gray : colors.grayishPink}`,
+            border: `1px solid ${this.props.isNightVersion ? colors.grey : colors.greyishPink}`,
             marginTop: 15,
             paddingLeft: 9,
             paddingRight: 9,

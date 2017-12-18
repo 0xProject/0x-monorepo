@@ -50,7 +50,7 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
                     fullWidth={true}
                     hintText={hintText}
                     floatingLabelFixed={true}
-                    floatingLabelStyle={{color: colors.grey500, display: labelDisplay}}
+                    floatingLabelStyle={{color: colors.grey, display: labelDisplay}}
                     floatingLabelText={label}
                     errorText={this.state.errMsg}
                     value={this.state.address}

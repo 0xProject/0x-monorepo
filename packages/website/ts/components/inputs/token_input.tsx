@@ -62,7 +62,7 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
                     >
                         <TokenIcon token={token} diameter={TOKEN_ICON_DIMENSION} />
                     </div>
-                    <div className="py1 center" style={{color: colors.grey500}}>
+                    <div className="py1 center" style={{color: colors.grey}}>
                         {token.name}
                     </div>
                 </Paper>

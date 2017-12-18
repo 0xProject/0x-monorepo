@@ -220,7 +220,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 {this.renderPortalMenu()}
                 {this.renderDocsMenu()}
                 {this.renderWiki()}
-                <div className="pl1 py1 mt3" style={{backgroundColor: colors.lightestGray}}>Website</div>
+                <div className="pl1 py1 mt3" style={{backgroundColor: colors.lightGrey}}>Website</div>
                 <Link to={WebsitePaths.Home} className="text-decoration-none">
                     <MenuItem className="py2">Home</MenuItem>
                 </Link>
@@ -284,7 +284,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         const sectionTitle = `${this.props.docsInfo.displayName} Docs`;
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{backgroundColor: colors.lightestGray}}>{sectionTitle}</div>
+                <div className="pl1 py1" style={{backgroundColor: colors.lightGrey}}>{sectionTitle}</div>
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
@@ -304,7 +304,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
 
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{backgroundColor: colors.lightestGray}}>0x Protocol Wiki</div>
+                <div className="pl1 py1" style={{backgroundColor: colors.lightGrey}}>0x Protocol Wiki</div>
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menuSubsectionsBySection}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
@@ -321,7 +321,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
 
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{backgroundColor: colors.lightestGray}}>Portal DApp</div>
+                <div className="pl1 py1" style={{backgroundColor: colors.lightGrey}}>Portal DApp</div>
                 <PortalMenu
                     menuItemStyle={{color: 'black'}}
                     onClick={this.onMenuButtonClick.bind(this)}

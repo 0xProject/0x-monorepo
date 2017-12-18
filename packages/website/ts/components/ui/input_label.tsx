@@ -7,7 +7,7 @@ export interface InputLabelProps {
 
 const styles = {
     label: {
-        color: colors.grey500,
+        color: colors.grey,
         fontSize: 12,
         pointerEvents: 'none',
         textAlign: 'left',

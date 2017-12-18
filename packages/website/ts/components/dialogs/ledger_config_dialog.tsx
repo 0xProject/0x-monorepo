@@ -146,7 +146,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                     <div className="overflow-hidden" style={{width: 180}}>
                         <TextField
                             floatingLabelFixed={true}
-                            floatingLabelStyle={{color: colors.grey500}}
+                            floatingLabelStyle={{color: colors.grey}}
                             floatingLabelText="Update path derivation (advanced)"
                             value={this.state.derivationPath}
                             errorText={this.state.derivationErrMsg}

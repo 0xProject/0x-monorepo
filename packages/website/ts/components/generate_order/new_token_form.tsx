@@ -49,7 +49,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey500}}
+                        floatingLabelStyle={{color: colors.grey}}
                         floatingLabelText={<RequiredLabel label="Name" />}
                         value={this.state.name}
                         errorText={this.state.nameErrText}
@@ -59,7 +59,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey500}}
+                        floatingLabelStyle={{color: colors.grey}}
                         floatingLabelText={<RequiredLabel label="Symbol" />}
                         value={this.state.symbol}
                         errorText={this.state.symbolErrText}
@@ -78,7 +78,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey500}}
+                        floatingLabelStyle={{color: colors.grey}}
                         floatingLabelText={<RequiredLabel label="Decimals" />}
                         value={this.state.decimals}
                         errorText={this.state.decimalsErrText}

@@ -154,7 +154,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     </div>
                     <div className="pt1 sm-pb2 lg-px4 md-px4">
                         <div className="lg-px3 md-px3">
-                            <div style={{fontSize: 12, color: colors.grey500}}>Expiration</div>
+                            <div style={{fontSize: 12, color: colors.grey}}>Expiration</div>
                             <ExpirationInput
                                 orderExpiryTimestamp={this.props.orderExpiryTimestamp}
                                 updateOrderExpiry={dispatcher.updateOrderExpiry.bind(dispatcher)}

@@ -92,7 +92,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         <a
                             target="_blank"
                             href="https://weth.io/"
-                            style={{color: colors.gray}}
+                            style={{color: colors.grey}}
                         >
                             <div className="flex">
                                 <div>About Wrapped ETH</div>

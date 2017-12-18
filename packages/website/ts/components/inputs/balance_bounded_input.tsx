@@ -83,7 +83,7 @@ export class BalanceBoundedInput extends
                 fullWidth={true}
                 floatingLabelText={label}
                 floatingLabelFixed={true}
-                floatingLabelStyle={{color: colors.grey500, width: 206}}
+                floatingLabelStyle={{color: colors.grey, width: 206}}
                 errorText={errorText}
                 value={this.state.amountString}
                 hintText={<span style={{textTransform: 'capitalize'}}>amount</span>}
@@ -133,7 +133,7 @@ export class BalanceBoundedInput extends
         const increaseBalanceText = 'Increase balance';
         const linkStyle = {
             cursor: 'pointer',
-            color: colors.grey900,
+            color: colors.darkestGray,
             textDecoration: 'underline',
             display: 'inline',
         };

@@ -55,7 +55,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             containerId={constants.DOCS_CONTAINER_ID}
                         >
                             <div
-                                style={{color: colors.grey500, cursor: 'pointer'}}
+                                style={{color: colors.grey, cursor: 'pointer'}}
                                 className="pb1"
                             >
                                 {finalSectionName.toUpperCase()}

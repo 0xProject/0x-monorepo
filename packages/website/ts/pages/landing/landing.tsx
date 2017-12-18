@@ -287,7 +287,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         });
         const titleStyle: React.CSSProperties = {
             fontFamily: 'Roboto Mono',
-            color: colors.gray,
+            color: colors.grey,
             textTransform: 'uppercase',
             fontWeight: 300,
             letterSpacing: 3,
@@ -329,7 +329,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div
                 className="clearfix lg-py4 md-py4 sm-pb4 sm-pt2"
-                style={{backgroundColor: colors.offWhite}}
+                style={{backgroundColor: colors.grey100}}
             >
                 <div className="mx-auto max-width-4 py4 clearfix">
                     {isSmallScreen &&
@@ -601,7 +601,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const boxStyle: React.CSSProperties = {
             maxWidth: 252,
             height: 386,
-            backgroundColor: colors.lightestGray,
+            backgroundColor: colors.lightGrey,
             borderRadius: 5,
             padding: '10px 24px 24px',
         };
@@ -705,14 +705,14 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const cases = _.map(useCases, (useCase: UseCase) => {
             const style = _.isUndefined(useCase.style) || isSmallScreen ? {} : useCase.style;
             const useCaseBoxStyle = {
-                color: colors.gray,
+                color: colors.grey,
                 border: '1px solid #565656',
                 borderRadius: 4,
                 maxWidth: isSmallScreen ? 375 : 'none',
                 ...style,
             };
             const typeStyle: React.CSSProperties = {
-                color: colors.lightestGray,
+                color: colors.lightGrey,
                 fontSize: 13,
                 textTransform: 'uppercase',
                 fontFamily: 'Roboto Mono',

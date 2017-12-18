@@ -72,7 +72,7 @@ export class DropDownMenuItem extends React.Component<DropDownMenuItemProps, Dro
                         onMouseEnter={this.onHover.bind(this)}
                         onMouseLeave={this.onHoverOff.bind(this)}
                     >
-                        <Menu style={{color: colors.gray}}>
+                        <Menu style={{color: colors.grey}}>
                             {this.props.subMenuItems}
                         </Menu>
                     </div>

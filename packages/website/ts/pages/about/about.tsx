@@ -152,12 +152,12 @@ export class About extends React.Component<AboutProps, AboutState> {
     }
     public render() {
         return (
-            <div style={{backgroundColor: colors.lightestGray}}>
+            <div style={{backgroundColor: colors.lightGrey}}>
                 <DocumentTitle title="0x About Us"/>
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
-                    style={{backgroundColor: colors.lightestGray}}
+                    style={{backgroundColor: colors.lightGrey}}
                 />
                 <div
                     id="about"
@@ -194,7 +194,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                     <div className="pt3 pb2">
                         <div
                             className="pt2 pb3 sm-center md-pl4 lg-pl0 md-ml3"
-                            style={{color: colors.gray, fontSize: 24, fontFamily: 'Roboto Mono'}}
+                            style={{color: colors.grey, fontSize: 24, fontFamily: 'Roboto Mono'}}
                         >
                             Advisors:
                         </div>

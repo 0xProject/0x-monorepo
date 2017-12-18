@@ -29,7 +29,7 @@ export function SourceLink(props: SourceLinkProps) {
                 href={sourceCodeUrl}
                 target="_blank"
                 className="underline"
-                style={{color: colors.grey500}}
+                style={{color: colors.grey}}
             >
                 Source
             </a>
