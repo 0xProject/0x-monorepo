@@ -10,8 +10,8 @@ export const blockParamSchema = {
     ],
 };
 
-export const subscriptionOptsSchema = {
-    id: '/SubscriptionOpts',
+export const blockRangeSchema = {
+    id: '/BlockRange',
     properties: {
         fromBlock: {$ref: '/BlockParam'},
         toBlock: {$ref: '/BlockParam'},

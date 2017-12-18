@@ -95,6 +95,7 @@ const docsInfoConfig: DocsInfoConfig = {
         'ExchangeEvents',
         'IndexedFilterValues',
         'SubscriptionOpts',
+        'BlockRange',
         'BlockParam',
         'OrderFillOrKillRequest',
         'OrderCancellationRequest',

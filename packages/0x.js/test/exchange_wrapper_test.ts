@@ -13,7 +13,7 @@ import {
     OrderCancellationRequest,
     OrderFillRequest,
     SignedOrder,
-    SubscriptionOpts,
+    BlockRange,
     Token,
     ZeroEx,
 } from '../src';
@@ -760,7 +760,7 @@ describe('ExchangeWrapper', () => {
         let takerAddress: string;
         const fillableAmount = new BigNumber(5);
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
-        const subscriptionOpts: SubscriptionOpts = {
+        const blockRange: BlockRange = {
             fromBlock: 0,
             toBlock: BlockParamLiteral.Latest,
         };
@@ -781,7 +781,7 @@ describe('ExchangeWrapper', () => {
             await zeroEx.awaitTransactionMinedAsync(txHash);
             const eventName = ExchangeEvents.LogFill;
             const indexFilterValues = {};
-            const logs = await zeroEx.exchange.getLogsAsync(eventName, subscriptionOpts, indexFilterValues);
+            const logs = await zeroEx.exchange.getLogsAsync(eventName, blockRange, indexFilterValues);
             expect(logs).to.have.length(1);
             expect(logs[0].event).to.be.equal(eventName);
         });
@@ -795,7 +795,7 @@ describe('ExchangeWrapper', () => {
             await zeroEx.awaitTransactionMinedAsync(txHash);
             const differentEventName = ExchangeEvents.LogCancel;
             const indexFilterValues = {};
-            const logs = await zeroEx.exchange.getLogsAsync(differentEventName, subscriptionOpts, indexFilterValues);
+            const logs = await zeroEx.exchange.getLogsAsync(differentEventName, blockRange, indexFilterValues);
             expect(logs).to.have.length(0);
         });
         it('should only get the logs with the correct indexed fields', async () => {
@@ -821,7 +821,7 @@ describe('ExchangeWrapper', () => {
                 maker: differentMakerAddress,
             };
             const logs = await zeroEx.exchange.getLogsAsync<LogFillContractEventArgs>(
-                eventName, subscriptionOpts, indexFilterValues,
+                eventName, blockRange, indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;

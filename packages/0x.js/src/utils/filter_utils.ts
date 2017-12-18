@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as uuid from 'uuid/v4';
 import * as Web3 from 'web3';
 
-import {ContractEvents, IndexedFilterValues, SubscriptionOpts} from '../types';
+import {BlockRange, ContractEvents, IndexedFilterValues} from '../types';
 
 const TOPIC_LENGTH = 32;
 
@@ -14,7 +14,7 @@ export const filterUtils = {
     },
     getFilter(address: string, eventName: ContractEvents,
               indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
-              subscriptionOpts?: SubscriptionOpts): Web3.FilterObject {
+              blockRange?: BlockRange): Web3.FilterObject {
         const eventAbi = _.find(abi, {name: eventName}) as Web3.EventAbi;
         const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi, eventName);
         const topicForEventSignature = ethUtil.addHexPrefix(jsSHA3.keccak256(eventSignature));
@@ -24,9 +24,9 @@ export const filterUtils = {
             address,
             topics,
         };
-        if (!_.isUndefined(subscriptionOpts)) {
+        if (!_.isUndefined(blockRange)) {
             filter = {
-                ...subscriptionOpts,
+                ...blockRange,
                 ...filter,
             };
         }

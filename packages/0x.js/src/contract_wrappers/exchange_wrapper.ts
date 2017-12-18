@@ -25,7 +25,7 @@ import {
     OrderTransactionOpts,
     OrderValues,
     SignedOrder,
-    SubscriptionOpts,
+    BlockRange,
     ValidateOrderFillableOpts,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -616,20 +616,20 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Gets historical logs without creating a subscription
      * @param   eventName           The exchange contract event you would like to subscribe to.
-     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
+     * @param   blockRange    Subscriptions options that let you configure the subscription.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends ExchangeContractEventArgs>(
-        eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts, indexFilterValues: IndexedFilterValues,
+        eventName: ExchangeEvents, blockRange: BlockRange, indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
-        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
+        assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const exchangeContractAddress = this.getContractAddress();
         const logs = await this._getLogsAsync<ArgsType>(
-            exchangeContractAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.ExchangeArtifact.abi,
+            exchangeContractAddress, eventName, blockRange, indexFilterValues, artifacts.ExchangeArtifact.abi,
         );
         return logs;
     }

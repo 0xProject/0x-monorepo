@@ -57,8 +57,8 @@ import {
 } from '../schemas/signed_orders_schema';
 import {
     blockParamSchema,
-    subscriptionOptsSchema,
-} from '../schemas/subscription_opts_schema';
+    blockRangeSchema,
+} from '../schemas/block_range_schema';
 import {
     tokenSchema,
 } from '../schemas/token_schema';
@@ -81,7 +81,7 @@ export const schemas = {
     signedOrderSchema,
     signedOrdersSchema,
     blockParamSchema,
-    subscriptionOptsSchema,
+    blockRangeSchema,
     tokenSchema,
     jsNumber,
     txDataSchema,
