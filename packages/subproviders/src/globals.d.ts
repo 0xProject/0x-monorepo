@@ -48,7 +48,7 @@ declare module 'ledgerco' {
         public comm: comm;
         constructor(comm: comm);
         public getAddress_async(path: string, display?: boolean, chaincode?: boolean):
-               Promise<{publicKey: string; address: string}>;
+               Promise<{publicKey: string; address: string; chainCode: string}>;
         public signTransaction_async(path: string, rawTxHex: string): Promise<ECSignatureString>;
         public getAppConfiguration_async(): Promise<{ arbitraryDataEnabled: number; version: string }>;
         public signPersonalMessage_async(path: string, messageHex: string): Promise<ECSignature>;

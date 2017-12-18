@@ -11,7 +11,7 @@ export interface LedgerCommunicationClient {
  */
 export interface LedgerEthereumClient {
     getAddress_async: (derivationPath: string, askForDeviceConfirmation: boolean,
-                       shouldGetChainCode: boolean) => Promise<LedgerGetAddressResult>;
+                       shouldGetChainCode: true) => Promise<LedgerGetAddressResult>;
     signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
     signTransaction_async: (derivationPath: string, txHex: string) => Promise<ECSignatureString>;
     comm: LedgerCommunicationClient;
@@ -63,6 +63,8 @@ export interface SignatureData {
 
 export interface LedgerGetAddressResult {
     address: string;
+    publicKey: string;
+    chainCode: string;
 }
 
 export interface LedgerWalletSubprovider {
