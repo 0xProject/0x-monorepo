@@ -10,6 +10,8 @@ export interface LedgerCommunicationClient {
  * NodeJs and Browser communication are supported.
  */
 export interface LedgerEthereumClient {
+    // shouldGetChainCode is defined as `true` instead of `boolean` because other types rely on the assumption
+    // that we get back the chain code and we don't have dependent types to express it properly
     getAddress_async: (derivationPath: string, askForDeviceConfirmation: boolean,
                        shouldGetChainCode: true) => Promise<LedgerGetAddressResult>;
     signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
