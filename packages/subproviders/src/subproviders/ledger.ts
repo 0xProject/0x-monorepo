@@ -145,7 +145,10 @@ export class LedgerSubprovider extends Subprovider {
         for (let i = 0; i < NUM_ADDRESSES_TO_FETCH; i++) {
             const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
             const derivedPublicKey = derivedHDNode.publicKey;
-            const ethereumAddressUnprefixed = ethUtil.publicToAddress(derivedPublicKey, true).toString('hex');
+            const shouldSanitizePublicKey = true;
+            const ethereumAddressUnprefixed = ethUtil.publicToAddress(
+                derivedPublicKey, shouldSanitizePublicKey,
+            ).toString('hex');
             const ethereumAddressPrefixed = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
             accounts.push(ethereumAddressPrefixed.toLowerCase());
         }
