@@ -1,5 +1,4 @@
 declare module 'bn.js';
-declare module 'ethereumjs-abi';
 declare module 'chai-bignumber';
 declare module 'dirty-chai';
 
@@ -28,6 +27,10 @@ declare module 'solc' {
 
 declare module 'web3-eth-abi' {
     export function encodeParameters(typesArray: string[], parameters: any[]): string;
+}
+
+declare module 'ethereumjs-abi' {
+    const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
 }
 
 // Truffle injects the following into the global scope
