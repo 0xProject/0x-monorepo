@@ -10,24 +10,10 @@ function strEnum(values: string[]): {[key: string]: string} {
     }, Object.create(null));
 }
 
-export enum GenerateOrderSteps {
-  ChooseAssets,
-  GrantAllowance,
-  RemainingConfigs,
-  SignTransaction,
-  CopyAndShare,
-}
-
 export enum Side {
     Receive = 'RECEIVE',
     Deposit = 'DEPOSIT',
 }
-
-export const Direction = strEnum([
-  'forward',
-  'backward',
-]);
-export type Direction = keyof typeof Direction;
 
 export interface Token {
     iconUrl?: string;
@@ -141,7 +127,6 @@ export const ActionTypes = strEnum([
     'CLEAR_TOKEN_BY_ADDRESS',
     'UPDATE_BLOCKCHAIN_IS_LOADED',
     'UPDATE_NETWORK_ID',
-    'UPDATE_GENERATE_ORDER_STEP',
     'UPDATE_CHOSEN_ASSET_TOKEN',
     'UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS',
     'UPDATE_ORDER_TAKER_ADDRESS',

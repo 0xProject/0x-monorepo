@@ -5,7 +5,6 @@ import {
     ActionTypes,
     AssetToken,
     BlockchainErrs,
-    Direction,
     Order,
     ProviderType,
     ScreenWidths,
@@ -41,12 +40,6 @@ export class Dispatcher {
     public swapAssetTokenSymbols() {
         this.dispatch({
             type: ActionTypes.SWAP_ASSET_TOKENS,
-        });
-    }
-    public updateGenerateOrderStep(direction: Direction) {
-        this.dispatch({
-            data: direction,
-            type: ActionTypes.UPDATE_GENERATE_ORDER_STEP,
         });
     }
     public updateOrderSalt(salt: BigNumber) {

@@ -5,8 +5,6 @@ import {
     Action,
     ActionTypes,
     BlockchainErrs,
-    Direction,
-    GenerateOrderSteps,
     Order,
     ProviderType,
     ScreenWidths,
@@ -28,7 +26,6 @@ export interface State {
     // Portal
     blockchainErr: BlockchainErrs;
     blockchainIsLoaded: boolean;
-    generateOrderStep: GenerateOrderSteps;
     networkId: number;
     orderExpiryTimestamp: BigNumber;
     orderFillAmount: BigNumber;
@@ -60,7 +57,6 @@ const INITIAL_STATE: State = {
     // Portal
     blockchainErr: BlockchainErrs.NoError,
     blockchainIsLoaded: false,
-    generateOrderStep: GenerateOrderSteps.ChooseAssets,
     networkId: undefined,
     orderExpiryTimestamp: utils.initialOrderExpiryUnixTimestampSec(),
     orderFillAmount: undefined,
@@ -256,19 +252,6 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         case ActionTypes.UPDATE_NETWORK_ID: {
             return _.assign({}, state, {
                 networkId: action.data,
-            });
-        }
-
-        case ActionTypes.UPDATE_GENERATE_ORDER_STEP: {
-            const direction = action.data;
-            let nextGenerateOrderStep = state.generateOrderStep;
-            if (direction === Direction.forward) {
-                nextGenerateOrderStep += 1;
-            } else if (state.generateOrderStep !== 0) {
-                nextGenerateOrderStep -= 1;
-            }
-            return _.assign({}, state, {
-                generateOrderStep: nextGenerateOrderStep,
             });
         }
 
