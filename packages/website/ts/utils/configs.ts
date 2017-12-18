@@ -19,6 +19,13 @@ export const configs = {
     lastLocalStorageFillClearanceDate: '2017-11-22',
     lastLocalStorageTrackedTokenClearanceDate: '2017-12-13',
     isMainnetEnabled: true,
+    shouldDeprecateOldWethToken: true,
+    // newWrappedEthers is temporary until we remove the shouldDeprecateOldWethToken flag
+    // and add the new WETHs to the tokenRegistry
+    newWrappedEthers: {
+        1: '0xe495bcacaf29a0eb00fb67b86e9cd2a994dd55d8',
+        42: '0x739e78d6bebbdf24105a5145fa04436589d1cbd9',
+    } as {[networkId: string]: string},
     outdatedWrappedEthers: [
         {
             42: {

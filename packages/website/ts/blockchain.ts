@@ -158,6 +158,12 @@ export class Blockchain {
     }
     public async isAddressInTokenRegistryAsync(tokenAddress: string): Promise<boolean> {
         utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
+        // HACK: temporarily whitelist the new WETH token address `as if` they were
+        // already in the tokenRegistry.
+        if (configs.shouldDeprecateOldWethToken &&
+            tokenAddress === configs.newWrappedEthers[this.networkId]) {
+            return true;
+        }
         const tokenIfExists = await this.zeroEx.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
         return !_.isUndefined(tokenIfExists);
     }
@@ -598,12 +604,11 @@ export class Blockchain {
             // new canonical WETH.
             // TODO: Remove this hack once we've updated the TokenRegistries
             let address = t.address;
-            if (t.symbol === 'WETH') {
-                if (this.networkId === 1) {
-                    address = '0xe495bcacaf29a0eb00fb67b86e9cd2a994dd55d8';
-                } else if (this.networkId === 42) {
-                    address = '0x739e78d6bebbdf24105a5145fa04436589d1cbd9';
-                }
+            if (configs.shouldDeprecateOldWethToken && t.symbol === 'WETH') {
+                    const newEtherTokenAddressIfExists = configs.newWrappedEthers[this.networkId];
+                    if (!_.isUndefined(newEtherTokenAddressIfExists)) {
+                        address = newEtherTokenAddressIfExists;
+                    }
             }
             const token: Token = {
                 iconUrl,
