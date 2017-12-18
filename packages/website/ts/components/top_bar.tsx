@@ -41,11 +41,6 @@ const styles: Styles = {
         whiteSpace: 'nowrap',
         width: 70,
     },
-    addressPopover: {
-        backgroundColor: colors.blueGrey500,
-        color: colors.white,
-        padding: 3,
-    },
     topBar: {
         backgroundcolor: colors.white,
         height: 59,
