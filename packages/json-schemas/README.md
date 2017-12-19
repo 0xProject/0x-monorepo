@@ -30,22 +30,32 @@ We strongly encourage our community members to help us make improvements and to 
 
 [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
-## Install Dependencies
+### Install Dependencies
 
 If you don't have yarn workspaces enabled - enable them:
-`yarn config set workspaces-experimental true`
+```bash
+yarn config set workspaces-experimental true
+```
 
 Then install dependencies
-`yarn install`
+```bash
+yarn install
+```
 
-## Build
+### Build
 
-`yarn build`
+```bash
+yarn build
+```
 
-## Lint
+### Lint
 
-`yarn lint`
+```bash
+yarn lint
+```
 
-## Run Tests
+### Run Tests
 
-`yarn test`
+```bash
+yarn test
+```
