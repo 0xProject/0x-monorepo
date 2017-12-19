@@ -1,4 +1,4 @@
-assert
+@0xproject/assert
 ------
 
 Standard type and schema assertions to be used across all 0x projects and packages

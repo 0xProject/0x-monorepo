@@ -1,4 +1,4 @@
-tslint-config
+@0xproject/tslint-config
 ------
 
 TSLint configuration and custom linter rules used by 0xProject.
