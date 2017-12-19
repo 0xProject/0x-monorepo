@@ -151,7 +151,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                     blockchainIsLoaded={this.props.blockchainIsLoaded}
                     location={this.props.location}
                 />
-                <div id="portal" className="mx-auto max-width-4 pt4" style={{width: '100%'}}>
+                <div id="portal" className="mx-auto max-width-4" style={{width: '100%'}}>
                     <Paper className="mb3 mt2">
                         {!configs.IS_MAINNET_ENABLED && this.props.networkId === constants.NETWORK_ID_MAINNET  ?
                             <div className="p3 center">

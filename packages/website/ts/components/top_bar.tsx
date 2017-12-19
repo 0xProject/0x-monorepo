@@ -45,7 +45,7 @@ const styles: Styles = {
         backgroundcolor: colors.white,
         height: 59,
         width: '100%',
-        position: 'fixed',
+        position: 'relative',
         top: 0,
         zIndex: 1100,
         paddingBottom: 1,
