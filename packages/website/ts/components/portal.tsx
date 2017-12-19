@@ -330,7 +330,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         });
     }
     private onWethNoticeAccepted() {
-        localStorage.setItem(constants.DISMISS_WETH_NOTICE_LOCAL_STORAGE_KEY, 'set');
+        localStorage.setItem(constants.LOCAL_STORAGE_KEY_DISMISS_WETH_NOTICE, 'set');
         this.setState({
             isWethNoticeDialogOpen: false,
         });

@@ -109,11 +109,11 @@ export class EthWethConversionDialog extends
                             style={{fontSize: 12}}
                         >
                             <div className="left">1 ETH = 1 WETH</div>
-                            {this.props.direction === Side.receive &&
+                            {this.props.direction === Side.Receive &&
                                 <div
                                     className="right"
                                     onClick={this.onMaxClick.bind(this)}
-                                    style={{color: DARK_BLUE, textDecoration: 'underline', cursor: 'pointer'}}
+                                    style={{color: colors.darkBlue, textDecoration: 'underline', cursor: 'pointer'}}
                                 >
                                     Max
                                 </div>

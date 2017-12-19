@@ -88,9 +88,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         const wethBalance = ZeroEx.toUnitAmount(etherTokenState.balance, constants.DECIMAL_PLACES_ETH);
         const isBidirectional = true;
         const etherscanUrl = utils.getEtherScanLinkIfExists(
-            etherToken.address, this.props.networkId, EtherscanLinkSuffixes.address,
+            etherToken.address, this.props.networkId, EtherscanLinkSuffixes.Address,
         );
-        const tokenLabel = this.renderToken('Wrapped Ether', etherToken.address, constants.iconUrlBySymbol.WETH);
+        const tokenLabel = this.renderToken('Wrapped Ether', etherToken.address, configs.ICON_URL_BY_SYMBOL.WETH);
         return (
             <div className="clearfix lg-px4 md-px4 sm-px2" style={{minHeight: 600}}>
                 <div className="relative">
@@ -98,7 +98,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                     <div className="absolute" style={{top: 0, right: 0}}>
                         <a
                             target="_blank"
-                            href={constants.WETH_IO_URL}
+                            href={constants.URL_WETH_IO}
                             style={{color: colors.grey}}
                         >
                             <div className="flex">
@@ -273,7 +273,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 this, outdatedWETHIfExists.address,
             );
             const etherscanUrl = utils.getEtherScanLinkIfExists(
-                outdatedWETHIfExists.address, this.props.networkId, EtherscanLinkSuffixes.address,
+                outdatedWETHIfExists.address, this.props.networkId, EtherscanLinkSuffixes.Address,
             );
             const tokenLabel = this.renderToken(dateRange, outdatedEtherToken.address, OUTDATED_WETH_ICON_PATH);
             return (
