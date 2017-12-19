@@ -201,7 +201,7 @@ export class ZeroEx {
             this._web3Wrapper, config.networkId, config.tokenRegistryContractAddress,
         );
         this.etherToken = new EtherTokenWrapper(
-            this._web3Wrapper, config.networkId, this.token,
+            this._web3Wrapper, config.networkId, this._abiDecoder, this.token,
         );
         this.orderStateWatcher = new OrderStateWatcher(
             this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config.orderWatcherConfig,

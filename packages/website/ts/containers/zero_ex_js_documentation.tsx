@@ -116,6 +116,8 @@ const docsInfoConfig: DocsInfoConfig = {
         'ZeroExConfig',
         'TransactionReceiptWithDecodedLogs',
         'LogWithDecodedArgs',
+        'EtherTokenEvents',
+        'BlockParamLiteral',
         'DecodedLogArgs',
         'MethodOpts',
         'ValidateOrderFillableOpts',

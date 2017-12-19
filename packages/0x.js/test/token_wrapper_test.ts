@@ -7,6 +7,7 @@ import * as Web3 from 'web3';
 
 import {
     ApprovalContractEventArgs,
+    BlockParamLiteral,
     BlockRange,
     DecodedLogEvent,
     Token,
@@ -15,7 +16,7 @@ import {
     ZeroEx,
     ZeroExError,
 } from '../src';
-import {BlockParamLiteral, DoneCallback} from '../src/types';
+import {DoneCallback} from '../src/types';
 
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';

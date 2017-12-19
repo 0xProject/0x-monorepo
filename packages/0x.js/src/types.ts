@@ -28,6 +28,7 @@ export enum ZeroExError {
 export enum InternalZeroExError {
     NoAbiDecoder = 'NO_ABI_DECODER',
     ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
+    WethNotInTokenRegistry = 'WETH_NOT_IN_TOKEN_REGISTRY',
 }
 
 /**
@@ -146,8 +147,17 @@ export interface ApprovalContractEventArgs {
     _spender: string;
     _value: BigNumber;
 }
+export interface DepositContractEventArgs {
+    _owner: string;
+    _value: BigNumber;
+}
+export interface WithdrawalContractEventArgs {
+    _owner: string;
+    _value: BigNumber;
+}
 export type TokenContractEventArgs = TransferContractEventArgs|ApprovalContractEventArgs;
-export type ContractEventArgs = ExchangeContractEventArgs|TokenContractEventArgs;
+export type EtherTokenContractEventArgs = TokenContractEventArgs|DepositContractEventArgs|WithdrawalContractEventArgs;
+export type ContractEventArgs = ExchangeContractEventArgs|TokenContractEventArgs|EtherTokenContractEventArgs;
 export type ContractEventArg = string|BigNumber;
 
 export interface Order {
@@ -201,7 +211,14 @@ export enum TokenEvents {
     Approval = 'Approval',
 }
 
-export type ContractEvents = TokenEvents|ExchangeEvents;
+export enum EtherTokenEvents  {
+    Transfer = 'Transfer',
+    Approval = 'Approval',
+    Deposit = 'Deposit',
+    Withdrawal = 'Withdrawal',
+}
+
+export type ContractEvents = TokenEvents|ExchangeEvents|EtherTokenEvents;
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;

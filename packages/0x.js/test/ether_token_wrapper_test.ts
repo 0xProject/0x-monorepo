@@ -4,11 +4,23 @@ import * as chai from 'chai';
 import 'mocha';
 import * as Web3 from 'web3';
 
-import {ZeroEx, ZeroExError} from '../src';
+import {
+    ApprovalContractEventArgs,
+    BlockParamLiteral,
+    BlockRange,
+    DecodedLogEvent,
+    EtherTokenEvents,
+    Token,
+    TransferContractEventArgs,
+    ZeroEx,
+    ZeroExError,
+} from '../src';
 import {artifacts} from '../src/artifacts';
+import {DoneCallback} from '../src/types';
 
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
+import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
 
 chaiSetup.configure();
@@ -24,11 +36,13 @@ const MAX_REASONABLE_GAS_COST_IN_WEI = 62517;
 describe('EtherTokenWrapper', () => {
     let web3: Web3;
     let zeroEx: ZeroEx;
+    let tokens: Token[];
     let userAddresses: string[];
     let addressWithETH: string;
     let wethContractAddress: string;
     let depositWeiAmount: BigNumber;
     let decimalPlaces: number;
+    let addressWithoutFunds: string;
     const gasPrice = new BigNumber(1);
     const zeroExConfig = {
         gasPrice,
@@ -37,11 +51,13 @@ describe('EtherTokenWrapper', () => {
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
+        tokens = await zeroEx.tokenRegistry.getTokensAsync();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
         wethContractAddress = (zeroEx.etherToken as any)._getContractAddress(artifacts.EtherTokenArtifact);
         depositWeiAmount = (zeroEx as any)._web3Wrapper.toWei(new BigNumber(5));
         decimalPlaces = 7;
+        addressWithoutFunds = userAddresses[1];
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -111,6 +127,159 @@ describe('EtherTokenWrapper', () => {
             return expect(
                 zeroEx.etherToken.withdrawAsync(wethContractAddress, overWETHBalance, addressWithETH),
             ).to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
+        });
+    });
+    describe('#subscribe', () => {
+        const indexFilterValues = {};
+        let etherTokenAddress: string;
+        const transferAmount = new BigNumber(42);
+        const allowanceAmount = new BigNumber(42);
+        before(() => {
+            const tokenUtils = new TokenUtils(tokens);
+            const etherToken = tokenUtils.getWethTokenOrThrow();
+            etherTokenAddress = etherToken.address;
+        });
+        afterEach(() => {
+            zeroEx.etherToken.unsubscribeAll();
+        });
+        // Hack: Mocha does not allow a test to be both async and have a `done` callback
+        // Since we need to await the receipt of the event in the `subscribe` callback,
+        // we do need both. A hack is to make the top-level a sync fn w/ a done callback and then
+        // wrap the rest of the test in an async block
+        // Source: https://github.com/mochajs/mocha/issues/2407
+        it('Should receive the Transfer event when tokens are transfered', (done: DoneCallback) => {
+            (async () => {
+                const callback = (err: Error, logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
+                    expect(logEvent).to.not.be.undefined();
+                    expect(logEvent.isRemoved).to.be.false();
+                    expect(logEvent.log.logIndex).to.be.equal(0);
+                    expect(logEvent.log.transactionIndex).to.be.equal(0);
+                    expect(logEvent.log.blockNumber).to.be.a('number');
+                    const args = logEvent.log.args;
+                    expect(args._from).to.be.equal(addressWithETH);
+                    expect(args._to).to.be.equal(addressWithoutFunds);
+                    expect(args._value).to.be.bignumber.equal(transferAmount);
+                    done();
+                };
+                await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
+                zeroEx.etherToken.subscribe(
+                    etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callback);
+                await zeroEx.token.transferAsync(
+                    etherTokenAddress, addressWithETH, addressWithoutFunds, transferAmount,
+                );
+            })().catch(done);
+        });
+        it('Should receive the Approval event when allowance is being set', (done: DoneCallback) => {
+            (async () => {
+                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    expect(logEvent).to.not.be.undefined();
+                    expect(logEvent.isRemoved).to.be.false();
+                    const args = logEvent.log.args;
+                    expect(args._owner).to.be.equal(addressWithETH);
+                    expect(args._spender).to.be.equal(addressWithoutFunds);
+                    expect(args._value).to.be.bignumber.equal(allowanceAmount);
+                    done();
+                };
+                zeroEx.etherToken.subscribe(
+                    etherTokenAddress, EtherTokenEvents.Approval, indexFilterValues, callback);
+                await zeroEx.token.setAllowanceAsync(
+                    etherTokenAddress, addressWithETH, addressWithoutFunds, allowanceAmount,
+                );
+            })().catch(done);
+        });
+        it('Outstanding subscriptions are cancelled when zeroEx.setProvider called', (done: DoneCallback) => {
+            (async () => {
+                const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    done(new Error('Expected this subscription to have been cancelled'));
+                };
+                zeroEx.etherToken.subscribe(
+                    etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled,
+                );
+                const callbackToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    done();
+                };
+                const newProvider = web3Factory.getRpcProvider();
+                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+                await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
+                zeroEx.etherToken.subscribe(
+                    etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callbackToBeCalled,
+                );
+                await zeroEx.token.transferAsync(
+                    etherTokenAddress, addressWithETH, addressWithoutFunds, transferAmount,
+                );
+            })().catch(done);
+        });
+        it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
+            (async () => {
+                const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    done(new Error('Expected this subscription to have been cancelled'));
+                };
+                await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
+                const subscriptionToken = zeroEx.etherToken.subscribe(
+                    etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled);
+                zeroEx.etherToken.unsubscribe(subscriptionToken);
+                await zeroEx.token.transferAsync(
+                    etherTokenAddress, addressWithETH, addressWithoutFunds, transferAmount,
+                );
+                done();
+            })().catch(done);
+        });
+    });
+    describe('#getLogsAsync', () => {
+        let etherTokenAddress: string;
+        let tokenTransferProxyAddress: string;
+        const blockRange: BlockRange = {
+            fromBlock: 0,
+            toBlock: BlockParamLiteral.Latest,
+        };
+        let txHash: string;
+        before(() => {
+            addressWithETH = userAddresses[0];
+            const tokenUtils = new TokenUtils(tokens);
+            const etherToken = tokenUtils.getWethTokenOrThrow();
+            etherTokenAddress = etherToken.address;
+            tokenTransferProxyAddress = zeroEx.proxy.getContractAddress();
+        });
+        it('should get logs with decoded args emitted by Approval', async () => {
+            txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, addressWithETH);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            const eventName = EtherTokenEvents.Approval;
+            const indexFilterValues = {};
+            const logs = await zeroEx.etherToken.getLogsAsync<ApprovalContractEventArgs>(
+                etherTokenAddress, eventName, blockRange, indexFilterValues,
+            );
+            expect(logs).to.have.length(1);
+            const args = logs[0].args;
+            expect(logs[0].event).to.be.equal(eventName);
+            expect(args._owner).to.be.equal(addressWithETH);
+            expect(args._spender).to.be.equal(tokenTransferProxyAddress);
+            expect(args._value).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+        it('should only get the logs with the correct event name', async () => {
+            txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, addressWithETH);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            const differentEventName = EtherTokenEvents.Transfer;
+            const indexFilterValues = {};
+            const logs = await zeroEx.etherToken.getLogsAsync(
+                etherTokenAddress, differentEventName, blockRange, indexFilterValues,
+            );
+            expect(logs).to.have.length(0);
+        });
+        it('should only get the logs with the correct indexed fields', async () => {
+            txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, addressWithETH);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, addressWithoutFunds);
+            await zeroEx.awaitTransactionMinedAsync(txHash);
+            const eventName = EtherTokenEvents.Approval;
+            const indexFilterValues = {
+                _owner: addressWithETH,
+            };
+            const logs = await zeroEx.etherToken.getLogsAsync<ApprovalContractEventArgs>(
+                etherTokenAddress, eventName, blockRange, indexFilterValues,
+            );
+            expect(logs).to.have.length(1);
+            const args = logs[0].args;
+            expect(args._owner).to.be.equal(addressWithETH);
         });
     });
 });
