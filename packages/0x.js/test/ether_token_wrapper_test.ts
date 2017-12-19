@@ -144,7 +144,7 @@ describe('EtherTokenWrapper', () => {
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
         // Since we need to await the receipt of the event in the `subscribe` callback,
-        // we do need both. A hack is to make the top-level a sync fn w/ a done callback and then
+        // we do need both. A hack is to make the top-level async fn w/ a done callback and then
         // wrap the rest of the test in an async block
         // Source: https://github.com/mochajs/mocha/issues/2407
         it('Should receive the Transfer event when tokens are transfered', (done: DoneCallback) => {
