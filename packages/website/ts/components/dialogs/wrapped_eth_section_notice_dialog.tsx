@@ -27,7 +27,7 @@ export function WrappedEthSectionNoticeDialog(props: WrappedEthSectionNoticeDial
         >
             <div className="pt2" style={{color: colors.grey700}}>
                 <div>
-                    We have recently updated the Wrapped Ether token used by 0x Portal.
+                    We have recently updated the Wrapped Ether token (WETH) used by 0x Portal.
                     Don't worry, unwrapping Ether tied to the old Wrapped Ether token can
                     be done at any time by clicking on the "Wrap ETH" section in the menu
                     to the left.
