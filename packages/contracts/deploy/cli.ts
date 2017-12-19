@@ -113,6 +113,7 @@ function deployCommandBuilder(yargsInstance: any) {
 }
 
 (() => {
+    const identityCommandBuilder = _.identity;
     return yargs
         .option('contracts-dir', {
             type: 'string',
@@ -150,11 +151,11 @@ function deployCommandBuilder(yargsInstance: any) {
         })
         .command('compile',
                  'compile contracts',
-                 _.identity,
+                 identityCommandBuilder,
                  onCompileCommand)
         .command('migrate',
                  'compile and deploy contracts using migration scripts',
-                 _.identity,
+                 identityCommandBuilder,
                  onMigrateCommand)
         .command('deploy',
                  'deploy a single contract with provided arguments',
