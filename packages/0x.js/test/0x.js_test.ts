@@ -152,6 +152,15 @@ describe('ZeroEx library', () => {
             const orderHash = ZeroEx.getOrderHashHex(order);
             expect(orderHash).to.be.equal(expectedOrderHash);
         });
+        it('throws a readable error message if taker format is invalid', async () => {
+            const orderWithInvalidtakerFormat = {
+                ...order,
+                taker: null as any as string,
+            };
+            // tslint:disable-next-line:max-line-length
+            const expectedErrorMessage = 'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
+            expect(() => ZeroEx.getOrderHashHex(orderWithInvalidtakerFormat)).to.throw(expectedErrorMessage);
+        });
     });
     describe('#signOrderHashAsync', () => {
         let stubs: Sinon.SinonStub[] = [];
