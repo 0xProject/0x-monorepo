@@ -384,7 +384,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
     }
     private getOutdatedWETHAddresses(): string[] {
         const outdatedWETHAddresses = _.compact(_.map(configs.outdatedWrappedEthers, outdatedWrappedEtherByNetwork => {
-            const  outdatedWrappedEtherIfExists = outdatedWrappedEtherByNetwork[this.props.networkId];
+            const outdatedWrappedEtherIfExists = outdatedWrappedEtherByNetwork[this.props.networkId];
             if (_.isUndefined(outdatedWrappedEtherIfExists)) {
                 return undefined;
             }
