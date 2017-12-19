@@ -27,7 +27,7 @@ import {TokenWrapper} from './token_wrapper';
  * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
  */
 export class EtherTokenWrapper extends ContractWrapper {
-    private _etherTokenContractsByAddress: {[address: string]: EtherTokenContract};
+    private _etherTokenContractsByAddress: {[address: string]: EtherTokenContract} = {};
     private _tokenWrapper: TokenWrapper;
     constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder, tokenWrapper: TokenWrapper) {
         super(web3Wrapper, networkId, abiDecoder);
