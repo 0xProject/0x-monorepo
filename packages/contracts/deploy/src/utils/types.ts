@@ -1,5 +1,6 @@
 import {TxData} from '@0xproject/types';
 import * as Web3 from 'web3';
+import * as yargs from 'yargs';
 
 export enum AbiType {
     Function = 'function',
@@ -32,7 +33,7 @@ export interface SolcErrors {
     [key: string]: boolean;
 }
 
-export interface CliOptions {
+export interface CliOptions extends yargs.Arguments {
     artifactsDir: string;
     contractsDir: string;
     jsonrpcPort: number;
