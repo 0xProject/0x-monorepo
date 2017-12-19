@@ -380,22 +380,24 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         const isUnseenMakerToken = _.isUndefined(makerTokenIfExists);
         const isMakerTokenTracked = !_.isUndefined(makerTokenIfExists) && makerTokenIfExists.isTracked;
         if (isUnseenMakerToken) {
-            tokensToTrack.push(_.assign({}, this.state.parsedOrder.maker.token, {
+            tokensToTrack.push({
+                ...this.state.parsedOrder.maker.token,
                 iconUrl: undefined,
                 isTracked: false,
                 isRegistered: false,
-            }));
+            });
         } else if (!isMakerTokenTracked) {
             tokensToTrack.push(makerTokenIfExists);
         }
         const isUnseenTakerToken = _.isUndefined(takerTokenIfExists);
         const isTakerTokenTracked = !_.isUndefined(takerTokenIfExists) && takerTokenIfExists.isTracked;
         if (isUnseenTakerToken) {
-            tokensToTrack.push(_.assign({}, this.state.parsedOrder.taker.token, {
+            tokensToTrack.push({
+                ...this.state.parsedOrder.taker.token,
                 iconUrl: undefined,
                 isTracked: false,
                 isRegistered: false,
-            }));
+            });
         } else if (!isTakerTokenTracked) {
             tokensToTrack.push(takerTokenIfExists);
         }
