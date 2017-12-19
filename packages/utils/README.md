@@ -23,9 +23,9 @@ import {
 
 ## Contributing
 
-We strongly encourage our community members to help us make improvements and to determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository. 
+We strongly recommend the community to help us make improvements and to determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
 
-[CONTRIBUTING.md](../../CONTRIBUTING.md)
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
 ### Install Dependencies
 
@@ -50,7 +50,3 @@ yarn build
 ```bash
 yarn lint
 ```
-
-### Run Tests
-
-N/A

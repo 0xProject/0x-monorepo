@@ -1,7 +1,7 @@
 @0xproject/kovan_faucets
 ------
 
-This faucet dispenses 0.1 test ether to one recipient per second. It has a max queue size of 1000.
+This faucet dispenses 0.1 test ether to one recipient per second and 0.1 test ZRX every 5 seconds. It has a max queue size of 1000.
 
 ## Installation
 
@@ -9,9 +9,9 @@ This is a private package and therefore is not published to npm. In order to bui
 
 ## Contributing
 
-We strongly encourage our community members to help us make improvements and to determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository. 
+We strongly recommend the community to help us make improvements and to determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
 
-[CONTRIBUTING.md](../../CONTRIBUTING.md)
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
 ### Install Dependencies
 
@@ -55,13 +55,6 @@ Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
 
 Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
 
-```javascript
-{
-    "full": false,
-    "size": 0
-}
-```
-
 ### Docker configs
 
 ```
@@ -82,7 +75,3 @@ kovan-faucets
 ```bash
 yarn lint
 ```
-
-### Run Tests
-
-N/A
