@@ -669,7 +669,6 @@ export enum SmartContractDocSections {
     TokenTransferProxy = 'TokenTransferProxy',
     TokenRegistry = 'TokenRegistry',
     ZRXToken = 'ZRXToken',
-    EtherToken = 'EtherToken',
 }
 
 // tslint:disable:max-file-line-count

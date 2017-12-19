@@ -26,21 +26,18 @@ export const configs = {
                 [SmartContractDocSections.Exchange]: '0x12459c951127e0c374ff9105dda097662a027093',
                 [SmartContractDocSections.TokenTransferProxy]: '0x8da0d80f5007ef1e431dd2127178d224e32c2ef4',
                 [SmartContractDocSections.ZRXToken]: '0xe41d2489571d322189246dafa5ebde1f4699f498',
-                [SmartContractDocSections.EtherToken]: '0x2956356cd2a2bf3202f771f50d3d14a367b48070',
                 [SmartContractDocSections.TokenRegistry]: '0x926a74c5c36adf004c87399e65f75628b0f98d2c',
             },
             [Networks.ropsten]: {
                 [SmartContractDocSections.Exchange]: '0x479cc461fecd078f766ecc58533d6f69580cf3ac',
                 [SmartContractDocSections.TokenTransferProxy]: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
                 [SmartContractDocSections.ZRXToken]: '0xa8e9fa8f91e5ae138c74648c9c304f1c75003a8d',
-                [SmartContractDocSections.EtherToken]: '0xc00fd9820cd2898cc4c054b7bf142de637ad129a',
                 [SmartContractDocSections.TokenRegistry]: '0x6b1a50f0bb5a7995444bd3877b22dc89c62843ed',
             },
             [Networks.kovan]: {
                 [SmartContractDocSections.Exchange]: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364',
                 [SmartContractDocSections.TokenTransferProxy]: '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4',
                 [SmartContractDocSections.ZRXToken]: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
-                [SmartContractDocSections.EtherToken]: '0x05d090b51c40b020eab3bfcb6a2dff130df22e9c',
                 [SmartContractDocSections.TokenRegistry]: '0xf18e504561f4347bea557f3d4558f559dddbae7f',
             },
         },
@@ -95,7 +92,13 @@ export const configs = {
     } as {[symbol: string]: string},
     IS_MAINNET_ENABLED: true,
     LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE: '2017-11-22',
-    LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2017-12-13',
+    LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2017-12-19',
+    // NEW_WRAPPED_ETHERS is temporary until we remove the SHOULD_DEPRECATE_OLD_WETH_TOKEN flag
+    // and add the new WETHs to the tokenRegistry
+    NEW_WRAPPED_ETHERS: {
+        1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+        42: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
+    } as {[networkId: string]: string},
     OUTDATED_WRAPPED_ETHERS: [
         {
             42: {
@@ -123,5 +126,6 @@ export const configs = {
             `https://kovan.infura.io/${INFURA_API_KEY}`,
         ],
     } as PublicNodeUrlsByNetworkId,
+    SHOULD_DEPRECATE_OLD_WETH_TOKEN: true,
     SYMBOLS_OF_MINTABLE_TOKENS: ['MKR', 'MLN', 'GNT', 'DGD', 'REP'],
 };
