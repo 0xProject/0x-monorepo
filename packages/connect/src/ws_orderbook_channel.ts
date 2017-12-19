@@ -11,7 +11,7 @@ import {
     WebsocketClientEventType,
     WebsocketConnectionEventType,
 } from './types';
-import {orderbookChannelMessageParsers} from './utils/orderbook_channel_message_parsers';
+import {orderbookChannelMessageParser} from './utils/orderbook_channel_message_parser';
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
@@ -97,7 +97,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         if (!_.isUndefined(message.utf8Data)) {
             try {
                 const utf8Data = message.utf8Data;
-                const parserResult = orderbookChannelMessageParsers.parser(utf8Data);
+                const parserResult = orderbookChannelMessageParser.parse(utf8Data);
                 if (parserResult.requestId === requestId) {
                     switch (parserResult.type) {
                         case (OrderbookChannelMessageTypes.Snapshot): {

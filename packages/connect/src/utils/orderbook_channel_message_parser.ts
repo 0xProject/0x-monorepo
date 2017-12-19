@@ -7,10 +7,10 @@ import {
     OrderbookChannelMessageTypes,
 } from '../types';
 
-import {typeConverters} from './type_converters';
+import {relayerResponseJsonParsers} from './relayer_response_json_parsers';
 
-export const orderbookChannelMessageParsers = {
-    parser(utf8Data: string): OrderbookChannelMessage {
+export const orderbookChannelMessageParser = {
+    parse(utf8Data: string): OrderbookChannelMessage {
         const messageObj = JSON.parse(utf8Data);
         const type: string = _.get(messageObj, 'type');
         assert.assert(!_.isUndefined(type), `Message is missing a type parameter: ${utf8Data}`);
@@ -18,15 +18,15 @@ export const orderbookChannelMessageParsers = {
         switch (type) {
             case (OrderbookChannelMessageTypes.Snapshot): {
                 assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrderbookChannelSnapshotSchema);
-                const orderbook = messageObj.payload;
-                typeConverters.convertOrderbookStringFieldsToBigNumber(orderbook);
-                return messageObj;
+                const orderbookJson = messageObj.payload;
+                const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(orderbookJson);
+                return _.assign(messageObj, {payload: orderbook});
             }
             case (OrderbookChannelMessageTypes.Update): {
                 assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrderbookChannelUpdateSchema);
-                const order = messageObj.payload;
-                typeConverters.convertOrderStringFieldsToBigNumber(order);
-                return messageObj;
+                const orderJson = messageObj.payload;
+                const order = relayerResponseJsonParsers.parseOrderJson(orderJson);
+                return _.assign(messageObj, {payload: order});
             }
             default: {
                 return {
