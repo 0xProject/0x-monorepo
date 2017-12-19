@@ -616,7 +616,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Gets historical logs without creating a subscription
      * @param   eventName           The exchange contract event you would like to subscribe to.
-     * @param   blockRange          Subscriptions options that let you configure the subscription.
+     * @param   blockRange          Block range to get logs from.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
