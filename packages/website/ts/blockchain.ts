@@ -160,6 +160,8 @@ export class Blockchain {
         utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
         // HACK: temporarily whitelist the new WETH token address `as if` they were
         // already in the tokenRegistry.
+        // TODO: Remove this hack once we've updated the TokenRegistries
+        // Airtable task: https://airtable.com/tblFe0Q9JuKJPYbTn/viwsOG2Y97qdIeCIO/recv3VGmIorFzHBVz
         if (configs.shouldDeprecateOldWethToken &&
             tokenAddress === configs.newWrappedEthers[this.networkId]) {
             return true;
@@ -603,6 +605,7 @@ export class Blockchain {
             // we deploy the new WETH page, everyone will re-fill their trackedTokens with the
             // new canonical WETH.
             // TODO: Remove this hack once we've updated the TokenRegistries
+            // Airtable task: https://airtable.com/tblFe0Q9JuKJPYbTn/viwsOG2Y97qdIeCIO/recv3VGmIorFzHBVz
             let address = t.address;
             if (configs.shouldDeprecateOldWethToken && t.symbol === 'WETH') {
                     const newEtherTokenAddressIfExists = configs.newWrappedEthers[this.networkId];
