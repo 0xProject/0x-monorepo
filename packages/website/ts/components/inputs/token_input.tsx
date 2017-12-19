@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {AssetPicker} from 'ts/components/generate_order/asset_picker';
@@ -8,6 +7,7 @@ import {InputLabel} from 'ts/components/ui/input_label';
 import {TokenIcon} from 'ts/components/ui/token_icon';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {AssetToken, BlockchainErrs, Side, Token, TokenByAddress} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 
 const TOKEN_ICON_DIMENSION = 80;
 
@@ -62,7 +62,7 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
                     >
                         <TokenIcon token={token} diameter={TOKEN_ICON_DIMENSION} />
                     </div>
-                    <div className="py1 center" style={{color: colors.grey500}}>
+                    <div className="py1 center" style={{color: colors.grey}}>
                         {token.name}
                     </div>
                 </Paper>
@@ -95,7 +95,7 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
         });
     }
     private onAssetClicked() {
-        if (this.props.blockchainErr !== '') {
+        if (this.props.blockchainErr !== BlockchainErrs.NoError) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;
         }

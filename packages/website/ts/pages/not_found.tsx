@@ -38,7 +38,7 @@ export class NotFound extends React.Component<NotFoundProps, NotFoundState> {
                         </div>
                     </div>
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }

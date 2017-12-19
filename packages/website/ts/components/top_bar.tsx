@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
@@ -12,10 +11,8 @@ import {Identicon} from 'ts/components/ui/identicon';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
 import {DocsMenu, MenuSubsectionsBySection, Styles, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
-
-const CUSTOM_DARK_GRAY = '#231F20';
-const SECTION_HEADER_COLOR = 'rgb(234, 234, 234)';
 
 interface TopBarProps {
     userAddress?: string;
@@ -44,16 +41,11 @@ const styles: Styles = {
         whiteSpace: 'nowrap',
         width: 70,
     },
-    addressPopover: {
-        backgroundColor: colors.blueGrey500,
-        color: 'white',
-        padding: 3,
-    },
     topBar: {
-        backgroundColor: 'white',
+        backgroundcolor: colors.white,
         height: 59,
         width: '100%',
-        position: 'fixed',
+        position: 'relative',
         top: 0,
         zIndex: 1100,
         paddingBottom: 1,
@@ -63,7 +55,7 @@ const styles: Styles = {
     },
     menuItem: {
         fontSize: 14,
-        color: CUSTOM_DARK_GRAY,
+        color: colors.darkestGrey,
         paddingTop: 6,
         paddingBottom: 6,
         marginTop: 17,
@@ -114,7 +106,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 key="subMenuItem-standard-relayer-api"
                 target="_blank"
                 className="text-decoration-none"
-                href={constants.STANDARD_RELAYER_API_GITHUB}
+                href={constants.URL_STANDARD_RELAYER_API_GITHUB}
             >
                 <MenuItem style={{fontSize: styles.menuItem.fontSize}} primaryText="Standard Relayer API" />
             </a>,
@@ -122,7 +114,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 key="subMenuItem-github"
                 target="_blank"
                 className="text-decoration-none"
-                href={constants.GITHUB_URL}
+                href={constants.URL_GITHUB_ORG}
             >
                 <MenuItem style={{fontSize: styles.menuItem.fontSize}} primaryText="GitHub" />
             </a>,
@@ -222,7 +214,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 {this.renderPortalMenu()}
                 {this.renderDocsMenu()}
                 {this.renderWiki()}
-                <div className="pl1 py1 mt3" style={{backgroundColor: SECTION_HEADER_COLOR}}>Website</div>
+                <div className="pl1 py1 mt3" style={{backgroundColor: colors.lightGrey}}>Website</div>
                 <Link to={WebsitePaths.Home} className="text-decoration-none">
                     <MenuItem className="py2">Home</MenuItem>
                 </Link>
@@ -262,7 +254,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <a
                     className="text-decoration-none"
                     target="_blank"
-                    href={constants.BLOG_URL}
+                    href={constants.URL_BLOG}
                 >
                     <MenuItem className="py2">Blog</MenuItem>
                 </a>
@@ -286,7 +278,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         const sectionTitle = `${this.props.docsInfo.displayName} Docs`;
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{backgroundColor: SECTION_HEADER_COLOR}}>{sectionTitle}</div>
+                <div className="pl1 py1" style={{backgroundColor: colors.lightGrey}}>{sectionTitle}</div>
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
@@ -306,7 +298,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
 
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{backgroundColor: SECTION_HEADER_COLOR}}>0x Protocol Wiki</div>
+                <div className="pl1 py1" style={{backgroundColor: colors.lightGrey}}>0x Protocol Wiki</div>
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menuSubsectionsBySection}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
@@ -323,7 +315,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
 
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{backgroundColor: SECTION_HEADER_COLOR}}>Portal DApp</div>
+                <div className="pl1 py1" style={{backgroundColor: colors.lightGrey}}>Portal DApp</div>
                 <PortalMenu
                     menuItemStyle={{color: 'black'}}
                     onClick={this.onMenuButtonClick.bind(this)}

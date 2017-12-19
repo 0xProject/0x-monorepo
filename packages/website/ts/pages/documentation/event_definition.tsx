@@ -4,8 +4,7 @@ import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {Type} from 'ts/pages/documentation/type';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
 import {Event, EventArg, HeaderSizes} from 'ts/types';
-
-const CUSTOM_GREEN = 'rgb(77, 162, 75)';
+import {colors} from 'ts/utils/colors';
 
 interface EventDefinitionProps {
     event: Event;
@@ -50,7 +49,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
         );
     }
     private renderEventCode() {
-        const indexed = <span style={{color: CUSTOM_GREEN}}> indexed</span>;
+        const indexed = <span style={{color: colors.green}}> indexed</span>;
         const eventArgs = _.map(this.props.event.eventArgs, (eventArg: EventArg) => {
             const type = (
                 <Type

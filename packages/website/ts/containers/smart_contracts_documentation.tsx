@@ -9,15 +9,12 @@ import {
 } from 'ts/pages/documentation/documentation';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {State} from 'ts/redux/reducer';
-import {DocsInfoConfig, WebsitePaths} from 'ts/types';
-import {constants} from 'ts/utils/constants';
+import {DocsInfoConfig, SmartContractDocSections as Sections, WebsitePaths} from 'ts/types';
 import {doxityUtils} from 'ts/utils/doxity_utils';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/smart_contracts/introduction');
 /* tslint:enable:no-var-requires */
-
-const sections = constants.smartContractDocSections;
 
 const docsInfoConfig: DocsInfoConfig = {
     displayName: '0x Smart Contracts',
@@ -26,26 +23,33 @@ const docsInfoConfig: DocsInfoConfig = {
     docsJsonRoot: 'https://s3.amazonaws.com/smart-contracts-docs-json',
     menu: {
         introduction: [
-            sections.Introduction,
+            Sections.Introduction,
         ],
         contracts: [
-            sections.Exchange,
-            sections.TokenRegistry,
-            sections.ZRXToken,
-            sections.EtherToken,
-            sections.TokenTransferProxy,
+            Sections.Exchange,
+            Sections.TokenRegistry,
+            Sections.ZRXToken,
+            Sections.EtherToken,
+            Sections.TokenTransferProxy,
         ],
     },
     sectionNameToMarkdown: {
-        [sections.Introduction]: IntroMarkdown,
+        [Sections.Introduction]: IntroMarkdown,
     },
-    sections,
+    sections: {
+        Introduction: Sections.Introduction,
+        Exchange: Sections.Exchange,
+        TokenTransferProxy: Sections.TokenTransferProxy,
+        TokenRegistry: Sections.TokenRegistry,
+        ZRXToken: Sections.ZRXToken,
+        EtherToken: Sections.EtherToken,
+    },
     visibleConstructors: [
-        sections.Exchange,
-        sections.TokenRegistry,
-        sections.ZRXToken,
-        sections.EtherToken,
-        sections.TokenTransferProxy,
+        Sections.Exchange,
+        Sections.TokenRegistry,
+        Sections.ZRXToken,
+        Sections.EtherToken,
+        Sections.TokenTransferProxy,
     ],
     convertToDocAgnosticFormatFn: doxityUtils.convertToDocAgnosticFormat.bind(doxityUtils),
 };

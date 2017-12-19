@@ -22,7 +22,7 @@ interface EthAmountInputState {}
 export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmountInputState> {
     public render() {
         const amount = this.props.amount ?
-            ZeroEx.toUnitAmount(this.props.amount, constants.ETH_DECIMAL_PLACES) :
+            ZeroEx.toUnitAmount(this.props.amount, constants.DECIMAL_PLACES_ETH) :
             undefined;
         return (
             <div className="flex overflow-hidden" style={{height: 63}}>
@@ -45,7 +45,7 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
     private onChange(isValid: boolean, amount?: BigNumber) {
         const baseUnitAmountIfExists = _.isUndefined(amount) ?
             undefined :
-            ZeroEx.toBaseUnitAmount(amount, constants.ETH_DECIMAL_PLACES);
+            ZeroEx.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);
         this.props.onChange(isValid, baseUnitAmountIfExists);
     }
 }

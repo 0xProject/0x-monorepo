@@ -217,7 +217,7 @@ export enum BlockParamLiteral {
 
 export type BlockParam = BlockParamLiteral|number;
 
-export interface SubscriptionOpts {
+export interface BlockRange {
     fromBlock: BlockParam;
     toBlock: BlockParam;
 }

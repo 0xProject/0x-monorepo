@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import {EtherscanLinkSuffixes} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
 
 interface EtherScanIconProps {
@@ -13,7 +13,7 @@ interface EtherScanIconProps {
 
 export const EtherScanIcon = (props: EtherScanIconProps) => {
     const etherscanLinkIfExists = utils.getEtherScanLinkIfExists(
-        props.addressOrTxHash, props.networkId, EtherscanLinkSuffixes.address,
+        props.addressOrTxHash, props.networkId, EtherscanLinkSuffixes.Address,
     );
     const transactionTooltipId = `${props.addressOrTxHash}-etherscan-icon-tooltip`;
     return (

@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {Paper} from 'material-ui/Paper';
+import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import {CopyIcon} from 'ts/components/ui/copy_icon';
@@ -137,9 +137,8 @@ You can see and fill it here: ${this.state.shareLink}`);
     }
     private async generateShareLinkAsync(): Promise<string> {
         const longUrl = encodeURIComponent(this.getOrderUrl());
-        const bitlyRequestUrl = constants.BITLY_ENDPOINT + '/v3/shorten?' +
-                                     'access_token=' + constants.BITLY_ACCESS_TOKEN +
-                                     '&longUrl=' + longUrl;
+        const bitlyRequestUrl =
+            `${constants.URL_BITLY_API}/v3/shorten?access_token=${configs.BITLY_ACCESS_TOKEN}&longUrl=${longUrl}`;
         const response = await fetch(bitlyRequestUrl);
         const responseBody = await response.text();
         const bodyObj = JSON.parse(responseBody);

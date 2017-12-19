@@ -1,17 +1,13 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
 import {Profile} from 'ts/pages/about/profile';
 import {ProfileInfo, Styles} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
-
-const CUSTOM_BACKGROUND_COLOR = '#F0F0F0';
-const CUSTOM_GRAY = '#4C4C4C';
-const CUSTOM_LIGHT_GRAY = '#A2A2A2';
 
 const teamRow1: ProfileInfo[] = [
     {
@@ -145,6 +141,12 @@ const styles: Styles = {
         color: 'black',
         paddingTop: 110,
     },
+    weAreHiring: {
+        fontSize: 30,
+        color: colors.darkestGrey,
+        fontFamily: 'Roboto Mono',
+        letterSpacing: 7.5,
+    },
 };
 
 export class About extends React.Component<AboutProps, AboutState> {
@@ -153,12 +155,12 @@ export class About extends React.Component<AboutProps, AboutState> {
     }
     public render() {
         return (
-            <div style={{backgroundColor: CUSTOM_BACKGROUND_COLOR}}>
+            <div style={{backgroundColor: colors.lightestGrey}}>
                 <DocumentTitle title="0x About Us"/>
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
-                    style={{backgroundColor: CUSTOM_BACKGROUND_COLOR}}
+                    style={{backgroundColor: colors.lightestGrey}}
                 />
                 <div
                     id="about"
@@ -176,7 +178,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         </div>
                         <div
                             className="pt3"
-                            style={{fontSize: 17, color: CUSTOM_GRAY, lineHeight: 1.5}}
+                            style={{fontSize: 17, color: colors.darkestGrey, lineHeight: 1.5}}
                         >
                             Our team is a diverse and globally distributed group with backgrounds
                             in engineering, research, business and design. We are passionate about
@@ -195,7 +197,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                     <div className="pt3 pb2">
                         <div
                             className="pt2 pb3 sm-center md-pl4 lg-pl0 md-ml3"
-                            style={{color: CUSTOM_LIGHT_GRAY, fontSize: 24, fontFamily: 'Roboto Mono'}}
+                            style={{color: colors.grey, fontSize: 24, fontFamily: 'Roboto Mono'}}
                         >
                             Advisors:
                         </div>
@@ -206,17 +208,17 @@ export class About extends React.Component<AboutProps, AboutState> {
                     <div className="mx-auto py4 sm-px3" style={{maxWidth: 308}}>
                         <div
                             className="pb2"
-                            style={{fontSize: 30, color: CUSTOM_GRAY, fontFamily: 'Roboto Mono', letterSpacing: 7.5}}
+                            style={styles.weAreHiring}
                         >
                             WE'RE HIRING
                         </div>
                         <div
                             className="pb4 mb4"
-                            style={{fontSize: 16, color: CUSTOM_GRAY, lineHeight: 1.5, letterSpacing: '0.5px'}}
+                            style={{fontSize: 16, color: colors.darkestGrey, lineHeight: 1.5, letterSpacing: '0.5px'}}
                         >
                             We are seeking outstanding candidates to{' '}
                             <a
-                                href={constants.ANGELLIST_URL}
+                                href={constants.URL_ANGELLIST}
                                 target="_blank"
                                 style={{color: 'black'}}
                             >
@@ -226,7 +228,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         </div>
                     </div>
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }

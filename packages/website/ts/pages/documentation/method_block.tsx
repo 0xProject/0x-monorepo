@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Comment} from 'ts/pages/documentation/comment';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
@@ -14,6 +13,7 @@ import {
     TypeDefinitionByName,
     TypescriptMethod,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {typeDocUtils} from 'ts/utils/typedoc_utils';
 
 interface MethodBlockProps {
@@ -31,7 +31,7 @@ const styles: Styles = {
     chip: {
         fontSize: 13,
         backgroundColor: colors.lightBlueA700,
-        color: 'white',
+        color: colors.white,
         height: 11,
         borderRadius: 14,
         marginTop: 19,
@@ -150,7 +150,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                         <div className="bold">
                             {parameter.name}
                         </div>
-                        <div className="pt1" style={{color: colors.grey500, fontSize: 14}}>
+                        <div className="pt1" style={{color: colors.grey, fontSize: 14}}>
                             {isOptional && 'optional'}
                         </div>
                     </div>

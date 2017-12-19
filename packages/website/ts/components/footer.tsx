@@ -4,6 +4,7 @@ import {
   Link,
 } from 'react-router-dom';
 import {WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 
 interface MenuItemsBySection {
@@ -24,9 +25,6 @@ enum Sections {
 }
 
 const ICON_DIMENSION = 16;
-const CUSTOM_DARK_GRAY = '#393939';
-const CUSTOM_LIGHT_GRAY = '#CACACA';
-const CUSTOM_LIGHTEST_GRAY = '#9E9E9E';
 const menuItemsBySection: MenuItemsBySection = {
     Documentation: [
         {
@@ -59,25 +57,25 @@ const menuItemsBySection: MenuItemsBySection = {
         {
             title: 'Rocket.chat',
             isExternal: true,
-            path: constants.ZEROEX_CHAT_URL,
+            path: constants.URL_ZEROEX_CHAT,
             fileName: 'rocketchat.png',
         },
         {
             title: 'Blog',
             isExternal: true,
-            path: constants.BLOG_URL,
+            path: constants.URL_BLOG,
             fileName: 'medium.png',
         },
         {
             title: 'Twitter',
             isExternal: true,
-            path: constants.TWITTER_URL,
+            path: constants.URL_TWITTER,
             fileName: 'twitter.png',
         },
         {
             title: 'Reddit',
             isExternal: true,
-            path: constants.REDDIT_URL,
+            path: constants.URL_REDDIT,
             fileName: 'reddit.png',
         },
     ],
@@ -90,7 +88,7 @@ const menuItemsBySection: MenuItemsBySection = {
         {
             title: 'Careers',
             isExternal: true,
-            path: constants.ANGELLIST_URL,
+            path: constants.URL_ANGELLIST,
         },
         {
             title: 'Contact',
@@ -100,7 +98,7 @@ const menuItemsBySection: MenuItemsBySection = {
     ],
 };
 const linkStyle = {
-    color: 'white',
+    color: colors.white,
     cursor: 'pointer',
 };
 
@@ -111,23 +109,23 @@ const titleToIcon: {[title: string]: string} = {
     'Reddit': 'reddit.png',
 };
 
-export interface FooterProps {
-    location: Location;
-}
+export interface FooterProps {}
 
 interface FooterState {}
 
 export class Footer extends React.Component<FooterProps, FooterState> {
     public render() {
         return (
-            <div className="relative pb4 pt2" style={{backgroundColor: CUSTOM_DARK_GRAY}}>
-                <div className="mx-auto max-width-4 md-px2 lg-px0 py4 clearfix" style={{color: 'white'}}>
+            <div className="relative pb4 pt2" style={{backgroundColor: colors.darkerGrey}}>
+                <div className="mx-auto max-width-4 md-px2 lg-px0 py4 clearfix" style={{color: colors.white}}>
                     <div className="col lg-col-4 md-col-4 col-12 left">
                         <div className="sm-mx-auto" style={{width: 148}}>
                             <div>
                                 <img src="/images/protocol_logo_white.png" height="30" />
                             </div>
-                            <div style={{fontSize: 11, color: CUSTOM_LIGHTEST_GRAY, paddingLeft: 37, paddingTop: 2}}>
+                            <div
+                                style={{fontSize: 11, color: colors.grey, paddingLeft: 37, paddingTop: 2}}
+                            >
                                 © ZeroEx, Intl.
                             </div>
                         </div>
@@ -211,7 +209,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
     private renderHeader(title: string) {
         const headerStyle = {
             textTransform: 'uppercase',
-            color: CUSTOM_LIGHT_GRAY,
+            color: colors.grey400,
             letterSpacing: 2,
             fontFamily: 'Roboto Mono',
             fontSize: 13,

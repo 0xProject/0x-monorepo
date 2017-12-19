@@ -36,7 +36,7 @@
     "@types/lodash": "^4.14.86",
     "@types/node": "^8.0.53",
     "@types/request-promise-native": "^1.0.2",
-    "@types/yargs": "^8.0.2",
+    "@types/yargs": "^10.0.0",
     "chai": "^4.0.1",
     "chai-as-promised": "^7.1.0",
     "chai-as-promised-typescript-typings": "^0.0.3",
