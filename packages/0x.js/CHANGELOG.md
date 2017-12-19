@@ -6,6 +6,7 @@ v0.x.x - _TBD, 2017_
     * Removed accidentally included `unsubscribeAll` method from `zeroEx.proxy`, `zeroEx.etherToken` and `zeroEx.tokenRegistry` (#267)
     * Removed `etherTokenContractAddress` from `ZeroEx` constructor arg `ZeroExConfig` (#267)
     * Rename `SubscriptionOpts` to `BlockRange` (#272)
+    * Improve the error message when taker is not a string (#278)
 
 v0.27.1 - _November 28, 2017_
 ------------------------
