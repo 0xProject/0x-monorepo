@@ -17,11 +17,11 @@ export function WrappedEthSectionNoticeDialog(props: WrappedEthSectionNoticeDial
                 <FlatButton
                     key="acknowledgeWrapEthSection"
                     label="Sounds good"
-                    onTouchTap={props.onToggleDialog.bind(this)}
+                    onTouchTap={props.onToggleDialog}
                 />,
             ]}
             open={props.isOpen}
-            onRequestClose={props.onToggleDialog.bind(this)}
+            onRequestClose={props.onToggleDialog}
             autoScrollBodyContent={true}
             modal={true}
         >
