@@ -388,18 +388,18 @@ export class Blockchain {
         const balance = await this.web3Wrapper.getBalanceInEthAsync(owner);
         return balance;
     }
-    public async convertEthToWrappedEthTokensAsync(amount: BigNumber): Promise<void> {
+    public async convertEthToWrappedEthTokensAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
         utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
         utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const txHash = await this.zeroEx.etherToken.depositAsync(amount, this.userAddress);
+        const txHash = await this.zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this.userAddress);
         await this.showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
-    public async convertWrappedEthTokensToEthAsync(amount: BigNumber): Promise<void> {
+    public async convertWrappedEthTokensToEthAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
         utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
         utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const txHash = await this.zeroEx.etherToken.withdrawAsync(amount, this.userAddress);
+        const txHash = await this.zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this.userAddress);
         await this.showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async doesContractExistAtAddressAsync(address: string) {

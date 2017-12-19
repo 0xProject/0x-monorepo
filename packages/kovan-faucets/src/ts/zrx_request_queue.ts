@@ -9,7 +9,7 @@ import {utils} from './utils';
 
 // HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
 // because they are using the wrong XHR package.
-// Issue: https://github.com/trufflesuite/truffle-contract/issues/14
+// Filed issue: https://github.com/ethereum/web3.js/issues/844
 // tslint:disable-next-line:ordered-imports
 import * as Web3 from 'web3';
 

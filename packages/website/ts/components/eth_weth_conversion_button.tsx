@@ -88,12 +88,12 @@ export class EthWethConversionButton extends
         let balance = tokenState.balance;
         try {
             if (direction === Side.Deposit) {
-                await this.props.blockchain.convertEthToWrappedEthTokensAsync(value);
+                await this.props.blockchain.convertEthToWrappedEthTokensAsync(token.address, value);
                 const ethAmount = ZeroEx.toUnitAmount(value, constants.DECIMAL_PLACES_ETH);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount.toString()} ETH to WETH`);
                 balance = balance.plus(value);
             } else {
-                await this.props.blockchain.convertWrappedEthTokensToEthAsync(value);
+                await this.props.blockchain.convertWrappedEthTokensToEthAsync(token.address, value);
                 const tokenAmount = ZeroEx.toUnitAmount(value, token.decimals);
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount.toString()} WETH to ETH`);
                 balance = balance.minus(value);

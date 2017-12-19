@@ -8,7 +8,6 @@ export const zeroExConfigSchema = {
         gasPrice: {$ref: '/Number'},
         exchangeContractAddress: {$ref: '/Address'},
         tokenRegistryContractAddress: {$ref: '/Address'},
-        etherTokenContractAddress: {$ref: '/Address'},
         orderWatcherConfig: {
             type: 'object',
             properties: {

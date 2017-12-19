@@ -18,7 +18,7 @@ import {reportCallbackErrors} from '../utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const FAKE_ADDRESS = '0x9901c66f2d4b95f7074b553da78084d708beca70';
+const FAKE_ADDRESS = '0xb088a3bc93f71b4de97b9de773e9647645983688';
 
 describe('LedgerSubprovider', () => {
     const networkId: number = 42;
@@ -28,8 +28,14 @@ describe('LedgerSubprovider', () => {
             // tslint:disable:no-object-literal-type-assertion
             const ledgerEthClient = {
                 getAddress_async: async () => {
+                    // tslint:disable-next-line:max-line-length
+                    const publicKey = '04f428290f4c5ed6a198f71b8205f488141dbb3f0840c923bbfa798ecbee6370986c03b5575d94d506772fb48a6a44e345e4ebd4f028a6f609c44b655d6d3e71a1';
+                    const chainCode = 'ac055a5537c0c7e9e02d14a197cad6b857836da2a12043b46912a37d959b5ae8';
+                    const address = '0xBa388BA5e5EEF2c6cE42d831c2B3A28D3c99bdB1';
                     return {
-                        address: FAKE_ADDRESS,
+                        publicKey,
+                        address,
+                        chainCode,
                     };
                 },
                 signPersonalMessage_async: async () => {

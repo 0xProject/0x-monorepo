@@ -28,7 +28,6 @@ contract('EtherTokenV2', (accounts: string[]) => {
         etherTokenAddress = etherToken.address;
         zeroEx = new ZeroEx(web3.currentProvider, {
             gasPrice,
-            etherTokenContractAddress: etherTokenAddress,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
     });
@@ -45,7 +44,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethToDeposit = initEthBalance.plus(1);
 
-            return expect(zeroEx.etherToken.depositAsync(ethToDeposit, account))
+            return expect(zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account))
                 .to.be.rejectedWith(ZeroExError.InsufficientEthBalanceForDeposit);
         });
 
@@ -55,7 +54,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
 
             const ethToDeposit = new BigNumber(web3.toWei(1, 'ether'));
 
-            const txHash = await zeroEx.etherToken.depositAsync(ethToDeposit, account);
+            const txHash = await zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
@@ -69,7 +68,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
         it('should log 1 event with correct arguments', async () => {
             const ethToDeposit = new BigNumber(web3.toWei(1, 'ether'));
 
-            const txHash = await zeroEx.etherToken.depositAsync(ethToDeposit, account);
+            const txHash = await zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const logs = receipt.logs;
@@ -88,14 +87,14 @@ contract('EtherTokenV2', (accounts: string[]) => {
     describe('withdraw', () => {
         beforeEach(async () => {
             const ethToDeposit = new BigNumber(web3.toWei(1, 'ether'));
-            await zeroEx.etherToken.depositAsync(ethToDeposit, account);
+            await zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
         });
 
         it('should throw if caller attempts to withdraw greater than caller balance', async () => {
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
             const ethTokensToWithdraw = initEthTokenBalance.plus(1);
 
-            return expect(zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account))
+            return expect(zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account))
                 .to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
         });
 
@@ -104,7 +103,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;
             expect(ethTokensToWithdraw).to.not.be.bignumber.equal(0);
-            const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account, {
+            const txHash = await zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account, {
                 gasLimit: constants.MAX_ETHERTOKEN_WITHDRAW_GAS,
             });
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
@@ -122,7 +121,7 @@ contract('EtherTokenV2', (accounts: string[]) => {
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
             const ethTokensToWithdraw = initEthTokenBalance;
             expect(ethTokensToWithdraw).to.not.be.bignumber.equal(0);
-            const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account, {
+            const txHash = await zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account, {
                 gasLimit: constants.MAX_ETHERTOKEN_WITHDRAW_GAS,
             });
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
