@@ -5,6 +5,7 @@ import 'mocha';
 import * as Web3 from 'web3';
 
 import {ZeroEx, ZeroExError} from '../src';
+import {artifacts} from '../src/artifacts';
 
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
@@ -38,7 +39,7 @@ describe('EtherTokenWrapper', () => {
         zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
-        wethContractAddress = zeroEx.etherToken.getContractAddress();
+        wethContractAddress = (zeroEx.etherToken as any)._getContractAddress(artifacts.EtherTokenArtifact);
         depositWeiAmount = (zeroEx as any)._web3Wrapper.toWei(new BigNumber(5));
         decimalPlaces = 7;
     });
@@ -55,7 +56,7 @@ describe('EtherTokenWrapper', () => {
             expect(preETHBalance).to.be.bignumber.gt(0);
             expect(preWETHBalance).to.be.bignumber.equal(0);
 
-            const txHash = await zeroEx.etherToken.depositAsync(depositWeiAmount, addressWithETH);
+            const txHash = await zeroEx.etherToken.depositAsync(wethContractAddress, depositWeiAmount, addressWithETH);
             await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const postETHBalanceInWei = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
@@ -73,7 +74,7 @@ describe('EtherTokenWrapper', () => {
             const overETHBalanceinWei = preETHBalance.add(extraETHBalance);
 
             return expect(
-                zeroEx.etherToken.depositAsync(overETHBalanceinWei, addressWithETH),
+                zeroEx.etherToken.depositAsync(wethContractAddress, overETHBalanceinWei, addressWithETH),
             ).to.be.rejectedWith(ZeroExError.InsufficientEthBalanceForDeposit);
         });
     });
@@ -81,7 +82,7 @@ describe('EtherTokenWrapper', () => {
         it('should successfully withdraw ETH in return for Wrapped ETH tokens', async () => {
             const ETHBalanceInWei = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
 
-            await zeroEx.etherToken.depositAsync(depositWeiAmount, addressWithETH);
+            await zeroEx.etherToken.depositAsync(wethContractAddress, depositWeiAmount, addressWithETH);
 
             const expectedPreETHBalance = ETHBalanceInWei.minus(depositWeiAmount);
             const preETHBalance = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
@@ -90,7 +91,7 @@ describe('EtherTokenWrapper', () => {
             expect(gasCost).to.be.bignumber.lte(MAX_REASONABLE_GAS_COST_IN_WEI);
             expect(preWETHBalance).to.be.bignumber.equal(depositWeiAmount);
 
-            const txHash = await zeroEx.etherToken.withdrawAsync(depositWeiAmount, addressWithETH);
+            const txHash = await zeroEx.etherToken.withdrawAsync(wethContractAddress, depositWeiAmount, addressWithETH);
             await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const postETHBalance = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
@@ -108,7 +109,7 @@ describe('EtherTokenWrapper', () => {
             const overWETHBalance = preWETHBalance.add(999999999);
 
             return expect(
-                zeroEx.etherToken.withdrawAsync(overWETHBalance, addressWithETH),
+                zeroEx.etherToken.withdrawAsync(wethContractAddress, overWETHBalance, addressWithETH),
             ).to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
         });
     });
