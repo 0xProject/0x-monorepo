@@ -7,7 +7,6 @@ import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import {colors} from 'material-ui/styles';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import {
@@ -42,6 +41,7 @@ import {
     TokenStateByAddress,
     TokenVisibility,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
@@ -115,7 +115,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (!_.isUndefined(this.state.currentZrxBalance) && !nextZrxTokenBalance.eq(this.state.currentZrxBalance)) {
             if (this.state.isZRXSpinnerVisible) {
                 const receivedAmount = nextZrxTokenBalance.minus(this.state.currentZrxBalance);
-                const receiveAmountInUnits = ZeroEx.toUnitAmount(receivedAmount, 18);
+                const receiveAmountInUnits = ZeroEx.toUnitAmount(receivedAmount, constants.DECIMAL_PLACES_ZRX);
                 this.props.dispatcher.showFlashMessage(`Received ${receiveAmountInUnits.toString(10)} Kovan ZRX`);
             }
             this.setState({
@@ -144,7 +144,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 onTouchTap={this.onDharmaDialogToggle.bind(this, false)}
             />,
         ];
-        const isTestNetwork = this.props.networkId === constants.TESTNET_NETWORK_ID;
+        const isTestNetwork = this.props.networkId === constants.NETWORK_ID_TESTNET;
         const dharmaButtonColumnStyle = {
             paddingLeft: 3,
             display: isTestNetwork ? 'table-cell' : 'none',
@@ -156,7 +156,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const tokenTableHeight = allTokenRowHeight < MAX_TOKEN_TABLE_HEIGHT ?
                                  allTokenRowHeight :
                                  MAX_TOKEN_TABLE_HEIGHT;
-        const isSmallScreen = this.props.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const tokenColSpan = isSmallScreen ? TOKEN_COL_SPAN_SM : TOKEN_COL_SPAN_LG;
         const dharmaLoanExplanation = 'If you need access to larger amounts of ether,<br> \
                                      you can request a loan from the Dharma Loan<br> \
@@ -164,7 +164,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                      minutes or less.';
         const allowanceExplanation = '0x smart contracts require access to your<br> \
                                   token balances in order to execute trades.<br> \
-                                  Toggling permissions sets an allowance for the<br> \
+                                  Toggling sets an allowance for the<br> \
                                   smart contract so you can start trading that token.';
         return (
             <div className="lg-px4 md-px4 sm-px1 pb2">
@@ -302,7 +302,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             </TableHeaderColumn>
                             <TableHeaderColumn style={{paddingLeft: 3}}>Balance</TableHeaderColumn>
                             <TableHeaderColumn>
-                                <div className="inline-block">{!isSmallScreen && 'Trade '}Permissions</div>
+                                <div className="inline-block">Allowance</div>
                                 <HelpTooltip
                                     style={{paddingLeft: 4}}
                                     explanation={allowanceExplanation}
@@ -311,7 +311,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             <TableHeaderColumn>
                                 Action
                             </TableHeaderColumn>
-                            {this.props.screenWidth !== ScreenWidths.SM &&
+                            {this.props.screenWidth !== ScreenWidths.Sm &&
                                 <TableHeaderColumn>
                                     Send
                                 </TableHeaderColumn>
@@ -333,9 +333,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </Dialog>
                 <Dialog
                     title="Request Dharma Loan"
-                    titleStyle={{fontWeight: 100, backgroundColor: 'rgb(250, 250, 250)'}}
-                    bodyStyle={{backgroundColor: 'rgb(37, 37, 37)'}}
-                    actionsContainerStyle={{backgroundColor: 'rgb(250, 250, 250)'}}
+                    titleStyle={{fontWeight: 100, backgroundColor: colors.white}}
+                    bodyStyle={{backgroundColor: colors.dharmaDarkGrey}}
+                    actionsContainerStyle={{backgroundColor: colors.white}}
                     autoScrollBodyContent={true}
                     actions={dharmaDialogActions}
                     open={this.state.isDharmaDialogVisible}
@@ -357,10 +357,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         );
     }
     private renderTokenTableRows() {
-        if (!this.props.blockchainIsLoaded || this.props.blockchainErr !== '') {
+        if (!this.props.blockchainIsLoaded || this.props.blockchainErr !== BlockchainErrs.NoError) {
             return '';
         }
-        const isSmallScreen = this.props.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const tokenColSpan = isSmallScreen ? TOKEN_COL_SPAN_SM : TOKEN_COL_SPAN_LG;
         const actionPaddingX = isSmallScreen ? 2 : 24;
         const allTokens = _.values(this.props.tokenByAddress);
@@ -379,9 +379,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     private renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
         const tokenState = this.props.tokenStateByAddress[token.address];
         const tokenLink = utils.getEtherScanLinkIfExists(token.address, this.props.networkId,
-                                                         EtherscanLinkSuffixes.address);
-        const isMintable = _.includes(configs.symbolsOfMintableTokens, token.symbol) &&
-            this.props.networkId !== constants.MAINNET_NETWORK_ID;
+                                                         EtherscanLinkSuffixes.Address);
+        const isMintable = _.includes(configs.SYMBOLS_OF_MINTABLE_TOKENS, token.symbol) &&
+            this.props.networkId !== constants.NETWORK_ID_MAINNET;
         return (
             <TableRow key={token.address} style={{height: TOKEN_TABLE_ROW_HEIGHT}}>
                 <TableRowColumn
@@ -423,7 +423,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             onClickAsyncFn={this.onMintTestTokensAsync.bind(this, token)}
                         />
                     }
-                    {token.symbol === ZRX_TOKEN_SYMBOL && this.props.networkId === constants.TESTNET_NETWORK_ID &&
+                    {token.symbol === ZRX_TOKEN_SYMBOL && this.props.networkId === constants.NETWORK_ID_TESTNET &&
                         <LifeCycleRaisedButton
                             labelReady="Request"
                             labelLoading="Sending..."
@@ -432,7 +432,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         />
                     }
                 </TableRowColumn>
-                {this.props.screenWidth !== ScreenWidths.SM &&
+                {this.props.screenWidth !== ScreenWidths.Sm &&
                     <TableRowColumn
                         style={{paddingLeft: actionPaddingX, paddingRight: actionPaddingX}}
                     >
@@ -456,13 +456,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             return;
         }
         const token = this.props.tokenByAddress[tokenAddress];
-        const isDefaultTrackedToken = _.includes(configs.defaultTrackedTokenSymbols, token.symbol);
+        const isDefaultTrackedToken = _.includes(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, token.symbol);
         if (!this.state.isAddingToken && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
-                const newToken = _.assign({}, token, {
+                const newToken = {
+                    ...token,
                     isTracked: false,
-                });
+                };
                 this.props.dispatcher.updateTokenByAddress([newToken]);
             } else {
                 this.props.dispatcher.removeTokenToTokenByAddress(token);
@@ -507,7 +508,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 return (
                     <div>
                         Our faucet can only send test Ether to addresses on the {constants.TESTNET_NAME}
-                        {' '}testnet (networkId {constants.TESTNET_NETWORK_ID}). Please make sure you are
+                        {' '}testnet (networkId {constants.NETWORK_ID_TESTNET}). Please make sure you are
                         {' '}connected to the {constants.TESTNET_NAME} testnet and try requesting ether again.
                     </div>
                 );
@@ -580,7 +581,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             return true;
         } catch (err) {
             const errMsg = '' + err;
-            if (_.includes(errMsg, BlockchainCallErrs.USER_HAS_NO_ASSOCIATED_ADDRESSES)) {
+            if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return false;
             }
@@ -604,7 +605,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
 
         // If on another network other then the testnet our faucet serves test ether
         // from, we must show user an error message
-        if (this.props.blockchain.networkId !== constants.TESTNET_NETWORK_ID) {
+        if (this.props.blockchain.networkId !== constants.NETWORK_ID_TESTNET) {
             this.setState({
                 errorType: BalanceErrs.incorrectNetworkForFaucet,
             });
@@ -614,7 +615,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         await utils.sleepAsync(ARTIFICIAL_FAUCET_REQUEST_DELAY);
 
         const segment = isEtherRequest ? 'ether' : 'zrx';
-        const response = await fetch(`${constants.ETHER_FAUCET_ENDPOINT}/${segment}/${this.props.userAddress}`);
+        const response = await fetch(`${constants.URL_ETHER_FAUCET}/${segment}/${this.props.userAddress}`);
         const responseBody = await response.text();
         if (response.status !== constants.SUCCESS_STATUS) {
             utils.consoleLog(`Unexpected status code: ${response.status} -> ${responseBody}`);

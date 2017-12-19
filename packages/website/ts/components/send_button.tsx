@@ -70,14 +70,14 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
             this.props.dispatcher.replaceTokenBalanceByAddress(token.address, balance);
         } catch (err) {
             const errMsg = `${err}`;
-            if (_.includes(errMsg, BlockchainCallErrs.USER_HAS_NO_ASSOCIATED_ADDRESSES)) {
+            if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return;
             } else if (!_.includes(errMsg, 'User denied transaction')) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
-                await errorReporter.reportAsync(err);
                 this.props.onError();
+                await errorReporter.reportAsync(err);
             }
         }
         this.setState({

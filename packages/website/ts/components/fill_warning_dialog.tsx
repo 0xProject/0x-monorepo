@@ -1,7 +1,7 @@
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
+import {colors} from 'ts/utils/colors';
 
 interface FillWarningDialogProps {
     isOpen: boolean;

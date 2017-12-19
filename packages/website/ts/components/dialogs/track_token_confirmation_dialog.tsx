@@ -73,7 +73,9 @@ export class TrackTokenConfirmationDialog extends
             isAddingTokenToTracked: true,
         });
         for (const token of this.props.tokens) {
-            const newTokenEntry = _.assign({}, token);
+            const newTokenEntry = {
+                ...token,
+            };
 
             newTokenEntry.isTracked = true;
             trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);

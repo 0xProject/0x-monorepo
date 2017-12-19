@@ -11,10 +11,10 @@ export const trackedTokenStorage = {
     // that introduced a backward incompatible change requiring the tracked tokens to be re-set
     clearIfRequired() {
         const lastClearFillDate = localStorage.getItemIfExists(TRACKED_TOKENS_CLEAR_KEY);
-        if (lastClearFillDate !== configs.lastLocalStorageTrackedTokenClearanceDate) {
+        if (lastClearFillDate !== configs.LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE) {
             localStorage.removeItem(TRACKED_TOKENS_KEY);
         }
-        localStorage.setItem(TRACKED_TOKENS_CLEAR_KEY, configs.lastLocalStorageTrackedTokenClearanceDate);
+        localStorage.setItem(TRACKED_TOKENS_CLEAR_KEY, configs.LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE);
     },
     addTrackedTokenToUser(userAddress: string, networkId: number, token: Token) {
         const trackedTokensByUserAddress = this.getTrackedTokensByUserAddress();

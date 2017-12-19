@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 import * as React from 'react';
+import {colors} from 'ts/utils/colors';
 
 export interface QuestionProps {
     prompt: string;
@@ -31,7 +32,7 @@ export class Question extends React.Component<QuestionProps, QuestionState> {
                     <CardHeader
                         title={this.props.prompt}
                         style={{borderBottom: this.state.isExpanded ? '1px solid rgba(0, 0, 0, 0.19)' : 'none'}}
-                        titleStyle={{color: 'rgb(66, 66, 66)'}}
+                        titleStyle={{color: colors.darkerGrey}}
                         actAsExpander={true}
                         showExpandableButton={true}
                     />

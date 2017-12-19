@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import {
@@ -11,6 +10,7 @@ import {MarkdownSection} from 'ts/pages/shared/markdown_section';
 import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
 import {SectionHeader} from 'ts/pages/shared/section_header';
 import {Article, ArticlesBySection, HeaderSizes, Styles, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
@@ -112,7 +112,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                             >
                                 <div id="0xProtocolWiki" />
                                 <h1 className="md-pl2 sm-pl3">
-                                    <a href={constants.GITHUB_WIKI_URL} target="_blank">
+                                    <a href={constants.URL_GITHUB_WIKI} target="_blank">
                                         0x Protocol Wiki
                                     </a>
                                 </h1>
@@ -134,7 +134,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
     private renderSection(sectionName: string) {
         const articles = this.state.articlesBySection[sectionName];
         const renderedArticles = _.map(articles, (article: Article) => {
-            const githubLink = `${constants.GITHUB_WIKI_URL}/edit/master/${sectionName}/${article.fileName}`;
+            const githubLink = `${constants.URL_GITHUB_WIKI}/edit/master/${sectionName}/${article.fileName}`;
             return (
                 <div key={`markdown-section-${article.title}`}>
                     <MarkdownSection
@@ -143,7 +143,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                         headerSize={HeaderSizes.H2}
                         githubLink={githubLink}
                     />
-                    <div className="mb4 mt3 p3 center" style={{backgroundColor: '#f9f5ef'}}>
+                    <div className="mb4 mt3 p3 center" style={{backgroundColor: colors.lightestGrey}}>
                         See a way to make this article better?{' '}
                         <a
                             href={githubLink}

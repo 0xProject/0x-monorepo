@@ -1,13 +1,13 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import {Route, Switch} from 'react-router-dom';
 import {Blockchain} from 'ts/blockchain';
 import {BlockchainErrDialog} from 'ts/components/dialogs/blockchain_err_dialog';
 import {PortalDisclaimerDialog} from 'ts/components/dialogs/portal_disclaimer_dialog';
+import {WrappedEthSectionNoticeDialog} from 'ts/components/dialogs/wrapped_eth_section_notice_dialog';
 import {EthWrappers} from 'ts/components/eth_wrappers';
 import {FillOrder} from 'ts/components/fill_order';
 import {Footer} from 'ts/components/footer';
@@ -32,6 +32,7 @@ import {
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
@@ -63,22 +64,39 @@ interface PortalAllState {
     prevNetworkId: number;
     prevNodeVersion: string;
     prevUserAddress: string;
-    hasAcceptedDisclaimer: boolean;
+    prevPathname: string;
+    isDisclaimerDialogOpen: boolean;
+    isWethNoticeDialogOpen: boolean;
 }
 
 export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     private blockchain: Blockchain;
     private sharedOrderIfExists: Order;
     private throttledScreenWidthUpdate: () => void;
+    public static hasAlreadyDismissedWethNotice() {
+        const didDismissWethNotice = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_DISMISS_WETH_NOTICE);
+        const hasAlreadyDismissedWethNotice = !_.isUndefined(didDismissWethNotice) &&
+                                              !_.isEmpty(didDismissWethNotice);
+        return hasAlreadyDismissedWethNotice;
+    }
     constructor(props: PortalAllProps) {
         super(props);
         this.sharedOrderIfExists = this.getSharedOrderIfExists();
         this.throttledScreenWidthUpdate = _.throttle(this.updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
+
+        const isViewingBalances = _.includes(props.location.pathname, `${WebsitePaths.Portal}/balances`);
+        const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
+
+        const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
+        const hasAcceptedDisclaimer = !_.isUndefined(didAcceptPortalDisclaimer) &&
+                                      !_.isEmpty(didAcceptPortalDisclaimer);
         this.state = {
             prevNetworkId: this.props.networkId,
             prevNodeVersion: this.props.nodeVersion,
             prevUserAddress: this.props.userAddress,
-            hasAcceptedDisclaimer: false,
+            prevPathname: this.props.location.pathname,
+            isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
+            isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
         };
     }
     public componentDidMount() {
@@ -87,12 +105,6 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     }
     public componentWillMount() {
         this.blockchain = new Blockchain(this.props.dispatcher);
-        const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY);
-        const hasAcceptedDisclaimer = !_.isUndefined(didAcceptPortalDisclaimer) &&
-                                      !_.isEmpty(didAcceptPortalDisclaimer);
-        this.setState({
-            hasAcceptedDisclaimer,
-        });
     }
     public componentWillUnmount() {
         this.blockchain.destroy();
@@ -128,6 +140,14 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             // tslint:disable-next-line:no-floating-promises
             this.blockchain.nodeVersionUpdatedFireAndForgetAsync(nextProps.nodeVersion);
         }
+        if (nextProps.location.pathname !== this.state.prevPathname) {
+            const isViewingBalances = _.includes(nextProps.location.pathname, `${WebsitePaths.Portal}/balances`);
+            const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
+            this.setState({
+                prevPathname: nextProps.location.pathname,
+                isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
+            });
+        }
     }
     public render() {
         const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher
@@ -138,6 +158,11 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             flexDirection: 'column',
             justifyContent: 'space-between',
         };
+        const portalMenuContainerStyle: React.CSSProperties = {
+            overflow: 'hidden',
+            backgroundColor: colors.darkestGrey,
+            color: colors.white,
+        };
         return (
             <div style={portalStyle}>
                 <DocumentTitle title="0x Portal DApp"/>
@@ -146,9 +171,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                     blockchainIsLoaded={this.props.blockchainIsLoaded}
                     location={this.props.location}
                 />
-                <div id="portal" className="mx-auto max-width-4 pt4" style={{width: '100%'}}>
+                <div id="portal" className="mx-auto max-width-4" style={{width: '100%'}}>
                     <Paper className="mb3 mt2">
-                        {!configs.isMainnetEnabled && this.props.networkId === constants.MAINNET_NETWORK_ID  ?
+                        {!configs.IS_MAINNET_ENABLED && this.props.networkId === constants.NETWORK_ID_MAINNET  ?
                             <div className="p3 center">
                                 <div className="h2 py2">Mainnet unavailable</div>
                                 <div className="mx-auto pb2 pt2">
@@ -171,9 +196,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                             <div className="mx-auto flex">
                                 <div
                                     className="col col-2 pr2 pt1 sm-hide xs-hide"
-                                    style={{overflow: 'hidden', backgroundColor: 'rgb(39, 39, 39)', color: 'white'}}
+                                    style={portalMenuContainerStyle}
                                 >
-                                    <PortalMenu menuItemStyle={{color: 'white'}} />
+                                    <PortalMenu menuItemStyle={{color: colors.white}} />
                                 </div>
                                 <div className="col col-12 lg-col-10 md-col-10 sm-col sm-col-12">
                                     <div className="py2" style={{backgroundColor: colors.grey50}}>
@@ -215,8 +240,12 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         toggleDialogFn={updateShouldBlockchainErrDialogBeOpen}
                         networkId={this.props.networkId}
                     />
+                    <WrappedEthSectionNoticeDialog
+                        isOpen={this.state.isWethNoticeDialogOpen}
+                        onToggleDialog={this.onWethNoticeAccepted.bind(this)}
+                    />
                     <PortalDisclaimerDialog
-                        isOpen={!this.state.hasAcceptedDisclaimer}
+                        isOpen={this.state.isDisclaimerDialogOpen}
                         onToggleDialog={this.onPortalDisclaimerAccepted.bind(this)}
                     />
                     <FlashMessage
@@ -224,7 +253,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         flashMessage={this.props.flashMessage}
                     />
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }
@@ -295,9 +324,15 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         );
     }
     private onPortalDisclaimerAccepted() {
-        localStorage.setItem(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY, 'set');
+        localStorage.setItem(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER, 'set');
         this.setState({
-            hasAcceptedDisclaimer: true,
+            isDisclaimerDialogOpen: false,
+        });
+    }
+    private onWethNoticeAccepted() {
+        localStorage.setItem(constants.LOCAL_STORAGE_KEY_DISMISS_WETH_NOTICE, 'set');
+        this.setState({
+            isWethNoticeDialogOpen: false,
         });
     }
     private getSharedOrderIfExists(): Order {

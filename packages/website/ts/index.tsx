@@ -1,8 +1,8 @@
 // Polyfills
 import 'whatwg-fetch';
 
-import BigNumber from 'bignumber.js';
-import {colors, getMuiTheme, MuiThemeProvider} from 'material-ui/styles';
+import {bigNumberConfigs} from '@0xproject/utils';
+import {MuiThemeProvider} from 'material-ui/styles';
 import * as React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
@@ -19,58 +19,17 @@ import {NotFound} from 'ts/pages/not_found';
 import {Wiki} from 'ts/pages/wiki/wiki';
 import {reducer, State} from 'ts/redux/reducer';
 import {WebsitePaths} from 'ts/types';
-import {constants} from 'ts/utils/constants';
+import {muiTheme} from 'ts/utils/mui_theme';
 injectTapEventPlugin();
 
-// By default BigNumber's `toString` method converts to exponential notation if the value has
-// more then 20 digits. We want to avoid this behavior, so we set EXPONENTIAL_AT to a high number
-BigNumber.config({
-    EXPONENTIAL_AT: 1000,
-});
+bigNumberConfigs.configure();
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
 trackedTokenStorage.clearIfRequired();
 
-const CUSTOM_GREY = 'rgb(39, 39, 39)';
-const CUSTOM_GREEN = 'rgb(102, 222, 117)';
-const CUSTOM_DARKER_GREEN = 'rgb(77, 197, 92)';
-
 import 'basscss/css/basscss.css';
 import 'less/all.less';
-
-const muiTheme = getMuiTheme({
-    appBar: {
-        height: 45,
-        color: 'white',
-        textColor: 'black',
-    },
-    palette: {
-        pickerHeaderColor: constants.CUSTOM_BLUE,
-        primary1Color: constants.CUSTOM_BLUE,
-        primary2Color: constants.CUSTOM_BLUE,
-        textColor: colors.grey700,
-    },
-    datePicker: {
-        color: colors.grey700,
-        textColor: 'white',
-        calendarTextColor: 'white',
-        selectColor: CUSTOM_GREY,
-        selectTextColor: 'white',
-    },
-    timePicker: {
-        color: colors.grey700,
-        textColor: 'white',
-        accentColor: 'white',
-        headerColor: CUSTOM_GREY,
-        selectColor: CUSTOM_GREY,
-        selectTextColor: CUSTOM_GREY,
-    },
-    toggle: {
-        thumbOnColor: CUSTOM_GREEN,
-        trackOnColor: CUSTOM_DARKER_GREEN,
-    },
-});
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
