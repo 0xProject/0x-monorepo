@@ -258,22 +258,20 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                     </div>
                 </div>
                 {!isUserMaker &&
-                    <div className="clearfix mx-auto" style={{width: 315, height: 108}}>
-                       <div className="col col-7" style={{maxWidth: 235}}>
-                           <TokenAmountInput
-                               label="Fill amount"
-                               onChange={this.onFillAmountChange.bind(this)}
-                               shouldShowIncompleteErrs={false}
-                               token={fillToken}
-                               tokenState={fillTokenState}
-                               amount={fillAssetToken.amount}
-                               shouldCheckBalance={true}
-                               shouldCheckAllowance={true}
-                           />
-                       </div>
+                    <div className="clearfix mx-auto relative" style={{width: 235, height: 108}}>
+                       <TokenAmountInput
+                           label="Fill amount"
+                           onChange={this.onFillAmountChange.bind(this)}
+                           shouldShowIncompleteErrs={false}
+                           token={fillToken}
+                           tokenState={fillTokenState}
+                           amount={fillAssetToken.amount}
+                           shouldCheckBalance={true}
+                           shouldCheckAllowance={true}
+                       />
                        <div
-                           className="col col-5 pl1"
-                           style={{color: colors.grey400, paddingTop: 39}}
+                           className="absolute sm-hide xs-hide"
+                           style={{color: colors.grey400, right: -247, top: 39, width: 242}}
                        >
                            = {accounting.formatNumber(orderReceiveAmount, 6)} {makerToken.symbol}
                        </div>
