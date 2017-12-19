@@ -27,7 +27,7 @@ import {TokenWrapper} from './token_wrapper';
  * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
  */
 export class EtherTokenWrapper extends ContractWrapper {
-    private _etherTokenContractIfExists?: EtherTokenContract;
+    private _etherTokenContractsByAddress: {[address: string]: EtherTokenContract};
     private _tokenWrapper: TokenWrapper;
     constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder, tokenWrapper: TokenWrapper) {
         super(web3Wrapper, networkId, abiDecoder);
@@ -144,14 +144,19 @@ export class EtherTokenWrapper extends ContractWrapper {
     }
     private _invalidateContractInstance(): void {
         this.unsubscribeAll();
-        delete this._etherTokenContractIfExists;
+        this._etherTokenContractsByAddress = {};
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<EtherTokenContract> {
+        let etherTokenContract = this._etherTokenContractsByAddress[etherTokenAddress];
+        if (!_.isUndefined(etherTokenContract)) {
+            return etherTokenContract;
+        }
         const web3ContractInstance = await this._instantiateContractIfExistsAsync(
             artifacts.EtherTokenArtifact, etherTokenAddress,
         );
         const contractInstance = new EtherTokenContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
-        this._etherTokenContractIfExists = contractInstance;
-        return this._etherTokenContractIfExists;
+        etherTokenContract = contractInstance;
+        this._etherTokenContractsByAddress[etherTokenAddress] = etherTokenContract;
+        return etherTokenContract;
     }
 }
