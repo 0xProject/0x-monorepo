@@ -1,5 +1,5 @@
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
+import {colors} from 'ts/utils/colors';
 
 export interface InputLabelProps {
     text: string | Element | React.ReactNode;
@@ -7,7 +7,7 @@ export interface InputLabelProps {
 
 const styles = {
     label: {
-        color: colors.grey500,
+        color: colors.grey,
         fontSize: 12,
         pointerEvents: 'none',
         textAlign: 'left',

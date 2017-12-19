@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import {Link} from 'react-router-dom';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
 import {ScreenWidths, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
@@ -35,11 +35,6 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
-const CUSTOM_HERO_BACKGROUND_COLOR = '#404040';
-const CUSTOM_PROJECTS_BACKGROUND_COLOR = '#343333';
-const CUSTOM_WHITE_BACKGROUND = 'rgb(245, 245, 245)';
-const CUSTOM_WHITE_TEXT = '#E4E4E4';
-const CUSTOM_GRAY_TEXT = '#919191';
 
 const boxContents: BoxContent[] = [
     {
@@ -70,67 +65,67 @@ const boxContents: BoxContent[] = [
 const projects: Project[] = [
     {
         logoFileName: 'ethfinex-top.png',
-        projectUrl: constants.ETHFINEX_URL,
+        projectUrl: constants.PROJECT_URL_ETHFINEX,
     },
     {
         logoFileName: 'radar_relay_top.png',
-        projectUrl: constants.RADAR_RELAY_URL,
+        projectUrl: constants.PROJECT_URL_RADAR_RELAY,
     },
     {
         logoFileName: 'paradex_top.png',
-        projectUrl: constants.PARADEX_URL,
+        projectUrl: constants.PROJECT_URL_PARADEX,
     },
     {
         logoFileName: 'the_ocean.png',
-        projectUrl: constants.OCEAN_URL,
+        projectUrl: constants.PROJECT_URL_0CEAN,
     },
     {
         logoFileName: 'dydx.png',
-        projectUrl: constants.DYDX_URL,
+        projectUrl: constants.PROJECT_URL_DYDX,
     },
     {
         logoFileName: 'melonport.png',
-        projectUrl: constants.MELONPORT_URL,
+        projectUrl: constants.PROJECT_URL_MELONPORT,
     },
     {
         logoFileName: 'maker.png',
-        projectUrl: constants.MAKER_URL,
+        projectUrl: constants.PROJECT_URL_MAKER,
     },
     {
         logoFileName: 'dharma.png',
-        projectUrl: constants.DHARMA_URL,
+        projectUrl: constants.PROJECT_URL_DHARMA,
     },
     {
         logoFileName: 'lendroid.png',
-        projectUrl: constants.LENDROID_URL,
+        projectUrl: constants.PROJECT_URL_LENDROID,
     },
     {
         logoFileName: 'district0x.png',
-        projectUrl: constants.DISTRICT_0X_URL,
+        projectUrl: constants.PROJECT_URL_DISTRICT_0X,
     },
     {
         logoFileName: 'aragon.png',
-        projectUrl: constants.ARAGON_URL,
+        projectUrl: constants.PROJECT_URL_ARAGON,
     },
     {
         logoFileName: 'blocknet.png',
-        projectUrl: constants.BLOCKNET_URL,
+        projectUrl: constants.PROJECT_URL_BLOCKNET,
     },
     {
         logoFileName: 'status.png',
-        projectUrl: constants.STATUS_URL,
+        projectUrl: constants.PROJECT_URL_STATUS,
     },
     {
         logoFileName: 'augur.png',
-        projectUrl: constants.AUGUR_URL,
+        projectUrl: constants.PROJECT_URL_AUGUR,
     },
     {
         logoFileName: 'anx.png',
-        projectUrl: constants.OPEN_ANX_URL,
+        projectUrl: constants.PROJECT_URL_OPEN_ANX,
     },
     {
         logoFileName: 'auctus.png',
-        projectUrl: constants.AUCTUS_URL,
+        projectUrl: constants.PROJECT_URL_AUCTUS,
     },
 ];
 
@@ -160,13 +155,13 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     public render() {
         return (
-            <div id="landing" className="clearfix" style={{color: colors.grey800}}>
+            <div id="landing" className="clearfix" style={{color: colors.grey500}}>
                 <DocumentTitle title="0x Protocol"/>
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
                     isNightVersion={true}
-                    style={{backgroundColor: CUSTOM_HERO_BACKGROUND_COLOR, position: 'relative'}}
+                    style={{backgroundColor: colors.heroGrey, position: 'relative'}}
                 />
                 {this.renderHero()}
                 {this.renderProjects()}
@@ -176,12 +171,12 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 {this.renderBuildingBlocksSection()}
                 {this.renderUseCases()}
                 {this.renderCallToAction()}
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }
     private renderHero() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const buttonLabelStyle: React.CSSProperties = {
             textTransform: 'none',
             fontSize: isSmallScreen ? 12 : 14,
@@ -197,7 +192,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div
                 className="clearfix py4"
-                style={{backgroundColor: CUSTOM_HERO_BACKGROUND_COLOR}}
+                style={{backgroundColor: colors.heroGrey}}
             >
                 <div
                     className="mx-auto max-width-4 clearfix"
@@ -211,7 +206,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         </div>
                         <div
                             className={left}
-                            style={{color: 'white'}}
+                            style={{color: colors.white}}
                         >
                             <div style={{paddingLeft: isSmallScreen ? 0 : 12}}>
                                 <div
@@ -241,7 +236,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                     </div>
                                     <div className="col col-6 sm-center">
                                         <a
-                                            href={constants.ZEROEX_CHAT_URL}
+                                            href={constants.URL_ZEROEX_CHAT}
                                             target="_blank"
                                             className="text-decoration-none"
                                         >
@@ -249,7 +244,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                                 style={{borderRadius: 6, minWidth: 150}}
                                                 buttonStyle={lightButtonStyle}
                                                 labelColor="white"
-                                                backgroundColor={CUSTOM_HERO_BACKGROUND_COLOR}
+                                                backgroundColor={colors.heroGrey}
                                                 labelStyle={buttonLabelStyle}
                                                 label="Join the community"
                                                 onClick={_.noop}
@@ -265,8 +260,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderProjects() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
-        const isMediumScreen = this.state.screenWidth === ScreenWidths.MD;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
+        const isMediumScreen = this.state.screenWidth === ScreenWidths.Md;
         const projectList = _.map(projects, (project: Project, i: number) => {
             const colWidth = isSmallScreen ? 3 : (isMediumScreen ? 4 : 2 - (i % 2));
             return (
@@ -291,7 +286,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         });
         const titleStyle: React.CSSProperties = {
             fontFamily: 'Roboto Mono',
-            color: '#A4A4A4',
+            color: colors.grey,
             textTransform: 'uppercase',
             fontWeight: 300,
             letterSpacing: 3,
@@ -299,7 +294,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div
                 className="clearfix py4"
-                style={{backgroundColor: CUSTOM_PROJECTS_BACKGROUND_COLOR}}
+                style={{backgroundColor: colors.projectsGrey}}
             >
                 <div className="mx-auto max-width-4 clearfix sm-px3">
                     <div
@@ -313,13 +308,13 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     </div>
                     <div
                         className="pt3 mx-auto center"
-                        style={{color: CUSTOM_GRAY_TEXT, fontFamily: 'Roboto Mono', maxWidth: 300, fontSize: 14}}
+                        style={{color: colors.landingLinkGrey, fontFamily: 'Roboto Mono', maxWidth: 300, fontSize: 14}}
                     >
                         view the{' '}
                         <Link
                             to={`${WebsitePaths.Wiki}#List-of-Projects-Using-0x-Protocol`}
                             className="text-decoration-none underline"
-                            style={{color: CUSTOM_GRAY_TEXT}}
+                            style={{color: colors.landingLinkGrey}}
                         >
                             full list
                         </Link>
@@ -329,11 +324,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderTokenizationSection() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
             <div
                 className="clearfix lg-py4 md-py4 sm-pb4 sm-pt2"
-                style={{backgroundColor: CUSTOM_WHITE_BACKGROUND}}
+                style={{backgroundColor: colors.grey100}}
             >
                 <div className="mx-auto max-width-4 py4 clearfix">
                     {isSmallScreen &&
@@ -382,11 +377,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderProtocolSection() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
             <div
                 className="clearfix lg-py4 md-py4 sm-pt4"
-                style={{backgroundColor: CUSTOM_HERO_BACKGROUND_COLOR}}
+                style={{backgroundColor: colors.heroGrey}}
             >
                 <div className="mx-auto max-width-4 lg-py4 md-py4 sm-pt4 clearfix">
                     <div className="col lg-col-6 md-col-6 col-12 sm-center">
@@ -397,7 +392,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     </div>
                     <div
                         className="col lg-col-6 md-col-6 col-12 lg-pr3 md-pr3 sm-mx-auto"
-                        style={{color: CUSTOM_WHITE_TEXT, paddingTop: 8, maxWidth: isSmallScreen ? 'none' : 445}}
+                        style={{color: colors.beigeWhite, paddingTop: 8, maxWidth: isSmallScreen ? 'none' : 445}}
                     >
                         <div
                             className="lg-h1 md-h1 sm-h2 pb1 sm-pt3 sm-center"
@@ -420,7 +415,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         </div>
                         <div
                             className="pt3 sm-mx-auto sm-px3"
-                            style={{color: CUSTOM_GRAY_TEXT, maxWidth: isSmallScreen ? 412 : 'none'}}
+                            style={{color: colors.landingLinkGrey, maxWidth: isSmallScreen ? 412 : 'none'}}
                         >
                             <div className="flex" style={{fontSize: 18}}>
                                 <div
@@ -433,7 +428,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                     <Link
                                         to={`${WebsitePaths.Wiki}#List-of-Projects-Using-0x-Protocol`}
                                         className="text-decoration-none underline"
-                                        style={{color: CUSTOM_GRAY_TEXT, fontFamily: 'Roboto Mono'}}
+                                        style={{color: colors.landingLinkGrey, fontFamily: 'Roboto Mono'}}
                                     >
                                         view all
                                     </Link>
@@ -468,7 +463,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderBuildingBlocksSection() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const descriptionStyle: React.CSSProperties = {
             fontFamily: 'Roboto Mono',
             lineHeight: isSmallScreen ? 1.5 : 2,
@@ -485,7 +480,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div
                 className="clearfix lg-pt4 md-pt4"
-                style={{backgroundColor: CUSTOM_HERO_BACKGROUND_COLOR}}
+                style={{backgroundColor: colors.heroGrey}}
             >
                 <div className="mx-auto max-width-4 lg-pt4 md-pt4 lg-mb4 md-mb4 sm-mb2 clearfix">
                     {isSmallScreen &&
@@ -493,7 +488,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     }
                     <div
                         className="col lg-col-6 md-col-6 col-12 lg-pr3 md-pr3 sm-px3"
-                        style={{color: CUSTOM_WHITE_TEXT}}
+                        style={{color: colors.beigeWhite}}
                     >
                         <div
                             className="pb1 lg-pt4 md-pt4 sm-pt3 lg-h1 md-h1 sm-h2 sm-px3 sm-center"
@@ -517,7 +512,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             <Link
                                 to={WebsitePaths.ZeroExJs}
                                 className="text-decoration-none underline"
-                                style={{color: CUSTOM_WHITE_TEXT, fontFamily: 'Roboto Mono'}}
+                                style={{color: colors.beigeWhite, fontFamily: 'Roboto Mono'}}
                             >
                                 0x.js
                             </Link>
@@ -525,7 +520,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             <Link
                                 to={WebsitePaths.SmartContracts}
                                 className="text-decoration-none underline"
-                                style={{color: CUSTOM_WHITE_TEXT, fontFamily: 'Roboto Mono'}}
+                                style={{color: colors.beigeWhite, fontFamily: 'Roboto Mono'}}
                             >
                                 smart contract
                             </Link>
@@ -540,7 +535,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderBlockChipImage() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
             <div className="col lg-col-6 md-col-6 col-12 sm-center">
                 <img
@@ -551,7 +546,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderTokenCloud() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
             <div className="col lg-col-6 md-col-6 col-12 center">
                 <img
@@ -562,7 +557,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderAssetTypes() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const assetTypes: AssetType[] = [
             {
                 title: 'Currency',
@@ -601,11 +596,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return assets;
     }
     private renderInfoBoxes() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const boxStyle: React.CSSProperties = {
             maxWidth: 252,
             height: 386,
-            backgroundColor: '#F9F9F9',
+            backgroundColor: colors.grey50,
             borderRadius: 5,
             padding: '10px 24px 24px',
         };
@@ -642,7 +637,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div
                 className="clearfix"
-                style={{backgroundColor: CUSTOM_HERO_BACKGROUND_COLOR}}
+                style={{backgroundColor: colors.heroGrey}}
             >
                 <div
                     className="mx-auto py4 sm-mt2 clearfix"
@@ -654,7 +649,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderUseCases() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
 
         const useCases: UseCase[] = [
             {
@@ -709,14 +704,14 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const cases = _.map(useCases, (useCase: UseCase) => {
             const style = _.isUndefined(useCase.style) || isSmallScreen ? {} : useCase.style;
             const useCaseBoxStyle = {
-                color: '#A2A2A2',
+                color: colors.grey,
                 border: '1px solid #565656',
                 borderRadius: 4,
                 maxWidth: isSmallScreen ? 375 : 'none',
                 ...style,
             };
             const typeStyle: React.CSSProperties = {
-                color: '#EBEBEB',
+                color: colors.lightGrey,
                 fontSize: 13,
                 textTransform: 'uppercase',
                 fontFamily: 'Roboto Mono',
@@ -753,7 +748,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div
                 className="clearfix pb4 lg-pt2 md-pt2 sm-pt4"
-                style={{backgroundColor: CUSTOM_HERO_BACKGROUND_COLOR}}
+                style={{backgroundColor: colors.heroGrey}}
             >
                 <div
                     className="mx-auto pb4 pt3 mt1 sm-mt2 clearfix"
@@ -765,7 +760,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         );
     }
     private renderCallToAction() {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.SM;
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const buttonLabelStyle: React.CSSProperties = {
             textTransform: 'none',
             fontSize: 15,
@@ -782,14 +777,14 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div
                 className="clearfix pb4"
-                style={{backgroundColor: CUSTOM_HERO_BACKGROUND_COLOR}}
+                style={{backgroundColor: colors.heroGrey}}
             >
                 <div
                     className="mx-auto max-width-4 pb4 mb3 clearfix"
                 >
                     <div
                         className={callToActionClassNames}
-                        style={{fontFamily: 'Roboto Mono', color: 'white', lineHeight: isSmallScreen ? 1.7 : 3}}
+                        style={{fontFamily: 'Roboto Mono', color: colors.white, lineHeight: isSmallScreen ? 1.7 : 3}}
                     >
                         Get started on building the decentralized future
                     </div>
@@ -799,7 +794,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                 style={{borderRadius: 6, minWidth: 150}}
                                 buttonStyle={lightButtonStyle}
                                 labelColor={colors.white}
-                                backgroundColor={CUSTOM_HERO_BACKGROUND_COLOR}
+                                backgroundColor={colors.heroGrey}
                                 labelStyle={buttonLabelStyle}
                                 label="Build on 0x"
                                 onClick={_.noop}

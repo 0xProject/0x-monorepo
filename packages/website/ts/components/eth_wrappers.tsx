@@ -2,7 +2,6 @@ import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
-import {colors} from 'material-ui/styles';
 import {
     Table,
     TableBody,
@@ -24,12 +23,12 @@ import {
     TokenState,
     TokenStateByAddress,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 
 const PRECISION = 5;
 const DATE_FORMAT = 'D/M/YY';
-const LIGHT_GRAY = '#A5A5A5';
 const ICON_DIMENSION = 40;
 const ETHER_ICON_PATH = '/images/ether.png';
 const OUTDATED_WETH_ICON_PATH = '/images/wrapped_eth_gray.png';
@@ -83,7 +82,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         const tokens = _.values(this.props.tokenByAddress);
         const etherToken = _.find(tokens, {symbol: 'WETH'});
         const etherTokenState = this.props.tokenStateByAddress[etherToken.address];
-        const wethBalance = ZeroEx.toUnitAmount(etherTokenState.balance, 18);
+        const wethBalance = ZeroEx.toUnitAmount(etherTokenState.balance, constants.DECIMAL_PLACES_ETH);
         const isBidirectional = true;
         return (
             <div className="clearfix lg-px4 md-px4 sm-px2" style={{minHeight: 600}}>
@@ -93,7 +92,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         <a
                             target="_blank"
                             href="https://weth.io/"
-                            style={{color: LIGHT_GRAY}}
+                            style={{color: colors.grey}}
                         >
                             <div className="flex">
                                 <div>About Wrapped ETH</div>
@@ -142,7 +141,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     <TableRowColumn>
                                         <EthWethConversionButton
                                             isOutdatedWrappedEther={false}
-                                            direction={Side.deposit}
+                                            direction={Side.Deposit}
                                             ethToken={etherToken}
                                             ethTokenState={etherTokenState}
                                             dispatcher={this.props.dispatcher}
@@ -156,7 +155,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                         <div className="flex">
                                             <img
                                                 style={{width: ICON_DIMENSION, height: ICON_DIMENSION}}
-                                                src={constants.iconUrlBySymbol.WETH}
+                                                src={configs.ICON_URL_BY_SYMBOL.WETH}
                                             />
                                             <div className="mt2 ml2 sm-hide xs-hide">
                                                 Wrapped Ether
@@ -169,7 +168,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     <TableRowColumn>
                                         <EthWethConversionButton
                                             isOutdatedWrappedEther={false}
-                                            direction={Side.receive}
+                                            direction={Side.Receive}
                                             ethToken={etherToken}
                                             ethTokenState={etherTokenState}
                                             dispatcher={this.props.dispatcher}
@@ -242,7 +241,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         );
     }
     private renderOutdatedWeths(etherToken: Token, etherTokenState: TokenState) {
-        const rows = _.map(configs.outdatedWrappedEthers,
+        const rows = _.map(configs.OUTDATED_WRAPPED_ETHERS,
                         (outdatedWETHByNetworkId: OutdatedWrappedEtherByNetworkId) => {
             const outdatedWETH = outdatedWETHByNetworkId[this.props.networkId];
             const timestampMsRange = outdatedWETH.timestampMsRange;
@@ -261,7 +260,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             const isStateLoaded = this.state.outdatedWETHAddressToIsStateLoaded[outdatedWETH.address];
             const outdatedEtherTokenState = this.state.outdatedWETHStateByAddress[outdatedWETH.address];
             const balanceInEthIfExists = isStateLoaded ?
-                                         ZeroEx.toUnitAmount(outdatedEtherTokenState.balance, 18).toFixed(PRECISION) :
+                                         ZeroEx.toUnitAmount(
+                                             outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH,
+                                         ).toFixed(PRECISION) :
                                          undefined;
             const onConversionSuccessful = this.onOutdatedConversionSuccessfulAsync.bind(this, outdatedWETH.address);
             return (
@@ -287,7 +288,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         <EthWethConversionButton
                             isDisabled={!isStateLoaded}
                             isOutdatedWrappedEther={true}
-                            direction={Side.receive}
+                            direction={Side.Receive}
                             ethToken={outdatedEtherToken}
                             ethTokenState={outdatedEtherTokenState}
                             dispatcher={this.props.dispatcher}
@@ -345,7 +346,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         });
     }
     private getOutdatedWETHAddresses(): string[] {
-        const outdatedWETHAddresses = _.map(configs.outdatedWrappedEthers, outdatedWrappedEther => {
+        const outdatedWETHAddresses = _.map(configs.OUTDATED_WRAPPED_ETHERS, outdatedWrappedEther => {
             return outdatedWrappedEther[this.props.networkId].address;
         });
         return outdatedWETHAddresses;

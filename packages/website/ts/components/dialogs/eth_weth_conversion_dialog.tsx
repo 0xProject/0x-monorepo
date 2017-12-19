@@ -5,8 +5,7 @@ import * as React from 'react';
 import {EthAmountInput} from 'ts/components/inputs/eth_amount_input';
 import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
 import {Side, Token, TokenState} from 'ts/types';
-
-const DARK_BLUE = '#4D5481';
+import {colors} from 'ts/utils/colors';
 
 interface EthWethConversionDialogProps {
     direction: Side;
@@ -47,7 +46,7 @@ export class EthWethConversionDialog extends
                 onTouchTap={this.onConvertClick.bind(this)}
             />,
         ];
-        const title = this.props.direction === Side.deposit ?  'Wrap ETH' : 'Unwrap WETH';
+        const title = this.props.direction === Side.Deposit ?  'Wrap ETH' : 'Unwrap WETH';
         return (
             <Dialog
                 title={title}
@@ -61,10 +60,10 @@ export class EthWethConversionDialog extends
         );
     }
     private renderConversionDialogBody() {
-        const explanation = this.props.direction === Side.deposit ?
+        const explanation = this.props.direction === Side.Deposit ?
                             'Convert your Ether into a tokenized, tradable form.' :
                             'Convert your Wrapped Ether back into it\'s native form.';
-        const isWrappedVersion = this.props.direction === Side.receive;
+        const isWrappedVersion = this.props.direction === Side.Receive;
         return (
             <div>
                 <div className="pb2">
@@ -75,7 +74,7 @@ export class EthWethConversionDialog extends
                         {this.renderCurrency(isWrappedVersion)}
                         <div style={{paddingTop: 68}}>
                             <i
-                                style={{fontSize: 28, color: DARK_BLUE}}
+                                style={{fontSize: 28, color: colors.darkBlue}}
                                 className="zmdi zmdi-arrow-right"
                             />
                         </div>
@@ -85,7 +84,7 @@ export class EthWethConversionDialog extends
                         className="pt2 mx-auto"
                         style={{width: 245}}
                     >
-                        {this.props.direction === Side.receive ?
+                        {this.props.direction === Side.Receive ?
                             <TokenAmountInput
                                 token={this.props.token}
                                 tokenState={this.props.tokenState}
@@ -124,7 +123,7 @@ export class EthWethConversionDialog extends
             <div className="mx-auto pt2">
                 <div
                     className="center"
-                    style={{color: DARK_BLUE}}
+                    style={{color: colors.darkBlue}}
                 >
                     {name}
                 </div>

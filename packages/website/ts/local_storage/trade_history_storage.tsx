@@ -16,7 +16,7 @@ export const tradeHistoryStorage = {
     // the blockchain
     clearIfRequired() {
         const lastClearFillDate = localStorage.getItemIfExists(FILL_CLEAR_KEY);
-        if (lastClearFillDate !== configs.lastLocalStorageFillClearanceDate) {
+        if (lastClearFillDate !== configs.LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE) {
             const localStorageKeys = localStorage.getAllKeys();
             _.each(localStorageKeys, key => {
                 if (_.startsWith(key, `${FILLS_KEY}-`) || _.startsWith(key, `${FILLS_LATEST_BLOCK}-`)) {
@@ -24,7 +24,7 @@ export const tradeHistoryStorage = {
                 }
             });
         }
-        localStorage.setItem(FILL_CLEAR_KEY, configs.lastLocalStorageFillClearanceDate);
+        localStorage.setItem(FILL_CLEAR_KEY, configs.LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE);
     },
     addFillToUser(userAddress: string, networkId: number, fill: Fill) {
         const fillsByHash = this.getUserFillsByHash(userAddress, networkId);

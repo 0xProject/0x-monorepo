@@ -1,7 +1,6 @@
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import {
@@ -34,19 +33,18 @@ import {
     TypeDefinitionByName,
     TypescriptMethod,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
+import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import {docUtils} from 'ts/utils/doc_utils';
 import {utils} from 'ts/utils/utils';
 
 const SCROLL_TOP_ID = 'docsScrollTop';
-const CUSTOM_PURPLE = '#690596';
-const CUSTOM_RED = '#e91751';
-const CUSTOM_TURQUOIS = '#058789';
 
 const networkNameToColor: {[network: string]: string} = {
-    [Networks.kovan]: CUSTOM_PURPLE,
-    [Networks.ropsten]: CUSTOM_RED,
-    [Networks.mainnet]: CUSTOM_TURQUOIS,
+    [Networks.kovan]: colors.purple,
+    [Networks.ropsten]: colors.red,
+    [Networks.mainnet]: colors.turquois,
 };
 
 export interface DocumentationAllProps {
@@ -273,7 +271,7 @@ export class Documentation extends
         );
     }
     private renderNetworkBadgesIfExists(sectionName: string) {
-        const networkToAddressByContractName = constants.contractAddresses[this.props.docsVersion];
+        const networkToAddressByContractName = configs.CONTRACT_ADDRESS[this.props.docsVersion];
         const badges = _.map(networkToAddressByContractName,
             (addressByContractName: AddressByContractName, networkName: string) => {
                 const contractAddress = addressByContractName[sectionName];
@@ -281,14 +279,14 @@ export class Documentation extends
                     return null;
                 }
                 const linkIfExists = utils.getEtherScanLinkIfExists(
-                    contractAddress, constants.networkIdByName[networkName], EtherscanLinkSuffixes.address,
+                    contractAddress, constants.NETWORK_ID_BY_NAME[networkName], EtherscanLinkSuffixes.Address,
                 );
                 return (
                     <a
                         key={`badge-${networkName}-${sectionName}`}
                         href={linkIfExists}
                         target="_blank"
-                        style={{color: 'white', textDecoration: 'none'}}
+                        style={{color: colors.white, textDecoration: 'none'}}
                     >
                         <Badge
                             title={networkName}

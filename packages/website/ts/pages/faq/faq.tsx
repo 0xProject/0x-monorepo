@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import {Footer} from 'ts/components/footer';
 import {TopBar} from 'ts/components/top_bar';
 import {Question} from 'ts/pages/faq/question';
 import {FAQQuestion, FAQSection, Styles, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 
@@ -411,7 +411,7 @@ const sections: FAQSection[] = [
                 prompt: 'How can I get involved?',
                 answer: (
                     <div>
-                        Join our <a href={constants.ZEROEX_CHAT_URL} target="_blank">Rocket.chat</a>!
+                        Join our <a href={constants.URL_ZEROEX_CHAT} target="_blank">Rocket.chat</a>!
                         As an open source project, 0x will rely on a worldwide community of passionate
                         developers to contribute proposals, ideas and code.
                     </div>
@@ -462,7 +462,7 @@ export class FAQ extends React.Component<FAQProps, FAQState> {
                         {this.renderSections()}
                     </div>
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }

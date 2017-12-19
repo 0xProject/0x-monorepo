@@ -1,7 +1,7 @@
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 
 interface U2fNotSupportedDialogProps {
@@ -39,7 +39,7 @@ export function U2fNotSupportedDialog(props: U2fNotSupportedDialogProps) {
                         <li>
                             Firefox with{' '}
                             <a
-                                href={constants.FIREFOX_U2F_ADDON}
+                                href={constants.URL_FIREFOX_U2F_ADDON}
                                 target="_blank"
                                 style={{textDecoration: 'underline'}}
                             >

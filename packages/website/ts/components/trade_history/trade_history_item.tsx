@@ -2,13 +2,13 @@ import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import {colors} from 'material-ui/styles';
 import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactTooltip from 'react-tooltip';
 import {EtherScanIcon} from 'ts/components/ui/etherscan_icon';
 import {Party} from 'ts/components/ui/party';
 import {EtherscanLinkSuffixes, Fill, Token, TokenByAddress} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 
 const PRECISION = 5;
 const IDENTICON_DIAMETER = 40;
@@ -87,7 +87,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
                             <EtherScanIcon
                                 addressOrTxHash={fill.transactionHash}
                                 networkId={this.props.networkId}
-                                etherscanLinkSuffixes={EtherscanLinkSuffixes.tx}
+                                etherscanLinkSuffixes={EtherscanLinkSuffixes.Tx}
                             />
                         </div>
                     </div>
