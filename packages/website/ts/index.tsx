@@ -2,7 +2,7 @@
 import 'whatwg-fetch';
 
 import {bigNumberConfigs} from '@0xproject/utils';
-import {getMuiTheme, MuiThemeProvider} from 'material-ui/styles';
+import {MuiThemeProvider} from 'material-ui/styles';
 import * as React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
@@ -19,7 +19,7 @@ import {NotFound} from 'ts/pages/not_found';
 import {Wiki} from 'ts/pages/wiki/wiki';
 import {reducer, State} from 'ts/redux/reducer';
 import {WebsitePaths} from 'ts/types';
-import {colors} from 'ts/utils/colors';
+import {muiTheme} from 'ts/utils/mui_theme';
 injectTapEventPlugin();
 
 bigNumberConfigs.configure();
@@ -30,39 +30,6 @@ trackedTokenStorage.clearIfRequired();
 
 import 'basscss/css/basscss.css';
 import 'less/all.less';
-
-const muiTheme = getMuiTheme({
-    appBar: {
-        height: 45,
-        color: colors.white,
-        textColor: colors.black,
-    },
-    palette: {
-        pickerHeaderColor: colors.lightBlue,
-        primary1Color: colors.lightBlue,
-        primary2Color: colors.lightBlue,
-        textColor: colors.grey700,
-    },
-    datePicker: {
-        color: colors.grey700,
-        textColor: colors.white,
-        calendarTextColor: colors.white,
-        selectColor: colors.darkestGrey,
-        selectTextColor: colors.white,
-    },
-    timePicker: {
-        color: colors.grey700,
-        textColor: colors.white,
-        accentColor: colors.white,
-        headerColor: colors.darkestGrey,
-        selectColor: colors.darkestGrey,
-        selectTextColor: colors.darkestGrey,
-    },
-    toggle: {
-        thumbOnColor: colors.limeGreen,
-        trackOnColor: colors.lightGreen,
-    },
-});
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
