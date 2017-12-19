@@ -104,7 +104,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(
-            etherTokenAddress, eventName, blockRange, indexFilterValues, artifacts.TokenArtifact.abi,
+            etherTokenAddress, eventName, blockRange, indexFilterValues, artifacts.EtherTokenArtifact.abi,
         );
         return logs;
     }
@@ -125,7 +125,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe<ArgsType>(
-            etherTokenAddress, eventName, indexFilterValues, artifacts.TokenArtifact.abi, callback,
+            etherTokenAddress, eventName, indexFilterValues, artifacts.EtherTokenArtifact.abi, callback,
         );
         return subscriptionToken;
     }
