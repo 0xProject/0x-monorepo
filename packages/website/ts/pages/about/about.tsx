@@ -9,8 +9,6 @@ import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
-const DARKEST_GRAY = colors.darkestGrey;
-
 const teamRow1: ProfileInfo[] = [
     {
         name: 'Will Warren',
@@ -143,6 +141,12 @@ const styles: Styles = {
         color: 'black',
         paddingTop: 110,
     },
+    weAreHiring: {
+        fontSize: 30,
+        color: colors.darkestGrey,
+        fontFamily: 'Roboto Mono',
+        letterSpacing: 7.5,
+    },
 };
 
 export class About extends React.Component<AboutProps, AboutState> {
@@ -174,7 +178,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         </div>
                         <div
                             className="pt3"
-                            style={{fontSize: 17, color: DARKEST_GRAY, lineHeight: 1.5}}
+                            style={{fontSize: 17, color: colors.darkestGrey, lineHeight: 1.5}}
                         >
                             Our team is a diverse and globally distributed group with backgrounds
                             in engineering, research, business and design. We are passionate about
@@ -204,13 +208,13 @@ export class About extends React.Component<AboutProps, AboutState> {
                     <div className="mx-auto py4 sm-px3" style={{maxWidth: 308}}>
                         <div
                             className="pb2"
-                            style={{fontSize: 30, color: DARKEST_GRAY, fontFamily: 'Roboto Mono', letterSpacing: 7.5}}
+                            style={styles.weAreHiring}
                         >
                             WE'RE HIRING
                         </div>
                         <div
                             className="pb4 mb4"
-                            style={{fontSize: 16, color: DARKEST_GRAY, lineHeight: 1.5, letterSpacing: '0.5px'}}
+                            style={{fontSize: 16, color: colors.darkestGrey, lineHeight: 1.5, letterSpacing: '0.5px'}}
                         >
                             We are seeking outstanding candidates to{' '}
                             <a
