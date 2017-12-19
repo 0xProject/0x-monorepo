@@ -12,6 +12,8 @@ import {
     ApprovalContractEventArgs,
     BlockParamLiteral,
     ContractEventArgs,
+    DepositContractEventArgs,
+    EtherTokenEvents,
     ExchangeContractErrs,
     ExchangeEvents,
     LogCancelContractEventArgs,
@@ -24,6 +26,7 @@ import {
     SignedOrder,
     TokenEvents,
     TransferContractEventArgs,
+    WithdrawalContractEventArgs,
     ZeroExError,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -236,6 +239,36 @@ export class OrderStateWatcher {
                 // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._from;
+                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                }
+                break;
+            }
+            case EtherTokenEvents.Deposit:
+            {
+                // Invalidate cache
+                const args = decodedLog.args as DepositContractEventArgs;
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
+                // Revalidate orders
+                makerToken = decodedLog.address;
+                makerAddress = args._owner;
+                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                }
+                break;
+            }
+            case EtherTokenEvents.Withdrawal:
+            {
+                // Invalidate cache
+                const args = decodedLog.args as WithdrawalContractEventArgs;
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
+                // Revalidate orders
+                makerToken = decodedLog.address;
+                makerAddress = args._owner;
                 if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
                     !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
                     const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
