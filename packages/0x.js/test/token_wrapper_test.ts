@@ -7,8 +7,8 @@ import * as Web3 from 'web3';
 
 import {
     ApprovalContractEventArgs,
+    BlockRange,
     DecodedLogEvent,
-    SubscriptionOpts,
     Token,
     TokenEvents,
     TransferContractEventArgs,
@@ -433,7 +433,7 @@ describe('TokenWrapper', () => {
     describe('#getLogsAsync', () => {
         let tokenAddress: string;
         let tokenTransferProxyAddress: string;
-        const subscriptionOpts: SubscriptionOpts = {
+        const blockRange: BlockRange = {
             fromBlock: 0,
             toBlock: BlockParamLiteral.Latest,
         };
@@ -449,7 +449,7 @@ describe('TokenWrapper', () => {
             const eventName = TokenEvents.Approval;
             const indexFilterValues = {};
             const logs = await zeroEx.token.getLogsAsync<ApprovalContractEventArgs>(
-                tokenAddress, eventName, subscriptionOpts, indexFilterValues,
+                tokenAddress, eventName, blockRange, indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;
@@ -464,7 +464,7 @@ describe('TokenWrapper', () => {
             const differentEventName = TokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await zeroEx.token.getLogsAsync(
-                tokenAddress, differentEventName, subscriptionOpts, indexFilterValues,
+                tokenAddress, differentEventName, blockRange, indexFilterValues,
             );
             expect(logs).to.have.length(0);
         });
@@ -478,7 +478,7 @@ describe('TokenWrapper', () => {
                 _owner: coinbase,
             };
             const logs = await zeroEx.token.getLogsAsync<ApprovalContractEventArgs>(
-                tokenAddress, eventName, subscriptionOpts, indexFilterValues,
+                tokenAddress, eventName, blockRange, indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;

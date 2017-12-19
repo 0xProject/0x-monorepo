@@ -1,5 +1,6 @@
 import {
     BlockParam,
+    BlockRange,
     DecodedLogEvent,
     ExchangeContractEventArgs,
     ExchangeEvents,
@@ -9,7 +10,6 @@ import {
     LogWithDecodedArgs,
     Order,
     SignedOrder,
-    SubscriptionOpts,
     Token as ZeroExToken,
     TransactionReceiptWithDecodedLogs,
     ZeroEx,
@@ -524,12 +524,12 @@ export class Blockchain {
     }
     private async fetchHistoricalExchangeLogFillEventsAsync(indexFilterValues: IndexedFilterValues) {
         const fromBlock = tradeHistoryStorage.getFillsLatestBlock(this.userAddress, this.networkId);
-        const subscriptionOpts: SubscriptionOpts = {
+        const blockRange: BlockRange = {
             fromBlock,
             toBlock: 'latest' as BlockParam,
         };
         const decodedLogs = await this.zeroEx.exchange.getLogsAsync<LogFillContractEventArgs>(
-            ExchangeEvents.LogFill, subscriptionOpts, indexFilterValues,
+            ExchangeEvents.LogFill, blockRange, indexFilterValues,
         );
         for (const decodedLog of decodedLogs) {
             if (!this.doesLogEventInvolveUser(decodedLog)) {

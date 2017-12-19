@@ -12,7 +12,7 @@ export {
     ExchangeEvents,
     TokenEvents,
     IndexedFilterValues,
-    SubscriptionOpts,
+    BlockRange,
     BlockParam,
     OrderCancellationRequest,
     OrderFillRequest,

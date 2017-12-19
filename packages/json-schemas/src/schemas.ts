@@ -3,6 +3,10 @@ import {
     numberSchema,
 } from '../schemas/basic_type_schemas';
 import {
+    blockParamSchema,
+    blockRangeSchema,
+} from '../schemas/block_range_schema';
+import {
     ecSignatureParameterSchema,
     ecSignatureSchema,
 } from '../schemas/ec_signature_schema';
@@ -56,10 +60,6 @@ import {
     signedOrdersSchema,
 } from '../schemas/signed_orders_schema';
 import {
-    blockParamSchema,
-    subscriptionOptsSchema,
-} from '../schemas/subscription_opts_schema';
-import {
     tokenSchema,
 } from '../schemas/token_schema';
 import {
@@ -81,7 +81,7 @@ export const schemas = {
     signedOrderSchema,
     signedOrdersSchema,
     blockParamSchema,
-    subscriptionOptsSchema,
+    blockRangeSchema,
     tokenSchema,
     jsNumber,
     txDataSchema,
