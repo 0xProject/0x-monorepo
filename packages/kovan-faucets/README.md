@@ -1,22 +1,35 @@
-Test Ether Faucet
-----------------------
+@0xproject/kovan_faucets
+------
 
-This faucet dispenses 0.1 test ether to one recipient per second. It has a max queue size of 1000.
+This faucet dispenses 0.1 test ether to one recipient per second and 0.1 test ZRX every 5 seconds. It has a max queue size of 1000.
 
+## Installation
 
-## Install
+This is a private package and therefore is not published to npm. In order to build and run this package locally, see the [Install Dependencies](#Install-Dependencies) section and onwards below.
 
-Install project dependencies:
+## Contributing
 
+We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
+
+### Install Dependencies
+
+If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+```bash
+yarn config set workspaces-experimental true
 ```
-npm install
+
+Then install dependencies
+```bash
+yarn install
 ```
 
-## Start
+### Start
 
 Set the following environment variables:
 
-```
+```bash
 export FAUCET_ENVIRONMENT=development
 export DISPENSER_ADDRESS=0x5409ed021d9299bf6814279a6a1411a7e866a631
 export DISPENSER_PRIVATE_KEY=f2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d
@@ -28,11 +41,11 @@ Infura API Key can be requested here: https://infura.io/register.html
 
 Note: The above public/private keys exist when running `testrpc` with the following option `--mnemonic concert load couple harbor equip island argue ramp clarify fence smart topic`.
 
-```
-npm run dev
+```bash
+yarn dev
 ```
 
-## Endpoints
+### Endpoints
 
 ```GET /ether/:recipient```
 
@@ -42,15 +55,7 @@ Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
 
 Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
 
-
-```javascript
-{
-    "full": false,
-    "size": 0
-}
-```
-
-## Docker configs
+### Docker configs
 
 ```
 docker run -d \
@@ -63,4 +68,10 @@ docker run -d \
 -e FAUCET_ROLLBAR_ACCESS_KEY=$FAUCET_ROLLBAR_ACCESS_KEY \
 -e FAUCET_ENVIRONMENT=production \
 kovan-faucets
+```
+
+### Lint
+
+```bash
+yarn lint
 ```
