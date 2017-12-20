@@ -25,7 +25,7 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 
 ### Install Dependencies
 
-If you don't have yarn workspaces enabled - enable them:
+If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 ```bash
 yarn config set workspaces-experimental true
 ```

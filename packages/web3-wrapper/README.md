@@ -1,7 +1,7 @@
 @0xproject/web3-wrapper
 ------
 
-Wrapped version of web3 with nicer interface to be used across 0x projects and packages
+Wrapped version of web3 with a nicer interface that is used across 0x projects and packages
 
 ## Installation
 
@@ -11,7 +11,13 @@ yarn add @0xproject/web3-wrapper
 
 ## Usage
 
-TODO - Custom documentation page is in progress.
+```typescript
+import {Web3Wrapper} from '@0xproject/web3-wrapper';
+
+const web3 = ...;
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+```
 
 ## Contributing
 
@@ -21,7 +27,7 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 
 ### Install Dependencies
 
-If you don't have yarn workspaces enabled - enable them:
+If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 ```bash
 yarn config set workspaces-experimental true
 ```
