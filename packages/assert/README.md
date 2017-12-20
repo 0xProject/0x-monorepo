@@ -11,13 +11,17 @@ yarn add @0xproject/assert
 
 ## Usage
 
-TODO - Custom documentation page is in progress.
+```typescript
+import {assert} from '@0xproject/assert';
+
+assert.isValidBaseUnitAmount('baseUnitAmount', baseUnitAmount);
+```
 
 ## Contributing
 
 We strongly encourage our community members to help us make improvements and to determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
 
-[CONTRIBUTING.md](../../CONTRIBUTING.md)
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
 ### Install Dependencies
 
