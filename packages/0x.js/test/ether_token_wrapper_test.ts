@@ -154,6 +154,7 @@ describe('EtherTokenWrapper', () => {
         it('Should receive the Transfer event when tokens are transfered', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
+                    expect(err).to.be.null();
                     expect(logEvent).to.not.be.undefined();
                     expect(logEvent.isRemoved).to.be.false();
                     expect(logEvent.log.logIndex).to.be.equal(0);
@@ -176,6 +177,7 @@ describe('EtherTokenWrapper', () => {
         it('Should receive the Approval event when allowance is being set', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                    expect(err).to.be.null();
                     expect(logEvent).to.not.be.undefined();
                     expect(logEvent.isRemoved).to.be.false();
                     const args = logEvent.log.args;
@@ -194,6 +196,7 @@ describe('EtherTokenWrapper', () => {
         it('Should receive the Deposit event when ether is being deposited', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<DepositContractEventArgs>) => {
+                    expect(err).to.be.null();
                     expect(logEvent).to.not.be.undefined();
                     expect(logEvent.isRemoved).to.be.false();
                     const args = logEvent.log.args;
@@ -211,6 +214,7 @@ describe('EtherTokenWrapper', () => {
         it('Should receive the Withdrawal event when ether is being withdrewn', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<WithdrawalContractEventArgs>) => {
+                    expect(err).to.be.null();
                     expect(logEvent).to.not.be.undefined();
                     expect(logEvent.isRemoved).to.be.false();
                     const args = logEvent.log.args;
