@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import {InternalZeroExError, Token} from '../../src/types';
 
 const PROTOCOL_TOKEN_SYMBOL = 'ZRX';
-const WETH_TOKEN_SYMBOL = 'WETH';
+const WETH_TOKEN_SYMBOL = 'WETH9';
 
 export class TokenUtils {
     private tokens: Token[];

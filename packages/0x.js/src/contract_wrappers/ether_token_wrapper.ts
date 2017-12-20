@@ -121,7 +121,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         etherTokenAddress: string, eventName: EtherTokenEvents, indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>): string {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
-        assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, EtherTokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe<ArgsType>(

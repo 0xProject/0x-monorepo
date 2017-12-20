@@ -9,9 +9,11 @@ import {
     BlockParamLiteral,
     BlockRange,
     DecodedLogEvent,
+    DepositContractEventArgs,
     EtherTokenEvents,
     Token,
     TransferContractEventArgs,
+    WithdrawalContractEventArgs,
     ZeroEx,
     ZeroExError,
 } from '../src';
@@ -48,6 +50,10 @@ describe('EtherTokenWrapper', () => {
         gasPrice,
         networkId: constants.TESTRPC_NETWORK_ID,
     };
+    const transferAmount = new BigNumber(42);
+    const allowanceAmount = new BigNumber(42);
+    const depositAmount = new BigNumber(42);
+    const withdrawalAmount = new BigNumber(42);
     before(async () => {
         web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
@@ -132,8 +138,6 @@ describe('EtherTokenWrapper', () => {
     describe('#subscribe', () => {
         const indexFilterValues = {};
         let etherTokenAddress: string;
-        const transferAmount = new BigNumber(42);
-        const allowanceAmount = new BigNumber(42);
         before(() => {
             const tokenUtils = new TokenUtils(tokens);
             const etherToken = tokenUtils.getWethTokenOrThrow();
@@ -184,6 +188,43 @@ describe('EtherTokenWrapper', () => {
                     etherTokenAddress, EtherTokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(
                     etherTokenAddress, addressWithETH, addressWithoutFunds, allowanceAmount,
+                );
+            })().catch(done);
+        });
+        it('Should receive the Deposit event when ether is being deposited', (done: DoneCallback) => {
+            (async () => {
+                const callback = (err: Error, logEvent: DecodedLogEvent<DepositContractEventArgs>) => {
+                    expect(logEvent).to.not.be.undefined();
+                    expect(logEvent.isRemoved).to.be.false();
+                    const args = logEvent.log.args;
+                    expect(args._owner).to.be.equal(addressWithETH);
+                    expect(args._value).to.be.bignumber.equal(depositAmount);
+                    done();
+                };
+                zeroEx.etherToken.subscribe(
+                    etherTokenAddress, EtherTokenEvents.Deposit, indexFilterValues, callback);
+                await zeroEx.etherToken.depositAsync(
+                    etherTokenAddress, depositAmount, addressWithETH,
+                );
+            })().catch(done);
+        });
+        it('Should receive the Withdrawal event when ether is being withdrewn', (done: DoneCallback) => {
+            (async () => {
+                const callback = (err: Error, logEvent: DecodedLogEvent<WithdrawalContractEventArgs>) => {
+                    expect(logEvent).to.not.be.undefined();
+                    expect(logEvent.isRemoved).to.be.false();
+                    const args = logEvent.log.args;
+                    expect(args._owner).to.be.equal(addressWithETH);
+                    expect(args._value).to.be.bignumber.equal(depositAmount);
+                    done();
+                };
+                await zeroEx.etherToken.depositAsync(
+                    etherTokenAddress, depositAmount, addressWithETH,
+                );
+                zeroEx.etherToken.subscribe(
+                    etherTokenAddress, EtherTokenEvents.Withdrawal, indexFilterValues, callback);
+                await zeroEx.etherToken.withdrawAsync(
+                    etherTokenAddress, withdrawalAmount, addressWithETH,
                 );
             })().catch(done);
         });
@@ -254,6 +295,19 @@ describe('EtherTokenWrapper', () => {
             expect(args._owner).to.be.equal(addressWithETH);
             expect(args._spender).to.be.equal(tokenTransferProxyAddress);
             expect(args._value).to.be.bignumber.equal(zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+        it('should get logs with decoded args emitted by Deposit', async () => {
+            await zeroEx.etherToken.depositAsync(etherTokenAddress, depositAmount, addressWithETH);
+            const eventName = EtherTokenEvents.Deposit;
+            const indexFilterValues = {};
+            const logs = await zeroEx.etherToken.getLogsAsync<DepositContractEventArgs>(
+                etherTokenAddress, eventName, blockRange, indexFilterValues,
+            );
+            expect(logs).to.have.length(1);
+            const args = logs[0].args;
+            expect(logs[0].event).to.be.equal(eventName);
+            expect(args._owner).to.be.equal(addressWithETH);
+            expect(args._value).to.be.bignumber.equal(depositAmount);
         });
         it('should only get the logs with the correct event name', async () => {
             txHash = await zeroEx.token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, addressWithETH);
