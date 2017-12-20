@@ -127,7 +127,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <MenuItem style={{fontSize: styles.menuItem.fontSize}} primaryText="Whitepaper" />
             </a>,
         ];
-        const bottomBorderStyle = this.shouldDisplayBottomBar() ? styles.bottomBar : {};
+        const bottomBorderStyle = this._shouldDisplayBottomBar() ? styles.bottomBar : {};
         const fullWidthClasses = isFullWidthPage ? 'pr4' : '';
         const logoUrl = isNightVersion ? '/images/protocol_logo_white.png' : '/images/protocol_logo_black.png';
         const menuClasses = `col col-${isFullWidthPage ? '4' : '5'} ${fullWidthClasses} lg-pr0 md-pr2 sm-hide xs-hide`;
@@ -147,7 +147,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     </div>
                     <div className={`col col-${isFullWidthPage ? '8' : '9'} lg-hide md-hide`} />
                     <div className={`col col-${isFullWidthPage ? '6' : '5'} sm-hide xs-hide`} />
-                    {!this.isViewingPortal() &&
+                    {!this._isViewingPortal() &&
                         <div
                             className={menuClasses}
                         >
@@ -183,37 +183,37 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     }
                     {this.props.blockchainIsLoaded && !_.isEmpty(this.props.userAddress) &&
                         <div className="col col-5">
-                            {this.renderUser()}
+                            {this._renderUser()}
                         </div>
                     }
-                    {!this.isViewingPortal() &&
+                    {!this._isViewingPortal() &&
                         <div
                             className={`col ${isFullWidthPage ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}
                         >
                             <div style={menuIconStyle}>
                                 <i
                                     className="zmdi zmdi-menu"
-                                    onClick={this.onMenuButtonClick.bind(this)}
+                                    onClick={this._onMenuButtonClick.bind(this)}
                                 />
                             </div>
                         </div>
                     }
                 </div>
-                {this.renderDrawer()}
+                {this._renderDrawer()}
             </div>
         );
     }
-    private renderDrawer() {
+    private _renderDrawer() {
         return (
             <Drawer
                 open={this.state.isDrawerOpen}
                 docked={false}
                 openSecondary={true}
-                onRequestChange={this.onMenuButtonClick.bind(this)}
+                onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                {this.renderPortalMenu()}
-                {this.renderDocsMenu()}
-                {this.renderWiki()}
+                {this._renderPortalMenu()}
+                {this._renderDocsMenu()}
+                {this._renderWiki()}
                 <div className="pl1 py1 mt3" style={{backgroundColor: colors.lightGrey}}>Website</div>
                 <Link to={WebsitePaths.Home} className="text-decoration-none">
                     <MenuItem className="py2">Home</MenuItem>
@@ -221,22 +221,22 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <Link to={`${WebsitePaths.Wiki}`} className="text-decoration-none">
                     <MenuItem className="py2">Wiki</MenuItem>
                 </Link>
-                {!this.isViewing0xjsDocs() &&
+                {!this._isViewing0xjsDocs() &&
                     <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
                         <MenuItem className="py2">0x.js Docs</MenuItem>
                     </Link>
                 }
-                {!this.isViewingConnectDocs() &&
+                {!this._isViewingConnectDocs() &&
                     <Link to={WebsitePaths.Connect} className="text-decoration-none">
                         <MenuItem className="py2">0x Connect Docs</MenuItem>
                     </Link>
                 }
-                {!this.isViewingSmartContractsDocs() &&
+                {!this._isViewingSmartContractsDocs() &&
                     <Link to={WebsitePaths.SmartContracts} className="text-decoration-none">
                         <MenuItem className="py2">Smart Contract Docs</MenuItem>
                     </Link>
                 }
-                {!this.isViewingPortal() &&
+                {!this._isViewingPortal() &&
                     <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
                         <MenuItem className="py2">Portal DApp</MenuItem>
                     </Link>
@@ -261,7 +261,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <Link to={`${WebsitePaths.FAQ}`} className="text-decoration-none">
                     <MenuItem
                         className="py2"
-                        onTouchTap={this.onMenuButtonClick.bind(this)}
+                        onTouchTap={this._onMenuButtonClick.bind(this)}
                     >
                         FAQ
                     </MenuItem>
@@ -269,8 +269,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </Drawer>
         );
     }
-    private renderDocsMenu() {
-        if (!this.isViewing0xjsDocs() && !this.isViewingSmartContractsDocs() && !this.isViewingConnectDocs()
+    private _renderDocsMenu() {
+        if (!this._isViewing0xjsDocs() && !this._isViewingSmartContractsDocs() && !this._isViewingConnectDocs()
             ||  _.isUndefined(this.props.menu)) {
             return;
         }
@@ -283,7 +283,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
                     shouldDisplaySectionHeaders={false}
-                    onMenuItemClick={this.onMenuButtonClick.bind(this)}
+                    onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
                     docPath={this.props.docsInfo.websitePath}
                     versions={this.props.availableDocVersions}
@@ -291,8 +291,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
     }
-    private renderWiki() {
-        if (!this.isViewingWiki()) {
+    private _renderWiki() {
+        if (!this._isViewingWiki()) {
             return;
         }
 
@@ -303,13 +303,13 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     topLevelMenu={this.props.menuSubsectionsBySection}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
                     shouldDisplaySectionHeaders={false}
-                    onMenuItemClick={this.onMenuButtonClick.bind(this)}
+                    onMenuItemClick={this._onMenuButtonClick.bind(this)}
                 />
             </div>
         );
     }
-    private renderPortalMenu() {
-        if (!this.isViewingPortal()) {
+    private _renderPortalMenu() {
+        if (!this._isViewingPortal()) {
             return;
         }
 
@@ -318,12 +318,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <div className="pl1 py1" style={{backgroundColor: colors.lightGrey}}>Portal DApp</div>
                 <PortalMenu
                     menuItemStyle={{color: 'black'}}
-                    onClick={this.onMenuButtonClick.bind(this)}
+                    onClick={this._onMenuButtonClick.bind(this)}
                 />
             </div>
         );
     }
-    private renderUser() {
+    private _renderUser() {
         const userAddress = this.props.userAddress;
         const identiconDiameter = 26;
         return (
@@ -345,31 +345,31 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
     }
-    private onMenuButtonClick() {
+    private _onMenuButtonClick() {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
         });
     }
-    private isViewingPortal() {
+    private _isViewingPortal() {
         return _.includes(this.props.location.pathname, WebsitePaths.Portal);
     }
-    private isViewingFAQ() {
+    private _isViewingFAQ() {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
     }
-    private isViewing0xjsDocs() {
+    private _isViewing0xjsDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs);
     }
-    private isViewingConnectDocs() {
+    private _isViewingConnectDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.Connect);
     }
-    private isViewingSmartContractsDocs() {
+    private _isViewingSmartContractsDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.SmartContracts);
     }
-    private isViewingWiki() {
+    private _isViewingWiki() {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
     }
-    private shouldDisplayBottomBar() {
-        return this.isViewingWiki() || this.isViewing0xjsDocs() || this.isViewingFAQ() ||
-               this.isViewingSmartContractsDocs() || this.isViewingConnectDocs();
+    private _shouldDisplayBottomBar() {
+        return this._isViewingWiki() || this._isViewing0xjsDocs() || this._isViewingFAQ() ||
+               this._isViewingSmartContractsDocs() || this._isViewingConnectDocs();
     }
 }

@@ -61,13 +61,13 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                                 {finalSectionName.toUpperCase()}
                             </div>
                         </ScrollLink>
-                        {this.renderMenuItems(menuItems)}
+                        {this._renderMenuItems(menuItems)}
                     </div>
                 );
             } else {
                 return (
                     <div key={`section-${sectionName}`} >
-                        {this.renderMenuItems(menuItems)}
+                        {this._renderMenuItems(menuItems)}
                     </div>
                 );
             }
@@ -87,7 +87,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             </div>
         );
     }
-    private renderMenuItems(menuItemNames: string[]): React.ReactNode[] {
+    private _renderMenuItems(menuItemNames: string[]): React.ReactNode[] {
         const menuItemStyles = this.props.shouldDisplaySectionHeaders ?
                                     styles.menuItemWithHeaders :
                                     styles.menuItemWithoutHeaders;
@@ -105,7 +105,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                         containerId={constants.DOCS_CONTAINER_ID}
                     >
                         <MenuItem
-                            onTouchTap={this.onMenuItemClick.bind(this, menuItemName)}
+                            onTouchTap={this._onMenuItemClick.bind(this, menuItemName)}
                             style={menuItemStyles}
                             innerDivStyle={menuItemInnerDivStyles}
                         >
@@ -114,19 +114,19 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             </span>
                         </MenuItem>
                     </ScrollLink>
-                    {this.renderMenuItemSubsections(menuItemName)}
+                    {this._renderMenuItemSubsections(menuItemName)}
                 </div>
             );
         });
         return menuItems;
     }
-    private renderMenuItemSubsections(menuItemName: string): React.ReactNode {
+    private _renderMenuItemSubsections(menuItemName: string): React.ReactNode {
         if (_.isUndefined(this.props.menuSubsectionsBySection[menuItemName])) {
             return null;
         }
-        return this.renderMenuSubsectionsBySection(menuItemName, this.props.menuSubsectionsBySection[menuItemName]);
+        return this._renderMenuSubsectionsBySection(menuItemName, this.props.menuSubsectionsBySection[menuItemName]);
     }
-    private renderMenuSubsectionsBySection(menuItemName: string, entityNames: string[]): React.ReactNode {
+    private _renderMenuSubsectionsBySection(menuItemName: string, entityNames: string[]): React.ReactNode {
         return (
             <ul style={{margin: 0, listStyleType: 'none', paddingLeft: 0}} key={menuItemName}>
             {_.map(entityNames, entityName => {
@@ -138,10 +138,10 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             offset={0}
                             duration={constants.DOCS_SCROLL_DURATION_MS}
                             containerId={constants.DOCS_CONTAINER_ID}
-                            onTouchTap={this.onMenuItemClick.bind(this, entityName)}
+                            onTouchTap={this._onMenuItemClick.bind(this, entityName)}
                         >
                             <MenuItem
-                                onTouchTap={this.onMenuItemClick.bind(this, menuItemName)}
+                                onTouchTap={this._onMenuItemClick.bind(this, menuItemName)}
                                 style={{minHeight: 35}}
                                 innerDivStyle={{paddingLeft: 36, fontSize: 14, lineHeight: '35px'}}
                             >
@@ -154,7 +154,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             </ul>
         );
     }
-    private onMenuItemClick(menuItemName: string): void {
+    private _onMenuItemClick(menuItemName: string): void {
         const id = utils.getIdFromName(menuItemName);
         utils.setUrlHash(id);
         this.props.onMenuItemClick();

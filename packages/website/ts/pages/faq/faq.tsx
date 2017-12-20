@@ -459,26 +459,26 @@ export class FAQ extends React.Component<FAQProps, FAQState> {
                 >
                     <h1 className="center" style={{...styles.thin}}>0x FAQ</h1>
                     <div className="sm-px2 md-px2 lg-px0 pb4">
-                        {this.renderSections()}
+                        {this._renderSections()}
                     </div>
                 </div>
                 <Footer />
             </div>
         );
     }
-    private renderSections() {
+    private _renderSections() {
         const renderedSections = _.map(sections, (section: FAQSection, i: number) => {
             const isFirstSection = i === 0;
             return (
                 <div key={section.name}>
                     <h3>{section.name}</h3>
-                    {this.renderQuestions(section.questions, isFirstSection)}
+                    {this._renderQuestions(section.questions, isFirstSection)}
                 </div>
             );
         });
         return renderedSections;
     }
-    private renderQuestions(questions: FAQQuestion[], isFirstSection: boolean) {
+    private _renderQuestions(questions: FAQQuestion[], isFirstSection: boolean) {
         const renderedQuestions = _.map(questions, (question: FAQQuestion, i: number) => {
             const isFirstQuestion = i === 0;
             return (

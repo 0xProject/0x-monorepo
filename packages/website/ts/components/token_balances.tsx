@@ -133,7 +133,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 key="errorOkBtn"
                 label="Ok"
                 primary={true}
-                onTouchTap={this.onErrorDialogToggle.bind(this, false)}
+                onTouchTap={this._onErrorDialogToggle.bind(this, false)}
             />,
         ];
         const dharmaDialogActions = [
@@ -141,7 +141,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 key="dharmaCloseBtn"
                 label="Close"
                 primary={true}
-                onTouchTap={this.onDharmaDialogToggle.bind(this, false)}
+                onTouchTap={this._onDharmaDialogToggle.bind(this, false)}
             />,
         ];
         const isTestNetwork = this.props.networkId === constants.NETWORK_ID_TESTNET;
@@ -239,7 +239,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                         labelReady="Request"
                                         labelLoading="Sending..."
                                         labelComplete="Sent!"
-                                        onClickAsyncFn={this.faucetRequestAsync.bind(this, true)}
+                                        onClickAsyncFn={this._faucetRequestAsync.bind(this, true)}
                                     />
                                 </TableRowColumn>
                             }
@@ -249,7 +249,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                     <RaisedButton
                                         label="Request"
                                         style={{width: '100%'}}
-                                        onTouchTap={this.onDharmaDialogToggle.bind(this)}
+                                        onTouchTap={this._onDharmaDialogToggle.bind(this)}
                                     />
                                 </TableRowColumn>
                             }
@@ -266,7 +266,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         <FloatingActionButton
                             mini={true}
                             zDepth={0}
-                            onClick={this.onAddTokenClicked.bind(this)}
+                            onClick={this._onAddTokenClicked.bind(this)}
                         >
                             <ContentAdd />
                         </FloatingActionButton>
@@ -275,7 +275,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         <FloatingActionButton
                             mini={true}
                             zDepth={0}
-                            onClick={this.onRemoveTokenClicked.bind(this)}
+                            onClick={this._onRemoveTokenClicked.bind(this)}
                         >
                             <ContentRemove />
                         </FloatingActionButton>
@@ -319,7 +319,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         </TableRow>
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
-                        {this.renderTokenTableRows()}
+                        {this._renderTokenTableRows()}
                     </TableBody>
                 </Table>
                 <Dialog
@@ -327,9 +327,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     titleStyle={{fontWeight: 100}}
                     actions={errorDialogActions}
                     open={!_.isUndefined(this.state.errorType)}
-                    onRequestClose={this.onErrorDialogToggle.bind(this, false)}
+                    onRequestClose={this._onErrorDialogToggle.bind(this, false)}
                 >
-                    {this.renderErrorDialogBody()}
+                    {this._renderErrorDialogBody()}
                 </Dialog>
                 <Dialog
                     title="Request Dharma Loan"
@@ -340,7 +340,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     actions={dharmaDialogActions}
                     open={this.state.isDharmaDialogVisible}
                 >
-                    {this.renderDharmaLoanFrame()}
+                    {this._renderDharmaLoanFrame()}
                 </Dialog>
                 <AssetPicker
                     userAddress={this.props.userAddress}
@@ -349,14 +349,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     dispatcher={this.props.dispatcher}
                     isOpen={this.state.isTokenPickerOpen}
                     currentTokenAddress={''}
-                    onTokenChosen={this.onAssetTokenPicked.bind(this)}
+                    onTokenChosen={this._onAssetTokenPicked.bind(this)}
                     tokenByAddress={this.props.tokenByAddress}
                     tokenVisibility={this.state.isAddingToken ? TokenVisibility.UNTRACKED : TokenVisibility.TRACKED}
                 />
             </div>
         );
     }
-    private renderTokenTableRows() {
+    private _renderTokenTableRows() {
         if (!this.props.blockchainIsLoaded || this.props.blockchainErr !== BlockchainErrs.NoError) {
             return '';
         }
@@ -372,11 +372,11 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         );
         const tableRows = _.map(
             trackedTokensStartingWithEtherToken,
-            this.renderTokenRow.bind(this, tokenColSpan, actionPaddingX),
+            this._renderTokenRow.bind(this, tokenColSpan, actionPaddingX),
         );
         return tableRows;
     }
-    private renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
+    private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
         const tokenState = this.props.tokenStateByAddress[token.address];
         const tokenLink = utils.getEtherScanLinkIfExists(token.address, this.props.networkId,
                                                          EtherscanLinkSuffixes.Address);
@@ -388,14 +388,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     colSpan={tokenColSpan}
                 >
                     {_.isUndefined(tokenLink) ?
-                        this.renderTokenName(token) :
+                        this._renderTokenName(token) :
                         <a href={tokenLink} target="_blank" style={{textDecoration: 'none'}}>
-                            {this.renderTokenName(token)}
+                            {this._renderTokenName(token)}
                         </a>
                     }
                 </TableRowColumn>
                 <TableRowColumn style={{paddingRight: 3, paddingLeft: 3}}>
-                    {this.renderAmount(tokenState.balance, token.decimals)} {token.symbol}
+                    {this._renderAmount(tokenState.balance, token.decimals)} {token.symbol}
                     {this.state.isZRXSpinnerVisible && token.symbol === ZRX_TOKEN_SYMBOL &&
                         <span className="pl1">
                             <i className="zmdi zmdi-spinner zmdi-hc-spin" />
@@ -408,7 +408,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         dispatcher={this.props.dispatcher}
                         token={token}
                         tokenState={tokenState}
-                        onErrorOccurred={this.onErrorOccurred.bind(this)}
+                        onErrorOccurred={this._onErrorOccurred.bind(this)}
                         userAddress={this.props.userAddress}
                     />
                 </TableRowColumn>
@@ -420,7 +420,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             labelReady="Mint"
                             labelLoading={<span style={{fontSize: 12}}>Minting...</span>}
                             labelComplete="Minted!"
-                            onClickAsyncFn={this.onMintTestTokensAsync.bind(this, token)}
+                            onClickAsyncFn={this._onMintTestTokensAsync.bind(this, token)}
                         />
                     }
                     {token.symbol === ZRX_TOKEN_SYMBOL && this.props.networkId === constants.NETWORK_ID_TESTNET &&
@@ -428,7 +428,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             labelReady="Request"
                             labelLoading="Sending..."
                             labelComplete="Sent!"
-                            onClickAsyncFn={this.faucetRequestAsync.bind(this, false)}
+                            onClickAsyncFn={this._faucetRequestAsync.bind(this, false)}
                         />
                     }
                 </TableRowColumn>
@@ -441,14 +441,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             dispatcher={this.props.dispatcher}
                             token={token}
                             tokenState={tokenState}
-                            onError={this.onSendFailed.bind(this)}
+                            onError={this._onSendFailed.bind(this)}
                         />
                     </TableRowColumn>
                 }
             </TableRow>
         );
     }
-    private onAssetTokenPicked(tokenAddress: string) {
+    private _onAssetTokenPicked(tokenAddress: string) {
         if (_.isEmpty(tokenAddress)) {
             this.setState({
                 isTokenPickerOpen: false,
@@ -477,16 +477,16 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isTokenPickerOpen: false,
         });
     }
-    private onSendFailed() {
+    private _onSendFailed() {
         this.setState({
             errorType: BalanceErrs.sendFailed,
         });
     }
-    private renderAmount(amount: BigNumber, decimals: number) {
+    private _renderAmount(amount: BigNumber, decimals: number) {
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
         return unitAmount.toNumber().toFixed(PRECISION);
     }
-    private renderTokenName(token: Token) {
+    private _renderTokenName(token: Token) {
         const tooltipId = `tooltip-${token.address}`;
         return (
             <div className="flex">
@@ -502,7 +502,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             </div>
         );
     }
-    private renderErrorDialogBody() {
+    private _renderErrorDialogBody() {
         switch (this.state.errorType) {
             case BalanceErrs.incorrectNetworkForFaucet:
                 return (
@@ -550,7 +550,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 throw utils.spawnSwitchErr('errorType', this.state.errorType);
         }
     }
-    private renderDharmaLoanFrame() {
+    private _renderDharmaLoanFrame() {
         if (utils.isUserOnMobile()) {
             return (
                 <h4 style={{textAlign: 'center'}}>
@@ -568,12 +568,12 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             );
         }
     }
-    private onErrorOccurred(errorType: BalanceErrs) {
+    private _onErrorOccurred(errorType: BalanceErrs) {
         this.setState({
             errorType,
         });
     }
-    private async onMintTestTokensAsync(token: Token): Promise<boolean> {
+    private async _onMintTestTokensAsync(token: Token): Promise<boolean> {
         try {
             await this.props.blockchain.mintTestTokensAsync(token);
             const amount = ZeroEx.toUnitAmount(constants.MINT_AMOUNT, token.decimals);
@@ -597,7 +597,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             return false;
         }
     }
-    private async faucetRequestAsync(isEtherRequest: boolean): Promise<boolean> {
+    private async _faucetRequestAsync(isEtherRequest: boolean): Promise<boolean> {
         if (this.props.userAddress === '') {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return false;
@@ -646,23 +646,23 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         }
         return true;
     }
-    private onErrorDialogToggle(isOpen: boolean) {
+    private _onErrorDialogToggle(isOpen: boolean) {
         this.setState({
             errorType: undefined,
         });
     }
-    private onDharmaDialogToggle() {
+    private _onDharmaDialogToggle() {
         this.setState({
             isDharmaDialogVisible: !this.state.isDharmaDialogVisible,
         });
     }
-    private onAddTokenClicked() {
+    private _onAddTokenClicked() {
         this.setState({
             isTokenPickerOpen: true,
             isAddingToken: true,
         });
     }
-    private onRemoveTokenClicked() {
+    private _onRemoveTokenClicked() {
         this.setState({
             isTokenPickerOpen: true,
             isAddingToken: false,

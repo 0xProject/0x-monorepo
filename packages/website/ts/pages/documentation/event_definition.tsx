@@ -29,8 +29,8 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
                 id={event.name}
                 className="pb2"
                 style={{overflow: 'hidden', width: '100%'}}
-                onMouseOver={this.setAnchorVisibility.bind(this, true)}
-                onMouseOut={this.setAnchorVisibility.bind(this, false)}
+                onMouseOver={this._setAnchorVisibility.bind(this, true)}
+                onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <AnchorTitle
                     headerSize={HeaderSizes.H3}
@@ -41,14 +41,14 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
                 <div style={{fontSize: 16}}>
                     <pre>
                         <code className="hljs">
-                            {this.renderEventCode()}
+                            {this._renderEventCode()}
                         </code>
                     </pre>
                 </div>
             </div>
         );
     }
-    private renderEventCode() {
+    private _renderEventCode() {
         const indexed = <span style={{color: colors.green}}> indexed</span>;
         const eventArgs = _.map(this.props.event.eventArgs, (eventArg: EventArg) => {
             const type = (
@@ -76,7 +76,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             </span>
         );
     }
-    private setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean) {
         this.setState({
             shouldShowAnchor,
         });

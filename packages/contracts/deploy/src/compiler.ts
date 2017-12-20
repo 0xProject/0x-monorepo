@@ -19,18 +19,18 @@ import {utils} from './utils/utils';
 const SOLIDITY_FILE_EXTENSION = '.sol';
 
 export class Compiler {
-    private contractsDir: string;
-    private networkId: number;
-    private optimizerEnabled: number;
-    private artifactsDir: string;
-    private contractSourcesIfExists?: ContractSources;
-    private solcErrors: Set<string>;
+    private _contractsDir: string;
+    private _networkId: number;
+    private _optimizerEnabled: number;
+    private _artifactsDir: string;
+    private _contractSourcesIfExists?: ContractSources;
+    private _solcErrors: Set<string>;
     /**
      * Recursively retrieves Solidity source code from directory.
      * @param  dirPath Directory to search.
      * @return Mapping of contract name to contract source.
      */
-    private static async getContractSourcesAsync(dirPath: string): Promise<ContractSources> {
+    private static async _getContractSourcesAsync(dirPath: string): Promise<ContractSources> {
         let dirContents: string[] = [];
         try {
             dirContents = await fsWrapper.readdirAsync(dirPath);
@@ -52,7 +52,7 @@ export class Compiler {
                 }
             } else {
                 try {
-                    const nestedSources = await Compiler.getContractSourcesAsync(contentPath);
+                    const nestedSources = await Compiler._getContractSourcesAsync(contentPath);
                     sources = {
                         ...sources,
                         ...nestedSources,
@@ -69,7 +69,7 @@ export class Compiler {
      * @param  source Source code of contract.
      * @return Solc compiler version.
      */
-    private static parseSolidityVersion(source: string): string {
+    private static _parseSolidityVersion(source: string): string {
         const solcVersionMatch = source.match(/(?:solidity\s\^?)([0-9]{1,2}[.][0-9]{1,2}[.][0-9]{1,2})/);
         if (_.isNull(solcVersionMatch)) {
             throw new Error('Could not find Solidity version in source');
@@ -85,7 +85,7 @@ export class Compiler {
      * @param  errMsg An error message from the compiled output.
      * @return The error message with directories truncated from the contract path.
      */
-    private static getNormalizedErrMsg(errMsg: string): string {
+    private static _getNormalizedErrMsg(errMsg: string): string {
         const errPathMatch = errMsg.match(/(.*\.sol)/);
         if (_.isNull(errPathMatch)) {
             throw new Error('Could not find a path in error message');
@@ -101,26 +101,26 @@ export class Compiler {
      * @return An instance of the Compiler class.
      */
     constructor(opts: CompilerOptions) {
-        this.contractsDir = opts.contractsDir;
-        this.networkId = opts.networkId;
-        this.optimizerEnabled = opts.optimizerEnabled;
-        this.artifactsDir = opts.artifactsDir;
-        this.solcErrors = new Set();
+        this._contractsDir = opts.contractsDir;
+        this._networkId = opts.networkId;
+        this._optimizerEnabled = opts.optimizerEnabled;
+        this._artifactsDir = opts.artifactsDir;
+        this._solcErrors = new Set();
     }
     /**
      * Compiles all Solidity files found in contractsDir and writes JSON artifacts to artifactsDir.
      */
     public async compileAllAsync(): Promise<void> {
-        await this.createArtifactsDirIfDoesNotExistAsync();
-        this.contractSourcesIfExists = await Compiler.getContractSourcesAsync(this.contractsDir);
+        await this._createArtifactsDirIfDoesNotExistAsync();
+        this._contractSourcesIfExists = await Compiler._getContractSourcesAsync(this._contractsDir);
 
-        const contractBaseNames = _.keys(this.contractSourcesIfExists);
+        const contractBaseNames = _.keys(this._contractSourcesIfExists);
         const compiledContractPromises = _.map(contractBaseNames, async (contractBaseName: string): Promise<void> => {
-            return this.compileContractAsync(contractBaseName);
+            return this._compileContractAsync(contractBaseName);
         });
         await Promise.all(compiledContractPromises);
 
-        this.solcErrors.forEach(errMsg => {
+        this._solcErrors.forEach(errMsg => {
             utils.consoleLog(errMsg);
         });
     }
@@ -128,14 +128,14 @@ export class Compiler {
      * Compiles contract and saves artifact to artifactsDir.
      * @param contractBaseName Name of contract with '.sol' extension.
      */
-    private async compileContractAsync(contractBaseName: string): Promise<void> {
-        if (_.isUndefined(this.contractSourcesIfExists)) {
+    private async _compileContractAsync(contractBaseName: string): Promise<void> {
+        if (_.isUndefined(this._contractSourcesIfExists)) {
             throw new Error('Contract sources not yet initialized');
         }
 
-        const source = this.contractSourcesIfExists[contractBaseName];
+        const source = this._contractSourcesIfExists[contractBaseName];
         const contractName = path.basename(contractBaseName, SOLIDITY_FILE_EXTENSION);
-        const currentArtifactPath = `${this.artifactsDir}/${contractName}.json`;
+        const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         const sourceHash = `0x${ethUtil.sha3(source).toString('hex')}`;
 
         let currentArtifactString: string;
@@ -149,10 +149,10 @@ export class Compiler {
             currentArtifactString = await fsWrapper.readFileAsync(currentArtifactPath, opts);
             currentArtifact = JSON.parse(currentArtifactString);
             oldNetworks = currentArtifact.networks;
-            const oldNetwork: ContractData = oldNetworks[this.networkId];
+            const oldNetwork: ContractData = oldNetworks[this._networkId];
             shouldCompile = _.isUndefined(oldNetwork) ||
                             oldNetwork.keccak256 !== sourceHash ||
-                            oldNetwork.optimizer_enabled !== this.optimizerEnabled;
+                            oldNetwork.optimizer_enabled !== this._optimizerEnabled;
         } catch (err) {
             shouldCompile = true;
         }
@@ -164,7 +164,7 @@ export class Compiler {
         const input = {
             [contractBaseName]: source,
         };
-        const solcVersion = Compiler.parseSolidityVersion(source);
+        const solcVersion = Compiler._parseSolidityVersion(source);
         const fullSolcVersion = binPaths[solcVersion];
         const solcBinPath = `./../solc/solc_bin/${fullSolcVersion}`;
         const solcBin = require(solcBinPath);
@@ -175,13 +175,13 @@ export class Compiler {
             sources: input,
         };
         const compiled = solcInstance.compile(sourcesToCompile,
-                                              this.optimizerEnabled,
-                                              this.findImportsIfSourcesExist.bind(this));
+                                              this._optimizerEnabled,
+                                              this._findImportsIfSourcesExist.bind(this));
 
         if (!_.isUndefined(compiled.errors)) {
             _.each(compiled.errors, errMsg => {
-                const normalizedErrMsg = Compiler.getNormalizedErrMsg(errMsg);
-                this.solcErrors.add(normalizedErrMsg);
+                const normalizedErrMsg = Compiler._getNormalizedErrMsg(errMsg);
+                this._solcErrors.add(normalizedErrMsg);
             });
         }
 
@@ -192,7 +192,7 @@ export class Compiler {
         const contractData: ContractData = {
             solc_version: solcVersion,
             keccak256: sourceHash,
-            optimizer_enabled: this.optimizerEnabled,
+            optimizer_enabled: this._optimizerEnabled,
             abi,
             unlinked_binary,
             updated_at,
@@ -204,14 +204,14 @@ export class Compiler {
                 ...currentArtifact,
                 networks: {
                     ...oldNetworks,
-                    [this.networkId]: contractData,
+                    [this._networkId]: contractData,
                 },
             };
         } else {
             newArtifact = {
                 contract_name: contractName,
                 networks: {
-                    [this.networkId]: contractData,
+                    [this._networkId]: contractData,
                 },
             };
         }
@@ -226,12 +226,12 @@ export class Compiler {
      * @param  importPath Path to an imported dependency.
      * @return Import contents object containing source code of dependency.
      */
-    private findImportsIfSourcesExist(importPath: string): ImportContents {
-        if (_.isUndefined(this.contractSourcesIfExists)) {
+    private _findImportsIfSourcesExist(importPath: string): ImportContents {
+        if (_.isUndefined(this._contractSourcesIfExists)) {
             throw new Error('Contract sources not yet initialized');
         }
         const contractBaseName = path.basename(importPath);
-        const source = this.contractSourcesIfExists[contractBaseName];
+        const source = this._contractSourcesIfExists[contractBaseName];
         const importContents: ImportContents = {
             contents: source,
         };
@@ -240,10 +240,10 @@ export class Compiler {
     /**
      * Creates the artifacts directory if it does not already exist.
      */
-    private async createArtifactsDirIfDoesNotExistAsync(): Promise<void> {
-        if (!fsWrapper.doesPathExistSync(this.artifactsDir)) {
+    private async _createArtifactsDirIfDoesNotExistAsync(): Promise<void> {
+        if (!fsWrapper.doesPathExistSync(this._artifactsDir)) {
             utils.consoleLog('Creating artifacts directory...');
-            await fsWrapper.mkdirAsync(this.artifactsDir);
+            await fsWrapper.mkdirAsync(this._artifactsDir);
         }
     }
 }

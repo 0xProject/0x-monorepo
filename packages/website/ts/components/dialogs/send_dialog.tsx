@@ -36,14 +36,14 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             <FlatButton
                 key="cancelTransfer"
                 label="Cancel"
-                onTouchTap={this.onCancel.bind(this)}
+                onTouchTap={this._onCancel.bind(this)}
             />,
             <FlatButton
                 key="sendTransfer"
-                disabled={this.hasErrors()}
+                disabled={this._hasErrors()}
                 label="Send"
                 primary={true}
-                onTouchTap={this.onSendClick.bind(this)}
+                onTouchTap={this._onSendClick.bind(this)}
             />,
         ];
         return (
@@ -53,17 +53,17 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
                 actions={transferDialogActions}
                 open={this.props.isOpen}
             >
-                {this.renderSendDialogBody()}
+                {this._renderSendDialogBody()}
             </Dialog>
         );
     }
-    private renderSendDialogBody() {
+    private _renderSendDialogBody() {
         return (
             <div className="mx-auto" style={{maxWidth: 300}}>
                 <div style={{height: 80}}>
                     <AddressInput
                         initialAddress={this.state.recipient}
-                        updateAddress={this.onRecipientChange.bind(this)}
+                        updateAddress={this._onRecipientChange.bind(this)}
                         isRequired={true}
                         label={'Recipient address'}
                         hintText={'Address'}
@@ -76,27 +76,27 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                     shouldCheckBalance={true}
                     shouldCheckAllowance={false}
-                    onChange={this.onValueChange.bind(this)}
+                    onChange={this._onValueChange.bind(this)}
                     amount={this.state.value}
                     onVisitBalancesPageClick={this.props.onCancelled}
                 />
             </div>
         );
     }
-    private onRecipientChange(recipient?: string) {
+    private _onRecipientChange(recipient?: string) {
         this.setState({
             shouldShowIncompleteErrs: false,
             recipient,
         });
     }
-    private onValueChange(isValid: boolean, amount?: BigNumber) {
+    private _onValueChange(isValid: boolean, amount?: BigNumber) {
         this.setState({
             isAmountValid: isValid,
             value: amount,
         });
     }
-    private onSendClick() {
-        if (this.hasErrors()) {
+    private _onSendClick() {
+        if (this._hasErrors()) {
             this.setState({
                 shouldShowIncompleteErrs: true,
             });
@@ -109,13 +109,13 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             this.props.onComplete(this.state.recipient, value);
         }
     }
-    private onCancel() {
+    private _onCancel() {
         this.setState({
             value: undefined,
         });
         this.props.onCancelled();
     }
-    private hasErrors() {
+    private _hasErrors() {
         return _.isUndefined(this.state.recipient) ||
                _.isUndefined(this.state.value) ||
                !this.state.isAmountValid;

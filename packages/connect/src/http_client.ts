@@ -31,7 +31,7 @@ BigNumber.config({
  * that implement the standard relayer API v0
  */
 export class HttpClient implements Client {
-    private apiEndpointUrl: string;
+    private _apiEndpointUrl: string;
     /**
      * Instantiates a new HttpClient instance
      * @param   url    The relayer API base HTTP url you would like to interact with
@@ -39,7 +39,7 @@ export class HttpClient implements Client {
      */
     constructor(url: string) {
         assert.isHttpUrl('url', url);
-        this.apiEndpointUrl = url;
+        this._apiEndpointUrl = url;
     }
     /**
      * Retrieve token pair info from the API
@@ -152,7 +152,7 @@ export class HttpClient implements Client {
             const stringifiedParams = queryString.stringify(params);
             query = `?${stringifiedParams}`;
         }
-        const url = `${this.apiEndpointUrl}/v0${path}${query}`;
+        const url = `${this._apiEndpointUrl}/v0${path}${query}`;
         const headers = new Headers({
             'content-type': 'application/json',
         });

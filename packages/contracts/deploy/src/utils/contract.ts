@@ -8,9 +8,9 @@ import {AbiType} from './types';
 export class Contract implements Web3.ContractInstance {
     public address: string;
     public abi: Web3.ContractAbi;
-    private contract: Web3.ContractInstance;
-    private defaults: Partial<Web3.TxData>;
-    private validator: SchemaValidator;
+    private _contract: Web3.ContractInstance;
+    private _defaults: Partial<Web3.TxData>;
+    private _validator: SchemaValidator;
     // This class instance is going to be populated with functions and events depending on the ABI
     // and we don't know their types in advance
     [name: string]: any;
@@ -23,7 +23,7 @@ export class Contract implements Web3.ContractInstance {
         this.populateFunctions();
         this.validator = new SchemaValidator();
     }
-    private populateFunctions(): void {
+    private _populateFunctions(): void {
         const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Function);
         _.forEach(functionsAbi, (functionAbi: Web3.MethodAbi) => {
             if (functionAbi.constant) {
@@ -41,13 +41,13 @@ export class Contract implements Web3.ContractInstance {
             }
         });
     }
-    private populateEvents(): void {
+    private _populateEvents(): void {
         const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Event);
         _.forEach(eventsAbi, (eventAbi: Web3.EventAbi) => {
             this[eventAbi.name] = this.contract[eventAbi.name];
         });
     }
-    private promisifyWithDefaultParams(fn: (...args: any[]) => void): (...args: any[]) => Promise<any> {
+    private _promisifyWithDefaultParams(fn: (...args: any[]) => void): (...args: any[]) => Promise<any> {
         const promisifiedWithDefaultParams = async (...args: any[]) => {
             const promise = new Promise((resolve, reject) => {
                 const lastArg = args[args.length - 1];
@@ -74,7 +74,7 @@ export class Contract implements Web3.ContractInstance {
         };
         return promisifiedWithDefaultParams;
     }
-    private isTxData(lastArg: any): boolean {
+    private _isTxData(lastArg: any): boolean {
         const isValid = this.validator.isValid(lastArg, schemas.txDataSchema);
         return isValid;
     }

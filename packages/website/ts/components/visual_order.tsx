@@ -42,13 +42,13 @@ export class VisualOrder extends React.Component<VisualOrderProps, VisualOrderSt
                     </div>
                     <div className="col col-2 center pt1">
                         <div className="pb1">
-                            {this.renderAmount(this.props.takerAssetToken, this.props.takerToken)}
+                            {this._renderAmount(this.props.takerAssetToken, this.props.takerToken)}
                         </div>
                         <div className="lg-p2 md-p2 sm-p1">
                             <img src="/images/trade_arrows.png" style={{width: 47}} />
                         </div>
                         <div className="pt1">
-                            {this.renderAmount(this.props.makerAssetToken, this.props.makerToken)}
+                            {this._renderAmount(this.props.makerAssetToken, this.props.makerToken)}
                         </div>
                     </div>
                     <div className="col col-5 center">
@@ -65,7 +65,7 @@ export class VisualOrder extends React.Component<VisualOrderProps, VisualOrderSt
             </div>
         );
     }
-    private renderAmount(assetToken: AssetToken, token: Token) {
+    private _renderAmount(assetToken: AssetToken, token: Token) {
         const unitAmount = ZeroEx.toUnitAmount(assetToken.amount, token.decimals);
         return (
             <div style={{fontSize: 13}}>

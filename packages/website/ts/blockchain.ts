@@ -59,15 +59,15 @@ const BLOCK_NUMBER_BACK_TRACK = 50;
 export class Blockchain {
     public networkId: number;
     public nodeVersion: string;
-    private zeroEx: ZeroEx;
-    private dispatcher: Dispatcher;
-    private web3Wrapper?: Web3Wrapper;
-    private exchangeAddress: string;
-    private userAddress: string;
-    private cachedProvider: Web3.Provider;
-    private ledgerSubprovider: LedgerWalletSubprovider;
-    private zrxPollIntervalId: NodeJS.Timer;
-    private static async onPageLoadAsync() {
+    private _zeroEx: ZeroEx;
+    private _dispatcher: Dispatcher;
+    private _web3Wrapper?: Web3Wrapper;
+    private _exchangeAddress: string;
+    private _userAddress: string;
+    private _cachedProvider: Web3.Provider;
+    private _ledgerSubprovider: LedgerWalletSubprovider;
+    private _zrxPollIntervalId: NodeJS.Timer;
+    private static async _onPageLoadAsync() {
         if (document.readyState === 'complete') {
             return; // Already loaded
         }
@@ -75,7 +75,7 @@ export class Blockchain {
             window.onload = resolve;
         });
     }
-    private static getNameGivenProvider(provider: Web3.Provider): string {
+    private static _getNameGivenProvider(provider: Web3.Provider): string {
         if (!_.isUndefined((provider as any).isMetaMask)) {
             return constants.PROVIDER_NAME_METAMASK;
         }
@@ -89,7 +89,7 @@ export class Blockchain {
 
         return constants.PROVIDER_NAME_GENERIC;
     }
-    private static async getProviderAsync(injectedWeb3: Web3, networkIdIfExists: number) {
+    private static async _getProviderAsync(injectedWeb3: Web3, networkIdIfExists: number) {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
         const publicNodeUrlsIfExistsForNetworkId = configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
         const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
@@ -126,29 +126,29 @@ export class Blockchain {
         return provider;
     }
     constructor(dispatcher: Dispatcher, isSalePage: boolean = false) {
-        this.dispatcher = dispatcher;
-        this.userAddress = '';
+        this._dispatcher = dispatcher;
+        this._userAddress = '';
         // tslint:disable-next-line:no-floating-promises
-        this.onPageLoadInitFireAndForgetAsync();
+        this._onPageLoadInitFireAndForgetAsync();
     }
     public async networkIdUpdatedFireAndForgetAsync(newNetworkId: number) {
         const isConnected = !_.isUndefined(newNetworkId);
         if (!isConnected) {
             this.networkId = newNetworkId;
-            this.dispatcher.encounteredBlockchainError(BlockchainErrs.DisconnectedFromEthereumNode);
-            this.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
+            this._dispatcher.encounteredBlockchainError(BlockchainErrs.DisconnectedFromEthereumNode);
+            this._dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
         } else if (this.networkId !== newNetworkId) {
             this.networkId = newNetworkId;
-            this.dispatcher.encounteredBlockchainError(BlockchainErrs.NoError);
-            await this.fetchTokenInformationAsync();
-            await this.rehydrateStoreWithContractEvents();
+            this._dispatcher.encounteredBlockchainError(BlockchainErrs.NoError);
+            await this._fetchTokenInformationAsync();
+            await this._rehydrateStoreWithContractEvents();
         }
     }
     public async userAddressUpdatedFireAndForgetAsync(newUserAddress: string) {
-        if (this.userAddress !== newUserAddress) {
-            this.userAddress = newUserAddress;
-            await this.fetchTokenInformationAsync();
-            await this.rehydrateStoreWithContractEvents();
+        if (this._userAddress !== newUserAddress) {
+            this._userAddress = newUserAddress;
+            await this._fetchTokenInformationAsync();
+            await this._rehydrateStoreWithContractEvents();
         }
     }
     public async nodeVersionUpdatedFireAndForgetAsync(nodeVersion: string) {
@@ -157,7 +157,7 @@ export class Blockchain {
         }
     }
     public async isAddressInTokenRegistryAsync(tokenAddress: string): Promise<boolean> {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         // HACK: temporarily whitelist the new WETH token address `as if` they were
         // already in the tokenRegistry.
         // TODO: Remove this hack once we've updated the TokenRegistries
@@ -166,30 +166,30 @@ export class Blockchain {
             tokenAddress === configs.NEW_WRAPPED_ETHERS[this.networkId]) {
             return true;
         }
-        const tokenIfExists = await this.zeroEx.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
+        const tokenIfExists = await this._zeroEx.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
         return !_.isUndefined(tokenIfExists);
     }
     public getLedgerDerivationPathIfExists(): string {
-        if (_.isUndefined(this.ledgerSubprovider)) {
+        if (_.isUndefined(this._ledgerSubprovider)) {
             return undefined;
         }
-        const path = this.ledgerSubprovider.getPath();
+        const path = this._ledgerSubprovider.getPath();
         return path;
     }
     public updateLedgerDerivationPathIfExists(path: string) {
-        if (_.isUndefined(this.ledgerSubprovider)) {
+        if (_.isUndefined(this._ledgerSubprovider)) {
             return; // noop
         }
-        this.ledgerSubprovider.setPath(path);
+        this._ledgerSubprovider.setPath(path);
     }
     public updateLedgerDerivationIndex(pathIndex: number) {
-        if (_.isUndefined(this.ledgerSubprovider)) {
+        if (_.isUndefined(this._ledgerSubprovider)) {
             return; // noop
         }
-        this.ledgerSubprovider.setPathIndex(pathIndex);
+        this._ledgerSubprovider.setPathIndex(pathIndex);
     }
     public async providerTypeUpdatedFireAndForgetAsync(providerType: ProviderType) {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         // Should actually be Web3.Provider|ProviderEngine union type but it causes issues
         // later on in the logic.
         let provider;
@@ -201,17 +201,17 @@ export class Blockchain {
                 }
 
                 // Cache injected provider so that we can switch the user back to it easily
-                this.cachedProvider = this.web3Wrapper.getProviderObj();
+                this._cachedProvider = this._web3Wrapper.getProviderObj();
 
-                this.dispatcher.updateUserAddress(''); // Clear old userAddress
+                this._dispatcher.updateUserAddress(''); // Clear old userAddress
 
                 provider = new ProviderEngine();
                 const ledgerWalletConfigs = {
                     networkId: this.networkId,
                     ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
                 };
-                this.ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
-                provider.addProvider(this.ledgerSubprovider);
+                this._ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
+                provider.addProvider(this._ledgerSubprovider);
                 provider.addProvider(new FilterSubprovider());
                 const networkId = configs.IS_MAINNET_ENABLED ?
                     constants.NETWORK_ID_MAINNET :
@@ -220,25 +220,25 @@ export class Blockchain {
                     configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId],
                 ));
                 provider.start();
-                this.web3Wrapper.destroy();
+                this._web3Wrapper.destroy();
                 const shouldPollUserAddress = false;
-                this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, this.networkId, shouldPollUserAddress);
-                this.zeroEx.setProvider(provider, networkId);
-                await this.postInstantiationOrUpdatingProviderZeroExAsync();
+                this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
+                this._zeroEx.setProvider(provider, networkId);
+                await this._postInstantiationOrUpdatingProviderZeroExAsync();
                 break;
             }
 
             case ProviderType.Injected: {
-                if (_.isUndefined(this.cachedProvider)) {
+                if (_.isUndefined(this._cachedProvider)) {
                     return; // Going from injected to injected, so we noop
                 }
-                provider = this.cachedProvider;
+                provider = this._cachedProvider;
                 const shouldPollUserAddress = true;
-                this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, this.networkId, shouldPollUserAddress);
-                this.zeroEx.setProvider(provider, this.networkId);
-                await this.postInstantiationOrUpdatingProviderZeroExAsync();
-                delete this.ledgerSubprovider;
-                delete this.cachedProvider;
+                this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
+                this._zeroEx.setProvider(provider, this.networkId);
+                await this._postInstantiationOrUpdatingProviderZeroExAsync();
+                delete this._ledgerSubprovider;
+                delete this._cachedProvider;
                 break;
             }
 
@@ -246,28 +246,28 @@ export class Blockchain {
                 throw utils.spawnSwitchErr('providerType', providerType);
         }
 
-        await this.fetchTokenInformationAsync();
+        await this._fetchTokenInformationAsync();
     }
     public async setProxyAllowanceAsync(token: Token, amountInBaseUnits: BigNumber): Promise<void> {
         utils.assert(this.isValidAddress(token.address), BlockchainCallErrs.TokenAddressIsInvalid);
-        utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
 
-        const txHash = await this.zeroEx.token.setProxyAllowanceAsync(
-            token.address, this.userAddress, amountInBaseUnits,
+        const txHash = await this._zeroEx.token.setProxyAllowanceAsync(
+            token.address, this._userAddress, amountInBaseUnits,
         );
-        await this.showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
+        await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const allowance = amountInBaseUnits;
-        this.dispatcher.replaceTokenAllowanceByAddress(token.address, allowance);
+        this._dispatcher.replaceTokenAllowanceByAddress(token.address, allowance);
     }
     public async transferAsync(token: Token, toAddress: string,
                                amountInBaseUnits: BigNumber): Promise<void> {
-        const txHash = await this.zeroEx.token.transferAsync(
-            token.address, this.userAddress, toAddress, amountInBaseUnits,
+        const txHash = await this._zeroEx.token.transferAsync(
+            token.address, this._userAddress, toAddress, amountInBaseUnits,
         );
-        await this.showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
+        await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
-        this.dispatcher.showFlashMessage(React.createElement(TokenSendCompleted, {
+        this._dispatcher.showFlashMessage(React.createElement(TokenSendCompleted, {
             etherScanLinkIfExists,
             token,
             toAddress,
@@ -302,16 +302,16 @@ export class Blockchain {
     }
     public async fillOrderAsync(signedOrder: SignedOrder,
                                 fillTakerTokenAmount: BigNumber): Promise<BigNumber> {
-        utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
 
-        const txHash = await this.zeroEx.exchange.fillOrderAsync(
-            signedOrder, fillTakerTokenAmount, shouldThrowOnInsufficientBalanceOrAllowance, this.userAddress,
+        const txHash = await this._zeroEx.exchange.fillOrderAsync(
+            signedOrder, fillTakerTokenAmount, shouldThrowOnInsufficientBalanceOrAllowance, this._userAddress,
         );
-        const receipt = await this.showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
+        const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
-        this.zeroEx.exchange.throwLogErrorsAsErrors(logs);
+        this._zeroEx.exchange.throwLogErrorsAsErrors(logs);
         const logFill = _.find(logs, {event: 'LogFill'});
         const args = logFill.args as any as LogFillContractEventArgs;
         const filledTakerTokenAmount = args.filledTakerTokenAmount;
@@ -319,12 +319,12 @@ export class Blockchain {
     }
     public async cancelOrderAsync(signedOrder: SignedOrder,
                                   cancelTakerTokenAmount: BigNumber): Promise<BigNumber> {
-        const txHash = await this.zeroEx.exchange.cancelOrderAsync(
+        const txHash = await this._zeroEx.exchange.cancelOrderAsync(
             signedOrder, cancelTakerTokenAmount,
         );
-        const receipt = await this.showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
+        const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
-        this.zeroEx.exchange.throwLogErrorsAsErrors(logs);
+        this._zeroEx.exchange.throwLogErrorsAsErrors(logs);
         const logCancel = _.find(logs, {event: ExchangeEvents.LogCancel});
         const args = logCancel.args as any as LogCancelContractEventArgs;
         const cancelledTakerTokenAmount = args.cancelledTakerTokenAmount;
@@ -332,95 +332,95 @@ export class Blockchain {
     }
     public async getUnavailableTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         utils.assert(ZeroEx.isValidOrderHash(orderHash), 'Must be valid orderHash');
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        const unavailableTakerAmount = await this.zeroEx.exchange.getUnavailableTakerAmountAsync(orderHash);
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        const unavailableTakerAmount = await this._zeroEx.exchange.getUnavailableTakerAmountAsync(orderHash);
         return unavailableTakerAmount;
     }
     public getExchangeContractAddressIfExists() {
-        return this.exchangeAddress;
+        return this._exchangeAddress;
     }
     public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
                                                       fillTakerTokenAmount: BigNumber,
                                                       takerAddress: string): Promise<void> {
-        await this.zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(
+        await this._zeroEx.exchange.validateFillOrderThrowIfInvalidAsync(
             signedOrder, fillTakerTokenAmount, takerAddress);
     }
     public async validateCancelOrderThrowIfInvalidAsync(order: Order,
                                                         cancelTakerTokenAmount: BigNumber): Promise<void> {
-        await this.zeroEx.exchange.validateCancelOrderThrowIfInvalidAsync(order, cancelTakerTokenAmount);
+        await this._zeroEx.exchange.validateCancelOrderThrowIfInvalidAsync(order, cancelTakerTokenAmount);
     }
     public isValidAddress(address: string): boolean {
         const lowercaseAddress = address.toLowerCase();
-        return this.web3Wrapper.isAddress(lowercaseAddress);
+        return this._web3Wrapper.isAddress(lowercaseAddress);
     }
     public async pollTokenBalanceAsync(token: Token) {
-        utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const [currBalance] = await this.getTokenBalanceAndAllowanceAsync(this.userAddress, token.address);
+        const [currBalance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
 
-        this.zrxPollIntervalId = intervalUtils.setAsyncExcludingInterval(async () => {
-            const [balance] = await this.getTokenBalanceAndAllowanceAsync(this.userAddress, token.address);
+        this._zrxPollIntervalId = intervalUtils.setAsyncExcludingInterval(async () => {
+            const [balance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
             if (!balance.eq(currBalance)) {
-                this.dispatcher.replaceTokenBalanceByAddress(token.address, balance);
-                clearInterval(this.zrxPollIntervalId);
-                delete this.zrxPollIntervalId;
+                this._dispatcher.replaceTokenBalanceByAddress(token.address, balance);
+                clearInterval(this._zrxPollIntervalId);
+                delete this._zrxPollIntervalId;
             }
         }, 5000);
     }
     public async signOrderHashAsync(orderHash: string): Promise<SignatureData> {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        const makerAddress = this.userAddress;
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        const makerAddress = this._userAddress;
         // If makerAddress is undefined, this means they have a web3 instance injected into their browser
         // but no account addresses associated with it.
         if (_.isUndefined(makerAddress)) {
             throw new Error('Tried to send a sign request but user has no associated addresses');
         }
-        const ecSignature = await this.zeroEx.signOrderHashAsync(orderHash, makerAddress);
+        const ecSignature = await this._zeroEx.signOrderHashAsync(orderHash, makerAddress);
         const signatureData = _.extend({}, ecSignature, {
             hash: orderHash,
         });
-        this.dispatcher.updateSignatureData(signatureData);
+        this._dispatcher.updateSignatureData(signatureData);
         return signatureData;
     }
     public async mintTestTokensAsync(token: Token) {
-        utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const mintableContract = await this.instantiateContractIfExistsAsync(MintableArtifacts, token.address);
+        const mintableContract = await this._instantiateContractIfExistsAsync(MintableArtifacts, token.address);
         await mintableContract.mint(constants.MINT_AMOUNT, {
-            from: this.userAddress,
+            from: this._userAddress,
         });
         const balanceDelta = constants.MINT_AMOUNT;
-        this.dispatcher.updateTokenBalanceByAddress(token.address, balanceDelta);
+        this._dispatcher.updateTokenBalanceByAddress(token.address, balanceDelta);
     }
     public async getBalanceInEthAsync(owner: string): Promise<BigNumber> {
-        const balance = await this.web3Wrapper.getBalanceInEthAsync(owner);
+        const balance = await this._web3Wrapper.getBalanceInEthAsync(owner);
         return balance;
     }
     public async convertEthToWrappedEthTokensAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const txHash = await this.zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this.userAddress);
-        await this.showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
+        const txHash = await this._zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this._userAddress);
+        await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async convertWrappedEthTokensToEthAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const txHash = await this.zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this.userAddress);
-        await this.showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
+        const txHash = await this._zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this._userAddress);
+        await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async doesContractExistAtAddressAsync(address: string) {
-        const doesContractExist = await this.web3Wrapper.doesContractExistAtAddressAsync(address);
+        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(address);
         return doesContractExist;
     }
     public async getCurrentUserTokenBalanceAndAllowanceAsync(tokenAddress: string): Promise<BigNumber[]> {
-      const tokenBalanceAndAllowance = await this.getTokenBalanceAndAllowanceAsync(this.userAddress, tokenAddress);
+      const tokenBalanceAndAllowance = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, tokenAddress);
       return tokenBalanceAndAllowance;
     }
     public async getTokenBalanceAndAllowanceAsync(ownerAddress: string, tokenAddress: string):
                     Promise<BigNumber[]> {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
 
         if (_.isEmpty(ownerAddress)) {
             const zero = new BigNumber(0);
@@ -428,9 +428,9 @@ export class Blockchain {
         }
         let balance = new BigNumber(0);
         let allowance = new BigNumber(0);
-        if (this.doesUserAddressExist()) {
-            balance = await this.zeroEx.token.getBalanceAsync(tokenAddress, ownerAddress);
-            allowance = await this.zeroEx.token.getProxyAllowanceAsync(tokenAddress, ownerAddress);
+        if (this._doesUserAddressExist()) {
+            balance = await this._zeroEx.token.getBalanceAsync(tokenAddress, ownerAddress);
+            allowance = await this._zeroEx.token.getProxyAllowanceAsync(tokenAddress, ownerAddress);
         }
         return [balance, allowance];
     }
@@ -439,11 +439,11 @@ export class Blockchain {
         for (const token of tokens) {
             let balance = new BigNumber(0);
             let allowance = new BigNumber(0);
-            if (this.doesUserAddressExist()) {
+            if (this._doesUserAddressExist()) {
                 [
                     balance,
                     allowance,
-                ] = await this.getTokenBalanceAndAllowanceAsync(this.userAddress, token.address);
+                ] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
             }
             const tokenState = {
                 balance,
@@ -451,61 +451,61 @@ export class Blockchain {
             };
             tokenStateByAddress[token.address] = tokenState;
         }
-        this.dispatcher.updateTokenStateByAddress(tokenStateByAddress);
+        this._dispatcher.updateTokenStateByAddress(tokenStateByAddress);
     }
     public async getUserAccountsAsync() {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        const userAccountsIfExists = await this.zeroEx.getAvailableAddressesAsync();
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        const userAccountsIfExists = await this._zeroEx.getAvailableAddressesAsync();
         return userAccountsIfExists;
     }
     // HACK: When a user is using a Ledger, we simply dispatch the selected userAddress, which
     // by-passes the web3Wrapper logic for updating the prevUserAddress. We therefore need to
     // manually update it. This should only be called by the LedgerConfigDialog.
     public updateWeb3WrapperPrevUserAddress(newUserAddress: string) {
-        this.web3Wrapper.updatePrevUserAddress(newUserAddress);
+        this._web3Wrapper.updatePrevUserAddress(newUserAddress);
     }
     public destroy() {
-        clearInterval(this.zrxPollIntervalId);
-        this.web3Wrapper.destroy();
-        this.stopWatchingExchangeLogFillEvents();
+        clearInterval(this._zrxPollIntervalId);
+        this._web3Wrapper.destroy();
+        this._stopWatchingExchangeLogFillEvents();
     }
-    private async showEtherScanLinkAndAwaitTransactionMinedAsync(
+    private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
         const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
-        this.dispatcher.showFlashMessage(React.createElement(TransactionSubmitted, {
+        this._dispatcher.showFlashMessage(React.createElement(TransactionSubmitted, {
             etherScanLinkIfExists,
         }));
-        const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
+        const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         return receipt;
     }
-    private doesUserAddressExist(): boolean {
-        return this.userAddress !== '';
+    private _doesUserAddressExist(): boolean {
+        return this._userAddress !== '';
     }
-    private async rehydrateStoreWithContractEvents() {
+    private async _rehydrateStoreWithContractEvents() {
         // Ensure we are only ever listening to one set of events
-        this.stopWatchingExchangeLogFillEvents();
+        this._stopWatchingExchangeLogFillEvents();
 
-        if (!this.doesUserAddressExist()) {
+        if (!this._doesUserAddressExist()) {
             return; // short-circuit
         }
 
-        if (!_.isUndefined(this.zeroEx)) {
+        if (!_.isUndefined(this._zeroEx)) {
             // Since we do not have an index on the `taker` address and want to show
             // transactions where an account is either the `maker` or `taker`, we loop
             // through all fill events, and filter/cache them client-side.
             const filterIndexObj = {};
-            await this.startListeningForExchangeLogFillEventsAsync(filterIndexObj);
+            await this._startListeningForExchangeLogFillEventsAsync(filterIndexObj);
         }
     }
-    private async startListeningForExchangeLogFillEventsAsync(indexFilterValues: IndexedFilterValues): Promise<void> {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        utils.assert(this.doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+    private async _startListeningForExchangeLogFillEventsAsync(indexFilterValues: IndexedFilterValues): Promise<void> {
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         // Fetch historical logs
-        await this.fetchHistoricalExchangeLogFillEventsAsync(indexFilterValues);
+        await this._fetchHistoricalExchangeLogFillEventsAsync(indexFilterValues);
 
         // Start a subscription for new logs
-        this.zeroEx.exchange.subscribe(
+        this._zeroEx.exchange.subscribe(
             ExchangeEvents.LogFill, indexFilterValues,
             async (err: Error, decodedLogEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
             if (err) {
@@ -517,40 +517,40 @@ export class Blockchain {
                 return;
             } else {
                 const decodedLog = decodedLogEvent.log;
-                if (!this.doesLogEventInvolveUser(decodedLog)) {
+                if (!this._doesLogEventInvolveUser(decodedLog)) {
                     return; // We aren't interested in the fill event
                 }
-                this.updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
-                const fill = await this.convertDecodedLogToFillAsync(decodedLog);
+                this._updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
+                const fill = await this._convertDecodedLogToFillAsync(decodedLog);
                 if (decodedLogEvent.isRemoved) {
-                    tradeHistoryStorage.removeFillFromUser(this.userAddress, this.networkId, fill);
+                    tradeHistoryStorage.removeFillFromUser(this._userAddress, this.networkId, fill);
                 } else {
-                    tradeHistoryStorage.addFillToUser(this.userAddress, this.networkId, fill);
+                    tradeHistoryStorage.addFillToUser(this._userAddress, this.networkId, fill);
                 }
             }
         });
     }
-    private async fetchHistoricalExchangeLogFillEventsAsync(indexFilterValues: IndexedFilterValues) {
-        const fromBlock = tradeHistoryStorage.getFillsLatestBlock(this.userAddress, this.networkId);
+    private async _fetchHistoricalExchangeLogFillEventsAsync(indexFilterValues: IndexedFilterValues) {
+        const fromBlock = tradeHistoryStorage.getFillsLatestBlock(this._userAddress, this.networkId);
         const blockRange: BlockRange = {
             fromBlock,
             toBlock: 'latest' as BlockParam,
         };
-        const decodedLogs = await this.zeroEx.exchange.getLogsAsync<LogFillContractEventArgs>(
+        const decodedLogs = await this._zeroEx.exchange.getLogsAsync<LogFillContractEventArgs>(
             ExchangeEvents.LogFill, blockRange, indexFilterValues,
         );
         for (const decodedLog of decodedLogs) {
-            if (!this.doesLogEventInvolveUser(decodedLog)) {
+            if (!this._doesLogEventInvolveUser(decodedLog)) {
                 continue; // We aren't interested in the fill event
             }
-            this.updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
-            const fill = await this.convertDecodedLogToFillAsync(decodedLog);
-            tradeHistoryStorage.addFillToUser(this.userAddress, this.networkId, fill);
+            this._updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
+            const fill = await this._convertDecodedLogToFillAsync(decodedLog);
+            tradeHistoryStorage.addFillToUser(this._userAddress, this.networkId, fill);
         }
     }
-    private async convertDecodedLogToFillAsync(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
+    private async _convertDecodedLogToFillAsync(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
         const args = decodedLog.args;
-        const blockTimestamp = await this.web3Wrapper.getBlockTimestampAsync(decodedLog.blockHash);
+        const blockTimestamp = await this._web3Wrapper.getBlockTimestampAsync(decodedLog.blockHash);
         const fill = {
             filledTakerTokenAmount: args.filledTakerTokenAmount,
             filledMakerTokenAmount: args.filledMakerTokenAmount,
@@ -567,13 +567,13 @@ export class Blockchain {
         };
         return fill;
     }
-    private doesLogEventInvolveUser(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
+    private _doesLogEventInvolveUser(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
         const args = decodedLog.args;
-        const isUserMakerOrTaker = args.maker === this.userAddress ||
-                                   args.taker === this.userAddress;
+        const isUserMakerOrTaker = args.maker === this._userAddress ||
+                                   args.taker === this._userAddress;
         return isUserMakerOrTaker;
     }
-    private updateLatestFillsBlockIfNeeded(blockNumber: number) {
+    private _updateLatestFillsBlockIfNeeded(blockNumber: number) {
         const isBlockPending = _.isNull(blockNumber);
         if (!isBlockPending) {
             // Hack: I've observed the behavior where a client won't register certain fill events
@@ -585,15 +585,15 @@ export class Blockchain {
             const blockNumberToSet = blockNumber - BLOCK_NUMBER_BACK_TRACK < 0 ?
                                      0 :
                                      blockNumber - BLOCK_NUMBER_BACK_TRACK;
-            tradeHistoryStorage.setFillsLatestBlock(this.userAddress, this.networkId, blockNumberToSet);
+            tradeHistoryStorage.setFillsLatestBlock(this._userAddress, this.networkId, blockNumberToSet);
         }
     }
-    private stopWatchingExchangeLogFillEvents(): void {
-        this.zeroEx.exchange.unsubscribeAll();
+    private _stopWatchingExchangeLogFillEvents(): void {
+        this._zeroEx.exchange.unsubscribeAll();
     }
-    private async getTokenRegistryTokensByAddressAsync(): Promise<TokenByAddress> {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        const tokenRegistryTokens = await this.zeroEx.tokenRegistry.getTokensAsync();
+    private async _getTokenRegistryTokensByAddressAsync(): Promise<TokenByAddress> {
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        const tokenRegistryTokens = await this._zeroEx.tokenRegistry.getTokensAsync();
 
         const tokenByAddress: TokenByAddress = {};
         _.each(tokenRegistryTokens, (t: ZeroExToken, i: number) => {
@@ -626,8 +626,8 @@ export class Blockchain {
         });
         return tokenByAddress;
     }
-    private async onPageLoadInitFireAndForgetAsync() {
-        await Blockchain.onPageLoadAsync(); // wait for page to load
+    private async _onPageLoadInitFireAndForgetAsync() {
+        await Blockchain._onPageLoadAsync(); // wait for page to load
 
         // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
         // order to properly instantiate the web3Wrapper. Since we must use the async call, we cannot
@@ -645,7 +645,7 @@ export class Blockchain {
             }
         }
 
-        const provider = await Blockchain.getProviderAsync(injectedWeb3, networkIdIfExists);
+        const provider = await Blockchain._getProviderAsync(injectedWeb3, networkIdIfExists);
         const networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists :
                             configs.IS_MAINNET_ENABLED ?
                                 constants.NETWORK_ID_MAINNET :
@@ -653,45 +653,45 @@ export class Blockchain {
         const zeroExConfigs = {
             networkId,
         };
-        this.zeroEx = new ZeroEx(provider, zeroExConfigs);
-        this.updateProviderName(injectedWeb3);
+        this._zeroEx = new ZeroEx(provider, zeroExConfigs);
+        this._updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
-        this.web3Wrapper = new Web3Wrapper(this.dispatcher, provider, networkId, shouldPollUserAddress);
-        await this.postInstantiationOrUpdatingProviderZeroExAsync();
+        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, networkId, shouldPollUserAddress);
+        await this._postInstantiationOrUpdatingProviderZeroExAsync();
     }
     // This method should always be run after instantiating or updating the provider
     // of the ZeroEx instance.
-    private async postInstantiationOrUpdatingProviderZeroExAsync() {
-        utils.assert(!_.isUndefined(this.zeroEx), 'ZeroEx must be instantiated.');
-        this.exchangeAddress = this.zeroEx.exchange.getContractAddress();
+    private async _postInstantiationOrUpdatingProviderZeroExAsync() {
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        this._exchangeAddress = this._zeroEx.exchange.getContractAddress();
     }
-    private updateProviderName(injectedWeb3: Web3) {
+    private _updateProviderName(injectedWeb3: Web3) {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
         const providerName = doesInjectedWeb3Exist ?
-                             Blockchain.getNameGivenProvider(injectedWeb3.currentProvider) :
+                             Blockchain._getNameGivenProvider(injectedWeb3.currentProvider) :
                              constants.PROVIDER_NAME_PUBLIC;
-        this.dispatcher.updateInjectedProviderName(providerName);
+        this._dispatcher.updateInjectedProviderName(providerName);
     }
-    private async fetchTokenInformationAsync() {
+    private async _fetchTokenInformationAsync() {
         utils.assert(!_.isUndefined(this.networkId),
                      'Cannot call fetchTokenInformationAsync if disconnected from Ethereum node');
 
-        this.dispatcher.updateBlockchainIsLoaded(false);
-        this.dispatcher.clearTokenByAddress();
+        this._dispatcher.updateBlockchainIsLoaded(false);
+        this._dispatcher.clearTokenByAddress();
 
-        const tokenRegistryTokensByAddress = await this.getTokenRegistryTokensByAddressAsync();
+        const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
 
         // HACK: We need to fetch the userAddress here because otherwise we cannot save the
         // tracked tokens in localStorage under the users address nor fetch the token
         // balances and allowances and we need to do this in order not to trigger the blockchain
         // loading dialog to show up twice. First to load the contracts, and second to load the
         // balances and allowances.
-        this.userAddress = await this.web3Wrapper.getFirstAccountIfExistsAsync();
-        if (!_.isEmpty(this.userAddress)) {
-            this.dispatcher.updateUserAddress(this.userAddress);
+        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
+        if (!_.isEmpty(this._userAddress)) {
+            this._dispatcher.updateUserAddress(this._userAddress);
         }
 
-        let trackedTokensIfExists = trackedTokenStorage.getTrackedTokensIfExists(this.userAddress, this.networkId);
+        let trackedTokensIfExists = trackedTokenStorage.getTrackedTokensIfExists(this._userAddress, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
         if (_.isUndefined(trackedTokensIfExists)) {
             trackedTokensIfExists = _.map(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
@@ -700,7 +700,7 @@ export class Blockchain {
                 return token;
             });
             _.each(trackedTokensIfExists, token => {
-                trackedTokenStorage.addTrackedTokenToUser(this.userAddress, this.networkId, token);
+                trackedTokenStorage.addTrackedTokenToUser(this._userAddress, this.networkId, token);
             });
         } else {
             // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
@@ -711,7 +711,7 @@ export class Blockchain {
             });
         }
         const allTokens = _.uniq([...tokenRegistryTokens, ...trackedTokensIfExists]);
-        this.dispatcher.updateTokenByAddress(allTokens);
+        this._dispatcher.updateTokenByAddress(allTokens);
 
         // Get balance/allowance for tracked tokens
         await this.updateTokenBalancesAndAllowancesAsync(trackedTokensIfExists);
@@ -720,13 +720,13 @@ export class Blockchain {
             _.find(allTokens, {symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0]}),
             _.find(allTokens, {symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[1]}),
         ];
-        this.dispatcher.updateChosenAssetTokenAddress(Side.Deposit, mostPopularTradingPairTokens[0].address);
-        this.dispatcher.updateChosenAssetTokenAddress(Side.Receive, mostPopularTradingPairTokens[1].address);
-        this.dispatcher.updateBlockchainIsLoaded(true);
+        this._dispatcher.updateChosenAssetTokenAddress(Side.Deposit, mostPopularTradingPairTokens[0].address);
+        this._dispatcher.updateChosenAssetTokenAddress(Side.Receive, mostPopularTradingPairTokens[1].address);
+        this._dispatcher.updateBlockchainIsLoaded(true);
     }
-    private async instantiateContractIfExistsAsync(artifact: any, address?: string): Promise<ContractInstance> {
+    private async _instantiateContractIfExistsAsync(artifact: any, address?: string): Promise<ContractInstance> {
         const c = await contract(artifact);
-        const providerObj = this.web3Wrapper.getProviderObj();
+        const providerObj = this._web3Wrapper.getProviderObj();
         c.setProvider(providerObj);
 
         const artifactNetworkConfigs = artifact.networks[this.networkId];

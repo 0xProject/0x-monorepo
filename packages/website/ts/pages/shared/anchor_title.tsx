@@ -79,14 +79,14 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                         className="zmdi zmdi-link"
                         onClick={utils.setUrlHash.bind(utils, this.props.id)}
                         style={{...styles.anchor, opacity}}
-                        onMouseOver={this.setHoverState.bind(this, true)}
-                        onMouseOut={this.setHoverState.bind(this, false)}
+                        onMouseOver={this._setHoverState.bind(this, true)}
+                        onMouseOut={this._setHoverState.bind(this, false)}
                     />
                 </ScrollLink>
             </div>
         );
     }
-    private setHoverState(isHovering: boolean) {
+    private _setHoverState(isHovering: boolean) {
         this.setState({
             isHovering,
         });

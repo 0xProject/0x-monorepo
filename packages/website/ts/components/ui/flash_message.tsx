@@ -26,7 +26,7 @@ export class FlashMessage extends React.Component<FlashMessageProps, FlashMessag
                     open={true}
                     message={this.props.flashMessage}
                     autoHideDuration={this.props.showDurationMs}
-                    onRequestClose={this.onClose.bind(this)}
+                    onRequestClose={this._onClose.bind(this)}
                     bodyStyle={this.props.bodyStyle}
                 />
             );
@@ -34,7 +34,7 @@ export class FlashMessage extends React.Component<FlashMessageProps, FlashMessag
             return null;
         }
     }
-    private onClose() {
+    private _onClose() {
         this.props.dispatcher.hideFlashMessage();
     }
 }

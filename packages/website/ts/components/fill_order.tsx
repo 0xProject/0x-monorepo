@@ -66,7 +66,7 @@ interface FillOrderState {
 }
 
 export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
-    private validator: SchemaValidator;
+    private _validator: SchemaValidator;
     constructor(props: FillOrderProps) {
         super(props);
         this.state = {
@@ -87,12 +87,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             isConfirmingTokenTracking: false,
             tokensToTrack: [],
         };
-        this.validator = new SchemaValidator();
+        this._validator = new SchemaValidator();
     }
     public componentWillMount() {
         if (!_.isEmpty(this.state.orderJSON)) {
             // tslint:disable-next-line:no-floating-promises
-            this.validateFillOrderFireAndForgetAsync(this.state.orderJSON);
+            this._validateFillOrderFireAndForgetAsync(this.state.orderJSON);
         }
     }
     public componentDidMount() {
@@ -115,15 +115,15 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                                 tokenByAddress={this.props.tokenByAddress}
                                 networkId={this.props.networkId}
                                 orderJSON={this.state.orderJSON}
-                                onFillOrderJSONChanged={this.onFillOrderJSONChanged.bind(this)}
+                                onFillOrderJSONChanged={this._onFillOrderJSONChanged.bind(this)}
                             />
-                            {this.renderOrderJsonNotices()}
+                            {this._renderOrderJsonNotices()}
                         </div>
                     }
                     <div>
                         {!_.isUndefined(this.state.parsedOrder) && this.state.didOrderValidationRun
                          && this.state.areAllInvolvedTokensTracked &&
-                             this.renderVisualOrder()
+                             this._renderVisualOrder()
                         }
                     </div>
                     {this.props.isOrderInUrl &&
@@ -140,17 +140,17 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                                         tokenByAddress={this.props.tokenByAddress}
                                         networkId={this.props.networkId}
                                         orderJSON={this.state.orderJSON}
-                                        onFillOrderJSONChanged={this.onFillOrderJSONChanged.bind(this)}
+                                        onFillOrderJSONChanged={this._onFillOrderJSONChanged.bind(this)}
                                     />
                                 </CardText>
                             </Card>
-                            {this.renderOrderJsonNotices()}
+                            {this._renderOrderJsonNotices()}
                         </div>
                     }
                 </div>
                 <FillWarningDialog
                     isOpen={this.state.isFillWarningDialogOpen}
-                    onToggleDialog={this.onFillWarningClosed.bind(this)}
+                    onToggleDialog={this._onFillWarningClosed.bind(this)}
                 />
                 <TrackTokenConfirmationDialog
                     userAddress={this.props.userAddress}
@@ -160,12 +160,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                     dispatcher={this.props.dispatcher}
                     tokens={this.state.tokensToTrack}
                     isOpen={this.state.isConfirmingTokenTracking}
-                    onToggleDialog={this.onToggleTrackConfirmDialog.bind(this)}
+                    onToggleDialog={this._onToggleTrackConfirmDialog.bind(this)}
                 />
             </div>
         );
     }
-    private renderOrderJsonNotices() {
+    private _renderOrderJsonNotices() {
         return (
             <div>
                 {!_.isUndefined(this.props.initialOrder) && !this.state.didOrderValidationRun &&
@@ -182,7 +182,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private renderVisualOrder() {
+    private _renderVisualOrder() {
         const takerTokenAddress = this.state.parsedOrder.taker.token.address;
         const takerToken = this.props.tokenByAddress[takerTokenAddress];
         const orderTakerAmount = new BigNumber(this.state.parsedOrder.taker.amount);
@@ -211,7 +211,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         let orderReceiveAmount = 0;
         if (!_.isUndefined(this.props.orderFillAmount)) {
             const orderReceiveAmountBigNumber = exchangeRate.mul(this.props.orderFillAmount);
-            orderReceiveAmount = this.formatCurrencyAmount(orderReceiveAmountBigNumber, makerToken.decimals);
+            orderReceiveAmount = this._formatCurrencyAmount(orderReceiveAmountBigNumber, makerToken.decimals);
         }
         const isUserMaker = !_.isUndefined(this.state.parsedOrder) &&
                           this.state.parsedOrder.maker.address === this.props.userAddress;
@@ -261,7 +261,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                     <div className="clearfix mx-auto relative" style={{width: 235, height: 108}}>
                        <TokenAmountInput
                            label="Fill amount"
-                           onChange={this.onFillAmountChange.bind(this)}
+                           onChange={this._onFillAmountChange.bind(this)}
                            shouldShowIncompleteErrs={false}
                            token={fillToken}
                            tokenState={fillTokenState}
@@ -284,12 +284,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                                 style={{width: '100%'}}
                                 disabled={this.state.isCancelling}
                                 label={this.state.isCancelling ? 'Cancelling order...' : 'Cancel order'}
-                                onClick={this.onCancelOrderClickFireAndForgetAsync.bind(this)}
+                                onClick={this._onCancelOrderClickFireAndForgetAsync.bind(this)}
                             />
                             {this.state.didCancelOrderSucceed &&
                                 <Alert
                                     type={AlertTypes.SUCCESS}
-                                    message={this.renderCancelSuccessMsg()}
+                                    message={this._renderCancelSuccessMsg()}
                                 />
                             }
                         </div> :
@@ -298,7 +298,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                                 style={{width: '100%'}}
                                 disabled={this.state.isFilling}
                                 label={this.state.isFilling ? 'Filling order...' : 'Fill order'}
-                                onClick={this.onFillOrderClick.bind(this)}
+                                onClick={this._onFillOrderClick.bind(this)}
                             />
                             {!_.isEmpty(this.state.globalErrMsg) &&
                                 <Alert type={AlertTypes.ERROR} message={this.state.globalErrMsg} />
@@ -306,7 +306,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                             {this.state.didFillOrderSucceed &&
                                 <Alert
                                     type={AlertTypes.SUCCESS}
-                                    message={this.renderFillSuccessMsg()}
+                                    message={this._renderFillSuccessMsg()}
                                 />
                             }
                         </div>
@@ -315,7 +315,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private renderFillSuccessMsg() {
+    private _renderFillSuccessMsg() {
         return (
             <div>
                 Order successfully filled. See the trade details in your{' '}
@@ -328,45 +328,45 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private renderCancelSuccessMsg() {
+    private _renderCancelSuccessMsg() {
         return (
             <div>
                 Order successfully cancelled.
             </div>
         );
     }
-    private onFillOrderClick() {
+    private _onFillOrderClick() {
         if (!this.state.isMakerTokenAddressInRegistry || !this.state.isTakerTokenAddressInRegistry) {
             this.setState({
                 isFillWarningDialogOpen: true,
             });
         } else {
             // tslint:disable-next-line:no-floating-promises
-            this.onFillOrderClickFireAndForgetAsync();
+            this._onFillOrderClickFireAndForgetAsync();
         }
     }
-    private onFillWarningClosed(didUserCancel: boolean) {
+    private _onFillWarningClosed(didUserCancel: boolean) {
         this.setState({
             isFillWarningDialogOpen: false,
         });
         if (!didUserCancel) {
             // tslint:disable-next-line:no-floating-promises
-            this.onFillOrderClickFireAndForgetAsync();
+            this._onFillOrderClickFireAndForgetAsync();
         }
     }
-    private onFillAmountChange(isValid: boolean, amount?: BigNumber) {
+    private _onFillAmountChange(isValid: boolean, amount?: BigNumber) {
         this.props.dispatcher.updateOrderFillAmount(amount);
     }
-    private onFillOrderJSONChanged(event: any) {
+    private _onFillOrderJSONChanged(event: any) {
         const orderJSON = event.target.value;
         this.setState({
             didOrderValidationRun: _.isEmpty(orderJSON) && _.isEmpty(this.state.orderJSONErrMsg),
             didFillOrderSucceed: false,
         });
         // tslint:disable-next-line:no-floating-promises
-        this.validateFillOrderFireAndForgetAsync(orderJSON);
+        this._validateFillOrderFireAndForgetAsync(orderJSON);
     }
-    private async checkForUntrackedTokensAndAskToAdd() {
+    private async _checkForUntrackedTokensAndAskToAdd() {
         if (!_.isEmpty(this.state.orderJSONErrMsg)) {
             return;
         }
@@ -410,12 +410,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
         }
     }
-    private async validateFillOrderFireAndForgetAsync(orderJSON: string) {
+    private async _validateFillOrderFireAndForgetAsync(orderJSON: string) {
         let orderJSONErrMsg = '';
         let parsedOrder: Order;
         try {
             const order = JSON.parse(orderJSON);
-            const validationResult = this.validator.validate(order, orderSchema);
+            const validationResult = this._validator.validate(order, orderSchema);
             if (validationResult.errors.length > 0) {
                 orderJSONErrMsg = 'Submitted order JSON is not a valid order';
                 utils.consoleLog(`Unexpected order JSON validation error: ${validationResult.errors.join(', ')}`);
@@ -508,9 +508,9 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             unavailableTakerAmount,
         });
 
-        await this.checkForUntrackedTokensAndAskToAdd();
+        await this._checkForUntrackedTokensAndAskToAdd();
     }
-    private async onFillOrderClickFireAndForgetAsync(): Promise<void> {
+    private async _onFillOrderClickFireAndForgetAsync(): Promise<void> {
         if (!_.isEmpty(this.props.blockchainErr) || _.isEmpty(this.props.userAddress)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;
@@ -601,7 +601,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             return;
         }
     }
-    private async onCancelOrderClickFireAndForgetAsync(): Promise<void> {
+    private async _onCancelOrderClickFireAndForgetAsync(): Promise<void> {
         if (!_.isEmpty(this.props.blockchainErr) || _.isEmpty(this.props.userAddress)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;
@@ -684,12 +684,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             return;
         }
     }
-    private formatCurrencyAmount(amount: BigNumber, decimals: number): number {
+    private _formatCurrencyAmount(amount: BigNumber, decimals: number): number {
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
         const roundedUnitAmount = Math.round(unitAmount.toNumber() * 100000) / 100000;
         return roundedUnitAmount;
     }
-    private onToggleTrackConfirmDialog(didConfirmTokenTracking: boolean) {
+    private _onToggleTrackConfirmDialog(didConfirmTokenTracking: boolean) {
         if (!didConfirmTokenTracking) {
             this.setState({
                 orderJSON: '',

@@ -37,13 +37,13 @@ export class EthWethConversionDialog extends
             <FlatButton
                 key="cancel"
                 label="Cancel"
-                onTouchTap={this.onCancel.bind(this)}
+                onTouchTap={this._onCancel.bind(this)}
             />,
             <FlatButton
                 key="convert"
                 label="Convert"
                 primary={true}
-                onTouchTap={this.onConvertClick.bind(this)}
+                onTouchTap={this._onConvertClick.bind(this)}
             />,
         ];
         const title = this.props.direction === Side.Deposit ?  'Wrap ETH' : 'Unwrap WETH';
@@ -55,11 +55,11 @@ export class EthWethConversionDialog extends
                 contentStyle={{width: 448}}
                 open={this.props.isOpen}
             >
-                {this.renderConversionDialogBody()}
+                {this._renderConversionDialogBody()}
             </Dialog>
         );
     }
-    private renderConversionDialogBody() {
+    private _renderConversionDialogBody() {
         const explanation = this.props.direction === Side.Deposit ?
                             'Convert your Ether into a tokenized, tradable form.' :
                             'Convert your Wrapped Ether back into it\'s native form.';
@@ -71,14 +71,14 @@ export class EthWethConversionDialog extends
                 </div>
                 <div className="mx-auto" style={{maxWidth: 312}}>
                     <div className="flex">
-                        {this.renderCurrency(isWrappedVersion)}
+                        {this._renderCurrency(isWrappedVersion)}
                         <div style={{paddingTop: 68}}>
                             <i
                                 style={{fontSize: 28, color: colors.darkBlue}}
                                 className="zmdi zmdi-arrow-right"
                             />
                         </div>
-                        {this.renderCurrency(!isWrappedVersion)}
+                        {this._renderCurrency(!isWrappedVersion)}
                     </div>
                     <div
                         className="pt2 mx-auto"
@@ -91,14 +91,14 @@ export class EthWethConversionDialog extends
                                 shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                 shouldCheckBalance={true}
                                 shouldCheckAllowance={false}
-                                onChange={this.onValueChange.bind(this)}
+                                onChange={this._onValueChange.bind(this)}
                                 amount={this.state.value}
                                 onVisitBalancesPageClick={this.props.onCancelled}
                             /> :
                             <EthAmountInput
                                 balance={this.props.etherBalance}
                                 amount={this.state.value}
-                                onChange={this.onValueChange.bind(this)}
+                                onChange={this._onValueChange.bind(this)}
                                 shouldCheckBalance={true}
                                 shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                 onVisitBalancesPageClick={this.props.onCancelled}
@@ -112,7 +112,7 @@ export class EthWethConversionDialog extends
                             {this.props.direction === Side.Receive &&
                                 <div
                                     className="right"
-                                    onClick={this.onMaxClick.bind(this)}
+                                    onClick={this._onMaxClick.bind(this)}
                                     style={{color: colors.darkBlue, textDecoration: 'underline', cursor: 'pointer'}}
                                 >
                                     Max
@@ -124,7 +124,7 @@ export class EthWethConversionDialog extends
             </div>
         );
     }
-    private renderCurrency(isWrappedVersion: boolean) {
+    private _renderCurrency(isWrappedVersion: boolean) {
         const name = isWrappedVersion ? 'Wrapped Ether' : 'Ether';
         const iconUrl = isWrappedVersion ? '/images/token_icons/ether_erc20.png' : '/images/ether.png';
         const symbol = isWrappedVersion ? 'WETH' : 'ETH';
@@ -145,18 +145,18 @@ export class EthWethConversionDialog extends
             </div>
         );
     }
-    private onMaxClick() {
+    private _onMaxClick() {
         this.setState({
             value: this.props.tokenState.balance,
         });
     }
-    private onValueChange(isValid: boolean, amount?: BigNumber) {
+    private _onValueChange(isValid: boolean, amount?: BigNumber) {
         this.setState({
             value: amount,
             hasErrors: !isValid,
         });
     }
-    private onConvertClick() {
+    private _onConvertClick() {
         if (this.state.hasErrors) {
             this.setState({
                 shouldShowIncompleteErrs: true,
@@ -169,7 +169,7 @@ export class EthWethConversionDialog extends
             this.props.onComplete(this.props.direction, value);
         }
     }
-    private onCancel() {
+    private _onCancel() {
         this.setState({
             value: undefined,
         });

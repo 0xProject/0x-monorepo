@@ -15,53 +15,53 @@ import {
 } from 'ts/types';
 
 export class Dispatcher {
-    private dispatch: Dispatch<State>;
+    private _dispatch: Dispatch<State>;
     constructor(dispatch: Dispatch<State>) {
-        this.dispatch = dispatch;
+        this._dispatch = dispatch;
     }
     // Portal
     public resetState() {
-        this.dispatch({
+        this._dispatch({
             type: ActionTypes.ResetState,
         });
     }
     public updateNodeVersion(nodeVersion: string) {
-        this.dispatch({
+        this._dispatch({
             data: nodeVersion,
             type: ActionTypes.UpdateNodeVersion,
         });
     }
     public updateScreenWidth(screenWidth: ScreenWidths) {
-        this.dispatch({
+        this._dispatch({
             data: screenWidth,
             type: ActionTypes.UpdateScreenWidth,
         });
     }
     public swapAssetTokenSymbols() {
-        this.dispatch({
+        this._dispatch({
             type: ActionTypes.SwapAssetTokens,
         });
     }
     public updateOrderSalt(salt: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: salt,
             type: ActionTypes.UpdateOrderSalt,
         });
     }
     public updateUserSuppliedOrderCache(order: Order) {
-        this.dispatch({
+        this._dispatch({
             data: order,
             type: ActionTypes.UpdateUserSuppliedOrderCache,
         });
     }
     public updateShouldBlockchainErrDialogBeOpen(shouldBeOpen: boolean) {
-        this.dispatch({
+        this._dispatch({
             data: shouldBeOpen,
             type: ActionTypes.UpdateShouldBlockchainErrDialogBeOpen,
         });
     }
     public updateChosenAssetToken(side: Side, token: AssetToken) {
-        this.dispatch({
+        this._dispatch({
             data: {
                 side,
                 token,
@@ -70,7 +70,7 @@ export class Dispatcher {
         });
     }
     public updateChosenAssetTokenAddress(side: Side, address: string) {
-        this.dispatch({
+        this._dispatch({
             data: {
                 address,
                 side,
@@ -79,72 +79,72 @@ export class Dispatcher {
         });
     }
     public updateOrderTakerAddress(address: string) {
-        this.dispatch({
+        this._dispatch({
             data: address,
             type: ActionTypes.UpdateOrderTakerAddress,
         });
     }
     public updateUserAddress(address: string) {
-        this.dispatch({
+        this._dispatch({
             data: address,
             type: ActionTypes.UpdateUserAddress,
         });
     }
     public updateOrderExpiry(unixTimestampSec: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: unixTimestampSec,
             type: ActionTypes.UpdateOrderExpiry,
         });
     }
     public encounteredBlockchainError(err: BlockchainErrs) {
-        this.dispatch({
+        this._dispatch({
              data: err,
              type: ActionTypes.BlockchainErrEncountered,
          });
     }
     public updateBlockchainIsLoaded(isLoaded: boolean) {
-        this.dispatch({
+        this._dispatch({
              data: isLoaded,
              type: ActionTypes.UpdateBlockchainIsLoaded,
          });
     }
     public addTokenToTokenByAddress(token: Token) {
-        this.dispatch({
+        this._dispatch({
              data: token,
              type: ActionTypes.AddTokenToTokenByAddress,
          });
     }
     public removeTokenToTokenByAddress(token: Token) {
-        this.dispatch({
+        this._dispatch({
              data: token,
              type: ActionTypes.RemoveTokenFromTokenByAddress,
          });
     }
     public clearTokenByAddress() {
-        this.dispatch({
+        this._dispatch({
             type: ActionTypes.ClearTokenByAddress,
          });
     }
     public updateTokenByAddress(tokens: Token[]) {
-        this.dispatch({
+        this._dispatch({
              data: tokens,
              type: ActionTypes.UpdateTokenByAddress,
          });
     }
     public updateTokenStateByAddress(tokenStateByAddress: TokenStateByAddress) {
-        this.dispatch({
+        this._dispatch({
              data: tokenStateByAddress,
              type: ActionTypes.UpdateTokenStateByAddress,
          });
     }
     public removeFromTokenStateByAddress(tokenAddress: string) {
-        this.dispatch({
+        this._dispatch({
             data: tokenAddress,
             type: ActionTypes.RemoveFromTokenStateByAddress,
         });
     }
     public replaceTokenAllowanceByAddress(address: string, allowance: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: {
               address,
               allowance,
@@ -153,7 +153,7 @@ export class Dispatcher {
         });
     }
     public replaceTokenBalanceByAddress(address: string, balance: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: {
                 address,
                 balance,
@@ -162,7 +162,7 @@ export class Dispatcher {
         });
     }
     public updateTokenBalanceByAddress(address: string, balanceDelta: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: {
                 address,
                 balanceDelta,
@@ -171,25 +171,25 @@ export class Dispatcher {
         });
     }
     public updateSignatureData(signatureData: SignatureData) {
-        this.dispatch({
+        this._dispatch({
              data: signatureData,
              type: ActionTypes.UpdateOrderSignatureData,
          });
     }
     public updateUserEtherBalance(balance: BigNumber) {
-        this.dispatch({
+        this._dispatch({
              data: balance,
              type: ActionTypes.UpdateUserEtherBalance,
          });
     }
     public updateNetworkId(networkId: number) {
-        this.dispatch({
+        this._dispatch({
              data: networkId,
              type: ActionTypes.UpdateNetworkId,
          });
     }
     public updateOrderFillAmount(amount: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: amount,
             type: ActionTypes.UpdateOrderFillAmount,
         });
@@ -197,13 +197,13 @@ export class Dispatcher {
 
     // Docs
     public updateCurrentDocsVersion(version: string) {
-        this.dispatch({
+        this._dispatch({
             data: version,
             type: ActionTypes.UpdateLibraryVersion,
         });
     }
     public updateAvailableDocVersions(versions: string[]) {
-        this.dispatch({
+        this._dispatch({
             data: versions,
             type: ActionTypes.UpdateAvailableLibraryVersions,
         });
@@ -211,24 +211,24 @@ export class Dispatcher {
 
     // Shared
     public showFlashMessage(msg: string|React.ReactNode) {
-        this.dispatch({
+        this._dispatch({
             data: msg,
             type: ActionTypes.ShowFlashMessage,
         });
     }
     public hideFlashMessage() {
-        this.dispatch({
+        this._dispatch({
             type: ActionTypes.HideFlashMessage,
         });
     }
     public updateProviderType(providerType: ProviderType) {
-        this.dispatch({
+        this._dispatch({
             type: ActionTypes.UpdateProviderType,
             data: providerType,
         });
     }
     public updateInjectedProviderName(injectedProviderName: string) {
-        this.dispatch({
+        this._dispatch({
             type: ActionTypes.UpdateInjectedProviderName,
             data: injectedProviderName,
         });

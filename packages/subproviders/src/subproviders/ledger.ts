@@ -32,7 +32,7 @@ export class LedgerSubprovider extends Subprovider {
     private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
-    private static validateSender(sender: string) {
+    private static _validateSender(sender: string) {
         if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
             throw new Error(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
         }
@@ -88,8 +88,8 @@ export class LedgerSubprovider extends Subprovider {
             case 'eth_sendTransaction':
                 txParams = payload.params[0];
                 try {
-                    LedgerSubprovider.validateSender(txParams.from);
-                    const result = await this.sendTransactionAsync(txParams);
+                    LedgerSubprovider._validateSender(txParams.from);
+                    const result = await this._sendTransactionAsync(txParams);
                     end(null, result);
                 } catch (err) {
                     end(err);
@@ -99,7 +99,7 @@ export class LedgerSubprovider extends Subprovider {
             case 'eth_signTransaction':
                 txParams = payload.params[0];
                 try {
-                    const result = await this.signTransactionWithoutSendingAsync(txParams);
+                    const result = await this._signTransactionWithoutSendingAsync(txParams);
                     end(null, result);
                 } catch (err) {
                     end(err);
@@ -126,7 +126,7 @@ export class LedgerSubprovider extends Subprovider {
         }
     }
     public async getAccountsAsync(): Promise<string[]> {
-        this._ledgerClientIfExists = await this.createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         let ledgerResponse;
         try {
@@ -134,7 +134,7 @@ export class LedgerSubprovider extends Subprovider {
                 this._derivationPath, this._shouldAlwaysAskForConfirmation, SHOULD_GET_CHAIN_CODE,
             );
         } finally {
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
         }
 
         const hdKey = new HDNode();
@@ -155,7 +155,7 @@ export class LedgerSubprovider extends Subprovider {
         return accounts;
     }
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        this._ledgerClientIfExists = await this.createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         const tx = new EthereumTx(txParams);
 
@@ -166,7 +166,7 @@ export class LedgerSubprovider extends Subprovider {
 
         const txHex = tx.serialize().toString('hex');
         try {
-            const derivationPath = this.getDerivationPath();
+            const derivationPath = this._getDerivationPath();
             const result = await this._ledgerClientIfExists.signTransaction_async(derivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
@@ -176,23 +176,23 @@ export class LedgerSubprovider extends Subprovider {
             // EIP155: v should be chain_id * 2 + {35, 36}
             const signedChainId = Math.floor((tx.v[0] - 35) / 2);
             if (signedChainId !== this._networkId) {
-                await this.destoryLedgerClientAsync();
+                await this._destroyLedgerClientAsync();
                 const err = new Error(LedgerSubproviderErrors.TooOldLedgerFirmware);
                 throw err;
             }
 
             const signedTxHex = `0x${tx.serialize().toString('hex')}`;
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
             return signedTxHex;
         } catch (err) {
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
             throw err;
         }
     }
     public async signPersonalMessageAsync(data: string): Promise<string> {
-        this._ledgerClientIfExists = await this.createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
         try {
-            const derivationPath = this.getDerivationPath();
+            const derivationPath = this._getDerivationPath();
             const result = await this._ledgerClientIfExists.signPersonalMessage_async(
                 derivationPath, ethUtil.stripHexPrefix(data));
             const v = result.v - 27;
@@ -201,18 +201,18 @@ export class LedgerSubprovider extends Subprovider {
                 vHex = `0${v}`;
             }
             const signature = `0x${result.r}${result.s}${vHex}`;
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
             return signature;
         } catch (err) {
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
             throw err;
         }
     }
-    private getDerivationPath() {
+    private _getDerivationPath() {
         const derivationPath = `${this.getPath()}/${this._derivationPathIndex}`;
         return derivationPath;
     }
-    private async createLedgerClientAsync(): Promise<LedgerEthereumClient> {
+    private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
         await this._connectionLock.wait();
         if (!_.isUndefined(this._ledgerClientIfExists)) {
             this._connectionLock.signal();
@@ -222,7 +222,7 @@ export class LedgerSubprovider extends Subprovider {
         this._connectionLock.signal();
         return ledgerEthereumClient;
     }
-    private async destoryLedgerClientAsync() {
+    private async _destroyLedgerClientAsync() {
         await this._connectionLock.wait();
         if (_.isUndefined(this._ledgerClientIfExists)) {
             this._connectionLock.signal();
@@ -232,11 +232,11 @@ export class LedgerSubprovider extends Subprovider {
         this._ledgerClientIfExists = undefined;
         this._connectionLock.signal();
     }
-    private async sendTransactionAsync(txParams: PartialTxParams): Promise<Web3.JSONRPCResponsePayload> {
+    private async _sendTransactionAsync(txParams: PartialTxParams): Promise<Web3.JSONRPCResponsePayload> {
         await this._nonceLock.wait();
         try {
             // fill in the extras
-            const filledParams = await this.populateMissingTxParamsAsync(txParams);
+            const filledParams = await this._populateMissingTxParamsAsync(txParams);
             // sign it
             const signedTx = await this.signTransactionAsync(filledParams);
             // emit a submit
@@ -252,11 +252,11 @@ export class LedgerSubprovider extends Subprovider {
             throw err;
         }
     }
-    private async signTransactionWithoutSendingAsync(txParams: PartialTxParams): Promise<ResponseWithTxParams> {
+    private async _signTransactionWithoutSendingAsync(txParams: PartialTxParams): Promise<ResponseWithTxParams> {
         await this._nonceLock.wait();
         try {
             // fill in the extras
-            const filledParams = await this.populateMissingTxParamsAsync(txParams);
+            const filledParams = await this._populateMissingTxParamsAsync(txParams);
             // sign it
             const signedTx = await this.signTransactionAsync(filledParams);
 
@@ -271,7 +271,7 @@ export class LedgerSubprovider extends Subprovider {
             throw err;
         }
     }
-    private async populateMissingTxParamsAsync(txParams: PartialTxParams): Promise<PartialTxParams> {
+    private async _populateMissingTxParamsAsync(txParams: PartialTxParams): Promise<PartialTxParams> {
         if (_.isUndefined(txParams.gasPrice)) {
             const gasPriceResult = await this.emitPayloadAsync({
                 method: 'eth_gasPrice',

@@ -133,20 +133,20 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                     <div className="col lg-col-8 md-col-8 col-12 lg-pl4 md-pl4">
                         <div className="col lg-col-4 md-col-4 col-12">
                             <div className="lg-right md-right sm-center">
-                                {this.renderHeader(Sections.Documentation)}
-                                {_.map(menuItemsBySection[Sections.Documentation], this.renderMenuItem.bind(this))}
+                                {this._renderHeader(Sections.Documentation)}
+                                {_.map(menuItemsBySection[Sections.Documentation], this._renderMenuItem.bind(this))}
                             </div>
                         </div>
                         <div className="col lg-col-4 md-col-4 col-12 lg-pr2 md-pr2">
                             <div className="lg-right md-right sm-center">
-                                {this.renderHeader(Sections.Community)}
-                                {_.map(menuItemsBySection[Sections.Community], this.renderMenuItem.bind(this))}
+                                {this._renderHeader(Sections.Community)}
+                                {_.map(menuItemsBySection[Sections.Community], this._renderMenuItem.bind(this))}
                             </div>
                         </div>
                         <div className="col lg-col-4 md-col-4 col-12">
                             <div className="lg-right md-right sm-center">
-                                {this.renderHeader(Sections.Organization)}
-                                {_.map(menuItemsBySection[Sections.Organization], this.renderMenuItem.bind(this))}
+                                {this._renderHeader(Sections.Organization)}
+                                {_.map(menuItemsBySection[Sections.Organization], this._renderMenuItem.bind(this))}
                             </div>
                         </div>
                     </div>
@@ -154,14 +154,14 @@ export class Footer extends React.Component<FooterProps, FooterState> {
             </div>
         );
     }
-    private renderIcon(fileName: string) {
+    private _renderIcon(fileName: string) {
         return (
             <div style={{height: ICON_DIMENSION, width: ICON_DIMENSION}}>
                 <img src={`/images/social/${fileName}`} style={{width: ICON_DIMENSION}} />
             </div>
         );
     }
-    private renderMenuItem(item: FooterMenuItem) {
+    private _renderMenuItem(item: FooterMenuItem) {
         const iconIfExists = titleToIcon[item.title];
         return (
             <div
@@ -180,7 +180,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                             <div className="sm-mx-auto" style={{width: 65}}>
                                 <div className="flex">
                                     <div className="pr1">
-                                        {this.renderIcon(iconIfExists)}
+                                        {this._renderIcon(iconIfExists)}
                                     </div>
                                     <div>{item.title}</div>
                                 </div>
@@ -196,7 +196,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                         <div>
                             {!_.isUndefined(iconIfExists) &&
                                 <div className="pr1">
-                                    {this.renderIcon(iconIfExists)}
+                                    {this._renderIcon(iconIfExists)}
                                 </div>
                             }
                             {item.title}
@@ -206,7 +206,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
             </div>
         );
     }
-    private renderHeader(title: string) {
+    private _renderHeader(title: string) {
         const headerStyle = {
             textTransform: 'uppercase',
             color: colors.grey400,

@@ -46,7 +46,7 @@ const styles: Styles = {
 };
 
 export class Wiki extends React.Component<WikiProps, WikiState> {
-    private wikiBackoffTimeoutId: number;
+    private _wikiBackoffTimeoutId: number;
     constructor(props: WikiProps) {
         super(props);
         this.state = {
@@ -55,15 +55,15 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
     }
     public componentWillMount() {
         // tslint:disable-next-line:no-floating-promises
-        this.fetchArticlesBySectionAsync();
+        this._fetchArticlesBySectionAsync();
     }
     public componentWillUnmount() {
-        clearTimeout(this.wikiBackoffTimeoutId);
+        clearTimeout(this._wikiBackoffTimeoutId);
     }
     public render() {
         const menuSubsectionsBySection = _.isUndefined(this.state.articlesBySection)
                                          ? {}
-                                         : this.getMenuSubsectionsBySection(this.state.articlesBySection);
+                                         : this._getMenuSubsectionsBySection(this.state.articlesBySection);
         return (
             <div>
                 <DocumentTitle title="0x Protocol Wiki"/>
@@ -117,7 +117,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                                     </a>
                                 </h1>
                                 <div id="wiki">
-                                    {this.renderWikiArticles()}
+                                    {this._renderWikiArticles()}
                                 </div>
                             </div>
                         </div>
@@ -126,12 +126,12 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             </div>
         );
     }
-    private renderWikiArticles(): React.ReactNode {
+    private _renderWikiArticles(): React.ReactNode {
         const sectionNames = _.keys(this.state.articlesBySection);
-        const sections = _.map(sectionNames, sectionName => this.renderSection(sectionName));
+        const sections = _.map(sectionNames, sectionName => this._renderSection(sectionName));
         return sections;
     }
-    private renderSection(sectionName: string) {
+    private _renderSection(sectionName: string) {
         const articles = this.state.articlesBySection[sectionName];
         const renderedArticles = _.map(articles, (article: Article) => {
             const githubLink = `${constants.URL_GITHUB_WIKI}/edit/master/${sectionName}/${article.fileName}`;
@@ -165,7 +165,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             </div>
         );
     }
-    private scrollToHash(): void {
+    private _scrollToHash(): void {
         const hashWithPrefix = this.props.location.hash;
         let hash = hashWithPrefix.slice(1);
         if (_.isEmpty(hash)) {
@@ -174,14 +174,14 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
 
         scroller.scrollTo(hash, {duration: 0, offset: 0, containerId: 'documentation'});
     }
-    private async fetchArticlesBySectionAsync(): Promise<void> {
+    private async _fetchArticlesBySectionAsync(): Promise<void> {
         const endpoint = `${configs.BACKEND_BASE_URL}${WebsitePaths.Wiki}`;
         const response = await fetch(endpoint);
         if (response.status === constants.HTTP_NO_CONTENT_STATUS_CODE) {
             // We need to backoff and try fetching again later
-            this.wikiBackoffTimeoutId = window.setTimeout(() => {
+            this._wikiBackoffTimeoutId = window.setTimeout(() => {
                 // tslint:disable-next-line:no-floating-promises
-                this.fetchArticlesBySectionAsync();
+                this._fetchArticlesBySectionAsync();
             }, WIKI_NOT_READY_BACKOUT_TIMEOUT_MS);
             return;
         }
@@ -195,10 +195,10 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         this.setState({
             articlesBySection,
         }, () => {
-            this.scrollToHash();
+            this._scrollToHash();
         });
     }
-    private getMenuSubsectionsBySection(articlesBySection: ArticlesBySection) {
+    private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection) {
         const sectionNames = _.keys(articlesBySection);
         const menuSubsectionsBySection: {[section: string]: string[]} = {};
         for (const sectionName of sectionNames) {

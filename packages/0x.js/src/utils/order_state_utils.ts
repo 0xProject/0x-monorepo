@@ -18,9 +18,9 @@ import {
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
 export class OrderStateUtils {
-    private balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
-    private orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
-    private static validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
+    private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
+    private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
+    private static _validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
         const unavailableTakerTokenAmount = orderRelevantState.cancelledTakerTokenAmount.add(
             orderRelevantState.filledTakerTokenAmount,
         );
@@ -53,14 +53,14 @@ export class OrderStateUtils {
     }
     constructor(balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore,
                 orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore) {
-        this.balanceAndProxyAllowanceLazyStore = balanceAndProxyAllowanceLazyStore;
-        this.orderFilledCancelledLazyStore = orderFilledCancelledLazyStore;
+        this._balanceAndProxyAllowanceLazyStore = balanceAndProxyAllowanceLazyStore;
+        this._orderFilledCancelledLazyStore = orderFilledCancelledLazyStore;
     }
     public async getOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
         const orderRelevantState = await this.getOrderRelevantStateAsync(signedOrder);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         try {
-            OrderStateUtils.validateIfOrderIsValid(signedOrder, orderRelevantState);
+            OrderStateUtils._validateIfOrderIsValid(signedOrder, orderRelevantState);
             const orderState: OrderStateValid = {
                 isValid: true,
                 orderHash,
@@ -81,23 +81,23 @@ export class OrderStateUtils {
         // If we pass it from the instantiator - there is no opportunity to get it there
         // because JS doesn't support async constructors.
         // Moreover - it's cached under the hood so it's equivalent to an async constructor.
-        const exchange = (this.orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        const makerBalance = await this.balanceAndProxyAllowanceLazyStore.getBalanceAsync(
+        const makerBalance = await this._balanceAndProxyAllowanceLazyStore.getBalanceAsync(
             signedOrder.makerTokenAddress, signedOrder.maker,
         );
-        const makerProxyAllowance = await this.balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
+        const makerProxyAllowance = await this._balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
             signedOrder.makerTokenAddress, signedOrder.maker,
         );
-        const makerFeeBalance = await this.balanceAndProxyAllowanceLazyStore.getBalanceAsync(
+        const makerFeeBalance = await this._balanceAndProxyAllowanceLazyStore.getBalanceAsync(
             zrxTokenAddress, signedOrder.maker,
         );
-        const makerFeeProxyAllowance = await this.balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
+        const makerFeeProxyAllowance = await this._balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
             zrxTokenAddress, signedOrder.maker,
         );
-        const filledTakerTokenAmount = await this.orderFilledCancelledLazyStore.getFilledTakerAmountAsync(orderHash);
-        const cancelledTakerTokenAmount = await this.orderFilledCancelledLazyStore.getCancelledTakerAmountAsync(
+        const filledTakerTokenAmount = await this._orderFilledCancelledLazyStore.getFilledTakerAmountAsync(orderHash);
+        const cancelledTakerTokenAmount = await this._orderFilledCancelledLazyStore.getCancelledTakerAmountAsync(
             orderHash,
         );
         const unavailableTakerTokenAmount = await exchange.getUnavailableTakerAmountAsync(orderHash);

@@ -21,7 +21,7 @@ export class Order {
         if (_.isUndefined(v) || _.isUndefined(r) || _.isUndefined(s)) {
             throw new Error('Cannot call isValidSignature on unsigned order');
         }
-        const orderHash = this.getOrderHash();
+        const orderHash = this._getOrderHash();
         const msgHash = ethUtil.hashPersonalMessage(ethUtil.toBuffer(orderHash));
         try {
             const pubKey = ethUtil.ecrecover(msgHash, v, ethUtil.toBuffer(r), ethUtil.toBuffer(s));
@@ -32,7 +32,7 @@ export class Order {
         }
     }
     public async signAsync() {
-        const orderHash = this.getOrderHash();
+        const orderHash = this._getOrderHash();
         const signature = await promisify<string>(web3.eth.sign)(this.params.maker, orderHash);
         const {v, r, s} = ethUtil.fromRpcSig(signature);
         this.params = _.assign(this.params, {
@@ -88,7 +88,7 @@ export class Order {
         };
         return cancel;
     }
-    private getOrderHash(): string {
+    private _getOrderHash(): string {
         const orderHash = crypto.solSHA3([
             this.params.exchangeContractAddress,
             this.params.maker,
