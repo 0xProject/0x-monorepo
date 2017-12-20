@@ -211,7 +211,7 @@ describe('EtherTokenWrapper', () => {
                 );
             })().catch(done);
         });
-        it('Should receive the Withdrawal event when ether is being withdrewn', (done: DoneCallback) => {
+        it('Should receive the Withdrawal event when ether is being withdrawn', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<WithdrawalContractEventArgs>) => {
                     expect(err).to.be.null();
