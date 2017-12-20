@@ -2,6 +2,7 @@ export {ZeroEx} from './0x';
 
 export {
     Order,
+    BlockParamLiteral,
     SignedOrder,
     ECSignature,
     ZeroExError,
@@ -23,10 +24,14 @@ export {
     TransferContractEventArgs,
     ApprovalContractEventArgs,
     TokenContractEventArgs,
+    EtherTokenContractEventArgs,
+    WithdrawalContractEventArgs,
+    DepositContractEventArgs,
     ContractEventArgs,
     ContractEventArg,
     Web3Provider,
     ZeroExConfig,
+    EtherTokenEvents,
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
     MethodOpts,
