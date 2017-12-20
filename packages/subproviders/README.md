@@ -14,7 +14,17 @@ yarn add @0xproject/subproviders
 Simply import the subprovider you are interested in using:
 
 ```javascript
-import {LedgerSubprovider} from '@0xproject/subproviders';
+import {
+    ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
+    LedgerSubprovider,
+} from '@0xproject/subproviders';
+
+const ledgerSubprovider = new LedgerSubprovider(
+    networkId,
+    ledgerEthereumClientFactoryAsync,
+);
+
+const accounts = await ledgerSubprovider.getAccountsAsync();
 ```
 
 ### Subproviders
