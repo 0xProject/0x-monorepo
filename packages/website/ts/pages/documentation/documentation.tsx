@@ -63,13 +63,13 @@ interface DocumentationState {
 const styles: Styles = {
     mainContainers: {
         position: 'absolute',
-        top: 60,
+        top: 1,
         left: 0,
         bottom: 0,
         right: 0,
         overflowZ: 'hidden',
         overflowY: 'scroll',
-        minHeight: 'calc(100vh - 60px)',
+        minHeight: 'calc(100vh - 1px)',
         WebkitOverflowScrolling: 'touch',
     },
     menuContainer: {
