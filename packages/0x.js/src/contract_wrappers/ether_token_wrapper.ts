@@ -11,7 +11,6 @@ import {
     EventCallback,
     IndexedFilterValues,
     LogWithDecodedArgs,
-    TokenEvents,
     TransactionOpts,
     ZeroExError,
 } from '../types';
