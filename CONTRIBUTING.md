@@ -42,7 +42,7 @@ We also recommend you read through the tests.
 
 ## Styleguide
 
-We use `[tslint](https://palantir.github.io/tslint/)` with [custom configs](https://github.com/0xProject/tslint-config-0xproject) to keep our code style consistent.
+We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/tslint-config-0xproject) to keep our code style consistent.
 
 To lint your code just run: `yarn lint`
 
