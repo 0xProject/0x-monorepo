@@ -40,3 +40,65 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 | [`@0xproject/kovan_faucets`](/packages/kovan-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether |
 | [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts) | Shared monorepo scripts |
 | [`@0xproject/website`](/packages/website) | 0x website & Portal DApp |
+
+## Usage
+
+Dedicated documentation pages:
+- [0x.js Library](https://0xproject.com/docs/0xjs)
+- [0x Connect](https://0xproject.com/docs/connect)
+- [Smart contracts](https://0xproject.com/docs/contracts)
+- [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/blob/master/README.md)
+
+## Contributing
+
+We strongly encourage the community to help us make improvements and to determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
+
+### Install dependencies
+
+If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+```bash
+yarn config set workspaces-experimental true
+```
+
+Then install dependencies
+```bash
+yarn install
+```
+
+### Build
+
+Build all packages
+
+```bash
+yarn lerna:run build
+```
+
+### Lint
+
+Lint all packages
+```bash
+yarn lerna:run lint
+```
+
+### Run Tests
+
+Before running the tests, you will need to spin up a [TestRPC](https://www.npmjs.com/package/ethereumjs-testrpc) instance and deploy all the 0x smart contracts.
+
+In a separate terminal, start TestRPC (a convenience command is provided as part of this repo)
+```bash
+yarn testrpc
+```
+
+Then in your main terminal run
+```
+cd packages/contracts
+yarn run migrate
+cd ..
+```
+
+And finally from the root project directory run
+```bash
+yarn lerna:run test
+```
