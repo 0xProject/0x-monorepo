@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.x.x - _TBD, 2017_
+v0.28.0 - _December 20, 2017_
 ------------------------
     * Add `etherTokenAddress` arg to `depositAsync` and `withdrawAsync` methods on `zeroEx.etherToken` (#267)
     * Removed accidentally included `unsubscribeAll` method from `zeroEx.proxy`, `zeroEx.etherToken` and `zeroEx.tokenRegistry` (#267)

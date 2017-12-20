@@ -1,5 +1,5 @@
 # CHANGELOG
 
-v0.x.x - _TBD, 2017_
+v0.2.0 - _December 20, 2017_
 ------------------------
     * Improve the performance of address fetching (#271)
