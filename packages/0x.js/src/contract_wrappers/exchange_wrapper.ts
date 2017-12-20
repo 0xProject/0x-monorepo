@@ -162,7 +162,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts                        Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber,
                                 shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                 takerAddress: string,
@@ -218,7 +218,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts                        Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], fillTakerTokenAmount: BigNumber,
                                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                      takerAddress: string,
@@ -299,7 +299,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts                            Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async batchFillOrdersAsync(orderFillRequests: OrderFillRequest[],
                                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                       takerAddress: string,
@@ -372,7 +372,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts    Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber,
                                       takerAddress: string,
                                       orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
@@ -417,7 +417,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts        Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async batchFillOrKillAsync(orderFillRequests: OrderFillRequest[],
                                       takerAddress: string,
                                       orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
@@ -485,7 +485,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   transactionOpts         Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async cancelOrderAsync(order: Order|SignedOrder,
                                   cancelTakerTokenAmount: BigNumber,
                                   orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
@@ -526,7 +526,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   transactionOpts             Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async batchCancelOrdersAsync(orderCancellationRequests: OrderCancellationRequest[],
                                         orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,

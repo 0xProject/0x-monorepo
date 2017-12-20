@@ -235,6 +235,7 @@ export interface OrderFillRequest {
 }
 
 export type AsyncMethod = (...args: any[]) => Promise<any>;
+export type SyncMethod = (...args: any[]) => any;
 
 /**
  * We re-export the `Web3.Provider` type specified in the Web3 Typescript typings

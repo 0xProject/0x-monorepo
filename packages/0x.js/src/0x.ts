@@ -25,6 +25,7 @@ import {
 import {AbiDecoder} from './utils/abi_decoder';
 import {assert} from './utils/assert';
 import {constants} from './utils/constants';
+import {decorators} from './utils/decorators';
 import {signatureUtils} from './utils/signature_utils';
 import {utils} from './utils/utils';
 
@@ -155,6 +156,7 @@ export class ZeroEx {
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
      * @return  The resulting orderHash from hashing the supplied order.
      */
+    @decorators.syncZeroExErrorHandler
     public static getOrderHashHex(order: Order|SignedOrder): string {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         const orderHashHex = utils.getOrderHashHex(order);
