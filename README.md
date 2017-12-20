@@ -94,7 +94,7 @@ yarn testrpc
 Then in your main terminal run
 ```
 cd packages/contracts
-yarn run migrate
+yarn migrate
 cd ..
 ```
 
