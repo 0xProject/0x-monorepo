@@ -49,6 +49,12 @@ yarn install
 yarn build
 ```
 
+### Clean
+
+```bash
+yarn clean
+```
+
 ### Lint
 
 ```bash
