@@ -127,7 +127,7 @@ export class OrderStateWatcher {
         }
         delete this._orderByOrderHash[orderHash];
         delete this._orderStateByOrderHashCache[orderHash];
-        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         this._removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
         this._removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
@@ -351,7 +351,7 @@ export class OrderStateWatcher {
         }
     }
     private _getZRXTokenAddress(): string {
-        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         return zrxTokenAddress;
     }

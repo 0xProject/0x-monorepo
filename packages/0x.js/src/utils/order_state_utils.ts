@@ -81,7 +81,7 @@ export class OrderStateUtils {
         // If we pass it from the instantiator - there is no opportunity to get it there
         // because JS doesn't support async constructors.
         // Moreover - it's cached under the hood so it's equivalent to an async constructor.
-        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         const makerBalance = await this._balanceAndProxyAllowanceLazyStore.getBalanceAsync(

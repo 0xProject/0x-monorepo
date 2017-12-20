@@ -65,7 +65,7 @@ describe('ExchangeTransferSimulator', () => {
             await exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress, sender, recipient, transferAmount, TradeSide.Taker, TransferType.Trade,
             );
-            const store = (exchangeTransferSimulator as any).store;
+            const store = (exchangeTransferSimulator as any)._store;
             const senderBalance = await store.getBalanceAsync(exampleTokenAddress, sender);
             const recipientBalance = await store.getBalanceAsync(exampleTokenAddress, recipient);
             const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleTokenAddress, sender);
@@ -81,7 +81,7 @@ describe('ExchangeTransferSimulator', () => {
             await exchangeTransferSimulator.transferFromAsync(
                 exampleTokenAddress, sender, recipient, transferAmount, TradeSide.Taker, TransferType.Trade,
             );
-            const store = (exchangeTransferSimulator as any).store;
+            const store = (exchangeTransferSimulator as any)._store;
             const senderBalance = await store.getBalanceAsync(exampleTokenAddress, sender);
             const recipientBalance = await store.getBalanceAsync(exampleTokenAddress, recipient);
             const senderProxyAllowance = await store.getProxyAllowanceAsync(exampleTokenAddress, sender);
