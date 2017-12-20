@@ -5,28 +5,24 @@ import {
     CustomTypeChild,
     DocAgnosticFormat,
     DocSection,
-    DocsMenu,
     IndexSignature,
     KindString,
-    MenuSubsectionsBySection,
     Parameter,
     Property,
     SectionsMap,
     Type,
     TypeDocNode,
     TypeDocType,
-    TypeDocTypes,
     TypeParameter,
     TypescriptMethod,
 } from 'ts/types';
-import {constants} from 'ts/utils/constants';
 import {utils} from 'ts/utils/utils';
 
 export const typeDocUtils = {
     isType(entity: TypeDocNode): boolean {
         return entity.kindString === KindString.Interface ||
                entity.kindString === KindString.Function ||
-               entity.kindString === KindString['Type alias'] ||
+               entity.kindString === KindString.TypeAlias ||
                entity.kindString === KindString.Variable ||
                entity.kindString === KindString.Enumeration;
     },
@@ -130,7 +126,7 @@ export const typeDocUtils = {
                 case KindString.Function:
                 case KindString.Variable:
                 case KindString.Enumeration:
-                case KindString['Type alias']:
+                case KindString.TypeAlias:
                     if (docsInfo.isPublicType(entity.name)) {
                         const customType = typeDocUtils._convertCustomType(
                             entity, docsInfo.sections, sectionName, docsInfo.subPackageName);

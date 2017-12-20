@@ -4,10 +4,7 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
-import * as moment from 'moment';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {Blockchain} from 'ts/blockchain';
@@ -19,28 +16,22 @@ import {Alert} from 'ts/components/ui/alert';
 import {EthereumAddress} from 'ts/components/ui/ethereum_address';
 import {Identicon} from 'ts/components/ui/identicon';
 import {VisualOrder} from 'ts/components/visual_order';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {orderSchema} from 'ts/schemas/order_schema';
 import {SchemaValidator} from 'ts/schemas/validator';
 import {
     AlertTypes,
     BlockchainErrs,
-    ContractResponse,
-    ExchangeContractErrs,
     Order,
-    OrderToken,
-    Side,
     Token,
     TokenByAddress,
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
 import {utils} from 'ts/utils/utils';
-
-const CUSTOM_LIGHT_GRAY = '#BBBBBB';
 
 interface FillOrderProps {
     blockchain: Blockchain;
@@ -230,7 +221,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 <div className="clearfix pb2" style={{width: '100%'}}>
                     <div className="inline left">Order details</div>
                     <div className="inline right" style={{minWidth: 208}}>
-                        <div className="col col-4 pl2" style={{color: '#BEBEBE'}}>
+                        <div className="col col-4 pl2" style={{color: colors.grey}}>
                             Maker:
                         </div>
                         <div className="col col-2 pr1">
@@ -267,22 +258,20 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                     </div>
                 </div>
                 {!isUserMaker &&
-                    <div className="clearfix mx-auto" style={{width: 315, height: 108}}>
-                       <div className="col col-7" style={{maxWidth: 235}}>
-                           <TokenAmountInput
-                               label="Fill amount"
-                               onChange={this.onFillAmountChange.bind(this)}
-                               shouldShowIncompleteErrs={false}
-                               token={fillToken}
-                               tokenState={fillTokenState}
-                               amount={fillAssetToken.amount}
-                               shouldCheckBalance={true}
-                               shouldCheckAllowance={true}
-                           />
-                       </div>
+                    <div className="clearfix mx-auto relative" style={{width: 235, height: 108}}>
+                       <TokenAmountInput
+                           label="Fill amount"
+                           onChange={this.onFillAmountChange.bind(this)}
+                           shouldShowIncompleteErrs={false}
+                           token={fillToken}
+                           tokenState={fillTokenState}
+                           amount={fillAssetToken.amount}
+                           shouldCheckBalance={true}
+                           shouldCheckAllowance={true}
+                       />
                        <div
-                           className="col col-5 pl1"
-                           style={{color: CUSTOM_LIGHT_GRAY, paddingTop: 39}}
+                           className="absolute sm-hide xs-hide"
+                           style={{color: colors.grey400, right: -247, top: 39, width: 242}}
                        >
                            = {accounting.formatNumber(orderReceiveAmount, 6)} {makerToken.symbol}
                        </div>
@@ -332,7 +321,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 Order successfully filled. See the trade details in your{' '}
                 <Link
                     to={`${WebsitePaths.Portal}/trades`}
-                    style={{color: 'white'}}
+                    style={{color: colors.white}}
                 >
                     trade history
                 </Link>
@@ -389,22 +378,24 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         const isUnseenMakerToken = _.isUndefined(makerTokenIfExists);
         const isMakerTokenTracked = !_.isUndefined(makerTokenIfExists) && makerTokenIfExists.isTracked;
         if (isUnseenMakerToken) {
-            tokensToTrack.push(_.assign({}, this.state.parsedOrder.maker.token, {
+            tokensToTrack.push({
+                ...this.state.parsedOrder.maker.token,
                 iconUrl: undefined,
                 isTracked: false,
                 isRegistered: false,
-            }));
+            });
         } else if (!isMakerTokenTracked) {
             tokensToTrack.push(makerTokenIfExists);
         }
         const isUnseenTakerToken = _.isUndefined(takerTokenIfExists);
         const isTakerTokenTracked = !_.isUndefined(takerTokenIfExists) && takerTokenIfExists.isTracked;
         if (isUnseenTakerToken) {
-            tokensToTrack.push(_.assign({}, this.state.parsedOrder.taker.token, {
+            tokensToTrack.push({
+                ...this.state.parsedOrder.taker.token,
                 iconUrl: undefined,
                 isTracked: false,
                 isRegistered: false,
-            }));
+            });
         } else if (!isTakerTokenTracked) {
             tokensToTrack.push(takerTokenIfExists);
         }
@@ -531,8 +522,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         });
 
         const parsedOrder = this.state.parsedOrder;
-        const orderHash = parsedOrder.signature.hash;
-        const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
         const takerFillAmount = this.props.orderFillAmount;
 
         if (_.isUndefined(this.props.userAddress)) {

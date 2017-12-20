@@ -1,12 +1,11 @@
 import * as _ from 'lodash';
 import MenuItem from 'material-ui/MenuItem';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Link as ScrollLink} from 'react-scroll';
 import {VersionDropDown} from 'ts/pages/shared/version_drop_down';
-import {Docs, MenuSubsectionsBySection, Styles} from 'ts/types';
+import {MenuSubsectionsBySection, Styles} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {constants} from 'ts/utils/constants';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
 import {utils} from 'ts/utils/utils';
 
 interface NestedSidebarMenuProps {
@@ -56,7 +55,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             containerId={constants.DOCS_CONTAINER_ID}
                         >
                             <div
-                                style={{color: colors.grey500, cursor: 'pointer'}}
+                                style={{color: colors.grey, cursor: 'pointer'}}
                                 className="pb1"
                             >
                                 {finalSectionName.toUpperCase()}

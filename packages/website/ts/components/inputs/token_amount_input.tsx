@@ -1,16 +1,16 @@
 import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {BalanceBoundedInput} from 'ts/components/inputs/balance_bounded_input';
 import {InputErrMsg, Token, TokenState, ValidatedBigNumberCallback, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 
 interface TokenAmountInputProps {
-    label: string;
     token: Token;
     tokenState: TokenState;
+    label?: string;
     amount?: BigNumber;
     shouldShowIncompleteErrs: boolean;
     shouldCheckBalance: boolean;
@@ -26,8 +26,9 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
         const amount = this.props.amount ?
             ZeroEx.toUnitAmount(this.props.amount, this.props.token.decimals) :
             undefined;
+        const hasLabel = !_.isUndefined(this.props.label);
         return (
-            <div className="flex overflow-hidden" style={{height: 84}}>
+            <div className="flex overflow-hidden" style={{height: hasLabel ? 84 : 62}}>
                 <BalanceBoundedInput
                     label={this.props.label}
                     amount={amount}
@@ -38,7 +39,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     shouldShowIncompleteErrs={this.props.shouldShowIncompleteErrs}
                     onVisitBalancesPageClick={this.props.onVisitBalancesPageClick}
                 />
-                <div style={{paddingTop: 39}}>
+                <div style={{paddingTop: hasLabel ? 39 : 14}}>
                     {this.props.token.symbol}
                 </div>
             </div>
@@ -58,7 +59,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     Insufficient allowance.{' '}
                     <Link
                         to={`${WebsitePaths.Portal}/balances`}
-                        style={{cursor: 'pointer', color: colors.grey900}}
+                        style={{cursor: 'pointer', color: colors.darkestGrey}}
                     >
                             Set allowance
                     </Link>

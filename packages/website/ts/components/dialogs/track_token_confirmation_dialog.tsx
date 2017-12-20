@@ -1,14 +1,12 @@
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {TrackTokenConfirmation} from 'ts/components/track_token_confirmation';
 import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {Token, TokenByAddress} from 'ts/types';
-import {constants} from 'ts/utils/constants';
 
 interface TrackTokenConfirmationDialogProps {
     tokens: Token[];
@@ -75,7 +73,9 @@ export class TrackTokenConfirmationDialog extends
             isAddingTokenToTracked: true,
         });
         for (const token of this.props.tokens) {
-            const newTokenEntry = _.assign({}, token);
+            const newTokenEntry = {
+                ...token,
+            };
 
             newTokenEntry.isTracked = true;
             trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);

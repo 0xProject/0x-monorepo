@@ -1,11 +1,9 @@
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import {Deployer} from './../src/deployer';
 import {constants} from './../src/utils/constants';
-import {Token} from './../src/utils/types';
 import {tokenInfo} from './config/token_info';
 
 export const migrator = {
@@ -21,7 +19,7 @@ export const migrator = {
 
         const tokenTransferProxy = await deployer.deployAndSaveAsync('TokenTransferProxy');
         const zrxToken = await deployer.deployAndSaveAsync('ZRXToken');
-        const etherToken = await deployer.deployAndSaveAsync('EtherToken');
+        const etherToken = await deployer.deployAndSaveAsync('WETH9');
         const tokenReg = await deployer.deployAndSaveAsync('TokenRegistry');
 
         const exchangeArgs = [zrxToken.address, tokenTransferProxy.address];

@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import {ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx, ZeroExError} from '../src';
+import {ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx} from '../src';
 
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
@@ -82,9 +82,9 @@ describe('ZeroEx library', () => {
         it('should return true if the signature does pertain to the dataHex & address', async () => {
             const isValidSignatureLocal = ZeroEx.isValidSignature(dataHex, signature, address);
             expect(isValidSignatureLocal).to.be.true();
-            const isValidSignatureOnContract = await (zeroEx.exchange as any)
-                ._isValidSignatureUsingContractCallAsync(dataHex, signature, address);
-            return expect(isValidSignatureOnContract).to.be.true();
+            return expect(
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, signature, address),
+            ).to.become(true);
         });
     });
     describe('#generateSalt', () => {
@@ -151,6 +151,15 @@ describe('ZeroEx library', () => {
         it('calculates the order hash', async () => {
             const orderHash = ZeroEx.getOrderHashHex(order);
             expect(orderHash).to.be.equal(expectedOrderHash);
+        });
+        it('throws a readable error message if taker format is invalid', async () => {
+            const orderWithInvalidtakerFormat = {
+                ...order,
+                taker: null as any as string,
+            };
+            // tslint:disable-next-line:max-line-length
+            const expectedErrorMessage = 'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
+            expect(() => ZeroEx.getOrderHashHex(orderWithInvalidtakerFormat)).to.throw(expectedErrorMessage);
         });
     });
     describe('#signOrderHashAsync', () => {
@@ -243,14 +252,6 @@ describe('ZeroEx library', () => {
             };
             const zeroExWithWrongExchangeAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
             expect(zeroExWithWrongExchangeAddress.exchange.getContractAddress()).to.be.equal(ZeroEx.NULL_ADDRESS);
-        });
-        it('allows to specify ether token contract address', async () => {
-            const zeroExConfig = {
-                etherTokenContractAddress: ZeroEx.NULL_ADDRESS,
-                networkId: constants.TESTRPC_NETWORK_ID,
-            };
-            const zeroExWithWrongEtherTokenAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
-            expect(zeroExWithWrongEtherTokenAddress.etherToken.getContractAddress()).to.be.equal(ZeroEx.NULL_ADDRESS);
         });
         it('allows to specify token registry token contract address', async () => {
             const zeroExConfig = {

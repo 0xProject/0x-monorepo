@@ -1,4 +1,3 @@
-import {ZeroEx} from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -7,7 +6,6 @@ import {Blockchain} from 'ts/blockchain';
 import {SendDialog} from 'ts/components/dialogs/send_dialog';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {BlockchainCallErrs, Token, TokenState} from 'ts/types';
-import {constants} from 'ts/utils/constants';
 import {errorReporter} from 'ts/utils/error_reporter';
 import {utils} from 'ts/utils/utils';
 
@@ -72,14 +70,14 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
             this.props.dispatcher.replaceTokenBalanceByAddress(token.address, balance);
         } catch (err) {
             const errMsg = `${err}`;
-            if (_.includes(errMsg, BlockchainCallErrs.USER_HAS_NO_ASSOCIATED_ADDRESSES)) {
+            if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return;
             } else if (!_.includes(errMsg, 'User denied transaction')) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
-                await errorReporter.reportAsync(err);
                 this.props.onError();
+                await errorReporter.reportAsync(err);
             }
         }
         this.setState({

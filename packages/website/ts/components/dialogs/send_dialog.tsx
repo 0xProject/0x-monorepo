@@ -2,13 +2,10 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import RadioButton from 'material-ui/RadioButton';
-import RadioButtonGroup from 'material-ui/RadioButton/RadioButtonGroup';
 import * as React from 'react';
 import {AddressInput} from 'ts/components/inputs/address_input';
-import {EthAmountInput} from 'ts/components/inputs/eth_amount_input';
 import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
-import {Side, Token, TokenState} from 'ts/types';
+import {Token, TokenState} from 'ts/types';
 
 interface SendDialogProps {
     onComplete: (recipient: string, value: BigNumber) => void;

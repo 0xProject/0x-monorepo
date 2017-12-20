@@ -1,16 +1,10 @@
 import * as _ from 'lodash';
 import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
 import Popover from 'material-ui/Popover';
 import * as React from 'react';
-import {Link} from 'react-router-dom';
-import {
-    Link as ScrollLink,
-} from 'react-scroll';
-import {Styles, WebsitePaths} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 
 const CHECK_CLOSE_POPOVER_INTERVAL_MS = 300;
-const CUSTOM_LIGHT_GRAY = '#848484';
 const DEFAULT_STYLE = {
     fontSize: 14,
 };
@@ -78,7 +72,7 @@ export class DropDownMenuItem extends React.Component<DropDownMenuItemProps, Dro
                         onMouseEnter={this.onHover.bind(this)}
                         onMouseLeave={this.onHoverOff.bind(this)}
                     >
-                        <Menu style={{color: CUSTOM_LIGHT_GRAY}}>
+                        <Menu style={{color: colors.grey}}>
                             {this.props.subMenuItems}
                         </Menu>
                     </div>

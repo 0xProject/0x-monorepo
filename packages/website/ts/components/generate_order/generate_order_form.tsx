@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {ExpirationInput} from 'ts/components/inputs/expiration_input';
@@ -30,6 +29,7 @@ import {
     TokenByAddress,
     TokenStateByAddress,
 } from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {errorReporter} from 'ts/utils/error_reporter';
 import {utils} from 'ts/utils/utils';
 
@@ -62,16 +62,7 @@ interface GenerateOrderFormState {
     signingState: SigningState;
 }
 
-const style = {
-    paper: {
-        display: 'inline-block',
-        position: 'relative',
-        textAlign: 'center',
-        width: '100%',
-    },
-};
-
-export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, any> {
+export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, GenerateOrderFormState> {
     private validator: SchemaValidator;
     constructor(props: GenerateOrderFormProps) {
         super(props);
@@ -87,10 +78,10 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
     }
     public render() {
         const dispatcher = this.props.dispatcher;
-        const depositTokenAddress = this.props.sideToAssetToken[Side.deposit].address;
+        const depositTokenAddress = this.props.sideToAssetToken[Side.Deposit].address;
         const depositToken = this.props.tokenByAddress[depositTokenAddress];
         const depositTokenState = this.props.tokenStateByAddress[depositTokenAddress];
-        const receiveTokenAddress = this.props.sideToAssetToken[Side.receive].address;
+        const receiveTokenAddress = this.props.sideToAssetToken[Side.Receive].address;
         const receiveToken = this.props.tokenByAddress[receiveTokenAddress];
         const receiveTokenState = this.props.tokenStateByAddress[receiveTokenAddress];
         const takerExplanation = 'If a taker is specified, only they are<br> \
@@ -111,9 +102,9 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
                                     blockchainErr={this.props.blockchainErr}
                                     dispatcher={this.props.dispatcher}
                                     label="Selling"
-                                    side={Side.deposit}
+                                    side={Side.Deposit}
                                     networkId={this.props.networkId}
-                                    assetToken={this.props.sideToAssetToken[Side.deposit]}
+                                    assetToken={this.props.sideToAssetToken[Side.Deposit]}
                                     updateChosenAssetToken={dispatcher.updateChosenAssetToken.bind(dispatcher)}
                                     tokenByAddress={this.props.tokenByAddress}
                                 />
@@ -121,8 +112,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
                                     label="Sell amount"
                                     token={depositToken}
                                     tokenState={depositTokenState}
-                                    amount={this.props.sideToAssetToken[Side.deposit].amount}
-                                    onChange={this.onTokenAmountChange.bind(this, depositToken, Side.deposit)}
+                                    amount={this.props.sideToAssetToken[Side.Deposit].amount}
+                                    onChange={this.onTokenAmountChange.bind(this, depositToken, Side.Deposit)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                     shouldCheckBalance={true}
                                     shouldCheckAllowance={true}
@@ -142,9 +133,9 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
                                     blockchainErr={this.props.blockchainErr}
                                     dispatcher={this.props.dispatcher}
                                     label="Buying"
-                                    side={Side.receive}
+                                    side={Side.Receive}
                                     networkId={this.props.networkId}
-                                    assetToken={this.props.sideToAssetToken[Side.receive]}
+                                    assetToken={this.props.sideToAssetToken[Side.Receive]}
                                     updateChosenAssetToken={dispatcher.updateChosenAssetToken.bind(dispatcher)}
                                     tokenByAddress={this.props.tokenByAddress}
                                 />
@@ -152,8 +143,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
                                     label="Receive amount"
                                     token={receiveToken}
                                     tokenState={receiveTokenState}
-                                    amount={this.props.sideToAssetToken[Side.receive].amount}
-                                    onChange={this.onTokenAmountChange.bind(this, receiveToken, Side.receive)}
+                                    amount={this.props.sideToAssetToken[Side.Receive].amount}
+                                    onChange={this.onTokenAmountChange.bind(this, receiveToken, Side.Receive)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                     shouldCheckBalance={false}
                                     shouldCheckAllowance={false}
@@ -163,7 +154,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
                     </div>
                     <div className="pt1 sm-pb2 lg-px4 md-px4">
                         <div className="lg-px3 md-px3">
-                            <div style={{fontSize: 12, color: colors.grey500}}>Expiration</div>
+                            <div style={{fontSize: 12, color: colors.grey}}>Expiration</div>
                             <ExpirationInput
                                 orderExpiryTimestamp={this.props.orderExpiryTimestamp}
                                 updateOrderExpiry={dispatcher.updateOrderExpiry.bind(dispatcher)}
@@ -244,16 +235,16 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
         });
     }
     private async onSignClickedAsync(): Promise<boolean> {
-        if (this.props.blockchainErr !== '') {
+        if (this.props.blockchainErr !== BlockchainErrs.NoError) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return false;
         }
 
         // Check if all required inputs were supplied
-        const debitToken = this.props.sideToAssetToken[Side.deposit];
+        const debitToken = this.props.sideToAssetToken[Side.Deposit];
         const debitBalance = this.props.tokenStateByAddress[debitToken.address].balance;
         const debitAllowance = this.props.tokenStateByAddress[debitToken.address].allowance;
-        const receiveAmount = this.props.sideToAssetToken[Side.receive].amount;
+        const receiveAmount = this.props.sideToAssetToken[Side.Receive].amount;
         if (!_.isUndefined(debitToken.amount) && !_.isUndefined(receiveAmount) &&
             debitToken.amount.gt(0) && receiveAmount.gt(0) &&
             this.props.userAddress !== '' &&
@@ -287,7 +278,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, a
         if (_.isUndefined(exchangeContractAddr)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             this.setState({
-                isSigning: false,
+                signingState: SigningState.UNSIGNED,
             });
             return false;
         }

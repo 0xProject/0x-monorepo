@@ -748,7 +748,6 @@ contract('Exchange', (accounts: string[]) => {
 
             const res = await exWrapper.cancelOrderAsync(order, maker);
             expect(res.logs).to.have.length(1);
-            const errId = res.logs[0].args.errorId.toNumber();
             const errCode = res.logs[0].args.errorId.toNumber();
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
         });

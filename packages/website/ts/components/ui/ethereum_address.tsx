@@ -26,7 +26,7 @@ export const EthereumAddress = (props: EthereumAddressProps) => {
                 <EtherScanIcon
                     addressOrTxHash={props.address}
                     networkId={props.networkId}
-                    etherscanLinkSuffixes={EtherscanLinkSuffixes.address}
+                    etherscanLinkSuffixes={EtherscanLinkSuffixes.Address}
                 />
             </div>
             <ReactTooltip id={tooltipId}>{props.address}</ReactTooltip>

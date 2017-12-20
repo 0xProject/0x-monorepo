@@ -9,11 +9,8 @@ import {MethodSignature} from 'ts/pages/documentation/method_signature';
 import {Type} from 'ts/pages/documentation/type';
 import {AnchorTitle} from 'ts/pages/shared/anchor_title';
 import {CustomType, CustomTypeChild, HeaderSizes, KindString, TypeDocTypes} from 'ts/types';
-import {constants} from 'ts/utils/constants';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
-
-const KEYWORD_COLOR = '#a81ca6';
 
 interface TypeDefinitionProps {
     customType: CustomType;
@@ -78,11 +75,15 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 );
                 break;
 
-            case KindString['Type alias']:
+            case KindString.TypeAlias:
                 typePrefix = 'Type Alias';
                 codeSnippet = (
                     <span>
-                        <span style={{color: KEYWORD_COLOR}}>type</span> {customType.name} ={' '}
+                        <span
+                            style={{color: colors.lightPurple}}
+                        >
+                            type
+                        </span> {customType.name} ={' '}
                         {customType.type.typeDocType !== TypeDocTypes.Reflection ?
                             <Type type={customType.type} docsInfo={this.props.docsInfo} /> :
                             <MethodSignature

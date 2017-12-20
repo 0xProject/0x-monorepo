@@ -1,9 +1,8 @@
 import {assert} from '@0xproject/assert';
 import {addressUtils} from '@0xproject/utils';
-import promisify = require('es6-promisify');
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
-import * as ledger from 'ledgerco';
+import HDNode = require('hdkey');
 import * as _ from 'lodash';
 import Semaphore from 'semaphore-async-await';
 import Web3 = require('web3');
@@ -22,8 +21,7 @@ import {Subprovider} from './subprovider';
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
 const NUM_ADDRESSES_TO_FETCH = 10;
 const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
-const SHOULD_GET_CHAIN_CODE = false;
-const HEX_REGEX = /^[0-9A-Fa-f]+$/g;
+const SHOULD_GET_CHAIN_CODE = true;
 
 export class LedgerSubprovider extends Subprovider {
     private _nonceLock: Semaphore;
@@ -34,18 +32,6 @@ export class LedgerSubprovider extends Subprovider {
     private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
-    private static isValidHex(data: string) {
-        if (!_.isString(data)) {
-            return false;
-        }
-        const isHexPrefixed = data.slice(0, 2) === '0x';
-        if (!isHexPrefixed) {
-            return false;
-        }
-        const nonPrefixed = data.slice(2);
-        const isValid = nonPrefixed.match(HEX_REGEX);
-        return isValid;
-    }
     private static validateSender(sender: string) {
         if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
             throw new Error(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
@@ -142,21 +128,30 @@ export class LedgerSubprovider extends Subprovider {
     public async getAccountsAsync(): Promise<string[]> {
         this._ledgerClientIfExists = await this.createLedgerClientAsync();
 
-        // TODO: replace with generating addresses without hitting Ledger
+        let ledgerResponse;
+        try {
+            ledgerResponse = await this._ledgerClientIfExists.getAddress_async(
+                this._derivationPath, this._shouldAlwaysAskForConfirmation, SHOULD_GET_CHAIN_CODE,
+            );
+        } finally {
+            await this.destoryLedgerClientAsync();
+        }
+
+        const hdKey = new HDNode();
+        hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
+        hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
+
         const accounts = [];
         for (let i = 0; i < NUM_ADDRESSES_TO_FETCH; i++) {
-            try {
-                const derivationPath = `${this._derivationPath}/${i + this._derivationPathIndex}`;
-                const result = await this._ledgerClientIfExists.getAddress_async(
-                    derivationPath, this._shouldAlwaysAskForConfirmation, SHOULD_GET_CHAIN_CODE,
-                );
-                accounts.push(result.address.toLowerCase());
-            } catch (err) {
-                await this.destoryLedgerClientAsync();
-                throw err;
-            }
+            const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
+            const derivedPublicKey = derivedHDNode.publicKey;
+            const shouldSanitizePublicKey = true;
+            const ethereumAddressUnprefixed = ethUtil.publicToAddress(
+                derivedPublicKey, shouldSanitizePublicKey,
+            ).toString('hex');
+            const ethereumAddressPrefixed = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
+            accounts.push(ethereumAddressPrefixed.toLowerCase());
         }
-        await this.destoryLedgerClientAsync();
         return accounts;
     }
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {

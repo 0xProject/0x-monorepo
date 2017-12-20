@@ -1,5 +1,4 @@
 import {BlockchainLifecycle} from '@0xproject/dev-utils';
-import {promisify} from '@0xproject/utils';
 import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
@@ -8,19 +7,16 @@ import * as Web3 from 'web3';
 
 import {
     ApprovalContractEventArgs,
-    ContractEvent,
+    BlockParamLiteral,
+    BlockRange,
     DecodedLogEvent,
-    LogEvent,
-    LogWithDecodedArgs,
-    SubscriptionOpts,
     Token,
-    TokenContractEventArgs,
     TokenEvents,
     TransferContractEventArgs,
     ZeroEx,
     ZeroExError,
 } from '../src';
-import {BlockParamLiteral, DoneCallback} from '../src/types';
+import {DoneCallback} from '../src/types';
 
 import {chaiSetup} from './utils/chai_setup';
 import {constants} from './utils/constants';
@@ -71,8 +67,7 @@ describe('TokenWrapper', () => {
             const toAddress = addressWithoutFunds;
             const preBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             expect(preBalance).to.be.bignumber.equal(0);
-            const txHash = await zeroEx.token.transferAsync(token.address, fromAddress, toAddress, transferAmount);
-            const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
+            await zeroEx.token.transferAsync(token.address, fromAddress, toAddress, transferAmount);
             const postBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });
@@ -354,7 +349,6 @@ describe('TokenWrapper', () => {
     });
     describe('#subscribe', () => {
         const indexFilterValues = {};
-        const shouldThrowOnInsufficientBalanceOrAllowance = true;
         let tokenAddress: string;
         const transferAmount = new BigNumber(42);
         const allowanceAmount = new BigNumber(42);
@@ -440,7 +434,7 @@ describe('TokenWrapper', () => {
     describe('#getLogsAsync', () => {
         let tokenAddress: string;
         let tokenTransferProxyAddress: string;
-        const subscriptionOpts: SubscriptionOpts = {
+        const blockRange: BlockRange = {
             fromBlock: 0,
             toBlock: BlockParamLiteral.Latest,
         };
@@ -456,7 +450,7 @@ describe('TokenWrapper', () => {
             const eventName = TokenEvents.Approval;
             const indexFilterValues = {};
             const logs = await zeroEx.token.getLogsAsync<ApprovalContractEventArgs>(
-                tokenAddress, eventName, subscriptionOpts, indexFilterValues,
+                tokenAddress, eventName, blockRange, indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;
@@ -471,7 +465,7 @@ describe('TokenWrapper', () => {
             const differentEventName = TokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await zeroEx.token.getLogsAsync(
-                tokenAddress, differentEventName, subscriptionOpts, indexFilterValues,
+                tokenAddress, differentEventName, blockRange, indexFilterValues,
             );
             expect(logs).to.have.length(0);
         });
@@ -485,7 +479,7 @@ describe('TokenWrapper', () => {
                 _owner: coinbase,
             };
             const logs = await zeroEx.token.getLogsAsync<ApprovalContractEventArgs>(
-                tokenAddress, eventName, subscriptionOpts, indexFilterValues,
+                tokenAddress, eventName, blockRange, indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;

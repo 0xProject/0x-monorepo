@@ -1,9 +1,6 @@
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import GridList from 'material-ui/GridList/GridList';
-import GridTile from 'material-ui/GridList/GridTile';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
 import {NewTokenForm} from 'ts/components/generate_order/new_token_form';
@@ -12,15 +9,12 @@ import {TokenIcon} from 'ts/components/ui/token_icon';
 import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {
-    AssetToken,
     DialogConfigs,
-    Styles,
     Token,
     TokenByAddress,
     TokenState,
     TokenVisibility,
 } from 'ts/types';
-import {utils} from 'ts/utils/utils';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
@@ -219,21 +213,6 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
             });
         }
     }
-    private getTitle() {
-        switch (this.state.assetView) {
-            case AssetViews.ASSET_PICKER:
-                return 'Select token';
-
-            case AssetViews.NEW_TOKEN_FORM:
-                return 'Add an ERC20 token';
-
-            case AssetViews.CONFIRM_TRACK_TOKEN:
-                return 'Tracking confirmation';
-
-            default:
-                throw utils.spawnSwitchErr('assetView', this.state.assetView);
-        }
-    }
     private onCustomAssetChosen() {
         this.setState({
             assetView: AssetViews.NEW_TOKEN_FORM,
@@ -265,7 +244,9 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         });
         const tokenAddress = this.state.chosenTrackTokenAddress;
         const token = this.props.tokenByAddress[tokenAddress];
-        const newTokenEntry = _.assign({}, token);
+        const newTokenEntry = {
+            ...token,
+        };
 
         newTokenEntry.isTracked = true;
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);

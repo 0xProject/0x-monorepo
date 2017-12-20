@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {Token} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
 
 const COMPLETE_STATE_SHOW_LENGTH_MS = 2000;
@@ -33,8 +32,8 @@ export class LifeCycleRaisedButton extends
     React.Component<LifeCycleRaisedButtonProps, LifeCycleRaisedButtonState> {
     public static defaultProps: Partial<LifeCycleRaisedButtonProps> = {
         isDisabled: false,
-        backgroundColor: 'white',
-        labelColor: 'rgb(97, 97, 97)',
+        backgroundColor: colors.white,
+        labelColor: colors.darkGrey,
     };
     private buttonTimeoutId: number;
     private didUnmount: boolean;

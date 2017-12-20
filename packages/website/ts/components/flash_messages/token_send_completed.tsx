@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
 import {Token} from 'ts/types';
+import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
 
 interface TokenSendCompletedProps {
@@ -19,7 +20,7 @@ export class TokenSendCompleted extends React.Component<TokenSendCompletedProps,
         const etherScanLink = !_.isUndefined(this.props.etherScanLinkIfExists) &&
                             (
                                 <a
-                                    style={{color: 'white'}}
+                                    style={{color: colors.white}}
                                     href={`${this.props.etherScanLinkIfExists}`}
                                     target="_blank"
                                 >

@@ -11,7 +11,6 @@ import {
  */
 export class Subprovider {
     private engine: any;
-    private currentBlock: any;
     // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
     private static getRandomId() {
         const extraDigits = 3;
@@ -34,9 +33,6 @@ export class Subprovider {
     }
     public setEngine(engine: any): void {
         this.engine = engine;
-        engine.on('block', (block: any) => {
-            this.currentBlock = block;
-        });
     }
     public async emitPayloadAsync(payload: JSONRPCPayload): Promise<any> {
         const finalPayload = Subprovider.createFinalPayload(payload);

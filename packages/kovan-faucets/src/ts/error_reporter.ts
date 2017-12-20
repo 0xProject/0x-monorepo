@@ -1,5 +1,4 @@
 import * as express from 'express';
-import * as fs from 'fs';
 import rollbar = require('rollbar');
 
 import {configs} from './configs';

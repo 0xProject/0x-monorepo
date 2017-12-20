@@ -15,7 +15,7 @@ const rollbarConfig = {
         environment: configs.ENVIRONMENT,
     },
     uncaughtErrorLevel: 'error',
-    hostWhiteList: [constants.PRODUCTION_DOMAIN, constants.STAGING_DOMAIN],
+    hostWhiteList: [configs.DOMAIN_PRODUCTION, configs.DOMAIN_STAGING],
     ignoredMessages: [
         // Errors from the third-party scripts
         'Script error',

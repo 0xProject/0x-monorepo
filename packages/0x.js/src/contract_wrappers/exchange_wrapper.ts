@@ -7,6 +7,7 @@ import * as Web3 from 'web3';
 import {artifacts} from '../artifacts';
 import {
     BlockParamLiteral,
+    BlockRange,
     DecodedLogArgs,
     ECSignature,
     EventCallback,
@@ -15,9 +16,7 @@ import {
     ExchangeContractEventArgs,
     ExchangeEvents,
     IndexedFilterValues,
-    LogCancelContractEventArgs,
     LogErrorContractEventArgs,
-    LogFillContractEventArgs,
     LogWithDecodedArgs,
     MethodOpts,
     Order,
@@ -26,9 +25,7 @@ import {
     OrderFillRequest,
     OrderTransactionOpts,
     OrderValues,
-    RawLog,
     SignedOrder,
-    SubscriptionOpts,
     ValidateOrderFillableOpts,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -88,7 +85,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
         super(web3Wrapper, networkId, abiDecoder);
         this._tokenWrapper = tokenWrapper;
-        this._orderValidationUtils = new OrderValidationUtils(tokenWrapper, this);
+        this._orderValidationUtils = new OrderValidationUtils(this);
         this._contractAddressIfExists = contractAddressIfExists;
     }
     /**
@@ -165,7 +162,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts                        Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber,
                                 shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                 takerAddress: string,
@@ -221,7 +218,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts                        Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async fillOrdersUpToAsync(signedOrders: SignedOrder[], fillTakerTokenAmount: BigNumber,
                                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                      takerAddress: string,
@@ -302,7 +299,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts                            Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async batchFillOrdersAsync(orderFillRequests: OrderFillRequest[],
                                       shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                       takerAddress: string,
@@ -375,7 +372,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts    Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber,
                                       takerAddress: string,
                                       orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
@@ -420,7 +417,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   orderTransactionOpts        Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async batchFillOrKillAsync(orderFillRequests: OrderFillRequest[],
                                       takerAddress: string,
                                       orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
@@ -488,7 +485,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   transactionOpts         Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async cancelOrderAsync(order: Order|SignedOrder,
                                   cancelTakerTokenAmount: BigNumber,
                                   orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
@@ -529,7 +526,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   transactionOpts             Optional arguments this method accepts.
      * @return  Transaction hash.
      */
-    @decorators.contractCallErrorHandler
+    @decorators.asyncZeroExErrorHandler
     public async batchCancelOrdersAsync(orderCancellationRequests: OrderCancellationRequest[],
                                         orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
         assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
@@ -611,22 +608,28 @@ export class ExchangeWrapper extends ContractWrapper {
         this._unsubscribe(subscriptionToken);
     }
     /**
+     * Cancels all existing subscriptions
+     */
+    public unsubscribeAll(): void {
+        super.unsubscribeAll();
+    }
+    /**
      * Gets historical logs without creating a subscription
      * @param   eventName           The exchange contract event you would like to subscribe to.
-     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
+     * @param   blockRange          Block range to get logs from.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends ExchangeContractEventArgs>(
-        eventName: ExchangeEvents, subscriptionOpts: SubscriptionOpts, indexFilterValues: IndexedFilterValues,
+        eventName: ExchangeEvents, blockRange: BlockRange, indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
-        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
+        assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const exchangeContractAddress = this.getContractAddress();
         const logs = await this._getLogsAsync<ArgsType>(
-            exchangeContractAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.ExchangeArtifact.abi,
+            exchangeContractAddress, eventName, blockRange, indexFilterValues, artifacts.ExchangeArtifact.abi,
         );
         return logs;
     }

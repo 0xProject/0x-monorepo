@@ -1,7 +1,6 @@
 import {ExchangeContractErrs, ZeroExError} from '0x.js';
 import BigNumber from 'bignumber.js';
 import deepEqual = require('deep-equal');
-import ethUtil = require('ethereumjs-util');
 import isMobile = require('is-mobile');
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -9,7 +8,6 @@ import {
     EtherscanLinkSuffixes,
     Networks,
     Order,
-    OrderParty,
     ScreenWidths,
     Side,
     SideToAssetToken,
@@ -17,6 +15,7 @@ import {
     Token,
     TokenByAddress,
 } from 'ts/types';
+import {configs} from 'ts/utils/configs';
 import {constants} from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
 
@@ -63,8 +62,8 @@ export const utils = {
                   orderExpiryTimestamp: BigNumber, orderTakerAddress: string, orderMakerAddress: string,
                   makerFee: BigNumber, takerFee: BigNumber, feeRecipient: string,
                   signatureData: SignatureData, tokenByAddress: TokenByAddress, orderSalt: BigNumber): Order {
-        const makerToken = tokenByAddress[sideToAssetToken[Side.deposit].address];
-        const takerToken = tokenByAddress[sideToAssetToken[Side.receive].address];
+        const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
+        const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
             maker: {
                 address: orderMakerAddress,
@@ -74,7 +73,7 @@ export const utils = {
                     decimals: makerToken.decimals,
                     address: makerToken.address,
                 },
-                amount: sideToAssetToken[Side.deposit].amount.toString(),
+                amount: sideToAssetToken[Side.Deposit].amount.toString(),
                 feeAmount: makerFee.toString(),
             },
             taker: {
@@ -85,7 +84,7 @@ export const utils = {
                     decimals: takerToken.decimals,
                     address: takerToken.address,
                 },
-                amount: sideToAssetToken[Side.receive].amount.toString(),
+                amount: sideToAssetToken[Side.Receive].amount.toString(),
                 feeAmount: takerFee.toString(),
             },
             expiration: orderExpiryTimestamp.toString(),
@@ -110,9 +109,9 @@ export const utils = {
     },
     getColSize(items: number) {
         const bassCssGridSize = 12; // Source: http://basscss.com/#basscss-grid
-        const colSize = 12 / items;
+        const colSize = bassCssGridSize / items;
         if (!_.isInteger(colSize)) {
-            throw new Error('Number of cols must be divisible by 12');
+            throw new Error(`Number of cols must be divisible by ${bassCssGridSize}`);
         }
         return colSize;
     },
@@ -126,11 +125,11 @@ export const utils = {
         // This logic mirrors the CSS media queries in BassCSS for the `lg-`, `md-` and `sm-` CSS
         // class prefixes. Do not edit these.
         if (widthInEm > LG_MIN_EM) {
-            return ScreenWidths.LG;
+            return ScreenWidths.Lg;
         } else if (widthInEm > MD_MIN_EM) {
-            return ScreenWidths.MD;
+            return ScreenWidths.Md;
         } else {
-            return ScreenWidths.SM;
+            return ScreenWidths.Sm;
         }
     },
     isUserOnMobile(): boolean {
@@ -138,7 +137,7 @@ export const utils = {
         return isUserOnMobile;
     },
     getEtherScanLinkIfExists(addressOrTxHash: string, networkId: number, suffix: EtherscanLinkSuffixes): string {
-        const networkName = constants.networkNameById[networkId];
+        const networkName = constants.NETWORK_NAME_BY_ID[networkId];
         if (_.isUndefined(networkName)) {
             return undefined;
         }
@@ -184,11 +183,11 @@ export const utils = {
     },
     getCurrentEnvironment() {
         switch (location.host) {
-            case constants.DEVELOPMENT_DOMAIN:
+            case configs.DOMAIN_DEVELOPMENT:
                 return 'development';
-            case constants.STAGING_DOMAIN:
+            case configs.DOMAIN_STAGING:
                 return 'staging';
-            case constants.PRODUCTION_DOMAIN:
+            case configs.DOMAIN_PRODUCTION:
                 return 'production';
             default:
                 return 'production';

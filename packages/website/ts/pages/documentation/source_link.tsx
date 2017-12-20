@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import {Source} from 'ts/types';
-import {constants} from 'ts/utils/constants';
+import {colors} from 'ts/utils/colors';
 
 interface SourceLinkProps {
     source: Source;
@@ -30,7 +29,7 @@ export function SourceLink(props: SourceLinkProps) {
                 href={sourceCodeUrl}
                 target="_blank"
                 className="underline"
-                style={{color: colors.grey500}}
+                style={{color: colors.grey}}
             >
                 Source
             </a>

@@ -1,8 +1,7 @@
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import {constants} from 'ts/utils/constants';
+import {colors} from 'ts/utils/colors';
 
 interface PortalDisclaimerDialogProps {
     isOpen: boolean;
@@ -18,11 +17,11 @@ export function PortalDisclaimerDialog(props: PortalDisclaimerDialogProps) {
                 <FlatButton
                     key="portalAgree"
                     label="I Agree"
-                    onTouchTap={props.onToggleDialog.bind(this)}
+                    onTouchTap={props.onToggleDialog}
                 />,
             ]}
             open={props.isOpen}
-            onRequestClose={props.onToggleDialog.bind(this)}
+            onRequestClose={props.onToggleDialog}
             autoScrollBodyContent={true}
             modal={true}
         >

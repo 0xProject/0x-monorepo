@@ -7,6 +7,7 @@ import * as Web3 from 'web3';
 import {
     Artifact,
     BlockParamLiteral,
+    BlockRange,
     ContractEventArgs,
     ContractEvents,
     EventCallback,
@@ -14,7 +15,6 @@ import {
     InternalZeroExError,
     LogWithDecodedArgs,
     RawLog,
-    SubscriptionOpts,
     ZeroExError,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -50,10 +50,7 @@ export class ContractWrapper {
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
-    /**
-     * Cancels all existing subscriptions
-     */
-    public unsubscribeAll(): void {
+    protected unsubscribeAll(): void {
         const filterTokens = _.keys(this._filterCallbacks);
         _.each(filterTokens, filterToken => {
             this._unsubscribe(filterToken);
@@ -86,9 +83,9 @@ export class ContractWrapper {
         return filterToken;
     }
     protected async _getLogsAsync<ArgsType extends ContractEventArgs>(
-        address: string, eventName: ContractEvents, subscriptionOpts: SubscriptionOpts,
+        address: string, eventName: ContractEvents, blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
-        const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi, subscriptionOpts);
+        const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi, blockRange);
         const logs = await this._web3Wrapper.getLogsAsync(filter);
         const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoop.bind(this));
         return logsWithDecodedArguments;

@@ -1,9 +1,7 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import {Element as ScrollElement} from 'react-scroll';
 import {ProfileInfo, Styles} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import {colors} from 'ts/utils/colors';
 
 const IMAGE_DIMENSION = 149;
 const styles: Styles = {
@@ -51,7 +49,7 @@ export function Profile(props: ProfileProps) {
                 {!_.isUndefined(props.profileInfo.title) &&
                     <div
                         className="pt1 center"
-                        style={{fontSize: 14, fontFamily: 'Roboto Mono', color: '#818181'}}
+                        style={{fontSize: 14, fontFamily: 'Roboto Mono', color: colors.darkGrey}}
                     >
                         {props.profileInfo.title.toUpperCase()}
                     </div>

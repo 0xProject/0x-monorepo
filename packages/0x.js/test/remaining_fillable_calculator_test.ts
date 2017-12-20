@@ -2,12 +2,11 @@ import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import 'mocha';
 
-import { ZeroEx } from '../src/0x';
-import { RemainingFillableCalculator } from '../src/order_watcher/remaining_fillable_calculator';
-import { ECSignature, SignedOrder } from '../src/types';
+import {ZeroEx} from '../src/0x';
+import {RemainingFillableCalculator} from '../src/order_watcher/remaining_fillable_calculator';
+import {ECSignature, SignedOrder} from '../src/types';
 
-import { chaiSetup } from './utils/chai_setup';
-import { TokenUtils } from './utils/token_utils';
+import {chaiSetup} from './utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -27,7 +26,7 @@ describe('RemainingFillableCalculator', () => {
     const decimals: number = 4;
     const zero: BigNumber = new BigNumber(0);
     const zeroAddress = '0x0';
-    const signature: ECSignature = { v: 27, r: '', s: ''};
+    const signature: ECSignature = {v: 27, r: '', s: ''};
     beforeEach(async () => {
         [makerAmount, takerAmount, makerFeeAmount] = [ZeroEx.toBaseUnitAmount(new BigNumber(50), decimals),
                                                       ZeroEx.toBaseUnitAmount(new BigNumber(5), decimals),

@@ -1,10 +1,9 @@
 import {Artifacts} from '../util/artifacts';
-import {ContractInstance, MultiSigConfigByNetwork} from '../util/types';
+import {MultiSigConfigByNetwork} from '../util/types';
 const {
     MultiSigWalletWithTimeLock,
     TokenTransferProxy,
     EtherToken,
-    EtherTokenV2,
     TokenRegistry,
 } = new Artifacts(artifacts);
 
@@ -34,8 +33,6 @@ module.exports = (deployer: any, network: string, accounts: string[]) => {
                 return deployer.deploy(TokenRegistry);
             }).then(() => {
                 return deployer.deploy(EtherToken);
-            }).then(() => {
-                return deployer.deploy(EtherTokenV2);
             });
     } else {
         deployer.deploy([

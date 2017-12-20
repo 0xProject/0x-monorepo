@@ -24,11 +24,11 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
         const tokenAddresses = _.keys(this.props.tokenByAddress);
         const exchangeContract = this.props.blockchain.getExchangeContractAddressIfExists();
         const hintSideToAssetToken = {
-            [Side.deposit]: {
+            [Side.Deposit]: {
                 amount: new BigNumber(35),
                 address: tokenAddresses[0],
             },
-            [Side.receive]: {
+            [Side.Receive]: {
                 amount: new BigNumber(89),
                 address: tokenAddresses[1],
             },
@@ -41,9 +41,10 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
             v: 27,
         };
         const hintSalt = ZeroEx.generatePseudoRandomSalt();
+        const feeRecipient = constants.NULL_ADDRESS;
         const hintOrder = utils.generateOrder(this.props.networkId, exchangeContract, hintSideToAssetToken,
                                               hintOrderExpiryTimestamp, '', '', constants.MAKER_FEE,
-                                              constants.TAKER_FEE, constants.FEE_RECIPIENT_ADDRESS,
+                                              constants.TAKER_FEE, feeRecipient,
                                               hintSignatureData, this.props.tokenByAddress, hintSalt);
         const hintOrderJSON = `${JSON.stringify(hintOrder, null, '\t').substring(0, 500)}...`;
         return (

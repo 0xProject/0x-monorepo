@@ -1,4 +1,3 @@
-import {promisify} from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
@@ -16,7 +15,6 @@ const {
     addressSchema,
     ecSignatureSchema,
     ecSignatureParameterSchema,
-    indexFilterValuesSchema,
     orderCancellationRequestsSchema,
     orderFillOrKillRequestsSchema,
     orderFillRequestsSchema,
@@ -25,7 +23,7 @@ const {
     signedOrderSchema,
     signedOrdersSchema,
     blockParamSchema,
-    subscriptionOptsSchema,
+    blockRangeSchema,
     tokenSchema,
     jsNumber,
     txDataSchema,
@@ -172,21 +170,21 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, blockParamSchema, shouldFail);
         });
     });
-    describe('#subscriptionOptsSchema', () => {
+    describe('#blockRangeSchema', () => {
         it('should validate valid subscription opts', () => {
             const testCases = [
                 {fromBlock: 42, toBlock: 'latest'},
                 {fromBlock: 42},
                 {},
             ];
-            validateAgainstSchema(testCases, subscriptionOptsSchema);
+            validateAgainstSchema(testCases, blockRangeSchema);
         });
         it('should fail for invalid subscription opts', () => {
             const testCases = [
                 {fromBlock: '42'},
             ];
             const shouldFail = true;
-            validateAgainstSchema(testCases, subscriptionOptsSchema, shouldFail);
+            validateAgainstSchema(testCases, blockRangeSchema, shouldFail);
         });
     });
     describe('#tokenSchema', () => {

@@ -2,7 +2,7 @@ import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
-import {Token, TokenMetadata, ZeroExError} from '../types';
+import {Token, TokenMetadata} from '../types';
 import {assert} from '../utils/assert';
 import {constants} from '../utils/constants';
 
@@ -36,8 +36,6 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * @return  An array of objects that conform to the Token interface.
      */
     public async getTokensAsync(): Promise<Token[]> {
-        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-
         const addresses = await this.getTokenAddressesAsync();
         const tokenPromises: Array<Promise<Token|undefined>> = _.map(
             addresses,

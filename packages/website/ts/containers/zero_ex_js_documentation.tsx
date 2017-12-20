@@ -1,9 +1,7 @@
-import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {Dispatch, Store as ReduxStore} from 'redux';
-import {Blockchain} from 'ts/blockchain';
+import {Dispatch} from 'redux';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {
     Documentation as DocumentationComponent,
@@ -97,6 +95,7 @@ const docsInfoConfig: DocsInfoConfig = {
         'ExchangeEvents',
         'IndexedFilterValues',
         'SubscriptionOpts',
+        'BlockRange',
         'BlockParam',
         'OrderFillOrKillRequest',
         'OrderCancellationRequest',
@@ -109,6 +108,9 @@ const docsInfoConfig: DocsInfoConfig = {
         'LogErrorContractEventArgs',
         'LogFillContractEventArgs',
         'LogCancelContractEventArgs',
+        'EtherTokenContractEventArgs',
+        'WithdrawalContractEventArgs',
+        'DepositContractEventArgs',
         'TokenEvents',
         'ExchangeContractEventArgs',
         'TransferContractEventArgs',
@@ -117,6 +119,8 @@ const docsInfoConfig: DocsInfoConfig = {
         'ZeroExConfig',
         'TransactionReceiptWithDecodedLogs',
         'LogWithDecodedArgs',
+        'EtherTokenEvents',
+        'BlockParamLiteral',
         'DecodedLogArgs',
         'MethodOpts',
         'ValidateOrderFillableOpts',

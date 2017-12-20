@@ -5,11 +5,11 @@ import * as _ from 'lodash';
 
 import {artifacts} from '../artifacts';
 import {
+    BlockRange,
     EventCallback,
     IndexedFilterValues,
     LogWithDecodedArgs,
     MethodOpts,
-    SubscriptionOpts,
     TokenContractEventArgs,
     TokenEvents,
     TransactionOpts,
@@ -22,8 +22,6 @@ import {constants} from '../utils/constants';
 import {ContractWrapper} from './contract_wrapper';
 import {TokenContract} from './generated/token';
 import {TokenTransferProxyWrapper} from './token_transfer_proxy_wrapper';
-
-const ALLOWANCE_TO_ZERO_GAS_AMOUNT = 47275;
 
 /**
  * This class includes all the functionality related to interacting with ERC20 token contracts.
@@ -284,23 +282,29 @@ export class TokenWrapper extends ContractWrapper {
         this._unsubscribe(subscriptionToken);
     }
     /**
+     * Cancels all existing subscriptions
+     */
+    public unsubscribeAll(): void {
+        super.unsubscribeAll();
+    }
+    /**
      * Gets historical logs without creating a subscription
      * @param   tokenAddress        An address of the token that emmited the logs.
      * @param   eventName           The token contract event you would like to subscribe to.
-     * @param   subscriptionOpts    Subscriptions options that let you configure the subscription.
+     * @param   blockRange          Block range to get logs from.
      * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends TokenContractEventArgs>(
-        tokenAddress: string, eventName: TokenEvents, subscriptionOpts: SubscriptionOpts,
+        tokenAddress: string, eventName: TokenEvents, blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
-        assert.doesConformToSchema('subscriptionOpts', subscriptionOpts, schemas.subscriptionOptsSchema);
+        assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(
-            tokenAddress, eventName, subscriptionOpts, indexFilterValues, artifacts.TokenArtifact.abi,
+            tokenAddress, eventName, blockRange, indexFilterValues, artifacts.TokenArtifact.abi,
         );
         return logs;
     }

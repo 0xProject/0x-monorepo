@@ -16,7 +16,6 @@ import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
 import {
     ECSignature,
     Order,
-    OrderStateWatcherConfig,
     SignedOrder,
     TransactionReceiptWithDecodedLogs,
     Web3Provider,
@@ -26,7 +25,7 @@ import {
 import {AbiDecoder} from './utils/abi_decoder';
 import {assert} from './utils/assert';
 import {constants} from './utils/constants';
-import {OrderStateUtils} from './utils/order_state_utils';
+import {decorators} from './utils/decorators';
 import {signatureUtils} from './utils/signature_utils';
 import {utils} from './utils/utils';
 
@@ -157,6 +156,7 @@ export class ZeroEx {
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
      * @return  The resulting orderHash from hashing the supplied order.
      */
+    @decorators.syncZeroExErrorHandler
     public static getOrderHashHex(order: Order|SignedOrder): string {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         const orderHashHex = utils.getOrderHashHex(order);
@@ -201,7 +201,7 @@ export class ZeroEx {
             this._web3Wrapper, config.networkId, config.tokenRegistryContractAddress,
         );
         this.etherToken = new EtherTokenWrapper(
-            this._web3Wrapper, config.networkId, this.token, config.etherTokenContractAddress,
+            this._web3Wrapper, config.networkId, this._abiDecoder, this.token,
         );
         this.orderStateWatcher = new OrderStateWatcher(
             this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config.orderWatcherConfig,

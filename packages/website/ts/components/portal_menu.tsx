@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Link} from 'react-router-dom';
 import {MenuItem} from 'ts/components/ui/menu_item';
 import {WebsitePaths} from 'ts/types';
 
@@ -49,6 +48,14 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                     onClick={this.props.onClick.bind(this)}
                 >
                     {this.renderMenuItemWithIcon('Trade history', 'zmdi-format-list-bulleted')}
+                </MenuItem>
+                <MenuItem
+                    style={this.props.menuItemStyle}
+                    className="py2"
+                    to={`${WebsitePaths.Portal}/weth`}
+                    onClick={this.props.onClick.bind(this)}
+                >
+                    {this.renderMenuItemWithIcon('Wrap ETH', 'zmdi-circle-o')}
                 </MenuItem>
             </div>
         );

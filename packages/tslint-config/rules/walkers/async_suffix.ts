@@ -9,6 +9,7 @@ export class AsyncSuffixWalker extends Lint.RuleWalker {
         const methodName = methodNameNode.getText();
         if (!_.isUndefined(node.type)) {
             if (node.type.kind === ts.SyntaxKind.TypeReference) {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const returnTypeName = (node.type as ts.TypeReferenceNode).typeName.getText();
                 if (returnTypeName === 'Promise' && !methodName.endsWith('Async')) {
                     const failure = this.createFailure(

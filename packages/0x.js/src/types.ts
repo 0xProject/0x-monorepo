@@ -28,6 +28,7 @@ export enum ZeroExError {
 export enum InternalZeroExError {
     NoAbiDecoder = 'NO_ABI_DECODER',
     ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
+    WethNotInTokenRegistry = 'WETH_NOT_IN_TOKEN_REGISTRY',
 }
 
 /**
@@ -146,8 +147,17 @@ export interface ApprovalContractEventArgs {
     _spender: string;
     _value: BigNumber;
 }
+export interface DepositContractEventArgs {
+    _owner: string;
+    _value: BigNumber;
+}
+export interface WithdrawalContractEventArgs {
+    _owner: string;
+    _value: BigNumber;
+}
 export type TokenContractEventArgs = TransferContractEventArgs|ApprovalContractEventArgs;
-export type ContractEventArgs = ExchangeContractEventArgs|TokenContractEventArgs;
+export type EtherTokenContractEventArgs = TokenContractEventArgs|DepositContractEventArgs|WithdrawalContractEventArgs;
+export type ContractEventArgs = ExchangeContractEventArgs|TokenContractEventArgs|EtherTokenContractEventArgs;
 export type ContractEventArg = string|BigNumber;
 
 export interface Order {
@@ -201,7 +211,14 @@ export enum TokenEvents {
     Approval = 'Approval',
 }
 
-export type ContractEvents = TokenEvents|ExchangeEvents;
+export enum EtherTokenEvents  {
+    Transfer = 'Transfer',
+    Approval = 'Approval',
+    Deposit = 'Deposit',
+    Withdrawal = 'Withdrawal',
+}
+
+export type ContractEvents = TokenEvents|ExchangeEvents|EtherTokenEvents;
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
@@ -217,7 +234,7 @@ export enum BlockParamLiteral {
 
 export type BlockParam = BlockParamLiteral|number;
 
-export interface SubscriptionOpts {
+export interface BlockRange {
     fromBlock: BlockParam;
     toBlock: BlockParam;
 }
@@ -235,6 +252,7 @@ export interface OrderFillRequest {
 }
 
 export type AsyncMethod = (...args: any[]) => Promise<any>;
+export type SyncMethod = (...args: any[]) => any;
 
 /**
  * We re-export the `Web3.Provider` type specified in the Web3 Typescript typings
@@ -268,7 +286,6 @@ export interface OrderStateWatcherConfig {
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
- * etherTokenContractAddress: The address of an ether token contract to use
  * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
  */
@@ -277,7 +294,6 @@ export interface ZeroExConfig {
     gasPrice?: BigNumber;
     exchangeContractAddress?: string;
     tokenRegistryContractAddress?: string;
-    etherTokenContractAddress?: string;
     tokenTransferProxyContractAddress?: string;
     orderWatcherConfig?: OrderStateWatcherConfig;
 }

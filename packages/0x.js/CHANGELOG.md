@@ -1,5 +1,17 @@
 # CHANGELOG
 
+v0.28.0 - _December 20, 2017_
+------------------------
+    * Add `etherTokenAddress` arg to `depositAsync` and `withdrawAsync` methods on `zeroEx.etherToken` (#267)
+    * Removed accidentally included `unsubscribeAll` method from `zeroEx.proxy`, `zeroEx.etherToken` and `zeroEx.tokenRegistry` (#267)
+    * Removed `etherTokenContractAddress` from `ZeroEx` constructor arg `ZeroExConfig` (#267)
+    * Rename `SubscriptionOpts` to `BlockRange` (#272)
+    * Add `zeroEx.etherToken.subscribe`, `zeroEx.etherToken.unsubscribe`, `zeroEx.etherToken.unsubscribeAll` (#277)
+    * Add `zeroEx.etherToken.getLogsAsync` (#277)
+    * Add new public types `BlockParamLiteral`, `EtherTokenEvents`, `EtherTokenContractEventArgs`, `DepositContractEventArgs`, `WithdrawalContractEventArgs` (#277)
+    * Support `Deposit` and `Withdraw` events on etherToken (#277)
+    * Improve the error message when taker is not a string (#278)
+
 v0.27.1 - _November 28, 2017_
 ------------------------
     * Export `TransactionOpts` type

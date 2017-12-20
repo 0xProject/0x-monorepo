@@ -1,10 +1,9 @@
 import {addressUtils} from '@0xproject/utils';
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
 import {RequiredLabel} from 'ts/components/ui/required_label';
+import {colors} from 'ts/utils/colors';
 
 interface AddressInputProps {
     disabled?: boolean;
@@ -51,7 +50,7 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
                     fullWidth={true}
                     hintText={hintText}
                     floatingLabelFixed={true}
-                    floatingLabelStyle={{color: colors.grey500, display: labelDisplay}}
+                    floatingLabelStyle={{color: colors.grey, display: labelDisplay}}
                     floatingLabelText={label}
                     errorText={this.state.errMsg}
                     value={this.state.address}

@@ -2,20 +2,16 @@ import * as chai from 'chai';
 import promisify = require('es6-promisify');
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
-import * as mocha from 'mocha';
 import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import {
-    ECSignature,
     ledgerEthereumNodeJsClientFactoryAsync,
     LedgerSubprovider,
 } from '../../src';
 import {
     DoneCallback,
-    LedgerGetAddressResult,
-    PartialTxParams,
 } from '../../src/types';
 import {chaiSetup} from '../chai_setup';
 import {reportCallbackErrors} from '../utils/report_callback_errors';

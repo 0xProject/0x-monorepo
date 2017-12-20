@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import {Blockchain} from 'ts/blockchain';
@@ -9,7 +8,7 @@ import {Alert} from 'ts/components/ui/alert';
 import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
 import {RequiredLabel} from 'ts/components/ui/required_label';
 import {AlertTypes, Token, TokenByAddress, TokenState} from 'ts/types';
-import {constants} from 'ts/utils/constants';
+import {colors} from 'ts/utils/colors';
 
 interface NewTokenFormProps {
     blockchain: Blockchain;
@@ -50,7 +49,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey500}}
+                        floatingLabelStyle={{color: colors.grey}}
                         floatingLabelText={<RequiredLabel label="Name" />}
                         value={this.state.name}
                         errorText={this.state.nameErrText}
@@ -60,7 +59,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey500}}
+                        floatingLabelStyle={{color: colors.grey}}
                         floatingLabelText={<RequiredLabel label="Symbol" />}
                         value={this.state.symbol}
                         errorText={this.state.symbolErrText}
@@ -79,7 +78,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey500}}
+                        floatingLabelStyle={{color: colors.grey}}
                         floatingLabelText={<RequiredLabel label="Decimals" />}
                         value={this.state.decimals}
                         errorText={this.state.decimalsErrText}

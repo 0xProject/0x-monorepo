@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {Dispatch, Store as ReduxStore} from 'redux';
 import {Blockchain} from 'ts/blockchain';
 import {GenerateOrderForm as GenerateOrderFormComponent} from 'ts/components/generate_order/generate_order_form';
 import {Dispatcher} from 'ts/redux/dispatcher';

@@ -25,7 +25,7 @@ describe('Assertions', () => {
                 'test',
                 42,
                 false,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
             ];
             invalidInputs.forEach(input => expect(assert.isBigNumber.bind(assert, variableName, input)).to.throw());
@@ -43,7 +43,7 @@ describe('Assertions', () => {
                 'test',
                 42,
                 false,
-                { random: 'test' },
+                {random: 'test'},
             ];
             invalidInputs.forEach(input => expect(assert.isUndefined.bind(assert, input, variableName)).to.throw());
         });
@@ -60,7 +60,7 @@ describe('Assertions', () => {
             const invalidInputs = [
                 42,
                 false,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
             ];
@@ -79,7 +79,7 @@ describe('Assertions', () => {
             const invalidInputs = [
                 42,
                 false,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
             ];
@@ -98,7 +98,7 @@ describe('Assertions', () => {
             const invalidInputs = [
                 42,
                 false,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
                 '0x61a3ed31B43c8780e905a260a35faYfEc527be7516aa11c0256729b5b351bc33',
@@ -121,7 +121,7 @@ describe('Assertions', () => {
             const invalidInputs = [
                 42,
                 false,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
                 '0x6FFFd0ae3f7d88c9b4925323f54c6e4b2918c5fd',
@@ -150,7 +150,7 @@ describe('Assertions', () => {
             const invalidInputs = [
                 42,
                 false,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
             ];
@@ -192,7 +192,7 @@ describe('Assertions', () => {
         it('should throw for invalid input', () => {
             const invalidInputs = [
                 false,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
             ];
@@ -210,7 +210,7 @@ describe('Assertions', () => {
         it('should throw for invalid input', () => {
             const invalidInputs = [
                 42,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
             ];
@@ -220,8 +220,8 @@ describe('Assertions', () => {
     describe('#isWeb3Provider', () => {
         it('should not throw for valid input', () => {
             const validInputs = [
-                { send: () => 45 },
-                { sendAsync: () => 45 },
+                {send: () => 45},
+                {sendAsync: () => 45},
             ];
             validInputs.forEach(input =>
                 expect(assert.isWeb3Provider.bind(assert, variableName, input)).to.not.throw(),
@@ -230,7 +230,7 @@ describe('Assertions', () => {
         it('should throw for invalid input', () => {
             const invalidInputs = [
                 42,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
             ];
@@ -253,7 +253,7 @@ describe('Assertions', () => {
         it('should throw for invalid input', () => {
             const invalidInputs = [
                 42,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
             ];
@@ -277,7 +277,7 @@ describe('Assertions', () => {
         it('should throw for invalid input', () => {
             const invalidInputs = [
                 42,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
                 'ws://www.api.example-relayer.net',
@@ -309,7 +309,7 @@ describe('Assertions', () => {
         it('should throw for invalid input', () => {
             const invalidInputs = [
                 42,
-                { random: 'test' },
+                {random: 'test'},
                 undefined,
                 new BigNumber(45),
                 'www.google.com',

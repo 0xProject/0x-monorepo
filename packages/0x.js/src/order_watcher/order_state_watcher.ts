@@ -4,7 +4,6 @@ import {Web3Wrapper} from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import {ZeroEx} from '../0x';
-import {artifacts} from '../artifacts';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
@@ -13,6 +12,8 @@ import {
     ApprovalContractEventArgs,
     BlockParamLiteral,
     ContractEventArgs,
+    DepositContractEventArgs,
+    EtherTokenEvents,
     ExchangeContractErrs,
     ExchangeEvents,
     LogCancelContractEventArgs,
@@ -25,7 +26,7 @@ import {
     SignedOrder,
     TokenEvents,
     TransferContractEventArgs,
-    Web3Provider,
+    WithdrawalContractEventArgs,
     ZeroExError,
 } from '../types';
 import {AbiDecoder} from '../utils/abi_decoder';
@@ -238,6 +239,36 @@ export class OrderStateWatcher {
                 // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._from;
+                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                }
+                break;
+            }
+            case EtherTokenEvents.Deposit:
+            {
+                // Invalidate cache
+                const args = decodedLog.args as DepositContractEventArgs;
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
+                // Revalidate orders
+                makerToken = decodedLog.address;
+                makerAddress = args._owner;
+                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                    const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
+                    await this._emitRevalidateOrdersAsync(orderHashes);
+                }
+                break;
+            }
+            case EtherTokenEvents.Withdrawal:
+            {
+                // Invalidate cache
+                const args = decodedLog.args as WithdrawalContractEventArgs;
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
+                // Revalidate orders
+                makerToken = decodedLog.address;
+                makerAddress = args._owner;
                 if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
                     !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
                     const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
