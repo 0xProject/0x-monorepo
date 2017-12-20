@@ -100,7 +100,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         etherTokenAddress: string, eventName: EtherTokenEvents, blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
-        assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, EtherTokenEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(

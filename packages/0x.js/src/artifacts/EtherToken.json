@@ -243,7 +243,7 @@
         {
           "indexed": false,
           "name": "_value",
-          "type": "uint"
+          "type": "uint256"
         }
       ],
       "name": "Deposit",
@@ -260,7 +260,7 @@
         {
           "indexed": false,
           "name": "_value",
-          "type": "uint"
+          "type": "uint256"
         }
       ],
       "name": "Withdrawal",
