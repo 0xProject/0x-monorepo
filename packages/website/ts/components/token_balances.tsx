@@ -590,10 +590,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             }
             utils.consoleLog(`Unexpected error encountered: ${err}`);
             utils.consoleLog(err.stack);
-            await errorReporter.reportAsync(err);
             this.setState({
                 errorType: BalanceErrs.mintingFailed,
             });
+            await errorReporter.reportAsync(err);
             return false;
         }
     }
@@ -619,13 +619,13 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const responseBody = await response.text();
         if (response.status !== constants.SUCCESS_STATUS) {
             utils.consoleLog(`Unexpected status code: ${response.status} -> ${responseBody}`);
-            await errorReporter.reportAsync(new Error(`Faucet returned non-200: ${JSON.stringify(response)}`));
             const errorType = response.status === constants.UNAVAILABLE_STATUS ?
                               BalanceErrs.faucetQueueIsFull :
                               BalanceErrs.faucetRequestFailed;
             this.setState({
                 errorType,
             });
+            await errorReporter.reportAsync(new Error(`Faucet returned non-200: ${JSON.stringify(response)}`));
             return false;
         }
 

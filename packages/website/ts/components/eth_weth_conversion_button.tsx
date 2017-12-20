@@ -109,11 +109,11 @@ export class EthWethConversionButton extends
             } else if (!_.includes(errMsg, 'User denied transaction')) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
-                await errorReporter.reportAsync(err);
                 const errorMsg = direction === Side.Deposit ?
                                  'Failed to wrap your ETH. Please try again.' :
                                  'Failed to unwrap your WETH. Please try again.';
                 this.props.dispatcher.showFlashMessage(errorMsg);
+                await errorReporter.reportAsync(err);
             }
         }
         this.setState({
