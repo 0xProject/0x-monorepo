@@ -16,7 +16,7 @@ This will list out any dependencies that differ in versions between packages.
 
 ## Contributing
 
-We strongly recommend the community to help us make improvements and to determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 

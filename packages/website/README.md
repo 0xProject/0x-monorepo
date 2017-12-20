@@ -7,6 +7,11 @@ This repository contains our website and [0x Portal DApp][portal-url] (over-the-
 [whitepaper-url]: https://0xproject.com/pdfs/0x_white_paper.pdf
 [portal-url]: https://0xproject.com/portal
 
+## Contributing
+
+We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
 ## Local Dev Setup
 
