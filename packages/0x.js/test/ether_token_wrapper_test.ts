@@ -232,7 +232,7 @@ describe('EtherTokenWrapper', () => {
                 );
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when zeroEx.setProvider called', (done: DoneCallback) => {
+        it('should cancel outstanding subscriptions when ZeroEx.setProvider is called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
