@@ -19,8 +19,7 @@ export const migrator = {
 
         const tokenTransferProxy = await deployer.deployAndSaveAsync('TokenTransferProxy');
         const zrxToken = await deployer.deployAndSaveAsync('ZRXToken');
-        const etherToken = await deployer.deployAndSaveAsync('EtherToken');
-        const makerEtherToken = await deployer.deployAndSaveAsync('WETH9');
+        const etherToken = await deployer.deployAndSaveAsync('WETH9');
         const tokenReg = await deployer.deployAndSaveAsync('TokenRegistry');
 
         const exchangeArgs = [zrxToken.address, tokenTransferProxy.address];
@@ -61,18 +60,6 @@ export const migrator = {
             etherToken.address,
             'Ether Token',
             'WETH',
-            18,
-            constants.NULL_BYTES,
-            constants.NULL_BYTES,
-            {
-                from: owner,
-                gas: addTokenGasEstimate,
-            },
-        );
-        await tokenReg.addToken.sendTransactionAsync(
-            makerEtherToken.address,
-            'Maker Ether Token',
-            'WETH9',
             18,
             constants.NULL_BYTES,
             constants.NULL_BYTES,
