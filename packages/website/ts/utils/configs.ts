@@ -104,15 +104,15 @@ export const configs = {
             42: {
                 address: '0x05d090b51c40b020eab3bfcb6a2dff130df22e9c',
                 timestampMsRange: {
-                    startTimestampMs: 1501614680000,
-                    endTimestampMs: 1513106129000,
+                    startTimestampMs: 1502455607000,
+                    endTimestampMs: 1513790926000,
                 },
             },
             1: {
                 address: '0x2956356cd2a2bf3202f771f50d3d14a367b48070',
                 timestampMsRange: {
-                    startTimestampMs: 1513123415000,
-                    endTimestampMs: 1513106129000,
+                    startTimestampMs: 1502455607000,
+                    endTimestampMs: 1513790926000,
                 },
             },
         },

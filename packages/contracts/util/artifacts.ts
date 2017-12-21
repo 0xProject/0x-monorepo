@@ -8,7 +8,6 @@ export class Artifacts {
     public DummyToken: any;
     public DummyTokenV2: any;
     public EtherToken: any;
-    public EtherTokenV2: any;
     public MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress: any;
     public MaliciousToken: any;
     constructor(artifacts: any) {
@@ -20,8 +19,7 @@ export class Artifacts {
         this.ZRXToken = artifacts.require('ZRXToken');
         this.DummyToken = artifacts.require('DummyToken');
         this.DummyTokenV2 = artifacts.require('DummyToken_v2');
-        this.EtherToken = artifacts.require('EtherToken');
-        this.EtherTokenV2 = artifacts.require('EtherToken_v2');
+        this.EtherToken = artifacts.require('WETH9');
         this.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = artifacts.require(
                 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress');
         this.MaliciousToken = artifacts.require('MaliciousToken');

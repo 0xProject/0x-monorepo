@@ -1,6 +1,6 @@
 {
   "name": "@0xproject/dev-utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "0x dev TS utils",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,14 +19,14 @@
   },
   "homepage": "https://github.com/0xProject/0x.js/packages/dev-utils/README.md",
   "devDependencies": {
-    "@0xproject/tslint-config": "^0.2.0",
+    "@0xproject/tslint-config": "^0.3.0",
     "@types/lodash": "^4.14.86",
     "npm-run-all": "^4.1.2",
     "shx": "^0.2.2",
     "tslint": "5.8.0",
-    "typescript": "~2.6.1",
     "types-bn": "^0.0.1",
-    "types-ethereumjs-util": "0xProject/types-ethereumjs-util"
+    "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
+    "typescript": "~2.6.1"
   },
   "dependencies": {
     "bignumber.js": "~4.1.0",

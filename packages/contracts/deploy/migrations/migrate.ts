@@ -19,7 +19,7 @@ export const migrator = {
 
         const tokenTransferProxy = await deployer.deployAndSaveAsync('TokenTransferProxy');
         const zrxToken = await deployer.deployAndSaveAsync('ZRXToken');
-        const etherToken = await deployer.deployAndSaveAsync('EtherToken');
+        const etherToken = await deployer.deployAndSaveAsync('WETH9');
         const tokenReg = await deployer.deployAndSaveAsync('TokenRegistry');
 
         const exchangeArgs = [zrxToken.address, tokenTransferProxy.address];

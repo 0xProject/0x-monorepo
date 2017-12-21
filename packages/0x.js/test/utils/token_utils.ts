@@ -17,6 +17,13 @@ export class TokenUtils {
         }
         return zrxToken;
     }
+    public getWethTokenOrThrow(): Token {
+        const wethToken = _.find(this.tokens, {symbol: WETH_TOKEN_SYMBOL});
+        if (_.isUndefined(wethToken)) {
+            throw new Error(InternalZeroExError.WethNotInTokenRegistry);
+        }
+        return wethToken;
+    }
     public getDummyTokens(): Token[] {
         const dummyTokens = _.filter(this._tokens, token => {
             return !_.includes([PROTOCOL_TOKEN_SYMBOL, WETH_TOKEN_SYMBOL], token.symbol);

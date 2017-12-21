@@ -594,10 +594,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             }
             globalErrMsg = 'Failed to fill order, please refresh and try again';
             utils.consoleLog(`${err}`);
-            await errorReporter.reportAsync(err);
             this.setState({
                 globalErrMsg,
             });
+            await errorReporter.reportAsync(err);
             return;
         }
     }
@@ -677,10 +677,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             }
             globalErrMsg = 'Failed to cancel order, please refresh and try again';
             utils.consoleLog(`${err}`);
-            await errorReporter.reportAsync(err);
             this.setState({
                 globalErrMsg,
             });
+            await errorReporter.reportAsync(err);
             return;
         }
     }

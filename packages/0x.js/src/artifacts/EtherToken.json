@@ -231,17 +231,51 @@
       ],
       "name": "Approval",
       "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Deposit",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdrawal",
+      "type": "event"
     }
   ],
   "networks": {
     "1": {
-      "address": "0x2956356cd2a2bf3202f771f50d3d14a367b48070"
+      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
     },
     "3": {
       "address": "0xc00fd9820cd2898cc4c054b7bf142de637ad129a"
     },
     "42": {
-      "address": "0x05d090b51c40b020eab3bfcb6a2dff130df22e9c"
+      "address": "0x653e49e301e508a13237c0ddc98ae7d4cd2667a1"
     },
     "50": {
       "address": "0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c"
