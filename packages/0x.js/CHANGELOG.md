@@ -1,5 +1,10 @@
 # CHANGELOG
 
+vx.x.x - _TBD_
+------------------------
+    * Assert baseUnit amount supplied to `toUnitAmount` is integer amount. (#287)
+    * `toBaseUnitAmount` throws if amount supplied has too many decimals (#287)
+
 v0.28.0 - _December 20, 2017_
 ------------------------
     * Add `etherTokenAddress` arg to `depositAsync` and `withdrawAsync` methods on `zeroEx.etherToken` (#267)
