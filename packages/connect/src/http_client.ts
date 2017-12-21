@@ -21,11 +21,6 @@ import {
 } from './types';
 import {typeConverters} from './utils/type_converters';
 
-// TODO: move this and bigNumberConfigs in the 0x.js package into one place
-BigNumber.config({
-    EXPONENTIAL_AT: 1000,
-});
-
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
  * that implement the standard relayer API v0
