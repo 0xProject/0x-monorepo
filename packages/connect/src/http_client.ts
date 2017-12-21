@@ -1,6 +1,5 @@
 import {assert} from '@0xproject/assert';
 import {schemas} from '@0xproject/json-schemas';
-import {BigNumber} from 'bignumber.js';
 import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
