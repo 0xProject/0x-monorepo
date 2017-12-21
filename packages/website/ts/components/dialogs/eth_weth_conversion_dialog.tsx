@@ -29,7 +29,7 @@ export class EthWethConversionDialog extends
         super();
         this.state = {
             shouldShowIncompleteErrs: false,
-            hasErrors: true,
+            hasErrors: false,
         };
     }
     public render() {
