@@ -128,7 +128,7 @@ export class ZeroEx {
      * @return  The amount in units.
      */
     public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
-        assert.isBigNumber('amount', amount);
+        assert.isValidBaseUnitAmount('amount', amount);
         assert.isNumber('decimals', decimals);
 
         const aUnit = new BigNumber(10).pow(decimals);

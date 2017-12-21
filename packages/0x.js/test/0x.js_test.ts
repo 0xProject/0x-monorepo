@@ -114,6 +114,12 @@ describe('ZeroEx library', () => {
         });
     });
     describe('#toUnitAmount', () => {
+        it('should throw if invalid baseUnit amount supplied as argument', () => {
+            const invalidBaseUnitAmount = new BigNumber(1000000000.4);
+            const decimals = 6;
+            expect(() => ZeroEx.toUnitAmount(invalidBaseUnitAmount, decimals))
+                .to.throw('amount should be in baseUnits (no decimals), found value: 1000000000.4');
+        });
         it('Should return the expected unit amount for the decimals passed in', () => {
             const baseUnitAmount = new BigNumber(1000000000);
             const decimals = 6;
