@@ -9,16 +9,16 @@ import {JSONRPCPayload} from '../../../src/types';
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class FakeGasEstimateSubprovider {
-    private constantGasAmount: number;
+    private _constantGasAmount: number;
     constructor(constantGasAmount: number) {
-        this.constantGasAmount = constantGasAmount;
+        this._constantGasAmount = constantGasAmount;
     }
     // This method needs to be here to satisfy the interface but linter wants it to be static.
     // tslint:disable-next-line:prefer-function-over-method
     public handleRequest(payload: JSONRPCPayload, next: () => void, end: (err: Error|null, result: any) => void) {
         switch (payload.method) {
             case 'eth_estimateGas':
-                end(null, this.constantGasAmount);
+                end(null, this._constantGasAmount);
                 return;
 
             default:

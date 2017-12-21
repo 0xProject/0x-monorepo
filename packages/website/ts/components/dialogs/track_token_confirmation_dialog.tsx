@@ -41,12 +41,12 @@ export class TrackTokenConfirmationDialog extends
                     <FlatButton
                         key="trackNo"
                         label="No"
-                        onTouchTap={this.onTrackConfirmationRespondedAsync.bind(this, false)}
+                        onTouchTap={this._onTrackConfirmationRespondedAsync.bind(this, false)}
                     />,
                     <FlatButton
                         key="trackYes"
                         label="Yes"
-                        onTouchTap={this.onTrackConfirmationRespondedAsync.bind(this, true)}
+                        onTouchTap={this._onTrackConfirmationRespondedAsync.bind(this, true)}
                     />,
                 ]}
                 open={this.props.isOpen}
@@ -64,7 +64,7 @@ export class TrackTokenConfirmationDialog extends
             </Dialog>
         );
     }
-    private async onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean) {
+    private async _onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean) {
         if (!didUserAcceptTracking) {
             this.props.onToggleDialog(didUserAcceptTracking);
             return;

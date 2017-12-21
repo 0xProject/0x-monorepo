@@ -23,7 +23,7 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                     to={`${WebsitePaths.Portal}`}
                     onClick={this.props.onClick.bind(this)}
                 >
-                    {this.renderMenuItemWithIcon('Generate order', 'zmdi-arrow-right-top')}
+                    {this._renderMenuItemWithIcon('Generate order', 'zmdi-arrow-right-top')}
                 </MenuItem>
                 <MenuItem
                     style={this.props.menuItemStyle}
@@ -31,7 +31,7 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                     to={`${WebsitePaths.Portal}/fill`}
                     onClick={this.props.onClick.bind(this)}
                 >
-                    {this.renderMenuItemWithIcon('Fill order', 'zmdi-arrow-left-bottom')}
+                    {this._renderMenuItemWithIcon('Fill order', 'zmdi-arrow-left-bottom')}
                 </MenuItem>
                 <MenuItem
                     style={this.props.menuItemStyle}
@@ -39,7 +39,7 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                     to={`${WebsitePaths.Portal}/balances`}
                     onClick={this.props.onClick.bind(this)}
                 >
-                    {this.renderMenuItemWithIcon('Balances', 'zmdi-balance-wallet')}
+                    {this._renderMenuItemWithIcon('Balances', 'zmdi-balance-wallet')}
                 </MenuItem>
                 <MenuItem
                     style={this.props.menuItemStyle}
@@ -47,7 +47,7 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                     to={`${WebsitePaths.Portal}/trades`}
                     onClick={this.props.onClick.bind(this)}
                 >
-                    {this.renderMenuItemWithIcon('Trade history', 'zmdi-format-list-bulleted')}
+                    {this._renderMenuItemWithIcon('Trade history', 'zmdi-format-list-bulleted')}
                 </MenuItem>
                 <MenuItem
                     style={this.props.menuItemStyle}
@@ -55,12 +55,12 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                     to={`${WebsitePaths.Portal}/weth`}
                     onClick={this.props.onClick.bind(this)}
                 >
-                    {this.renderMenuItemWithIcon('Wrap ETH', 'zmdi-circle-o')}
+                    {this._renderMenuItemWithIcon('Wrap ETH', 'zmdi-circle-o')}
                 </MenuItem>
             </div>
         );
     }
-    private renderMenuItemWithIcon(title: string, iconName: string) {
+    private _renderMenuItemWithIcon(title: string, iconName: string) {
         return (
             <div className="flex" style={{fontWeight: 100}}>
                 <div className="pr1 pl2">

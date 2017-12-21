@@ -35,8 +35,8 @@ export class LifeCycleRaisedButton extends
         backgroundColor: colors.white,
         labelColor: colors.darkGrey,
     };
-    private buttonTimeoutId: number;
-    private didUnmount: boolean;
+    private _buttonTimeoutId: number;
+    private _didUnmount: boolean;
     constructor(props: LifeCycleRaisedButtonProps) {
         super(props);
         this.state = {
@@ -44,8 +44,8 @@ export class LifeCycleRaisedButton extends
         };
     }
     public componentWillUnmount() {
-        clearTimeout(this.buttonTimeoutId);
-        this.didUnmount = true;
+        clearTimeout(this._buttonTimeoutId);
+        this._didUnmount = true;
     }
     public render() {
         if (this.props.isHidden) {
@@ -83,14 +83,14 @@ export class LifeCycleRaisedButton extends
             buttonState: ButtonState.LOADING,
         });
         const didSucceed = await this.props.onClickAsyncFn();
-        if (this.didUnmount) {
+        if (this._didUnmount) {
             return; // noop since unmount called before async callback returned.
         }
         if (didSucceed) {
             this.setState({
                 buttonState: ButtonState.COMPLETE,
             });
-            this.buttonTimeoutId = window.setTimeout(() => {
+            this._buttonTimeoutId = window.setTimeout(() => {
                 this.setState({
                     buttonState: ButtonState.READY,
                 });

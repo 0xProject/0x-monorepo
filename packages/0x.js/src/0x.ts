@@ -128,7 +128,7 @@ export class ZeroEx {
      * @return  The amount in units.
      */
     public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
-        assert.isBigNumber('amount', amount);
+        assert.isValidBaseUnitAmount('amount', amount);
         assert.isNumber('decimals', decimals);
 
         const aUnit = new BigNumber(10).pow(decimals);
@@ -149,6 +149,10 @@ export class ZeroEx {
 
         const unit = new BigNumber(10).pow(decimals);
         const baseUnitAmount = amount.times(unit);
+        const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
+        if (hasDecimals) {
+            throw new Error(`Invalid unit amount: ${amount.toString()} - Too many decimal places`);
+        }
         return baseUnitAmount;
     }
     /**

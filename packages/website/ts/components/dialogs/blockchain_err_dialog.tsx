@@ -31,7 +31,7 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
         const hasWalletAddress = this.props.userAddress !== '';
         return (
             <Dialog
-                title={this.getTitle(hasWalletAddress)}
+                title={this._getTitle(hasWalletAddress)}
                 titleStyle={{fontWeight: 100}}
                 actions={dialogActions}
                 open={this.props.isOpen}
@@ -40,12 +40,12 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                 autoScrollBodyContent={true}
             >
                 <div className="pt2" style={{color: colors.grey700}}>
-                    {this.renderExplanation(hasWalletAddress)}
+                    {this._renderExplanation(hasWalletAddress)}
                 </div>
             </Dialog>
         );
     }
-    private getTitle(hasWalletAddress: boolean) {
+    private _getTitle(hasWalletAddress: boolean) {
         if (this.props.blockchainErr === BlockchainErrs.AContractNotDeployedOnNetwork) {
             return '0x smart contracts not found';
         } else if (!hasWalletAddress) {
@@ -56,18 +56,18 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
             return 'Unexpected error';
         }
     }
-    private renderExplanation(hasWalletAddress: boolean) {
+    private _renderExplanation(hasWalletAddress: boolean) {
         if (this.props.blockchainErr === BlockchainErrs.AContractNotDeployedOnNetwork) {
-            return this.renderContractsNotDeployedExplanation();
+            return this._renderContractsNotDeployedExplanation();
         } else if (!hasWalletAddress) {
-            return this.renderNoWalletFoundExplanation();
+            return this._renderNoWalletFoundExplanation();
         } else if (this.props.blockchainErr === BlockchainErrs.DisconnectedFromEthereumNode) {
-            return this.renderDisconnectedFromNode();
+            return this._renderDisconnectedFromNode();
         } else {
-            return this.renderUnexpectedErrorExplanation();
+            return this._renderUnexpectedErrorExplanation();
         }
     }
-    private renderDisconnectedFromNode() {
+    private _renderDisconnectedFromNode() {
         return (
             <div>
                 You were disconnected from the backing Ethereum node.
@@ -78,14 +78,14 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
             </div>
         );
     }
-    private renderUnexpectedErrorExplanation() {
+    private _renderUnexpectedErrorExplanation() {
         return (
             <div>
                 We encountered an unexpected error. Please try refreshing the page.
             </div>
         );
     }
-    private renderNoWalletFoundExplanation() {
+    private _renderNoWalletFoundExplanation() {
         return (
             <div>
                 <div>
@@ -122,7 +122,7 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
             </div>
         );
     }
-    private renderContractsNotDeployedExplanation() {
+    private _renderContractsNotDeployedExplanation() {
         return (
             <div>
                 <div>

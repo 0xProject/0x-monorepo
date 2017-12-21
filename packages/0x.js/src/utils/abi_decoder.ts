@@ -6,9 +6,9 @@ import * as SolidityCoder from 'web3/lib/solidity/coder';
 import {AbiType, ContractEventArgs, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes} from '../types';
 
 export class AbiDecoder {
-    private savedABIs: Web3.AbiDefinition[] = [];
-    private methodIds: {[signatureHash: string]: Web3.EventAbi} = {};
-    private static padZeros(address: string) {
+    private _savedABIs: Web3.AbiDefinition[] = [];
+    private _methodIds: {[signatureHash: string]: Web3.EventAbi} = {};
+    private static _padZeros(address: string) {
         let formatted = address;
         if (_.startsWith(formatted, '0x')) {
             formatted = formatted.slice(2);
@@ -18,13 +18,13 @@ export class AbiDecoder {
         return `0x${formatted}`;
     }
     constructor(abiArrays: Web3.AbiDefinition[][]) {
-        _.map(abiArrays, this.addABI.bind(this));
+        _.map(abiArrays, this._addABI.bind(this));
     }
     // This method can only decode logs from the 0x & ERC20 smart contracts
     public tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
         log: Web3.LogEntry): LogWithDecodedArgs<ArgsType>|RawLog {
         const methodId = log.topics[0];
-        const event = this.methodIds[methodId];
+        const event = this._methodIds[methodId];
         if (_.isUndefined(event)) {
             return log;
         }
@@ -41,7 +41,7 @@ export class AbiDecoder {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
             let value = param.indexed ? log.topics[topicsIndex++] : decodedData[dataIndex++];
             if (param.type === SolidityTypes.Address) {
-                value = AbiDecoder.padZeros(new BigNumber(value).toString(16));
+                value = AbiDecoder._padZeros(new BigNumber(value).toString(16));
             } else if (param.type === SolidityTypes.Uint256 ||
                        param.type === SolidityTypes.Uint8 ||
                        param.type === SolidityTypes.Uint) {
@@ -56,14 +56,14 @@ export class AbiDecoder {
             args: decodedParams,
         };
     }
-    private addABI(abiArray: Web3.AbiDefinition[]): void {
+    private _addABI(abiArray: Web3.AbiDefinition[]): void {
         _.map(abiArray, (abi: Web3.AbiDefinition) => {
             if (abi.type === AbiType.Event) {
                 const signature = `${abi.name}(${_.map(abi.inputs, input => input.type).join(',')})`;
                 const signatureHash = new Web3().sha3(signature);
-                this.methodIds[signatureHash] = abi;
+                this._methodIds[signatureHash] = abi;
             }
         });
-        this.savedABIs = this.savedABIs.concat(abiArray);
+        this._savedABIs = this._savedABIs.concat(abiArray);
     }
 }

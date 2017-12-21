@@ -1,12 +1,12 @@
 import {ContractInstance, Token} from './types';
 
 export class TokenRegWrapper {
-    private tokenReg: ContractInstance;
+    private _tokenReg: ContractInstance;
     constructor(tokenRegContractInstance: ContractInstance) {
-        this.tokenReg = tokenRegContractInstance;
+        this._tokenReg = tokenRegContractInstance;
     }
     public addTokenAsync(token: Token, from: string) {
-        const tx = this.tokenReg.addToken(
+        const tx = this._tokenReg.addToken(
             token.address,
             token.name,
             token.symbol,
@@ -18,7 +18,7 @@ export class TokenRegWrapper {
         return tx;
     }
     public async getTokenMetaDataAsync(tokenAddress: string) {
-        const data = await this.tokenReg.getTokenMetaData(tokenAddress);
+        const data = await this._tokenReg.getTokenMetaData(tokenAddress);
         const token: Token = {
             address: data[0],
             name: data[1],
@@ -30,7 +30,7 @@ export class TokenRegWrapper {
         return token;
     }
     public async getTokenByNameAsync(tokenName: string) {
-        const data = await this.tokenReg.getTokenByName(tokenName);
+        const data = await this._tokenReg.getTokenByName(tokenName);
         const token: Token = {
             address: data[0],
             name: data[1],
@@ -42,7 +42,7 @@ export class TokenRegWrapper {
         return token;
     }
     public async getTokenBySymbolAsync(tokenSymbol: string) {
-        const data = await this.tokenReg.getTokenBySymbol(tokenSymbol);
+        const data = await this._tokenReg.getTokenBySymbol(tokenSymbol);
         const token: Token = {
             address: data[0],
             name: data[1],

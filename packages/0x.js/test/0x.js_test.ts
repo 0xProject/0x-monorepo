@@ -114,6 +114,12 @@ describe('ZeroEx library', () => {
         });
     });
     describe('#toUnitAmount', () => {
+        it('should throw if invalid baseUnit amount supplied as argument', () => {
+            const invalidBaseUnitAmount = new BigNumber(1000000000.4);
+            const decimals = 6;
+            expect(() => ZeroEx.toUnitAmount(invalidBaseUnitAmount, decimals))
+                .to.throw('amount should be in baseUnits (no decimals), found value: 1000000000.4');
+        });
         it('Should return the expected unit amount for the decimals passed in', () => {
             const baseUnitAmount = new BigNumber(1000000000);
             const decimals = 6;
@@ -129,6 +135,12 @@ describe('ZeroEx library', () => {
             const baseUnitAmount = ZeroEx.toBaseUnitAmount(unitAmount, decimals);
             const expectedUnitAmount = new BigNumber(1000000000);
             expect(baseUnitAmount).to.be.bignumber.equal(expectedUnitAmount);
+        });
+        it('should throw if unitAmount has more decimals then specified as the max decimal precision', () => {
+            const unitAmount = new BigNumber(0.823091);
+            const decimals = 5;
+            expect(() => ZeroEx.toBaseUnitAmount(unitAmount, decimals))
+                .to.throw('Invalid unit amount: 0.823091 - Too many decimal places');
         });
     });
     describe('#getOrderHashHex', () => {

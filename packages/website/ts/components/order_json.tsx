@@ -36,7 +36,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
             shareLink: '',
         };
         // tslint:disable-next-line:no-floating-promises
-        this.setShareLinkAsync();
+        this._setShareLinkAsync();
     }
     public render() {
         const order = utils.generateOrder(this.props.networkId, this.props.exchangeContractIfExists,
@@ -88,21 +88,21 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
                         <div>
                             <i
                                 style={{cursor: 'pointer', fontSize: 29}}
-                                onClick={this.shareViaFacebook.bind(this)}
+                                onClick={this._shareViaFacebook.bind(this)}
                                 className="zmdi zmdi-facebook-box"
                             />
                         </div>
                         <div className="pl1" style={{position: 'relative', width: 28}}>
                             <i
                                 style={{cursor: 'pointer', fontSize: 32, position: 'absolute', top: -2, left: 8}}
-                                onClick={this.shareViaEmailAsync.bind(this)}
+                                onClick={this._shareViaEmailAsync.bind(this)}
                                 className="zmdi zmdi-email"
                             />
                         </div>
                         <div className="pl1">
                             <i
                                 style={{cursor: 'pointer', fontSize: 29}}
-                                onClick={this.shareViaTwitterAsync.bind(this)}
+                                onClick={this._shareViaTwitterAsync.bind(this)}
                                 className="zmdi zmdi-twitter-box"
                             />
                         </div>
@@ -111,32 +111,32 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
             </div>
         );
     }
-    private async shareViaTwitterAsync() {
+    private async _shareViaTwitterAsync() {
         const tweetText = encodeURIComponent(`Fill my order using the 0x protocol: ${this.state.shareLink}`);
         window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, 'Share your order', 'width=500,height=400');
     }
-    private async shareViaFacebook() {
+    private async _shareViaFacebook() {
         (window as any).FB.ui({
             display: 'popup',
             href: this.state.shareLink,
             method: 'share',
         }, _.noop);
     }
-    private async shareViaEmailAsync() {
+    private async _shareViaEmailAsync() {
         const encodedSubject = encodeURIComponent('Let\'s trade using the 0x protocol');
         const encodedBody = encodeURIComponent(`I generated an order with the 0x protocol.
 You can see and fill it here: ${this.state.shareLink}`);
         const mailToLink = `mailto:mail@example.org?subject=${encodedSubject}&body=${encodedBody}`;
         window.open(mailToLink, '_blank');
     }
-    private async setShareLinkAsync() {
-        const shareLink = await this.generateShareLinkAsync();
+    private async _setShareLinkAsync() {
+        const shareLink = await this._generateShareLinkAsync();
         this.setState({
             shareLink,
         });
     }
-    private async generateShareLinkAsync(): Promise<string> {
-        const longUrl = encodeURIComponent(this.getOrderUrl());
+    private async _generateShareLinkAsync(): Promise<string> {
+        const longUrl = encodeURIComponent(this._getOrderUrl());
         const bitlyRequestUrl =
             `${constants.URL_BITLY_API}/v3/shorten?access_token=${configs.BITLY_ACCESS_TOKEN}&longUrl=${longUrl}`;
         const response = await fetch(bitlyRequestUrl);
@@ -150,7 +150,7 @@ You can see and fill it here: ${this.state.shareLink}`);
         }
         return (bodyObj).data.url;
     }
-    private getOrderUrl() {
+    private _getOrderUrl() {
         const order = utils.generateOrder(this.props.networkId, this.props.exchangeContractIfExists,
             this.props.sideToAssetToken, this.props.orderExpiryTimestamp, this.props.orderTakerAddress,
             this.props.orderMakerAddress, this.props.orderMakerFee, this.props.orderTakerFee,

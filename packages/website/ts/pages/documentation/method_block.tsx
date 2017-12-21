@@ -58,19 +58,19 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                 id={`${this.props.sectionName}-${method.name}`}
                 style={{overflow: 'hidden', width: '100%'}}
                 className="pb4"
-                onMouseOver={this.setAnchorVisibility.bind(this, true)}
-                onMouseOut={this.setAnchorVisibility.bind(this, false)}
+                onMouseOver={this._setAnchorVisibility.bind(this, true)}
+                onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 {!method.isConstructor &&
                     <div className="flex">
                         {(method as TypescriptMethod).isStatic &&
-                            this.renderChip('Static')
+                            this._renderChip('Static')
                         }
                         {(method as SolidityMethod).isConstant &&
-                            this.renderChip('Constant')
+                            this._renderChip('Constant')
                         }
                         {(method as SolidityMethod).isPayable &&
-                            this.renderChip('Payable')
+                            this._renderChip('Payable')
                         }
                         <AnchorTitle
                             headerSize={HeaderSizes.H3}
@@ -110,7 +110,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                         >
                             ARGUMENTS
                         </h4>
-                        {this.renderParameterDescriptions(method.parameters)}
+                        {this._renderParameterDescriptions(method.parameters)}
                     </div>
                 }
                 {method.returnComment &&
@@ -129,7 +129,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
             </div>
         );
     }
-    private renderChip(text: string) {
+    private _renderChip(text: string) {
         return (
             <div
                 className="p1 mr1"
@@ -139,7 +139,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
             </div>
         );
     }
-    private renderParameterDescriptions(parameters: Parameter[]) {
+    private _renderParameterDescriptions(parameters: Parameter[]) {
         const descriptions = _.map(parameters, parameter => {
             const isOptional = parameter.isOptional;
             return (
@@ -168,7 +168,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
         });
         return descriptions;
     }
-    private setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean) {
         this.setState({
             shouldShowAnchor,
         });

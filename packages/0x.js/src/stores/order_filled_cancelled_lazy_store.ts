@@ -8,54 +8,54 @@ import {BlockParamLiteral} from '../types';
  * Copy on read store for filled/cancelled taker amounts
  */
 export class OrderFilledCancelledLazyStore {
-    private exchange: ExchangeWrapper;
-    private filledTakerAmount: {
+    private _exchange: ExchangeWrapper;
+    private _filledTakerAmount: {
         [orderHash: string]: BigNumber;
     };
-    private cancelledTakerAmount: {
+    private _cancelledTakerAmount: {
         [orderHash: string]: BigNumber;
     };
     constructor(exchange: ExchangeWrapper) {
-        this.exchange = exchange;
-        this.filledTakerAmount = {};
-        this.cancelledTakerAmount = {};
+        this._exchange = exchange;
+        this._filledTakerAmount = {};
+        this._cancelledTakerAmount = {};
     }
     public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
-        if (_.isUndefined(this.filledTakerAmount[orderHash])) {
+        if (_.isUndefined(this._filledTakerAmount[orderHash])) {
             const methodOpts = {
                 defaultBlock: BlockParamLiteral.Pending,
             };
-            const filledTakerAmount = await this.exchange.getFilledTakerAmountAsync(orderHash, methodOpts);
+            const filledTakerAmount = await this._exchange.getFilledTakerAmountAsync(orderHash, methodOpts);
             this.setFilledTakerAmount(orderHash, filledTakerAmount);
         }
-        const cachedFilled = this.filledTakerAmount[orderHash];
+        const cachedFilled = this._filledTakerAmount[orderHash];
         return cachedFilled;
     }
     public setFilledTakerAmount(orderHash: string, filledTakerAmount: BigNumber): void {
-        this.filledTakerAmount[orderHash] = filledTakerAmount;
+        this._filledTakerAmount[orderHash] = filledTakerAmount;
     }
     public deleteFilledTakerAmount(orderHash: string): void {
-        delete this.filledTakerAmount[orderHash];
+        delete this._filledTakerAmount[orderHash];
     }
     public async getCancelledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
-        if (_.isUndefined(this.cancelledTakerAmount[orderHash])) {
+        if (_.isUndefined(this._cancelledTakerAmount[orderHash])) {
             const methodOpts = {
                 defaultBlock: BlockParamLiteral.Pending,
             };
-            const cancelledTakerAmount = await this.exchange.getCancelledTakerAmountAsync(orderHash, methodOpts);
+            const cancelledTakerAmount = await this._exchange.getCancelledTakerAmountAsync(orderHash, methodOpts);
             this.setCancelledTakerAmount(orderHash, cancelledTakerAmount);
         }
-        const cachedCancelled = this.cancelledTakerAmount[orderHash];
+        const cachedCancelled = this._cancelledTakerAmount[orderHash];
         return cachedCancelled;
     }
     public setCancelledTakerAmount(orderHash: string, cancelledTakerAmount: BigNumber): void {
-        this.cancelledTakerAmount[orderHash] = cancelledTakerAmount;
+        this._cancelledTakerAmount[orderHash] = cancelledTakerAmount;
     }
     public deleteCancelledTakerAmount(orderHash: string): void {
-        delete this.cancelledTakerAmount[orderHash];
+        delete this._cancelledTakerAmount[orderHash];
     }
     public deleteAll(): void {
-        this.filledTakerAmount = {};
-        this.cancelledTakerAmount = {};
+        this._filledTakerAmount = {};
+        this._cancelledTakerAmount = {};
     }
 }

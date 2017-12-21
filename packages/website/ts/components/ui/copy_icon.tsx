@@ -15,8 +15,8 @@ interface CopyIconState {
 }
 
 export class CopyIcon extends React.Component<CopyIconProps, CopyIconState> {
-    private copyTooltipTimeoutId: number;
-    private copyable: HTMLInputElement;
+    private _copyTooltipTimeoutId: number;
+    private _copyable: HTMLInputElement;
     constructor(props: CopyIconProps) {
         super(props);
         this.state = {
@@ -25,25 +25,25 @@ export class CopyIcon extends React.Component<CopyIconProps, CopyIconState> {
     }
     public componentDidUpdate() {
         // Remove tooltip if hover away
-        if (!this.state.isHovering && this.copyTooltipTimeoutId) {
-            clearInterval(this.copyTooltipTimeoutId);
-            this.hideTooltip();
+        if (!this.state.isHovering && this._copyTooltipTimeoutId) {
+            clearInterval(this._copyTooltipTimeoutId);
+            this._hideTooltip();
         }
     }
     public render() {
         return (
             <div className="inline-block">
-                    <CopyToClipboard text={this.props.data} onCopy={this.onCopy.bind(this)}>
+                    <CopyToClipboard text={this.props.data} onCopy={this._onCopy.bind(this)}>
                         <div
                             className="inline flex"
                             style={{cursor: 'pointer', color: colors.amber600}}
-                            ref={this.setRefToProperty.bind(this)}
+                            ref={this._setRefToProperty.bind(this)}
                             data-tip={true}
                             data-for="copy"
                             data-event="click"
                             data-iscapture={true} // This let's the click event continue to propogate
-                            onMouseOver={this.setHoverState.bind(this, true)}
-                            onMouseOut={this.setHoverState.bind(this, false)}
+                            onMouseOver={this._setHoverState.bind(this, true)}
+                            onMouseOut={this._setHoverState.bind(this, false)}
                         >
                             <div>
                                 <i style={{fontSize: 15}} className="zmdi zmdi-copy" />
@@ -57,25 +57,25 @@ export class CopyIcon extends React.Component<CopyIconProps, CopyIconState> {
             </div>
         );
     }
-    private setRefToProperty(el: HTMLInputElement) {
-        this.copyable = el;
+    private _setRefToProperty(el: HTMLInputElement) {
+        this._copyable = el;
     }
-    private setHoverState(isHovering: boolean) {
+    private _setHoverState(isHovering: boolean) {
         this.setState({
             isHovering,
         });
     }
-    private onCopy() {
-        if (this.copyTooltipTimeoutId) {
-            clearInterval(this.copyTooltipTimeoutId);
+    private _onCopy() {
+        if (this._copyTooltipTimeoutId) {
+            clearInterval(this._copyTooltipTimeoutId);
         }
 
         const tooltipLifespanMs = 1000;
-        this.copyTooltipTimeoutId = window.setTimeout(() => {
-            this.hideTooltip();
+        this._copyTooltipTimeoutId = window.setTimeout(() => {
+            this._hideTooltip();
         }, tooltipLifespanMs);
     }
-    private hideTooltip() {
-        ReactTooltip.hide(ReactDOM.findDOMNode(this.copyable));
+    private _hideTooltip() {
+        ReactTooltip.hide(ReactDOM.findDOMNode(this._copyable));
     }
 }

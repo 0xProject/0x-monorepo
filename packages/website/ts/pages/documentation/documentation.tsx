@@ -93,7 +93,7 @@ export class Documentation extends
         const versions = findVersions(lastSegment);
         const preferredVersionIfExists = versions.length > 0 ? versions[0] : undefined;
         // tslint:disable-next-line:no-floating-promises
-        this.fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
+        this._fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
     }
     public render() {
         const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat) ?
@@ -157,7 +157,7 @@ export class Documentation extends
                                         {this.props.docsInfo.displayName}
                                     </a>
                                 </h1>
-                                {this.renderDocumentation()}
+                                {this._renderDocumentation()}
                             </div>
                         </div>
                     </div>
@@ -165,16 +165,16 @@ export class Documentation extends
             </div>
         );
     }
-    private renderDocumentation(): React.ReactNode {
+    private _renderDocumentation(): React.ReactNode {
         const subMenus = _.values(this.props.docsInfo.getMenu());
         const orderedSectionNames = _.flatten(subMenus);
 
         const typeDefinitionByName = this.props.docsInfo.getTypeDefinitionsByName(this.state.docAgnosticFormat);
-        const renderedSections = _.map(orderedSectionNames, this.renderSection.bind(this, typeDefinitionByName));
+        const renderedSections = _.map(orderedSectionNames, this._renderSection.bind(this, typeDefinitionByName));
 
         return renderedSections;
     }
-    private renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
+    private _renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
         const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdown[sectionName];
         if (!_.isUndefined(markdownFileIfExists)) {
             return (
@@ -204,12 +204,12 @@ export class Documentation extends
         });
 
         const sortedProperties = _.sortBy(docSection.properties, 'name');
-        const propertyDefs = _.map(sortedProperties, this.renderProperty.bind(this, sectionName));
+        const propertyDefs = _.map(sortedProperties, this._renderProperty.bind(this, sectionName));
 
         const sortedMethods = _.sortBy(docSection.methods, 'name');
         const methodDefs = _.map(sortedMethods, method => {
             const isConstructor = false;
-            return this.renderMethodBlocks(method, sectionName, isConstructor, typeDefinitionByName);
+            return this._renderMethodBlocks(method, sectionName, isConstructor, typeDefinitionByName);
         });
 
         const sortedEvents = _.sortBy(docSection.events, 'name');
@@ -232,7 +232,7 @@ export class Documentation extends
                         <div style={{marginRight: 7}}>
                             <SectionHeader sectionName={sectionName} />
                         </div>
-                        {this.renderNetworkBadgesIfExists(sectionName)}
+                        {this._renderNetworkBadgesIfExists(sectionName)}
                 </div>
                 {docSection.comment &&
                     <Comment
@@ -243,7 +243,7 @@ export class Documentation extends
                  this.props.docsInfo.isVisibleConstructor(sectionName) &&
                     <div>
                         <h2 className="thin">Constructor</h2>
-                        {this.renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
+                        {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
                     </div>
                 }
                 {docSection.properties.length > 0 &&
@@ -272,7 +272,7 @@ export class Documentation extends
             </div>
         );
     }
-    private renderNetworkBadgesIfExists(sectionName: string) {
+    private _renderNetworkBadgesIfExists(sectionName: string) {
         const networkToAddressByContractName = configs.CONTRACT_ADDRESS[this.props.docsVersion];
         const badges = _.map(networkToAddressByContractName,
             (addressByContractName: AddressByContractName, networkName: string) => {
@@ -299,11 +299,11 @@ export class Documentation extends
         });
         return badges;
     }
-    private renderConstructors(constructors: SolidityMethod[]|TypescriptMethod[],
-                               sectionName: string,
-                               typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
+    private _renderConstructors(constructors: SolidityMethod[]|TypescriptMethod[],
+                                sectionName: string,
+                                typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
         const constructorDefs = _.map(constructors, constructor => {
-            return this.renderMethodBlocks(
+            return this._renderMethodBlocks(
                 constructor, sectionName, constructor.isConstructor, typeDefinitionByName,
             );
         });
@@ -313,7 +313,7 @@ export class Documentation extends
             </div>
         );
     }
-    private renderProperty(sectionName: string, property: Property): React.ReactNode {
+    private _renderProperty(sectionName: string, property: Property): React.ReactNode {
         return (
             <div
                 key={`property-${property.name}-${property.type.name}`}
@@ -344,8 +344,8 @@ export class Documentation extends
             </div>
         );
     }
-    private renderMethodBlocks(method: SolidityMethod|TypescriptMethod, sectionName: string,
-                               isConstructor: boolean, typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
+    private _renderMethodBlocks(method: SolidityMethod|TypescriptMethod, sectionName: string,
+                                isConstructor: boolean, typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
         return (
             <MethodBlock
                key={`method-${method.name}-${sectionName}`}
@@ -357,7 +357,7 @@ export class Documentation extends
             />
         );
     }
-    private scrollToHash(): void {
+    private _scrollToHash(): void {
         const hashWithPrefix = this.props.location.hash;
         let hash = hashWithPrefix.slice(1);
         if (_.isEmpty(hash)) {
@@ -366,7 +366,7 @@ export class Documentation extends
 
         scroller.scrollTo(hash, {duration: 0, offset: 0, containerId: 'documentation'});
     }
-    private async fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
+    private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
         const versionToFileName = await docUtils.getVersionToFileNameAsync(this.props.docsInfo.docsJsonRoot);
         const versions = _.keys(versionToFileName);
         this.props.dispatcher.updateAvailableDocVersions(versions);
@@ -391,7 +391,7 @@ export class Documentation extends
         this.setState({
             docAgnosticFormat,
         }, () => {
-            this.scrollToHash();
+            this._scrollToHash();
         });
     }
 }

@@ -52,9 +52,9 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
                 <Paper
                     zDepth={1}
                     style={{cursor: 'pointer'}}
-                    onMouseEnter={this.onToggleHover.bind(this, true)}
-                    onMouseLeave={this.onToggleHover.bind(this, false)}
-                    onClick={this.onAssetClicked.bind(this)}
+                    onMouseEnter={this._onToggleHover.bind(this, true)}
+                    onMouseLeave={this._onToggleHover.bind(this, false)}
+                    onClick={this._onAssetClicked.bind(this)}
                 >
                     <div
                         className="mx-auto pt2"
@@ -73,13 +73,13 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
                     dispatcher={this.props.dispatcher}
                     isOpen={this.state.isPickerOpen}
                     currentTokenAddress={this.props.assetToken.address}
-                    onTokenChosen={this.onTokenChosen.bind(this)}
+                    onTokenChosen={this._onTokenChosen.bind(this)}
                     tokenByAddress={this.props.tokenByAddress}
                 />
             </div>
         );
     }
-    private onTokenChosen(tokenAddress: string) {
+    private _onTokenChosen(tokenAddress: string) {
         const assetToken: AssetToken = {
             address: tokenAddress,
             amount: this.props.assetToken.amount,
@@ -89,12 +89,12 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
             isPickerOpen: false,
         });
     }
-    private onToggleHover(isHoveringIcon: boolean) {
+    private _onToggleHover(isHoveringIcon: boolean) {
         this.setState({
             isHoveringIcon,
         });
     }
-    private onAssetClicked() {
+    private _onAssetClicked() {
         if (this.props.blockchainErr !== BlockchainErrs.NoError) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;

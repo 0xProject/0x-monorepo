@@ -33,8 +33,8 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     label={this.props.label}
                     amount={amount}
                     balance={ZeroEx.toUnitAmount(this.props.tokenState.balance, this.props.token.decimals)}
-                    onChange={this.onChange.bind(this)}
-                    validate={this.validate.bind(this)}
+                    onChange={this._onChange.bind(this)}
+                    validate={this._validate.bind(this)}
                     shouldCheckBalance={this.props.shouldCheckBalance}
                     shouldShowIncompleteErrs={this.props.shouldShowIncompleteErrs}
                     onVisitBalancesPageClick={this.props.onVisitBalancesPageClick}
@@ -45,14 +45,14 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             </div>
         );
     }
-    private onChange(isValid: boolean, amount?: BigNumber) {
+    private _onChange(isValid: boolean, amount?: BigNumber) {
         let baseUnitAmount;
         if (!_.isUndefined(amount)) {
             baseUnitAmount = ZeroEx.toBaseUnitAmount(amount, this.props.token.decimals);
         }
         this.props.onChange(isValid, baseUnitAmount);
     }
-    private validate(amount: BigNumber): InputErrMsg {
+    private _validate(amount: BigNumber): InputErrMsg {
         if (this.props.shouldCheckAllowance && amount.gt(this.props.tokenState.allowance)) {
             return (
                 <span>

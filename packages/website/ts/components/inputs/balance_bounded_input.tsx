@@ -35,7 +35,7 @@ export class BalanceBoundedInput extends
         super(props);
         const amountString = this.props.amount ? this.props.amount.toString() : '';
         this.state = {
-            errMsg: this.validate(amountString, props.balance),
+            errMsg: this._validate(amountString, props.balance),
             amountString,
         };
     }
@@ -57,14 +57,14 @@ export class BalanceBoundedInput extends
             if (shouldResetState) {
                 const amountString = nextProps.amount.toString();
                 this.setState({
-                    errMsg: this.validate(amountString, nextProps.balance),
+                    errMsg: this._validate(amountString, nextProps.balance),
                     amountString,
                 });
             }
         } else if (isCurrentAmountNumeric) {
             const amountString = '';
             this.setState({
-                errMsg: this.validate(amountString, nextProps.balance),
+                errMsg: this._validate(amountString, nextProps.balance),
                 amountString,
             });
         }
@@ -87,13 +87,13 @@ export class BalanceBoundedInput extends
                 errorText={errorText}
                 value={this.state.amountString}
                 hintText={<span style={{textTransform: 'capitalize'}}>amount</span>}
-                onChange={this.onValueChange.bind(this)}
+                onChange={this._onValueChange.bind(this)}
                 underlineStyle={{width: 'calc(100% + 50px)'}}
             />
         );
     }
-    private onValueChange(e: any, amountString: string) {
-        const errMsg = this.validate(amountString, this.props.balance);
+    private _onValueChange(e: any, amountString: string) {
+        const errMsg = this._validate(amountString, this.props.balance);
         this.setState({
             amountString,
             errMsg,
@@ -106,7 +106,7 @@ export class BalanceBoundedInput extends
             }
         });
     }
-    private validate(amountString: string, balance: BigNumber): InputErrMsg {
+    private _validate(amountString: string, balance: BigNumber): InputErrMsg {
         if (!utils.isNumeric(amountString)) {
             return amountString !== '' ? 'Must be a number' : '';
         }
@@ -118,14 +118,14 @@ export class BalanceBoundedInput extends
             return (
                 <span>
                     Insufficient balance.{' '}
-                    {this.renderIncreaseBalanceLink()}
+                    {this._renderIncreaseBalanceLink()}
                 </span>
             );
         }
         const errMsg = _.isUndefined(this.props.validate) ? undefined : this.props.validate(amount);
         return errMsg;
     }
-    private renderIncreaseBalanceLink() {
+    private _renderIncreaseBalanceLink() {
         if (this.props.shouldHideVisitBalancesLink) {
             return null;
         }
