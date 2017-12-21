@@ -107,8 +107,8 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 id={this.props.shouldAddId ? typeDefinitionAnchorId : ''}
                 className="pb2"
                 style={{overflow: 'hidden', width: '100%'}}
-                onMouseOver={this.setAnchorVisibility.bind(this, true)}
-                onMouseOut={this.setAnchorVisibility.bind(this, false)}
+                onMouseOver={this._setAnchorVisibility.bind(this, true)}
+                onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <AnchorTitle
                     headerSize={HeaderSizes.H3}
@@ -132,7 +132,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
             </div>
         );
     }
-    private setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean) {
         this.setState({
             shouldShowAnchor,
         });

@@ -7,8 +7,8 @@ import {JSONRPCPayload} from '../types';
 import {Subprovider} from './subprovider';
 
 export class RedundantRPCSubprovider extends Subprovider {
-    private rpcs: RpcSubprovider[];
-    private static async firstSuccessAsync(
+    private _rpcs: RpcSubprovider[];
+    private static async _firstSuccessAsync(
         rpcs: RpcSubprovider[], payload: JSONRPCPayload, next: () => void,
     ): Promise<any> {
         let lastErr: Error|undefined;
@@ -27,7 +27,7 @@ export class RedundantRPCSubprovider extends Subprovider {
     }
     constructor(endpoints: string[]) {
         super();
-        this.rpcs = _.map(endpoints, endpoint => {
+        this._rpcs = _.map(endpoints, endpoint => {
             return new RpcSubprovider({
                 rpcUrl: endpoint,
             });
@@ -36,9 +36,9 @@ export class RedundantRPCSubprovider extends Subprovider {
     // tslint:disable-next-line:async-suffix
     public async handleRequest(payload: JSONRPCPayload, next: () => void,
                                end: (err: Error|null, data?: any) =>  void): Promise<void> {
-        const rpcsCopy = this.rpcs.slice();
+        const rpcsCopy = this._rpcs.slice();
         try {
-            const data = await RedundantRPCSubprovider.firstSuccessAsync(rpcsCopy, payload, next);
+            const data = await RedundantRPCSubprovider._firstSuccessAsync(rpcsCopy, payload, next);
             end(null, data);
         } catch (err) {
             end(err);

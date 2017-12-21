@@ -19,7 +19,7 @@ export class DocsInfo {
     public menu: DocsMenu;
     public sections: SectionsMap;
     public sectionNameToMarkdown: {[sectionName: string]: string};
-    private docsInfo: DocsInfoConfig;
+    private _docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
         this.displayName = config.displayName;
         this.packageUrl = config.packageUrl;
@@ -28,32 +28,32 @@ export class DocsInfo {
         this.docsJsonRoot = config.docsJsonRoot;
         this.sections = config.sections;
         this.sectionNameToMarkdown = config.sectionNameToMarkdown;
-        this.docsInfo = config;
+        this._docsInfo = config;
     }
     public isPublicType(typeName: string): boolean {
-        if (_.isUndefined(this.docsInfo.publicTypes)) {
+        if (_.isUndefined(this._docsInfo.publicTypes)) {
             return false;
         }
-        const isPublic = _.includes(this.docsInfo.publicTypes, typeName);
+        const isPublic = _.includes(this._docsInfo.publicTypes, typeName);
         return isPublic;
     }
     public getModulePathsIfExists(sectionName: string): string[] {
-        const modulePathsIfExists = this.docsInfo.sectionNameToModulePath[sectionName];
+        const modulePathsIfExists = this._docsInfo.sectionNameToModulePath[sectionName];
         return modulePathsIfExists;
     }
     public getMenu(selectedVersion?: string): {[section: string]: string[]} {
-        if (_.isUndefined(selectedVersion) || _.isUndefined(this.docsInfo.menuSubsectionToVersionWhenIntroduced)) {
-            return this.docsInfo.menu;
+        if (_.isUndefined(selectedVersion) || _.isUndefined(this._docsInfo.menuSubsectionToVersionWhenIntroduced)) {
+            return this._docsInfo.menu;
         }
 
-        const finalMenu = _.cloneDeep(this.docsInfo.menu);
+        const finalMenu = _.cloneDeep(this._docsInfo.menu);
         if (_.isUndefined(finalMenu.contracts)) {
             return finalMenu;
         }
 
         // TODO: refactor to include more sections then simply the `contracts` section
         finalMenu.contracts = _.filter(finalMenu.contracts, (contractName: string) => {
-            const versionIntroducedIfExists = this.docsInfo.menuSubsectionToVersionWhenIntroduced[contractName];
+            const versionIntroducedIfExists = this._docsInfo.menuSubsectionToVersionWhenIntroduced[contractName];
             if (!_.isUndefined(versionIntroducedIfExists)) {
                 const existsInSelectedVersion = compareVersions(selectedVersion,
                                                                 versionIntroducedIfExists) >= 0;
@@ -104,9 +104,9 @@ export class DocsInfo {
         return typeDefinitionByName;
     }
     public isVisibleConstructor(sectionName: string): boolean {
-        return _.includes(this.docsInfo.visibleConstructors, sectionName);
+        return _.includes(this._docsInfo.visibleConstructors, sectionName);
     }
     public convertToDocAgnosticFormat(docObj: DoxityDocObj|TypeDocNode): DocAgnosticFormat {
-        return this.docsInfo.convertToDocAgnosticFormatFn(docObj, this);
+        return this._docsInfo.convertToDocAgnosticFormatFn(docObj, this);
     }
 }

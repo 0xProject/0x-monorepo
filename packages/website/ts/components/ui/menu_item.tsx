@@ -35,15 +35,15 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
                     onClick={this.props.onClick.bind(this)}
                     className={`mx-auto ${this.props.className}`}
                     style={menuItemStyles}
-                    onMouseEnter={this.onToggleHover.bind(this, true)}
-                    onMouseLeave={this.onToggleHover.bind(this, false)}
+                    onMouseEnter={this._onToggleHover.bind(this, true)}
+                    onMouseLeave={this._onToggleHover.bind(this, false)}
                 >
                     {this.props.children}
                 </div>
             </Link>
         );
     }
-    private onToggleHover(isHovering: boolean) {
+    private _onToggleHover(isHovering: boolean) {
         this.setState({
             isHovering,
         });

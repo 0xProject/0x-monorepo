@@ -35,8 +35,8 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         return (
             <div
                 className="pt2 pr3 md-pl2 sm-pl3 overflow-hidden"
-                onMouseOver={this.setAnchorVisibility.bind(this, true)}
-                onMouseOut={this.setAnchorVisibility.bind(this, false)}
+                onMouseOver={this._setAnchorVisibility.bind(this, true)}
+                onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <ScrollElement name={id}>
                     <div className="clearfix">
@@ -69,7 +69,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
             </div>
         );
     }
-    private setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean) {
         this.setState({
             shouldShowAnchor,
         });

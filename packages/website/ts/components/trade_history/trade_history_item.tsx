@@ -54,7 +54,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             >
                 <div className="clearfix">
                     <div className="col col-12 lg-col-1 md-col-1 pt2 lg-pl3 md-pl3">
-                        {this.renderDate()}
+                        {this._renderDate()}
                     </div>
                     <div
                         className="col col-12 lg-col-6 md-col-6 lg-pl3 md-pl3"
@@ -80,7 +80,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
                         className={amountColClassNames}
                         style={amountColStyle}
                     >
-                        {this.renderAmounts(makerToken, takerToken)}
+                        {this._renderAmounts(makerToken, takerToken)}
                     </div>
                     <div className="col col-12 lg-col-1 md-col-1 lg-pr3 md-pr3 lg-py3 md-py3 sm-pb1 sm-center">
                         <div className="pt1 lg-right md-right sm-mx-auto" style={{width: 13}}>
@@ -95,7 +95,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </Paper>
         );
     }
-    private renderAmounts(makerToken: Token, takerToken: Token) {
+    private _renderAmounts(makerToken: Token, takerToken: Token) {
         const fill = this.props.fill;
         const filledTakerTokenAmountInUnits = ZeroEx.toUnitAmount(fill.filledTakerTokenAmount, takerToken.decimals);
         const filledMakerTokenAmountInUnits = ZeroEx.toUnitAmount(fill.filledMakerTokenAmount, takerToken.decimals);
@@ -133,14 +133,14 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
                     style={{color: colors.green400, fontSize: 16}}
                 >
                     <span>+{' '}</span>
-                    {this.renderAmount(receiveAmount, receiveToken.symbol, receiveToken.decimals)}
+                    {this._renderAmount(receiveAmount, receiveToken.symbol, receiveToken.decimals)}
                 </div>
                 <div
                     className="pb1 inline-block"
                     style={{color: colors.red200, fontSize: 16}}
                 >
                     <span>-{' '}</span>
-                    {this.renderAmount(givenAmount, givenToken.symbol, givenToken.decimals)}
+                    {this._renderAmount(givenAmount, givenToken.symbol, givenToken.decimals)}
                 </div>
                 <div style={{color: colors.grey400, fontSize: 14}}>
                     {exchangeRate.toFixed(PRECISION)} {givenToken.symbol}/{receiveToken.symbol}
@@ -148,7 +148,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </div>
         );
     }
-    private renderDate() {
+    private _renderDate() {
         const blockMoment = moment.unix(this.props.fill.blockTimestamp);
         if (!blockMoment.isValid()) {
             return null;
@@ -170,7 +170,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             </div>
         );
     }
-    private renderAmount(amount: BigNumber, symbol: string, decimals: number) {
+    private _renderAmount(amount: BigNumber, symbol: string, decimals: number) {
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
         return (
             <span>

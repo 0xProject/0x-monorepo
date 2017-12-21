@@ -63,7 +63,7 @@ interface GenerateOrderFormState {
 }
 
 export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, GenerateOrderFormState> {
-    private validator: SchemaValidator;
+    private _validator: SchemaValidator;
     constructor(props: GenerateOrderFormProps) {
         super(props);
         this.state = {
@@ -71,7 +71,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             shouldShowIncompleteErrs: false,
             signingState: SigningState.UNSIGNED,
         };
-        this.validator = new SchemaValidator();
+        this._validator = new SchemaValidator();
     }
     public componentDidMount() {
         window.scrollTo(0, 0);
@@ -113,7 +113,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     token={depositToken}
                                     tokenState={depositTokenState}
                                     amount={this.props.sideToAssetToken[Side.Deposit].amount}
-                                    onChange={this.onTokenAmountChange.bind(this, depositToken, Side.Deposit)}
+                                    onChange={this._onTokenAmountChange.bind(this, depositToken, Side.Deposit)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                     shouldCheckBalance={true}
                                     shouldCheckAllowance={true}
@@ -144,7 +144,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     token={receiveToken}
                                     tokenState={receiveTokenState}
                                     amount={this.props.sideToAssetToken[Side.Receive].amount}
-                                    onChange={this.onTokenAmountChange.bind(this, receiveToken, Side.Receive)}
+                                    onChange={this._onTokenAmountChange.bind(this, receiveToken, Side.Receive)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                     shouldCheckBalance={false}
                                     shouldCheckAllowance={false}
@@ -165,7 +165,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                         <IdenticonAddressInput
                             label="Taker"
                             initialAddress={this.props.orderTakerAddress}
-                            updateOrderAddress={this.updateOrderAddress.bind(this)}
+                            updateOrderAddress={this._updateOrderAddress.bind(this)}
                         />
                         <div className="pt3">
                             <div className="pl1">
@@ -189,7 +189,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                 labelReady="Sign hash"
                                 labelLoading="Signing..."
                                 labelComplete="Hash signed!"
-                                onClickAsyncFn={this.onSignClickedAsync.bind(this)}
+                                onClickAsyncFn={this._onSignClickedAsync.bind(this)}
                             />
                         </div>
                         {this.state.globalErrMsg !== '' &&
@@ -202,7 +202,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     titleStyle={{fontWeight: 100}}
                     modal={false}
                     open={this.state.signingState === SigningState.SIGNED}
-                    onRequestClose={this.onCloseOrderJSONDialog.bind(this)}
+                    onRequestClose={this._onCloseOrderJSONDialog.bind(this)}
                 >
                     <OrderJSON
                         exchangeContractIfExists={exchangeContractIfExists}
@@ -222,10 +222,10 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             </div>
         );
     }
-    private onTokenAmountChange(token: Token, side: Side, isValid: boolean, amount?: BigNumber) {
+    private _onTokenAmountChange(token: Token, side: Side, isValid: boolean, amount?: BigNumber) {
         this.props.dispatcher.updateChosenAssetToken(side, {address: token.address, amount});
     }
-    private onCloseOrderJSONDialog() {
+    private _onCloseOrderJSONDialog() {
         // Upon closing the order JSON dialog, we update the orderSalt stored in the Redux store
         // with a new value so that if a user signs the identical order again, the newly signed
         // orderHash will not collide with the previously generated orderHash.
@@ -234,7 +234,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             signingState: SigningState.UNSIGNED,
         });
     }
-    private async onSignClickedAsync(): Promise<boolean> {
+    private async _onSignClickedAsync(): Promise<boolean> {
         if (this.props.blockchainErr !== BlockchainErrs.NoError) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return false;
@@ -249,7 +249,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             debitToken.amount.gt(0) && receiveAmount.gt(0) &&
             this.props.userAddress !== '' &&
             debitBalance.gte(debitToken.amount) && debitAllowance.gte(debitToken.amount)) {
-            const didSignSuccessfully = await this.signTransactionAsync();
+            const didSignSuccessfully = await this._signTransactionAsync();
             if (didSignSuccessfully) {
                 this.setState({
                     globalErrMsg: '',
@@ -270,7 +270,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             return false;
         }
     }
-    private async signTransactionAsync(): Promise<boolean> {
+    private async _signTransactionAsync(): Promise<boolean> {
         this.setState({
             signingState: SigningState.SIGNING,
         });
@@ -308,7 +308,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                               this.props.userAddress, hashData.makerFee, hashData.takerFee,
                                               hashData.feeRecipientAddress, signatureData, this.props.tokenByAddress,
                                               hashData.orderSalt);
-            const validationResult = this.validator.validate(order, orderSchema);
+            const validationResult = this._validator.validate(order, orderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';
                 utils.consoleLog(`Unexpected error occured: Order validation failed:
@@ -331,7 +331,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         });
         return globalErrMsg === '';
     }
-    private updateOrderAddress(address?: string): void {
+    private _updateOrderAddress(address?: string): void {
         if (!_.isUndefined(address)) {
             this.props.dispatcher.updateOrderTakerAddress(address);
         }

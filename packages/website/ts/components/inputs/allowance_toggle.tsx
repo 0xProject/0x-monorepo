@@ -46,8 +46,8 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
                 <div>
                     <Toggle
                         disabled={this.state.isSpinnerVisible}
-                        toggled={this.isAllowanceSet()}
-                        onToggle={this.onToggleAllowanceAsync.bind(this, this.props.token)}
+                        toggled={this._isAllowanceSet()}
+                        onToggle={this._onToggleAllowanceAsync.bind(this, this.props.token)}
                     />
                 </div>
                 {this.state.isSpinnerVisible &&
@@ -58,7 +58,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             </div>
         );
     }
-    private async onToggleAllowanceAsync() {
+    private async _onToggleAllowanceAsync() {
         if (this.props.userAddress === '') {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return false;
@@ -69,7 +69,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         });
 
         let newAllowanceAmountInBaseUnits = new BigNumber(0);
-        if (!this.isAllowanceSet()) {
+        if (!this._isAllowanceSet()) {
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
         try {
@@ -88,7 +88,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             await errorReporter.reportAsync(err);
         }
     }
-    private isAllowanceSet() {
+    private _isAllowanceSet() {
         return !this.props.tokenState.allowance.eq(0);
     }
 }

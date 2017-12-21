@@ -62,7 +62,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             <FlatButton
                 key="ledgerConnectCancel"
                 label="Cancel"
-                onTouchTap={this.onClose.bind(this)}
+                onTouchTap={this._onClose.bind(this)}
             />,
         ];
         const dialogTitle = this.state.stepIndex === LedgerSteps.CONNECT ?
@@ -74,22 +74,22 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                 titleStyle={{fontWeight: 100}}
                 actions={dialogActions}
                 open={this.props.isOpen}
-                onRequestClose={this.onClose.bind(this)}
+                onRequestClose={this._onClose.bind(this)}
                 autoScrollBodyContent={true}
                 bodyStyle={{paddingBottom: 0}}
             >
                 <div style={{color: colors.grey700, paddingTop: 1}}>
                     {this.state.stepIndex === LedgerSteps.CONNECT &&
-                        this.renderConnectStep()
+                        this._renderConnectStep()
                     }
                     {this.state.stepIndex === LedgerSteps.SELECT_ADDRESS &&
-                        this.renderSelectAddressStep()
+                        this._renderSelectAddressStep()
                     }
                 </div>
             </Dialog>
         );
     }
-    private renderConnectStep() {
+    private _renderConnectStep() {
         return (
             <div>
                 <div className="h4 pt3">
@@ -113,7 +113,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                         labelReady="Connect to Ledger"
                         labelLoading="Connecting..."
                         labelComplete="Connected!"
-                        onClickAsyncFn={this.onConnectLedgerClickAsync.bind(this, true)}
+                        onClickAsyncFn={this._onConnectLedgerClickAsync.bind(this, true)}
                     />
                     {this.state.didConnectFail &&
                         <div className="pt2 left-align" style={{color: colors.red200}}>
@@ -124,13 +124,13 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             </div>
         );
     }
-    private renderSelectAddressStep() {
+    private _renderSelectAddressStep() {
         return (
             <div>
                 <div>
                     <Table
                         bodyStyle={{height: 300}}
-                        onRowSelection={this.onAddressSelected.bind(this)}
+                        onRowSelection={this._onAddressSelected.bind(this)}
                     >
                         <TableHeader displaySelectAll={false}>
                             <TableRow>
@@ -139,7 +139,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {this.renderAddressTableRows()}
+                            {this._renderAddressTableRows()}
                         </TableBody>
                     </Table>
                 </div>
@@ -151,7 +151,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                             floatingLabelText="Update path derivation (advanced)"
                             value={this.state.derivationPath}
                             errorText={this.state.derivationErrMsg}
-                            onChange={this.onDerivationPathChanged.bind(this)}
+                            onChange={this._onDerivationPathChanged.bind(this)}
                         />
                     </div>
                     <div className="pl2" style={{paddingTop: 28}}>
@@ -159,14 +159,14 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                             labelReady="Update"
                             labelLoading="Updating..."
                             labelComplete="Updated!"
-                            onClickAsyncFn={this.onFetchAddressesForDerivationPathAsync.bind(this, true)}
+                            onClickAsyncFn={this._onFetchAddressesForDerivationPathAsync.bind(this, true)}
                         />
                     </div>
                 </div>
             </div>
         );
     }
-    private renderAddressTableRows() {
+    private _renderAddressTableRows() {
         const rows = _.map(this.state.userAddresses, (userAddress: string, i: number) => {
             const balance = this.state.addressBalances[i];
             const addressTooltipId = `address-${userAddress}`;
@@ -201,14 +201,14 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         });
         return rows;
     }
-    private onClose() {
+    private _onClose() {
         this.setState({
             didConnectFail: false,
         });
         const isOpen = false;
         this.props.toggleDialogFn(isOpen);
     }
-    private onAddressSelected(selectedRowIndexes: number[]) {
+    private _onAddressSelected(selectedRowIndexes: number[]) {
         const selectedRowIndex = selectedRowIndexes[0];
         this.props.blockchain.updateLedgerDerivationIndex(selectedRowIndex);
         const selectedAddress = this.state.userAddresses[selectedRowIndex];
@@ -222,13 +222,13 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         const isOpen = false;
         this.props.toggleDialogFn(isOpen);
     }
-    private async onFetchAddressesForDerivationPathAsync() {
+    private async _onFetchAddressesForDerivationPathAsync() {
         const currentlySetPath = this.props.blockchain.getLedgerDerivationPathIfExists();
         if (currentlySetPath === this.state.derivationPath) {
             return;
         }
         this.props.blockchain.updateLedgerDerivationPathIfExists(this.state.derivationPath);
-        const didSucceed = await this.fetchAddressesAndBalancesAsync();
+        const didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (!didSucceed) {
             this.setState({
                 derivationErrMsg: 'Failed to connect to Ledger.',
@@ -236,11 +236,11 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         }
         return didSucceed;
     }
-    private async fetchAddressesAndBalancesAsync() {
+    private async _fetchAddressesAndBalancesAsync() {
         let userAddresses: string[];
         const addressBalances: BigNumber[] = [];
         try {
-            userAddresses = await this.getUserAddressesAsync();
+            userAddresses = await this._getUserAddressesAsync();
             for (const address of userAddresses) {
                 const balance = await this.props.blockchain.getBalanceInEthAsync(address);
                 addressBalances.push(balance);
@@ -258,7 +258,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         });
         return true;
     }
-    private onDerivationPathChanged(e: any, derivationPath: string) {
+    private _onDerivationPathChanged(e: any, derivationPath: string) {
         let derivationErrMsg = '';
         if (!_.startsWith(derivationPath, VALID_ETHEREUM_DERIVATION_PATH_PREFIX)) {
             derivationErrMsg = 'Must be valid Ethereum path.';
@@ -269,8 +269,8 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             derivationErrMsg,
         });
     }
-    private async onConnectLedgerClickAsync() {
-        const didSucceed = await this.fetchAddressesAndBalancesAsync();
+    private async _onConnectLedgerClickAsync() {
+        const didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (didSucceed) {
             this.setState({
                 stepIndex: LedgerSteps.SELECT_ADDRESS,
@@ -278,7 +278,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         }
         return didSucceed;
     }
-    private async getUserAddressesAsync(): Promise<string[]> {
+    private async _getUserAddressesAsync(): Promise<string[]> {
         let userAddresses: string[];
         userAddresses = await this.props.blockchain.getUserAccountsAsync();
 

@@ -30,7 +30,7 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
                     label={this.props.label}
                     balance={this.props.balance}
                     amount={amount}
-                    onChange={this.onChange.bind(this)}
+                    onChange={this._onChange.bind(this)}
                     shouldCheckBalance={this.props.shouldCheckBalance}
                     shouldShowIncompleteErrs={this.props.shouldShowIncompleteErrs}
                     onVisitBalancesPageClick={this.props.onVisitBalancesPageClick}
@@ -42,7 +42,7 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
             </div>
         );
     }
-    private onChange(isValid: boolean, amount?: BigNumber) {
+    private _onChange(isValid: boolean, amount?: BigNumber) {
         const baseUnitAmountIfExists = _.isUndefined(amount) ?
             undefined :
             ZeroEx.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);

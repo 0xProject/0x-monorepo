@@ -39,28 +39,28 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
                     labelStyle={labelStyle}
                     disabled={this.state.isSending}
                     label={this.state.isSending ? 'Sending...' : 'Send'}
-                    onClick={this.toggleSendDialog.bind(this)}
+                    onClick={this._toggleSendDialog.bind(this)}
                 />
                 <SendDialog
                     isOpen={this.state.isSendDialogVisible}
-                    onComplete={this.onSendAmountSelectedAsync.bind(this)}
-                    onCancelled={this.toggleSendDialog.bind(this)}
+                    onComplete={this._onSendAmountSelectedAsync.bind(this)}
+                    onCancelled={this._toggleSendDialog.bind(this)}
                     token={this.props.token}
                     tokenState={this.props.tokenState}
                 />
             </div>
         );
     }
-    private toggleSendDialog() {
+    private _toggleSendDialog() {
         this.setState({
             isSendDialogVisible: !this.state.isSendDialogVisible,
         });
     }
-    private async onSendAmountSelectedAsync(recipient: string, value: BigNumber) {
+    private async _onSendAmountSelectedAsync(recipient: string, value: BigNumber) {
         this.setState({
             isSending: true,
         });
-        this.toggleSendDialog();
+        this._toggleSendDialog();
         const token = this.props.token;
         const tokenState = this.props.tokenState;
         let balance = tokenState.balance;

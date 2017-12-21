@@ -54,12 +54,12 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
                     floatingLabelText={label}
                     errorText={this.state.errMsg}
                     value={this.state.address}
-                    onChange={this.onOrderTakerAddressUpdated.bind(this)}
+                    onChange={this._onOrderTakerAddressUpdated.bind(this)}
                 />
             </div>
         );
     }
-    private onOrderTakerAddressUpdated(e: any) {
+    private _onOrderTakerAddressUpdated(e: any) {
         const address = e.target.value.toLowerCase();
         const isValidAddress = addressUtils.isAddress(address) || address === '';
         const errMsg = isValidAddress ? '' : 'Invalid ethereum address';

@@ -6,9 +6,9 @@ import {Order} from './order';
 import {DefaultOrderParams, OptionalOrderParams, OrderParams} from './types';
 
 export class OrderFactory {
-    private defaultOrderParams: DefaultOrderParams;
+    private _defaultOrderParams: DefaultOrderParams;
     constructor(defaultOrderParams: DefaultOrderParams) {
-        this.defaultOrderParams = defaultOrderParams;
+        this._defaultOrderParams = defaultOrderParams;
     }
     public async newSignedOrderAsync(customOrderParams: OptionalOrderParams = {}) {
         const randomExpiration = new BigNumber(Math.floor((Date.now() + (Math.random() * 100000000000)) / 1000));
@@ -16,7 +16,7 @@ export class OrderFactory {
             expirationTimestampInSec: randomExpiration,
             salt: ZeroEx.generatePseudoRandomSalt(),
             taker: ZeroEx.NULL_ADDRESS,
-        }, this.defaultOrderParams, customOrderParams);
+        }, this._defaultOrderParams, customOrderParams);
         const order = new Order(orderParams);
         await order.signAsync();
         return order;

@@ -27,7 +27,7 @@ export class Question extends React.Component<QuestionProps, QuestionState> {
             >
                 <Card
                     initiallyExpanded={this.props.shouldDisplayExpanded}
-                    onExpandChange={this.onExchangeChange.bind(this)}
+                    onExpandChange={this._onExchangeChange.bind(this)}
                 >
                     <CardHeader
                         title={this.props.prompt}
@@ -45,7 +45,7 @@ export class Question extends React.Component<QuestionProps, QuestionState> {
             </div>
         );
     }
-    private onExchangeChange() {
+    private _onExchangeChange() {
         this.setState({
             isExpanded: !this.state.isExpanded,
         });

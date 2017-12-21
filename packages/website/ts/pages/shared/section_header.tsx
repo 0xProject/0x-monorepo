@@ -28,8 +28,8 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
         const id = utils.getIdFromName(sectionName);
         return (
             <div
-                onMouseOver={this.setAnchorVisibility.bind(this, true)}
-                onMouseOut={this.setAnchorVisibility.bind(this, false)}
+                onMouseOver={this._setAnchorVisibility.bind(this, true)}
+                onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <ScrollElement name={id}>
                     <AnchorTitle
@@ -42,7 +42,7 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
             </div>
         );
     }
-    private setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean) {
         this.setState({
             shouldShowAnchor,
         });

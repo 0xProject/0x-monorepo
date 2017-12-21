@@ -27,8 +27,8 @@ export class SwapIcon extends React.Component<SwapIconProps, SwapIconState> {
                 className="mx-auto pt4"
                 style={{cursor: 'pointer', height: 50, width: 37.5}}
                 onClick={this.props.swapTokensFn}
-                onMouseEnter={this.onToggleHover.bind(this, true)}
-                onMouseLeave={this.onToggleHover.bind(this, false)}
+                onMouseEnter={this._onToggleHover.bind(this, true)}
+                onMouseLeave={this._onToggleHover.bind(this, false)}
             >
                 <i
                     style={swapStyles}
@@ -37,7 +37,7 @@ export class SwapIcon extends React.Component<SwapIconProps, SwapIconState> {
             </div>
         );
     }
-    private onToggleHover(isHovering: boolean) {
+    private _onToggleHover(isHovering: boolean) {
         this.setState({
             isHovering,
         });

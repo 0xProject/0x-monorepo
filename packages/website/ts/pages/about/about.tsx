@@ -188,10 +188,10 @@ export class About extends React.Component<AboutProps, AboutState> {
                     </div>
                     <div className="pt3 md-px4 lg-px0">
                         <div className="clearfix pb3">
-                            {this.renderProfiles(teamRow1)}
+                            {this._renderProfiles(teamRow1)}
                         </div>
                         <div className="clearfix">
-                            {this.renderProfiles(teamRow2)}
+                            {this._renderProfiles(teamRow2)}
                         </div>
                     </div>
                     <div className="pt3 pb2">
@@ -202,7 +202,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                             Advisors:
                         </div>
                         <div className="clearfix">
-                            {this.renderProfiles(advisors)}
+                            {this._renderProfiles(advisors)}
                         </div>
                     </div>
                     <div className="mx-auto py4 sm-px3" style={{maxWidth: 308}}>
@@ -232,7 +232,7 @@ export class About extends React.Component<AboutProps, AboutState> {
             </div>
         );
     }
-    private renderProfiles(profiles: ProfileInfo[]) {
+    private _renderProfiles(profiles: ProfileInfo[]) {
         const numIndiv = profiles.length;
         const colSize = utils.getColSize(numIndiv);
         return _.map(profiles, profile => {

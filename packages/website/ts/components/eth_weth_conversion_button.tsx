@@ -59,13 +59,13 @@ export class EthWethConversionButton extends
                     labelStyle={labelStyle}
                     disabled={this.props.isDisabled || this.state.isEthConversionHappening}
                     label={this.state.isEthConversionHappening ? inProgressLabel : callToActionLabel}
-                    onClick={this.toggleConversionDialog.bind(this)}
+                    onClick={this._toggleConversionDialog.bind(this)}
                 />
                 <EthWethConversionDialog
                     direction={this.props.direction}
                     isOpen={this.state.isEthConversionDialogVisible}
-                    onComplete={this.onConversionAmountSelectedAsync.bind(this)}
-                    onCancelled={this.toggleConversionDialog.bind(this)}
+                    onComplete={this._onConversionAmountSelectedAsync.bind(this)}
+                    onCancelled={this._toggleConversionDialog.bind(this)}
                     etherBalance={this.props.userEtherBalance}
                     token={this.props.ethToken}
                     tokenState={this.props.ethTokenState}
@@ -73,16 +73,16 @@ export class EthWethConversionButton extends
             </div>
         );
     }
-    private toggleConversionDialog() {
+    private _toggleConversionDialog() {
         this.setState({
             isEthConversionDialogVisible: !this.state.isEthConversionDialogVisible,
         });
     }
-    private async onConversionAmountSelectedAsync(direction: Side, value: BigNumber) {
+    private async _onConversionAmountSelectedAsync(direction: Side, value: BigNumber) {
         this.setState({
             isEthConversionHappening: true,
         });
-        this.toggleConversionDialog();
+        this._toggleConversionDialog();
         const token = this.props.ethToken;
         const tokenState = this.props.ethTokenState;
         let balance = tokenState.balance;

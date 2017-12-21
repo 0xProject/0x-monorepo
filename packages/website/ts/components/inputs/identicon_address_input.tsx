@@ -38,14 +38,14 @@ export class IdenticonAddressInput extends React.Component<IdenticonAddressInput
                             hintText="e.g 0x75bE4F78AA3699B3A348c84bDB2a96c3Db..."
                             shouldHideLabel={true}
                             initialAddress={this.props.initialAddress}
-                            updateAddress={this.updateAddress.bind(this)}
+                            updateAddress={this._updateAddress.bind(this)}
                         />
                     </div>
                 </div>
             </div>
         );
     }
-    private updateAddress(address?: string): void {
+    private _updateAddress(address?: string): void {
         this.setState({
             address,
         });
