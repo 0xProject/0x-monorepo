@@ -149,6 +149,10 @@ export class ZeroEx {
 
         const unit = new BigNumber(10).pow(decimals);
         const baseUnitAmount = amount.times(unit);
+        const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
+        if (hasDecimals) {
+            throw new Error(`Invalid unit amount: ${amount.toString()} - Too many decimal places`);
+        }
         return baseUnitAmount;
     }
     /**

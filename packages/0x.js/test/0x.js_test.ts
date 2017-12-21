@@ -136,6 +136,12 @@ describe('ZeroEx library', () => {
             const expectedUnitAmount = new BigNumber(1000000000);
             expect(baseUnitAmount).to.be.bignumber.equal(expectedUnitAmount);
         });
+        it('should throw if unitAmount has more decimals then specified as the max decimal precision', () => {
+            const unitAmount = new BigNumber(0.823091);
+            const decimals = 5;
+            expect(() => ZeroEx.toBaseUnitAmount(unitAmount, decimals))
+                .to.throw('Invalid unit amount: 0.823091 - Too many decimal places');
+        });
     });
     describe('#getOrderHashHex', () => {
         const expectedOrderHash = '0x39da987067a3c9e5f1617694f1301326ba8c8b0498ebef5df4863bed394e3c83';
