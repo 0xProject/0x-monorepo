@@ -46,6 +46,7 @@ export const constants = {
     UNAVAILABLE_STATUS: 503,
     TAKER_FEE: new BigNumber(0),
     TESTNET_NAME: 'Kovan',
+    TYPES_SECTION_NAME: 'types',
     PROJECT_URL_ETHFINEX: 'https://www.bitfinex.com/ethfinex',
     PROJECT_URL_RADAR_RELAY: 'https://radarrelay.com',
     PROJECT_URL_PARADEX: 'https://paradex.io',

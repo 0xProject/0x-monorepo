@@ -3,6 +3,7 @@ import * as React from 'react';
 import {DocsInfo} from 'ts/pages/documentation/docs_info';
 import {Type} from 'ts/pages/documentation/type';
 import {Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod} from 'ts/types';
+import {constants} from 'ts/utils/constants';
 
 interface MethodSignatureProps {
     method: TypescriptMethod|SolidityMethod;
@@ -19,7 +20,7 @@ const defaultProps = {
 };
 
 export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSignatureProps) => {
-    const sectionName = 'types';
+    const sectionName = constants.TYPES_SECTION_NAME;
     const parameters = renderParameters(
         props.method, props.docsInfo, sectionName, props.typeDefinitionByName,
     );
