@@ -37,6 +37,7 @@ const typeToSection: {[typeName: string]: string} = {
 interface TypeProps {
     type: TypeDef;
     docsInfo: DocsInfo;
+    sectionName: string;
     typeDefinitionByName?: TypeDefinitionByName;
 }
 
@@ -66,6 +67,7 @@ export function Type(props: TypeProps): any {
                             <Type
                                 key={key}
                                 type={arg.elementType}
+                                sectionName={props.sectionName}
                                 typeDefinitionByName={props.typeDefinitionByName}
                                 docsInfo={props.docsInfo}
                             />[]
@@ -76,6 +78,7 @@ export function Type(props: TypeProps): any {
                         <Type
                             key={`type-${arg.name}-${arg.value}-${arg.typeDocType}`}
                             type={arg}
+                            sectionName={props.sectionName}
                             typeDefinitionByName={props.typeDefinitionByName}
                             docsInfo={props.docsInfo}
                         />
@@ -100,6 +103,7 @@ export function Type(props: TypeProps): any {
                     <Type
                         key={`type-${t.name}-${t.value}-${t.typeDocType}`}
                         type={t}
+                        sectionName={props.sectionName}
                         typeDefinitionByName={props.typeDefinitionByName}
                         docsInfo={props.docsInfo}
                     />
@@ -144,7 +148,9 @@ export function Type(props: TypeProps): any {
                 (props.docsInfo.isPublicType(typeName as string) ||
                 !_.isUndefined(sectionNameIfExists))) {
         const id = Math.random().toString();
-        const typeDefinitionAnchorId = _.isUndefined(sectionNameIfExists) ? typeName : sectionNameIfExists;
+        const typeDefinitionAnchorId = _.isUndefined(sectionNameIfExists) ?
+                                       `${props.sectionName}-${typeName}` :
+                                       sectionNameIfExists;
         let typeDefinition;
         if (props.typeDefinitionByName) {
             typeDefinition = props.typeDefinitionByName[typeName as string];
@@ -177,6 +183,7 @@ export function Type(props: TypeProps): any {
                         className="typeTooltip"
                     >
                         <TypeDefinition
+                            sectionName={props.sectionName}
                             customType={typeDefinition}
                             shouldAddId={false}
                             docsInfo={props.docsInfo}

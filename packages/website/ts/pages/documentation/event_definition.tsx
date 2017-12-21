@@ -8,6 +8,7 @@ import {colors} from 'ts/utils/colors';
 
 interface EventDefinitionProps {
     event: Event;
+    sectionName: string;
     docsInfo: DocsInfo;
 }
 
@@ -26,7 +27,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
         const event = this.props.event;
         return (
             <div
-                id={event.name}
+                id={`${this.props.sectionName}-${event.name}`}
                 className="pb2"
                 style={{overflow: 'hidden', width: '100%'}}
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
@@ -54,6 +55,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             const type = (
                 <Type
                     type={eventArg.type}
+                    sectionName={this.props.sectionName}
                     docsInfo={this.props.docsInfo}
                 />
             );

@@ -10,6 +10,7 @@ import {
 import {Dispatcher} from 'ts/redux/dispatcher';
 import {State} from 'ts/redux/reducer';
 import {DocsInfoConfig, WebsitePaths} from 'ts/types';
+import {constants} from 'ts/utils/constants';
 import {typeDocUtils} from 'ts/utils/typedoc_utils';
 
 /* tslint:disable:no-var-requires */
@@ -34,7 +35,7 @@ const zeroExJsDocSections = {
     etherToken: 'etherToken',
     proxy: 'proxy',
     orderWatcher: 'orderWatcher',
-    types: 'types',
+    types: constants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {

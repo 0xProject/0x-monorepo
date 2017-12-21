@@ -130,7 +130,8 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         return (
             <ul style={{margin: 0, listStyleType: 'none', paddingLeft: 0}} key={menuItemName}>
             {_.map(entityNames, entityName => {
-                const id = utils.getIdFromName(entityName);
+                const name = `${menuItemName}-${entityName}`;
+                const id = utils.getIdFromName(name);
                 return (
                     <li key={`menuItem-${entityName}`}>
                         <ScrollLink
@@ -138,10 +139,10 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             offset={0}
                             duration={constants.DOCS_SCROLL_DURATION_MS}
                             containerId={constants.DOCS_CONTAINER_ID}
-                            onTouchTap={this._onMenuItemClick.bind(this, entityName)}
+                            onTouchTap={this._onMenuItemClick.bind(this, name)}
                         >
                             <MenuItem
-                                onTouchTap={this._onMenuItemClick.bind(this, menuItemName)}
+                                onTouchTap={this._onMenuItemClick.bind(this, name)}
                                 style={{minHeight: 35}}
                                 innerDivStyle={{paddingLeft: 36, fontSize: 14, lineHeight: '35px'}}
                             >
@@ -154,8 +155,8 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             </ul>
         );
     }
-    private _onMenuItemClick(menuItemName: string): void {
-        const id = utils.getIdFromName(menuItemName);
+    private _onMenuItemClick(name: string): void {
+        const id = utils.getIdFromName(name);
         utils.setUrlHash(id);
         this.props.onMenuItemClick();
     }
