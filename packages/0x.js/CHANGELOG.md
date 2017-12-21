@@ -4,6 +4,7 @@ vx.x.x - _TBD_
 ------------------------
     * Assert baseUnit amount supplied to `toUnitAmount` is integer amount. (#287)
     * `toBaseUnitAmount` throws if amount supplied has too many decimals (#287)
+    * Fixed build minification issue by removing an internal dependency using ES7 features (#290)
 
 v0.28.0 - _December 20, 2017_
 ------------------------
