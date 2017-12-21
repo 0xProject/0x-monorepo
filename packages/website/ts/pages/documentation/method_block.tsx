@@ -18,6 +18,7 @@ import {typeDocUtils} from 'ts/utils/typedoc_utils';
 
 interface MethodBlockProps {
     method: SolidityMethod|TypescriptMethod;
+    sectionName: string;
     libraryVersion: string;
     typeDefinitionByName: TypeDefinitionByName;
     docsInfo: DocsInfo;
@@ -54,7 +55,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
 
         return (
             <div
-                id={method.name}
+                id={`${this.props.sectionName}-${method.name}`}
                 style={{overflow: 'hidden', width: '100%'}}
                 className="pb4"
                 onMouseOver={this.setAnchorVisibility.bind(this, true)}
@@ -74,7 +75,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                         <AnchorTitle
                             headerSize={HeaderSizes.H3}
                             title={method.name}
-                            id={method.name}
+                            id={`${this.props.sectionName}-${method.name}`}
                             shouldShowAnchor={this.state.shouldShowAnchor}
                         />
                     </div>
@@ -82,6 +83,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                 <code className="hljs">
                     <MethodSignature
                         method={method}
+                        sectionName={this.props.sectionName}
                         typeDefinitionByName={this.props.typeDefinitionByName}
                         docsInfo={this.props.docsInfo}
                     />

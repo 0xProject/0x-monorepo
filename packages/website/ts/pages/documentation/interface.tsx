@@ -7,6 +7,7 @@ import {CustomType, TypeDocTypes} from 'ts/types';
 
 interface InterfaceProps {
     type: CustomType;
+    sectionName: string;
     docsInfo: DocsInfo;
 }
 
@@ -17,9 +18,14 @@ export function Interface(props: InterfaceProps) {
             <span key={`property-${property.name}-${property.type}-${type.name}`}>
                 {property.name}:{' '}
                 {property.type.typeDocType !== TypeDocTypes.Reflection ?
-                    <Type type={property.type} docsInfo={props.docsInfo} /> :
+                    <Type
+                        type={property.type}
+                        sectionName={props.sectionName}
+                        docsInfo={props.docsInfo}
+                    /> :
                     <MethodSignature
                         method={property.type.method}
+                        sectionName={props.sectionName}
                         shouldHideMethodName={true}
                         shouldUseArrowSyntax={true}
                         docsInfo={props.docsInfo}
@@ -33,7 +39,7 @@ export function Interface(props: InterfaceProps) {
         const is = type.indexSignature;
         const param = (
             <span key={`indexSigParams-${is.keyName}-${is.keyType}-${type.name}`}>
-                {is.keyName}: <Type type={is.keyType} docsInfo={props.docsInfo} />
+                {is.keyName}: <Type type={is.keyType} sectionName={props.sectionName} docsInfo={props.docsInfo} />
             </span>
         );
         properties.push((

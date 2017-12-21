@@ -13,6 +13,7 @@ import {colors} from 'ts/utils/colors';
 import {utils} from 'ts/utils/utils';
 
 interface TypeDefinitionProps {
+    sectionName: string;
     customType: CustomType;
     shouldAddId?: boolean;
     docsInfo: DocsInfo;
@@ -46,6 +47,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 codeSnippet = (
                     <Interface
                         type={customType}
+                        sectionName={this.props.sectionName}
                         docsInfo={this.props.docsInfo}
                     />
                 );
@@ -85,9 +87,14 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                             type
                         </span> {customType.name} ={' '}
                         {customType.type.typeDocType !== TypeDocTypes.Reflection ?
-                            <Type type={customType.type} docsInfo={this.props.docsInfo} /> :
+                            <Type
+                                type={customType.type}
+                                sectionName={this.props.sectionName}
+                                docsInfo={this.props.docsInfo}
+                            /> :
                             <MethodSignature
                                 method={customType.type.method}
+                                sectionName={this.props.sectionName}
                                 shouldHideMethodName={true}
                                 shouldUseArrowSyntax={true}
                                 docsInfo={this.props.docsInfo}
@@ -101,7 +108,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 throw utils.spawnSwitchErr('type.kindString', customType.kindString);
         }
 
-        const typeDefinitionAnchorId = customType.name;
+        const typeDefinitionAnchorId = `${this.props.sectionName}-${customType.name}`;
         return (
             <div
                 id={this.props.shouldAddId ? typeDefinitionAnchorId : ''}

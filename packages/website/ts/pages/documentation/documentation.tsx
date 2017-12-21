@@ -195,6 +195,7 @@ export class Documentation extends
         const typeDefs = _.map(sortedTypes, customType => {
             return (
                 <TypeDefinition
+                    sectionName={sectionName}
                     key={`type-${customType.name}`}
                     customType={customType}
                     docsInfo={this.props.docsInfo}
@@ -203,7 +204,7 @@ export class Documentation extends
         });
 
         const sortedProperties = _.sortBy(docSection.properties, 'name');
-        const propertyDefs = _.map(sortedProperties, this.renderProperty.bind(this));
+        const propertyDefs = _.map(sortedProperties, this.renderProperty.bind(this, sectionName));
 
         const sortedMethods = _.sortBy(docSection.methods, 'name');
         const methodDefs = _.map(sortedMethods, method => {
@@ -217,6 +218,7 @@ export class Documentation extends
                 <EventDefinition
                     key={`event-${event.name}-${i}`}
                     event={event}
+                    sectionName={sectionName}
                     docsInfo={this.props.docsInfo}
                 />
             );
@@ -311,14 +313,19 @@ export class Documentation extends
             </div>
         );
     }
-    private renderProperty(property: Property): React.ReactNode {
+    private renderProperty(sectionName: string, property: Property): React.ReactNode {
         return (
             <div
                 key={`property-${property.name}-${property.type.name}`}
                 className="pb3"
             >
                 <code className="hljs">
-                    {property.name}: <Type type={property.type} docsInfo={this.props.docsInfo} />
+                    {property.name}:
+                    <Type
+                        type={property.type}
+                        sectionName={sectionName}
+                        docsInfo={this.props.docsInfo}
+                    />
                 </code>
                 {property.source &&
                     <SourceLink
@@ -342,6 +349,7 @@ export class Documentation extends
         return (
             <MethodBlock
                key={`method-${method.name}-${sectionName}`}
+               sectionName={sectionName}
                method={method}
                typeDefinitionByName={typeDefinitionByName}
                libraryVersion={this.props.docsVersion}
