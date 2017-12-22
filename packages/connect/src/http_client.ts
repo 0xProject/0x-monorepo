@@ -1,6 +1,5 @@
 import {assert} from '@0xproject/assert';
 import {schemas} from '@0xproject/json-schemas';
-import {BigNumber} from 'bignumber.js';
 import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
@@ -20,11 +19,6 @@ import {
     TokenPairsRequest,
 } from './types';
 import {typeConverters} from './utils/type_converters';
-
-// TODO: move this and bigNumberConfigs in the 0x.js package into one place
-BigNumber.config({
-    EXPONENTIAL_AT: 1000,
-});
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
