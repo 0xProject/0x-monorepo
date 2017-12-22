@@ -6,6 +6,7 @@
     ],
     "scripts": {
         "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
+        "prettier": "prettier --write '**/*.ts'",
         "lerna:run": "lerna run",
         "lerna:rebuild": "lerna run clean; lerna run build;",
         "lerna:publish": "yarn install; lerna run clean; lerna run build; lerna publish --registry=https://registry.npmjs.org/"
@@ -18,6 +19,7 @@
         "async-child-process": "^1.1.1",
         "ethereumjs-testrpc": "6.0.3",
         "lerna": "^2.5.1",
+        "prettier": "1.9.2",
         "publish-release": "0xproject/publish-release",
         "semver-sort": "^0.0.4"
     }
