@@ -1,21 +1,18 @@
-import {ZeroEx} from '0x.js';
-import {BigNumber} from 'bignumber.js';
+import { ZeroEx } from '0x.js';
+import { BigNumber } from 'bignumber.js';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
-import {Artifacts} from '../../../util/artifacts';
-import {ExchangeWrapper} from '../../../util/exchange_wrapper';
-import {Order} from '../../../util/order';
-import {OrderFactory} from '../../../util/order_factory';
-import {chaiSetup} from '../utils/chai_setup';
+import { Artifacts } from '../../../util/artifacts';
+import { ExchangeWrapper } from '../../../util/exchange_wrapper';
+import { Order } from '../../../util/order';
+import { OrderFactory } from '../../../util/order_factory';
+import { chaiSetup } from '../utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-const {
-    Exchange,
-    TokenRegistry,
-} = new Artifacts(artifacts);
+const { Exchange, TokenRegistry } = new Artifacts(artifacts);
 
 contract('Exchange', (accounts: string[]) => {
     const maker = accounts[0];
@@ -26,10 +23,7 @@ contract('Exchange', (accounts: string[]) => {
     let orderFactory: OrderFactory;
 
     before(async () => {
-        const [tokenRegistry, exchange] = await Promise.all([
-            TokenRegistry.deployed(),
-            Exchange.deployed(),
-        ]);
+        const [tokenRegistry, exchange] = await Promise.all([TokenRegistry.deployed(), Exchange.deployed()]);
         exchangeWrapper = new ExchangeWrapper(exchange);
         const [repAddress, dgdAddress] = await Promise.all([
             tokenRegistry.getTokenAddressBySymbol('REP'),

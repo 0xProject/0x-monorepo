@@ -42,9 +42,8 @@ export class RequestQueue {
                 return;
             }
             const recipientAddress = this.queue.shift();
-                // tslint:disable-next-line:no-floating-promises
+            // tslint:disable-next-line:no-floating-promises
             this.processNextRequestFireAndForgetAsync(recipientAddress);
-
         }, this.queueIntervalMs);
     }
     protected stop() {

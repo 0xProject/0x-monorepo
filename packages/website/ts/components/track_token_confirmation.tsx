@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Party} from 'ts/components/ui/party';
-import {Token, TokenByAddress} from 'ts/types';
-import {colors} from 'ts/utils/colors';
-import {utils} from 'ts/utils/utils';
+import { Party } from 'ts/components/ui/party';
+import { Token, TokenByAddress } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { utils } from 'ts/utils/utils';
 
 interface TrackTokenConfirmationProps {
     tokens: Token[];
@@ -14,25 +14,23 @@ interface TrackTokenConfirmationProps {
 
 interface TrackTokenConfirmationState {}
 
-export class TrackTokenConfirmation extends
-    React.Component<TrackTokenConfirmationProps, TrackTokenConfirmationState> {
+export class TrackTokenConfirmation extends React.Component<TrackTokenConfirmationProps, TrackTokenConfirmationState> {
     public render() {
         const isMultipleTokens = this.props.tokens.length > 1;
         const allTokens = _.values(this.props.tokenByAddress);
         return (
-            <div style={{color: colors.grey700}}>
-                {this.props.isAddingTokenToTracked ?
+            <div style={{ color: colors.grey700 }}>
+                {this.props.isAddingTokenToTracked ? (
                     <div className="py4 my4 center">
                         <span className="pr1">
                             <i className="zmdi zmdi-spinner zmdi-hc-spin" />
                         </span>
                         <span>Adding token{isMultipleTokens && 's'}...</span>
-                    </div> :
+                    </div>
+                ) : (
                     <div>
-                        <div>
-                            You do not currently track the following token{isMultipleTokens && 's'}:
-                        </div>
-                        <div className="py2 clearfix mx-auto center" style={{width: 355}}>
+                        <div>You do not currently track the following token{isMultipleTokens && 's'}:</div>
+                        <div className="py2 clearfix mx-auto center" style={{ width: 355 }}>
                             {_.map(this.props.tokens, (token: Token) => (
                                 <div
                                     key={`token-profile-${token.name}`}
@@ -50,13 +48,13 @@ export class TrackTokenConfirmation extends
                             ))}
                         </div>
                         <div>
-                            Tracking a token adds it to the balances section of 0x Portal and
-                            allows you to generate/fill orders involving the token
+                            Tracking a token adds it to the balances section of 0x Portal and allows you to
+                            generate/fill orders involving the token
                             {isMultipleTokens && 's'}. Would you like to start tracking{' '}
-                            {isMultipleTokens ? 'these' : 'this'}{' '}token?
+                            {isMultipleTokens ? 'these' : 'this'} token?
                         </div>
                     </div>
-                }
+                )}
             </div>
         );
     }

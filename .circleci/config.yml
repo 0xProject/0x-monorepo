@@ -26,3 +26,4 @@ jobs:
           background: true
       - run: yarn lerna:run test:circleci
       - run: yarn lerna:run lint
+      - run: yarn prettier:ci

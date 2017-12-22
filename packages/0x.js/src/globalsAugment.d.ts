@@ -9,7 +9,7 @@ declare global {
     /* tslint:disable */
     namespace Chai {
         interface NumberComparer {
-            (value: number|BigNumber, message?: string): Assertion;
+            (value: number | BigNumber, message?: string): Assertion;
         }
         interface NumericComparison {
             greaterThan: NumberComparer;
@@ -18,6 +18,6 @@ declare global {
     /* tslint:enable */
     interface DecodedLogArg {
         name: string;
-        value: string|BigNumber;
+        value: string | BigNumber;
     }
 }

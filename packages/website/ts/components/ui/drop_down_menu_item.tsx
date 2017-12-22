@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import Menu from 'material-ui/Menu';
 import Popover from 'material-ui/Popover';
 import * as React from 'react';
-import {colors} from 'ts/utils/colors';
+import { colors } from 'ts/utils/colors';
 
 const CHECK_CLOSE_POPOVER_INTERVAL_MS = 300;
 const DEFAULT_STYLE = {
@@ -48,33 +48,26 @@ export class DropDownMenuItem extends React.Component<DropDownMenuItemProps, Dro
         const colorStyle = this.props.isNightVersion ? 'white' : this.props.style.color;
         return (
             <div
-                style={{...this.props.style, color: colorStyle}}
+                style={{ ...this.props.style, color: colorStyle }}
                 onMouseEnter={this._onHover.bind(this)}
                 onMouseLeave={this._onHoverOff.bind(this)}
             >
                 <div className="flex relative">
-                    <div style={{paddingRight: 10}}>
-                        {this.props.title}
-                    </div>
-                    <div className="absolute" style={{paddingLeft: 3, right: 3, top: -2}}>
-                        <i className="zmdi zmdi-caret-right" style={{fontSize: 22}} />
+                    <div style={{ paddingRight: 10 }}>{this.props.title}</div>
+                    <div className="absolute" style={{ paddingLeft: 3, right: 3, top: -2 }}>
+                        <i className="zmdi zmdi-caret-right" style={{ fontSize: 22 }} />
                     </div>
                 </div>
                 <Popover
                     open={this.state.isDropDownOpen}
                     anchorEl={this.state.anchorEl}
-                    anchorOrigin={{horizontal: 'middle', vertical: 'bottom'}}
-                    targetOrigin={{horizontal: 'middle', vertical: 'top'}}
+                    anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
+                    targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
                     onRequestClose={this._closePopover.bind(this)}
                     useLayerForClickAway={false}
                 >
-                    <div
-                        onMouseEnter={this._onHover.bind(this)}
-                        onMouseLeave={this._onHoverOff.bind(this)}
-                    >
-                        <Menu style={{color: colors.grey}}>
-                            {this.props.subMenuItems}
-                        </Menu>
+                    <div onMouseEnter={this._onHover.bind(this)} onMouseLeave={this._onHoverOff.bind(this)}>
+                        <Menu style={{ color: colors.grey }}>{this.props.subMenuItems}</Menu>
                     </div>
                 </Popover>
             </div>
@@ -90,8 +83,8 @@ export class DropDownMenuItem extends React.Component<DropDownMenuItemProps, Dro
         }
 
         this.setState({
-          isDropDownOpen: true,
-          anchorEl: event.currentTarget,
+            isDropDownOpen: true,
+            anchorEl: event.currentTarget,
         });
     }
     private _onHoverOff(event: React.FormEvent<HTMLInputElement>) {

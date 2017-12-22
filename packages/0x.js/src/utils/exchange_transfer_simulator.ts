@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
-import {TokenWrapper} from '../contract_wrappers/token_wrapper';
-import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
-import {BlockParamLiteral, ExchangeContractErrs, TradeSide, TransferType} from '../types';
+import { TokenWrapper } from '../contract_wrappers/token_wrapper';
+import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
+import { BlockParamLiteral, ExchangeContractErrs, TradeSide, TransferType } from '../types';
 
 enum FailureReason {
     Balance = 'balance',
@@ -36,8 +36,11 @@ const ERR_MSG_MAPPING = {
 export class ExchangeTransferSimulator {
     private _store: BalanceAndProxyAllowanceLazyStore;
     private _UNLIMITED_ALLOWANCE_IN_BASE_UNITS: BigNumber;
-    private static _throwValidationError(failureReason: FailureReason, tradeSide: TradeSide,
-                                         transferType: TransferType): never {
+    private static _throwValidationError(
+        failureReason: FailureReason,
+        tradeSide: TradeSide,
+        transferType: TransferType,
+    ): never {
         const errMsg = ERR_MSG_MAPPING[failureReason][tradeSide][transferType];
         throw new Error(errMsg);
     }
@@ -54,9 +57,14 @@ export class ExchangeTransferSimulator {
      * @param  tradeSide         Is Maker/Taker transferring
      * @param  transferType      Is it a fee payment or a value transfer
      */
-    public async transferFromAsync(tokenAddress: string, from: string, to: string,
-                                   amountInBaseUnits: BigNumber, tradeSide: TradeSide,
-                                   transferType: TransferType): Promise<void> {
+    public async transferFromAsync(
+        tokenAddress: string,
+        from: string,
+        to: string,
+        amountInBaseUnits: BigNumber,
+        tradeSide: TradeSide,
+        transferType: TransferType,
+    ): Promise<void> {
         const balance = await this._store.getBalanceAsync(tokenAddress, from);
         const proxyAllowance = await this._store.getProxyAllowanceAsync(tokenAddress, from);
         if (proxyAllowance.lessThan(amountInBaseUnits)) {
@@ -69,20 +77,29 @@ export class ExchangeTransferSimulator {
         await this._decreaseBalanceAsync(tokenAddress, from, amountInBaseUnits);
         await this._increaseBalanceAsync(tokenAddress, to, amountInBaseUnits);
     }
-    private async _decreaseProxyAllowanceAsync(tokenAddress: string, userAddress: string,
-                                               amountInBaseUnits: BigNumber): Promise<void> {
+    private async _decreaseProxyAllowanceAsync(
+        tokenAddress: string,
+        userAddress: string,
+        amountInBaseUnits: BigNumber,
+    ): Promise<void> {
         const proxyAllowance = await this._store.getProxyAllowanceAsync(tokenAddress, userAddress);
         if (!proxyAllowance.eq(this._UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
             this._store.setProxyAllowance(tokenAddress, userAddress, proxyAllowance.minus(amountInBaseUnits));
         }
     }
-    private async _increaseBalanceAsync(tokenAddress: string, userAddress: string,
-                                        amountInBaseUnits: BigNumber): Promise<void> {
+    private async _increaseBalanceAsync(
+        tokenAddress: string,
+        userAddress: string,
+        amountInBaseUnits: BigNumber,
+    ): Promise<void> {
         const balance = await this._store.getBalanceAsync(tokenAddress, userAddress);
         this._store.setBalance(tokenAddress, userAddress, balance.plus(amountInBaseUnits));
     }
-    private async _decreaseBalanceAsync(tokenAddress: string, userAddress: string,
-                                        amountInBaseUnits: BigNumber): Promise<void> {
+    private async _decreaseBalanceAsync(
+        tokenAddress: string,
+        userAddress: string,
+        amountInBaseUnits: BigNumber,
+    ): Promise<void> {
         const balance = await this._store.getBalanceAsync(tokenAddress, userAddress);
         this._store.setBalance(tokenAddress, userAddress, balance.minus(amountInBaseUnits));
     }

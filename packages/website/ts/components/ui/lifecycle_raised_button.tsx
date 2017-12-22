@@ -1,24 +1,24 @@
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import {colors} from 'ts/utils/colors';
-import {utils} from 'ts/utils/utils';
+import { colors } from 'ts/utils/colors';
+import { utils } from 'ts/utils/utils';
 
 const COMPLETE_STATE_SHOW_LENGTH_MS = 2000;
 
 enum ButtonState {
-  READY,
-  LOADING,
-  COMPLETE,
+    READY,
+    LOADING,
+    COMPLETE,
 }
 
 interface LifeCycleRaisedButtonProps {
     isHidden?: boolean;
     isDisabled?: boolean;
     isPrimary?: boolean;
-    labelReady: React.ReactNode|string;
-    labelLoading: React.ReactNode|string;
-    labelComplete: React.ReactNode|string;
+    labelReady: React.ReactNode | string;
+    labelLoading: React.ReactNode | string;
+    labelComplete: React.ReactNode | string;
     onClickAsyncFn: () => Promise<boolean>;
     backgroundColor?: string;
     labelColor?: string;
@@ -28,8 +28,7 @@ interface LifeCycleRaisedButtonState {
     buttonState: ButtonState;
 }
 
-export class LifeCycleRaisedButton extends
-    React.Component<LifeCycleRaisedButtonProps, LifeCycleRaisedButtonState> {
+export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButtonProps, LifeCycleRaisedButtonState> {
     public static defaultProps: Partial<LifeCycleRaisedButtonProps> = {
         isDisabled: false,
         backgroundColor: colors.white,
@@ -70,7 +69,7 @@ export class LifeCycleRaisedButton extends
             <RaisedButton
                 primary={this.props.isPrimary}
                 label={label}
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
                 backgroundColor={this.props.backgroundColor}
                 labelColor={this.props.labelColor}
                 onTouchTap={this.onClickAsync.bind(this)}

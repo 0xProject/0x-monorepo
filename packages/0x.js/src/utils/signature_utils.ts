@@ -1,6 +1,6 @@
 import * as ethUtil from 'ethereumjs-util';
 
-import {ECSignature} from '../types';
+import { ECSignature } from '../types';
 
 export const signatureUtils = {
     isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {
@@ -11,7 +11,8 @@ export const signatureUtils = {
                 msgHashBuff,
                 signature.v,
                 ethUtil.toBuffer(signature.r),
-                ethUtil.toBuffer(signature.s));
+                ethUtil.toBuffer(signature.s),
+            );
             const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
             return retrievedAddress === signerAddress;
         } catch (err) {
@@ -34,7 +35,7 @@ export const signatureUtils = {
         return ecSignature;
     },
     parseSignatureHexAsRSV(signatureHex: string): ECSignature {
-        const {v, r, s} = ethUtil.fromRpcSig(signatureHex);
+        const { v, r, s } = ethUtil.fromRpcSig(signatureHex);
         const ecSignature: ECSignature = {
             v,
             r: ethUtil.bufferToHex(r),

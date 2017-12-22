@@ -47,10 +47,16 @@ declare module 'ledgerco' {
     export class eth {
         public comm: comm;
         constructor(comm: comm);
-        public getAddress_async(path: string, display?: boolean, chaincode?: boolean):
-               Promise<{publicKey: string; address: string; chainCode: string}>;
+        public getAddress_async(
+            path: string,
+            display?: boolean,
+            chaincode?: boolean,
+        ): Promise<{ publicKey: string; address: string; chainCode: string }>;
         public signTransaction_async(path: string, rawTxHex: string): Promise<ECSignatureString>;
-        public getAppConfiguration_async(): Promise<{ arbitraryDataEnabled: number; version: string }>;
+        public getAppConfiguration_async(): Promise<{
+            arbitraryDataEnabled: number;
+            version: string;
+        }>;
         public signPersonalMessage_async(path: string, messageHex: string): Promise<ECSignature>;
     }
 }
@@ -73,23 +79,25 @@ declare module 'web3-provider-engine/subproviders/subprovider' {
 declare module 'web3-provider-engine/subproviders/rpc' {
     import * as Web3 from 'web3';
     class RpcSubprovider {
-        constructor(options: {rpcUrl: string});
+        constructor(options: { rpcUrl: string });
         public handleRequest(
-            payload: Web3.JSONRPCRequestPayload, next: () => void, end: (err: Error|null, data?: any) =>  void,
+            payload: Web3.JSONRPCRequestPayload,
+            next: () => void,
+            end: (err: Error | null, data?: any) => void,
         ): void;
     }
     export = RpcSubprovider;
 }
 declare module 'web3-provider-engine' {
-  class Web3ProviderEngine {
-    public on(event: string, handler: () => void): void;
-    public send(payload: any): void;
-    public sendAsync(payload: any, callback: (error: any, response: any) => void): void;
-    public addProvider(provider: any): void;
-    public start(): void;
-    public stop(): void;
-  }
-  export = Web3ProviderEngine;
+    class Web3ProviderEngine {
+        public on(event: string, handler: () => void): void;
+        public send(payload: any): void;
+        public sendAsync(payload: any, callback: (error: any, response: any) => void): void;
+        public addProvider(provider: any): void;
+        public start(): void;
+        public stop(): void;
+    }
+    export = Web3ProviderEngine;
 }
 
 // hdkey declarations

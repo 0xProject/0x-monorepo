@@ -1,7 +1,7 @@
-import {migrator} from './../migrations/migrate';
-import {Compiler} from './compiler';
-import {Deployer} from './deployer';
-import {CompilerOptions, DeployerOptions} from './utils/types';
+import { migrator } from './../migrations/migrate';
+import { Compiler } from './compiler';
+import { Deployer } from './deployer';
+import { CompilerOptions, DeployerOptions } from './utils/types';
 
 export const commands = {
     async compileAsync(opts: CompilerOptions): Promise<void> {

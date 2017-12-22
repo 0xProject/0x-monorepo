@@ -1,7 +1,7 @@
-import {Schema, Validator, ValidatorResult} from 'jsonschema';
+import { Schema, Validator, ValidatorResult } from 'jsonschema';
 import values = require('lodash.values');
 
-import {schemas} from './schemas';
+import { schemas } from './schemas';
 
 export class SchemaValidator {
     private _validator: Validator;

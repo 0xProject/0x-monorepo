@@ -2,19 +2,13 @@ import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {NewTokenForm} from 'ts/components/generate_order/new_token_form';
-import {TrackTokenConfirmation} from 'ts/components/track_token_confirmation';
-import {TokenIcon} from 'ts/components/ui/token_icon';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {
-    DialogConfigs,
-    Token,
-    TokenByAddress,
-    TokenState,
-    TokenVisibility,
-} from 'ts/types';
+import { Blockchain } from 'ts/blockchain';
+import { NewTokenForm } from 'ts/components/generate_order/new_token_form';
+import { TrackTokenConfirmation } from 'ts/components/track_token_confirmation';
+import { TokenIcon } from 'ts/components/ui/token_icon';
+import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { DialogConfigs, Token, TokenByAddress, TokenState, TokenVisibility } from 'ts/types';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
@@ -47,7 +41,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     public static defaultProps: Partial<AssetPickerProps> = {
         tokenVisibility: TokenVisibility.ALL,
     };
-    private _dialogConfigsByAssetView: {[assetView: string]: DialogConfigs};
+    private _dialogConfigsByAssetView: { [assetView: string]: DialogConfigs };
     constructor(props: AssetPickerProps) {
         super(props);
         this.state = {
@@ -90,25 +84,21 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         return (
             <Dialog
                 title={dialogConfigs.title}
-                titleStyle={{fontWeight: 100}}
+                titleStyle={{ fontWeight: 100 }}
                 modal={dialogConfigs.isModal}
                 open={this.props.isOpen}
                 actions={dialogConfigs.actions}
                 onRequestClose={this._onCloseDialog.bind(this)}
             >
-                {this.state.assetView === AssetViews.ASSET_PICKER &&
-                    this._renderAssetPicker()
-                }
-                {this.state.assetView === AssetViews.NEW_TOKEN_FORM &&
+                {this.state.assetView === AssetViews.ASSET_PICKER && this._renderAssetPicker()}
+                {this.state.assetView === AssetViews.NEW_TOKEN_FORM && (
                     <NewTokenForm
                         blockchain={this.props.blockchain}
                         onNewTokenSubmitted={this._onNewTokenSubmitted.bind(this)}
                         tokenByAddress={this.props.tokenByAddress}
                     />
-                }
-                {this.state.assetView === AssetViews.CONFIRM_TRACK_TOKEN &&
-                    this._renderConfirmTrackToken()
-                }
+                )}
+                {this.state.assetView === AssetViews.CONFIRM_TRACK_TOKEN && this._renderConfirmTrackToken()}
             </Dialog>
         );
     }
@@ -127,7 +117,12 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         return (
             <div
                 className="clearfix flex flex-wrap"
-                style={{overflowY: 'auto', maxWidth: 720, maxHeight: 356, marginBottom: 10}}
+                style={{
+                    overflowY: 'auto',
+                    maxWidth: 720,
+                    maxHeight: 356,
+                    marginBottom: 10,
+                }}
             >
                 {this._renderGridTiles()}
             </div>
@@ -137,8 +132,10 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         let isHovered;
         let tileStyles;
         const gridTiles = _.map(this.props.tokenByAddress, (token: Token, address: string) => {
-            if ((this.props.tokenVisibility === TokenVisibility.TRACKED && !token.isTracked) ||
-                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && token.isTracked)) {
+            if (
+                (this.props.tokenVisibility === TokenVisibility.TRACKED && !token.isTracked) ||
+                (this.props.tokenVisibility === TokenVisibility.UNTRACKED && token.isTracked)
+            ) {
                 return null; // Skip
             }
             isHovered = this.state.hoveredAddress === address;
@@ -149,7 +146,11 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
             return (
                 <div
                     key={address}
-                    style={{width: TILE_DIMENSION, height: TILE_DIMENSION, ...tileStyles}}
+                    style={{
+                        width: TILE_DIMENSION,
+                        height: TILE_DIMENSION,
+                        ...tileStyles,
+                    }}
                     className="p2 mx-auto"
                     onClick={this._onChooseToken.bind(this, address)}
                     onMouseEnter={this._onToggleHover.bind(this, address, true)}
@@ -169,10 +170,14 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
             opacity: isHovered ? 0.6 : 1,
         };
         if (this.props.tokenVisibility !== TokenVisibility.TRACKED) {
-            gridTiles.push((
+            gridTiles.push(
                 <div
                     key={otherTokenKey}
-                    style={{width: TILE_DIMENSION, height: TILE_DIMENSION, ...tileStyles}}
+                    style={{
+                        width: TILE_DIMENSION,
+                        height: TILE_DIMENSION,
+                        ...tileStyles,
+                    }}
                     className="p2 mx-auto"
                     onClick={this._onCustomAssetChosen.bind(this)}
                     onMouseEnter={this._onToggleHover.bind(this, otherTokenKey, true)}
@@ -180,13 +185,13 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                 >
                     <div className="p1 center">
                         <i
-                            style={{fontSize: 105, paddingLeft: 1, paddingRight: 1}}
+                            style={{ fontSize: 105, paddingLeft: 1, paddingRight: 1 }}
                             className="zmdi zmdi-plus-circle"
                         />
                     </div>
                     <div className="center">Other ERC20 Token</div>
-                </div>
-            ));
+                </div>,
+            );
         }
         return gridTiles;
     }
@@ -251,10 +256,9 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         newTokenEntry.isTracked = true;
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
 
-        const [
-            balance,
-            allowance,
-        ] = await this.props.blockchain.getCurrentUserTokenBalanceAndAllowanceAsync(token.address);
+        const [balance, allowance] = await this.props.blockchain.getCurrentUserTokenBalanceAndAllowanceAsync(
+            token.address,
+        );
         this.props.dispatcher.updateTokenStateByAddress({
             [token.address]: {
                 balance,

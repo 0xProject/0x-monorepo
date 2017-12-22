@@ -1,10 +1,10 @@
-import {intervalUtils} from '@0xproject/utils';
-import {BigNumber} from 'bignumber.js';
-import {RBTree} from 'bintrees';
+import { intervalUtils } from '@0xproject/utils';
+import { BigNumber } from 'bignumber.js';
+import { RBTree } from 'bintrees';
 import * as _ from 'lodash';
 
-import {ZeroExError} from '../types';
-import {utils} from '../utils/utils';
+import { ZeroExError } from '../types';
+import { utils } from '../utils/utils';
 
 const DEFAULT_EXPIRATION_MARGIN_MS = 0;
 const DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS = 50;
@@ -15,16 +15,14 @@ const DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS = 50;
  */
 export class ExpirationWatcher {
     private _orderHashByExpirationRBTree: RBTree<string>;
-    private _expiration: {[orderHash: string]: BigNumber} = {};
+    private _expiration: { [orderHash: string]: BigNumber } = {};
     private _orderExpirationCheckingIntervalMs: number;
     private _expirationMarginMs: number;
     private _orderExpirationCheckingIntervalIdIfExists?: NodeJS.Timer;
-    constructor(expirationMarginIfExistsMs?: number,
-                orderExpirationCheckingIntervalIfExistsMs?: number) {
-        this._expirationMarginMs = expirationMarginIfExistsMs ||
-                                  DEFAULT_EXPIRATION_MARGIN_MS;
-        this._orderExpirationCheckingIntervalMs = expirationMarginIfExistsMs ||
-                                                 DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
+    constructor(expirationMarginIfExistsMs?: number, orderExpirationCheckingIntervalIfExistsMs?: number) {
+        this._expirationMarginMs = expirationMarginIfExistsMs || DEFAULT_EXPIRATION_MARGIN_MS;
+        this._orderExpirationCheckingIntervalMs =
+            expirationMarginIfExistsMs || DEFAULT_ORDER_EXPIRATION_CHECKING_INTERVAL_MS;
         const scoreFunction = (orderHash: string) => this._expiration[orderHash].toNumber();
         const comparator = (lhs: string, rhs: string) => scoreFunction(lhs) - scoreFunction(rhs);
         this._orderHashByExpirationRBTree = new RBTree(comparator);
@@ -34,7 +32,8 @@ export class ExpirationWatcher {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
         this._orderExpirationCheckingIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this._pruneExpiredOrders.bind(this, callback), this._orderExpirationCheckingIntervalMs,
+            this._pruneExpiredOrders.bind(this, callback),
+            this._orderExpirationCheckingIntervalMs,
         );
     }
     public unsubscribe(): void {

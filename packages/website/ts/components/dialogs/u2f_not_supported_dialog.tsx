@@ -1,8 +1,8 @@
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
-import {colors} from 'ts/utils/colors';
-import {constants} from 'ts/utils/constants';
+import { colors } from 'ts/utils/colors';
+import { constants } from 'ts/utils/constants';
 
 interface U2fNotSupportedDialogProps {
     isOpen: boolean;
@@ -13,24 +13,16 @@ export function U2fNotSupportedDialog(props: U2fNotSupportedDialogProps) {
     return (
         <Dialog
             title="U2F Not Supported"
-            titleStyle={{fontWeight: 100}}
-            actions={[
-                <FlatButton
-                    key="u2fNo"
-                    label="Ok"
-                    onTouchTap={props.onToggleDialog.bind(this)}
-                />,
-            ]}
+            titleStyle={{ fontWeight: 100 }}
+            actions={[<FlatButton key="u2fNo" label="Ok" onTouchTap={props.onToggleDialog.bind(this)} />]}
             open={props.isOpen}
             onRequestClose={props.onToggleDialog.bind(this)}
             autoScrollBodyContent={true}
         >
-            <div className="pt2" style={{color: colors.grey700}}>
+            <div className="pt2" style={{ color: colors.grey700 }}>
                 <div>
-                    It looks like your browser does not support U2F connections
-                    required for us to communicate with your hardware wallet.
-                    Please use a browser that supports U2F connections and try
-                    again.
+                    It looks like your browser does not support U2F connections required for us to communicate with your
+                    hardware wallet. Please use a browser that supports U2F connections and try again.
                 </div>
                 <div>
                     <ul>
@@ -41,7 +33,7 @@ export function U2fNotSupportedDialog(props: U2fNotSupportedDialogProps) {
                             <a
                                 href={constants.URL_FIREFOX_U2F_ADDON}
                                 target="_blank"
-                                style={{textDecoration: 'underline'}}
+                                style={{ textDecoration: 'underline' }}
                             >
                                 this extension
                             </a>.

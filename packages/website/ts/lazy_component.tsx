@@ -32,9 +32,9 @@ export class LazyComponent extends React.Component<LazyComponentProps, LazyCompo
         }
     }
     public render() {
-        return _.isUndefined(this.state.component) ?
-                null :
-                React.createElement(this.state.component, this.props.reactComponentProps);
+        return _.isUndefined(this.state.component)
+            ? null
+            : React.createElement(this.state.component, this.props.reactComponentProps);
     }
     private async _loadComponentFireAndForgetAsync(props: LazyComponentProps) {
         const component = await props.reactComponentPromise;
@@ -61,11 +61,6 @@ export const createLazyComponent = (componentName: string, lazyImport: () => Pro
             }
             return component;
         })();
-        return (
-            <LazyComponent
-                reactComponentPromise={reactComponentPromise}
-                reactComponentProps={props}
-            />
-        );
+        return <LazyComponent reactComponentPromise={reactComponentPromise} reactComponentProps={props} />;
     };
 };

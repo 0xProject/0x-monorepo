@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
-import {ZeroEx} from '../0x';
-import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
-import {RemainingFillableCalculator} from '../order_watcher/remaining_fillable_calculator';
-import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
-import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
+import { ZeroEx } from '../0x';
+import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
+import { RemainingFillableCalculator } from '../order_watcher/remaining_fillable_calculator';
+import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
+import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
 import {
     ExchangeContractErrs,
     OrderRelevantState,
@@ -44,15 +44,20 @@ export class OrderStateUtils {
             }
         }
         const minFillableTakerTokenAmountWithinNoRoundingErrorRange = signedOrder.takerTokenAmount
-                                                                      .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
-                                                                      .dividedBy(signedOrder.makerTokenAmount);
-        if (orderRelevantState.remainingFillableTakerTokenAmount
-            .lessThan(minFillableTakerTokenAmountWithinNoRoundingErrorRange)) {
+            .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
+            .dividedBy(signedOrder.makerTokenAmount);
+        if (
+            orderRelevantState.remainingFillableTakerTokenAmount.lessThan(
+                minFillableTakerTokenAmountWithinNoRoundingErrorRange,
+            )
+        ) {
             throw new Error(ExchangeContractErrs.OrderFillRoundingError);
         }
     }
-    constructor(balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore,
-                orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore) {
+    constructor(
+        balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore,
+        orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore,
+    ) {
         this._balanceAndProxyAllowanceLazyStore = balanceAndProxyAllowanceLazyStore;
         this._orderFilledCancelledLazyStore = orderFilledCancelledLazyStore;
     }
@@ -85,16 +90,20 @@ export class OrderStateUtils {
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         const makerBalance = await this._balanceAndProxyAllowanceLazyStore.getBalanceAsync(
-            signedOrder.makerTokenAddress, signedOrder.maker,
+            signedOrder.makerTokenAddress,
+            signedOrder.maker,
         );
         const makerProxyAllowance = await this._balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
-            signedOrder.makerTokenAddress, signedOrder.maker,
+            signedOrder.makerTokenAddress,
+            signedOrder.maker,
         );
         const makerFeeBalance = await this._balanceAndProxyAllowanceLazyStore.getBalanceAsync(
-            zrxTokenAddress, signedOrder.maker,
+            zrxTokenAddress,
+            signedOrder.maker,
         );
         const makerFeeProxyAllowance = await this._balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
-            zrxTokenAddress, signedOrder.maker,
+            zrxTokenAddress,
+            signedOrder.maker,
         );
         const filledTakerTokenAmount = await this._orderFilledCancelledLazyStore.getFilledTakerAmountAsync(orderHash);
         const cancelledTakerTokenAmount = await this._orderFilledCancelledLazyStore.getCancelledTakerAmountAsync(
@@ -104,17 +113,20 @@ export class OrderStateUtils {
         const totalMakerTokenAmount = signedOrder.makerTokenAmount;
         const totalTakerTokenAmount = signedOrder.takerTokenAmount;
         const remainingTakerTokenAmount = totalTakerTokenAmount.minus(unavailableTakerTokenAmount);
-        const remainingMakerTokenAmount = remainingTakerTokenAmount.times(totalMakerTokenAmount)
-                                                                   .dividedToIntegerBy(totalTakerTokenAmount);
+        const remainingMakerTokenAmount = remainingTakerTokenAmount
+            .times(totalMakerTokenAmount)
+            .dividedToIntegerBy(totalTakerTokenAmount);
         const transferrableMakerTokenAmount = BigNumber.min([makerProxyAllowance, makerBalance]);
         const transferrableFeeTokenAmount = BigNumber.min([makerFeeProxyAllowance, makerFeeBalance]);
 
         const isMakerTokenZRX = signedOrder.makerTokenAddress === zrxTokenAddress;
-        const remainingFillableCalculator = new RemainingFillableCalculator(signedOrder,
-                                                isMakerTokenZRX,
-                                                transferrableMakerTokenAmount,
-                                                transferrableFeeTokenAmount,
-                                                remainingMakerTokenAmount);
+        const remainingFillableCalculator = new RemainingFillableCalculator(
+            signedOrder,
+            isMakerTokenZRX,
+            transferrableMakerTokenAmount,
+            transferrableFeeTokenAmount,
+            remainingMakerTokenAmount,
+        );
         const remainingFillableMakerTokenAmount = remainingFillableCalculator.computeRemainingMakerFillable();
         const remainingFillableTakerTokenAmount = remainingFillableCalculator.computeRemainingTakerFillable();
         const orderRelevantState = {

@@ -7,25 +7,16 @@ export const jsNumber = {
 export const txDataSchema = {
     id: '/TxData',
     properties: {
-        from: {$ref: '/Address'},
-        to: {$ref: '/Address'},
+        from: { $ref: '/Address' },
+        to: { $ref: '/Address' },
         value: {
-            oneOf: [
-                {$ref: '/Number'},
-                {$ref: '/JsNumber'},
-            ],
+            oneOf: [{ $ref: '/Number' }, { $ref: '/JsNumber' }],
         },
         gas: {
-            oneOf: [
-                {$ref: '/Number'},
-                {$ref: '/JsNumber'},
-            ],
+            oneOf: [{ $ref: '/Number' }, { $ref: '/JsNumber' }],
         },
         gasPrice: {
-            oneOf: [
-                {$ref: '/Number'},
-                {$ref: '/JsNumber'},
-            ],
+            oneOf: [{ $ref: '/Number' }, { $ref: '/JsNumber' }],
         },
         data: {
             type: 'string',

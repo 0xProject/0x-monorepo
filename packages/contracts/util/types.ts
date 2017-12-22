@@ -1,4 +1,4 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import * as Web3 from 'web3';
 
 export interface BalancesByOwner {

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
 import * as React from 'react';
-import {colors} from 'ts/utils/colors';
+import { colors } from 'ts/utils/colors';
 
 export interface QuestionProps {
     prompt: string;
@@ -22,24 +22,22 @@ export class Question extends React.Component<QuestionProps, QuestionState> {
     }
     public render() {
         return (
-            <div
-                className="py1"
-            >
+            <div className="py1">
                 <Card
                     initiallyExpanded={this.props.shouldDisplayExpanded}
                     onExpandChange={this._onExchangeChange.bind(this)}
                 >
                     <CardHeader
                         title={this.props.prompt}
-                        style={{borderBottom: this.state.isExpanded ? '1px solid rgba(0, 0, 0, 0.19)' : 'none'}}
-                        titleStyle={{color: colors.darkerGrey}}
+                        style={{
+                            borderBottom: this.state.isExpanded ? '1px solid rgba(0, 0, 0, 0.19)' : 'none',
+                        }}
+                        titleStyle={{ color: colors.darkerGrey }}
                         actAsExpander={true}
                         showExpandableButton={true}
                     />
                     <CardText expandable={true}>
-                        <div style={{lineHeight: 1.4}}>
-                            {this.props.answer}
-                        </div>
+                        <div style={{ lineHeight: 1.4 }}>{this.props.answer}</div>
                     </CardText>
                 </Card>
             </div>

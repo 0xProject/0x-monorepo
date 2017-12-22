@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import {InternalZeroExError, Token} from '../../src/types';
+import { InternalZeroExError, Token } from '../../src/types';
 
 const PROTOCOL_TOKEN_SYMBOL = 'ZRX';
 const WETH_TOKEN_SYMBOL = 'WETH';
@@ -11,14 +11,14 @@ export class TokenUtils {
         this._tokens = tokens;
     }
     public getProtocolTokenOrThrow(): Token {
-        const zrxToken = _.find(this._tokens, {symbol: PROTOCOL_TOKEN_SYMBOL});
+        const zrxToken = _.find(this._tokens, { symbol: PROTOCOL_TOKEN_SYMBOL });
         if (_.isUndefined(zrxToken)) {
             throw new Error(InternalZeroExError.ZrxNotInTokenRegistry);
         }
         return zrxToken;
     }
     public getWethTokenOrThrow(): Token {
-        const wethToken = _.find(this._tokens, {symbol: WETH_TOKEN_SYMBOL});
+        const wethToken = _.find(this._tokens, { symbol: WETH_TOKEN_SYMBOL });
         if (_.isUndefined(wethToken)) {
             throw new Error(InternalZeroExError.WethNotInTokenRegistry);
         }

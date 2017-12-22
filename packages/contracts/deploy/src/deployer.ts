@@ -1,17 +1,13 @@
-import {TxData} from '@0xproject/types';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
+import { TxData } from '@0xproject/types';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import {Contract} from './utils/contract';
-import {encoder} from './utils/encoder';
-import {fsWrapper} from './utils/fs_wrapper';
-import {
-    ContractArtifact,
-    ContractData,
-    DeployerOptions,
-} from './utils/types';
-import {utils} from './utils/utils';
+import { Contract } from './utils/contract';
+import { encoder } from './utils/encoder';
+import { fsWrapper } from './utils/fs_wrapper';
+import { ContractArtifact, ContractData, DeployerOptions } from './utils/types';
+import { utils } from './utils/utils';
 
 // Gas added to gas estimate to make sure there is sufficient gas for deployment.
 const EXTRA_GAS = 200000;
@@ -99,8 +95,11 @@ export class Deployer {
      * @param contractAddress Contract address to save to artifact.
      * @param args Contract constructor arguments that will be encoded and saved to artifact.
      */
-    private async _saveContractDataToArtifactAsync(contractName: string,
-                                                   contractAddress: string, args: any[]): Promise<void> {
+    private async _saveContractDataToArtifactAsync(
+        contractName: string,
+        contractAddress: string,
+        args: any[],
+    ): Promise<void> {
         const contractArtifact: ContractArtifact = this._loadContractArtifactIfExists(contractName);
         const contractData: ContractData = this._getContractDataFromArtifactIfExists(contractArtifact);
         const abi = contractData.abi;

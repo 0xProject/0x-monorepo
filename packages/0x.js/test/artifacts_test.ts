@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import HDWalletProvider = require('truffle-hdwallet-provider');
 
-import {ZeroEx} from '../src';
+import { ZeroEx } from '../src';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
 
 chaiSetup.configure();
 

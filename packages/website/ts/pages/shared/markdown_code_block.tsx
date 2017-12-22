@@ -17,12 +17,8 @@ export class MarkdownCodeBlock extends React.Component<MarkdownCodeBlockProps, M
     }
     public render() {
         return (
-            <span style={{fontSize: 16}}>
-                <HighLight
-                    className={this.props.language || 'javascript'}
-                >
-                    {this.props.literal}
-                </HighLight>
+            <span style={{ fontSize: 16 }}>
+                <HighLight className={this.props.language || 'javascript'}>{this.props.literal}</HighLight>
             </span>
         );
     }

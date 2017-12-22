@@ -1,9 +1,7 @@
 import promisify = require('es6-promisify');
 import Web3 = require('web3');
 
-import {
-    JSONRPCPayload,
-} from '../types';
+import { JSONRPCPayload } from '../types';
 /*
  * A version of the base class Subprovider found in providerEngine
  * This one has an async/await `emitPayloadAsync` and also defined types.
