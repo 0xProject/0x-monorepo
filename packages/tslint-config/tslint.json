@@ -31,7 +31,6 @@
     "max-classes-per-file": false,
     "max-classes-per-file": [true, 1],
     "max-file-line-count": [true, 500],
-    "max-line-length": [true, 120],
     "member-access": true,
     "member-ordering": [true,
       "public-before-private",
@@ -55,7 +54,6 @@
     "no-unused-variable": [true, {"ignore-pattern": "^_\\d*"}],
     "no-implicit-dependencies": [true, "dev"],
     "number-literal-format": true,
-    "object-curly-spacing": [true, "never"],
     "object-literal-sort-keys": false,
     "ordered-imports": [
         true,
