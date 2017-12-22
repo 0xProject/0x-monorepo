@@ -1290,10 +1290,6 @@ bignumber.js@^4.0.2, bignumber.js@~4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-4.1.0.tgz#db6f14067c140bd46624815a7916c92d9b6c24b1"
 
-"bignumber.js@git+https://github.com/debris/bignumber.js#master":
-  version "2.0.7"
-  resolved "git+https://github.com/debris/bignumber.js#c7a38de919ed75e6fb6ba38051986e294b328df9"
-
 "bignumber.js@git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2":
   version "2.0.7"
   resolved "git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2"
@@ -3143,7 +3139,7 @@ ethereumjs-util@4.5.0, ethereumjs-util@^4.0.0, ethereumjs-util@^4.0.1, ethereumj
     rlp "^2.0.0"
     secp256k1 "^3.0.1"
 
-ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereumjs-util@^5.1.2:
+ethereumjs-util@^5.0.0, ethereumjs-util@^5.1.1, ethereumjs-util@^5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-5.1.2.tgz#25ba0215cbb4c2f0b108a6f96af2a2e62e45921f"
   dependencies:
@@ -4816,7 +4812,7 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
-isomorphic-fetch@^2.1.1, isomorphic-fetch@^2.2.0, isomorphic-fetch@^2.2.1:
+isomorphic-fetch@^2.1.1, isomorphic-fetch@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
   dependencies:
@@ -8902,14 +8898,14 @@ truffle-contract@2.0.1:
     truffle-contract-schema "0.0.5"
     web3 "^0.18.0"
 
-truffle-hdwallet-provider@^0.0.3:
+truffle-hdwallet-provider@0xproject/truffle-hdwallet-provider:
   version "0.0.3"
-  resolved "https://registry.yarnpkg.com/truffle-hdwallet-provider/-/truffle-hdwallet-provider-0.0.3.tgz#0e1de02104b73d3875e1cf7093305b4ea8a2d843"
+  resolved "https://codeload.github.com/0xproject/truffle-hdwallet-provider/tar.gz/4ec9b703823f384556a16b104bbc6ec9518ee175"
   dependencies:
     bip39 "^2.2.0"
     ethereumjs-wallet "^0.6.0"
     web3 "^0.18.2"
-    web3-provider-engine "^8.4.0"
+    web3-provider-engine "^13.0.1"
 
 truffle@^4.0.1:
   version "4.0.1"
@@ -9421,25 +9417,6 @@ web3-provider-engine@^13.0.1:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-provider-engine@^8.4.0:
-  version "8.6.1"
-  resolved "https://registry.yarnpkg.com/web3-provider-engine/-/web3-provider-engine-8.6.1.tgz#4d86e19e30caaf97df351511ec0f60136e5b30eb"
-  dependencies:
-    async "^2.1.2"
-    clone "^2.0.0"
-    ethereumjs-block "^1.2.2"
-    ethereumjs-tx "^1.2.0"
-    ethereumjs-util "^5.0.1"
-    ethereumjs-vm "^2.0.2"
-    isomorphic-fetch "^2.2.0"
-    request "^2.67.0"
-    semaphore "^1.0.3"
-    solc "^0.4.2"
-    tape "^4.4.0"
-    web3 "^0.16.0"
-    xhr "^2.2.0"
-    xtend "^4.0.1"
-
 web3-typescript-typings@^0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.7.2.tgz#5312bb786936a9c91381eee7af3d02ac21cf13b3"
@@ -9457,15 +9434,6 @@ web3-utils@^1.0.0-beta.26:
     randomhex "0.1.5"
     underscore "1.8.3"
     utf8 "2.1.1"
-
-web3@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/web3/-/web3-0.16.0.tgz#a4554175cd462943035b1f1d39432f741c6b6019"
-  dependencies:
-    bignumber.js "git+https://github.com/debris/bignumber.js#master"
-    crypto-js "^3.1.4"
-    utf8 "^2.1.1"
-    xmlhttprequest "*"
 
 web3@^0.18.0, web3@^0.18.2:
   version "0.18.4"
