@@ -124,6 +124,18 @@ describe('HttpClient', () => {
             const fees = await relayerClient.getFeesAsync(request);
             expect(fees).to.be.deep.equal(feesResponse);
         });
+        it('does not mutate input', async () => {
+            fetchMock.post(url, feesResponseJSON);
+            const makerTokenAmountBefore = new BigNumber(request.makerTokenAmount);
+            const takerTokenAmountBefore = new BigNumber(request.takerTokenAmount);
+            const saltBefore = new BigNumber(request.salt);
+            const expirationUnixTimestampSecBefore = new BigNumber(request.expirationUnixTimestampSec);
+            await relayerClient.getFeesAsync(request);
+            expect(makerTokenAmountBefore).to.be.deep.equal(request.makerTokenAmount);
+            expect(takerTokenAmountBefore).to.be.deep.equal(request.takerTokenAmount);
+            expect(saltBefore).to.be.deep.equal(request.salt);
+            expect(expirationUnixTimestampSecBefore).to.be.deep.equal(request.expirationUnixTimestampSec);
+        });
         it('throws an error for invalid JSON response', async () => {
             fetchMock.post(url, {test: 'dummy'});
             expect(relayerClient.getFeesAsync(request)).to.be.rejected();

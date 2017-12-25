@@ -18,11 +18,6 @@ export const typeConverters = {
             'salt',
         ]);
     },
-    convertBigNumberFieldsToStrings(obj: object, fields: string[]): void {
-        _.each(fields, field => {
-            _.update(obj, field, (value: BigNumber) => value.toString());
-        });
-    },
     convertStringsFieldsToBigNumbers(obj: object, fields: string[]): void {
         _.each(fields, field => {
             _.update(obj, field, (value: string) => new BigNumber(value));
