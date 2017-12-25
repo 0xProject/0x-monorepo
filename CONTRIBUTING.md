@@ -1,9 +1,7 @@
-0x Protocol Contributing Guide
-------------------------------
+0x Contribution Guide
+---------------------
 
 Thank you for your interest in contributing to 0x protocol! We welcome contributions from anyone on the internet, and are grateful for even the smallest of fixes!
-
-## Developer's guide
 
 ### How to contribute
 
