@@ -131,7 +131,7 @@ declare module 'web3' {
         interface FilterResult {
             get(callback: () => void): void;
             watch(callback: (err: Error, result: LogEntryEvent) => void): void;
-            stopWatching(callback: () => void): void;
+            stopWatching(callback?: () => void): void;
         }
 
         export interface JSONRPCRequestPayload {
