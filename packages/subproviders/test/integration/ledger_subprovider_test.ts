@@ -92,8 +92,8 @@ describe('LedgerSubprovider', () => {
                 const signer = accounts[0];
                 const payload = {
                     jsonrpc: '2.0',
-                    method: 'personal_sign',
-                    params: [messageHex, signer],
+                    method: 'eth_sign',
+                    params: [signer, messageHex],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {

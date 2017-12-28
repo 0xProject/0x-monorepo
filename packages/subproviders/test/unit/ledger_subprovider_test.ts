@@ -121,8 +121,8 @@ describe('LedgerSubprovider', () => {
                 const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
                 const payload = {
                     jsonrpc: '2.0',
-                    method: 'personal_sign',
-                    params: [messageHex, '0x0000000000000000000000000000000000000000'],
+                    method: 'eth_sign',
+                    params: ['0x0000000000000000000000000000000000000000', messageHex],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
@@ -157,12 +157,12 @@ describe('LedgerSubprovider', () => {
             });
         });
         describe('failure cases', () => {
-            it('should throw if `data` param not hex when calling personal_sign', (done: DoneCallback) => {
+            it('should throw if `data` param not hex when calling eth_sign', (done: DoneCallback) => {
                 const nonHexMessage = 'hello world';
                 const payload = {
                     jsonrpc: '2.0',
-                    method: 'personal_sign',
-                    params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
+                    method: 'eth_sign',
+                    params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
