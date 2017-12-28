@@ -106,8 +106,8 @@ export class LedgerSubprovider extends Subprovider {
                 }
                 return;
 
-            case 'personal_sign':
-                const data = payload.params[0];
+            case 'eth_sign':
+                const data = payload.params[1];
                 try {
                     if (_.isUndefined(data)) {
                         throw new Error(LedgerSubproviderErrors.DataMissingForSignPersonalMessage);
