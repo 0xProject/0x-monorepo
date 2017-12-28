@@ -117,12 +117,28 @@ describe('LedgerSubprovider', () => {
                 });
                 provider.sendAsync(payload, callback);
             });
-            it('signs a personal message', (done: DoneCallback) => {
+            it('signs a personal message with eth_sign', (done: DoneCallback) => {
                 const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
                     params: ['0x0000000000000000000000000000000000000000', messageHex],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                    expect(err).to.be.a('null');
+                    // tslint:disable-next-line:max-line-length
+                    expect(response.result).to.be.equal('0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001');
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
+            it('signs a personal message with personal_sign', (done: DoneCallback) => {
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'personal_sign',
+                    params: [messageHex, '0x0000000000000000000000000000000000000000'],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
@@ -163,6 +179,21 @@ describe('LedgerSubprovider', () => {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
                     params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                    expect(err).to.not.be.a('null');
+                    expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
+            it('should throw if `data` param not hex when calling personal_sign', (done: DoneCallback) => {
+                const nonHexMessage = 'hello world';
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'personal_sign',
+                    params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {

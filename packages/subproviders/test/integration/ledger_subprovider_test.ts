@@ -85,7 +85,7 @@ describe('LedgerSubprovider', () => {
             });
             ledgerProvider.sendAsync(payload, callback);
         });
-        it('signs a personal message', (done: DoneCallback) => {
+        it('signs a personal message with eth_sign', (done: DoneCallback) => {
             (async () => {
                 const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
                 const accounts = await ledgerSubprovider.getAccountsAsync();
@@ -94,6 +94,26 @@ describe('LedgerSubprovider', () => {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
                     params: [signer, messageHex],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                    expect(err).to.be.a('null');
+                    expect(response.result.length).to.be.equal(132);
+                    expect(response.result.substr(0, 2)).to.be.equal('0x');
+                    done();
+                });
+                ledgerProvider.sendAsync(payload, callback);
+            })().catch(done);
+        });
+        it('signs a personal message with personal_sign', (done: DoneCallback) => {
+            (async () => {
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
+                const accounts = await ledgerSubprovider.getAccountsAsync();
+                const signer = accounts[0];
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'personal_sign',
+                    params: [messageHex, signer],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
