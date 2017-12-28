@@ -1,6 +1,6 @@
 # CHANGELOG
 
-vx.x.x - _TBD_
+v0.29.0 - _December 28, 2017_
 ------------------------
     * Assert baseUnit amount supplied to `toUnitAmount` is integer amount. (#287)
     * `toBaseUnitAmount` throws if amount supplied has too many decimals (#287)
