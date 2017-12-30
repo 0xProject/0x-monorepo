@@ -15,6 +15,7 @@ import {ContextData, ParamKind} from './types';
 import {utils} from './utils';
 
 const ABI_TYPE_METHOD = 'function';
+const ABI_TYPE_EVENT = 'event';
 const MAIN_TEMPLATE_NAME = 'contract.mustache';
 
 const args = yargs
@@ -74,6 +75,7 @@ for (const abiFileName of abiFileNames) {
         utils.log(`Please make sure your ABI file is either an array with ABI entries or an object with the abi key`);
         process.exit(1);
     }
+
     const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_METHOD) as Web3.MethodAbi[];
     const methodsData = _.map(methodAbis, methodAbi => {
         _.map(methodAbi.inputs, input => {
@@ -89,9 +91,13 @@ for (const abiFileName of abiFileNames) {
         };
         return methodData;
     });
+
+    const eventAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_EVENT) as Web3.MethodAbi[];
+
     const contextData = {
         contractName: namedContent.name,
         methods: methodsData,
+        events: eventAbis,
     };
     const renderedTsCode = template(contextData);
     writeOutputFile(namedContent.name, renderedTsCode);
