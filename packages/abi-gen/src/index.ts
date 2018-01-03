@@ -91,7 +91,7 @@ for (const abiFileName of abiFileNames) {
         return methodData;
     });
 
-    const eventAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_EVENT) as Web3.MethodAbi[];
+    const eventAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_EVENT) as Web3.EventAbi[];
 
     const contextData = {
         contractName: namedContent.name,

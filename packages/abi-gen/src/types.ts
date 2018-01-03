@@ -12,4 +12,5 @@ export interface Method extends Web3.MethodAbi {
 export interface ContextData {
     contractName: string;
     methods: Method[];
+    events: Web3.EventAbi[];
 }
