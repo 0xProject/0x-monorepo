@@ -233,7 +233,7 @@ export class LedgerSubprovider extends Subprovider {
         this._ledgerClientIfExists = undefined;
         this._connectionLock.signal();
     }
-    private async _sendTransactionAsync(txParams: PartialTxParams): Promise<Web3.JSONRPCResponsePayload> {
+    private async _sendTransactionAsync(txParams: PartialTxParams): Promise<string> {
         await this._nonceLock.wait();
         try {
             // fill in the extras
@@ -247,7 +247,7 @@ export class LedgerSubprovider extends Subprovider {
             };
             const result = await this.emitPayloadAsync(payload);
             this._nonceLock.signal();
-            return result;
+            return result.result;
         } catch (err) {
             this._nonceLock.signal();
             throw err;
