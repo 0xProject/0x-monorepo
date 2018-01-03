@@ -2,10 +2,10 @@
   "name": "web3-typescript-typings",
   "version": "0.8.0",
   "description": "Typescript type definitions for web3",
-  "main": "index.d.ts",
-  "types": "index.d.ts",
+  "main": "web3/index.d.ts",
+  "types": "web3/index.d.ts",
   "scripts": {
-    "lint": "tslint index.d.ts"
+    "lint": "tslint web3/index.d.ts"
   },
   "repository": {
     "type": "git",

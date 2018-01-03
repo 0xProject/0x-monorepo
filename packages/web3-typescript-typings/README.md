@@ -18,11 +18,8 @@ Using yarn:
 ```
 yarn add web3-typescript-typings -D
 ```
-Also don't forget to manually include `index.d.ts` within an `include` section of your `tsconfig.json`
+Also don't forget to manually include the definitions within the `typeRoots` section of your `tsconfig.json`
 ```
-"include": [
-    ...
-    "./node_modules/web3-typescript-typings/index.d.ts"
-]
+"typeRoots": ["node_modules/@types", "node_modules/web3-typescript-typings"]
 ```
 And you're ready to go to a bright type-safe and distributed future!
