@@ -1,6 +1,6 @@
 {
   "name": "web3-typescript-typings",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Typescript type definitions for web3",
   "main": "web3/index.d.ts",
   "types": "web3/index.d.ts",
