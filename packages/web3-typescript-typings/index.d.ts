@@ -57,12 +57,16 @@ declare module 'web3' {
             Fallback = 'fallback',
         }
 
+        type ConstructorStateMutability = 'nonpayable' | 'payable';
+        type StateMutability = 'pure' | 'view' | ConstructorStateMutability;
+
         interface MethodAbi {
             type: AbiType.Function;
             name: string;
             inputs: FunctionParameter[];
             outputs: FunctionParameter[];
             constant: boolean;
+            stateMutability: StateMutability;
             payable: boolean;
         }
 
@@ -70,6 +74,7 @@ declare module 'web3' {
             type: AbiType.Constructor;
             inputs: FunctionParameter[];
             payable: boolean;
+            stateMutability: ConstructorStateMutability;
         }
 
         interface FallbackAbi {
