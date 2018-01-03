@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {Element as ScrollElement} from 'react-scroll';
-import {AnchorTitle} from 'ts/pages/shared/anchor_title';
-import {HeaderSizes} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import { Element as ScrollElement } from 'react-scroll';
+import { AnchorTitle } from 'ts/pages/shared/anchor_title';
+import { HeaderSizes } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 
 interface SectionHeaderProps {
     sectionName: string;
@@ -34,7 +34,7 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
                 <ScrollElement name={id}>
                     <AnchorTitle
                         headerSize={this.props.headerSize}
-                        title={<span style={{textTransform: 'capitalize'}}>{sectionName}</span>}
+                        title={<span style={{ textTransform: 'capitalize' }}>{sectionName}</span>}
                         id={id}
                         shouldShowAnchor={this.state.shouldShowAnchor}
                     />

@@ -1,24 +1,22 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as dirtyChai from 'dirty-chai';
 import * as fetchMock from 'fetch-mock';
 import 'mocha';
 
-import {HttpClient} from '../src/index';
+import { HttpClient } from '../src/index';
 
-import {feesResponse} from './fixtures/standard_relayer_api/fees';
+import { feesResponse } from './fixtures/standard_relayer_api/fees';
 import * as feesResponseJSON from './fixtures/standard_relayer_api/fees.json';
-import {
-    orderResponse,
-} from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
+import { orderResponse } from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
 // tslint:disable-next-line:max-line-length
 import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f.json';
-import {orderbookResponse} from './fixtures/standard_relayer_api/orderbook';
+import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
-import {ordersResponse} from './fixtures/standard_relayer_api/orders';
+import { ordersResponse } from './fixtures/standard_relayer_api/orders';
 import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
-import {tokenPairsResponse} from './fixtures/standard_relayer_api/token_pairs';
+import { tokenPairsResponse } from './fixtures/standard_relayer_api/token_pairs';
 import * as tokenPairsResponseJSON from './fixtures/standard_relayer_api/token_pairs.json';
 
 chai.config.includeStack = true;
@@ -50,7 +48,7 @@ describe('HttpClient', () => {
             expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
         });
         it('throws an error for invalid JSON response', async () => {
-            fetchMock.get(url, {test: 'dummy'});
+            fetchMock.get(url, { test: 'dummy' });
             expect(relayerClient.getTokenPairsAsync()).to.be.rejected();
         });
     });
@@ -72,7 +70,7 @@ describe('HttpClient', () => {
             expect(orders).to.be.deep.equal(ordersResponse);
         });
         it('throws an error for invalid JSON response', async () => {
-            fetchMock.get(url, {test: 'dummy'});
+            fetchMock.get(url, { test: 'dummy' });
             expect(relayerClient.getOrdersAsync()).to.be.rejected();
         });
     });
@@ -85,7 +83,7 @@ describe('HttpClient', () => {
             expect(order).to.be.deep.equal(orderResponse);
         });
         it('throws an error for invalid JSON response', async () => {
-            fetchMock.get(url, {test: 'dummy'});
+            fetchMock.get(url, { test: 'dummy' });
             expect(relayerClient.getOrderAsync(orderHash)).to.be.rejected();
         });
     });
@@ -95,14 +93,16 @@ describe('HttpClient', () => {
             quoteTokenAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
         };
         // tslint:disable-next-line:max-line-length
-        const url = `${relayUrl}/v0/orderbook?baseTokenAddress=${request.baseTokenAddress}&quoteTokenAddress=${request.quoteTokenAddress}`;
+        const url = `${relayUrl}/v0/orderbook?baseTokenAddress=${request.baseTokenAddress}&quoteTokenAddress=${
+            request.quoteTokenAddress
+        }`;
         it('gets order book', async () => {
             fetchMock.get(url, orderbookJSON);
             const orderbook = await relayerClient.getOrderbookAsync(request);
             expect(orderbook).to.be.deep.equal(orderbookResponse);
         });
         it('throws an error for invalid JSON response', async () => {
-            fetchMock.get(url, {test: 'dummy'});
+            fetchMock.get(url, { test: 'dummy' });
             expect(relayerClient.getOrderbookAsync(request)).to.be.rejected();
         });
     });
@@ -125,7 +125,7 @@ describe('HttpClient', () => {
             expect(fees).to.be.deep.equal(feesResponse);
         });
         it('throws an error for invalid JSON response', async () => {
-            fetchMock.post(url, {test: 'dummy'});
+            fetchMock.post(url, { test: 'dummy' });
             expect(relayerClient.getFeesAsync(request)).to.be.rejected();
         });
     });

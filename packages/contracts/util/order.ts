@@ -1,11 +1,11 @@
-import {promisify} from '@0xproject/utils';
-import {BigNumber} from 'bignumber.js';
+import { promisify } from '@0xproject/utils';
+import { BigNumber } from 'bignumber.js';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import Web3 = require('web3');
 
-import {crypto} from './crypto';
-import {OrderParams} from './types';
+import { crypto } from './crypto';
+import { OrderParams } from './types';
 
 // In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
 // with type `any` to a variable of type `Web3`.
@@ -17,7 +17,7 @@ export class Order {
         this.params = params;
     }
     public isValidSignature() {
-        const {v, r, s} = this.params;
+        const { v, r, s } = this.params;
         if (_.isUndefined(v) || _.isUndefined(r) || _.isUndefined(s)) {
             throw new Error('Cannot call isValidSignature on unsigned order');
         }
@@ -34,7 +34,7 @@ export class Order {
     public async signAsync() {
         const orderHash = this._getOrderHash();
         const signature = await promisify<string>(web3.eth.sign)(this.params.maker, orderHash);
-        const {v, r, s} = ethUtil.fromRpcSig(signature);
+        const { v, r, s } = ethUtil.fromRpcSig(signature);
         this.params = _.assign(this.params, {
             orderHashHex: orderHash,
             v,

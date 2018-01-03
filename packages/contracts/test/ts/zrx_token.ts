@@ -1,17 +1,17 @@
-import {ZeroEx} from '0x.js';
-import {BigNumber} from 'bignumber.js';
+import { ZeroEx } from '0x.js';
+import { BigNumber } from 'bignumber.js';
 import * as chai from 'chai';
 import Web3 = require('web3');
 
-import {Artifacts} from '../../util/artifacts';
-import {constants} from '../../util/constants';
-import {ContractInstance} from '../../util/types';
+import { Artifacts } from '../../util/artifacts';
+import { constants } from '../../util/constants';
+import { ContractInstance } from '../../util/types';
 
-import {chaiSetup} from './utils/chai_setup';
+import { chaiSetup } from './utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const {Exchange, ZRXToken} = new Artifacts(artifacts);
+const { Exchange, ZRXToken } = new Artifacts(artifacts);
 const web3: Web3 = (global as any).web3;
 
 contract('ZRXToken', (accounts: string[]) => {
@@ -85,7 +85,9 @@ contract('ZRXToken', (accounts: string[]) => {
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const didReturnTrue = await zrx.transfer.call(spender, 0, {from: owner});
+            const didReturnTrue = await zrx.transfer.call(spender, 0, {
+                from: owner,
+            });
             expect(didReturnTrue).to.be.true();
         });
     });
@@ -98,7 +100,7 @@ contract('ZRXToken', (accounts: string[]) => {
                 gasLimit: constants.MAX_TOKEN_APPROVE_GAS,
             });
             await zeroEx.awaitTransactionMinedAsync(txHash);
-            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, {from: spender});
+            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.false();
         });
 
@@ -110,13 +112,13 @@ contract('ZRXToken', (accounts: string[]) => {
             const spenderAllowanceIsInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(spenderAllowanceIsInsufficient).to.be.true();
 
-            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, {from: spender});
+            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.false();
         });
 
         it('should return true on a 0 value transfer', async () => {
             const amountToTransfer = 0;
-            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, {from: spender});
+            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.true();
         });
 

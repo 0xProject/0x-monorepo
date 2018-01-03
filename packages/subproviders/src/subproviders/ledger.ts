@@ -1,5 +1,5 @@
-import {assert} from '@0xproject/assert';
-import {addressUtils} from '@0xproject/utils';
+import { assert } from '@0xproject/assert';
+import { addressUtils } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
@@ -16,7 +16,7 @@ import {
     ResponseWithTxParams,
 } from '../types';
 
-import {Subprovider} from './subprovider';
+import { Subprovider } from './subprovider';
 
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
 const NUM_ADDRESSES_TO_FETCH = 10;
@@ -44,12 +44,11 @@ export class LedgerSubprovider extends Subprovider {
         this._networkId = config.networkId;
         this._ledgerEthereumClientFactoryAsync = config.ledgerEthereumClientFactoryAsync;
         this._derivationPath = config.derivationPath || DEFAULT_DERIVATION_PATH;
-        this._shouldAlwaysAskForConfirmation = !_.isUndefined(config.accountFetchingConfigs) &&
-                                               !_.isUndefined(
-                                                   config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation,
-                                               ) ?
-                                               config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation :
-                                               ASK_FOR_ON_DEVICE_CONFIRMATION;
+        this._shouldAlwaysAskForConfirmation =
+            !_.isUndefined(config.accountFetchingConfigs) &&
+            !_.isUndefined(config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation)
+                ? config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation
+                : ASK_FOR_ON_DEVICE_CONFIRMATION;
         this._derivationPathIndex = 0;
     }
     public getPath(): string {
@@ -62,7 +61,9 @@ export class LedgerSubprovider extends Subprovider {
         this._derivationPathIndex = pathIndex;
     }
     public async handleRequest(
-        payload: Web3.JSONRPCRequestPayload, next: () => void, end: (err: Error|null, result?: any) => void,
+        payload: Web3.JSONRPCRequestPayload,
+        next: () => void,
+        end: (err: Error | null, result?: any) => void,
     ) {
         let accounts;
         let txParams;
@@ -132,7 +133,9 @@ export class LedgerSubprovider extends Subprovider {
         let ledgerResponse;
         try {
             ledgerResponse = await this._ledgerClientIfExists.getAddress_async(
-                this._derivationPath, this._shouldAlwaysAskForConfirmation, SHOULD_GET_CHAIN_CODE,
+                this._derivationPath,
+                this._shouldAlwaysAskForConfirmation,
+                SHOULD_GET_CHAIN_CODE,
             );
         } finally {
             await this._destroyLedgerClientAsync();
@@ -147,9 +150,9 @@ export class LedgerSubprovider extends Subprovider {
             const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
             const derivedPublicKey = derivedHDNode.publicKey;
             const shouldSanitizePublicKey = true;
-            const ethereumAddressUnprefixed = ethUtil.publicToAddress(
-                derivedPublicKey, shouldSanitizePublicKey,
-            ).toString('hex');
+            const ethereumAddressUnprefixed = ethUtil
+                .publicToAddress(derivedPublicKey, shouldSanitizePublicKey)
+                .toString('hex');
             const ethereumAddressPrefixed = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
             accounts.push(ethereumAddressPrefixed.toLowerCase());
         }
@@ -195,7 +198,9 @@ export class LedgerSubprovider extends Subprovider {
         try {
             const derivationPath = this._getDerivationPath();
             const result = await this._ledgerClientIfExists.signPersonalMessage_async(
-                derivationPath, ethUtil.stripHexPrefix(data));
+                derivationPath,
+                ethUtil.stripHexPrefix(data),
+            );
             const v = result.v - 27;
             let vHex = v.toString(16);
             if (vHex.length < 2) {

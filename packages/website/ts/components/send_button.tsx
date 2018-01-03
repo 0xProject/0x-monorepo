@@ -2,12 +2,12 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {SendDialog} from 'ts/components/dialogs/send_dialog';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {BlockchainCallErrs, Token, TokenState} from 'ts/types';
-import {errorReporter} from 'ts/utils/error_reporter';
-import {utils} from 'ts/utils/utils';
+import { Blockchain } from 'ts/blockchain';
+import { SendDialog } from 'ts/components/dialogs/send_dialog';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { BlockchainCallErrs, Token, TokenState } from 'ts/types';
+import { errorReporter } from 'ts/utils/error_reporter';
+import { utils } from 'ts/utils/utils';
 
 interface SendButtonProps {
     token: Token;
@@ -31,11 +31,11 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
         };
     }
     public render() {
-        const labelStyle = this.state.isSending ? {fontSize: 10} : {};
+        const labelStyle = this.state.isSending ? { fontSize: 10 } : {};
         return (
             <div>
                 <RaisedButton
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     labelStyle={labelStyle}
                     disabled={this.state.isSending}
                     label={this.state.isSending ? 'Sending...' : 'Send'}

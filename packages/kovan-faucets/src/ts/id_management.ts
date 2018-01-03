@@ -1,16 +1,14 @@
 import EthereumTx = require('ethereumjs-tx');
 
-import {configs} from './configs';
-import {utils} from './utils';
+import { configs } from './configs';
+import { utils } from './utils';
 
 type Callback = (err: Error, accounts: any) => void;
 
 export const idManagement = {
     getAccounts(callback: Callback) {
         utils.consoleLog(`configs.DISPENSER_ADDRESS: ${configs.DISPENSER_ADDRESS}`);
-        callback(null, [
-            configs.DISPENSER_ADDRESS,
-        ]);
+        callback(null, [configs.DISPENSER_ADDRESS]);
     },
     approveTransaction(txData: object, callback: Callback) {
         callback(null, true);

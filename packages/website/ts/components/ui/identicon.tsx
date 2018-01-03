@@ -1,7 +1,7 @@
 import blockies = require('blockies');
 import * as _ from 'lodash';
 import * as React from 'react';
-import {constants} from 'ts/utils/constants';
+import { constants } from 'ts/utils/constants';
 
 interface IdenticonProps {
     address: string;
@@ -27,9 +27,21 @@ export class Identicon extends React.Component<IdenticonProps, IdenticonState> {
         return (
             <div
                 className="circle mx-auto relative transitionFix"
-                style={{width: diameter, height: diameter, overflow: 'hidden', ...this.props.style}}
+                style={{
+                    width: diameter,
+                    height: diameter,
+                    overflow: 'hidden',
+                    ...this.props.style,
+                }}
             >
-                <img src={icon.toDataURL()} style={{width: diameter, height: diameter, imageRendering: 'pixelated'}}/>
+                <img
+                    src={icon.toDataURL()}
+                    style={{
+                        width: diameter,
+                        height: diameter,
+                        imageRendering: 'pixelated',
+                    }}
+                />
             </div>
         );
     }

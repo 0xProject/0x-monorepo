@@ -1,16 +1,16 @@
-import {BlockchainLifecycle} from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import {ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx} from '../src';
+import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx } from '../src';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
-import {TokenUtils} from './utils/token_utils';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
+import { TokenUtils } from './utils/token_utils';
+import { web3Factory } from './utils/web3_factory';
 
 const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 chaiSetup.configure();
@@ -41,11 +41,11 @@ describe('ZeroEx library', () => {
 
             // Check that all nested web3 wrapper instances return the updated provider
             const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getCurrentProvider();
-            expect((nestedWeb3WrapperProvider).zeroExTestId).to.be.a('number');
+            expect(nestedWeb3WrapperProvider.zeroExTestId).to.be.a('number');
             const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getCurrentProvider();
-            expect((exchangeWeb3WrapperProvider).zeroExTestId).to.be.a('number');
+            expect(exchangeWeb3WrapperProvider.zeroExTestId).to.be.a('number');
             const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getCurrentProvider();
-            expect((tokenRegistryWeb3WrapperProvider).zeroExTestId).to.be.a('number');
+            expect(tokenRegistryWeb3WrapperProvider.zeroExTestId).to.be.a('number');
         });
     });
     describe('#isValidSignature', () => {
@@ -58,22 +58,25 @@ describe('ZeroEx library', () => {
             s: '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',
         };
         const address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-        it('should return false if the data doesn\'t pertain to the signature & address', async () => {
+        it("should return false if the data doesn't pertain to the signature & address", async () => {
             expect(ZeroEx.isValidSignature('0x0', signature, address)).to.be.false();
             return expect(
                 (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync('0x0', signature, address),
             ).to.become(false);
         });
-        it('should return false if the address doesn\'t pertain to the signature & data', async () => {
+        it("should return false if the address doesn't pertain to the signature & data", async () => {
             const validUnrelatedAddress = '0x8b0292b11a196601ed2ce54b665cafeca0347d42';
             expect(ZeroEx.isValidSignature(dataHex, signature, validUnrelatedAddress)).to.be.false();
             return expect(
-                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, signature,
-                                                                                validUnrelatedAddress),
+                (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(
+                    dataHex,
+                    signature,
+                    validUnrelatedAddress,
+                ),
             ).to.become(false);
         });
-        it('should return false if the signature doesn\'t pertain to the dataHex & address', async () => {
-            const wrongSignature = _.assign({}, signature, {v: 28});
+        it("should return false if the signature doesn't pertain to the dataHex & address", async () => {
+            const wrongSignature = _.assign({}, signature, { v: 28 });
             expect(ZeroEx.isValidSignature(dataHex, wrongSignature, address)).to.be.false();
             return expect(
                 (zeroEx.exchange as any)._isValidSignatureUsingContractCallAsync(dataHex, wrongSignature, address),
@@ -117,8 +120,9 @@ describe('ZeroEx library', () => {
         it('should throw if invalid baseUnit amount supplied as argument', () => {
             const invalidBaseUnitAmount = new BigNumber(1000000000.4);
             const decimals = 6;
-            expect(() => ZeroEx.toUnitAmount(invalidBaseUnitAmount, decimals))
-                .to.throw('amount should be in baseUnits (no decimals), found value: 1000000000.4');
+            expect(() => ZeroEx.toUnitAmount(invalidBaseUnitAmount, decimals)).to.throw(
+                'amount should be in baseUnits (no decimals), found value: 1000000000.4',
+            );
         });
         it('Should return the expected unit amount for the decimals passed in', () => {
             const baseUnitAmount = new BigNumber(1000000000);
@@ -139,8 +143,9 @@ describe('ZeroEx library', () => {
         it('should throw if unitAmount has more decimals then specified as the max decimal precision', () => {
             const unitAmount = new BigNumber(0.823091);
             const decimals = 5;
-            expect(() => ZeroEx.toBaseUnitAmount(unitAmount, decimals))
-                .to.throw('Invalid unit amount: 0.823091 - Too many decimal places');
+            expect(() => ZeroEx.toBaseUnitAmount(unitAmount, decimals)).to.throw(
+                'Invalid unit amount: 0.823091 - Too many decimal places',
+            );
         });
     });
     describe('#getOrderHashHex', () => {
@@ -167,10 +172,11 @@ describe('ZeroEx library', () => {
         it('throws a readable error message if taker format is invalid', async () => {
             const orderWithInvalidtakerFormat = {
                 ...order,
-                taker: null as any as string,
+                taker: (null as any) as string,
             };
             // tslint:disable-next-line:max-line-length
-            const expectedErrorMessage = 'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
+            const expectedErrorMessage =
+                'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
             expect(() => ZeroEx.getOrderHashHex(orderWithInvalidtakerFormat)).to.throw(expectedErrorMessage);
         });
     });
@@ -199,15 +205,15 @@ describe('ZeroEx library', () => {
         it('should return the correct ECSignature for signatureHex concatenated as R + S + V', async () => {
             const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
             // tslint:disable-next-line: max-line-length
-            const signature = '0x22109d11d79cb8bf96ed88625e1cd9558800c4073332a9a02857499883ee5ce3050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb021b';
+            const signature =
+                '0x22109d11d79cb8bf96ed88625e1cd9558800c4073332a9a02857499883ee5ce3050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb021b';
             const expectedECSignature = {
                 v: 27,
                 r: '0x22109d11d79cb8bf96ed88625e1cd9558800c4073332a9a02857499883ee5ce3',
                 s: '0x050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb02',
             };
             stubs = [
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync')
-                    .returns(Promise.resolve(signature)),
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync').returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
@@ -217,15 +223,15 @@ describe('ZeroEx library', () => {
         it('should return the correct ECSignature for signatureHex concatenated as V + R + S', async () => {
             const orderHash = '0xc793e33ffded933b76f2f48d9aa3339fc090399d5e7f5dec8d3660f5480793f7';
             // tslint:disable-next-line: max-line-length
-            const signature = '0x1bc80bedc6756722672753413efdd749b5adbd4fd552595f59c13427407ee9aee02dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960';
+            const signature =
+                '0x1bc80bedc6756722672753413efdd749b5adbd4fd552595f59c13427407ee9aee02dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960';
             const expectedECSignature = {
                 v: 27,
                 r: '0xc80bedc6756722672753413efdd749b5adbd4fd552595f59c13427407ee9aee0',
                 s: '0x2dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960',
             };
             stubs = [
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync')
-                    .returns(Promise.resolve(signature)),
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync').returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
@@ -271,8 +277,9 @@ describe('ZeroEx library', () => {
                 networkId: constants.TESTRPC_NETWORK_ID,
             };
             const zeroExWithWrongTokenRegistryAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
-            expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddress())
-                .to.be.equal(ZeroEx.NULL_ADDRESS);
+            expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddress()).to.be.equal(
+                ZeroEx.NULL_ADDRESS,
+            );
         });
     });
 });

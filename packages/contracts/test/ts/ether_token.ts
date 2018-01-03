@@ -1,15 +1,15 @@
-import {ZeroEx, ZeroExError} from '0x.js';
-import {promisify} from '@0xproject/utils';
-import {BigNumber} from 'bignumber.js';
+import { ZeroEx, ZeroExError } from '0x.js';
+import { promisify } from '@0xproject/utils';
+import { BigNumber } from 'bignumber.js';
 import * as chai from 'chai';
 import Web3 = require('web3');
 
-import {Artifacts} from '../../util/artifacts';
-import {constants} from '../../util/constants';
+import { Artifacts } from '../../util/artifacts';
+import { constants } from '../../util/constants';
 
-import {chaiSetup} from './utils/chai_setup';
+import { chaiSetup } from './utils/chai_setup';
 
-const {EtherToken} = new Artifacts(artifacts);
+const { EtherToken } = new Artifacts(artifacts);
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -44,8 +44,9 @@ contract('EtherToken', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethToDeposit = initEthBalance.plus(1);
 
-            return expect(zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account))
-                .to.be.rejectedWith(ZeroExError.InsufficientEthBalanceForDeposit);
+            return expect(zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account)).to.be.rejectedWith(
+                ZeroExError.InsufficientEthBalanceForDeposit,
+            );
         });
 
         it('should convert deposited Ether to wrapped Ether tokens', async () => {
@@ -71,8 +72,9 @@ contract('EtherToken', (accounts: string[]) => {
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
             const ethTokensToWithdraw = initEthTokenBalance.plus(1);
 
-            return expect(zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account))
-                .to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
+            return expect(
+                zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account),
+            ).to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
         });
 
         it('should convert ether tokens to ether with sufficient balance', async () => {
@@ -89,8 +91,9 @@ contract('EtherToken', (accounts: string[]) => {
             const finalEthBalance = await getEthBalanceAsync(account);
             const finalEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
 
-            expect(finalEthBalance).to.be.bignumber
-                .equal(initEthBalance.plus(ethTokensToWithdraw.minus(ethSpentOnGas)));
+            expect(finalEthBalance).to.be.bignumber.equal(
+                initEthBalance.plus(ethTokensToWithdraw.minus(ethSpentOnGas)),
+            );
             expect(finalEthTokenBalance).to.be.bignumber.equal(initEthTokenBalance.minus(ethTokensToWithdraw));
         });
     });

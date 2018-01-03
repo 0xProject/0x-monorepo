@@ -2,10 +2,10 @@ import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import * as React from 'react';
-import {TradeHistoryItem} from 'ts/components/trade_history/trade_history_item';
-import {tradeHistoryStorage} from 'ts/local_storage/trade_history_storage';
-import {Fill, TokenByAddress} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import { TradeHistoryItem } from 'ts/components/trade_history/trade_history_item';
+import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
+import { Fill, TokenByAddress } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 
 const FILL_POLLING_INTERVAL = 1000;
 
@@ -42,7 +42,7 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
             <div className="lg-px4 md-px4 sm-px2">
                 <h3>Trade history</h3>
                 <Divider />
-                <div className="pt2" style={{height: 608, overflow: 'scroll'}}>
+                <div className="pt2" style={{ height: 608, overflow: 'scroll' }}>
                     {this._renderTrades()}
                 </div>
             </div>
@@ -68,7 +68,7 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
     }
     private _renderEmptyNotice() {
         return (
-            <Paper className="mt1 p2 mx-auto center" style={{width: '80%'}}>
+            <Paper className="mt1 p2 mx-auto center" style={{ width: '80%' }}>
                 No filled orders yet.
             </Paper>
         );

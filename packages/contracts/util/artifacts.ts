@@ -21,7 +21,8 @@ export class Artifacts {
         this.DummyTokenV2 = artifacts.require('DummyToken_v2');
         this.EtherToken = artifacts.require('WETH9');
         this.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = artifacts.require(
-                'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress');
+            'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
+        );
         this.MaliciousToken = artifacts.require('MaliciousToken');
     }
 }

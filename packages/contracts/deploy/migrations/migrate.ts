@@ -1,10 +1,10 @@
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
-import {BigNumber} from 'bignumber.js';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BigNumber } from 'bignumber.js';
 import * as _ from 'lodash';
 
-import {Deployer} from './../src/deployer';
-import {constants} from './../src/utils/constants';
-import {tokenInfo} from './config/token_info';
+import { Deployer } from './../src/deployer';
+import { constants } from './../src/utils/constants';
+import { tokenInfo } from './config/token_info';
 
 export const migrator = {
     /**
@@ -29,12 +29,13 @@ export const migrator = {
         const multiSigArgs = [owners, confirmationsRequired, secondsRequired, tokenTransferProxy.address];
         const exchange = await deployer.deployAndSaveAsync('Exchange', exchangeArgs);
         const multiSig = await deployer.deployAndSaveAsync(
-            'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', multiSigArgs,
+            'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
+            multiSigArgs,
         );
 
         const owner = accounts[0];
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {from: owner});
-        await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, {from: owner});
+        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
+        await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: owner });
         const addTokenGasEstimate = await tokenReg.addToken.estimateGasAsync(
             zrxToken.address,
             tokenInfo[0].name,
@@ -42,7 +43,7 @@ export const migrator = {
             tokenInfo[0].decimals,
             tokenInfo[0].ipfsHash,
             tokenInfo[0].swarmHash,
-            {from: owner},
+            { from: owner },
         );
         await tokenReg.addToken.sendTransactionAsync(
             zrxToken.address,
@@ -70,12 +71,7 @@ export const migrator = {
         );
         for (const token of tokenInfo) {
             const totalSupply = new BigNumber(0);
-            const args = [
-                token.name,
-                token.symbol,
-                token.decimals,
-                totalSupply,
-            ];
+            const args = [token.name, token.symbol, token.decimals, totalSupply];
             const dummyToken = await deployer.deployAsync('DummyToken', args);
             await tokenReg.addToken.sendTransactionAsync(
                 dummyToken.address,

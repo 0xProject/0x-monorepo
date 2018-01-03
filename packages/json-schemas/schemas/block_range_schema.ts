@@ -13,8 +13,8 @@ export const blockParamSchema = {
 export const blockRangeSchema = {
     id: '/BlockRange',
     properties: {
-        fromBlock: {$ref: '/BlockParam'},
-        toBlock: {$ref: '/BlockParam'},
+        fromBlock: { $ref: '/BlockParam' },
+        toBlock: { $ref: '/BlockParam' },
     },
     type: 'object',
 };

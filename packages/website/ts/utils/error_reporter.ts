@@ -1,7 +1,7 @@
-import {Environments} from 'ts/types';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
+import { Environments } from 'ts/types';
+import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 // Suggested way to include Rollbar with Webpack
 // https://github.com/rollbar/rollbar.js/tree/master/examples/webpack
@@ -23,7 +23,7 @@ const rollbarConfig = {
         'TypeError: Failed to fetch',
         'Exchange has not been deployed to detected network (network/artifact mismatch)',
         // Source: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-discuss/7VU0_VvC7mE
-        'undefined is not an object (evaluating \'__gCrWeb.autofill.extractForms\')',
+        "undefined is not an object (evaluating '__gCrWeb.autofill.extractForms')",
         // Source: http://stackoverflow.com/questions/43399818/securityerror-from-facebook-and-cross-domain-messaging
         'SecurityError (DOM Exception 18)',
     ],

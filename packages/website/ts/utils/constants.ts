@@ -1,7 +1,5 @@
 import BigNumber from 'bignumber.js';
-import {
-    Networks,
-} from 'ts/types';
+import { Networks } from 'ts/types';
 
 export const constants = {
     DECIMAL_PLACES_ETH: 18,
@@ -12,7 +10,7 @@ export const constants = {
         1: 4145578,
         42: 3117574,
         50: 0,
-    } as {[networkId: number]: number},
+    } as { [networkId: number]: number },
     HOME_SCROLL_DURATION_MS: 500,
     HTTP_NO_CONTENT_STATUS_CODE: 204,
     LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER: 'didAcceptPortalDisclaimer',
@@ -28,13 +26,13 @@ export const constants = {
         3: Networks.ropsten,
         4: Networks.rinkeby,
         42: Networks.kovan,
-    } as {[symbol: number]: string},
+    } as { [symbol: number]: string },
     NETWORK_ID_BY_NAME: {
         [Networks.mainnet]: 1,
         [Networks.ropsten]: 3,
         [Networks.rinkeby]: 4,
         [Networks.kovan]: 42,
-    } as {[networkName: string]: number},
+    } as { [networkName: string]: number },
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     PROVIDER_NAME_LEDGER: 'Ledger',
     PROVIDER_NAME_METAMASK: 'Metamask',

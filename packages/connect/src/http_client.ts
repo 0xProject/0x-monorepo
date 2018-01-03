@@ -1,10 +1,10 @@
-import {assert} from '@0xproject/assert';
-import {schemas} from '@0xproject/json-schemas';
+import { assert } from '@0xproject/assert';
+import { schemas } from '@0xproject/json-schemas';
 import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
-import {schemas as clientSchemas} from './schemas/schemas';
+import { schemas as clientSchemas } from './schemas/schemas';
 import {
     Client,
     FeesRequest,
@@ -18,7 +18,7 @@ import {
     TokenPairsItem,
     TokenPairsRequest,
 } from './types';
-import {typeConverters} from './utils/type_converters';
+import { typeConverters } from './utils/type_converters';
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
@@ -49,8 +49,7 @@ export class HttpClient implements Client {
             params: request,
         };
         const tokenPairs = await this._requestAsync('/token_pairs', HttpRequestType.Get, requestOpts);
-        assert.doesConformToSchema(
-            'tokenPairs', tokenPairs, schemas.relayerApiTokenPairsResponseSchema);
+        assert.doesConformToSchema('tokenPairs', tokenPairs, schemas.relayerApiTokenPairsResponseSchema);
         _.each(tokenPairs, (tokenPair: object) => {
             typeConverters.convertStringsFieldsToBigNumbers(tokenPair, [
                 'tokenA.minAmount',
@@ -137,8 +136,11 @@ export class HttpClient implements Client {
         };
         await this._requestAsync('/order', HttpRequestType.Post, requestOpts);
     }
-    private async _requestAsync(path: string, requestType: HttpRequestType,
-                                requestOptions?: HttpRequestOptions): Promise<any> {
+    private async _requestAsync(
+        path: string,
+        requestType: HttpRequestType,
+        requestOptions?: HttpRequestOptions,
+    ): Promise<any> {
         const params = _.get(requestOptions, 'params');
         const payload = _.get(requestOptions, 'payload');
         let query = '';

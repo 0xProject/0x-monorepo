@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Styles} from 'ts/types';
+import { Styles } from 'ts/types';
 
 const styles: Styles = {
     badge: {

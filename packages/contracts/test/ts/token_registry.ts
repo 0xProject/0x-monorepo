@@ -1,16 +1,16 @@
-import {ZeroEx} from '0x.js';
+import { ZeroEx } from '0x.js';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import {Artifacts} from '../../util/artifacts';
-import {constants} from '../../util/constants';
-import {TokenRegWrapper} from '../../util/token_registry_wrapper';
-import {ContractInstance} from '../../util/types';
+import { Artifacts } from '../../util/artifacts';
+import { constants } from '../../util/constants';
+import { TokenRegWrapper } from '../../util/token_registry_wrapper';
+import { ContractInstance } from '../../util/types';
 
-import {chaiSetup} from './utils/chai_setup';
+import { chaiSetup } from './utils/chai_setup';
 
-const {TokenRegistry} = new Artifacts(artifacts);
+const { TokenRegistry } = new Artifacts(artifacts);
 chaiSetup.configure();
 const expect = chai.expect;
 
@@ -79,18 +79,22 @@ contract('TokenRegistry', (accounts: string[]) => {
 
         it('should throw if name already exists', async () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
-            const duplicateNameToken = _.assign({}, token2, {name: token1.name});
+            const duplicateNameToken = _.assign({}, token2, { name: token1.name });
 
-            return expect(tokenRegWrapper.addTokenAsync(duplicateNameToken, owner))
-                .to.be.rejectedWith(constants.REVERT);
+            return expect(tokenRegWrapper.addTokenAsync(duplicateNameToken, owner)).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
 
         it('should throw if symbol already exists', async () => {
             await tokenRegWrapper.addTokenAsync(token1, owner);
-            const duplicateSymbolToken = _.assign({}, token2, {symbol: token1.symbol});
+            const duplicateSymbolToken = _.assign({}, token2, {
+                symbol: token1.symbol,
+            });
 
-            return expect(tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner))
-                .to.be.rejectedWith(constants.REVERT);
+            return expect(tokenRegWrapper.addTokenAsync(duplicateSymbolToken, owner)).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
     });
 
@@ -115,19 +119,22 @@ contract('TokenRegistry', (accounts: string[]) => {
 
         describe('setTokenName', () => {
             it('should throw when not called by owner', async () => {
-                return expect(tokenReg.setTokenName(token1.address, token2.name, {from: notOwner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(
+                    tokenReg.setTokenName(token1.address, token2.name, { from: notOwner }),
+                ).to.be.rejectedWith(constants.REVERT);
             });
 
             it('should change the token name when called by owner', async () => {
-                const res = await tokenReg.setTokenName(token1.address, token2.name, {from: owner});
+                const res = await tokenReg.setTokenName(token1.address, token2.name, {
+                    from: owner,
+                });
                 expect(res.logs).to.have.length(1);
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenByNameAsync(token2.name),
                     tokenRegWrapper.getTokenByNameAsync(token1.name),
                 ]);
 
-                const expectedNewData = _.assign({}, token1, {name: token2.name});
+                const expectedNewData = _.assign({}, token1, { name: token2.name });
                 const expectedOldData = nullToken;
                 expect(newData).to.be.deep.equal(expectedNewData);
                 expect(oldData).to.be.deep.equal(expectedOldData);
@@ -136,31 +143,36 @@ contract('TokenRegistry', (accounts: string[]) => {
             it('should throw if the name already exists', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
 
-                return expect(tokenReg.setTokenName(token1.address, token2.name, {from: owner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(tokenReg.setTokenName(token1.address, token2.name, { from: owner })).to.be.rejectedWith(
+                    constants.REVERT,
+                );
             });
 
             it('should throw if token does not exist', async () => {
-                return expect(tokenReg.setTokenName(nullToken.address, token2.name, {from: owner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(
+                    tokenReg.setTokenName(nullToken.address, token2.name, { from: owner }),
+                ).to.be.rejectedWith(constants.REVERT);
             });
         });
 
         describe('setTokenSymbol', () => {
             it('should throw when not called by owner', async () => {
-                return expect(tokenReg.setTokenSymbol(token1.address, token2.symbol, {from: notOwner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(
+                    tokenReg.setTokenSymbol(token1.address, token2.symbol, {
+                        from: notOwner,
+                    }),
+                ).to.be.rejectedWith(constants.REVERT);
             });
 
             it('should change the token symbol when called by owner', async () => {
-                const res = await tokenReg.setTokenSymbol(token1.address, token2.symbol, {from: owner});
+                const res = await tokenReg.setTokenSymbol(token1.address, token2.symbol, { from: owner });
                 expect(res.logs).to.have.length(1);
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenBySymbolAsync(token2.symbol),
                     tokenRegWrapper.getTokenBySymbolAsync(token1.symbol),
                 ]);
 
-                const expectedNewData = _.assign({}, token1, {symbol: token2.symbol});
+                const expectedNewData = _.assign({}, token1, { symbol: token2.symbol });
                 const expectedOldData = nullToken;
                 expect(newData).to.be.deep.equal(expectedNewData);
                 expect(oldData).to.be.deep.equal(expectedOldData);
@@ -169,26 +181,35 @@ contract('TokenRegistry', (accounts: string[]) => {
             it('should throw if the symbol already exists', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
 
-                return expect(tokenReg.setTokenSymbol(token1.address, token2.symbol, {from: owner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(
+                    tokenReg.setTokenSymbol(token1.address, token2.symbol, {
+                        from: owner,
+                    }),
+                ).to.be.rejectedWith(constants.REVERT);
             });
 
             it('should throw if token does not exist', async () => {
-                return expect(tokenReg.setTokenSymbol(nullToken.address, token2.symbol, {from: owner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(
+                    tokenReg.setTokenSymbol(nullToken.address, token2.symbol, {
+                        from: owner,
+                    }),
+                ).to.be.rejectedWith(constants.REVERT);
             });
         });
 
         describe('removeToken', () => {
             it('should throw if not called by owner', async () => {
                 const index = 0;
-                return expect(tokenReg.removeToken(token1.address, index, {from: notOwner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(tokenReg.removeToken(token1.address, index, { from: notOwner })).to.be.rejectedWith(
+                    constants.REVERT,
+                );
             });
 
             it('should remove token metadata when called by owner', async () => {
                 const index = 0;
-                const res = await tokenReg.removeToken(token1.address, index, {from: owner});
+                const res = await tokenReg.removeToken(token1.address, index, {
+                    from: owner,
+                });
                 expect(res.logs).to.have.length(1);
                 const tokenData = await tokenRegWrapper.getTokenMetaDataAsync(token1.address);
                 expect(tokenData).to.be.deep.equal(nullToken);
@@ -196,17 +217,18 @@ contract('TokenRegistry', (accounts: string[]) => {
 
             it('should throw if token does not exist', async () => {
                 const index = 0;
-                return expect(tokenReg.removeToken(nullToken.address, index, {from: owner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(tokenReg.removeToken(nullToken.address, index, { from: owner })).to.be.rejectedWith(
+                    constants.REVERT,
+                );
             });
 
             it('should throw if token at given index does not match address', async () => {
                 await tokenRegWrapper.addTokenAsync(token2, owner);
                 const incorrectIndex = 0;
-                return expect(tokenReg.removeToken(token2.address, incorrectIndex, {from: owner}))
-                    .to.be.rejectedWith(constants.REVERT);
+                return expect(tokenReg.removeToken(token2.address, incorrectIndex, { from: owner })).to.be.rejectedWith(
+                    constants.REVERT,
+                );
             });
-
         });
     });
 });

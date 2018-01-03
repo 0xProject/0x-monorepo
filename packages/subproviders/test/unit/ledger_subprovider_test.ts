@@ -5,16 +5,10 @@ import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import {
-    LedgerSubprovider,
-} from '../../src';
-import {
-    DoneCallback,
-    LedgerCommunicationClient,
-    LedgerSubproviderErrors,
-} from '../../src/types';
-import {chaiSetup} from '../chai_setup';
-import {reportCallbackErrors} from '../utils/report_callback_errors';
+import { LedgerSubprovider } from '../../src';
+import { DoneCallback, LedgerCommunicationClient, LedgerSubproviderErrors } from '../../src/types';
+import { chaiSetup } from '../chai_setup';
+import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -29,7 +23,8 @@ describe('LedgerSubprovider', () => {
             const ledgerEthClient = {
                 getAddress_async: async () => {
                     // tslint:disable-next-line:max-line-length
-                    const publicKey = '04f428290f4c5ed6a198f71b8205f488141dbb3f0840c923bbfa798ecbee6370986c03b5575d94d506772fb48a6a44e345e4ebd4f028a6f609c44b655d6d3e71a1';
+                    const publicKey =
+                        '04f428290f4c5ed6a198f71b8205f488141dbb3f0840c923bbfa798ecbee6370986c03b5575d94d506772fb48a6a44e345e4ebd4f028a6f609c44b655d6d3e71a1';
                     const chainCode = 'ac055a5537c0c7e9e02d14a197cad6b857836da2a12043b46912a37d959b5ae8';
                     const address = '0xBa388BA5e5EEF2c6cE42d831c2B3A28D3c99bdB1';
                     return {
@@ -77,16 +72,20 @@ describe('LedgerSubprovider', () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
                 const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
                 // tslint:disable-next-line:max-line-length
-                expect(ecSignatureHex).to.be.equal('0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001');
+                expect(ecSignatureHex).to.be.equal(
+                    '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
+                );
             });
         });
         describe('failure cases', () => {
             it('cannot open multiple simultaneous connections to the Ledger device', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
-                return expect(Promise.all([
-                    ledgerSubprovider.getAccountsAsync(),
-                    ledgerSubprovider.signPersonalMessageAsync(data),
-                ])).to.be.rejectedWith(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
+                return expect(
+                    Promise.all([
+                        ledgerSubprovider.getAccountsAsync(),
+                        ledgerSubprovider.signPersonalMessageAsync(data),
+                    ]),
+                ).to.be.rejectedWith(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
             });
         });
     });
@@ -128,7 +127,9 @@ describe('LedgerSubprovider', () => {
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     // tslint:disable-next-line:max-line-length
-                    expect(response.result).to.be.equal('0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001');
+                    expect(response.result).to.be.equal(
+                        '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
+                    );
                     done();
                 });
                 provider.sendAsync(payload, callback);
@@ -221,8 +222,7 @@ describe('LedgerSubprovider', () => {
                 });
                 provider.sendAsync(payload, callback);
             });
-            it('should throw if `from` param invalid address when calling eth_sendTransaction',
-               (done: DoneCallback) => {
+            it('should throw if `from` param invalid address when calling eth_sendTransaction', (done: DoneCallback) => {
                 const tx = {
                     to: '0xafa3f8684e54059998bc3a7b0d2b0da075154d66',
                     from: '0xIncorrectEthereumAddress',

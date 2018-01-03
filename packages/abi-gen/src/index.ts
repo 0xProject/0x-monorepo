@@ -2,7 +2,7 @@
 
 import chalk from 'chalk';
 import * as fs from 'fs';
-import {sync as globSync} from 'glob';
+import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
@@ -11,8 +11,8 @@ import * as yargs from 'yargs';
 import toSnakeCase = require('to-snake-case');
 import * as Web3 from 'web3';
 
-import {ContextData, ParamKind} from './types';
-import {utils} from './utils';
+import { ContextData, ParamKind } from './types';
+import { utils } from './utils';
 
 const ABI_TYPE_METHOD = 'function';
 const MAIN_TEMPLATE_NAME = 'contract.mustache';
@@ -32,8 +32,7 @@ const args = yargs
         describe: 'Folder where to put the output files',
         type: 'string',
         demand: true,
-    })
-    .argv;
+    }).argv;
 
 function writeOutputFile(name: string, renderedTsCode: string): void {
     const fileName = toSnakeCase(name);
@@ -66,9 +65,9 @@ for (const abiFileName of abiFileNames) {
     const namedContent = utils.getNamedContent(abiFileName);
     utils.log(`Processing: ${chalk.bold(namedContent.name)}...`);
     const parsedContent = JSON.parse(namedContent.content);
-    const ABI = _.isArray(parsedContent) ?
-                parsedContent : // ABI file
-                parsedContent.abi; // Truffle contracts file
+    const ABI = _.isArray(parsedContent)
+        ? parsedContent // ABI file
+        : parsedContent.abi; // Truffle contracts file
     if (_.isUndefined(ABI)) {
         utils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
         utils.log(`Please make sure your ABI file is either an array with ABI entries or an object with the abi key`);

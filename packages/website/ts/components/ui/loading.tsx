@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import * as React from 'react';
-import {DefaultPlayer as Video} from 'react-html5video';
+import { DefaultPlayer as Video } from 'react-html5video';
 import 'react-html5video/dist/styles.css';
-import {utils} from 'ts/utils/utils';
+import { utils } from 'ts/utils/utils';
 
 interface LoadingProps {}
 
@@ -12,11 +12,12 @@ interface LoadingState {}
 export class Loading extends React.Component<LoadingProps, LoadingState> {
     public render() {
         return (
-            <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{height: 500}}>
-                <Paper className="mx-auto" style={{maxWidth: 400}}>
-                    {utils.isUserOnMobile() ?
-                        <img className="p1" src="/gifs/0xAnimation.gif" width="96%" /> :
-                        <div style={{pointerEvents: 'none'}}>
+            <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
+                <Paper className="mx-auto" style={{ maxWidth: 400 }}>
+                    {utils.isUserOnMobile() ? (
+                        <img className="p1" src="/gifs/0xAnimation.gif" width="96%" />
+                    ) : (
+                        <div style={{ pointerEvents: 'none' }}>
                             <Video
                                 autoPlay={true}
                                 loop={true}
@@ -27,8 +28,10 @@ export class Loading extends React.Component<LoadingProps, LoadingState> {
                                 <source src="/videos/0xAnimation.mp4" type="video/mp4" />
                             </Video>
                         </div>
-                    }
-                    <div className="center pt2" style={{paddingBottom: 11}}>Connecting to the blockchain...</div>
+                    )}
+                    <div className="center pt2" style={{ paddingBottom: 11 }}>
+                        Connecting to the blockchain...
+                    </div>
                 </Paper>
             </div>
         );

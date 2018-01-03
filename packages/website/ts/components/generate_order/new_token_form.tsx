@@ -2,13 +2,13 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {AddressInput} from 'ts/components/inputs/address_input';
-import {Alert} from 'ts/components/ui/alert';
-import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
-import {RequiredLabel} from 'ts/components/ui/required_label';
-import {AlertTypes, Token, TokenByAddress, TokenState} from 'ts/types';
-import {colors} from 'ts/utils/colors';
+import { Blockchain } from 'ts/blockchain';
+import { AddressInput } from 'ts/components/inputs/address_input';
+import { Alert } from 'ts/components/ui/alert';
+import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
+import { RequiredLabel } from 'ts/components/ui/required_label';
+import { AlertTypes, Token, TokenByAddress, TokenState } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 interface NewTokenFormProps {
     blockchain: Blockchain;
@@ -45,11 +45,11 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
     }
     public render() {
         return (
-            <div className="mx-auto pb2" style={{width: 256}}>
+            <div className="mx-auto pb2" style={{ width: 256 }}>
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey}}
+                        floatingLabelStyle={{ color: colors.grey }}
                         floatingLabelText={<RequiredLabel label="Name" />}
                         value={this.state.name}
                         errorText={this.state.nameErrText}
@@ -59,7 +59,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey}}
+                        floatingLabelStyle={{ color: colors.grey }}
                         floatingLabelText={<RequiredLabel label="Symbol" />}
                         value={this.state.symbol}
                         errorText={this.state.symbolErrText}
@@ -78,14 +78,14 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                 <div>
                     <TextField
                         floatingLabelFixed={true}
-                        floatingLabelStyle={{color: colors.grey}}
+                        floatingLabelStyle={{ color: colors.grey }}
                         floatingLabelText={<RequiredLabel label="Decimals" />}
                         value={this.state.decimals}
                         errorText={this.state.decimalsErrText}
                         onChange={this._onTokenDecimalsChanged.bind(this)}
                     />
                 </div>
-                <div className="pt2 mx-auto" style={{width: 120}}>
+                <div className="pt2 mx-auto" style={{ width: 120 }}>
                     <LifeCycleRaisedButton
                         labelReady="Add"
                         labelLoading="Adding..."
@@ -93,9 +93,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                         onClickAsyncFn={this._onAddNewTokenClickAsync.bind(this)}
                     />
                 </div>
-                {this.state.globalErrMsg !== '' &&
-                    <Alert type={AlertTypes.ERROR} message={this.state.globalErrMsg} />
-                }
+                {this.state.globalErrMsg !== '' && <Alert type={AlertTypes.ERROR} message={this.state.globalErrMsg} />}
             </div>
         );
     }
@@ -116,18 +114,21 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
         let allowance = new BigNumber(0);
         if (doesContractExist) {
             try {
-                [
-                    balance,
-                    allowance,
-                ] = await this.props.blockchain.getCurrentUserTokenBalanceAndAllowanceAsync(this.state.address);
+                [balance, allowance] = await this.props.blockchain.getCurrentUserTokenBalanceAndAllowanceAsync(
+                    this.state.address,
+                );
             } catch (err) {
                 hasBalanceAllowanceErr = true;
             }
         }
 
         let globalErrMsg = '';
-        if (this.state.nameErrText !== '' || this.state.symbolErrText !== '' ||
-            this.state.decimalsErrText !== '' || isAddressIncomplete) {
+        if (
+            this.state.nameErrText !== '' ||
+            this.state.symbolErrText !== '' ||
+            this.state.decimalsErrText !== '' ||
+            isAddressIncomplete
+        ) {
             globalErrMsg = 'Please fix the above issues';
         } else if (!doesContractExist) {
             globalErrMsg = 'No contract found at supplied address';
@@ -164,7 +165,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
         let nameErrText = '';
         const maxLength = 30;
         const tokens = _.values(this.props.tokenByAddress);
-        const tokenWithNameIfExists = _.find(tokens, {name});
+        const tokenWithNameIfExists = _.find(tokens, { name });
         const tokenWithNameExists = !_.isUndefined(tokenWithNameIfExists);
         if (name === '') {
             nameErrText = 'Name is required';
@@ -185,7 +186,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
         let symbolErrText = '';
         const maxLength = 5;
         const tokens = _.values(this.props.tokenByAddress);
-        const tokenWithSymbolExists = !_.isUndefined(_.find(tokens, {symbol}));
+        const tokenWithSymbolExists = !_.isUndefined(_.find(tokens, { symbol }));
         if (symbol === '') {
             symbolErrText = 'Symbol is required';
         } else if (!this._isLetters(symbol)) {

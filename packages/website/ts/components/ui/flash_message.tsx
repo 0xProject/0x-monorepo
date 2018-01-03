@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import Snackbar from 'material-ui/Snackbar';
 import * as React from 'react';
-import {Dispatcher} from 'ts/redux/dispatcher';
+import { Dispatcher } from 'ts/redux/dispatcher';
 
 const SHOW_DURATION_MS = 4000;
 
 interface FlashMessageProps {
     dispatcher: Dispatcher;
-    flashMessage?: string|React.ReactNode;
+    flashMessage?: string | React.ReactNode;
     showDurationMs?: number;
     bodyStyle?: React.CSSProperties;
 }

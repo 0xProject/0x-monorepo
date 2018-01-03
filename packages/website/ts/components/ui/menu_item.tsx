@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface MenuItemProps {
     to: string;
@@ -30,7 +30,7 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
             opacity: this.state.isHovering ? 0.5 : 1,
         };
         return (
-            <Link to={this.props.to} style={{textDecoration: 'none', ...this.props.style}}>
+            <Link to={this.props.to} style={{ textDecoration: 'none', ...this.props.style }}>
                 <div
                     onClick={this.props.onClick.bind(this)}
                     className={`mx-auto ${this.props.className}`}

@@ -13,7 +13,9 @@ export class AsyncSuffixWalker extends Lint.RuleWalker {
                 const returnTypeName = (node.type as ts.TypeReferenceNode).typeName.getText();
                 if (returnTypeName === 'Promise' && !methodName.endsWith('Async')) {
                     const failure = this.createFailure(
-                        methodNameNode.getStart(), methodNameNode.getWidth(), AsyncSuffixWalker.FAILURE_STRING,
+                        methodNameNode.getStart(),
+                        methodNameNode.getWidth(),
+                        AsyncSuffixWalker.FAILURE_STRING,
                     );
                     this.addFailure(failure);
                 }

@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {DocsInfo} from 'ts/pages/documentation/docs_info';
-import {Type} from 'ts/pages/documentation/type';
-import {AnchorTitle} from 'ts/pages/shared/anchor_title';
-import {Event, EventArg, HeaderSizes} from 'ts/types';
-import {colors} from 'ts/utils/colors';
+import { DocsInfo } from 'ts/pages/documentation/docs_info';
+import { Type } from 'ts/pages/documentation/type';
+import { AnchorTitle } from 'ts/pages/shared/anchor_title';
+import { Event, EventArg, HeaderSizes } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 interface EventDefinitionProps {
     event: Event;
@@ -29,7 +29,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             <div
                 id={`${this.props.sectionName}-${event.name}`}
                 className="pb2"
-                style={{overflow: 'hidden', width: '100%'}}
+                style={{ overflow: 'hidden', width: '100%' }}
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
@@ -39,29 +39,24 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
                     id={event.name}
                     shouldShowAnchor={this.state.shouldShowAnchor}
                 />
-                <div style={{fontSize: 16}}>
+                <div style={{ fontSize: 16 }}>
                     <pre>
-                        <code className="hljs">
-                            {this._renderEventCode()}
-                        </code>
+                        <code className="hljs">{this._renderEventCode()}</code>
                     </pre>
                 </div>
             </div>
         );
     }
     private _renderEventCode() {
-        const indexed = <span style={{color: colors.green}}> indexed</span>;
+        const indexed = <span style={{ color: colors.green }}> indexed</span>;
         const eventArgs = _.map(this.props.event.eventArgs, (eventArg: EventArg) => {
             const type = (
-                <Type
-                    type={eventArg.type}
-                    sectionName={this.props.sectionName}
-                    docsInfo={this.props.docsInfo}
-                />
+                <Type type={eventArg.type} sectionName={this.props.sectionName} docsInfo={this.props.docsInfo} />
             );
             return (
                 <span key={`eventArg-${eventArg.name}`}>
-                    {eventArg.name}{eventArg.isIndexed ? indexed : ''}:  {type},
+                    {eventArg.name}
+                    {eventArg.isIndexed ? indexed : ''}: {type},
                 </span>
             );
         });
@@ -71,9 +66,10 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
         return (
             <span>
                 {`{`}
-                    <br />
-                    {'\t'}{argList}
-                    <br />
+                <br />
+                {'\t'}
+                {argList}
+                <br />
                 {`}`}
             </span>
         );

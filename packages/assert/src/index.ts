@@ -1,8 +1,5 @@
-import {
-    Schema,
-    SchemaValidator,
-} from '@0xproject/json-schemas';
-import {addressUtils} from '@0xproject/utils';
+import { Schema, SchemaValidator } from '@0xproject/json-schemas';
+import { addressUtils } from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
@@ -18,7 +15,8 @@ export const assert = {
         assert.isBigNumber(variableName, value);
         const hasDecimals = value.decimalPlaces() !== 0;
         this.assert(
-            !hasDecimals, `${variableName} should be in baseUnits (no decimals), found value: ${value.toNumber()}`,
+            !hasDecimals,
+            `${variableName} should be in baseUnits (no decimals), found value: ${value.toNumber()}`,
         );
     },
     isUndefined(value: any, variableName?: string): void {
@@ -31,8 +29,10 @@ export const assert = {
         this.assert(_.isFunction(value), this.typeAssertionMessage(variableName, 'function', value));
     },
     isHexString(variableName: string, value: string): void {
-        this.assert(_.isString(value) && HEX_REGEX.test(value),
-            this.typeAssertionMessage(variableName, 'HexString', value));
+        this.assert(
+            _.isString(value) && HEX_REGEX.test(value),
+            this.typeAssertionMessage(variableName, 'HexString', value),
+        );
     },
     isETHAddressHex(variableName: string, value: string): void {
         this.assert(addressUtils.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
@@ -41,8 +41,11 @@ export const assert = {
             `Checksummed addresses are not supported. Convert ${variableName} to lower case before passing`,
         );
     },
-    doesBelongToStringEnum(variableName: string, value: string,
-                           stringEnum: any /* There is no base type for every string enum */): void {
+    doesBelongToStringEnum(
+        variableName: string,
+        value: string,
+        stringEnum: any /* There is no base type for every string enum */,
+    ): void {
         const doesBelongToStringEnum = !_.isUndefined(stringEnum[value]);
         const enumValues = _.keys(stringEnum);
         const enumValuesAsStrings = _.map(enumValues, enumValue => `'${enumValue}'`);
@@ -62,7 +65,7 @@ export const assert = {
         this.assert(_.isBoolean(value), this.typeAssertionMessage(variableName, 'boolean', value));
     },
     isWeb3Provider(variableName: string, value: any): void {
-        const isWeb3Provider = _.isFunction((value).send) || _.isFunction((value).sendAsync);
+        const isWeb3Provider = _.isFunction(value.send) || _.isFunction(value.sendAsync);
         this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Web3.Provider', value));
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema): void {

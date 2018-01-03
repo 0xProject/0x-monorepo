@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {MenuItem} from 'ts/components/ui/menu_item';
-import {WebsitePaths} from 'ts/types';
+import { MenuItem } from 'ts/components/ui/menu_item';
+import { WebsitePaths } from 'ts/types';
 
 export interface PortalMenuProps {
     menuItemStyle: React.CSSProperties;
@@ -62,13 +62,11 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
     }
     private _renderMenuItemWithIcon(title: string, iconName: string) {
         return (
-            <div className="flex" style={{fontWeight: 100}}>
+            <div className="flex" style={{ fontWeight: 100 }}>
                 <div className="pr1 pl2">
-                    <i style={{fontSize: 20}} className={`zmdi ${iconName}`} />
+                    <i style={{ fontSize: 20 }} className={`zmdi ${iconName}`} />
                 </div>
-                <div className="pl1">
-                    {title}
-                </div>
+                <div className="pl1">{title}</div>
             </div>
         );
     }

@@ -1,4 +1,4 @@
-import {colors as materialUiColors} from 'material-ui/styles';
+import { colors as materialUiColors } from 'material-ui/styles';
 
 export const colors = {
     ...materialUiColors,

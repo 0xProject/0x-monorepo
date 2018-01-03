@@ -1,12 +1,12 @@
 import * as chai from 'chai';
 import 'mocha';
 
-import {Compiler} from './../src/compiler';
-import {Deployer} from './../src/deployer';
-import {fsWrapper} from './../src/utils/fs_wrapper';
-import {CompilerOptions, ContractArtifact, ContractData, DoneCallback} from './../src/utils/types';
-import {constructor_args, exchange_binary} from './fixtures/exchange_bin';
-import {constants} from './util/constants';
+import { Compiler } from './../src/compiler';
+import { Deployer } from './../src/deployer';
+import { fsWrapper } from './../src/utils/fs_wrapper';
+import { CompilerOptions, ContractArtifact, ContractData, DoneCallback } from './../src/utils/types';
+import { constructor_args, exchange_binary } from './fixtures/exchange_bin';
+import { constants } from './util/constants';
 
 const expect = chai.expect;
 const artifactsDir = `${__dirname}/fixtures/artifacts`;

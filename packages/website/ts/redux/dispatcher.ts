@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
-import {Dispatch} from 'redux';
-import {State} from 'ts/redux/reducer';
+import { Dispatch } from 'redux';
+import { State } from 'ts/redux/reducer';
 import {
     ActionTypes,
     AssetToken,
@@ -98,44 +98,44 @@ export class Dispatcher {
     }
     public encounteredBlockchainError(err: BlockchainErrs) {
         this._dispatch({
-             data: err,
-             type: ActionTypes.BlockchainErrEncountered,
-         });
+            data: err,
+            type: ActionTypes.BlockchainErrEncountered,
+        });
     }
     public updateBlockchainIsLoaded(isLoaded: boolean) {
         this._dispatch({
-             data: isLoaded,
-             type: ActionTypes.UpdateBlockchainIsLoaded,
-         });
+            data: isLoaded,
+            type: ActionTypes.UpdateBlockchainIsLoaded,
+        });
     }
     public addTokenToTokenByAddress(token: Token) {
         this._dispatch({
-             data: token,
-             type: ActionTypes.AddTokenToTokenByAddress,
-         });
+            data: token,
+            type: ActionTypes.AddTokenToTokenByAddress,
+        });
     }
     public removeTokenToTokenByAddress(token: Token) {
         this._dispatch({
-             data: token,
-             type: ActionTypes.RemoveTokenFromTokenByAddress,
-         });
+            data: token,
+            type: ActionTypes.RemoveTokenFromTokenByAddress,
+        });
     }
     public clearTokenByAddress() {
         this._dispatch({
             type: ActionTypes.ClearTokenByAddress,
-         });
+        });
     }
     public updateTokenByAddress(tokens: Token[]) {
         this._dispatch({
-             data: tokens,
-             type: ActionTypes.UpdateTokenByAddress,
-         });
+            data: tokens,
+            type: ActionTypes.UpdateTokenByAddress,
+        });
     }
     public updateTokenStateByAddress(tokenStateByAddress: TokenStateByAddress) {
         this._dispatch({
-             data: tokenStateByAddress,
-             type: ActionTypes.UpdateTokenStateByAddress,
-         });
+            data: tokenStateByAddress,
+            type: ActionTypes.UpdateTokenStateByAddress,
+        });
     }
     public removeFromTokenStateByAddress(tokenAddress: string) {
         this._dispatch({
@@ -146,8 +146,8 @@ export class Dispatcher {
     public replaceTokenAllowanceByAddress(address: string, allowance: BigNumber) {
         this._dispatch({
             data: {
-              address,
-              allowance,
+                address,
+                allowance,
             },
             type: ActionTypes.ReplaceTokenAllowanceByAddress,
         });
@@ -172,21 +172,21 @@ export class Dispatcher {
     }
     public updateSignatureData(signatureData: SignatureData) {
         this._dispatch({
-             data: signatureData,
-             type: ActionTypes.UpdateOrderSignatureData,
-         });
+            data: signatureData,
+            type: ActionTypes.UpdateOrderSignatureData,
+        });
     }
     public updateUserEtherBalance(balance: BigNumber) {
         this._dispatch({
-             data: balance,
-             type: ActionTypes.UpdateUserEtherBalance,
-         });
+            data: balance,
+            type: ActionTypes.UpdateUserEtherBalance,
+        });
     }
     public updateNetworkId(networkId: number) {
         this._dispatch({
-             data: networkId,
-             type: ActionTypes.UpdateNetworkId,
-         });
+            data: networkId,
+            type: ActionTypes.UpdateNetworkId,
+        });
     }
     public updateOrderFillAmount(amount: BigNumber) {
         this._dispatch({
@@ -210,7 +210,7 @@ export class Dispatcher {
     }
 
     // Shared
-    public showFlashMessage(msg: string|React.ReactNode) {
+    public showFlashMessage(msg: string | React.ReactNode) {
         this._dispatch({
             data: msg,
             type: ActionTypes.ShowFlashMessage,

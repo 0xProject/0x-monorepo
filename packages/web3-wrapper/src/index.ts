@@ -1,18 +1,15 @@
-import {TransactionReceipt, TxData} from '@0xproject/types';
-import {
-    bigNumberConfigs,
-    promisify,
-} from '@0xproject/utils';
+import { TransactionReceipt, TxData } from '@0xproject/types';
+import { bigNumberConfigs, promisify } from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 interface RawLogEntry {
-    logIndex: string|null;
-    transactionIndex: string|null;
+    logIndex: string | null;
+    transactionIndex: string | null;
     transactionHash: string;
-    blockHash: string|null;
-    blockNumber: string|null;
+    blockHash: string | null;
+    blockNumber: string | null;
     address: string;
     data: string;
     topics: string[];
@@ -93,12 +90,12 @@ export class Web3Wrapper {
         const blockNumber = await promisify<number>(this._web3.eth.getBlockNumber)();
         return blockNumber;
     }
-    public async getBlockAsync(blockParam: string|Web3.BlockParam): Promise<Web3.BlockWithoutTransactionData> {
+    public async getBlockAsync(blockParam: string | Web3.BlockParam): Promise<Web3.BlockWithoutTransactionData> {
         const block = await promisify<Web3.BlockWithoutTransactionData>(this._web3.eth.getBlock)(blockParam);
         return block;
     }
-    public async getBlockTimestampAsync(blockParam: string|Web3.BlockParam): Promise<number> {
-        const {timestamp} = await this.getBlockAsync(blockParam);
+    public async getBlockTimestampAsync(blockParam: string | Web3.BlockParam): Promise<number> {
+        const { timestamp } = await this.getBlockAsync(blockParam);
         return timestamp;
     }
     public async getAvailableAddressesAsync(): Promise<string[]> {
@@ -138,7 +135,7 @@ export class Web3Wrapper {
         return web3ContractInstance;
     }
     public async estimateGasAsync(data: string): Promise<number> {
-        const gas = await promisify<number>(this._web3.eth.estimateGas)({data});
+        const gas = await promisify<number>(this._web3.eth.estimateGas)({ data });
         return gas;
     }
     private async _sendRawPayloadAsync<A>(payload: Web3.JSONRPCRequestPayload): Promise<A> {
@@ -147,14 +144,14 @@ export class Web3Wrapper {
         const result = response.result;
         return result;
     }
-    private _normalizeTxReceiptStatus(status: undefined|null|string|0|1): null|0|1 {
+    private _normalizeTxReceiptStatus(status: undefined | null | string | 0 | 1): null | 0 | 1 {
         // Transaction status might have four values
         // undefined - Testrpc and other old clients
         // null - New clients on old transactions
         // number - Parity
         // hex - Geth
         if (_.isString(status)) {
-            return this._web3.toDecimal(status) as 0|1;
+            return this._web3.toDecimal(status) as 0 | 1;
         } else if (_.isUndefined(status)) {
             return null;
         } else {
@@ -170,7 +167,7 @@ export class Web3Wrapper {
         };
         return formattedLog;
     }
-    private _hexToDecimal(hex: string|null): number|null {
+    private _hexToDecimal(hex: string | null): number | null {
         if (_.isNull(hex)) {
             return null;
         }

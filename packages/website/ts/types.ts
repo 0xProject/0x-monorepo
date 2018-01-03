@@ -221,9 +221,9 @@ export interface ContractEvent {
 export type InputErrMsg = React.ReactNode | string | undefined;
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
 export enum ScreenWidths {
-  Sm = 'SM',
-  Md = 'MD',
-  Lg = 'LG',
+    Sm = 'SM',
+    Md = 'MD',
+    Lg = 'LG',
 }
 
 export enum AlertTypes {
@@ -232,8 +232,8 @@ export enum AlertTypes {
 }
 
 export enum EtherscanLinkSuffixes {
-  Address = 'address',
-  Tx = 'tx',
+    Address = 'address',
+    Tx = 'tx',
 }
 
 export enum BlockchainErrs {
@@ -243,23 +243,23 @@ export enum BlockchainErrs {
 }
 
 export enum BlockchainCallErrs {
-  ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
-  UserHasNoAssociatedAddresses = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
-  UnhandledError = 'UNHANDLED_ERROR',
-  TokenAddressIsInvalid = 'TOKEN_ADDRESS_IS_INVALID',
+    ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
+    UserHasNoAssociatedAddresses = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
+    UnhandledError = 'UNHANDLED_ERROR',
+    TokenAddressIsInvalid = 'TOKEN_ADDRESS_IS_INVALID',
 }
 
 // Exception: We don't make the values uppercase because these KindString's need to
 // match up those returned by TypeDoc
 export enum KindString {
-  Constructor = 'Constructor',
-  Property = 'Property',
-  Method = 'Method',
-  Interface = 'Interface',
-  TypeAlias = 'Type alias',
-  Variable = 'Variable',
-  Function = 'Function',
-  Enumeration = 'Enumeration',
+    Constructor = 'Constructor',
+    Property = 'Property',
+    Method = 'Method',
+    Interface = 'Interface',
+    TypeAlias = 'Type alias',
+    Variable = 'Variable',
+    Function = 'Function',
+    Enumeration = 'Enumeration',
 }
 
 export interface EnumValue {
@@ -336,8 +336,8 @@ export interface DocAgnosticFormat {
 
 export interface DocSection {
     comment: string;
-    constructors: Array<TypescriptMethod|SolidityMethod>;
-    methods: Array<TypescriptMethod|SolidityMethod>;
+    constructors: Array<TypescriptMethod | SolidityMethod>;
+    methods: Array<TypescriptMethod | SolidityMethod>;
     properties: Property[];
     types: CustomType[];
     events?: Event[];
@@ -364,7 +364,7 @@ export interface Property {
 export interface BaseMethod {
     isConstructor: boolean;
     name: string;
-    returnComment?: string|undefined;
+    returnComment?: string | undefined;
     callPath: string;
     parameters: Parameter[];
     returnType: Type;
@@ -457,8 +457,8 @@ export interface MenuSubsectionsBySection {
 }
 
 export enum ProviderType {
-  Injected = 'INJECTED',
-  Ledger = 'LEDGER',
+    Injected = 'INJECTED',
+    Ledger = 'LEDGER',
 }
 
 export interface Fact {
@@ -479,8 +479,11 @@ interface LedgerCommunication {
     close_async: () => Promise<void>;
 }
 export interface LedgerEthConnection {
-    getAddress_async: (derivationPath: string, askForDeviceConfirmation: boolean,
-                       shouldGetChainCode: boolean) => Promise<LedgerGetAddressResult>;
+    getAddress_async: (
+        derivationPath: string,
+        askForDeviceConfirmation: boolean,
+        shouldGetChainCode: boolean,
+    ) => Promise<LedgerGetAddressResult>;
     signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<LedgerSignResult>;
     signTransaction_async: (derivationPath: string, txHex: string) => Promise<LedgerSignResult>;
     comm: LedgerCommunication;
@@ -636,19 +639,19 @@ export interface SectionsMap {
 }
 
 export interface DocsInfoConfig {
-  displayName: string;
-  packageUrl: string;
-  websitePath: string;
-  docsJsonRoot: string;
-  menu: DocsMenu;
-  sections: SectionsMap;
-  sectionNameToMarkdown: {[sectionName: string]: string};
-  visibleConstructors: string[];
-  convertToDocAgnosticFormatFn: (docObj: DoxityDocObj|TypeDocNode, docsInfo?: any) => DocAgnosticFormat;
-  subPackageName?: string;
-  publicTypes?: string[];
-  sectionNameToModulePath?: {[sectionName: string]: string[]};
-  menuSubsectionToVersionWhenIntroduced?: {[sectionName: string]: string};
+    displayName: string;
+    packageUrl: string;
+    websitePath: string;
+    docsJsonRoot: string;
+    menu: DocsMenu;
+    sections: SectionsMap;
+    sectionNameToMarkdown: { [sectionName: string]: string };
+    visibleConstructors: string[];
+    convertToDocAgnosticFormatFn: (docObj: DoxityDocObj | TypeDocNode, docsInfo?: any) => DocAgnosticFormat;
+    subPackageName?: string;
+    publicTypes?: string[];
+    sectionNameToModulePath?: { [sectionName: string]: string[] };
+    menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };
 }
 
 export interface TimestampMsRange {
