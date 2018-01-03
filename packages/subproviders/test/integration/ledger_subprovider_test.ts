@@ -46,7 +46,6 @@ describe('LedgerSubprovider', () => {
                 chainId: 3,
             };
             const txHex = await ledgerSubprovider.signTransactionAsync(tx);
-            // tslint:disable-next-line:max-line-length
             expect(txHex).to.be.equal(
                 '0xf85f8080822710940000000000000000000000000000000000000000808077a088a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98ba0019f4a4b9a107d1e6752bf7f701e275f28c13791d6e76af895b07373462cefaa',
             );

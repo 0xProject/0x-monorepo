@@ -174,7 +174,6 @@ describe('ZeroEx library', () => {
                 ...order,
                 taker: (null as any) as string,
             };
-            // tslint:disable-next-line:max-line-length
             const expectedErrorMessage =
                 'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
             expect(() => ZeroEx.getOrderHashHex(orderWithInvalidtakerFormat)).to.throw(expectedErrorMessage);
@@ -204,7 +203,6 @@ describe('ZeroEx library', () => {
         });
         it('should return the correct ECSignature for signatureHex concatenated as R + S + V', async () => {
             const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
-            // tslint:disable-next-line: max-line-length
             const signature =
                 '0x22109d11d79cb8bf96ed88625e1cd9558800c4073332a9a02857499883ee5ce3050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb021b';
             const expectedECSignature = {
@@ -222,7 +220,6 @@ describe('ZeroEx library', () => {
         });
         it('should return the correct ECSignature for signatureHex concatenated as V + R + S', async () => {
             const orderHash = '0xc793e33ffded933b76f2f48d9aa3339fc090399d5e7f5dec8d3660f5480793f7';
-            // tslint:disable-next-line: max-line-length
             const signature =
                 '0x1bc80bedc6756722672753413efdd749b5adbd4fd552595f59c13427407ee9aee02dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960';
             const expectedECSignature = {

@@ -10,7 +10,6 @@ import { HttpClient } from '../src/index';
 import { feesResponse } from './fixtures/standard_relayer_api/fees';
 import * as feesResponseJSON from './fixtures/standard_relayer_api/fees.json';
 import { orderResponse } from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
-// tslint:disable-next-line:max-line-length
 import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f.json';
 import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
@@ -92,7 +91,6 @@ describe('HttpClient', () => {
             baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
             quoteTokenAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
         };
-        // tslint:disable-next-line:max-line-length
         const url = `${relayUrl}/v0/orderbook?baseTokenAddress=${request.baseTokenAddress}&quoteTokenAddress=${
             request.quoteTokenAddress
         }`;

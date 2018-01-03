@@ -4,7 +4,6 @@ import 'mocha';
 
 import { orderbookChannelMessageParsers } from '../src/utils/orderbook_channel_message_parsers';
 
-// tslint:disable-next-line:max-line-length
 import { orderResponse } from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
 import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import {
@@ -59,7 +58,6 @@ describe('orderbookChannelMessageParsers', () => {
         });
         it('throws when snapshot message has malformed payload', () => {
             const badCall = () => orderbookChannelMessageParsers.parser(malformedSnapshotOrderbookChannelMessage);
-            // tslint:disable-next-line:max-line-length
             const errMsg =
                 'Validation errors: instance.payload requires property "bids", instance.payload requires property "asks"';
             expect(badCall).throws(errMsg);

@@ -22,7 +22,6 @@ describe('LedgerSubprovider', () => {
             // tslint:disable:no-object-literal-type-assertion
             const ledgerEthClient = {
                 getAddress_async: async () => {
-                    // tslint:disable-next-line:max-line-length
                     const publicKey =
                         '04f428290f4c5ed6a198f71b8205f488141dbb3f0840c923bbfa798ecbee6370986c03b5575d94d506772fb48a6a44e345e4ebd4f028a6f609c44b655d6d3e71a1';
                     const chainCode = 'ac055a5537c0c7e9e02d14a197cad6b857836da2a12043b46912a37d959b5ae8';
@@ -71,7 +70,6 @@ describe('LedgerSubprovider', () => {
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
                 const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
-                // tslint:disable-next-line:max-line-length
                 expect(ecSignatureHex).to.be.equal(
                     '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
                 );
@@ -126,7 +124,6 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    // tslint:disable-next-line:max-line-length
                     expect(response.result).to.be.equal(
                         '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
                     );
@@ -144,8 +141,9 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    // tslint:disable-next-line:max-line-length
-                    expect(response.result).to.be.equal('0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001');
+                    expect(response.result).to.be.equal(
+                        '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
+                    );
                     done();
                 });
                 provider.sendAsync(payload, callback);

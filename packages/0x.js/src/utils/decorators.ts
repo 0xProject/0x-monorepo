@@ -18,7 +18,6 @@ const contractCallErrorTransformer = (error: Error) => {
 
 const schemaErrorTransformer = (error: Error) => {
     if (_.includes(error.message, constants.INVALID_TAKER_FORMAT)) {
-        // tslint:disable-next-line:max-line-length
         const errMsg =
             'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
         return new Error(errMsg);

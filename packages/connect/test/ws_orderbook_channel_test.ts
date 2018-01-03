@@ -39,7 +39,6 @@ describe('WebSocketOrderbookChannel', () => {
                 {},
                 emptyOrderbookChannelHandler,
             );
-            // tslint:disable-next-line:max-line-length
             expect(badSubscribeCall).throws(
                 'Expected subscriptionOpts to conform to schema /RelayerApiOrderbookChannelSubscribePayload\nEncountered: {}\nValidation errors: instance requires property "baseTokenAddress", instance requires property "quoteTokenAddress"',
             );
