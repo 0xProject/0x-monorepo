@@ -1,8 +1,7 @@
 declare module 'web3' {
-
     import * as BigNumber from 'bignumber.js';
 
-    type MixedData = string|number|object|any[]|BigNumber.BigNumber;
+    type MixedData = string | number | object | any[] | BigNumber.BigNumber;
 
     class Web3 {
         public static providers: typeof providers;
@@ -22,12 +21,12 @@ declare module 'web3' {
         public toAscii(hex: string): string;
         public fromAscii(ascii: string, padding?: number): string;
         public toDecimal(hex: string): number;
-        public fromDecimal(value: number|string): string;
-        public fromWei(value: number|string, unit: Web3.Unit): string;
+        public fromDecimal(value: number | string): string;
+        public fromWei(value: number | string, unit: Web3.Unit): string;
         public fromWei(value: BigNumber.BigNumber, unit: Web3.Unit): BigNumber.BigNumber;
-        public toWei(amount: number|string, unit: Web3.Unit): string;
+        public toWei(amount: number | string, unit: Web3.Unit): string;
         public toWei(amount: BigNumber.BigNumber, unit: Web3.Unit): BigNumber.BigNumber;
-        public toBigNumber(value: number|string): BigNumber.BigNumber;
+        public toBigNumber(value: number | string): BigNumber.BigNumber;
         public isAddress(address: string): boolean;
         public isChecksumAddress(address: string): boolean;
         public sha3(value: string, options?: Web3.Sha3Options): string;
@@ -46,9 +45,9 @@ declare module 'web3' {
     namespace Web3 {
         type ContractAbi = AbiDefinition[];
 
-        type AbiDefinition = FunctionAbi|EventAbi;
+        type AbiDefinition = FunctionAbi | EventAbi;
 
-        type FunctionAbi = MethodAbi|ConstructorAbi|FallbackAbi;
+        type FunctionAbi = MethodAbi | ConstructorAbi | FallbackAbi;
 
         enum AbiType {
             Function = 'function',
@@ -112,13 +111,13 @@ declare module 'web3' {
         }
 
         interface FilterObject {
-            fromBlock?: number|string;
-            toBlock?: number|string;
+            fromBlock?: number | string;
+            toBlock?: number | string;
             address?: string;
             topics?: LogTopic[];
         }
 
-        type LogTopic = null|string|string[];
+        type LogTopic = null | string | string[];
 
         interface DecodedLogEntry<A> extends LogEntry {
             event: string;
@@ -174,7 +173,7 @@ declare module 'web3' {
             defaultBlock: Web3.BlockParam;
             syncing: Web3.SyncingResult;
             compile: {
-                solidity(sourceString: string, cb?: (err: Error, result: any) => void): object,
+                solidity(sourceString: string, cb?: (err: Error, result: any) => void): object;
             };
             getMining(cd: (err: Error, mining: boolean) => void): void;
             getHashrate(cd: (err: Error, hashrate: number) => void): void;
@@ -184,32 +183,53 @@ declare module 'web3' {
             getSyncing(cd: (err: Error, syncing: Web3.SyncingResult) => void): void;
             isSyncing(cb: (err: Error, isSyncing: boolean, syncingState: Web3.SyncingState) => void): Web3.IsSyncing;
 
-            getBlock(hashStringOrBlockNumber: string|Web3.BlockParam): Web3.BlockWithoutTransactionData;
-            getBlock(hashStringOrBlockNumber: string|Web3.BlockParam,
-                     callback: (err: Error, blockObj: Web3.BlockWithoutTransactionData) => void): void;
-            getBlock(hashStringOrBlockNumber: string|Web3.BlockParam,
-                     returnTransactionObjects: true): Web3.BlockWithTransactionData;
-            getBlock(hashStringOrBlockNumber: string|Web3.BlockParam, returnTransactionObjects: true,
-                     callback: (err: Error, blockObj: Web3.BlockWithTransactionData) => void): void;
+            getBlock(hashStringOrBlockNumber: string | Web3.BlockParam): Web3.BlockWithoutTransactionData;
+            getBlock(
+                hashStringOrBlockNumber: string | Web3.BlockParam,
+                callback: (err: Error, blockObj: Web3.BlockWithoutTransactionData) => void,
+            ): void;
+            getBlock(
+                hashStringOrBlockNumber: string | Web3.BlockParam,
+                returnTransactionObjects: true,
+            ): Web3.BlockWithTransactionData;
+            getBlock(
+                hashStringOrBlockNumber: string | Web3.BlockParam,
+                returnTransactionObjects: true,
+                callback: (err: Error, blockObj: Web3.BlockWithTransactionData) => void,
+            ): void;
 
-            getBlockTransactionCount(hashStringOrBlockNumber: string|Web3.BlockParam): number;
-            getBlockTransactionCount(hashStringOrBlockNumber: string|Web3.BlockParam,
-                                     callback: (err: Error, blockTransactionCount: number) => void): void;
+            getBlockTransactionCount(hashStringOrBlockNumber: string | Web3.BlockParam): number;
+            getBlockTransactionCount(
+                hashStringOrBlockNumber: string | Web3.BlockParam,
+                callback: (err: Error, blockTransactionCount: number) => void,
+            ): void;
 
             // TODO returnTransactionObjects
-            getUncle(hashStringOrBlockNumber: string|Web3.BlockParam,
-                     uncleNumber: number): Web3.BlockWithoutTransactionData;
-            getUncle(hashStringOrBlockNumber: string|Web3.BlockParam, uncleNumber: number,
-                     callback: (err: Error, uncle: Web3.BlockWithoutTransactionData) => void): void;
+            getUncle(
+                hashStringOrBlockNumber: string | Web3.BlockParam,
+                uncleNumber: number,
+            ): Web3.BlockWithoutTransactionData;
+            getUncle(
+                hashStringOrBlockNumber: string | Web3.BlockParam,
+                uncleNumber: number,
+                callback: (err: Error, uncle: Web3.BlockWithoutTransactionData) => void,
+            ): void;
 
             getTransaction(transactionHash: string): Web3.Transaction;
-            getTransaction(transactionHash: string,
-                           callback: (err: Error, transaction: Web3.Transaction) => void): void;
+            getTransaction(
+                transactionHash: string,
+                callback: (err: Error, transaction: Web3.Transaction) => void,
+            ): void;
 
-            getTransactionFromBlock(hashStringOrBlockNumber: string|Web3.BlockParam,
-                                    indexNumber: number): Web3.Transaction;
-            getTransactionFromBlock(hashStringOrBlockNumber: string|Web3.BlockParam, indexNumber: number,
-                                    callback: (err: Error, transaction: Web3.Transaction) => void): void;
+            getTransactionFromBlock(
+                hashStringOrBlockNumber: string | Web3.BlockParam,
+                indexNumber: number,
+            ): Web3.Transaction;
+            getTransactionFromBlock(
+                hashStringOrBlockNumber: string | Web3.BlockParam,
+                indexNumber: number,
+                callback: (err: Error, transaction: Web3.Transaction) => void,
+            ): void;
 
             contract(abi: Web3.AbiDefinition[]): Web3.Contract<any>;
 
@@ -225,7 +245,7 @@ declare module 'web3' {
             getCode(addressHexString: string): string;
             getCode(addressHexString: string, callback: (err: Error, code: string) => void): void;
 
-            filter(value: string|Web3.FilterObject): Web3.FilterResult;
+            filter(value: string | Web3.FilterObject): Web3.FilterResult;
 
             sendTransaction(txData: Web3.TxData): string;
             sendTransaction(txData: Web3.TxData, callback: (err: Error, value: string) => void): void;
@@ -237,8 +257,10 @@ declare module 'web3' {
             sign(address: string, data: string, callback: (err: Error, signature: string) => void): void;
 
             getTransactionReceipt(txHash: string): Web3.TransactionReceipt;
-            getTransactionReceipt(txHash: string,
-                                  callback: (err: Error, receipt: Web3.TransactionReceipt) => void): void;
+            getTransactionReceipt(
+                txHash: string,
+                callback: (err: Error, receipt: Web3.TransactionReceipt) => void,
+            ): void;
 
             // TODO block param
             call(callData: Web3.CallData): string;
@@ -280,17 +302,31 @@ declare module 'web3' {
             getPeerCount(cd: (err: Error, peerCount: number) => void): void;
         }
 
-        type BlockParam = number|'earliest'|'latest'|'pending';
+        type BlockParam = number | 'earliest' | 'latest' | 'pending';
 
-        type Unit = 'kwei'|'ada'|'mwei'|'babbage'|'gwei'|'shannon'|'szabo'|'finney'|
-                    'ether'|'kether'|'grand'|'einstein'|'mether'|'gether'|'tether';
+        type Unit =
+            | 'kwei'
+            | 'ada'
+            | 'mwei'
+            | 'babbage'
+            | 'gwei'
+            | 'shannon'
+            | 'szabo'
+            | 'finney'
+            | 'ether'
+            | 'kether'
+            | 'grand'
+            | 'einstein'
+            | 'mether'
+            | 'gether'
+            | 'tether';
 
         interface SyncingState {
             startingBlock: number;
             currentBlock: number;
             highestBlock: number;
         }
-        type SyncingResult = false|SyncingState;
+        type SyncingResult = false | SyncingState;
 
         interface IsSyncing {
             addCallback(cb: (err: Error, isSyncing: boolean, syncingState: SyncingState) => void): void;
@@ -298,12 +334,12 @@ declare module 'web3' {
         }
 
         interface AbstractBlock {
-            number: number|null;
-            hash: string|null;
+            number: number | null;
+            hash: string | null;
             parentHash: string;
-            nonce: string|null;
+            nonce: string | null;
             sha3Uncles: string;
-            logsBloom: string|null;
+            logsBloom: string | null;
             transactionsRoot: string;
             stateRoot: string;
             miner: string;
@@ -326,11 +362,11 @@ declare module 'web3' {
         interface Transaction {
             hash: string;
             nonce: number;
-            blockHash: string|null;
-            blockNumber: number|null;
-            transactionIndex: number|null;
+            blockHash: string | null;
+            blockNumber: number | null;
+            transactionIndex: number | null;
             from: string;
-            to: string|null;
+            to: string | null;
             value: BigNumber.BigNumber;
             gasPrice: BigNumber.BigNumber;
             gas: number;
@@ -339,9 +375,9 @@ declare module 'web3' {
 
         interface CallTxDataBase {
             to?: string;
-            value?: number|string|BigNumber.BigNumber;
-            gas?: number|string|BigNumber.BigNumber;
-            gasPrice?: number|string|BigNumber.BigNumber;
+            value?: number | string | BigNumber.BigNumber;
+            gas?: number | string | BigNumber.BigNumber;
+            gasPrice?: number | string | BigNumber.BigNumber;
             data?: string;
             nonce?: number;
         }
@@ -361,19 +397,19 @@ declare module 'web3' {
             transactionIndex: number;
             from: string;
             to: string;
-            status: null|string|0|1;
+            status: null | string | 0 | 1;
             cumulativeGasUsed: number;
             gasUsed: number;
-            contractAddress: string|null;
+            contractAddress: string | null;
             logs: LogEntry[];
         }
 
         interface LogEntry {
-            logIndex: number|null;
-            transactionIndex: number|null;
+            logIndex: number | null;
+            transactionIndex: number | null;
             transactionHash: string;
-            blockHash: string|null;
-            blockNumber: number|null;
+            blockHash: string | null;
+            blockNumber: number | null;
             address: string;
             data: string;
             topics: string[];

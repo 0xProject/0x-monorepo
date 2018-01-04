@@ -6,6 +6,10 @@
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@types/accounting/-/accounting-0.4.1.tgz#865d9f5694fd7c438fba34eb4bc82eec6f34cdd5"
 
+"@types/bignumber.js@^4.0.2":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@types/bignumber.js/-/bignumber.js-4.0.3.tgz#e8ce5f28c3025a01c6af7fc6d944494903a9e348"
+
 "@types/bintrees@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/bintrees/-/bintrees-1.0.2.tgz#0dfdce4eeebdf90427bd35b0e79dc248b3d157a6"
@@ -8951,7 +8955,7 @@ tslint-react@^3.0.0, tslint-react@^3.2.0:
   dependencies:
     tsutils "^2.8.0"
 
-tslint@5.8.0:
+tslint@5.8.0, tslint@^5.5.0:
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.8.0.tgz#1f49ad5b2e77c76c3af4ddcae552ae4e3612eb13"
   dependencies:
@@ -9063,6 +9067,10 @@ types-ethereumjs-util@0xproject/types-ethereumjs-util:
 typescript@2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
+
+typescript@^2.4.2:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
 
 typescript@~2.6.1:
   version "2.6.1"
@@ -9447,12 +9455,6 @@ web3-provider-engine@^8.4.0:
 web3-typescript-typings@^0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.7.2.tgz#5312bb786936a9c91381eee7af3d02ac21cf13b3"
-  dependencies:
-    bignumber.js "^4.0.2"
-
-web3-typescript-typings@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.9.0.tgz#c658db3c84427d9c05a93613e35e6d8147c931c4"
   dependencies:
     bignumber.js "^4.0.2"
 
