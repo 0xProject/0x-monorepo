@@ -1,6 +1,6 @@
 import { schemas } from '@0xproject/json-schemas';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 

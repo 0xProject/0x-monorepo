@@ -10,7 +10,7 @@ export const utils = {
         if (solType.match(trailingArrayRegex)) {
             const arrayItemSolType = solType.replace(trailingArrayRegex, '');
             const arrayItemTsType = utils.solTypeToTsType(paramKind, arrayItemSolType);
-            const arrayTsType = `(${arrayItemTsType})[]`;
+            const arrayTsType = utils.isUnionType(arrayItemTsType) ? `Array<${arrayItemTsType}>` : `${arrayItemTsType}[]`;
             return arrayTsType;
         } else {
             const solTypeRegexToTsType = [
@@ -36,6 +36,9 @@ export const utils = {
             }
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
+    },
+    isUnionType(tsType: string): boolean {
+        return tsType === 'number|BigNumber';
     },
     log(...args: any[]): void {
         console.log(...args); // tslint:disable-line:no-console
