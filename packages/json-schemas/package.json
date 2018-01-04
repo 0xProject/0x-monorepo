@@ -32,7 +32,6 @@
     "@types/lodash.foreach": "^4.5.3",
     "@types/lodash.values": "^4.3.3",
     "@types/mocha": "^2.2.42",
-    "bignumber.js": "~4.1.0",
     "chai": "^4.0.1",
     "chai-typescript-typings": "^0.0.1",
     "dirty-chai": "^2.0.1",

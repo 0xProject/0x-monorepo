@@ -1,6 +1,6 @@
 import { ZeroEx, ZeroExError } from '0x.js';
 import { promisify } from '@0xproject/utils';
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import Web3 = require('web3');
 

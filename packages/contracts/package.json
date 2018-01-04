@@ -59,7 +59,6 @@
     "@0xproject/json-schemas": "^0.7.1",
     "@0xproject/utils": "^0.1.2",
     "@0xproject/web3-wrapper": "^0.1.2",
-    "bignumber.js": "~4.1.0",
     "bluebird": "^3.5.0",
     "bn.js": "^4.11.8",
     "ethereumjs-abi": "^0.6.4",

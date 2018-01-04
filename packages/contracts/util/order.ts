@@ -1,5 +1,5 @@
 import { promisify } from '@0xproject/utils';
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import Web3 = require('web3');

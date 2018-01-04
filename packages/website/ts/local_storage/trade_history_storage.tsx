@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import { localStorage } from 'ts/local_storage/local_storage';

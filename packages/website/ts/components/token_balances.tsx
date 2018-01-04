@@ -1,5 +1,5 @@
 import { ZeroEx } from '0x.js';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import DharmaLoanFrame from 'dharma-loan-frame';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';

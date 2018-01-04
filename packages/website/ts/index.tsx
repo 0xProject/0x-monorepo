@@ -1,7 +1,4 @@
 // Polyfills
-import 'whatwg-fetch';
-
-import { bigNumberConfigs } from '@0xproject/utils';
 import { MuiThemeProvider } from 'material-ui/styles';
 import * as React from 'react';
 import { render } from 'react-dom';
@@ -20,9 +17,8 @@ import { Wiki } from 'ts/pages/wiki/wiki';
 import { reducer, State } from 'ts/redux/reducer';
 import { WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
+import 'whatwg-fetch';
 injectTapEventPlugin();
-
-bigNumberConfigs.configure();
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();

@@ -1,6 +1,6 @@
 import { Schema, SchemaValidator } from '@0xproject/json-schemas';
 import { addressUtils } from '@0xproject/utils';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
 

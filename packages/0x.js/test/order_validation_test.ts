@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';

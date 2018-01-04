@@ -1,7 +1,6 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
-import { bigNumberConfigs, intervalUtils } from '@0xproject/utils';
+import { BigNumber, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -28,9 +27,6 @@ import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
 import { signatureUtils } from './utils/signature_utils';
 import { utils } from './utils/utils';
-
-// Customize our BigNumber instances
-bigNumberConfigs.configure();
 
 /**
  * The ZeroEx class is the single entry-point into the 0x.js library. It contains all of the library's functionality

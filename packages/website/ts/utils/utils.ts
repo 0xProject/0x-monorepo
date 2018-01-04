@@ -1,5 +1,5 @@
 import { ExchangeContractErrs, ZeroExError } from '0x.js';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import isMobile = require('is-mobile');
 import * as _ from 'lodash';

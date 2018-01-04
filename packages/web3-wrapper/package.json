@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@0xproject/utils": "^0.1.2",
-    "bignumber.js": "~4.1.0",
     "lodash": "^4.17.4",
     "web3": "^0.20.0"
   }

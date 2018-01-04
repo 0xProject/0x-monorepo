@@ -29,7 +29,7 @@
     "typescript": "~2.6.1"
   },
   "dependencies": {
-    "bignumber.js": "~4.1.0",
+    "@0xproject/utils": "^0.1.2",
     "ethereumjs-util": "^5.1.2",
     "lodash": "^4.17.4",
     "request-promise-native": "^1.0.5"

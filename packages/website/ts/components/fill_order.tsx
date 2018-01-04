@@ -1,6 +1,6 @@
 import { Order as ZeroExOrder, ZeroEx } from '0x.js';
 import * as accounting from 'accounting';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';

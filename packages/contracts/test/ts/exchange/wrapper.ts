@@ -1,5 +1,5 @@
 import { ZeroEx } from '0x.js';
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 

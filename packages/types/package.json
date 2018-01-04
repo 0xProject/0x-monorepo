@@ -20,13 +20,12 @@
   "homepage": "https://github.com/0xProject/0x.js/packages/types/README.md",
   "devDependencies": {
     "@0xproject/tslint-config": "^0.4.0",
-    "bignumber.js": "^5.0.0",
     "shx": "^0.2.2",
     "tslint": "5.8.0",
     "typescript": "~2.6.1"
   },
   "dependencies": {
-    "bignumber.js": "~4.1.0",
+    "@0xproject/utils": "^0.1.2",
     "web3": "^0.20.0"
   }
 }
