@@ -21,7 +21,5 @@
         "./migrations/**/*",
         "./deploy/**/*"
     ],
-    "exclude": [
-        "./deploy/solc/solc_bin"
-    ]
+    "exclude": ["./deploy/solc/solc_bin"]
 }

@@ -1,5 +1,4 @@
-Contracts
---------
+## Contracts
 
 Smart contracts that implement the 0x protocol.
 
@@ -22,11 +21,13 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 ### Install Dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
 
 Then install dependencies
+
 ```bash
 yarn install
 ```
@@ -54,12 +55,14 @@ yarn lint
 Before running the tests, you will need to spin up a [TestRPC](https://www.npmjs.com/package/ethereumjs-testrpc) instance.
 
 In a separate terminal, start TestRPC (a convenience command is provided as part of the [0x.js monorepo](https://github.com/0xProject/0x.js))
+
 ```bash
 cd ../..
 yarn testrpc
 ```
 
 Then in your main terminal run
+
 ```bash
 yarn test
 ```

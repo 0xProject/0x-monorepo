@@ -1,5 +1,4 @@
-@0xproject/assert
-------
+## @0xproject/assert
 
 Standard type and schema assertions to be used across all 0x projects and packages
 
@@ -12,7 +11,7 @@ yarn add @0xproject/assert
 ## Usage
 
 ```typescript
-import {assert} from '@0xproject/assert';
+import { assert } from '@0xproject/assert';
 
 assert.isValidBaseUnitAmount('baseUnitAmount', baseUnitAmount);
 ```
@@ -26,11 +25,13 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 ### Install Dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
 
 Then install dependencies
+
 ```bash
 yarn install
 ```

@@ -1,6 +1,6 @@
 0x.js ships as both a [UMD](https://github.com/umdjs/umd) module and a [CommonJS](https://en.wikipedia.org/wiki/CommonJS) package.
 
-#### CommonJS *(recommended)*:
+#### CommonJS _(recommended)_:
 
 **Install**
 
@@ -11,7 +11,7 @@ npm install 0x.js --save
 **Import**
 
 ```javascript
-import {ZeroEx} from '0x.js';
+import { ZeroEx } from '0x.js';
 ```
 
 #### UMD:

@@ -1,5 +1,4 @@
-@0xproject/types
-------
+## @0xproject/types
 
 Typescript types shared across 0x projects and packages
 
@@ -12,13 +11,8 @@ yarn add -D @0xproject/types
 ## Usage
 
 ```javascript
-import {
-    TransactionReceipt, 
-    TxData,
-    TxDataPayable,
-} from '@0xproject/types';
+import { TransactionReceipt, TxData, TxDataPayable } from '@0xproject/types';
 ```
-
 
 ## Contributing
 
@@ -29,11 +23,13 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 ### Install Dependencies
 
 If you don't have yarn workspaces e`nabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
 
 Then install dependencies
+
 ```bash
 yarn install
 ```
