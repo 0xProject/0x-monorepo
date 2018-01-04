@@ -10,7 +10,9 @@ export const utils = {
         if (solType.match(trailingArrayRegex)) {
             const arrayItemSolType = solType.replace(trailingArrayRegex, '');
             const arrayItemTsType = utils.solTypeToTsType(paramKind, arrayItemSolType);
-            const arrayTsType = utils.isUnionType(arrayItemTsType) ? `Array<${arrayItemTsType}>` : `${arrayItemTsType}[]`;
+            const arrayTsType = utils.isUnionType(arrayItemTsType)
+                ? `Array<${arrayItemTsType}>`
+                : `${arrayItemTsType}[]`;
             return arrayTsType;
         } else {
             const solTypeRegexToTsType = [
