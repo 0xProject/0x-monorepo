@@ -1,18 +1,16 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
         "outDir": "./transpiled/",
-        "sourceMap": true,
-        "lib": ["es2015", "dom"],
-        "noImplicitAny": true,
-        "module": "commonjs",
-        "target": "es5",
         "jsx": "react",
         "baseUrl": "./",
         "allowJs": true,
+        "strictNullChecks": true,
+        "declaration": false,
         "paths": {
             "*": ["node_modules/@types/*", "*"]
         }
     },
-    "include": ["./ts/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
+    "include": ["./ts/**/*"]
 }

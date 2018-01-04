@@ -24,7 +24,7 @@ export class Contract implements Web3.ContractInstance {
         this._validator = new SchemaValidator();
     }
     private _populateFunctions(): void {
-        const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Function);
+        const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Function) as Web3.FunctionAbi[];
         _.forEach(functionsAbi, (functionAbi: Web3.MethodAbi) => {
             if (functionAbi.constant) {
                 const cbStyleCallFunction = this._contract[functionAbi.name].call;
@@ -42,7 +42,7 @@ export class Contract implements Web3.ContractInstance {
         });
     }
     private _populateEvents(): void {
-        const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Event);
+        const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Event) as Web3.EventAbi[];
         _.forEach(eventsAbi, (eventAbi: Web3.EventAbi) => {
             this[eventAbi.name] = this._contract[eventAbi.name];
         });

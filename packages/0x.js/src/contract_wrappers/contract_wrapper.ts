@@ -177,6 +177,9 @@ export class ContractWrapper {
             this._onLogStateChanged.bind(this, isRemoved),
         );
     }
+    private _setNetworkId(networkId: number): void {
+        this._networkId = networkId;
+    }
     private _stopBlockAndLogStream(): void {
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
             throw new Error(ZeroExError.SubscriptionNotFound);

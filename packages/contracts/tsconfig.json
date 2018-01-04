@@ -1,16 +1,15 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
-        "outDir": "./lib/",
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "module": "commonjs",
-        "target": "es6",
+        "outDir": "lib",
         "baseUrl": ".",
+        "declaration": false,
+        "strictNullChecks": false,
+        "strictFunctionTypes": false,
         "allowJs": true
     },
     "include": [
         "../../node_modules/types-ethereumjs-util/index.d.ts",
-        "../../node_modules/web3-typescript-typings/index.d.ts",
         "../../node_modules/chai-typescript-typings/index.d.ts",
         "../../node_modules/chai-as-promised-typescript-typings/index.d.ts",
         "../../node_modules/types-ethereumjs-util/index.d.ts",

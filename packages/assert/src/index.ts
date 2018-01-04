@@ -18,9 +18,6 @@ export const assert = {
             `${variableName} should be in baseUnits (no decimals), found value: ${value.toNumber()}`,
         );
     },
-    isUndefined(value: any, variableName?: string): void {
-        this.assert(_.isUndefined(value), this.typeAssertionMessage(variableName, 'undefined', value));
-    },
     isString(variableName: string, value: string): void {
         this.assert(_.isString(value), this.typeAssertionMessage(variableName, 'string', value));
     },
@@ -77,11 +74,11 @@ Validation errors: ${validationResult.errors.join(', ')}`;
         this.assert(!hasValidationErrors, msg);
     },
     isHttpUrl(variableName: string, value: any): void {
-        const isValidUrl = validUrl.isWebUri(value);
+        const isValidUrl = !_.isUndefined(validUrl.isWebUri(value));
         this.assert(isValidUrl, this.typeAssertionMessage(variableName, 'http url', value));
     },
     isUri(variableName: string, value: any): void {
-        const isValidUri = validUrl.isUri(value);
+        const isValidUri = !_.isUndefined(validUrl.isUri(value));
         this.assert(isValidUri, this.typeAssertionMessage(variableName, 'uri', value));
     },
     assert(condition: boolean, message: string): void {

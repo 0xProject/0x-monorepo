@@ -1,13 +1,7 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
-        "lib": ["es2017", "dom"],
-        "outDir": "lib",
-        "sourceMap": true,
-        "declaration": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true
+        "outDir": "lib"
     },
     "include": ["./src/**/*"]
 }

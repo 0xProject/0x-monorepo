@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "lib": ["es2017", "dom"],
+        "sourceMap": true,
+        "declaration": true,
+        "experimentalDecorators": true,
+        "noImplicitReturns": true,
+        "pretty": true,
+        "strict": true,
+        "typeRoots": ["node_modules/@types", "node_modules/web3-typescript-typings"]
+    }
+}
