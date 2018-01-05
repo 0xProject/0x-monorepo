@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { DoneCallback, OrderState } from '../../src/types';
+import { DoneCallback } from '../../src/types';
 
 const expect = chai.expect;
 

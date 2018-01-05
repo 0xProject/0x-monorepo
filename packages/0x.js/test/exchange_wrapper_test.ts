@@ -33,13 +33,6 @@ const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 const NON_EXISTENT_ORDER_HASH = '0x79370342234e7acd6bbeac335bd3bb1d368383294b64b8160a00f4060e4d3777';
 
-function noError<T>(err: Error | null, value: T | undefined): value is T {
-    if (_.isNull(err)) {
-        throw err;
-    }
-    return _.isNull(err);
-}
-
 describe('ExchangeWrapper', () => {
     let web3: Web3;
     let zeroEx: ZeroEx;

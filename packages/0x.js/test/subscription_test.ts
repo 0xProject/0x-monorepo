@@ -1,6 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
-import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
@@ -15,7 +14,6 @@ import { assertNodeCallbackError } from './utils/report_callback_errors';
 import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
-const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('SubscriptionTest', () => {
