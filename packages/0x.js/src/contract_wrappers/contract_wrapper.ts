@@ -87,7 +87,7 @@ export class ContractWrapper {
         }
         const filterToken = filterUtils.generateUUID();
         this._filters[filterToken] = filter;
-        this._filterCallbacks[filterToken] = callback;
+        this._filterCallbacks[filterToken] = callback as EventCallback<ContractEventArgs>;
         return filterToken;
     }
     protected async _getLogsAsync<ArgsType extends ContractEventArgs>(

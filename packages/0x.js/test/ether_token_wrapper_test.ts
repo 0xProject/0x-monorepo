@@ -22,6 +22,7 @@ import { DoneCallback } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
 import { web3Factory } from './utils/web3_factory';
 
@@ -153,19 +154,19 @@ describe('EtherTokenWrapper', () => {
         // Source: https://github.com/mochajs/mocha/issues/2407
         it('Should receive the Transfer event when tokens are transfered', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
-                    expect(err).to.be.null();
-                    expect(logEvent).to.not.be.undefined();
-                    expect(logEvent.isRemoved).to.be.false();
-                    expect(logEvent.log.logIndex).to.be.equal(0);
-                    expect(logEvent.log.transactionIndex).to.be.equal(0);
-                    expect(logEvent.log.blockNumber).to.be.a('number');
-                    const args = logEvent.log.args;
-                    expect(args._from).to.be.equal(addressWithETH);
-                    expect(args._to).to.be.equal(addressWithoutFunds);
-                    expect(args._value).to.be.bignumber.equal(transferAmount);
-                    done();
-                };
+                const callback = reportNodeCallbackErrors(done)(
+                    (logEvent: DecodedLogEvent<TransferContractEventArgs>) => {
+                        expect(logEvent).to.not.be.undefined();
+                        expect(logEvent.isRemoved).to.be.false();
+                        expect(logEvent.log.logIndex).to.be.equal(0);
+                        expect(logEvent.log.transactionIndex).to.be.equal(0);
+                        expect(logEvent.log.blockNumber).to.be.a('number');
+                        const args = logEvent.log.args;
+                        expect(args._from).to.be.equal(addressWithETH);
+                        expect(args._to).to.be.equal(addressWithoutFunds);
+                        expect(args._value).to.be.bignumber.equal(transferAmount);
+                    },
+                );
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
                 zeroEx.etherToken.subscribe(etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callback);
                 await zeroEx.token.transferAsync(
@@ -178,16 +179,16 @@ describe('EtherTokenWrapper', () => {
         });
         it('Should receive the Approval event when allowance is being set', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                    expect(err).to.be.null();
-                    expect(logEvent).to.not.be.undefined();
-                    expect(logEvent.isRemoved).to.be.false();
-                    const args = logEvent.log.args;
-                    expect(args._owner).to.be.equal(addressWithETH);
-                    expect(args._spender).to.be.equal(addressWithoutFunds);
-                    expect(args._value).to.be.bignumber.equal(allowanceAmount);
-                    done();
-                };
+                const callback = reportNodeCallbackErrors(done)(
+                    (logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                        expect(logEvent).to.not.be.undefined();
+                        expect(logEvent.isRemoved).to.be.false();
+                        const args = logEvent.log.args;
+                        expect(args._owner).to.be.equal(addressWithETH);
+                        expect(args._spender).to.be.equal(addressWithoutFunds);
+                        expect(args._value).to.be.bignumber.equal(allowanceAmount);
+                    },
+                );
                 zeroEx.etherToken.subscribe(etherTokenAddress, EtherTokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(
                     etherTokenAddress,
@@ -199,30 +200,30 @@ describe('EtherTokenWrapper', () => {
         });
         it('Should receive the Deposit event when ether is being deposited', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: DecodedLogEvent<DepositContractEventArgs>) => {
-                    expect(err).to.be.null();
-                    expect(logEvent).to.not.be.undefined();
-                    expect(logEvent.isRemoved).to.be.false();
-                    const args = logEvent.log.args;
-                    expect(args._owner).to.be.equal(addressWithETH);
-                    expect(args._value).to.be.bignumber.equal(depositAmount);
-                    done();
-                };
+                const callback = reportNodeCallbackErrors(done)(
+                    (logEvent: DecodedLogEvent<DepositContractEventArgs>) => {
+                        expect(logEvent).to.not.be.undefined();
+                        expect(logEvent.isRemoved).to.be.false();
+                        const args = logEvent.log.args;
+                        expect(args._owner).to.be.equal(addressWithETH);
+                        expect(args._value).to.be.bignumber.equal(depositAmount);
+                    },
+                );
                 zeroEx.etherToken.subscribe(etherTokenAddress, EtherTokenEvents.Deposit, indexFilterValues, callback);
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, depositAmount, addressWithETH);
             })().catch(done);
         });
         it('Should receive the Withdrawal event when ether is being withdrawn', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: DecodedLogEvent<WithdrawalContractEventArgs>) => {
-                    expect(err).to.be.null();
-                    expect(logEvent).to.not.be.undefined();
-                    expect(logEvent.isRemoved).to.be.false();
-                    const args = logEvent.log.args;
-                    expect(args._owner).to.be.equal(addressWithETH);
-                    expect(args._value).to.be.bignumber.equal(depositAmount);
-                    done();
-                };
+                const callback = reportNodeCallbackErrors(done)(
+                    (logEvent: DecodedLogEvent<WithdrawalContractEventArgs>) => {
+                        expect(logEvent).to.not.be.undefined();
+                        expect(logEvent.isRemoved).to.be.false();
+                        const args = logEvent.log.args;
+                        expect(args._owner).to.be.equal(addressWithETH);
+                        expect(args._value).to.be.bignumber.equal(depositAmount);
+                    },
+                );
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, depositAmount, addressWithETH);
                 zeroEx.etherToken.subscribe(
                     etherTokenAddress,
@@ -235,18 +236,18 @@ describe('EtherTokenWrapper', () => {
         });
         it('should cancel outstanding subscriptions when ZeroEx.setProvider is called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                    done(new Error('Expected this subscription to have been cancelled'));
-                };
+                const callbackNeverToBeCalled = reportNodeCallbackErrors(done)(
+                    (logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                        done(new Error('Expected this subscription to have been cancelled'));
+                    },
+                );
                 zeroEx.etherToken.subscribe(
                     etherTokenAddress,
                     EtherTokenEvents.Transfer,
                     indexFilterValues,
                     callbackNeverToBeCalled,
                 );
-                const callbackToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                    done();
-                };
+                const callbackToBeCalled = reportNodeCallbackErrors(done)();
                 const newProvider = web3Factory.getRpcProvider();
                 zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
@@ -266,9 +267,11 @@ describe('EtherTokenWrapper', () => {
         });
         it('Should cancel subscription when unsubscribe called', (done: DoneCallback) => {
             (async () => {
-                const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                    done(new Error('Expected this subscription to have been cancelled'));
-                };
+                const callbackNeverToBeCalled = reportNodeCallbackErrors(done)(
+                    (logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
+                        done(new Error('Expected this subscription to have been cancelled'));
+                    },
+                );
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
                 const subscriptionToken = zeroEx.etherToken.subscribe(
                     etherTokenAddress,
