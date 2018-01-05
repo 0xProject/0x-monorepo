@@ -16,10 +16,10 @@ yarn add -D web3-typescript-typings
 
 ## Usage
 
-Add the following lines to compilerOptions section of your `tsconfig.json`
+Add the following line within an `include` section of your `tsconfig.json`
 
 ```json
-"typeRoots": ["node_modules/@types", "node_modules/web3-typescript-typings"]
+"./node_modules/web3-typescript-typings/index.d.ts"
 ```
 
 ## Contributing
