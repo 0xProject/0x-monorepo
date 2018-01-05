@@ -2,10 +2,10 @@
     "name": "web3-typescript-typings",
     "version": "0.9.0",
     "description": "Typescript type definitions for web3",
-    "main": "web3/index.d.ts",
-    "types": "web3/index.d.ts",
+    "main": "index.d.ts",
+    "types": "index.d.ts",
     "scripts": {
-        "lint": "tslint web3/index.d.ts"
+        "lint": "tslint index.d.ts"
     },
     "repository": {
         "type": "git",
@@ -22,7 +22,7 @@
         "@types/bignumber.js": "^4.0.2",
         "tslint": "^5.5.0",
         "tslint-config-0xproject": "^0.0.2",
-        "typescript": "^2.4.2"
+        "typescript": "~2.6.1"
     },
     "dependencies": {
         "bignumber.js": "~4.1.0"

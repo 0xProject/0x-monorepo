@@ -6,7 +6,7 @@
         "jsx": "react",
         "baseUrl": "./",
         "allowJs": true,
-        "strictNullChecks": true,
+        "strictNullChecks": false,
         "declaration": false,
         "paths": {
             "*": ["node_modules/@types/*", "*"]
