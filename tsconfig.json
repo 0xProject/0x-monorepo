@@ -8,7 +8,6 @@
         "experimentalDecorators": true,
         "noImplicitReturns": true,
         "pretty": true,
-        "strict": true,
-        "typeRoots": ["node_modules/@types", "node_modules/web3-typescript-typings"]
+        "strict": true
     }
 }
