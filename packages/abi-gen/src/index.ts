@@ -76,9 +76,9 @@ for (const abiFileName of abiFileNames) {
         process.exit(1);
     }
 
-    let constructor = ABI.find((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as Web3.ConstructorAbi;
-    if (!constructor) {
-        constructor = utils.getEmptyConstructor(); // The constructor exists, but it's implicit in JSON's ABI definition
+    let ctor = ABI.find((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as Web3.ConstructorAbi;
+    if (_.isUndefined(ctor)) {
+        ctor = utils.getEmptyConstructor(); // The constructor exists, but it's implicit in JSON's ABI definition
     }
 
     const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_METHOD) as Web3.MethodAbi[];
@@ -101,7 +101,7 @@ for (const abiFileName of abiFileNames) {
 
     const contextData = {
         contractName: namedContent.name,
-        constructor,
+        ctor,
         methods: methodsData,
         events: eventAbis,
     };
