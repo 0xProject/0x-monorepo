@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
+import * as Web3 from 'web3';
 
 import { ParamKind } from './types';
 
@@ -55,5 +56,13 @@ export const utils = {
         } catch (err) {
             throw new Error(`Failed to read ${filename}: ${err}`);
         }
+    },
+    getEmptyConstructor(): Web3.ConstructorAbi {
+        return {
+            type: 'constructor',
+            stateMutability: 'nonpayable',
+            payable: false,
+            inputs: [],
+        };
     },
 };
