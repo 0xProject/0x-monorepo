@@ -1,15 +1,10 @@
-import {assert} from '@0xproject/assert';
-import {schemas} from '@0xproject/json-schemas';
+import { assert } from '@0xproject/assert';
+import { schemas } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
-import {
-    FeesResponse,
-    OrderbookResponse,
-    SignedOrder,
-    TokenPairsItem,
-} from '../types';
+import { FeesResponse, OrderbookResponse, SignedOrder, TokenPairsItem } from '../types';
 
-import {typeConverters} from './type_converters';
+import { typeConverters } from './type_converters';
 
 export const relayerResponseJsonParsers = {
     parseTokenPairsJson(json: any): TokenPairsItem[] {

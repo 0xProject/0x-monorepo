@@ -48,11 +48,7 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const responseJson = await this._requestAsync(
-            '/token_pairs',
-            HttpRequestType.Get,
-            requestOpts,
-        );
+        const responseJson = await this._requestAsync('/token_pairs', HttpRequestType.Get, requestOpts);
         const tokenPairs = relayerResponseJsonParsers.parseTokenPairsJson(responseJson);
         return tokenPairs;
     }
@@ -68,11 +64,7 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const responseJson = await this._requestAsync(
-            `/orders`,
-            HttpRequestType.Get,
-            requestOpts,
-        );
+        const responseJson = await this._requestAsync(`/orders`, HttpRequestType.Get, requestOpts);
         const orders = relayerResponseJsonParsers.parseOrdersJson(responseJson);
         return orders;
     }
@@ -83,10 +75,7 @@ export class HttpClient implements Client {
      */
     public async getOrderAsync(orderHash: string): Promise<SignedOrder> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        const responseJson = await this._requestAsync(
-            `/order/${orderHash}`,
-            HttpRequestType.Get,
-        );
+        const responseJson = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get);
         const order = relayerResponseJsonParsers.parseOrderJson(responseJson);
         return order;
     }
@@ -100,11 +89,7 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const responseJson = await this._requestAsync(
-            '/orderbook',
-            HttpRequestType.Get,
-            requestOpts,
-        );
+        const responseJson = await this._requestAsync('/orderbook', HttpRequestType.Get, requestOpts);
         const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(responseJson);
         return orderbook;
     }
@@ -118,11 +103,7 @@ export class HttpClient implements Client {
         const requestOpts = {
             payload: request,
         };
-        const responseJson = await this._requestAsync(
-            '/fees',
-            HttpRequestType.Post,
-            requestOpts,
-        );
+        const responseJson = await this._requestAsync('/fees', HttpRequestType.Post, requestOpts);
         const fees = relayerResponseJsonParsers.parseFeesResponseJson(responseJson);
         return fees;
     }
@@ -135,13 +116,13 @@ export class HttpClient implements Client {
         const requestOpts = {
             payload: signedOrder,
         };
-        await this._requestAsync(
-            '/order',
-            HttpRequestType.Post,
-            requestOpts,
-        );
+        await this._requestAsync('/order', HttpRequestType.Post, requestOpts);
     }
-    private async _requestAsync(path: string, requestType: HttpRequestType, requestOptions?: HttpRequestOptions): Promise<any> {
+    private async _requestAsync(
+        path: string,
+        requestType: HttpRequestType,
+        requestOptions?: HttpRequestOptions,
+    ): Promise<any> {
         const params = _.get(requestOptions, 'params');
         const payload = _.get(requestOptions, 'payload');
         let query = '';

@@ -57,15 +57,14 @@ describe('orderbookChannelMessageParser', () => {
             expect(badCall).throws('Expected type to be of type string, encountered: 1');
         });
         it('throws when snapshot message has malformed payload', () => {
-            const badCall = () =>
-                orderbookChannelMessageParser.parse(malformedSnapshotOrderbookChannelMessage);
+            const badCall = () => orderbookChannelMessageParser.parse(malformedSnapshotOrderbookChannelMessage);
             // tslint:disable-next-line:max-line-length
-            const errMsg = 'Validation errors: instance.payload requires property "bids", instance.payload requires property "asks"';
+            const errMsg =
+                'Validation errors: instance.payload requires property "bids", instance.payload requires property "asks"';
             expect(badCall).throws(errMsg);
         });
         it('throws when update message has malformed payload', () => {
-            const badCall = () =>
-                orderbookChannelMessageParser.parse(malformedUpdateOrderbookChannelMessage);
+            const badCall = () => orderbookChannelMessageParser.parse(malformedUpdateOrderbookChannelMessage);
             expect(badCall).throws(/^Expected message to conform to schema/);
         });
         it('throws when input message is not valid JSON', () => {
