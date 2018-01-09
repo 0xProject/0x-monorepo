@@ -2,11 +2,11 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
-import {Link} from 'react-router-dom';
-import {RequiredLabel} from 'ts/components/ui/required_label';
-import {InputErrMsg, ValidatedBigNumberCallback, WebsitePaths} from 'ts/types';
-import {colors} from 'ts/utils/colors';
-import {utils} from 'ts/utils/utils';
+import { Link } from 'react-router-dom';
+import { RequiredLabel } from 'ts/components/ui/required_label';
+import { InputErrMsg, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { utils } from 'ts/utils/utils';
 
 interface BalanceBoundedInputProps {
     label?: string;
@@ -25,8 +25,7 @@ interface BalanceBoundedInputState {
     amountString: string;
 }
 
-export class BalanceBoundedInput extends
-    React.Component<BalanceBoundedInputProps, BalanceBoundedInputState> {
+export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProps, BalanceBoundedInputState> {
     public static defaultProps: Partial<BalanceBoundedInputProps> = {
         shouldShowIncompleteErrs: false,
         shouldHideVisitBalancesLink: false,
@@ -74,37 +73,40 @@ export class BalanceBoundedInput extends
         if (this.props.shouldShowIncompleteErrs && this.state.amountString === '') {
             errorText = 'This field is required';
         }
-        let label: React.ReactNode|string = '';
+        let label: React.ReactNode | string = '';
         if (!_.isUndefined(this.props.label)) {
-            label = <RequiredLabel label={this.props.label}/>;
+            label = <RequiredLabel label={this.props.label} />;
         }
         return (
             <TextField
                 fullWidth={true}
                 floatingLabelText={label}
                 floatingLabelFixed={true}
-                floatingLabelStyle={{color: colors.grey, width: 206}}
+                floatingLabelStyle={{ color: colors.grey, width: 206 }}
                 errorText={errorText}
                 value={this.state.amountString}
-                hintText={<span style={{textTransform: 'capitalize'}}>amount</span>}
+                hintText={<span style={{ textTransform: 'capitalize' }}>amount</span>}
                 onChange={this._onValueChange.bind(this)}
-                underlineStyle={{width: 'calc(100% + 50px)'}}
+                underlineStyle={{ width: 'calc(100% + 50px)' }}
             />
         );
     }
     private _onValueChange(e: any, amountString: string) {
         const errMsg = this._validate(amountString, this.props.balance);
-        this.setState({
-            amountString,
-            errMsg,
-        }, () => {
-            const isValid = _.isUndefined(errMsg);
-            if (utils.isNumeric(amountString)) {
-                this.props.onChange(isValid, new BigNumber(amountString));
-            } else {
-                this.props.onChange(isValid);
-            }
-        });
+        this.setState(
+            {
+                amountString,
+                errMsg,
+            },
+            () => {
+                const isValid = _.isUndefined(errMsg);
+                if (utils.isNumeric(amountString)) {
+                    this.props.onChange(isValid, new BigNumber(amountString));
+                } else {
+                    this.props.onChange(isValid);
+                }
+            },
+        );
     }
     private _validate(amountString: string, balance: BigNumber): InputErrMsg {
         if (!utils.isNumeric(amountString)) {
@@ -115,12 +117,7 @@ export class BalanceBoundedInput extends
             return 'Cannot be zero';
         }
         if (this.props.shouldCheckBalance && amount.gt(balance)) {
-            return (
-                <span>
-                    Insufficient balance.{' '}
-                    {this._renderIncreaseBalanceLink()}
-                </span>
-            );
+            return <span>Insufficient balance. {this._renderIncreaseBalanceLink()}</span>;
         }
         const errMsg = _.isUndefined(this.props.validate) ? undefined : this.props.validate(amount);
         return errMsg;
@@ -139,19 +136,13 @@ export class BalanceBoundedInput extends
         };
         if (_.isUndefined(this.props.onVisitBalancesPageClick)) {
             return (
-                <Link
-                    to={`${WebsitePaths.Portal}/balances`}
-                    style={linkStyle}
-                >
+                <Link to={`${WebsitePaths.Portal}/balances`} style={linkStyle}>
                     {increaseBalanceText}
                 </Link>
             );
         } else {
             return (
-                <div
-                    onClick={this.props.onVisitBalancesPageClick}
-                    style={linkStyle}
-                >
+                <div onClick={this.props.onVisitBalancesPageClick} style={linkStyle}>
                     {increaseBalanceText}
                 </div>
             );

@@ -1,11 +1,11 @@
-import {ZeroEx} from '0x.js';
+import { ZeroEx } from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
-import {configs} from './configs';
-import {errorReporter} from './error_reporter';
-import {RequestQueue} from './request_queue';
-import {utils} from './utils';
+import { configs } from './configs';
+import { errorReporter } from './error_reporter';
+import { RequestQueue } from './request_queue';
+import { utils } from './utils';
 
 // HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
 // because they are using the wrong XHR package.
@@ -31,7 +31,10 @@ export class ZRXRequestQueue extends RequestQueue {
         const baseUnitAmount = ZeroEx.toBaseUnitAmount(DISPENSE_AMOUNT_ZRX, 18);
         try {
             await this._zeroEx.token.transferAsync(
-                configs.ZRX_TOKEN_ADDRESS, configs.DISPENSER_ADDRESS, recipientAddress, baseUnitAmount,
+                configs.ZRX_TOKEN_ADDRESS,
+                configs.DISPENSER_ADDRESS,
+                recipientAddress,
+                baseUnitAmount,
             );
             utils.consoleLog(`Sent ${DISPENSE_AMOUNT_ZRX} ZRX to ${recipientAddress}`);
         } catch (err) {

@@ -4,7 +4,7 @@ import * as dirtyChai from 'dirty-chai';
 import forEach = require('lodash.foreach');
 import 'mocha';
 
-import {schemas, SchemaValidator} from '../src/index';
+import { schemas, SchemaValidator } from '../src/index';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
@@ -94,9 +94,9 @@ describe('Schema', () => {
         });
         it('should fail for invalid parameters', () => {
             const testCases = [
-                '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3',  // shorter
+                '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3', // shorter
                 '0xzzzz9190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254', // invalid characters
-                '40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254',   // no 0x
+                '40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254', // no 0x
             ];
             const shouldFail = true;
             validateAgainstSchema(testCases, ecSignatureParameterSchema, shouldFail);
@@ -122,11 +122,7 @@ describe('Schema', () => {
             const v = 27;
             const r = '0x61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33';
             const s = '0x40349190569279751135161d22529dc25add4f6069af05be04cacbda2ace2254';
-            const testCases = [
-                {},
-                {v},
-                {r, s, v: 31},
-            ];
+            const testCases = [{}, { v }, { r, s, v: 31 }];
             const shouldFail = true;
             validateAgainstSchema(testCases, ecSignatureSchema, shouldFail);
         });
@@ -152,37 +148,22 @@ describe('Schema', () => {
     });
     describe('#blockParamSchema', () => {
         it('should validate valid block param', () => {
-            const testCases = [
-                42,
-                'latest',
-                'pending',
-                'earliest',
-            ];
+            const testCases = [42, 'latest', 'pending', 'earliest'];
             validateAgainstSchema(testCases, blockParamSchema);
         });
         it('should fail for invalid block param', () => {
-            const testCases = [
-                {},
-                '42',
-                'pemding',
-            ];
+            const testCases = [{}, '42', 'pemding'];
             const shouldFail = true;
             validateAgainstSchema(testCases, blockParamSchema, shouldFail);
         });
     });
     describe('#blockRangeSchema', () => {
         it('should validate valid subscription opts', () => {
-            const testCases = [
-                {fromBlock: 42, toBlock: 'latest'},
-                {fromBlock: 42},
-                {},
-            ];
+            const testCases = [{ fromBlock: 42, toBlock: 'latest' }, { fromBlock: 42 }, {}];
             validateAgainstSchema(testCases, blockRangeSchema);
         });
         it('should fail for invalid subscription opts', () => {
-            const testCases = [
-                {fromBlock: '42'},
-            ];
+            const testCases = [{ fromBlock: '42' }];
             const shouldFail = true;
             validateAgainstSchema(testCases, blockRangeSchema, shouldFail);
         });
@@ -196,9 +177,7 @@ describe('Schema', () => {
             url: 'https://0xproject.com',
         };
         it('should validate valid token', () => {
-            const testCases = [
-                token,
-            ];
+            const testCases = [token];
             validateAgainstSchema(testCases, tokenSchema);
         });
         it('should fail for invalid token', () => {
@@ -235,9 +214,7 @@ describe('Schema', () => {
         };
         describe('#orderSchema', () => {
             it('should validate valid order', () => {
-                const testCases = [
-                    order,
-                ];
+                const testCases = [order];
                 validateAgainstSchema(testCases, orderSchema);
             });
             it('should fail for invalid order', () => {
@@ -267,28 +244,18 @@ describe('Schema', () => {
             };
             describe('#signedOrdersSchema', () => {
                 it('should validate valid signed orders', () => {
-                    const testCases = [
-                        [signedOrder],
-                        [],
-                    ];
+                    const testCases = [[signedOrder], []];
                     validateAgainstSchema(testCases, signedOrdersSchema);
                 });
                 it('should fail for invalid signed orders', () => {
-                    const testCases = [
-                        [
-                            signedOrder,
-                            1,
-                        ],
-                    ];
+                    const testCases = [[signedOrder, 1]];
                     const shouldFail = true;
                     validateAgainstSchema(testCases, signedOrdersSchema, shouldFail);
                 });
             });
             describe('#signedOrderSchema', () => {
                 it('should validate valid signed order', () => {
-                    const testCases = [
-                        signedOrder,
-                    ];
+                    const testCases = [signedOrder];
                     validateAgainstSchema(testCases, signedOrderSchema);
                 });
                 it('should fail for invalid signed order', () => {
@@ -310,9 +277,7 @@ describe('Schema', () => {
                     },
                 ];
                 it('should validate valid order fill or kill requests', () => {
-                    const testCases = [
-                        orderFillOrKillRequests,
-                    ];
+                    const testCases = [orderFillOrKillRequests];
                     validateAgainstSchema(testCases, orderFillOrKillRequestsSchema);
                 });
                 it('should fail for invalid order fill or kill requests', () => {
@@ -336,9 +301,7 @@ describe('Schema', () => {
                     },
                 ];
                 it('should validate valid order cancellation requests', () => {
-                    const testCases = [
-                        orderCancellationRequests,
-                    ];
+                    const testCases = [orderCancellationRequests];
                     validateAgainstSchema(testCases, orderCancellationRequestsSchema);
                 });
                 it('should fail for invalid order cancellation requests', () => {
@@ -362,9 +325,7 @@ describe('Schema', () => {
                     },
                 ];
                 it('should validate valid order fill requests', () => {
-                    const testCases = [
-                        orderFillRequests,
-                    ];
+                    const testCases = [orderFillRequests];
                     validateAgainstSchema(testCases, orderFillRequestsSchema);
                 });
                 it('should fail for invalid order fill requests', () => {
@@ -559,12 +520,8 @@ describe('Schema', () => {
                             channel: 'orderbook',
                             requestId: 2,
                             payload: {
-                                bids: [
-                                    signedOrder,
-                                ],
-                                asks: [
-                                    signedOrder,
-                                ],
+                                bids: [signedOrder],
+                                asks: [signedOrder],
                             },
                         },
                     ];
@@ -577,12 +534,8 @@ describe('Schema', () => {
                             channel: 'orderbook',
                             requestId: 2,
                             payload: {
-                                bids: [
-                                    signedOrder,
-                                ],
-                                asks: [
-                                    signedOrder,
-                                ],
+                                bids: [signedOrder],
+                                asks: [signedOrder],
                             },
                         },
                         {
@@ -590,24 +543,16 @@ describe('Schema', () => {
                             channel: 'bar',
                             requestId: 2,
                             payload: {
-                                bids: [
-                                    signedOrder,
-                                ],
-                                asks: [
-                                    signedOrder,
-                                ],
+                                bids: [signedOrder],
+                                asks: [signedOrder],
                             },
                         },
                         {
                             type: 'snapshot',
                             channel: 'orderbook',
                             payload: {
-                                bids: [
-                                    signedOrder,
-                                ],
-                                asks: [
-                                    signedOrder,
-                                ],
+                                bids: [signedOrder],
+                                asks: [signedOrder],
                             },
                         },
                         {
@@ -615,12 +560,8 @@ describe('Schema', () => {
                             channel: 'orderbook',
                             requestId: '2',
                             payload: {
-                                bids: [
-                                    signedOrder,
-                                ],
-                                asks: [
-                                    signedOrder,
-                                ],
+                                bids: [signedOrder],
+                                asks: [signedOrder],
                             },
                         },
                         {
@@ -628,9 +569,7 @@ describe('Schema', () => {
                             channel: 'orderbook',
                             requestId: 2,
                             payload: {
-                                bids: [
-                                    signedOrder,
-                                ],
+                                bids: [signedOrder],
                             },
                         },
                         {
@@ -638,9 +577,7 @@ describe('Schema', () => {
                             channel: 'orderbook',
                             requestId: 2,
                             payload: {
-                                asks: [
-                                    signedOrder,
-                                ],
+                                asks: [signedOrder],
                             },
                         },
                         {
@@ -648,12 +585,8 @@ describe('Schema', () => {
                             channel: 'orderbook',
                             requestId: 2,
                             payload: {
-                                bids: [
-                                    signedOrder,
-                                ],
-                                asks: [
-                                    {},
-                                ],
+                                bids: [signedOrder],
+                                asks: [{}],
                             },
                         },
                         {
@@ -661,12 +594,8 @@ describe('Schema', () => {
                             channel: 'orderbook',
                             requestId: 2,
                             payload: {
-                                bids: [
-                                    {},
-                                ],
-                                asks: [
-                                    signedOrder,
-                                ],
+                                bids: [{}],
+                                asks: [signedOrder],
                             },
                         },
                     ];
@@ -941,18 +870,11 @@ describe('Schema', () => {
     });
     describe('#jsNumberSchema', () => {
         it('should validate valid js number', () => {
-            const testCases = [
-                1,
-                42,
-            ];
+            const testCases = [1, 42];
             validateAgainstSchema(testCases, jsNumber);
         });
         it('should fail for invalid js number', () => {
-            const testCases = [
-                NaN,
-                -1,
-                new BigNumber(1),
-            ];
+            const testCases = [NaN, -1, new BigNumber(1)];
             const shouldFail = true;
             validateAgainstSchema(testCases, jsNumber, shouldFail);
         });

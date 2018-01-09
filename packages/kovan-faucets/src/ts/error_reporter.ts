@@ -1,8 +1,8 @@
 import * as express from 'express';
 import rollbar = require('rollbar');
 
-import {configs} from './configs';
-import {utils} from './utils';
+import { configs } from './configs';
+import { utils } from './utils';
 
 export const errorReporter = {
     setup() {

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {AlertTypes} from 'ts/types';
-import {colors} from 'ts/utils/colors';
+import { AlertTypes } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 interface AlertProps {
     type: AlertTypes;
-    message: string|React.ReactNode;
+    message: string | React.ReactNode;
 }
 
 export function Alert(props: AlertProps) {

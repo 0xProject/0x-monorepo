@@ -5,11 +5,11 @@ import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hook
 import NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import {configs} from './configs';
-import {EtherRequestQueue} from './ether_request_queue';
-import {idManagement} from './id_management';
-import {utils} from './utils';
-import {ZRXRequestQueue} from './zrx_request_queue';
+import { configs } from './configs';
+import { EtherRequestQueue } from './ether_request_queue';
+import { idManagement } from './id_management';
+import { utils } from './utils';
+import { ZRXRequestQueue } from './zrx_request_queue';
 
 // HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
 // because they are using the wrong XHR package.
@@ -78,9 +78,11 @@ export class Handler {
         const engine = new ProviderEngine();
         engine.addProvider(new NonceSubprovider());
         engine.addProvider(new HookedWalletSubprovider(idManagement));
-        engine.addProvider(new RpcSubprovider({
-            rpcUrl,
-        }));
+        engine.addProvider(
+            new RpcSubprovider({
+                rpcUrl,
+            }),
+        );
         engine.start();
         return engine;
     }

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
-import {EtherScanIcon} from 'ts/components/ui/etherscan_icon';
-import {EtherscanLinkSuffixes} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import { EtherScanIcon } from 'ts/components/ui/etherscan_icon';
+import { EtherscanLinkSuffixes } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 
 interface EthereumAddressProps {
     address: string;
@@ -14,12 +14,7 @@ export const EthereumAddress = (props: EthereumAddressProps) => {
     const truncatedAddress = utils.getAddressBeginAndEnd(props.address);
     return (
         <div>
-            <div
-                className="inline"
-                style={{fontSize: 13}}
-                data-tip={true}
-                data-for={tooltipId}
-            >
+            <div className="inline" style={{ fontSize: 13 }} data-tip={true} data-for={tooltipId}>
                 {truncatedAddress}
             </div>
             <div className="pl1 inline">

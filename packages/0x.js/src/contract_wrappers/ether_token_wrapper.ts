@@ -1,9 +1,9 @@
-import {schemas} from '@0xproject/json-schemas';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
+import { schemas } from '@0xproject/json-schemas';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 
-import {artifacts} from '../artifacts';
+import { artifacts } from '../artifacts';
 import {
     BlockRange,
     EtherTokenContractEventArgs,
@@ -14,19 +14,21 @@ import {
     TransactionOpts,
     ZeroExError,
 } from '../types';
-import {AbiDecoder} from '../utils/abi_decoder';
-import {assert} from '../utils/assert';
+import { AbiDecoder } from '../utils/abi_decoder';
+import { assert } from '../utils/assert';
 
-import {ContractWrapper} from './contract_wrapper';
-import {EtherTokenContract} from './generated/ether_token';
-import {TokenWrapper} from './token_wrapper';
+import { ContractWrapper } from './contract_wrapper';
+import { EtherTokenContract } from './generated/ether_token';
+import { TokenWrapper } from './token_wrapper';
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
  * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
  */
 export class EtherTokenWrapper extends ContractWrapper {
-    private _etherTokenContractsByAddress: {[address: string]: EtherTokenContract} = {};
+    private _etherTokenContractsByAddress: {
+        [address: string]: EtherTokenContract;
+    } = {};
     private _tokenWrapper: TokenWrapper;
     constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder, tokenWrapper: TokenWrapper) {
         super(web3Wrapper, networkId, abiDecoder);
@@ -43,7 +45,10 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     public async depositAsync(
-        etherTokenAddress: string, amountInWei: BigNumber, depositor: string, txOpts: TransactionOpts = {},
+        etherTokenAddress: string,
+        amountInWei: BigNumber,
+        depositor: string,
+        txOpts: TransactionOpts = {},
     ): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
@@ -70,7 +75,10 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     public async withdrawAsync(
-        etherTokenAddress: string, amountInWei: BigNumber, withdrawer: string, txOpts: TransactionOpts = {},
+        etherTokenAddress: string,
+        amountInWei: BigNumber,
+        withdrawer: string,
+        txOpts: TransactionOpts = {},
     ): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
@@ -96,14 +104,21 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @return  Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends EtherTokenContractEventArgs>(
-        etherTokenAddress: string, eventName: EtherTokenEvents, blockRange: BlockRange,
-        indexFilterValues: IndexedFilterValues): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
+        etherTokenAddress: string,
+        eventName: EtherTokenEvents,
+        blockRange: BlockRange,
+        indexFilterValues: IndexedFilterValues,
+    ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, EtherTokenEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(
-            etherTokenAddress, eventName, blockRange, indexFilterValues, artifacts.EtherTokenArtifact.abi,
+            etherTokenAddress,
+            eventName,
+            blockRange,
+            indexFilterValues,
+            artifacts.EtherTokenArtifact.abi,
         );
         return logs;
     }
@@ -117,14 +132,21 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends EtherTokenContractEventArgs>(
-        etherTokenAddress: string, eventName: EtherTokenEvents, indexFilterValues: IndexedFilterValues,
-        callback: EventCallback<ArgsType>): string {
+        etherTokenAddress: string,
+        eventName: EtherTokenEvents,
+        indexFilterValues: IndexedFilterValues,
+        callback: EventCallback<ArgsType>,
+    ): string {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, EtherTokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe<ArgsType>(
-            etherTokenAddress, eventName, indexFilterValues, artifacts.EtherTokenArtifact.abi, callback,
+            etherTokenAddress,
+            eventName,
+            indexFilterValues,
+            artifacts.EtherTokenArtifact.abi,
+            callback,
         );
         return subscriptionToken;
     }
@@ -151,7 +173,8 @@ export class EtherTokenWrapper extends ContractWrapper {
             return etherTokenContract;
         }
         const web3ContractInstance = await this._instantiateContractIfExistsAsync(
-            artifacts.EtherTokenArtifact, etherTokenAddress,
+            artifacts.EtherTokenArtifact,
+            etherTokenAddress,
         );
         const contractInstance = new EtherTokenContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
         etherTokenContract = contractInstance;

@@ -1,5 +1,5 @@
-import {BlockchainLifecycle} from '@0xproject/dev-utils';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import 'mocha';
@@ -16,12 +16,12 @@ import {
     ZeroEx,
     ZeroExError,
 } from '../src';
-import {DoneCallback} from '../src/types';
+import { DoneCallback } from '../src/types';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
-import {TokenUtils} from './utils/token_utils';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
+import { TokenUtils } from './utils/token_utils';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -74,17 +74,17 @@ describe('TokenWrapper', () => {
         it('should fail to transfer tokens if fromAddress has an insufficient balance', async () => {
             const fromAddress = addressWithoutFunds;
             const toAddress = coinbase;
-            return expect(zeroEx.token.transferAsync(
-                token.address, fromAddress, toAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.InsufficientBalanceForTransfer);
+            return expect(
+                zeroEx.token.transferAsync(token.address, fromAddress, toAddress, transferAmount),
+            ).to.be.rejectedWith(ZeroExError.InsufficientBalanceForTransfer);
         });
         it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
             const fromAddress = coinbase;
             const toAddress = coinbase;
-            return expect(zeroEx.token.transferAsync(
-                nonExistentTokenAddress, fromAddress, toAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
+            return expect(
+                zeroEx.token.transferAsync(nonExistentTokenAddress, fromAddress, toAddress, transferAmount),
+            ).to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
         });
     });
     describe('#transferFromAsync', () => {
@@ -103,24 +103,22 @@ describe('TokenWrapper', () => {
             const fromAddressBalance = await zeroEx.token.getBalanceAsync(token.address, fromAddress);
             expect(fromAddressBalance).to.be.bignumber.greaterThan(transferAmount);
 
-            const fromAddressAllowance = await zeroEx.token.getAllowanceAsync(token.address, fromAddress,
-                                                                              toAddress);
+            const fromAddressAllowance = await zeroEx.token.getAllowanceAsync(token.address, fromAddress, toAddress);
             expect(fromAddressAllowance).to.be.bignumber.equal(0);
 
-            return expect(zeroEx.token.transferFromAsync(
-                token.address, fromAddress, toAddress, senderAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.InsufficientAllowanceForTransfer);
+            return expect(
+                zeroEx.token.transferFromAsync(token.address, fromAddress, toAddress, senderAddress, transferAmount),
+            ).to.be.rejectedWith(ZeroExError.InsufficientAllowanceForTransfer);
         });
-        it('[regression] should fail to transfer tokens if set allowance for toAddress instead of senderAddress',
-            async () => {
+        it('[regression] should fail to transfer tokens if set allowance for toAddress instead of senderAddress', async () => {
             const fromAddress = coinbase;
             const transferAmount = new BigNumber(42);
 
             await zeroEx.token.setAllowanceAsync(token.address, fromAddress, toAddress, transferAmount);
 
-            return expect(zeroEx.token.transferFromAsync(
-                token.address, fromAddress, toAddress, senderAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.InsufficientAllowanceForTransfer);
+            return expect(
+                zeroEx.token.transferFromAsync(token.address, fromAddress, toAddress, senderAddress, transferAmount),
+            ).to.be.rejectedWith(ZeroExError.InsufficientAllowanceForTransfer);
         });
         it('should fail to transfer tokens if fromAddress has insufficient balance', async () => {
             const fromAddress = addressWithoutFunds;
@@ -130,13 +128,16 @@ describe('TokenWrapper', () => {
             expect(fromAddressBalance).to.be.bignumber.equal(0);
 
             await zeroEx.token.setAllowanceAsync(token.address, fromAddress, senderAddress, transferAmount);
-            const fromAddressAllowance = await zeroEx.token.getAllowanceAsync(token.address, fromAddress,
-                                                                              senderAddress);
+            const fromAddressAllowance = await zeroEx.token.getAllowanceAsync(
+                token.address,
+                fromAddress,
+                senderAddress,
+            );
             expect(fromAddressAllowance).to.be.bignumber.equal(transferAmount);
 
-            return expect(zeroEx.token.transferFromAsync(
-                token.address, fromAddress, toAddress, senderAddress, transferAmount,
-            )).to.be.rejectedWith(ZeroExError.InsufficientBalanceForTransfer);
+            return expect(
+                zeroEx.token.transferFromAsync(token.address, fromAddress, toAddress, senderAddress, transferAmount),
+            ).to.be.rejectedWith(ZeroExError.InsufficientBalanceForTransfer);
         });
         it('should successfully transfer tokens', async () => {
             const fromAddress = coinbase;
@@ -147,17 +148,22 @@ describe('TokenWrapper', () => {
             const transferAmount = new BigNumber(42);
             await zeroEx.token.setAllowanceAsync(token.address, fromAddress, senderAddress, transferAmount);
 
-            await zeroEx.token.transferFromAsync(token.address, fromAddress, toAddress, senderAddress,
-                                                 transferAmount);
+            await zeroEx.token.transferFromAsync(token.address, fromAddress, toAddress, senderAddress, transferAmount);
             const postBalance = await zeroEx.token.getBalanceAsync(token.address, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });
         it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
             const fromAddress = coinbase;
             const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-            return expect(zeroEx.token.transferFromAsync(
-                nonExistentTokenAddress, fromAddress, toAddress, senderAddress, new BigNumber(42),
-            )).to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
+            return expect(
+                zeroEx.token.transferFromAsync(
+                    nonExistentTokenAddress,
+                    fromAddress,
+                    toAddress,
+                    senderAddress,
+                    new BigNumber(42),
+                ),
+            ).to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
         });
     });
     describe('#getBalanceAsync', () => {
@@ -172,8 +178,9 @@ describe('TokenWrapper', () => {
             it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
                 const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
                 const ownerAddress = coinbase;
-                return expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress))
-                    .to.be.rejectedWith(ZeroExError.TokenContractDoesNotExist);
+                return expect(zeroEx.token.getBalanceAsync(nonExistentTokenAddress, ownerAddress)).to.be.rejectedWith(
+                    ZeroExError.TokenContractDoesNotExist,
+                );
             });
             it('should return a balance of 0 for a non-existent owner address', async () => {
                 const token = tokens[0];
@@ -191,22 +198,25 @@ describe('TokenWrapper', () => {
                 zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should return balance even when called with Web3 provider instance without addresses', async () => {
-                    const token = tokens[0];
-                    const ownerAddress = coinbase;
-                    const balance = await zeroExWithoutAccounts.token.getBalanceAsync(token.address, ownerAddress);
-                    const expectedBalance = new BigNumber('1000000000000000000000000000');
-                    return expect(balance).to.be.bignumber.equal(expectedBalance);
+                const token = tokens[0];
+                const ownerAddress = coinbase;
+                const balance = await zeroExWithoutAccounts.token.getBalanceAsync(token.address, ownerAddress);
+                const expectedBalance = new BigNumber('1000000000000000000000000000');
+                return expect(balance).to.be.bignumber.equal(expectedBalance);
             });
         });
     });
     describe('#setAllowanceAsync', () => {
-        it('should set the spender\'s allowance', async () => {
+        it("should set the spender's allowance", async () => {
             const token = tokens[0];
             const ownerAddress = coinbase;
             const spenderAddress = addressWithoutFunds;
 
-            const allowanceBeforeSet = await zeroEx.token.getAllowanceAsync(token.address, ownerAddress,
-                                                                            spenderAddress);
+            const allowanceBeforeSet = await zeroEx.token.getAllowanceAsync(
+                token.address,
+                ownerAddress,
+                spenderAddress,
+            );
             const expectedAllowanceBeforeAllowanceSet = new BigNumber(0);
             expect(allowanceBeforeSet).to.be.bignumber.equal(expectedAllowanceBeforeAllowanceSet);
 
@@ -219,7 +229,7 @@ describe('TokenWrapper', () => {
         });
     });
     describe('#setUnlimitedAllowanceAsync', () => {
-        it('should set the unlimited spender\'s allowance', async () => {
+        it("should set the unlimited spender's allowance", async () => {
             const token = tokens[0];
             const ownerAddress = coinbase;
             const spenderAddress = addressWithoutFunds;
@@ -241,10 +251,18 @@ describe('TokenWrapper', () => {
             );
 
             await zeroEx.token.transferFromAsync(
-                zrx.address, coinbase, userWithNormalAllowance, userWithNormalAllowance, transferAmount,
+                zrx.address,
+                coinbase,
+                userWithNormalAllowance,
+                userWithNormalAllowance,
+                transferAmount,
             );
             await zeroEx.token.transferFromAsync(
-                zrx.address, coinbase, userWithUnlimitedAllowance, userWithUnlimitedAllowance, transferAmount,
+                zrx.address,
+                coinbase,
+                userWithUnlimitedAllowance,
+                userWithUnlimitedAllowance,
+                transferAmount,
             );
 
             const finalBalanceWithNormalAllowance = await web3Wrapper.getBalanceInWeiAsync(userWithNormalAllowance);
@@ -300,7 +318,9 @@ describe('TokenWrapper', () => {
                 await zeroEx.token.setAllowanceAsync(token.address, ownerAddress, spenderAddress, amountInBaseUnits);
 
                 const allowance = await zeroExWithoutAccounts.token.getAllowanceAsync(
-                    token.address, ownerAddress, spenderAddress,
+                    token.address,
+                    ownerAddress,
+                    spenderAddress,
                 );
                 const expectedAllowance = amountInBaseUnits;
                 return expect(allowance).to.be.bignumber.equal(expectedAllowance);
@@ -378,8 +398,7 @@ describe('TokenWrapper', () => {
                     expect(args._value).to.be.bignumber.equal(transferAmount);
                     done();
                 };
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Transfer, indexFilterValues, callback);
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callback);
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
             })().catch(done);
         });
@@ -394,8 +413,7 @@ describe('TokenWrapper', () => {
                     expect(args._value).to.be.bignumber.equal(allowanceAmount);
                     done();
                 };
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
         });
@@ -404,17 +422,13 @@ describe('TokenWrapper', () => {
                 const callbackNeverToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled,
-                );
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled);
                 const callbackToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done();
                 };
                 const newProvider = web3Factory.getRpcProvider();
                 zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackToBeCalled,
-                );
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackToBeCalled);
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
             })().catch(done);
         });
@@ -424,7 +438,11 @@ describe('TokenWrapper', () => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 const subscriptionToken = zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled);
+                    tokenAddress,
+                    TokenEvents.Transfer,
+                    indexFilterValues,
+                    callbackNeverToBeCalled,
+                );
                 zeroEx.token.unsubscribe(subscriptionToken);
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
                 done();
@@ -450,7 +468,10 @@ describe('TokenWrapper', () => {
             const eventName = TokenEvents.Approval;
             const indexFilterValues = {};
             const logs = await zeroEx.token.getLogsAsync<ApprovalContractEventArgs>(
-                tokenAddress, eventName, blockRange, indexFilterValues,
+                tokenAddress,
+                eventName,
+                blockRange,
+                indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;
@@ -465,7 +486,10 @@ describe('TokenWrapper', () => {
             const differentEventName = TokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await zeroEx.token.getLogsAsync(
-                tokenAddress, differentEventName, blockRange, indexFilterValues,
+                tokenAddress,
+                differentEventName,
+                blockRange,
+                indexFilterValues,
             );
             expect(logs).to.have.length(0);
         });
@@ -479,7 +503,10 @@ describe('TokenWrapper', () => {
                 _owner: coinbase,
             };
             const logs = await zeroEx.token.getLogsAsync<ApprovalContractEventArgs>(
-                tokenAddress, eventName, blockRange, indexFilterValues,
+                tokenAddress,
+                eventName,
+                blockRange,
+                indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;
@@ -487,3 +514,4 @@ describe('TokenWrapper', () => {
         });
     });
 });
+// tslint:disable:max-file-line-count

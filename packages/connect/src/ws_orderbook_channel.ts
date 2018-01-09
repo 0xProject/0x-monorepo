@@ -1,5 +1,5 @@
-import {assert} from '@0xproject/assert';
-import {schemas} from '@0xproject/json-schemas';
+import { assert } from '@0xproject/assert';
+import { schemas } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 import * as WebSocket from 'websocket';
 
@@ -11,7 +11,7 @@ import {
     WebsocketClientEventType,
     WebsocketConnectionEventType,
 } from './types';
-import {orderbookChannelMessageParser} from './utils/orderbook_channel_message_parser';
+import { orderbookChannelMessageParser } from './utils/orderbook_channel_message_parser';
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
@@ -41,7 +41,10 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
      */
     public subscribe(subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler): void {
         assert.doesConformToSchema(
-            'subscriptionOpts', subscriptionOpts, schemas.relayerApiOrderbookChannelSubscribePayload);
+            'subscriptionOpts',
+            subscriptionOpts,
+            schemas.relayerApiOrderbookChannelSubscribePayload,
+        );
         assert.isFunction('handler.onSnapshot', _.get(handler, 'onSnapshot'));
         assert.isFunction('handler.onUpdate', _.get(handler, 'onUpdate'));
         assert.isFunction('handler.onError', _.get(handler, 'onError'));
@@ -92,25 +95,32 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
             this._client.connect(this._apiEndpointUrl);
         }
     }
-    private _handleWebSocketMessage(requestId: number, subscriptionOpts: OrderbookChannelSubscriptionOpts,
-                                    message: WebSocket.IMessage, handler: OrderbookChannelHandler): void {
+    private _handleWebSocketMessage(
+        requestId: number,
+        subscriptionOpts: OrderbookChannelSubscriptionOpts,
+        message: WebSocket.IMessage,
+        handler: OrderbookChannelHandler,
+    ): void {
         if (!_.isUndefined(message.utf8Data)) {
             try {
                 const utf8Data = message.utf8Data;
                 const parserResult = orderbookChannelMessageParser.parse(utf8Data);
                 if (parserResult.requestId === requestId) {
                     switch (parserResult.type) {
-                        case (OrderbookChannelMessageTypes.Snapshot): {
+                        case OrderbookChannelMessageTypes.Snapshot: {
                             handler.onSnapshot(this, subscriptionOpts, parserResult.payload);
                             break;
                         }
-                        case (OrderbookChannelMessageTypes.Update): {
+                        case OrderbookChannelMessageTypes.Update: {
                             handler.onUpdate(this, subscriptionOpts, parserResult.payload);
                             break;
                         }
                         default: {
                             handler.onError(
-                                this, subscriptionOpts, new Error(`Message has missing a type parameter: ${utf8Data}`));
+                                this,
+                                subscriptionOpts,
+                                new Error(`Message has missing a type parameter: ${utf8Data}`),
+                            );
                         }
                     }
                 }

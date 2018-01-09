@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {colors} from 'ts/utils/colors';
+import { colors } from 'ts/utils/colors';
 
 export interface InputLabelProps {
     text: string | Element | React.ReactNode;
@@ -21,7 +21,5 @@ const styles = {
 };
 
 export const InputLabel = (props: InputLabelProps) => {
-    return (
-        <label style={styles.label}>{props.text}</label>
-    );
+    return <label style={styles.label}>{props.text}</label>;
 };

@@ -1,9 +1,9 @@
-import {schemas, SchemaValidator} from '@0xproject/json-schemas';
-import {promisify} from '@0xproject/utils';
+import { schemas, SchemaValidator } from '@0xproject/json-schemas';
+import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import {AbiType} from './types';
+import { AbiType } from './types';
 
 export class Contract implements Web3.ContractInstance {
     public address: string;

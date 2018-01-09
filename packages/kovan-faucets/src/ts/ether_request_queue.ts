@@ -1,10 +1,10 @@
-import {promisify} from '@0xproject/utils';
+import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import {configs} from './configs';
-import {errorReporter} from './error_reporter';
-import {RequestQueue} from './request_queue';
-import {utils} from './utils';
+import { configs } from './configs';
+import { errorReporter } from './error_reporter';
+import { RequestQueue } from './request_queue';
+import { utils } from './utils';
 
 const DISPENSE_AMOUNT_ETHER = 0.1;
 

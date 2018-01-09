@@ -1,9 +1,9 @@
-import {ZeroEx} from '0x.js';
+import { ZeroEx } from '0x.js';
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Party} from 'ts/components/ui/party';
-import {AssetToken, Token, TokenByAddress} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import { Party } from 'ts/components/ui/party';
+import { AssetToken, Token, TokenByAddress } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 
 const PRECISION = 5;
 
@@ -45,7 +45,7 @@ export class VisualOrder extends React.Component<VisualOrderProps, VisualOrderSt
                             {this._renderAmount(this.props.takerAssetToken, this.props.takerToken)}
                         </div>
                         <div className="lg-p2 md-p2 sm-p1">
-                            <img src="/images/trade_arrows.png" style={{width: 47}} />
+                            <img src="/images/trade_arrows.png" style={{ width: 47 }} />
                         </div>
                         <div className="pt1">
                             {this._renderAmount(this.props.makerAssetToken, this.props.makerToken)}
@@ -68,7 +68,7 @@ export class VisualOrder extends React.Component<VisualOrderProps, VisualOrderSt
     private _renderAmount(assetToken: AssetToken, token: Token) {
         const unitAmount = ZeroEx.toUnitAmount(assetToken.amount, token.decimals);
         return (
-            <div style={{fontSize: 13}}>
+            <div style={{ fontSize: 13 }}>
                 {unitAmount.toNumber().toFixed(PRECISION)} {token.symbol}
             </div>
         );

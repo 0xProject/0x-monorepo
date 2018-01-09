@@ -1,18 +1,16 @@
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 
-import {
-    LogEvent,
-} from '../src';
-import {EventWatcher} from '../src/order_watcher/event_watcher';
-import {DoneCallback} from '../src/types';
+import { LogEvent } from '../src';
+import { EventWatcher } from '../src/order_watcher/event_watcher';
+import { DoneCallback } from '../src/types';
 
-import {chaiSetup} from './utils/chai_setup';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -38,7 +36,7 @@ describe('EventWatcher', () => {
         blockNumber: null,
         data: '',
         logIndex: null,
-        topics: [ '0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567' ],
+        topics: ['0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567'],
         transactionHash: '0x01ef3c048b18d9b09ea195b4ed94cf8dd5f3d857a1905ff886b152cfb1166f25',
         transactionIndex: 0,
     };
@@ -48,7 +46,7 @@ describe('EventWatcher', () => {
         blockNumber: null,
         data: '',
         logIndex: null,
-        topics: [ '0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567' ],
+        topics: ['0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567'],
         transactionHash: '0x01ef3c048b18d9b09ea195b4ed94cf8dd5f3d857a1905ff886b152cfb1166f25',
         transactionIndex: 0,
     };

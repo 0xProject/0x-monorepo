@@ -1,10 +1,10 @@
-import {assert} from '@0xproject/assert';
-import {schemas} from '@0xproject/json-schemas';
+import { assert } from '@0xproject/assert';
+import { schemas } from '@0xproject/json-schemas';
 import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
-import {schemas as clientSchemas} from './schemas/schemas';
+import { schemas as clientSchemas } from './schemas/schemas';
 import {
     Client,
     FeesRequest,
@@ -18,7 +18,7 @@ import {
     TokenPairsItem,
     TokenPairsRequest,
 } from './types';
-import {relayerResponseJsonParsers} from './utils/relayer_response_json_parsers';
+import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints

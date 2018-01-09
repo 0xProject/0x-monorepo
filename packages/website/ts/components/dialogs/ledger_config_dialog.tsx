@@ -2,24 +2,17 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {
-    Table,
-    TableBody,
-    TableHeader,
-    TableHeaderColumn,
-    TableRow,
-    TableRowColumn,
-} from 'material-ui/Table';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
-import {Blockchain} from 'ts/blockchain';
-import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {colors} from 'ts/utils/colors';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
+import { Blockchain } from 'ts/blockchain';
+import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { colors } from 'ts/utils/colors';
+import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const VALID_ETHEREUM_DERIVATION_PATH_PREFIX = `44'/60'`;
 
@@ -59,32 +52,23 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     }
     public render() {
         const dialogActions = [
-            <FlatButton
-                key="ledgerConnectCancel"
-                label="Cancel"
-                onTouchTap={this._onClose.bind(this)}
-            />,
+            <FlatButton key="ledgerConnectCancel" label="Cancel" onTouchTap={this._onClose.bind(this)} />,
         ];
-        const dialogTitle = this.state.stepIndex === LedgerSteps.CONNECT ?
-                            'Connect to your Ledger' :
-                            'Select desired address';
+        const dialogTitle =
+            this.state.stepIndex === LedgerSteps.CONNECT ? 'Connect to your Ledger' : 'Select desired address';
         return (
             <Dialog
                 title={dialogTitle}
-                titleStyle={{fontWeight: 100}}
+                titleStyle={{ fontWeight: 100 }}
                 actions={dialogActions}
                 open={this.props.isOpen}
                 onRequestClose={this._onClose.bind(this)}
                 autoScrollBodyContent={true}
-                bodyStyle={{paddingBottom: 0}}
+                bodyStyle={{ paddingBottom: 0 }}
             >
-                <div style={{color: colors.grey700, paddingTop: 1}}>
-                    {this.state.stepIndex === LedgerSteps.CONNECT &&
-                        this._renderConnectStep()
-                    }
-                    {this.state.stepIndex === LedgerSteps.SELECT_ADDRESS &&
-                        this._renderSelectAddressStep()
-                    }
+                <div style={{ color: colors.grey700, paddingTop: 1 }}>
+                    {this.state.stepIndex === LedgerSteps.CONNECT && this._renderConnectStep()}
+                    {this.state.stepIndex === LedgerSteps.SELECT_ADDRESS && this._renderSelectAddressStep()}
                 </div>
             </Dialog>
         );
@@ -92,19 +76,15 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     private _renderConnectStep() {
         return (
             <div>
-                <div className="h4 pt3">
-                    Follow these instructions before proceeding:
-                </div>
+                <div className="h4 pt3">Follow these instructions before proceeding:</div>
                 <ol>
-                    <li className="pb1">
-                        Connect your Ledger Nano S & Open the Ethereum application
-                    </li>
-                    <li className="pb1">
-                        Verify that Browser Support is enabled in Settings
-                    </li>
+                    <li className="pb1">Connect your Ledger Nano S & Open the Ethereum application</li>
+                    <li className="pb1">Verify that Browser Support is enabled in Settings</li>
                     <li className="pb1">
                         If no Browser Support is found in settings, verify that you have{' '}
-                        <a href="https://www.ledgerwallet.com/apps/manager" target="_blank">Firmware >1.2</a>
+                        <a href="https://www.ledgerwallet.com/apps/manager" target="_blank">
+                            Firmware >1.2
+                        </a>
                     </li>
                 </ol>
                 <div className="center pb3">
@@ -115,11 +95,11 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                         labelComplete="Connected!"
                         onClickAsyncFn={this._onConnectLedgerClickAsync.bind(this, true)}
                     />
-                    {this.state.didConnectFail &&
-                        <div className="pt2 left-align" style={{color: colors.red200}}>
+                    {this.state.didConnectFail && (
+                        <div className="pt2 left-align" style={{ color: colors.red200 }}>
                             Failed to connect. Follow the instructions and try again.
                         </div>
-                    }
+                    )}
                 </div>
             </div>
         );
@@ -128,33 +108,28 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         return (
             <div>
                 <div>
-                    <Table
-                        bodyStyle={{height: 300}}
-                        onRowSelection={this._onAddressSelected.bind(this)}
-                    >
+                    <Table bodyStyle={{ height: 300 }} onRowSelection={this._onAddressSelected.bind(this)}>
                         <TableHeader displaySelectAll={false}>
                             <TableRow>
                                 <TableHeaderColumn colSpan={2}>Address</TableHeaderColumn>
                                 <TableHeaderColumn>Balance</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
-                            {this._renderAddressTableRows()}
-                        </TableBody>
+                        <TableBody>{this._renderAddressTableRows()}</TableBody>
                     </Table>
                 </div>
-                <div className="flex pt2" style={{height: 100}}>
-                    <div className="overflow-hidden" style={{width: 180}}>
+                <div className="flex pt2" style={{ height: 100 }}>
+                    <div className="overflow-hidden" style={{ width: 180 }}>
                         <TextField
                             floatingLabelFixed={true}
-                            floatingLabelStyle={{color: colors.grey}}
+                            floatingLabelStyle={{ color: colors.grey }}
                             floatingLabelText="Update path derivation (advanced)"
                             value={this.state.derivationPath}
                             errorText={this.state.derivationErrMsg}
                             onChange={this._onDerivationPathChanged.bind(this)}
                         />
                     </div>
-                    <div className="pl2" style={{paddingTop: 28}}>
+                    <div className="pl2" style={{ paddingTop: 28 }}>
                         <LifeCycleRaisedButton
                             labelReady="Update"
                             labelLoading="Updating..."
@@ -177,21 +152,15 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             const isKovanNetwork = networkName === 'Kovan';
             const balanceString = `${balance.toString()} ${isKovanNetwork ? 'Kovan ' : ''}ETH`;
             return (
-                <TableRow key={userAddress} style={{height: 40}}>
+                <TableRow key={userAddress} style={{ height: 40 }}>
                     <TableRowColumn colSpan={2}>
-                        <div
-                            data-tip={true}
-                            data-for={addressTooltipId}
-                        >
+                        <div data-tip={true} data-for={addressTooltipId}>
                             {userAddress}
                         </div>
                         <ReactTooltip id={addressTooltipId}>{userAddress}</ReactTooltip>
                     </TableRowColumn>
                     <TableRowColumn>
-                        <div
-                            data-tip={true}
-                            data-for={balanceTooltipId}
-                        >
+                        <div data-tip={true} data-for={balanceTooltipId}>
                             {balanceString}
                         </div>
                         <ReactTooltip id={balanceTooltipId}>{balanceString}</ReactTooltip>

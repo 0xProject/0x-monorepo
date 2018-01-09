@@ -1,4 +1,4 @@
-export {ZeroEx} from './0x';
+export { ZeroEx } from './0x';
 
 export {
     Order,
@@ -47,6 +47,4 @@ export {
     OrderState,
 } from './types';
 
-export {
-    TransactionReceipt,
-} from '@0xproject/types';
+export { TransactionReceipt } from '@0xproject/types';

@@ -1,4 +1,4 @@
-import {RPC} from './rpc';
+import { RPC } from './rpc';
 
 export class BlockchainLifecycle {
     private _rpc: RPC;

@@ -1,14 +1,14 @@
-import {ZeroEx} from '0x.js';
+import { ZeroEx } from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactTooltip from 'react-tooltip';
-import {EtherScanIcon} from 'ts/components/ui/etherscan_icon';
-import {Party} from 'ts/components/ui/party';
-import {EtherscanLinkSuffixes, Fill, Token, TokenByAddress} from 'ts/types';
-import {colors} from 'ts/utils/colors';
+import { EtherScanIcon } from 'ts/components/ui/etherscan_icon';
+import { Party } from 'ts/components/ui/party';
+import { EtherscanLinkSuffixes, Fill, Token, TokenByAddress } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 const PRECISION = 5;
 const IDENTICON_DIAMETER = 40;
@@ -44,30 +44,26 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             fontWeight: 100,
             display: 'inline-block',
         };
-        const amountColClassNames = 'col col-12 lg-col-4 md-col-4 lg-py2 md-py2 sm-py1 lg-pr2 md-pr2 \
+        const amountColClassNames =
+            'col col-12 lg-col-4 md-col-4 lg-py2 md-py2 sm-py1 lg-pr2 md-pr2 \
                                      lg-right-align md-right-align sm-center';
 
         return (
-            <Paper
-                className="py1"
-                style={{margin: '3px 3px 15px 3px'}}
-            >
+            <Paper className="py1" style={{ margin: '3px 3px 15px 3px' }}>
                 <div className="clearfix">
-                    <div className="col col-12 lg-col-1 md-col-1 pt2 lg-pl3 md-pl3">
-                        {this._renderDate()}
-                    </div>
+                    <div className="col col-12 lg-col-1 md-col-1 pt2 lg-pl3 md-pl3">{this._renderDate()}</div>
                     <div
                         className="col col-12 lg-col-6 md-col-6 lg-pl3 md-pl3"
-                        style={{fontSize: 12, fontWeight: 100}}
+                        style={{ fontSize: 12, fontWeight: 100 }}
                     >
-                        <div className="flex sm-mx-auto xs-mx-auto" style={{paddingTop: 4, width: 224}}>
+                        <div className="flex sm-mx-auto xs-mx-auto" style={{ paddingTop: 4, width: 224 }}>
                             <Party
                                 label="Maker"
                                 address={fill.maker}
                                 identiconDiameter={IDENTICON_DIAMETER}
                                 networkId={this.props.networkId}
                             />
-                            <i style={{fontSize: 30}} className="zmdi zmdi-swap py3" />
+                            <i style={{ fontSize: 30 }} className="zmdi zmdi-swap py3" />
                             <Party
                                 label="Taker"
                                 address={fill.taker}
@@ -76,14 +72,11 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
                             />
                         </div>
                     </div>
-                    <div
-                        className={amountColClassNames}
-                        style={amountColStyle}
-                    >
+                    <div className={amountColClassNames} style={amountColStyle}>
                         {this._renderAmounts(makerToken, takerToken)}
                     </div>
                     <div className="col col-12 lg-col-1 md-col-1 lg-pr3 md-pr3 lg-py3 md-py3 sm-pb1 sm-center">
-                        <div className="pt1 lg-right md-right sm-mx-auto" style={{width: 13}}>
+                        <div className="pt1 lg-right md-right sm-mx-auto" style={{ width: 13 }}>
                             <EtherScanIcon
                                 addressOrTxHash={fill.transactionHash}
                                 networkId={this.props.networkId}
@@ -124,25 +117,20 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
             givenToken = takerToken;
         } else {
             // This condition should never be hit
-            throw new Error('Found Fill that wasn\'t performed by this user');
+            throw new Error("Found Fill that wasn't performed by this user");
         }
 
         return (
             <div>
-                <div
-                    style={{color: colors.green400, fontSize: 16}}
-                >
-                    <span>+{' '}</span>
+                <div style={{ color: colors.green400, fontSize: 16 }}>
+                    <span>+ </span>
                     {this._renderAmount(receiveAmount, receiveToken.symbol, receiveToken.decimals)}
                 </div>
-                <div
-                    className="pb1 inline-block"
-                    style={{color: colors.red200, fontSize: 16}}
-                >
-                    <span>-{' '}</span>
+                <div className="pb1 inline-block" style={{ color: colors.red200, fontSize: 16 }}>
+                    <span>- </span>
                     {this._renderAmount(givenAmount, givenToken.symbol, givenToken.decimals)}
                 </div>
-                <div style={{color: colors.grey400, fontSize: 14}}>
+                <div style={{ color: colors.grey400, fontSize: 14 }}>
                     {exchangeRate.toFixed(PRECISION)} {givenToken.symbol}/{receiveToken.symbol}
                 </div>
             </div>
@@ -160,12 +148,13 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
         const dateTooltipId = `${this.props.fill.transactionHash}-date`;
 
         return (
-            <div
-                data-tip={true}
-                data-for={dateTooltipId}
-            >
-                <div className="center pt1" style={{fontSize: 13}}>{monthAbreviation}</div>
-                <div className="center" style={{fontSize: 24, fontWeight: 100}}>{dayOfMonth}</div>
+            <div data-tip={true} data-for={dateTooltipId}>
+                <div className="center pt1" style={{ fontSize: 13 }}>
+                    {monthAbreviation}
+                </div>
+                <div className="center" style={{ fontSize: 24, fontWeight: 100 }}>
+                    {dayOfMonth}
+                </div>
                 <ReactTooltip id={dateTooltipId}>{formattedBlockDate}</ReactTooltip>
             </div>
         );

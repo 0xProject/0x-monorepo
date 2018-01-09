@@ -1,6 +1,6 @@
 {
   "name": "0x.js",
-  "version": "0.28.0",
+  "version": "0.29.0",
   "description": "A javascript library for interacting with the 0x protocol",
   "keywords": [
     "0x.js",
@@ -45,10 +45,10 @@
     "node": ">=6.0.0"
   },
   "devDependencies": {
-    "@0xproject/abi-gen": "^0.0.3",
-    "@0xproject/dev-utils": "^0.0.2",
-    "@0xproject/tslint-config": "^0.3.0",
-    "@0xproject/types": "^0.1.1",
+    "@0xproject/abi-gen": "^0.0.4",
+    "@0xproject/dev-utils": "^0.0.3",
+    "@0xproject/tslint-config": "^0.4.0",
+    "@0xproject/types": "^0.1.2",
     "@types/bintrees": "^1.0.2",
     "@types/jsonschema": "^1.1.1",
     "@types/lodash": "^4.14.86",
@@ -84,10 +84,10 @@
     "webpack": "^3.1.0"
   },
   "dependencies": {
-    "@0xproject/assert": "^0.0.8",
-    "@0xproject/json-schemas": "^0.7.0",
-    "@0xproject/utils": "^0.1.1",
-    "@0xproject/web3-wrapper": "^0.1.1",
+    "@0xproject/assert": "^0.0.9",
+    "@0xproject/json-schemas": "^0.7.1",
+    "@0xproject/utils": "^0.1.2",
+    "@0xproject/web3-wrapper": "^0.1.2",
     "bignumber.js": "~4.1.0",
     "bintrees": "^1.0.2",
     "bn.js": "^4.11.8",

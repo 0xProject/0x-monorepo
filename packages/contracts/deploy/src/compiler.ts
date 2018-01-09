@@ -4,8 +4,8 @@ import * as path from 'path';
 import solc = require('solc');
 import * as Web3 from 'web3';
 
-import {binPaths} from './../solc/bin_paths';
-import {fsWrapper} from './utils/fs_wrapper';
+import { binPaths } from './../solc/bin_paths';
+import { fsWrapper } from './utils/fs_wrapper';
 import {
     CompilerOptions,
     ContractArtifact,
@@ -14,7 +14,7 @@ import {
     ContractSources,
     ImportContents,
 } from './utils/types';
-import {utils} from './utils/utils';
+import { utils } from './utils/utils';
 
 const SOLIDITY_FILE_EXTENSION = '.sol';
 
@@ -150,9 +150,10 @@ export class Compiler {
             currentArtifact = JSON.parse(currentArtifactString);
             oldNetworks = currentArtifact.networks;
             const oldNetwork: ContractData = oldNetworks[this._networkId];
-            shouldCompile = _.isUndefined(oldNetwork) ||
-                            oldNetwork.keccak256 !== sourceHash ||
-                            oldNetwork.optimizer_enabled !== this._optimizerEnabled;
+            shouldCompile =
+                _.isUndefined(oldNetwork) ||
+                oldNetwork.keccak256 !== sourceHash ||
+                oldNetwork.optimizer_enabled !== this._optimizerEnabled;
         } catch (err) {
             shouldCompile = true;
         }
@@ -174,9 +175,11 @@ export class Compiler {
         const sourcesToCompile = {
             sources: input,
         };
-        const compiled = solcInstance.compile(sourcesToCompile,
-                                              this._optimizerEnabled,
-                                              this._findImportsIfSourcesExist.bind(this));
+        const compiled = solcInstance.compile(
+            sourcesToCompile,
+            this._optimizerEnabled,
+            this._findImportsIfSourcesExist.bind(this),
+        );
 
         if (!_.isUndefined(compiled.errors)) {
             _.each(compiled.errors, errMsg => {

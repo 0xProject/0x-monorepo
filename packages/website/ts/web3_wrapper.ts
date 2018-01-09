@@ -1,7 +1,7 @@
-import {intervalUtils, promisify} from '@0xproject/utils';
+import { intervalUtils, promisify } from '@0xproject/utils';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
-import {Dispatcher} from 'ts/redux/dispatcher';
+import { Dispatcher } from 'ts/redux/dispatcher';
 import * as Web3 from 'web3';
 
 export class Web3Wrapper {
@@ -12,8 +12,12 @@ export class Web3Wrapper {
     private _watchNetworkAndBalanceIntervalId: NodeJS.Timer;
     private _prevUserEtherBalanceInEth: BigNumber;
     private _prevUserAddress: string;
-    constructor(dispatcher: Dispatcher, provider: Web3.Provider, networkIdIfExists: number,
-                shouldPollUserAddress: boolean) {
+    constructor(
+        dispatcher: Dispatcher,
+        provider: Web3.Provider,
+        networkIdIfExists: number,
+        shouldPollUserAddress: boolean,
+    ) {
         this._dispatcher = dispatcher;
         this._prevNetworkId = networkIdIfExists;
         this._shouldPollUserAddress = shouldPollUserAddress;
@@ -36,7 +40,7 @@ export class Web3Wrapper {
         if (_.isEmpty(addresses)) {
             return '';
         }
-        return (addresses)[0];
+        return addresses[0];
     }
     public async getNodeVersionAsync(): Promise<string> {
         const nodeVersion = await promisify<string>(this._web3.version.getNode)();
@@ -71,7 +75,7 @@ export class Web3Wrapper {
         return signData;
     }
     public async getBlockTimestampAsync(blockHash: string): Promise<number> {
-        const {timestamp} = await promisify<Web3.BlockWithoutTransactionData>(this._web3.eth.getBlock)(blockHash);
+        const { timestamp } = await promisify<Web3.BlockWithoutTransactionData>(this._web3.eth.getBlock)(blockHash);
         return timestamp;
     }
     public destroy() {

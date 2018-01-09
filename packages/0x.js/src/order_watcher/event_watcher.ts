@@ -1,14 +1,10 @@
-import {intervalUtils} from '@0xproject/utils';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
+import { intervalUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import {
-    BlockParamLiteral,
-    EventWatcherCallback,
-    ZeroExError,
-} from '../types';
-import {assert} from '../utils/assert';
+import { BlockParamLiteral, EventWatcherCallback, ZeroExError } from '../types';
+import { assert } from '../utils/assert';
 
 const DEFAULT_EVENT_POLLING_INTERVAL_MS = 200;
 
@@ -26,11 +22,11 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: Web3.LogEntry[] = [];
-    constructor(web3Wrapper: Web3Wrapper, pollingIntervalIfExistsMs: undefined|number) {
+    constructor(web3Wrapper: Web3Wrapper, pollingIntervalIfExistsMs: undefined | number) {
         this._web3Wrapper = web3Wrapper;
-        this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs) ?
-                                    DEFAULT_EVENT_POLLING_INTERVAL_MS :
-                                    pollingIntervalIfExistsMs;
+        this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
+            ? DEFAULT_EVENT_POLLING_INTERVAL_MS
+            : pollingIntervalIfExistsMs;
     }
     public subscribe(callback: EventWatcherCallback): void {
         assert.isFunction('callback', callback);
@@ -38,7 +34,8 @@ export class EventWatcher {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
         this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this._pollForBlockchainEventsAsync.bind(this, callback), this._pollingIntervalMs,
+            this._pollForBlockchainEventsAsync.bind(this, callback),
+            this._pollingIntervalMs,
         );
     }
     public unsubscribe(): void {
@@ -71,7 +68,9 @@ export class EventWatcher {
         return events;
     }
     private async _emitDifferencesAsync(
-        logs: Web3.LogEntry[], logEventState: LogEventState, callback: EventWatcherCallback,
+        logs: Web3.LogEntry[],
+        logEventState: LogEventState,
+        callback: EventWatcherCallback,
     ): Promise<void> {
         for (const log of logs) {
             const logEvent = {
