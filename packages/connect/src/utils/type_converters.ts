@@ -1,15 +1,17 @@
 import { BigNumber } from 'bignumber.js';
 import * as _ from 'lodash';
 
-// TODO: convert all of these to non-mutating, pure functions
 export const typeConverters = {
-    convertOrderbookStringFieldsToBigNumber(orderbook: object): void {
-        _.each(orderbook, (orders: object[]) => {
-            _.each(orders, (order: object) => this.convertOrderStringFieldsToBigNumber(order));
-        });
+    convertOrderbookStringFieldsToBigNumber(orderbook: any): any {
+        const bids = _.get(orderbook, 'bids', []);
+        const asks = _.get(orderbook, 'asks', []);
+        return {
+            bids: bids.map((order: any) => this.convertOrderStringFieldsToBigNumber(order)),
+            asks: asks.map((order: any) => this.convertOrderStringFieldsToBigNumber(order)),
+        };
     },
-    convertOrderStringFieldsToBigNumber(order: object): void {
-        this.convertStringsFieldsToBigNumbers(order, [
+    convertOrderStringFieldsToBigNumber(order: any): any {
+        return this.convertStringsFieldsToBigNumbers(order, [
             'makerTokenAmount',
             'takerTokenAmount',
             'makerFee',
@@ -18,9 +20,11 @@ export const typeConverters = {
             'salt',
         ]);
     },
-    convertStringsFieldsToBigNumbers(obj: object, fields: string[]): void {
+    convertStringsFieldsToBigNumbers(obj: any, fields: string[]): any {
+        const result = _.assign({}, obj);
         _.each(fields, field => {
-            _.update(obj, field, (value: string) => new BigNumber(value));
+            _.update(result, field, (value: string) => new BigNumber(value));
         });
+        return result;
     },
 };

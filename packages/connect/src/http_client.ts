@@ -18,7 +18,7 @@ import {
     TokenPairsItem,
     TokenPairsRequest,
 } from './types';
-import { typeConverters } from './utils/type_converters';
+import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
@@ -48,16 +48,8 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const tokenPairs = await this._requestAsync('/token_pairs', HttpRequestType.Get, requestOpts);
-        assert.doesConformToSchema('tokenPairs', tokenPairs, schemas.relayerApiTokenPairsResponseSchema);
-        _.each(tokenPairs, (tokenPair: object) => {
-            typeConverters.convertStringsFieldsToBigNumbers(tokenPair, [
-                'tokenA.minAmount',
-                'tokenA.maxAmount',
-                'tokenB.minAmount',
-                'tokenB.maxAmount',
-            ]);
-        });
+        const responseJson = await this._requestAsync('/token_pairs', HttpRequestType.Get, requestOpts);
+        const tokenPairs = relayerResponseJsonParsers.parseTokenPairsJson(responseJson);
         return tokenPairs;
     }
     /**
@@ -72,9 +64,8 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const orders = await this._requestAsync(`/orders`, HttpRequestType.Get, requestOpts);
-        assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
-        _.each(orders, (order: object) => typeConverters.convertOrderStringFieldsToBigNumber(order));
+        const responseJson = await this._requestAsync(`/orders`, HttpRequestType.Get, requestOpts);
+        const orders = relayerResponseJsonParsers.parseOrdersJson(responseJson);
         return orders;
     }
     /**
@@ -84,9 +75,8 @@ export class HttpClient implements Client {
      */
     public async getOrderAsync(orderHash: string): Promise<SignedOrder> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        const order = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get);
-        assert.doesConformToSchema('order', order, schemas.signedOrderSchema);
-        typeConverters.convertOrderStringFieldsToBigNumber(order);
+        const responseJson = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get);
+        const order = relayerResponseJsonParsers.parseOrderJson(responseJson);
         return order;
     }
     /**
@@ -99,10 +89,9 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const orderBook = await this._requestAsync('/orderbook', HttpRequestType.Get, requestOpts);
-        assert.doesConformToSchema('orderBook', orderBook, schemas.relayerApiOrderBookResponseSchema);
-        typeConverters.convertOrderbookStringFieldsToBigNumber(orderBook);
-        return orderBook;
+        const responseJson = await this._requestAsync('/orderbook', HttpRequestType.Get, requestOpts);
+        const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(responseJson);
+        return orderbook;
     }
     /**
      * Retrieve fee information from the API
@@ -114,9 +103,8 @@ export class HttpClient implements Client {
         const requestOpts = {
             payload: request,
         };
-        const fees = await this._requestAsync('/fees', HttpRequestType.Post, requestOpts);
-        assert.doesConformToSchema('fees', fees, schemas.relayerApiFeesResponseSchema);
-        typeConverters.convertStringsFieldsToBigNumbers(fees, ['makerFee', 'takerFee']);
+        const responseJson = await this._requestAsync('/fees', HttpRequestType.Post, requestOpts);
+        const fees = relayerResponseJsonParsers.parseFeesResponseJson(responseJson);
         return fees;
     }
     /**
