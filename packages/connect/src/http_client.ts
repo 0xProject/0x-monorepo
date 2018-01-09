@@ -48,13 +48,13 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const result = await this._requestAsync(
+        const responseJson = await this._requestAsync(
             '/token_pairs',
             HttpRequestType.Get,
-            relayerResponseJsonParsers.parseTokenPairsJson,
             requestOpts,
         );
-        return result;
+        const tokenPairs = relayerResponseJsonParsers.parseTokenPairsJson(responseJson);
+        return tokenPairs;
     }
     /**
      * Retrieve orders from the API
@@ -68,13 +68,13 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const result = await this._requestAsync(
+        const responseJson = await this._requestAsync(
             `/orders`,
             HttpRequestType.Get,
-            relayerResponseJsonParsers.parseOrdersJson,
             requestOpts,
         );
-        return result;
+        const orders = relayerResponseJsonParsers.parseOrdersJson(responseJson);
+        return orders;
     }
     /**
      * Retrieve a specific order from the API
@@ -83,12 +83,12 @@ export class HttpClient implements Client {
      */
     public async getOrderAsync(orderHash: string): Promise<SignedOrder> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        const result = await this._requestAsync(
+        const responseJson = await this._requestAsync(
             `/order/${orderHash}`,
             HttpRequestType.Get,
-            relayerResponseJsonParsers.parseOrderJson,
         );
-        return result;
+        const order = relayerResponseJsonParsers.parseOrderJson(responseJson);
+        return order;
     }
     /**
      * Retrieve an orderbook from the API
@@ -100,13 +100,13 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const result = await this._requestAsync(
+        const responseJson = await this._requestAsync(
             '/orderbook',
             HttpRequestType.Get,
-            relayerResponseJsonParsers.parseOrderbookResponseJson,
             requestOpts,
         );
-        return result;
+        const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(responseJson);
+        return orderbook;
     }
     /**
      * Retrieve fee information from the API
@@ -118,13 +118,13 @@ export class HttpClient implements Client {
         const requestOpts = {
             payload: request,
         };
-        const result = await this._requestAsync(
+        const responseJson = await this._requestAsync(
             '/fees',
             HttpRequestType.Post,
-            relayerResponseJsonParsers.parseFeesResponseJson,
             requestOpts,
         );
-        return result;
+        const fees = relayerResponseJsonParsers.parseFeesResponseJson(responseJson);
+        return fees;
     }
     /**
      * Submit a signed order to the API
@@ -138,13 +138,10 @@ export class HttpClient implements Client {
         await this._requestAsync(
             '/order',
             HttpRequestType.Post,
-            _.noop,
             requestOpts,
         );
     }
-    private async _requestAsync<T>(path: string, requestType: HttpRequestType,
-                                   jsonParser: (json: any) => T,
-                                   requestOptions?: HttpRequestOptions): Promise<T> {
+    private async _requestAsync(path: string, requestType: HttpRequestType, requestOptions?: HttpRequestOptions): Promise<any> {
         const params = _.get(requestOptions, 'params');
         const payload = _.get(requestOptions, 'payload');
         let query = '';
@@ -166,6 +163,6 @@ export class HttpClient implements Client {
             throw Error(response.statusText);
         }
         const json = await response.json();
-        return jsonParser(json);
+        return json;
     }
 }
