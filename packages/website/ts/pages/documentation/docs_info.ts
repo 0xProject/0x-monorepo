@@ -18,7 +18,7 @@ export class DocsInfo {
     public docsJsonRoot: string;
     public menu: DocsMenu;
     public sections: SectionsMap;
-    public sectionNameToMarkdown: {[sectionName: string]: string};
+    public sectionNameToMarkdown: { [sectionName: string]: string };
     private _docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
         this.displayName = config.displayName;
@@ -41,7 +41,7 @@ export class DocsInfo {
         const modulePathsIfExists = this._docsInfo.sectionNameToModulePath[sectionName];
         return modulePathsIfExists;
     }
-    public getMenu(selectedVersion?: string): {[section: string]: string[]} {
+    public getMenu(selectedVersion?: string): { [section: string]: string[] } {
         if (_.isUndefined(selectedVersion) || _.isUndefined(this._docsInfo.menuSubsectionToVersionWhenIntroduced)) {
             return this._docsInfo.menu;
         }
@@ -55,8 +55,7 @@ export class DocsInfo {
         finalMenu.contracts = _.filter(finalMenu.contracts, (contractName: string) => {
             const versionIntroducedIfExists = this._docsInfo.menuSubsectionToVersionWhenIntroduced[contractName];
             if (!_.isUndefined(versionIntroducedIfExists)) {
-                const existsInSelectedVersion = compareVersions(selectedVersion,
-                                                                versionIntroducedIfExists) >= 0;
+                const existsInSelectedVersion = compareVersions(selectedVersion, versionIntroducedIfExists) >= 0;
                 return existsInSelectedVersion;
             } else {
                 return true;
@@ -106,7 +105,7 @@ export class DocsInfo {
     public isVisibleConstructor(sectionName: string): boolean {
         return _.includes(this._docsInfo.visibleConstructors, sectionName);
     }
-    public convertToDocAgnosticFormat(docObj: DoxityDocObj|TypeDocNode): DocAgnosticFormat {
+    public convertToDocAgnosticFormat(docObj: DoxityDocObj | TypeDocNode): DocAgnosticFormat {
         return this._docsInfo.convertToDocAgnosticFormatFn(docObj, this);
     }
 }

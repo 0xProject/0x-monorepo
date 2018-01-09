@@ -1,10 +1,10 @@
-import {bigNumberConfigs} from '@0xproject/utils';
+import { bigNumberConfigs } from '@0xproject/utils';
 
 // Customize our BigNumber instances
 bigNumberConfigs.configure();
 
-export {HttpClient} from './http_client';
-export {WebSocketOrderbookChannel} from './ws_orderbook_channel';
+export { HttpClient } from './http_client';
+export { WebSocketOrderbookChannel } from './ws_orderbook_channel';
 export {
     Client,
     ECSignature,

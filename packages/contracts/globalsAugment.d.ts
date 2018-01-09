@@ -1,4 +1,4 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 
 // HACK: This module overrides the Chai namespace so that we can use BigNumber types inside.
 // Source: https://github.com/Microsoft/TypeScript/issues/7352#issuecomment-191547232

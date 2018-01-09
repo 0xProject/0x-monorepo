@@ -1,6 +1,6 @@
 # CHANGELOG
 
-v0.x.x - TBD
+v0.4.0 - _December 28, 2017_
 ------------------------
     * Added custom 'underscore-privates' rule, requiring underscores to be prepended to private variable names
     * Because our tools can be used in both a TS and JS environment, we want to make the private methods of any public facing interface show up at the bottom of auto-complete lists. Additionally, we wanted to remain consistent with respect to our usage of underscores in order to enforce this rule with a linter rule, rather then manual code reviews.

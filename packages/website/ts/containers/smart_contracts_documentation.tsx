@@ -1,16 +1,13 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {Dispatch} from 'redux';
-import {DocsInfo} from 'ts/pages/documentation/docs_info';
-import {
-    Documentation as DocumentationComponent,
-    DocumentationAllProps,
-} from 'ts/pages/documentation/documentation';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
-import {DocsInfoConfig, SmartContractDocSections as Sections, WebsitePaths} from 'ts/types';
-import {doxityUtils} from 'ts/utils/doxity_utils';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { DocsInfo } from 'ts/pages/documentation/docs_info';
+import { Documentation as DocumentationComponent, DocumentationAllProps } from 'ts/pages/documentation/documentation';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { State } from 'ts/redux/reducer';
+import { DocsInfoConfig, SmartContractDocSections as Sections, WebsitePaths } from 'ts/types';
+import { doxityUtils } from 'ts/utils/doxity_utils';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/smart_contracts/introduction');
@@ -22,15 +19,8 @@ const docsInfoConfig: DocsInfoConfig = {
     websitePath: WebsitePaths.SmartContracts,
     docsJsonRoot: 'https://s3.amazonaws.com/smart-contracts-docs-json',
     menu: {
-        introduction: [
-            Sections.Introduction,
-        ],
-        contracts: [
-            Sections.Exchange,
-            Sections.TokenRegistry,
-            Sections.ZRXToken,
-            Sections.TokenTransferProxy,
-        ],
+        introduction: [Sections.Introduction],
+        contracts: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
     },
     sectionNameToMarkdown: {
         [Sections.Introduction]: IntroMarkdown,
@@ -42,12 +32,7 @@ const docsInfoConfig: DocsInfoConfig = {
         TokenRegistry: Sections.TokenRegistry,
         ZRXToken: Sections.ZRXToken,
     },
-    visibleConstructors: [
-        Sections.Exchange,
-        Sections.TokenRegistry,
-        Sections.ZRXToken,
-        Sections.TokenTransferProxy,
-    ],
+    visibleConstructors: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
     convertToDocAgnosticFormatFn: doxityUtils.convertToDocAgnosticFormat.bind(doxityUtils),
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
@@ -72,5 +57,6 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     docsInfo,
 });
 
-export const Documentation: React.ComponentClass<DocumentationAllProps> =
-  connect(mapStateToProps, mapDispatchToProps)(DocumentationComponent);
+export const Documentation: React.ComponentClass<DocumentationAllProps> = connect(mapStateToProps, mapDispatchToProps)(
+    DocumentationComponent,
+);

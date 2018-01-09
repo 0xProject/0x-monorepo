@@ -1,8 +1,8 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import * as _ from 'lodash';
 
-import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
-import {BlockParamLiteral} from '../types';
+import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
+import { BlockParamLiteral } from '../types';
 
 /**
  * Copy on read store for filled/cancelled taker amounts

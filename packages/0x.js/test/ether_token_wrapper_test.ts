@@ -1,4 +1,4 @@
-import {BlockchainLifecycle} from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import 'mocha';
@@ -17,13 +17,13 @@ import {
     ZeroEx,
     ZeroExError,
 } from '../src';
-import {artifacts} from '../src/artifacts';
-import {DoneCallback} from '../src/types';
+import { artifacts } from '../src/artifacts';
+import { DoneCallback } from '../src/types';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
-import {TokenUtils} from './utils/token_utils';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
+import { TokenUtils } from './utils/token_utils';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -167,10 +167,12 @@ describe('EtherTokenWrapper', () => {
                     done();
                 };
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
-                zeroEx.etherToken.subscribe(
-                    etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callback);
+                zeroEx.etherToken.subscribe(etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callback);
                 await zeroEx.token.transferAsync(
-                    etherTokenAddress, addressWithETH, addressWithoutFunds, transferAmount,
+                    etherTokenAddress,
+                    addressWithETH,
+                    addressWithoutFunds,
+                    transferAmount,
                 );
             })().catch(done);
         });
@@ -186,10 +188,12 @@ describe('EtherTokenWrapper', () => {
                     expect(args._value).to.be.bignumber.equal(allowanceAmount);
                     done();
                 };
-                zeroEx.etherToken.subscribe(
-                    etherTokenAddress, EtherTokenEvents.Approval, indexFilterValues, callback);
+                zeroEx.etherToken.subscribe(etherTokenAddress, EtherTokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(
-                    etherTokenAddress, addressWithETH, addressWithoutFunds, allowanceAmount,
+                    etherTokenAddress,
+                    addressWithETH,
+                    addressWithoutFunds,
+                    allowanceAmount,
                 );
             })().catch(done);
         });
@@ -204,11 +208,8 @@ describe('EtherTokenWrapper', () => {
                     expect(args._value).to.be.bignumber.equal(depositAmount);
                     done();
                 };
-                zeroEx.etherToken.subscribe(
-                    etherTokenAddress, EtherTokenEvents.Deposit, indexFilterValues, callback);
-                await zeroEx.etherToken.depositAsync(
-                    etherTokenAddress, depositAmount, addressWithETH,
-                );
+                zeroEx.etherToken.subscribe(etherTokenAddress, EtherTokenEvents.Deposit, indexFilterValues, callback);
+                await zeroEx.etherToken.depositAsync(etherTokenAddress, depositAmount, addressWithETH);
             })().catch(done);
         });
         it('Should receive the Withdrawal event when ether is being withdrawn', (done: DoneCallback) => {
@@ -222,14 +223,14 @@ describe('EtherTokenWrapper', () => {
                     expect(args._value).to.be.bignumber.equal(depositAmount);
                     done();
                 };
-                await zeroEx.etherToken.depositAsync(
-                    etherTokenAddress, depositAmount, addressWithETH,
-                );
+                await zeroEx.etherToken.depositAsync(etherTokenAddress, depositAmount, addressWithETH);
                 zeroEx.etherToken.subscribe(
-                    etherTokenAddress, EtherTokenEvents.Withdrawal, indexFilterValues, callback);
-                await zeroEx.etherToken.withdrawAsync(
-                    etherTokenAddress, withdrawalAmount, addressWithETH,
+                    etherTokenAddress,
+                    EtherTokenEvents.Withdrawal,
+                    indexFilterValues,
+                    callback,
                 );
+                await zeroEx.etherToken.withdrawAsync(etherTokenAddress, withdrawalAmount, addressWithETH);
             })().catch(done);
         });
         it('should cancel outstanding subscriptions when ZeroEx.setProvider is called', (done: DoneCallback) => {
@@ -238,7 +239,10 @@ describe('EtherTokenWrapper', () => {
                     done(new Error('Expected this subscription to have been cancelled'));
                 };
                 zeroEx.etherToken.subscribe(
-                    etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled,
+                    etherTokenAddress,
+                    EtherTokenEvents.Transfer,
+                    indexFilterValues,
+                    callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
                     done();
@@ -247,10 +251,16 @@ describe('EtherTokenWrapper', () => {
                 zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
                 zeroEx.etherToken.subscribe(
-                    etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callbackToBeCalled,
+                    etherTokenAddress,
+                    EtherTokenEvents.Transfer,
+                    indexFilterValues,
+                    callbackToBeCalled,
                 );
                 await zeroEx.token.transferAsync(
-                    etherTokenAddress, addressWithETH, addressWithoutFunds, transferAmount,
+                    etherTokenAddress,
+                    addressWithETH,
+                    addressWithoutFunds,
+                    transferAmount,
                 );
             })().catch(done);
         });
@@ -261,10 +271,17 @@ describe('EtherTokenWrapper', () => {
                 };
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
                 const subscriptionToken = zeroEx.etherToken.subscribe(
-                    etherTokenAddress, EtherTokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled);
+                    etherTokenAddress,
+                    EtherTokenEvents.Transfer,
+                    indexFilterValues,
+                    callbackNeverToBeCalled,
+                );
                 zeroEx.etherToken.unsubscribe(subscriptionToken);
                 await zeroEx.token.transferAsync(
-                    etherTokenAddress, addressWithETH, addressWithoutFunds, transferAmount,
+                    etherTokenAddress,
+                    addressWithETH,
+                    addressWithoutFunds,
+                    transferAmount,
                 );
                 done();
             })().catch(done);
@@ -291,7 +308,10 @@ describe('EtherTokenWrapper', () => {
             const eventName = EtherTokenEvents.Approval;
             const indexFilterValues = {};
             const logs = await zeroEx.etherToken.getLogsAsync<ApprovalContractEventArgs>(
-                etherTokenAddress, eventName, blockRange, indexFilterValues,
+                etherTokenAddress,
+                eventName,
+                blockRange,
+                indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;
@@ -305,7 +325,10 @@ describe('EtherTokenWrapper', () => {
             const eventName = EtherTokenEvents.Deposit;
             const indexFilterValues = {};
             const logs = await zeroEx.etherToken.getLogsAsync<DepositContractEventArgs>(
-                etherTokenAddress, eventName, blockRange, indexFilterValues,
+                etherTokenAddress,
+                eventName,
+                blockRange,
+                indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;
@@ -319,7 +342,10 @@ describe('EtherTokenWrapper', () => {
             const differentEventName = EtherTokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await zeroEx.etherToken.getLogsAsync(
-                etherTokenAddress, differentEventName, blockRange, indexFilterValues,
+                etherTokenAddress,
+                differentEventName,
+                blockRange,
+                indexFilterValues,
             );
             expect(logs).to.have.length(0);
         });
@@ -333,7 +359,10 @@ describe('EtherTokenWrapper', () => {
                 _owner: addressWithETH,
             };
             const logs = await zeroEx.etherToken.getLogsAsync<ApprovalContractEventArgs>(
-                etherTokenAddress, eventName, blockRange, indexFilterValues,
+                etherTokenAddress,
+                eventName,
+                blockRange,
+                indexFilterValues,
             );
             expect(logs).to.have.length(1);
             const args = logs[0].args;

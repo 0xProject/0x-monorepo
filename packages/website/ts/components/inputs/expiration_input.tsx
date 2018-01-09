@@ -4,7 +4,7 @@ import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import * as moment from 'moment';
 import * as React from 'react';
-import {utils} from 'ts/utils/utils';
+import { utils } from 'ts/utils/utils';
 
 interface ExpirationInputProps {
     orderExpiryTimestamp: BigNumber;
@@ -45,10 +45,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
                         onChange={this._onDateChanged.bind(this)}
                         shouldDisableDate={this._shouldDisableDate.bind(this)}
                     />
-                    <div
-                        className="absolute"
-                        style={{fontSize: 20, right: 40, top: 13, pointerEvents: 'none'}}
-                    >
+                    <div className="absolute" style={{ fontSize: 20, right: 40, top: 13, pointerEvents: 'none' }}>
                         <i className="zmdi zmdi-calendar" />
                     </div>
                 </div>
@@ -60,25 +57,20 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
                         value={time}
                         onChange={this._onTimeChanged.bind(this)}
                     />
-                    <div
-                        className="absolute"
-                        style={{fontSize: 20, right: 9, top: 13, pointerEvents: 'none'}}
-                    >
+                    <div className="absolute" style={{ fontSize: 20, right: 9, top: 13, pointerEvents: 'none' }}>
                         <i className="zmdi zmdi-time" />
                     </div>
                 </div>
-                <div
-                    onClick={this._clearDates.bind(this)}
-                    className="col col-1 pt2"
-                    style={{textAlign: 'right'}}
-                >
-                    <i style={{fontSize: 16, cursor: 'pointer'}} className="zmdi zmdi-close" />
+                <div onClick={this._clearDates.bind(this)} className="col col-1 pt2" style={{ textAlign: 'right' }}>
+                    <i style={{ fontSize: 16, cursor: 'pointer' }} className="zmdi zmdi-close" />
                 </div>
             </div>
         );
     }
     private _shouldDisableDate(date: Date): boolean {
-        return moment(date).startOf('day').isBefore(this._earliestPickableMoment);
+        return moment(date)
+            .startOf('day')
+            .isBefore(this._earliestPickableMoment);
     }
     private _clearDates() {
         this.setState({
@@ -101,7 +93,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
         this.setState({
             timeMoment,
         });
-        const dateMoment =  _.isUndefined(this.state.dateMoment) ? moment() : this.state.dateMoment;
+        const dateMoment = _.isUndefined(this.state.dateMoment) ? moment() : this.state.dateMoment;
         const timestamp = utils.convertToUnixTimestampSeconds(dateMoment, timeMoment);
         this.props.updateOrderExpiry(timestamp);
     }

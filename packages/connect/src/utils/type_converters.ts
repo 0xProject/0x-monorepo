@@ -1,4 +1,4 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import * as _ from 'lodash';
 
 // TODO: convert all of these to non-mutating, pure functions

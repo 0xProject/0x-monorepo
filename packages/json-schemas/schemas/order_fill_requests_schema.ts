@@ -3,8 +3,8 @@ export const orderFillRequestsSchema = {
     type: 'array',
     items: {
         properties: {
-            signedOrder: {$ref: '/SignedOrder'},
-            takerTokenFillAmount: {$ref: '/Number'},
+            signedOrder: { $ref: '/SignedOrder' },
+            takerTokenFillAmount: { $ref: '/Number' },
         },
         required: ['signedOrder', 'takerTokenFillAmount'],
         type: 'object',

@@ -1,8 +1,8 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import * as _ from 'lodash';
 
-import {TokenWrapper} from '../contract_wrappers/token_wrapper';
-import {BlockParamLiteral} from '../types';
+import { TokenWrapper } from '../contract_wrappers/token_wrapper';
+import { BlockParamLiteral } from '../types';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
@@ -52,8 +52,10 @@ export class BalanceAndProxyAllowanceLazyStore {
         }
     }
     public async getProxyAllowanceAsync(tokenAddress: string, userAddress: string): Promise<BigNumber> {
-        if (_.isUndefined(this._proxyAllowance[tokenAddress]) ||
-            _.isUndefined(this._proxyAllowance[tokenAddress][userAddress])) {
+        if (
+            _.isUndefined(this._proxyAllowance[tokenAddress]) ||
+            _.isUndefined(this._proxyAllowance[tokenAddress][userAddress])
+        ) {
             const methodOpts = {
                 defaultBlock: this._defaultBlock,
             };

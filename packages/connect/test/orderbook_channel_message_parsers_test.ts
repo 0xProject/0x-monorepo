@@ -2,16 +2,15 @@ import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 
-import {orderbookChannelMessageParsers} from '../src/utils/orderbook_channel_message_parsers';
+import { orderbookChannelMessageParsers } from '../src/utils/orderbook_channel_message_parsers';
 
-// tslint:disable-next-line:max-line-length
-import {orderResponse} from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
-import {orderbookResponse} from './fixtures/standard_relayer_api/orderbook';
+import { orderResponse } from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
+import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import {
     malformedSnapshotOrderbookChannelMessage,
     snapshotOrderbookChannelMessage,
 } from './fixtures/standard_relayer_api/snapshot_orderbook_channel_message';
-import {unknownOrderbookChannelMessage} from './fixtures/standard_relayer_api/unknown_orderbook_channel_message';
+import { unknownOrderbookChannelMessage } from './fixtures/standard_relayer_api/unknown_orderbook_channel_message';
 import {
     malformedUpdateOrderbookChannelMessage,
     updateOrderbookChannelMessage,
@@ -58,15 +57,13 @@ describe('orderbookChannelMessageParsers', () => {
             expect(badCall).throws('Expected type to be of type string, encountered: 1');
         });
         it('throws when snapshot message has malformed payload', () => {
-            const badCall = () =>
-                orderbookChannelMessageParsers.parser(malformedSnapshotOrderbookChannelMessage);
-            // tslint:disable-next-line:max-line-length
-            const errMsg = 'Validation errors: instance.payload requires property "bids", instance.payload requires property "asks"';
+            const badCall = () => orderbookChannelMessageParsers.parser(malformedSnapshotOrderbookChannelMessage);
+            const errMsg =
+                'Validation errors: instance.payload requires property "bids", instance.payload requires property "asks"';
             expect(badCall).throws(errMsg);
         });
         it('throws when update message has malformed payload', () => {
-            const badCall = () =>
-                orderbookChannelMessageParsers.parser(malformedUpdateOrderbookChannelMessage);
+            const badCall = () => orderbookChannelMessageParsers.parser(malformedUpdateOrderbookChannelMessage);
             expect(badCall).throws(/^Expected message to conform to schema/);
         });
         it('throws when input message is not valid JSON', () => {

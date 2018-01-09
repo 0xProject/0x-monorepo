@@ -1,4 +1,4 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 
 // TODO: Consolidate Order, SignedOrder and ECSignature into a shared package instead of duplicating them from 0x.js
 export interface Order {
@@ -57,19 +57,24 @@ export interface OrderbookChannelSubscriptionOpts {
 }
 
 export interface OrderbookChannelHandler {
-    onSnapshot: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts,
-                 snapshot: OrderbookResponse) => void;
-    onUpdate: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts,
-               order: SignedOrder) => void;
-    onError: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts,
-              err: Error) => void;
+    onSnapshot: (
+        channel: OrderbookChannel,
+        subscriptionOpts: OrderbookChannelSubscriptionOpts,
+        snapshot: OrderbookResponse,
+    ) => void;
+    onUpdate: (
+        channel: OrderbookChannel,
+        subscriptionOpts: OrderbookChannelSubscriptionOpts,
+        order: SignedOrder,
+    ) => void;
+    onError: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts, err: Error) => void;
     onClose: (channel: OrderbookChannel, subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
 }
 
 export type OrderbookChannelMessage =
-    SnapshotOrderbookChannelMessage |
-    UpdateOrderbookChannelMessage |
-    UnknownOrderbookChannelMessage;
+    | SnapshotOrderbookChannelMessage
+    | UpdateOrderbookChannelMessage
+    | UnknownOrderbookChannelMessage;
 
 export enum OrderbookChannelMessageTypes {
     Snapshot = 'snapshot',

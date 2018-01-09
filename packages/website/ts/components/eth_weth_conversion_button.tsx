@@ -1,15 +1,15 @@
-import {ZeroEx} from '0x.js';
+import { ZeroEx } from '0x.js';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {EthWethConversionDialog} from 'ts/components/dialogs/eth_weth_conversion_dialog';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {BlockchainCallErrs, Side, Token, TokenState} from 'ts/types';
-import {constants} from 'ts/utils/constants';
-import {errorReporter} from 'ts/utils/error_reporter';
-import {utils} from 'ts/utils/utils';
+import { Blockchain } from 'ts/blockchain';
+import { EthWethConversionDialog } from 'ts/components/dialogs/eth_weth_conversion_dialog';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { BlockchainCallErrs, Side, Token, TokenState } from 'ts/types';
+import { constants } from 'ts/utils/constants';
+import { errorReporter } from 'ts/utils/error_reporter';
+import { utils } from 'ts/utils/utils';
 
 interface EthWethConversionButtonProps {
     direction: Side;
@@ -28,8 +28,10 @@ interface EthWethConversionButtonState {
     isEthConversionHappening: boolean;
 }
 
-export class EthWethConversionButton extends
-    React.Component<EthWethConversionButtonProps, EthWethConversionButtonState> {
+export class EthWethConversionButton extends React.Component<
+    EthWethConversionButtonProps,
+    EthWethConversionButtonState
+> {
     public static defaultProps: Partial<EthWethConversionButtonProps> = {
         isDisabled: false,
         onConversionSuccessful: _.noop,
@@ -42,7 +44,7 @@ export class EthWethConversionButton extends
         };
     }
     public render() {
-        const labelStyle = this.state.isEthConversionHappening ? {fontSize: 10} : {};
+        const labelStyle = this.state.isEthConversionHappening ? { fontSize: 10 } : {};
         let callToActionLabel;
         let inProgressLabel;
         if (this.props.direction === Side.Deposit) {
@@ -55,7 +57,7 @@ export class EthWethConversionButton extends
         return (
             <div>
                 <RaisedButton
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     labelStyle={labelStyle}
                     disabled={this.props.isDisabled || this.state.isEthConversionHappening}
                     label={this.state.isEthConversionHappening ? inProgressLabel : callToActionLabel}
@@ -109,9 +111,10 @@ export class EthWethConversionButton extends
             } else if (!_.includes(errMsg, 'User denied transaction')) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
-                const errorMsg = direction === Side.Deposit ?
-                                 'Failed to wrap your ETH. Please try again.' :
-                                 'Failed to unwrap your WETH. Please try again.';
+                const errorMsg =
+                    direction === Side.Deposit
+                        ? 'Failed to wrap your ETH. Please try again.'
+                        : 'Failed to unwrap your WETH. Please try again.';
                 this.props.dispatcher.showFlashMessage(errorMsg);
                 await errorReporter.reportAsync(err);
             }

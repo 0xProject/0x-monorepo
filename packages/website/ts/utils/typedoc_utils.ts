@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {DocsInfo} from 'ts/pages/documentation/docs_info';
+import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import {
     CustomType,
     CustomTypeChild,
@@ -16,15 +16,17 @@ import {
     TypeParameter,
     TypescriptMethod,
 } from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import { utils } from 'ts/utils/utils';
 
 export const typeDocUtils = {
     isType(entity: TypeDocNode): boolean {
-        return entity.kindString === KindString.Interface ||
-               entity.kindString === KindString.Function ||
-               entity.kindString === KindString.TypeAlias ||
-               entity.kindString === KindString.Variable ||
-               entity.kindString === KindString.Enumeration;
+        return (
+            entity.kindString === KindString.Interface ||
+            entity.kindString === KindString.Function ||
+            entity.kindString === KindString.TypeAlias ||
+            entity.kindString === KindString.Variable ||
+            entity.kindString === KindString.Enumeration
+        );
     },
     isMethod(entity: TypeDocNode): boolean {
         return entity.kindString === KindString.Method;
@@ -38,8 +40,10 @@ export const typeDocUtils = {
     isPrivateOrProtectedProperty(propertyName: string): boolean {
         return _.startsWith(propertyName, '_');
     },
-    getModuleDefinitionBySectionNameIfExists(versionDocObj: TypeDocNode, modulePaths: string[]):
-        TypeDocNode|undefined {
+    getModuleDefinitionBySectionNameIfExists(
+        versionDocObj: TypeDocNode,
+        modulePaths: string[],
+    ): TypeDocNode | undefined {
         const modules = versionDocObj.children;
         for (const mod of modules) {
             if (_.includes(modulePaths, mod.name)) {
@@ -59,7 +63,8 @@ export const typeDocUtils = {
                 return; // no-op
             }
             const packageDefinitionIfExists = typeDocUtils.getModuleDefinitionBySectionNameIfExists(
-                typeDocJson, modulePathsIfExists,
+                typeDocJson,
+                modulePathsIfExists,
             );
             if (_.isUndefined(packageDefinitionIfExists)) {
                 return; // no-op
@@ -99,7 +104,11 @@ export const typeDocUtils = {
                 case KindString.Constructor:
                     isConstructor = true;
                     const constructor = typeDocUtils._convertMethod(
-                        entity, isConstructor, docsInfo.sections, sectionName, docsInfo.subPackageName,
+                        entity,
+                        isConstructor,
+                        docsInfo.sections,
+                        sectionName,
+                        docsInfo.subPackageName,
                     );
                     docSection.constructors.push(constructor);
                     break;
@@ -108,7 +117,11 @@ export const typeDocUtils = {
                     if (entity.flags.isPublic) {
                         isConstructor = false;
                         const method = typeDocUtils._convertMethod(
-                            entity, isConstructor, docsInfo.sections, sectionName, docsInfo.subPackageName,
+                            entity,
+                            isConstructor,
+                            docsInfo.sections,
+                            sectionName,
+                            docsInfo.subPackageName,
                         );
                         docSection.methods.push(method);
                     }
@@ -117,7 +130,11 @@ export const typeDocUtils = {
                 case KindString.Property:
                     if (!typeDocUtils.isPrivateOrProtectedProperty(entity.name)) {
                         const property = typeDocUtils._convertProperty(
-                            entity, docsInfo.sections, sectionName, docsInfo.subPackageName);
+                            entity,
+                            docsInfo.sections,
+                            sectionName,
+                            docsInfo.subPackageName,
+                        );
                         docSection.properties.push(property);
                     }
                     break;
@@ -129,7 +146,11 @@ export const typeDocUtils = {
                 case KindString.TypeAlias:
                     if (docsInfo.isPublicType(entity.name)) {
                         const customType = typeDocUtils._convertCustomType(
-                            entity, docsInfo.sections, sectionName, docsInfo.subPackageName);
+                            entity,
+                            docsInfo.sections,
+                            sectionName,
+                            docsInfo.subPackageName,
+                        );
                         docSection.types.push(customType);
                     }
                     break;
@@ -140,35 +161,40 @@ export const typeDocUtils = {
         });
         return docSection;
     },
-    _convertCustomType(entity: TypeDocNode, sections: SectionsMap, sectionName: string,
-                       subPackageName: string): CustomType {
-        const typeIfExists = !_.isUndefined(entity.type) ?
-                             typeDocUtils._convertType(entity.type, sections, sectionName, subPackageName) :
-                             undefined;
+    _convertCustomType(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        subPackageName: string,
+    ): CustomType {
+        const typeIfExists = !_.isUndefined(entity.type)
+            ? typeDocUtils._convertType(entity.type, sections, sectionName, subPackageName)
+            : undefined;
         const isConstructor = false;
-        const methodIfExists = !_.isUndefined(entity.declaration) ?
-            typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, subPackageName) :
-            undefined;
-        const indexSignatureIfExists = !_.isUndefined(entity.indexSignature) ?
-            typeDocUtils._convertIndexSignature(entity.indexSignature[0], sections, sectionName, subPackageName) :
-            undefined;
-        const commentIfExists = !_.isUndefined(entity.comment) && !_.isUndefined(entity.comment.shortText) ?
-            entity.comment.shortText :
-            undefined;
+        const methodIfExists = !_.isUndefined(entity.declaration)
+            ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, subPackageName)
+            : undefined;
+        const indexSignatureIfExists = !_.isUndefined(entity.indexSignature)
+            ? typeDocUtils._convertIndexSignature(entity.indexSignature[0], sections, sectionName, subPackageName)
+            : undefined;
+        const commentIfExists =
+            !_.isUndefined(entity.comment) && !_.isUndefined(entity.comment.shortText)
+                ? entity.comment.shortText
+                : undefined;
 
-        const childrenIfExist = !_.isUndefined(entity.children) ?
-            _.map(entity.children, (child: TypeDocNode) => {
-                const childTypeIfExists = !_.isUndefined(child.type) ?
-                    typeDocUtils._convertType(child.type, sections, sectionName, subPackageName) :
-                    undefined;
-                const c: CustomTypeChild = {
-                    name: child.name,
-                    type: childTypeIfExists,
-                    defaultValue: child.defaultValue,
-                };
-                return c;
-            }) :
-            undefined;
+        const childrenIfExist = !_.isUndefined(entity.children)
+            ? _.map(entity.children, (child: TypeDocNode) => {
+                  const childTypeIfExists = !_.isUndefined(child.type)
+                      ? typeDocUtils._convertType(child.type, sections, sectionName, subPackageName)
+                      : undefined;
+                  const c: CustomTypeChild = {
+                      name: child.name,
+                      type: childTypeIfExists,
+                      defaultValue: child.defaultValue,
+                  };
+                  return c;
+              })
+            : undefined;
 
         const customType = {
             name: entity.name,
@@ -182,8 +208,12 @@ export const typeDocUtils = {
         };
         return customType;
     },
-    _convertIndexSignature(entity: TypeDocNode, sections: SectionsMap, sectionName: string,
-                           subPackageName: string): IndexSignature {
+    _convertIndexSignature(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        subPackageName: string,
+    ): IndexSignature {
         const key = entity.parameters[0];
         const indexSignature = {
             keyName: key.name,
@@ -192,8 +222,12 @@ export const typeDocUtils = {
         };
         return indexSignature;
     },
-    _convertProperty(entity: TypeDocNode, sections: SectionsMap, sectionName: string,
-                     subPackageName: string): Property {
+    _convertProperty(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        subPackageName: string,
+    ): Property {
         const source = entity.sources[0];
         const commentIfExists = !_.isUndefined(entity.comment) ? entity.comment.shortText : undefined;
         const property = {
@@ -208,7 +242,11 @@ export const typeDocUtils = {
         return property;
     },
     _convertMethod(
-        entity: TypeDocNode, isConstructor: boolean, sections: SectionsMap, sectionName: string, subPackageName: string,
+        entity: TypeDocNode,
+        isConstructor: boolean,
+        sections: SectionsMap,
+        sectionName: string,
+        subPackageName: string,
     ): TypescriptMethod {
         const signature = entity.signatures[0];
         const source = entity.sources[0];
@@ -222,9 +260,10 @@ export const typeDocUtils = {
             callPath = '';
         } else if (subPackageName === '0x.js') {
             const topLevelInterface = isStatic ? 'ZeroEx.' : 'zeroEx.';
-            callPath = (!_.isUndefined(sections.zeroEx) && sectionName !== sections.zeroEx) ?
-                       `${topLevelInterface}${sectionName}.` :
-                       topLevelInterface;
+            callPath =
+                !_.isUndefined(sections.zeroEx) && sectionName !== sections.zeroEx
+                    ? `${topLevelInterface}${sectionName}.`
+                    : topLevelInterface;
         } else {
             callPath = `${sectionName}.`;
         }
@@ -233,10 +272,9 @@ export const typeDocUtils = {
             return typeDocUtils._convertParameter(param, sections, sectionName, subPackageName);
         });
         const returnType = typeDocUtils._convertType(signature.type, sections, sectionName, subPackageName);
-        const typeParameter = _.isUndefined(signature.typeParameter) ?
-                              undefined :
-                              typeDocUtils._convertTypeParameter(
-                                  signature.typeParameter[0], sections, sectionName, subPackageName);
+        const typeParameter = _.isUndefined(signature.typeParameter)
+            ? undefined
+            : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, subPackageName);
 
         const method = {
             isConstructor,
@@ -255,8 +293,12 @@ export const typeDocUtils = {
         };
         return method;
     },
-    _convertTypeParameter(entity: TypeDocNode, sections: SectionsMap, sectionName: string,
-                          subPackageName: string): TypeParameter {
+    _convertTypeParameter(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        subPackageName: string,
+    ): TypeParameter {
         const type = typeDocUtils._convertType(entity.type, sections, sectionName, subPackageName);
         const parameter = {
             name: entity.name,
@@ -264,8 +306,12 @@ export const typeDocUtils = {
         };
         return parameter;
     },
-    _convertParameter(entity: TypeDocNode, sections: SectionsMap, sectionName: string,
-                      subPackageName: string): Parameter {
+    _convertParameter(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        subPackageName: string,
+    ): Parameter {
         let comment = '<No comment>';
         if (entity.comment && entity.comment.shortText) {
             comment = entity.comment.shortText;
@@ -273,9 +319,7 @@ export const typeDocUtils = {
             comment = entity.comment.text;
         }
 
-        const isOptional = !_.isUndefined(entity.flags.isOptional) ?
-            entity.flags.isOptional :
-            false;
+        const isOptional = !_.isUndefined(entity.flags.isOptional) ? entity.flags.isOptional : false;
 
         const type = typeDocUtils._convertType(entity.type, sections, sectionName, subPackageName);
 
@@ -296,16 +340,16 @@ export const typeDocUtils = {
         });
 
         const isConstructor = false;
-        const methodIfExists = !_.isUndefined(entity.declaration) ?
-            typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, subPackageName) :
-            undefined;
+        const methodIfExists = !_.isUndefined(entity.declaration)
+            ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, subPackageName)
+            : undefined;
 
-        const elementTypeIfExists = !_.isUndefined(entity.elementType) ?
-            {
-                name: entity.elementType.name,
-                typeDocType: entity.elementType.type,
-            } :
-            undefined;
+        const elementTypeIfExists = !_.isUndefined(entity.elementType)
+            ? {
+                  name: entity.elementType.name,
+                  typeDocType: entity.elementType.type,
+              }
+            : undefined;
 
         const type = {
             name: entity.name,

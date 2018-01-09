@@ -3,25 +3,25 @@ import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import {Route, Switch} from 'react-router-dom';
-import {Blockchain} from 'ts/blockchain';
-import {BlockchainErrDialog} from 'ts/components/dialogs/blockchain_err_dialog';
-import {PortalDisclaimerDialog} from 'ts/components/dialogs/portal_disclaimer_dialog';
-import {WrappedEthSectionNoticeDialog} from 'ts/components/dialogs/wrapped_eth_section_notice_dialog';
-import {EthWrappers} from 'ts/components/eth_wrappers';
-import {FillOrder} from 'ts/components/fill_order';
-import {Footer} from 'ts/components/footer';
-import {PortalMenu} from 'ts/components/portal_menu';
-import {TokenBalances} from 'ts/components/token_balances';
-import {TopBar} from 'ts/components/top_bar';
-import {TradeHistory} from 'ts/components/trade_history/trade_history';
-import {FlashMessage} from 'ts/components/ui/flash_message';
-import {Loading} from 'ts/components/ui/loading';
-import {GenerateOrderForm} from 'ts/containers/generate_order_form';
-import {localStorage} from 'ts/local_storage/local_storage';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {orderSchema} from 'ts/schemas/order_schema';
-import {SchemaValidator} from 'ts/schemas/validator';
+import { Route, Switch } from 'react-router-dom';
+import { Blockchain } from 'ts/blockchain';
+import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
+import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
+import { WrappedEthSectionNoticeDialog } from 'ts/components/dialogs/wrapped_eth_section_notice_dialog';
+import { EthWrappers } from 'ts/components/eth_wrappers';
+import { FillOrder } from 'ts/components/fill_order';
+import { Footer } from 'ts/components/footer';
+import { PortalMenu } from 'ts/components/portal_menu';
+import { TokenBalances } from 'ts/components/token_balances';
+import { TopBar } from 'ts/components/top_bar';
+import { TradeHistory } from 'ts/components/trade_history/trade_history';
+import { FlashMessage } from 'ts/components/ui/flash_message';
+import { Loading } from 'ts/components/ui/loading';
+import { GenerateOrderForm } from 'ts/containers/generate_order_form';
+import { localStorage } from 'ts/local_storage/local_storage';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { orderSchema } from 'ts/schemas/order_schema';
+import { SchemaValidator } from 'ts/schemas/validator';
 import {
     BlockchainErrs,
     HashData,
@@ -32,10 +32,10 @@ import {
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
-import {colors} from 'ts/utils/colors';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
+import { colors } from 'ts/utils/colors';
+import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const THROTTLE_TIMEOUT = 100;
 
@@ -57,7 +57,7 @@ export interface PortalAllProps {
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
     location: Location;
-    flashMessage?: string|React.ReactNode;
+    flashMessage?: string | React.ReactNode;
 }
 
 interface PortalAllState {
@@ -75,8 +75,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     private _throttledScreenWidthUpdate: () => void;
     public static hasAlreadyDismissedWethNotice() {
         const didDismissWethNotice = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_DISMISS_WETH_NOTICE);
-        const hasAlreadyDismissedWethNotice = !_.isUndefined(didDismissWethNotice) &&
-                                              !_.isEmpty(didDismissWethNotice);
+        const hasAlreadyDismissedWethNotice = !_.isUndefined(didDismissWethNotice) && !_.isEmpty(didDismissWethNotice);
         return hasAlreadyDismissedWethNotice;
     }
     constructor(props: PortalAllProps) {
@@ -88,8 +87,8 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
 
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
-        const hasAcceptedDisclaimer = !_.isUndefined(didAcceptPortalDisclaimer) &&
-                                      !_.isEmpty(didAcceptPortalDisclaimer);
+        const hasAcceptedDisclaimer =
+            !_.isUndefined(didAcceptPortalDisclaimer) && !_.isEmpty(didAcceptPortalDisclaimer);
         this.state = {
             prevNetworkId: this.props.networkId,
             prevNodeVersion: this.props.nodeVersion,
@@ -126,8 +125,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         if (nextProps.userAddress !== this.state.prevUserAddress) {
             // tslint:disable-next-line:no-floating-promises
             this._blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
-            if (!_.isEmpty(nextProps.userAddress) &&
-                nextProps.blockchainIsLoaded) {
+            if (!_.isEmpty(nextProps.userAddress) && nextProps.blockchainIsLoaded) {
                 const tokens = _.values(nextProps.tokenByAddress);
                 // tslint:disable-next-line:no-floating-promises
                 this._updateBalanceAndAllowanceWithLoadingScreenAsync(tokens);
@@ -150,8 +148,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         }
     }
     public render() {
-        const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher
-                .updateShouldBlockchainErrDialogBeOpen.bind(this.props.dispatcher);
+        const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen.bind(
+            this.props.dispatcher,
+        );
         const portalStyle: React.CSSProperties = {
             minHeight: '100vh',
             display: 'flex',
@@ -165,44 +164,34 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         };
         return (
             <div style={portalStyle}>
-                <DocumentTitle title="0x Portal DApp"/>
+                <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
                     blockchainIsLoaded={this.props.blockchainIsLoaded}
                     location={this.props.location}
                 />
-                <div id="portal" className="mx-auto max-width-4" style={{width: '100%'}}>
+                <div id="portal" className="mx-auto max-width-4" style={{ width: '100%' }}>
                     <Paper className="mb3 mt2">
-                        {!configs.IS_MAINNET_ENABLED && this.props.networkId === constants.NETWORK_ID_MAINNET  ?
+                        {!configs.IS_MAINNET_ENABLED && this.props.networkId === constants.NETWORK_ID_MAINNET ? (
                             <div className="p3 center">
                                 <div className="h2 py2">Mainnet unavailable</div>
                                 <div className="mx-auto pb2 pt2">
-                                    <img
-                                        src="/images/zrx_token.png"
-                                        style={{width: 150}}
-                                    />
+                                    <img src="/images/zrx_token.png" style={{ width: 150 }} />
                                 </div>
                                 <div>
                                     0x portal is currently unavailable on the Ethereum mainnet.
-                                    <div>
-                                        To try it out, switch to the Kovan test network
-                                        (networkId: 42).
-                                    </div>
-                                    <div className="py2">
-                                        Check back soon!
-                                    </div>
+                                    <div>To try it out, switch to the Kovan test network (networkId: 42).</div>
+                                    <div className="py2">Check back soon!</div>
                                 </div>
-                            </div> :
+                            </div>
+                        ) : (
                             <div className="mx-auto flex">
-                                <div
-                                    className="col col-2 pr2 pt1 sm-hide xs-hide"
-                                    style={portalMenuContainerStyle}
-                                >
-                                    <PortalMenu menuItemStyle={{color: colors.white}} />
+                                <div className="col col-2 pr2 pt1 sm-hide xs-hide" style={portalMenuContainerStyle}>
+                                    <PortalMenu menuItemStyle={{ color: colors.white }} />
                                 </div>
                                 <div className="col col-12 lg-col-10 md-col-10 sm-col sm-col-12">
-                                    <div className="py2" style={{backgroundColor: colors.grey50}}>
-                                        {this.props.blockchainIsLoaded ?
+                                    <div className="py2" style={{ backgroundColor: colors.grey50 }}>
+                                        {this.props.blockchainIsLoaded ? (
                                             <Switch>
                                                 <Route
                                                     path={`${WebsitePaths.Portal}/weth`}
@@ -224,13 +213,14 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                                                     path={`${WebsitePaths.Home}`}
                                                     render={this._renderGenerateOrderForm.bind(this)}
                                                 />
-                                            </Switch> :
+                                            </Switch>
+                                        ) : (
                                             <Loading />
-                                        }
+                                        )}
                                     </div>
                                 </div>
                             </div>
-                        }
+                        )}
                     </Paper>
                     <BlockchainErrDialog
                         blockchain={this._blockchain}
@@ -248,10 +238,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         isOpen={this.state.isDisclaimerDialogOpen}
                         onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
                     />
-                    <FlashMessage
-                        dispatcher={this.props.dispatcher}
-                        flashMessage={this.props.flashMessage}
-                    />
+                    <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
                 </div>
                 <Footer />
             </div>
@@ -296,9 +283,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         );
     }
     private _renderFillOrder(match: any, location: Location, history: History) {
-        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache) ?
-                                 this.props.userSuppliedOrderCache :
-                                 this._sharedOrderIfExists;
+        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
+            ? this.props.userSuppliedOrderCache
+            : this._sharedOrderIfExists;
         return (
             <FillOrder
                 blockchain={this._blockchain}

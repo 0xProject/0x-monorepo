@@ -14,7 +14,9 @@ export class InjectedWeb3Subprovider {
         this._injectedWeb3 = injectedWeb3;
     }
     public handleRequest(
-        payload: Web3.JSONRPCRequestPayload, next: () => void, end: (err: Error|null, result: any) => void,
+        payload: Web3.JSONRPCRequestPayload,
+        next: () => void,
+        end: (err: Error | null, result: any) => void,
     ) {
         switch (payload.method) {
             case 'web3_clientVersion':

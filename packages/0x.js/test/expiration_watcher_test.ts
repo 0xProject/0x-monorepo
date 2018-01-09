@@ -1,4 +1,4 @@
-import {BlockchainLifecycle} from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -6,18 +6,18 @@ import 'mocha';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 
-import {ZeroEx} from '../src/0x';
-import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
-import {DoneCallback, Token} from '../src/types';
-import {constants} from '../src/utils/constants';
-import {utils} from '../src/utils/utils';
+import { ZeroEx } from '../src/0x';
+import { ExpirationWatcher } from '../src/order_watcher/expiration_watcher';
+import { DoneCallback, Token } from '../src/types';
+import { constants } from '../src/utils/constants';
+import { utils } from '../src/utils/utils';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants as testConstants} from './utils/constants';
-import {FillScenarios} from './utils/fill_scenarios';
-import {reportCallbackErrors} from './utils/report_callback_errors';
-import {TokenUtils} from './utils/token_utils';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { constants as testConstants } from './utils/constants';
+import { FillScenarios } from './utils/fill_scenarios';
+import { reportCallbackErrors } from './utils/report_callback_errors';
+import { TokenUtils } from './utils/token_utils';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -62,7 +62,7 @@ describe('ExpirationWatcher', () => {
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
-        const sinonTimerConfig = {shouldAdvanceTime: true} as any;
+        const sinonTimerConfig = { shouldAdvanceTime: true } as any;
         // This constructor has incorrect types
         timer = Sinon.useFakeTimers(sinonTimerConfig);
         currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
@@ -78,7 +78,11 @@ describe('ExpirationWatcher', () => {
             const orderLifetimeSec = 60;
             const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeSec);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
                 expirationUnixTimestampSec,
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
@@ -92,12 +96,16 @@ describe('ExpirationWatcher', () => {
             timer.tick(orderLifetimeSec * 1000);
         })().catch(done);
     });
-    it('doesn\'t emit events before order expires', (done: DoneCallback) => {
+    it("doesn't emit events before order expires", (done: DoneCallback) => {
         (async () => {
             const orderLifetimeSec = 60;
             const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeSec);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
                 expirationUnixTimestampSec,
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
@@ -118,11 +126,19 @@ describe('ExpirationWatcher', () => {
             const order1ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order1Lifetime);
             const order2ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order2Lifetime);
             const signedOrder1 = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
                 order1ExpirationUnixTimestampSec,
             );
             const signedOrder2 = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
                 order2ExpirationUnixTimestampSec,
             );
             const orderHash1 = ZeroEx.getOrderHashHex(signedOrder1);

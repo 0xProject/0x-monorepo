@@ -1,17 +1,14 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {Dispatch} from 'redux';
-import {DocsInfo} from 'ts/pages/documentation/docs_info';
-import {
-    Documentation as DocumentationComponent,
-    DocumentationAllProps,
-} from 'ts/pages/documentation/documentation';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
-import {DocsInfoConfig, WebsitePaths} from 'ts/types';
-import {constants} from 'ts/utils/constants';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { DocsInfo } from 'ts/pages/documentation/docs_info';
+import { Documentation as DocumentationComponent, DocumentationAllProps } from 'ts/pages/documentation/documentation';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { State } from 'ts/redux/reducer';
+import { DocsInfoConfig, WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
+import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/connect/introduction');
@@ -33,21 +30,11 @@ const docsInfoConfig: DocsInfoConfig = {
     websitePath: WebsitePaths.Connect,
     docsJsonRoot: 'https://s3.amazonaws.com/connect-docs-jsons',
     menu: {
-        introduction: [
-            connectDocSections.introduction,
-        ],
-        install: [
-            connectDocSections.installation,
-        ],
-        httpClient: [
-            connectDocSections.httpClient,
-        ],
-        webSocketOrderbookChannel: [
-            connectDocSections.webSocketOrderbookChannel,
-        ],
-        types: [
-            connectDocSections.types,
-        ],
+        introduction: [connectDocSections.introduction],
+        install: [connectDocSections.installation],
+        httpClient: [connectDocSections.httpClient],
+        webSocketOrderbookChannel: [connectDocSections.webSocketOrderbookChannel],
+        types: [connectDocSections.types],
     },
     sectionNameToMarkdown: {
         [connectDocSections.introduction]: IntroMarkdown,
@@ -79,10 +66,7 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: connectDocSections,
-    visibleConstructors: [
-        connectDocSections.httpClient,
-        connectDocSections.webSocketOrderbookChannel,
-    ],
+    visibleConstructors: [connectDocSections.httpClient, connectDocSections.webSocketOrderbookChannel],
     convertToDocAgnosticFormatFn: typeDocUtils.convertToDocAgnosticFormat.bind(typeDocUtils),
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
@@ -107,5 +91,6 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Documentation: React.ComponentClass<DocumentationAllProps> =
-  connect(mapStateToProps, mapDispatchToProps)(DocumentationComponent);
+export const Documentation: React.ComponentClass<DocumentationAllProps> = connect(mapStateToProps, mapDispatchToProps)(
+    DocumentationComponent,
+);

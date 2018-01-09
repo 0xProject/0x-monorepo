@@ -1,9 +1,9 @@
-import {addressUtils} from '@0xproject/utils';
+import { addressUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
-import {RequiredLabel} from 'ts/components/ui/required_label';
-import {colors} from 'ts/utils/colors';
+import { RequiredLabel } from 'ts/components/ui/required_label';
+import { colors } from 'ts/utils/colors';
 
 interface AddressInputProps {
     disabled?: boolean;
@@ -30,16 +30,14 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
         };
     }
     public componentWillReceiveProps(nextProps: AddressInputProps) {
-        if (nextProps.shouldShowIncompleteErrs && this.props.isRequired &&
-            this.state.address === '') {
-                this.setState({
-                    errMsg: 'Address is required',
-                });
+        if (nextProps.shouldShowIncompleteErrs && this.props.isRequired && this.state.address === '') {
+            this.setState({
+                errMsg: 'Address is required',
+            });
         }
     }
     public render() {
-        const label = this.props.isRequired ? <RequiredLabel label={this.props.label} /> :
-                      this.props.label;
+        const label = this.props.isRequired ? <RequiredLabel label={this.props.label} /> : this.props.label;
         const labelDisplay = this.props.shouldHideLabel ? 'hidden' : 'block';
         const hintText = this.props.hintText ? this.props.hintText : '';
         return (
@@ -50,7 +48,7 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
                     fullWidth={true}
                     hintText={hintText}
                     floatingLabelFixed={true}
-                    floatingLabelStyle={{color: colors.grey, display: labelDisplay}}
+                    floatingLabelStyle={{ color: colors.grey, display: labelDisplay }}
                     floatingLabelText={label}
                     errorText={this.state.errMsg}
                     value={this.state.address}

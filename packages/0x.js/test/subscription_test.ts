@@ -1,4 +1,4 @@
-import {BlockchainLifecycle} from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -6,19 +6,13 @@ import 'mocha';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 
-import {
-    ApprovalContractEventArgs,
-    DecodedLogEvent,
-    Token,
-    TokenEvents,
-    ZeroEx,
-} from '../src';
-import {DoneCallback} from '../src/types';
+import { ApprovalContractEventArgs, DecodedLogEvent, Token, TokenEvents, ZeroEx } from '../src';
+import { DoneCallback } from '../src/types';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
-import {reportCallbackErrors} from './utils/report_callback_errors';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
+import { reportCallbackErrors } from './utils/report_callback_errors';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -72,12 +66,8 @@ describe('SubscriptionTest', () => {
                         done();
                     },
                 );
-                stubs = [
-                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws(new Error(errMsg)),
-                ];
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                stubs = [Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync').throws(new Error(errMsg))];
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
         });
@@ -91,24 +81,16 @@ describe('SubscriptionTest', () => {
                         done();
                     },
                 );
-                stubs = [
-                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getLogsAsync')
-                   .throws(new Error(errMsg)),
-                ];
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                stubs = [Sinon.stub((zeroEx as any)._web3Wrapper, 'getLogsAsync').throws(new Error(errMsg))];
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
         });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
-                stubs = [
-                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws(new Error('JSON RPC error')),
-                ];
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                stubs = [Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync').throws(new Error('JSON RPC error'))];
                 zeroEx.token.unsubscribeAll();
                 done();
             })().catch(done);

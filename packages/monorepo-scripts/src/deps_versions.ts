@@ -2,7 +2,7 @@
 
 import chalk from 'chalk';
 import * as fs from 'fs';
-import {sync as globSync} from 'glob';
+import { sync as globSync } from 'glob';
 import * as _ from 'lodash';
 
 interface Dependencies {

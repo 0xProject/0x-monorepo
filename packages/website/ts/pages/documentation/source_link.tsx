@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Source} from 'ts/types';
-import {colors} from 'ts/utils/colors';
+import { Source } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 interface SourceLinkProps {
     source: Source;
@@ -10,9 +10,7 @@ interface SourceLinkProps {
     subPackageName: string;
 }
 
-const packagesWithNamespace = [
-    'connect',
-];
+const packagesWithNamespace = ['connect'];
 
 export function SourceLink(props: SourceLinkProps) {
     const src = props.source;
@@ -24,13 +22,8 @@ export function SourceLink(props: SourceLinkProps) {
     }
     const sourceCodeUrl = `${url}/blob/${tagPrefix}%40${props.version}/packages/${pkg}/${src.fileName}#L${src.line}`;
     return (
-        <div className="pt2" style={{fontSize: 14}}>
-            <a
-                href={sourceCodeUrl}
-                target="_blank"
-                className="underline"
-                style={{color: colors.grey}}
-            >
+        <div className="pt2" style={{ fontSize: 14 }}>
+            <a href={sourceCodeUrl} target="_blank" className="underline" style={{ color: colors.grey }}>
                 Source
             </a>
         </div>

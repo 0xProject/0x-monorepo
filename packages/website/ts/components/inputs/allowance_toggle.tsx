@@ -2,11 +2,11 @@ import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {BalanceErrs, Token, TokenState} from 'ts/types';
-import {errorReporter} from 'ts/utils/error_reporter';
-import {utils} from 'ts/utils/utils';
+import { Blockchain } from 'ts/blockchain';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { BalanceErrs, Token, TokenState } from 'ts/types';
+import { errorReporter } from 'ts/utils/error_reporter';
+import { utils } from 'ts/utils/utils';
 
 const DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1);
 
@@ -50,11 +50,11 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
                         onToggle={this._onToggleAllowanceAsync.bind(this, this.props.token)}
                     />
                 </div>
-                {this.state.isSpinnerVisible &&
-                    <div className="pl1" style={{paddingTop: 3}}>
+                {this.state.isSpinnerVisible && (
+                    <div className="pl1" style={{ paddingTop: 3 }}>
                         <i className="zmdi zmdi-spinner zmdi-hc-spin" />
                     </div>
-                }
+                )}
             </div>
         );
     }

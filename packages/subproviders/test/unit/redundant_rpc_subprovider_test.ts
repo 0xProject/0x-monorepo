@@ -3,12 +3,10 @@ import * as _ from 'lodash';
 import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
 
-import {RedundantRPCSubprovider} from '../../src';
-import {
-    DoneCallback,
-} from '../../src/types';
-import {chaiSetup} from '../chai_setup';
-import {reportCallbackErrors} from '../utils/report_callback_errors';
+import { RedundantRPCSubprovider } from '../../src';
+import { DoneCallback } from '../../src/types';
+import { chaiSetup } from '../chai_setup';
+import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 const expect = chai.expect;
 chaiSetup.configure();
@@ -17,9 +15,7 @@ describe('RedundantRpcSubprovider', () => {
     let provider: Web3ProviderEngine;
     it('succeeds when supplied a healthy endpoint', (done: DoneCallback) => {
         provider = new Web3ProviderEngine();
-        const endpoints = [
-            'http://localhost:8545',
-        ];
+        const endpoints = ['http://localhost:8545'];
         const redundantSubprovider = new RedundantRPCSubprovider(endpoints);
         provider.addProvider(redundantSubprovider);
         provider.start();
@@ -39,10 +35,7 @@ describe('RedundantRpcSubprovider', () => {
     });
     it('succeeds when supplied at least one healthy endpoint', (done: DoneCallback) => {
         provider = new Web3ProviderEngine();
-        const endpoints = [
-            'http://does-not-exist:3000',
-            'http://localhost:8545',
-        ];
+        const endpoints = ['http://does-not-exist:3000', 'http://localhost:8545'];
         const redundantSubprovider = new RedundantRPCSubprovider(endpoints);
         provider.addProvider(redundantSubprovider);
         provider.start();

@@ -18,14 +18,14 @@ export const crypto = {
             const isNumber = _.isFinite(arg);
             if (isNumber) {
                 argTypes.push('uint8');
-            } else if ((arg).isBigNumber) {
+            } else if (arg.isBigNumber) {
                 argTypes.push('uint256');
                 args[i] = new BN(arg.toString(10), 10);
             } else if (ethUtil.isValidAddress(arg)) {
                 argTypes.push('address');
             } else if (_.isString(arg)) {
                 argTypes.push('string');
-            } else if  (_.isBoolean(arg)) {
+            } else if (_.isBoolean(arg)) {
                 argTypes.push('bool');
             } else {
                 throw new Error(`Unable to guess arg type: ${arg}`);

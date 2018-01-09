@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {EnumValue} from 'ts/types';
+import { EnumValue } from 'ts/types';
 
 interface EnumProps {
     values: EnumValue[];
@@ -14,8 +14,8 @@ export function Enum(props: EnumProps) {
     return (
         <span>
             {`{`}
-                {values}
-                <br />
+            {values}
+            <br />
             {`}`}
         </span>
     );

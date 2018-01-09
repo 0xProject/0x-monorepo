@@ -3,23 +3,21 @@ import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
-import {
-    scroller,
-} from 'react-scroll';
+import { scroller } from 'react-scroll';
 import semverSort = require('semver-sort');
-import {TopBar} from 'ts/components/top_bar';
-import {Badge} from 'ts/components/ui/badge';
-import {Comment} from 'ts/pages/documentation/comment';
-import {DocsInfo} from 'ts/pages/documentation/docs_info';
-import {EventDefinition} from 'ts/pages/documentation/event_definition';
-import {MethodBlock} from 'ts/pages/documentation/method_block';
-import {SourceLink} from 'ts/pages/documentation/source_link';
-import {Type} from 'ts/pages/documentation/type';
-import {TypeDefinition} from 'ts/pages/documentation/type_definition';
-import {MarkdownSection} from 'ts/pages/shared/markdown_section';
-import {NestedSidebarMenu} from 'ts/pages/shared/nested_sidebar_menu';
-import {SectionHeader} from 'ts/pages/shared/section_header';
-import {Dispatcher} from 'ts/redux/dispatcher';
+import { TopBar } from 'ts/components/top_bar';
+import { Badge } from 'ts/components/ui/badge';
+import { Comment } from 'ts/pages/documentation/comment';
+import { DocsInfo } from 'ts/pages/documentation/docs_info';
+import { EventDefinition } from 'ts/pages/documentation/event_definition';
+import { MethodBlock } from 'ts/pages/documentation/method_block';
+import { SourceLink } from 'ts/pages/documentation/source_link';
+import { Type } from 'ts/pages/documentation/type';
+import { TypeDefinition } from 'ts/pages/documentation/type_definition';
+import { MarkdownSection } from 'ts/pages/shared/markdown_section';
+import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
+import { SectionHeader } from 'ts/pages/shared/section_header';
+import { Dispatcher } from 'ts/redux/dispatcher';
 import {
     AddressByContractName,
     DocAgnosticFormat,
@@ -33,15 +31,15 @@ import {
     TypeDefinitionByName,
     TypescriptMethod,
 } from 'ts/types';
-import {colors} from 'ts/utils/colors';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
-import {docUtils} from 'ts/utils/doc_utils';
-import {utils} from 'ts/utils/utils';
+import { colors } from 'ts/utils/colors';
+import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
+import { docUtils } from 'ts/utils/doc_utils';
+import { utils } from 'ts/utils/utils';
 
 const SCROLL_TOP_ID = 'docsScrollTop';
 
-const networkNameToColor: {[network: string]: string} = {
+const networkNameToColor: { [network: string]: string } = {
     [Networks.kovan]: colors.purple,
     [Networks.ropsten]: colors.red,
     [Networks.mainnet]: colors.turquois,
@@ -79,8 +77,7 @@ const styles: Styles = {
     },
 };
 
-export class Documentation extends
-    React.Component<DocumentationAllProps, DocumentationState> {
+export class Documentation extends React.Component<DocumentationAllProps, DocumentationState> {
     constructor(props: DocumentationAllProps) {
         super(props);
         this.state = {
@@ -96,12 +93,12 @@ export class Documentation extends
         this._fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
     }
     public render() {
-        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat) ?
-                {} :
-                this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
+        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
+            ? {}
+            : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         return (
             <div>
-                <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`}/>
+                <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`} />
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
@@ -112,29 +109,26 @@ export class Documentation extends
                     shouldFullWidth={true}
                     docsInfo={this.props.docsInfo}
                 />
-                {_.isUndefined(this.state.docAgnosticFormat) ?
-                    <div
-                        className="col col-12"
-                        style={styles.mainContainers}
-                    >
+                {_.isUndefined(this.state.docAgnosticFormat) ? (
+                    <div className="col col-12" style={styles.mainContainers}>
                         <div
                             className="relative sm-px2 sm-pt2 sm-m1"
-                            style={{height: 122, top: '50%', transform: 'translateY(-50%)'}}
+                            style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
                         >
                             <div className="center pb2">
                                 <CircularProgress size={40} thickness={5} />
                             </div>
-                            <div className="center pt2" style={{paddingBottom: 11}}>Loading documentation...</div>
+                            <div className="center pt2" style={{ paddingBottom: 11 }}>
+                                Loading documentation...
+                            </div>
                         </div>
-                    </div> :
-                    <div
-                        className="mx-auto flex"
-                        style={{color: colors.grey800, height: 43}}
-                    >
+                    </div>
+                ) : (
+                    <div className="mx-auto flex" style={{ color: colors.grey800, height: 43 }}>
                         <div className="relative col md-col-3 lg-col-3 lg-pl0 md-pl1 sm-hide xs-hide">
                             <div
                                 className="border-right absolute"
-                                style={{...styles.menuContainer, ...styles.mainContainers}}
+                                style={{ ...styles.menuContainer, ...styles.mainContainers }}
                             >
                                 <NestedSidebarMenu
                                     selectedVersion={this.props.docsVersion}
@@ -146,11 +140,7 @@ export class Documentation extends
                             </div>
                         </div>
                         <div className="relative col lg-col-9 md-col-9 sm-col-12 col-12">
-                            <div
-                                id="documentation"
-                                style={styles.mainContainers}
-                                className="absolute"
-                            >
+                            <div id="documentation" style={styles.mainContainers} className="absolute">
                                 <div id={SCROLL_TOP_ID} />
                                 <h1 className="md-pl2 sm-pl3">
                                     <a href={this.props.docsInfo.packageUrl} target="_blank">
@@ -161,7 +151,7 @@ export class Documentation extends
                             </div>
                         </div>
                     </div>
-                }
+                )}
             </div>
         );
     }
@@ -224,136 +214,120 @@ export class Documentation extends
             );
         });
         return (
-            <div
-                key={`section-${sectionName}`}
-                className="py2 pr3 md-pl2 sm-pl3"
-            >
+            <div key={`section-${sectionName}`} className="py2 pr3 md-pl2 sm-pl3">
                 <div className="flex">
-                        <div style={{marginRight: 7}}>
-                            <SectionHeader sectionName={sectionName} />
-                        </div>
-                        {this._renderNetworkBadgesIfExists(sectionName)}
-                </div>
-                {docSection.comment &&
-                    <Comment
-                        comment={docSection.comment}
-                    />
-                }
-                {docSection.constructors.length > 0 &&
-                 this.props.docsInfo.isVisibleConstructor(sectionName) &&
-                    <div>
-                        <h2 className="thin">Constructor</h2>
-                        {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
+                    <div style={{ marginRight: 7 }}>
+                        <SectionHeader sectionName={sectionName} />
                     </div>
-                }
-                {docSection.properties.length > 0 &&
+                    {this._renderNetworkBadgesIfExists(sectionName)}
+                </div>
+                {docSection.comment && <Comment comment={docSection.comment} />}
+                {docSection.constructors.length > 0 &&
+                    this.props.docsInfo.isVisibleConstructor(sectionName) && (
+                        <div>
+                            <h2 className="thin">Constructor</h2>
+                            {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
+                        </div>
+                    )}
+                {docSection.properties.length > 0 && (
                     <div>
                         <h2 className="thin">Properties</h2>
                         <div>{propertyDefs}</div>
                     </div>
-                }
-                {docSection.methods.length > 0 &&
+                )}
+                {docSection.methods.length > 0 && (
                     <div>
                         <h2 className="thin">Methods</h2>
                         <div>{methodDefs}</div>
                     </div>
-                }
-                {!_.isUndefined(docSection.events) && docSection.events.length > 0 &&
-                    <div>
-                        <h2 className="thin">Events</h2>
-                        <div>{eventDefs}</div>
-                    </div>
-                }
-                {!_.isUndefined(typeDefs) &&  typeDefs.length > 0 &&
-                    <div>
-                        <div>{typeDefs}</div>
-                    </div>
-                }
+                )}
+                {!_.isUndefined(docSection.events) &&
+                    docSection.events.length > 0 && (
+                        <div>
+                            <h2 className="thin">Events</h2>
+                            <div>{eventDefs}</div>
+                        </div>
+                    )}
+                {!_.isUndefined(typeDefs) &&
+                    typeDefs.length > 0 && (
+                        <div>
+                            <div>{typeDefs}</div>
+                        </div>
+                    )}
             </div>
         );
     }
     private _renderNetworkBadgesIfExists(sectionName: string) {
         const networkToAddressByContractName = configs.CONTRACT_ADDRESS[this.props.docsVersion];
-        const badges = _.map(networkToAddressByContractName,
+        const badges = _.map(
+            networkToAddressByContractName,
             (addressByContractName: AddressByContractName, networkName: string) => {
                 const contractAddress = addressByContractName[sectionName];
                 if (_.isUndefined(contractAddress)) {
                     return null;
                 }
                 const linkIfExists = utils.getEtherScanLinkIfExists(
-                    contractAddress, constants.NETWORK_ID_BY_NAME[networkName], EtherscanLinkSuffixes.Address,
+                    contractAddress,
+                    constants.NETWORK_ID_BY_NAME[networkName],
+                    EtherscanLinkSuffixes.Address,
                 );
                 return (
                     <a
                         key={`badge-${networkName}-${sectionName}`}
                         href={linkIfExists}
                         target="_blank"
-                        style={{color: colors.white, textDecoration: 'none'}}
+                        style={{ color: colors.white, textDecoration: 'none' }}
                     >
-                        <Badge
-                            title={networkName}
-                            backgroundColor={networkNameToColor[networkName]}
-                        />
+                        <Badge title={networkName} backgroundColor={networkNameToColor[networkName]} />
                     </a>
                 );
-        });
+            },
+        );
         return badges;
     }
-    private _renderConstructors(constructors: SolidityMethod[]|TypescriptMethod[],
-                                sectionName: string,
-                                typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
+    private _renderConstructors(
+        constructors: SolidityMethod[] | TypescriptMethod[],
+        sectionName: string,
+        typeDefinitionByName: TypeDefinitionByName,
+    ): React.ReactNode {
         const constructorDefs = _.map(constructors, constructor => {
-            return this._renderMethodBlocks(
-                constructor, sectionName, constructor.isConstructor, typeDefinitionByName,
-            );
+            return this._renderMethodBlocks(constructor, sectionName, constructor.isConstructor, typeDefinitionByName);
         });
-        return (
-            <div>
-                {constructorDefs}
-            </div>
-        );
+        return <div>{constructorDefs}</div>;
     }
     private _renderProperty(sectionName: string, property: Property): React.ReactNode {
         return (
-            <div
-                key={`property-${property.name}-${property.type.name}`}
-                className="pb3"
-            >
+            <div key={`property-${property.name}-${property.type.name}`} className="pb3">
                 <code className="hljs">
                     {property.name}:
-                    <Type
-                        type={property.type}
-                        sectionName={sectionName}
-                        docsInfo={this.props.docsInfo}
-                    />
+                    <Type type={property.type} sectionName={sectionName} docsInfo={this.props.docsInfo} />
                 </code>
-                {property.source &&
+                {property.source && (
                     <SourceLink
                         version={this.props.docsVersion}
                         source={property.source}
                         baseUrl={this.props.docsInfo.packageUrl}
                         subPackageName={this.props.docsInfo.subPackageName}
                     />
-                }
-                {property.comment &&
-                    <Comment
-                        comment={property.comment}
-                        className="py2"
-                    />
-                }
+                )}
+                {property.comment && <Comment comment={property.comment} className="py2" />}
             </div>
         );
     }
-    private _renderMethodBlocks(method: SolidityMethod|TypescriptMethod, sectionName: string,
-                                isConstructor: boolean, typeDefinitionByName: TypeDefinitionByName): React.ReactNode {
+    private _renderMethodBlocks(
+        method: SolidityMethod | TypescriptMethod,
+        sectionName: string,
+        isConstructor: boolean,
+        typeDefinitionByName: TypeDefinitionByName,
+    ): React.ReactNode {
         return (
             <MethodBlock
-               key={`method-${method.name}-${sectionName}`}
-               sectionName={sectionName}
-               method={method}
-               typeDefinitionByName={typeDefinitionByName}
-               libraryVersion={this.props.docsVersion}
-               docsInfo={this.props.docsInfo}
+                key={`method-${method.name}-${sectionName}`}
+                sectionName={sectionName}
+                method={method}
+                typeDefinitionByName={typeDefinitionByName}
+                libraryVersion={this.props.docsVersion}
+                docsInfo={this.props.docsInfo}
             />
         );
     }
@@ -364,7 +338,11 @@ export class Documentation extends
             hash = SCROLL_TOP_ID; // scroll to the top
         }
 
-        scroller.scrollTo(hash, {duration: 0, offset: 0, containerId: 'documentation'});
+        scroller.scrollTo(hash, {
+            duration: 0,
+            offset: 0,
+            containerId: 'documentation',
+        });
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
         const versionToFileName = await docUtils.getVersionToFileNameAsync(this.props.docsInfo.docsJsonRoot);
@@ -384,14 +362,18 @@ export class Documentation extends
 
         const versionFileNameToFetch = versionToFileName[versionToFetch];
         const versionDocObj = await docUtils.getJSONDocFileAsync(
-            versionFileNameToFetch, this.props.docsInfo.docsJsonRoot,
+            versionFileNameToFetch,
+            this.props.docsInfo.docsJsonRoot,
         );
         const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
 
-        this.setState({
-            docAgnosticFormat,
-        }, () => {
-            this._scrollToHash();
-        });
+        this.setState(
+            {
+                docAgnosticFormat,
+            },
+            () => {
+                this._scrollToHash();
+            },
+        );
     }
 }
