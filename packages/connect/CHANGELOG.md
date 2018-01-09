@@ -1,5 +1,9 @@
 # CHANGELOG
 
+vx.x.x
+------------------------
+    * Prevent getFeesAsync method on HttpClient from mutating input (#296)
+
 v0.3.0 - _December 8, 2017_
 ------------------------
     * Expose WebSocketOrderbookChannel and associated types to public interface (#251)

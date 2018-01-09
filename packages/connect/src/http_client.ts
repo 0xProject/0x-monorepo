@@ -111,12 +111,6 @@ export class HttpClient implements Client {
      */
     public async getFeesAsync(request: FeesRequest): Promise<FeesResponse> {
         assert.doesConformToSchema('request', request, schemas.relayerApiFeesPayloadSchema);
-        typeConverters.convertBigNumberFieldsToStrings(request, [
-            'makerTokenAmount',
-            'takerTokenAmount',
-            'expirationUnixTimestampSec',
-            'salt',
-        ]);
         const requestOpts = {
             payload: request,
         };
