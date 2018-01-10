@@ -63,6 +63,8 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     </Link>
                 </span>
             );
+        } else {
+            return undefined;
         }
     }
 }

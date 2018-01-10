@@ -238,12 +238,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </Drawer>
         );
     }
-    private _renderDocsMenu() {
+    private _renderDocsMenu(): React.ReactNode {
         if (
             (!this._isViewing0xjsDocs() && !this._isViewingSmartContractsDocs() && !this._isViewingConnectDocs()) ||
             _.isUndefined(this.props.menu)
         ) {
-            return;
+            return undefined;
         }
 
         const sectionTitle = `${this.props.docsInfo.displayName} Docs`;
@@ -264,9 +264,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
     }
-    private _renderWiki() {
+    private _renderWiki(): React.ReactNode {
         if (!this._isViewingWiki()) {
-            return;
+            return undefined;
         }
 
         return (
@@ -283,9 +283,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </div>
         );
     }
-    private _renderPortalMenu() {
+    private _renderPortalMenu(): React.ReactNode {
         if (!this._isViewingPortal()) {
-            return;
+            return undefined;
         }
 
         return (
