@@ -5,6 +5,13 @@ export enum ParamKind {
     Output = 'output',
 }
 
+export enum AbiType {
+    Function = 'function',
+    Constructor = 'constructor',
+    Event = 'event',
+    Fallback = 'fallback',
+}
+
 export interface Method extends Web3.MethodAbi {
     singleReturnValue: boolean;
 }
