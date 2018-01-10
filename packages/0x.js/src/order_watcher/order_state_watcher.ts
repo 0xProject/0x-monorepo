@@ -155,6 +155,10 @@ export class OrderStateWatcher {
         this._cleanupJobIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             this._cleanupAsync.bind(this),
             this._cleanupJobInterval,
+            (err: Error) => {
+                this.unsubscribe();
+                callback(err);
+            },
         );
     }
     /**
@@ -207,11 +211,18 @@ export class OrderStateWatcher {
         if (!_.isUndefined(this._orderByOrderHash[orderHash])) {
             this.removeOrder(orderHash);
             if (!_.isUndefined(this._callbackIfExists)) {
-                this._callbackIfExists(orderState);
+                this._callbackIfExists(null, orderState);
             }
         }
     }
-    private async _onEventWatcherCallbackAsync(log: LogEvent): Promise<void> {
+    private async _onEventWatcherCallbackAsync(err: Error | null, logIfExists?: LogEvent): Promise<void> {
+        if (!_.isNull(err)) {
+            if (!_.isUndefined(this._callbackIfExists)) {
+                this._callbackIfExists(err);
+                this.unsubscribe();
+            }
+        }
+        const log = logIfExists as LogEvent;
         const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
         const isLogDecoded = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
         if (!isLogDecoded) {
@@ -332,7 +343,7 @@ export class OrderStateWatcher {
             } else {
                 this._orderStateByOrderHashCache[orderHash] = orderState;
             }
-            this._callbackIfExists(orderState);
+            this._callbackIfExists(null, orderState);
         }
     }
     private _addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string): void {

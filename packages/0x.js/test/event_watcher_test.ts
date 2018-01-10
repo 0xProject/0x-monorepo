@@ -10,6 +10,7 @@ import { EventWatcher } from '../src/order_watcher/event_watcher';
 import { DoneCallback } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
+import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
@@ -77,13 +78,14 @@ describe('EventWatcher', () => {
         const getLogsStub = Sinon.stub(web3Wrapper, 'getLogsAsync');
         getLogsStub.onCall(0).returns(logs);
         stubs.push(getLogsStub);
-        const callback = (event: LogEvent) => {
+        const expectedToBeCalledOnce = false;
+        const callback = reportNodeCallbackErrors(done, expectedToBeCalledOnce)((event: LogEvent) => {
             const expectedLogEvent = expectedLogEvents.shift();
             expect(event).to.be.deep.equal(expectedLogEvent);
             if (_.isEmpty(expectedLogEvents)) {
                 done();
             }
-        };
+        });
         eventWatcher.subscribe(callback);
     });
     it('correctly computes the difference and emits only changes', (done: DoneCallback) => {
@@ -111,13 +113,14 @@ describe('EventWatcher', () => {
         getLogsStub.onCall(0).returns(initialLogs);
         getLogsStub.onCall(1).returns(changedLogs);
         stubs.push(getLogsStub);
-        const callback = (event: LogEvent) => {
+        const expectedToBeCalledOnce = false;
+        const callback = reportNodeCallbackErrors(done, expectedToBeCalledOnce)((event: LogEvent) => {
             const expectedLogEvent = expectedLogEvents.shift();
             expect(event).to.be.deep.equal(expectedLogEvent);
             if (_.isEmpty(expectedLogEvents)) {
                 done();
             }
-        };
+        });
         eventWatcher.subscribe(callback);
     });
 });

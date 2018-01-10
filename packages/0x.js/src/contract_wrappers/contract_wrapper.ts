@@ -167,6 +167,7 @@ export class ContractWrapper {
         this._blockAndLogStreamInterval = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
             constants.DEFAULT_BLOCK_POLLING_INTERVAL,
+            this._onReconcileBlockError.bind(this),
         );
         let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
@@ -176,6 +177,12 @@ export class ContractWrapper {
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
             this._onLogStateChanged.bind(this, isRemoved),
         );
+    }
+    private _onReconcileBlockError(err: Error): void {
+        const filterTokens = _.keys(this._filterCallbacks);
+        _.each(filterTokens, filterToken => {
+            this._unsubscribe(filterToken, err);
+        });
     }
     private _setNetworkId(networkId: number): void {
         this._networkId = networkId;
@@ -190,18 +197,11 @@ export class ContractWrapper {
         delete this._blockAndLogStreamerIfExists;
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        try {
-            const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
-            // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
-            if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
-                // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-                await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlock as any) as Block);
-            }
-        } catch (err) {
-            const filterTokens = _.keys(this._filterCallbacks);
-            _.each(filterTokens, filterToken => {
-                this._unsubscribe(filterToken, err);
-            });
+        const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
+        // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
+        if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
+            // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
+            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlock as any) as Block);
         }
     }
 }

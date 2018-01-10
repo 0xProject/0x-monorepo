@@ -302,26 +302,33 @@ export class ZeroEx {
 
         const txReceiptPromise = new Promise(
             (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
-                const intervalId = intervalUtils.setAsyncExcludingInterval(async () => {
-                    if (timeoutExceeded) {
-                        intervalUtils.clearAsyncExcludingInterval(intervalId);
-                        return reject(ZeroExError.TransactionMiningTimeout);
-                    }
+                const intervalId = intervalUtils.setAsyncExcludingInterval(
+                    async () => {
+                        if (timeoutExceeded) {
+                            intervalUtils.clearAsyncExcludingInterval(intervalId);
+                            return reject(ZeroExError.TransactionMiningTimeout);
+                        }
 
-                    const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
-                    if (!_.isNull(transactionReceipt)) {
+                        const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
+                        if (!_.isNull(transactionReceipt)) {
+                            intervalUtils.clearAsyncExcludingInterval(intervalId);
+                            const logsWithDecodedArgs = _.map(
+                                transactionReceipt.logs,
+                                this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
+                            );
+                            const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
+                                ...transactionReceipt,
+                                logs: logsWithDecodedArgs,
+                            };
+                            resolve(transactionReceiptWithDecodedLogArgs);
+                        }
+                    },
+                    pollingIntervalMs,
+                    (err: Error) => {
                         intervalUtils.clearAsyncExcludingInterval(intervalId);
-                        const logsWithDecodedArgs = _.map(
-                            transactionReceipt.logs,
-                            this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
-                        );
-                        const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
-                            ...transactionReceipt,
-                            logs: logsWithDecodedArgs,
-                        };
-                        resolve(transactionReceiptWithDecodedLogArgs);
-                    }
-                }, pollingIntervalMs);
+                        reject(err);
+                    },
+                );
             },
         );
 
