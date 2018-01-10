@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.x.x - _TBD, 2018_
+
+    * Add an error parameter to the order watcher callback (#312)
+    * Fix the bug making it impossible to catch some errors from awaitTransactionMinedAsync (#312)
+
 ## v0.29.1 - _January 11, 2018_
 
     * Fixed bignumber config issue #301 (#305)
