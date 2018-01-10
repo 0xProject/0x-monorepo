@@ -1,6 +1,5 @@
 import { TransactionReceipt, TxData } from '@0xproject/types';
-import { bigNumberConfigs, promisify } from '@0xproject/utils';
-import BigNumber from 'bignumber.js';
+import { BigNumber, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
@@ -14,9 +13,6 @@ interface RawLogEntry {
     data: string;
     topics: string[];
 }
-
-// Customize our BigNumber instances
-bigNumberConfigs.configure();
 
 export class Web3Wrapper {
     private _web3: Web3;

@@ -1,10 +1,7 @@
-import { bigNumberConfigs } from '@0xproject/utils';
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { BalancesByOwner, ContractInstance } from './types';
-
-bigNumberConfigs.configure();
 
 export class Balances {
     private _tokenContractInstances: ContractInstance[];

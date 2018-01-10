@@ -1,6 +1,5 @@
 import { RPC } from '@0xproject/dev-utils';
-import { promisify } from '@0xproject/utils';
-import { BigNumber } from 'bignumber.js';
+import { BigNumber, promisify } from '@0xproject/utils';
 import * as chai from 'chai';
 import Web3 = require('web3');
 

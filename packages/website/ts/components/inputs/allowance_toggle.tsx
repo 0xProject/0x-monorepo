@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';

@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';

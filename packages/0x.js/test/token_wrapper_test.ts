@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import BigNumber from 'bignumber.js';
 import * as chai from 'chai';
 import 'mocha';
 import * as Web3 from 'web3';

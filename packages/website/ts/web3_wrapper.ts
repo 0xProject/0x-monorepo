@@ -1,5 +1,4 @@
-import { intervalUtils, promisify } from '@0xproject/utils';
-import BigNumber from 'bignumber.js';
+import { BigNumber, intervalUtils, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import * as Web3 from 'web3';

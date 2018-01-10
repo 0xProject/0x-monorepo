@@ -39,7 +39,6 @@
     "@0xproject/assert": "^0.0.9",
     "@0xproject/json-schemas": "^0.7.1",
     "@0xproject/utils": "^0.1.2",
-    "bignumber.js": "~4.1.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "query-string": "^5.0.1",

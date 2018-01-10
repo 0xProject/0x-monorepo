@@ -1,4 +1,4 @@
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 export const typeConverters = {

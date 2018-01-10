@@ -21,8 +21,7 @@ import {
     LedgerWalletSubprovider,
     RedundantRPCSubprovider,
 } from '@0xproject/subproviders';
-import { intervalUtils, promisify } from '@0xproject/utils';
-import BigNumber from 'bignumber.js';
+import { BigNumber, intervalUtils, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import contract = require('truffle-contract');

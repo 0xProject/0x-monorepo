@@ -23,7 +23,6 @@
     "@0xproject/utils": "^0.1.2",
     "accounting": "^0.4.1",
     "basscss": "^8.0.3",
-    "bignumber.js": "~4.1.0",
     "blockies": "^0.0.2",
     "compare-versions": "^3.0.1",
     "dateformat": "^2.0.0",

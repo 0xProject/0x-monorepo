@@ -1,5 +1,5 @@
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { BigNumber } from 'bignumber.js';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as Web3 from 'web3';

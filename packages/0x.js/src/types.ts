@@ -1,5 +1,5 @@
 import { TransactionReceipt } from '@0xproject/types';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 export enum ZeroExError {
