@@ -64,7 +64,7 @@ export const utils = {
     },
     getEmptyConstructor(): Web3.ConstructorAbi {
         return {
-            type: 'constructor',
+            type: Web3.AbiType.Constructor,
             stateMutability: 'nonpayable',
             payable: false,
             inputs: [],
