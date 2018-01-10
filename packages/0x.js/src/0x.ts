@@ -213,12 +213,17 @@ export class ZeroEx {
      * @param   networkId   The id of the network your provider is connected to
      */
     public setProvider(provider: Web3Provider, networkId: number): void {
-        this._web3Wrapper.setProvider(provider, networkId);
+        this._web3Wrapper.setProvider(provider);
         (this.exchange as any)._invalidateContractInstances();
+        (this.exchange as any)._setNetworkId(networkId);
         (this.tokenRegistry as any)._invalidateContractInstance();
+        (this.tokenRegistry as any)._setNetworkId(networkId);
         (this.token as any)._invalidateContractInstances();
+        (this.token as any)._setNetworkId(networkId);
         (this.proxy as any)._invalidateContractInstance();
+        (this.proxy as any)._setNetworkId(networkId);
         (this.etherToken as any)._invalidateContractInstance();
+        (this.etherToken as any)._setNetworkId(networkId);
     }
     /**
      * Get user Ethereum addresses available through the supplied web3 provider available for sending transactions.

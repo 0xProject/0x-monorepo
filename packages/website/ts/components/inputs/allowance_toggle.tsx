@@ -47,7 +47,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
                     <Toggle
                         disabled={this.state.isSpinnerVisible}
                         toggled={this._isAllowanceSet()}
-                        onToggle={this._onToggleAllowanceAsync.bind(this, this.props.token)}
+                        onToggle={this._onToggleAllowanceAsync.bind(this)}
                     />
                 </div>
                 {this.state.isSpinnerVisible && (
@@ -58,10 +58,9 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             </div>
         );
     }
-    private async _onToggleAllowanceAsync() {
+    private async _onToggleAllowanceAsync(): Promise<void> {
         if (this.props.userAddress === '') {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
-            return false;
         }
 
         this.setState({
@@ -80,7 +79,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             });
             const errMsg = '' + err;
             if (_.includes(errMsg, 'User denied transaction')) {
-                return false;
+                return;
             }
             utils.consoleLog(`Unexpected error encountered: ${err}`);
             utils.consoleLog(err.stack);

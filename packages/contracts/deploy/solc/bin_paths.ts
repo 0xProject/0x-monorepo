@@ -1,4 +1,4 @@
-interface BinaryPaths {
+export interface BinaryPaths {
     [key: string]: string;
 }
 

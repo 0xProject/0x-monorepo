@@ -3,11 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import {
-    Portal as PortalComponent,
-    PortalAllProps as PortalComponentAllProps,
-    PortalPassedProps as PortalComponentPassedProps,
-} from 'ts/components/portal';
+import { Portal as PortalComponent, PortalAllProps as PortalComponentAllProps } from 'ts/components/portal';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
 import { BlockchainErrs, HashData, Order, ScreenWidths, Side, TokenByAddress, TokenStateByAddress } from 'ts/types';
@@ -80,6 +76,6 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Portal: React.ComponentClass<PortalComponentPassedProps> = connect(mapStateToProps, mapDispatchToProps)(
+export const Portal: React.ComponentClass<PortalComponentAllProps> = connect(mapStateToProps, mapDispatchToProps)(
     PortalComponent,
 );

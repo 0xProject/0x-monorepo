@@ -87,7 +87,7 @@ export class ContractWrapper {
         }
         const filterToken = filterUtils.generateUUID();
         this._filters[filterToken] = filter;
-        this._filterCallbacks[filterToken] = callback;
+        this._filterCallbacks[filterToken] = callback as EventCallback<ContractEventArgs>;
         return filterToken;
     }
     protected async _getLogsAsync<ArgsType extends ContractEventArgs>(
@@ -176,6 +176,9 @@ export class ContractWrapper {
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
             this._onLogStateChanged.bind(this, isRemoved),
         );
+    }
+    private _setNetworkId(networkId: number): void {
+        this._networkId = networkId;
     }
     private _stopBlockAndLogStream(): void {
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {

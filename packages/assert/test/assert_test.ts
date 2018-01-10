@@ -22,16 +22,6 @@ describe('Assertions', () => {
             invalidInputs.forEach(input => expect(assert.isBigNumber.bind(assert, variableName, input)).to.throw());
         });
     });
-    describe('#isUndefined', () => {
-        it('should not throw for valid input', () => {
-            const validInputs = [undefined];
-            validInputs.forEach(input => expect(assert.isUndefined.bind(assert, input, variableName)).to.not.throw());
-        });
-        it('should throw for invalid input', () => {
-            const invalidInputs = ['test', 42, false, { random: 'test' }];
-            invalidInputs.forEach(input => expect(assert.isUndefined.bind(assert, input, variableName)).to.throw());
-        });
-    });
     describe('#isString', () => {
         it('should not throw for valid input', () => {
             const validInputs = ['hello', 'goodbye'];
@@ -44,7 +34,7 @@ describe('Assertions', () => {
     });
     describe('#isFunction', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [BigNumber, assert.isString.bind(this)];
+            const validInputs = [BigNumber, assert.isString];
             validInputs.forEach(input => expect(assert.isFunction.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {

@@ -5,7 +5,7 @@ import { colors } from 'ts/utils/colors';
 
 interface FillWarningDialogProps {
     isOpen: boolean;
-    onToggleDialog: () => void;
+    onToggleDialog: (didUserCancel: boolean) => void;
 }
 
 export function FillWarningDialog(props: FillWarningDialogProps) {

@@ -66,12 +66,12 @@ export class Blockchain {
     private _cachedProvider: Web3.Provider;
     private _ledgerSubprovider: LedgerWalletSubprovider;
     private _zrxPollIntervalId: NodeJS.Timer;
-    private static async _onPageLoadAsync() {
+    private static async _onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
             return; // Already loaded
         }
-        return new Promise((resolve, reject) => {
-            window.onload = resolve;
+        return new Promise<void>((resolve, reject) => {
+            window.onload = () => resolve();
         });
     }
     private static _getNameGivenProvider(provider: Web3.Provider): string {

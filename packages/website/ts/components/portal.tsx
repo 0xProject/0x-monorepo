@@ -322,10 +322,10 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             isWethNoticeDialogOpen: false,
         });
     }
-    private _getSharedOrderIfExists(): Order {
+    private _getSharedOrderIfExists(): Order | undefined {
         const queryString = window.location.search;
         if (queryString.length === 0) {
-            return;
+            return undefined;
         }
         const queryParams = queryString.substring(1).split('&');
         const orderQueryParam = _.find(queryParams, queryParam => {
@@ -333,11 +333,11 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             return queryPair[0] === 'order';
         });
         if (_.isUndefined(orderQueryParam)) {
-            return;
+            return undefined;
         }
         const orderPair = orderQueryParam.split('=');
         if (orderPair.length !== 2) {
-            return;
+            return undefined;
         }
 
         const validator = new SchemaValidator();
@@ -345,7 +345,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const validationResult = validator.validate(order, orderSchema);
         if (validationResult.errors.length > 0) {
             utils.consoleLog(`Invalid shared order: ${validationResult.errors}`);
-            return;
+            return undefined;
         }
         return order;
     }

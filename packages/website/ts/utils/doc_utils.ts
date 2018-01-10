@@ -20,7 +20,7 @@ export const docUtils = {
             // TODO: Show the user an error message when the docs fail to load
             const errMsg = await response.text();
             utils.consoleLog(`Failed to load JSON file list: ${response.status} ${errMsg}`);
-            return;
+            throw new Error(errMsg);
         }
         const responseXML = await response.text();
         const responseJSONString = convert.xml2json(responseXML, {
@@ -43,7 +43,7 @@ export const docUtils = {
             // TODO: Show the user an error message when the docs fail to load
             const errMsg = await response.text();
             utils.consoleLog(`Failed to load Doc JSON: ${response.status} ${errMsg}`);
-            return;
+            throw new Error(errMsg);
         }
         const jsonDocObj = await response.json();
         return jsonDocObj;

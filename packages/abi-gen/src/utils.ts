@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as Web3 from 'web3';
 
-import { ParamKind } from './types';
+import { AbiType, ParamKind } from './types';
 
 export const utils = {
     solTypeToTsType(paramKind: ParamKind, solType: string): string {
@@ -64,7 +64,7 @@ export const utils = {
     },
     getEmptyConstructor(): Web3.ConstructorAbi {
         return {
-            type: 'constructor',
+            type: AbiType.Constructor,
             stateMutability: 'nonpayable',
             payable: false,
             inputs: [],

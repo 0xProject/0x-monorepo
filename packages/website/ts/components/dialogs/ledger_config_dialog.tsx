@@ -134,7 +134,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                             labelReady="Update"
                             labelLoading="Updating..."
                             labelComplete="Updated!"
-                            onClickAsyncFn={this._onFetchAddressesForDerivationPathAsync.bind(this, true)}
+                            onClickAsyncFn={this._onFetchAddressesForDerivationPathAsync.bind(this)}
                         />
                     </div>
                 </div>
@@ -191,13 +191,15 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         const isOpen = false;
         this.props.toggleDialogFn(isOpen);
     }
-    private async _onFetchAddressesForDerivationPathAsync() {
+    private async _onFetchAddressesForDerivationPathAsync(): Promise<boolean> {
         const currentlySetPath = this.props.blockchain.getLedgerDerivationPathIfExists();
+        let didSucceed;
         if (currentlySetPath === this.state.derivationPath) {
-            return;
+            didSucceed = true;
+            return didSucceed;
         }
         this.props.blockchain.updateLedgerDerivationPathIfExists(this.state.derivationPath);
-        const didSucceed = await this._fetchAddressesAndBalancesAsync();
+        didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (!didSucceed) {
             this.setState({
                 derivationErrMsg: 'Failed to connect to Ledger.',

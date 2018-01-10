@@ -155,7 +155,11 @@ export interface Action {
 }
 
 export interface TrackedTokensByNetworkId {
-    [networkId: number]: Token;
+    [networkId: number]: Token[];
+}
+
+export interface TrackedTokensByUserAddress {
+    [userAddress: string]: TrackedTokensByNetworkId;
 }
 
 export interface Styles {

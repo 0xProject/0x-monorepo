@@ -38,10 +38,10 @@ export class RequestQueue {
     }
     protected start() {
         this.queueIntervalId = timers.setInterval(() => {
-            if (this.queue.length === 0) {
+            const recipientAddress = this.queue.shift();
+            if (_.isUndefined(recipientAddress)) {
                 return;
             }
-            const recipientAddress = this.queue.shift();
             // tslint:disable-next-line:no-floating-promises
             this.processNextRequestFireAndForgetAsync(recipientAddress);
         }, this.queueIntervalMs);
