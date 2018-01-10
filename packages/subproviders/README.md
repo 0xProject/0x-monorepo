@@ -1,5 +1,4 @@
-@0xproject/subproviders
---------
+## @0xproject/subproviders
 
 A few useful web3 subproviders including a LedgerSubprovider useful for adding Ledger Nano S support.
 
@@ -50,6 +49,7 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 ### Install Dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
@@ -88,10 +88,10 @@ yarn run test:unit
 
 In order to run the integration tests, make sure you have a Ledger Nano S available.
 
-- Plug it into your computer
-- Unlock the device
-- Open the on-device Ethereum app
-- Make sure "browser support" is disabled
+* Plug it into your computer
+* Unlock the device
+* Open the on-device Ethereum app
+* Make sure "browser support" is disabled
 
 Then run:
 

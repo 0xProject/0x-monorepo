@@ -1,5 +1,4 @@
-@0xproject/utils
-------
+## @0xproject/utils
 
 Utils to be shared across 0x projects and packages
 
@@ -12,13 +11,7 @@ yarn add @0xproject/utils
 ## Usage
 
 ```javascript
-import {
-    addressUtils, 
-    bigNumberConfigs,
-    classUtils,
-    intervalUtils,
-    promisify,
-} from '@0xproject/utils';
+import { addressUtils, bigNumberConfigs, classUtils, intervalUtils, promisify } from '@0xproject/utils';
 ```
 
 ## Contributing
@@ -30,11 +23,13 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 ### Install Dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
 
 Then install dependencies
+
 ```bash
 yarn install
 ```

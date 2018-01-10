@@ -4,8 +4,8 @@
     "workspaces": ["packages/*"],
     "scripts": {
         "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
-        "prettier": "prettier --write '**/*.{ts,tsx}'",
-        "prettier:ci": "prettier --list-different '**/*.{ts,tsx}'",
+        "prettier": "prettier --write '**/*.{ts,tsx,json,md}'",
+        "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}'",
         "lerna:run": "lerna run",
         "lerna:rebuild": "lerna run clean; lerna run build;",
         "lerna:publish":

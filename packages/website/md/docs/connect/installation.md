@@ -7,7 +7,7 @@ npm install @0xproject/connect --save
 **Import**
 
 ```javascript
-import {HttpClient} from '@0xproject/connect';
+import { HttpClient } from '@0xproject/connect';
 ```
 
 ### Wiki

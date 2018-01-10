@@ -3,7 +3,7 @@
         "allowSyntheticDefaultImports": true,
         "outDir": "./transpiled/",
         "sourceMap": true,
-        "lib": [ "es2015", "dom" ],
+        "lib": ["es2015", "dom"],
         "noImplicitAny": true,
         "module": "commonjs",
         "target": "es5",
@@ -11,11 +11,8 @@
         "baseUrl": "./",
         "allowJs": true,
         "paths": {
-            "*": [ "node_modules/@types/*", "*"]
+            "*": ["node_modules/@types/*", "*"]
         }
     },
-    "include": [
-        "./ts/**/*",
-        "../../node_modules/web3-typescript-typings/index.d.ts"
-    ]
+    "include": ["./ts/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
 }
