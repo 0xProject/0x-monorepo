@@ -40,6 +40,9 @@ const teamRow1: ProfileInfo[] = [
         github: 'https://github.com/fabioberger',
         medium: 'https://medium.com/@fabioberger',
     },
+];
+
+const teamRow2: ProfileInfo[] = [
     {
         name: 'Alex Xu',
         title: 'Director of Operations',
@@ -50,9 +53,6 @@ const teamRow1: ProfileInfo[] = [
         github: '',
         medium: '',
     },
-];
-
-const teamRow2: ProfileInfo[] = [
     {
         name: 'Leonid Logvinov',
         title: 'Engineer',
@@ -73,16 +73,9 @@ const teamRow2: ProfileInfo[] = [
         github: '',
         medium: '',
     },
-    {
-        name: 'Philippe Castonguay',
-        title: 'Dev Relations Manager',
-        description: `Developer relations. Previously computational neuroscience \
-                      research at Janelia. Statistics at Western University. MA Dropout.`,
-        image: '/images/team/philippe.png',
-        linkedIn: '',
-        github: 'https://github.com/PhABC',
-        medium: '',
-    },
+];
+
+const teamRow3: ProfileInfo[] = [
     {
         name: 'Brandon Millman',
         title: 'Senior Engineer',
@@ -90,6 +83,24 @@ const teamRow2: ProfileInfo[] = [
                       Twitter. Electrical and Computer Engineering at Duke.`,
         image: '/images/team/brandon.png',
         linkedIn: 'https://www.linkedin.com/company-beta/17942619/',
+    },
+    {
+        name: 'Tom Schmidt',
+        title: 'Product Manager',
+        description: `Previously engineering at Apple, product management at Facebook and Instagram. Computer Science at Stanford.`,
+        image: '/images/team/anyone.png',
+        linkedIn: 'https://www.linkedin.com/in/tomhschmidt/',
+        github: 'https://github.com/tomhschmidt',
+        medium: '',
+    },
+    {
+        name: 'Jacob Evans',
+        title: 'Blockchain Engineer',
+        description: `Previously software engineer at Qantas and RSA Security.`,
+        image: '/images/team/anyone.png',
+        linkedIn: 'https://www.linkedin.com/in/dekzter/',
+        github: 'https://github.com/dekz',
+        medium: '',
     },
 ];
 
@@ -181,6 +192,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                     <div className="pt3 md-px4 lg-px0">
                         <div className="clearfix pb3">{this._renderProfiles(teamRow1)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow2)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow3)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
