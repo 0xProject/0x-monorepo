@@ -1,8 +1,8 @@
-import * as Redshift from 'node-redshift';
 import * as dotenv from 'dotenv';
+import * as Redshift from 'node-redshift';
 dotenv.config();
 
-let client = {
+const client = {
     user: process.env.REDSHIFT_USER,
     database: process.env.REDSHIFT_DB,
     password: process.env.REDSHIFT_PASSWORD,
@@ -10,8 +10,8 @@ let client = {
     host: process.env.REDSHIFT_HOST,
 };
 
-let options = {};
+const options = {};
 
-let redshiftClient = new Redshift(client, options);
+const redshiftClient = new Redshift(client, options);
 
 export default redshiftClient;
