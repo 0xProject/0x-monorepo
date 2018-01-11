@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## vx.x.x
+## v0.4.0 - _January 11, 2017_
 
     * Prevent getFeesAsync method on HttpClient from mutating input (#296)
 
