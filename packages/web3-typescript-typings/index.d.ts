@@ -107,6 +107,7 @@ declare module 'web3' {
 
         interface Contract<A extends ContractInstance> {
             at(address: string): A;
+            getData(...args: any[]): string;
             'new'(...args: any[]): A;
         }
 
