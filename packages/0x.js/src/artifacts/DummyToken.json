@@ -1,7 +1,6 @@
 {
     "contract_name": "DummyToken",
-    "abi":
-    [
+    "abi": [
         {
             "constant": false,
             "inputs": [

@@ -1,15 +1,15 @@
-import {ZeroEx} from '0x.js';
-import {BigNumber} from 'bignumber.js';
+import { ZeroEx } from '0x.js';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
-import {Artifacts} from '../../util/artifacts';
-import {constants} from '../../util/constants';
-import {ContractInstance} from '../../util/types';
+import { Artifacts } from '../../util/artifacts';
+import { constants } from '../../util/constants';
+import { ContractInstance } from '../../util/types';
 
-import {chaiSetup} from './utils/chai_setup';
+import { chaiSetup } from './utils/chai_setup';
 
-const {DummyTokenV2} = new Artifacts(artifacts);
+const { DummyTokenV2 } = new Artifacts(artifacts);
 const web3: Web3 = (global as any).web3;
 chaiSetup.configure();
 const expect = chai.expect;
@@ -27,8 +27,8 @@ contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
     let token: ContractInstance;
 
     beforeEach(async () => {
-        token = await DummyTokenV2.new({from: owner});
-        await token.mint(MAX_MINT_VALUE, {from: owner});
+        token = await DummyTokenV2.new({ from: owner });
+        await token.mint(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });
 
@@ -36,8 +36,9 @@ contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
         it('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
-            return expect(token.transfer.call(spender, amountToTransfer, {from: owner}))
-                .to.be.rejectedWith(constants.REVERT);
+            return expect(token.transfer.call(spender, amountToTransfer, { from: owner })).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
 
         it('should transfer balance from sender to receiver', async () => {
@@ -55,7 +56,9 @@ contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const didReturnTrue = await token.transfer.call(spender, 0, {from: owner});
+            const didReturnTrue = await token.transfer.call(spender, 0, {
+                from: owner,
+            });
             expect(didReturnTrue).to.be.true();
         });
     });
@@ -65,8 +68,11 @@ contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, amountToTransfer);
-            return expect(token.transferFrom.call(owner, spender, amountToTransfer, {from: spender}))
-                .to.be.rejectedWith(constants.REVERT);
+            return expect(
+                token.transferFrom.call(owner, spender, amountToTransfer, {
+                    from: spender,
+                }),
+            ).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should throw if spender has insufficient allowance', async () => {
@@ -77,13 +83,16 @@ contract('UnlimitedAllowanceTokenV2', (accounts: string[]) => {
             const spenderAllowanceIsInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(spenderAllowanceIsInsufficient).to.be.true();
 
-            return expect(token.transferFrom.call(owner, spender, amountToTransfer, {from: spender}))
-                .to.be.rejectedWith(constants.REVERT);
+            return expect(
+                token.transferFrom.call(owner, spender, amountToTransfer, {
+                    from: spender,
+                }),
+            ).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should return true on a 0 value transfer', async () => {
             const amountToTransfer = 0;
-            const didReturnTrue = await token.transferFrom.call(owner, spender, amountToTransfer, {from: spender});
+            const didReturnTrue = await token.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.true();
         });
 

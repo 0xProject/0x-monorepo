@@ -1,13 +1,13 @@
-import {schemas} from '@0xproject/json-schemas';
-import {intervalUtils} from '@0xproject/utils';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
+import { schemas } from '@0xproject/json-schemas';
+import { intervalUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import {ZeroEx} from '../0x';
-import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
-import {TokenWrapper} from '../contract_wrappers/token_wrapper';
-import {BalanceAndProxyAllowanceLazyStore} from '../stores/balance_proxy_allowance_lazy_store';
-import {OrderFilledCancelledLazyStore} from '../stores/order_filled_cancelled_lazy_store';
+import { ZeroEx } from '../0x';
+import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
+import { TokenWrapper } from '../contract_wrappers/token_wrapper';
+import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
+import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
 import {
     ApprovalContractEventArgs,
     BlockParamLiteral,
@@ -29,13 +29,13 @@ import {
     WithdrawalContractEventArgs,
     ZeroExError,
 } from '../types';
-import {AbiDecoder} from '../utils/abi_decoder';
-import {assert} from '../utils/assert';
-import {OrderStateUtils} from '../utils/order_state_utils';
-import {utils} from '../utils/utils';
+import { AbiDecoder } from '../utils/abi_decoder';
+import { assert } from '../utils/assert';
+import { OrderStateUtils } from '../utils/order_state_utils';
+import { utils } from '../utils/utils';
 
-import {EventWatcher} from './event_watcher';
-import {ExpirationWatcher} from './expiration_watcher';
+import { EventWatcher } from './event_watcher';
+import { ExpirationWatcher } from './expiration_watcher';
 
 interface DependentOrderHashes {
     [makerAddress: string]: {
@@ -74,7 +74,10 @@ export class OrderStateWatcher {
     private _cleanupJobInterval: number;
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
     constructor(
-        web3Wrapper: Web3Wrapper, abiDecoder: AbiDecoder, token: TokenWrapper, exchange: ExchangeWrapper,
+        web3Wrapper: Web3Wrapper,
+        abiDecoder: AbiDecoder,
+        token: TokenWrapper,
+        exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
     ) {
         this._abiDecoder = abiDecoder;
@@ -82,24 +85,26 @@ export class OrderStateWatcher {
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
-            token, BlockParamLiteral.Pending,
+            token,
+            BlockParamLiteral.Pending,
         );
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
         this._orderStateUtils = new OrderStateUtils(
-            this._balanceAndProxyAllowanceLazyStore, this._orderFilledCancelledLazyStore,
+            this._balanceAndProxyAllowanceLazyStore,
+            this._orderFilledCancelledLazyStore,
         );
-        const orderExpirationCheckingIntervalMsIfExists = _.isUndefined(config) ?
-                                                          undefined :
-                                                          config.orderExpirationCheckingIntervalMs;
-        const expirationMarginIfExistsMs = _.isUndefined(config) ?
-                                           undefined :
-                                           config.expirationMarginMs;
+        const orderExpirationCheckingIntervalMsIfExists = _.isUndefined(config)
+            ? undefined
+            : config.orderExpirationCheckingIntervalMs;
+        const expirationMarginIfExistsMs = _.isUndefined(config) ? undefined : config.expirationMarginMs;
         this._expirationWatcher = new ExpirationWatcher(
-            expirationMarginIfExistsMs, orderExpirationCheckingIntervalMsIfExists,
+            expirationMarginIfExistsMs,
+            orderExpirationCheckingIntervalMsIfExists,
         );
-        this._cleanupJobInterval = _.isUndefined(config) || _.isUndefined(config.cleanupJobIntervalMs) ?
-                                   DEFAULT_CLEANUP_JOB_INTERVAL_MS :
-                                   config.cleanupJobIntervalMs;
+        this._cleanupJobInterval =
+            _.isUndefined(config) || _.isUndefined(config.cleanupJobIntervalMs)
+                ? DEFAULT_CLEANUP_JOB_INTERVAL_MS
+                : config.cleanupJobIntervalMs;
     }
     /**
      * Add an order to the orderStateWatcher. Before the order is added, it's
@@ -111,7 +116,7 @@ export class OrderStateWatcher {
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         assert.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker);
         this._orderByOrderHash[orderHash] = signedOrder;
-        this.addToDependentOrderHashes(signedOrder, orderHash);
+        this._addToDependentOrderHashes(signedOrder, orderHash);
         const expirationUnixTimestampMs = signedOrder.expirationUnixTimestampSec.times(1000);
         this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);
     }
@@ -127,10 +132,10 @@ export class OrderStateWatcher {
         }
         delete this._orderByOrderHash[orderHash];
         delete this._orderStateByOrderHashCache[orderHash];
-        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
-        this.removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
-        this.removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
+        this._removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
+        this._removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
         this._expirationWatcher.removeOrder(orderHash);
     }
     /**
@@ -148,7 +153,8 @@ export class OrderStateWatcher {
         this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
         this._expirationWatcher.subscribe(this._onOrderExpired.bind(this));
         this._cleanupJobIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this._cleanupAsync.bind(this), this._cleanupJobInterval,
+            this._cleanupAsync.bind(this),
+            this._cleanupJobInterval,
         );
     }
     /**
@@ -215,23 +221,23 @@ export class OrderStateWatcher {
         let makerToken: string;
         let makerAddress: string;
         switch (decodedLog.event) {
-            case TokenEvents.Approval:
-            {
+            case TokenEvents.Approval: {
                 // Invalidate cache
                 const args = decodedLog.args as ApprovalContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(decodedLog.address, args._owner);
                 // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._owner;
-                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                if (
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])
+                ) {
                     const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
                     await this._emitRevalidateOrdersAsync(orderHashes);
                 }
                 break;
             }
-            case TokenEvents.Transfer:
-            {
+            case TokenEvents.Transfer: {
                 // Invalidate cache
                 const args = decodedLog.args as TransferContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._from);
@@ -239,45 +245,48 @@ export class OrderStateWatcher {
                 // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._from;
-                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                if (
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])
+                ) {
                     const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
                     await this._emitRevalidateOrdersAsync(orderHashes);
                 }
                 break;
             }
-            case EtherTokenEvents.Deposit:
-            {
+            case EtherTokenEvents.Deposit: {
                 // Invalidate cache
                 const args = decodedLog.args as DepositContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
                 // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._owner;
-                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                if (
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])
+                ) {
                     const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
                     await this._emitRevalidateOrdersAsync(orderHashes);
                 }
                 break;
             }
-            case EtherTokenEvents.Withdrawal:
-            {
+            case EtherTokenEvents.Withdrawal: {
                 // Invalidate cache
                 const args = decodedLog.args as WithdrawalContractEventArgs;
                 this._balanceAndProxyAllowanceLazyStore.deleteBalance(decodedLog.address, args._owner);
                 // Revalidate orders
                 makerToken = decodedLog.address;
                 makerAddress = args._owner;
-                if (!_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
-                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])) {
+                if (
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress]) &&
+                    !_.isUndefined(this._dependentOrderHashes[makerAddress][makerToken])
+                ) {
                     const orderHashes = Array.from(this._dependentOrderHashes[makerAddress][makerToken]);
                     await this._emitRevalidateOrdersAsync(orderHashes);
                 }
                 break;
             }
-            case ExchangeEvents.LogFill:
-            {
+            case ExchangeEvents.LogFill: {
                 // Invalidate cache
                 const args = decodedLog.args as LogFillContractEventArgs;
                 this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
@@ -289,8 +298,7 @@ export class OrderStateWatcher {
                 }
                 break;
             }
-            case ExchangeEvents.LogCancel:
-            {
+            case ExchangeEvents.LogCancel: {
                 // Invalidate cache
                 const args = decodedLog.args as LogCancelContractEventArgs;
                 this._orderFilledCancelledLazyStore.deleteCancelledTakerAmount(args.orderHash);
@@ -327,7 +335,7 @@ export class OrderStateWatcher {
             this._callbackIfExists(orderState);
         }
     }
-    private addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string): void {
+    private _addToDependentOrderHashes(signedOrder: SignedOrder, orderHash: string): void {
         if (_.isUndefined(this._dependentOrderHashes[signedOrder.maker])) {
             this._dependentOrderHashes[signedOrder.maker] = {};
         }
@@ -341,7 +349,7 @@ export class OrderStateWatcher {
         }
         this._dependentOrderHashes[signedOrder.maker][zrxTokenAddress].add(orderHash);
     }
-    private removeFromDependentOrderHashes(makerAddress: string, tokenAddress: string, orderHash: string) {
+    private _removeFromDependentOrderHashes(makerAddress: string, tokenAddress: string, orderHash: string) {
         this._dependentOrderHashes[makerAddress][tokenAddress].delete(orderHash);
         if (this._dependentOrderHashes[makerAddress][tokenAddress].size === 0) {
             delete this._dependentOrderHashes[makerAddress][tokenAddress];
@@ -351,7 +359,7 @@ export class OrderStateWatcher {
         }
     }
     private _getZRXTokenAddress(): string {
-        const exchange = (this._orderFilledCancelledLazyStore as any).exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         return zrxTokenAddress;
     }

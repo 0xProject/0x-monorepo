@@ -6,15 +6,10 @@ import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import {
-    ledgerEthereumNodeJsClientFactoryAsync,
-    LedgerSubprovider,
-} from '../../src';
-import {
-    DoneCallback,
-} from '../../src/types';
-import {chaiSetup} from '../chai_setup';
-import {reportCallbackErrors} from '../utils/report_callback_errors';
+import { ledgerEthereumNodeJsClientFactoryAsync, LedgerSubprovider } from '../../src';
+import { DoneCallback } from '../../src/types';
+import { chaiSetup } from '../chai_setup';
+import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -51,8 +46,9 @@ describe('LedgerSubprovider', () => {
                 chainId: 3,
             };
             const txHex = await ledgerSubprovider.signTransactionAsync(tx);
-            // tslint:disable-next-line:max-line-length
-            expect(txHex).to.be.equal('0xf85f8080822710940000000000000000000000000000000000000000808077a088a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98ba0019f4a4b9a107d1e6752bf7f701e275f28c13791d6e76af895b07373462cefaa');
+            expect(txHex).to.be.equal(
+                '0xf85f8080822710940000000000000000000000000000000000000000808077a088a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98ba0019f4a4b9a107d1e6752bf7f701e275f28c13791d6e76af895b07373462cefaa',
+            );
         });
     });
     describe('calls through a provider', () => {
@@ -85,7 +81,27 @@ describe('LedgerSubprovider', () => {
             });
             ledgerProvider.sendAsync(payload, callback);
         });
-        it('signs a personal message', (done: DoneCallback) => {
+        it('signs a personal message with eth_sign', (done: DoneCallback) => {
+            (async () => {
+                const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
+                const accounts = await ledgerSubprovider.getAccountsAsync();
+                const signer = accounts[0];
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'eth_sign',
+                    params: [signer, messageHex],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                    expect(err).to.be.a('null');
+                    expect(response.result.length).to.be.equal(132);
+                    expect(response.result.substr(0, 2)).to.be.equal('0x');
+                    done();
+                });
+                ledgerProvider.sendAsync(payload, callback);
+            })().catch(done);
+        });
+        it('signs a personal message with personal_sign', (done: DoneCallback) => {
             (async () => {
                 const messageHex = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
                 const accounts = await ledgerSubprovider.getAccountsAsync();

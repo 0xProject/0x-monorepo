@@ -5,6 +5,13 @@ export enum ParamKind {
     Output = 'output',
 }
 
+export enum AbiType {
+    Function = 'function',
+    Constructor = 'constructor',
+    Event = 'event',
+    Fallback = 'fallback',
+}
+
 export interface Method extends Web3.MethodAbi {
     singleReturnValue: boolean;
 }
@@ -12,4 +19,5 @@ export interface Method extends Web3.MethodAbi {
 export interface ContextData {
     contractName: string;
     methods: Method[];
+    events: Web3.EventAbi[];
 }

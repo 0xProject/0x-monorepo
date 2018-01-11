@@ -1,6 +1,7 @@
 0x.js is a promise-based library. This means that whenever an asynchronous call is required, the library method will return a native Javascript promise. You can therefore choose between using `promise` or `async/await` syntax when calling our async methods.
 
-*Async/await syntax (recommended):*
+_Async/await syntax (recommended):_
+
 ```javascript
 try {
     var availableAddresses = await zeroEx.getAvailableAddressesAsync();
@@ -9,9 +10,11 @@ try {
 }
 ```
 
-*Promise syntax:*
+_Promise syntax:_
+
 ```javascript
-zeroEx.getAvailableAddressesAsync()
+zeroEx
+    .getAvailableAddressesAsync()
     .then(function(availableAddresses) {
         console.log(availableAddresses);
     })

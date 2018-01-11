@@ -1,10 +1,10 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import * as moment from 'moment';
 import * as React from 'react';
-import {utils} from 'ts/utils/utils';
+import { utils } from 'ts/utils/utils';
 
 interface ExpirationInputProps {
     orderExpiryTimestamp: BigNumber;
@@ -17,11 +17,11 @@ interface ExpirationInputState {
 }
 
 export class ExpirationInput extends React.Component<ExpirationInputProps, ExpirationInputState> {
-    private earliestPickableMoment: moment.Moment;
+    private _earliestPickableMoment: moment.Moment;
     constructor(props: ExpirationInputProps) {
         super(props);
         // Set the earliest pickable date to today at 00:00, so users can only pick the current or later dates
-        this.earliestPickableMoment = moment().startOf('day');
+        this._earliestPickableMoment = moment().startOf('day');
         const expirationMoment = utils.convertToMomentFromUnixTimestamp(props.orderExpiryTimestamp);
         const initialOrderExpiryTimestamp = utils.initialOrderExpiryUnixTimestampSec();
         const didUserSetExpiry = !initialOrderExpiryTimestamp.eq(props.orderExpiryTimestamp);
@@ -42,13 +42,10 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
                         mode="landscape"
                         autoOk={true}
                         value={date}
-                        onChange={this.onDateChanged.bind(this)}
-                        shouldDisableDate={this.shouldDisableDate.bind(this)}
+                        onChange={this._onDateChanged.bind(this)}
+                        shouldDisableDate={this._shouldDisableDate.bind(this)}
                     />
-                    <div
-                        className="absolute"
-                        style={{fontSize: 20, right: 40, top: 13, pointerEvents: 'none'}}
-                    >
+                    <div className="absolute" style={{ fontSize: 20, right: 40, top: 13, pointerEvents: 'none' }}>
                         <i className="zmdi zmdi-calendar" />
                     </div>
                 </div>
@@ -58,29 +55,24 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
                         hintText="Time"
                         autoOk={true}
                         value={time}
-                        onChange={this.onTimeChanged.bind(this)}
+                        onChange={this._onTimeChanged.bind(this)}
                     />
-                    <div
-                        className="absolute"
-                        style={{fontSize: 20, right: 9, top: 13, pointerEvents: 'none'}}
-                    >
+                    <div className="absolute" style={{ fontSize: 20, right: 9, top: 13, pointerEvents: 'none' }}>
                         <i className="zmdi zmdi-time" />
                     </div>
                 </div>
-                <div
-                    onClick={this.clearDates.bind(this)}
-                    className="col col-1 pt2"
-                    style={{textAlign: 'right'}}
-                >
-                    <i style={{fontSize: 16, cursor: 'pointer'}} className="zmdi zmdi-close" />
+                <div onClick={this._clearDates.bind(this)} className="col col-1 pt2" style={{ textAlign: 'right' }}>
+                    <i style={{ fontSize: 16, cursor: 'pointer' }} className="zmdi zmdi-close" />
                 </div>
             </div>
         );
     }
-    private shouldDisableDate(date: Date): boolean {
-        return moment(date).startOf('day').isBefore(this.earliestPickableMoment);
+    private _shouldDisableDate(date: Date): boolean {
+        return moment(date)
+            .startOf('day')
+            .isBefore(this._earliestPickableMoment);
     }
-    private clearDates() {
+    private _clearDates() {
         this.setState({
             dateMoment: undefined,
             timeMoment: undefined,
@@ -88,7 +80,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
         const defaultDateTime = utils.initialOrderExpiryUnixTimestampSec();
         this.props.updateOrderExpiry(defaultDateTime);
     }
-    private onDateChanged(e: any, date: Date) {
+    private _onDateChanged(e: any, date: Date) {
         const dateMoment = moment(date);
         this.setState({
             dateMoment,
@@ -96,12 +88,12 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
         const timestamp = utils.convertToUnixTimestampSeconds(dateMoment, this.state.timeMoment);
         this.props.updateOrderExpiry(timestamp);
     }
-    private onTimeChanged(e: any, time: Date) {
+    private _onTimeChanged(e: any, time: Date) {
         const timeMoment = moment(time);
         this.setState({
             timeMoment,
         });
-        const dateMoment =  _.isUndefined(this.state.dateMoment) ? moment() : this.state.dateMoment;
+        const dateMoment = _.isUndefined(this.state.dateMoment) ? moment() : this.state.dateMoment;
         const timestamp = utils.convertToUnixTimestampSeconds(dateMoment, timeMoment);
         this.props.updateOrderExpiry(timestamp);
     }

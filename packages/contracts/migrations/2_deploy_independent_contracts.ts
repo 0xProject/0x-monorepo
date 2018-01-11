@@ -1,11 +1,6 @@
-import {Artifacts} from '../util/artifacts';
-import {MultiSigConfigByNetwork} from '../util/types';
-const {
-    MultiSigWalletWithTimeLock,
-    TokenTransferProxy,
-    EtherToken,
-    TokenRegistry,
-} = new Artifacts(artifacts);
+import { Artifacts } from '../util/artifacts';
+import { MultiSigConfigByNetwork } from '../util/types';
+const { MultiSigWalletWithTimeLock, TokenTransferProxy, EtherToken, TokenRegistry } = new Artifacts(artifacts);
 
 let multiSigConfigByNetwork: MultiSigConfigByNetwork;
 try {
@@ -25,13 +20,15 @@ module.exports = (deployer: any, network: string, accounts: string[]) => {
     };
     const config = multiSigConfigByNetwork[network] || defaultConfig;
     if (network !== 'live') {
-            deployer.deploy(MultiSigWalletWithTimeLock, config.owners,
-                            config.confirmationsRequired, config.secondsRequired)
+        deployer
+            .deploy(MultiSigWalletWithTimeLock, config.owners, config.confirmationsRequired, config.secondsRequired)
             .then(() => {
                 return deployer.deploy(TokenTransferProxy);
-            }).then(() => {
+            })
+            .then(() => {
                 return deployer.deploy(TokenRegistry);
-            }).then(() => {
+            })
+            .then(() => {
                 return deployer.deploy(EtherToken);
             });
     } else {

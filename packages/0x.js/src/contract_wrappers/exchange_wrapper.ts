@@ -1,10 +1,10 @@
-import {schemas} from '@0xproject/json-schemas';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
-import BigNumber from 'bignumber.js';
+import { schemas } from '@0xproject/json-schemas';
+import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import {artifacts} from '../artifacts';
+import { artifacts } from '../artifacts';
 import {
     BlockParamLiteral,
     BlockRange,
@@ -28,16 +28,16 @@ import {
     SignedOrder,
     ValidateOrderFillableOpts,
 } from '../types';
-import {AbiDecoder} from '../utils/abi_decoder';
-import {assert} from '../utils/assert';
-import {decorators} from '../utils/decorators';
-import {ExchangeTransferSimulator} from '../utils/exchange_transfer_simulator';
-import {OrderValidationUtils} from '../utils/order_validation_utils';
-import {utils} from '../utils/utils';
+import { AbiDecoder } from '../utils/abi_decoder';
+import { assert } from '../utils/assert';
+import { decorators } from '../utils/decorators';
+import { ExchangeTransferSimulator } from '../utils/exchange_transfer_simulator';
+import { OrderValidationUtils } from '../utils/order_validation_utils';
+import { utils } from '../utils/utils';
 
-import {ContractWrapper} from './contract_wrapper';
-import {ExchangeContract} from './generated/exchange';
-import {TokenWrapper} from './token_wrapper';
+import { ContractWrapper } from './contract_wrapper';
+import { ExchangeContract } from './generated/exchange';
+import { TokenWrapper } from './token_wrapper';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;
 
@@ -81,8 +81,13 @@ export class ExchangeWrapper extends ContractWrapper {
         ];
         return [orderAddresses, orderValues];
     }
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder,
-                tokenWrapper: TokenWrapper, contractAddressIfExists?: string) {
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        networkId: number,
+        abiDecoder: AbiDecoder,
+        tokenWrapper: TokenWrapper,
+        contractAddressIfExists?: string,
+    ) {
         super(web3Wrapper, networkId, abiDecoder);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(this);
@@ -97,14 +102,14 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   methodOpts              Optional arguments this method accepts.
      * @return  The amount of the order (in taker tokens) that has either been filled or cancelled.
      */
-    public async getUnavailableTakerAmountAsync(orderHash: string,
-                                                methodOpts?: MethodOpts): Promise<BigNumber> {
+    public async getUnavailableTakerAmountAsync(orderHash: string, methodOpts?: MethodOpts): Promise<BigNumber> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
 
         const exchangeContract = await this._getExchangeContractAsync();
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
         let unavailableTakerTokenAmount = await exchangeContract.getUnavailableTakerTokenAmount.callAsync(
-            orderHash, defaultBlock,
+            orderHash,
+            defaultBlock,
         );
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         unavailableTakerTokenAmount = new BigNumber(unavailableTakerTokenAmount);
@@ -163,24 +168,32 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber,
-                                shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                                takerAddress: string,
-                                orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
+    public async fillOrderAsync(
+        signedOrder: SignedOrder,
+        fillTakerTokenAmount: BigNumber,
+        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+        takerAddress: string,
+        orderTransactionOpts: OrderTransactionOpts = {},
+    ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
-        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
-                               SHOULD_VALIDATE_BY_DEFAULT :
-                               orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
+            ? SHOULD_VALIDATE_BY_DEFAULT
+            : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
             await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
-                exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+                exchangeTradeEmulator,
+                signedOrder,
+                fillTakerTokenAmount,
+                takerAddress,
+                zrxTokenAddress,
+            );
         }
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
@@ -219,30 +232,42 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async fillOrdersUpToAsync(signedOrders: SignedOrder[], fillTakerTokenAmount: BigNumber,
-                                     shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                                     takerAddress: string,
-                                     orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
+    public async fillOrdersUpToAsync(
+        signedOrders: SignedOrder[],
+        fillTakerTokenAmount: BigNumber,
+        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+        takerAddress: string,
+        orderTransactionOpts: OrderTransactionOpts = {},
+    ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         const takerTokenAddresses = _.map(signedOrders, signedOrder => signedOrder.takerTokenAddress);
-        assert.hasAtMostOneUniqueValue(takerTokenAddresses,
-                                       ExchangeContractErrs.MultipleTakerTokensInFillUpToDisallowed);
+        assert.hasAtMostOneUniqueValue(
+            takerTokenAddresses,
+            ExchangeContractErrs.MultipleTakerTokensInFillUpToDisallowed,
+        );
         const exchangeContractAddresses = _.map(signedOrders, signedOrder => signedOrder.exchangeContractAddress);
-        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
-                                       ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
+        assert.hasAtMostOneUniqueValue(
+            exchangeContractAddresses,
+            ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress,
+        );
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
-                               SHOULD_VALIDATE_BY_DEFAULT :
-                               orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
+            ? SHOULD_VALIDATE_BY_DEFAULT
+            : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
             for (const signedOrder of signedOrders) {
                 await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
-                    exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+                    exchangeTradeEmulator,
+                    signedOrder,
+                    fillTakerTokenAmount,
+                    takerAddress,
+                    zrxTokenAddress,
+                );
             }
         }
 
@@ -300,29 +325,36 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async batchFillOrdersAsync(orderFillRequests: OrderFillRequest[],
-                                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                                      takerAddress: string,
-                                      orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
+    public async batchFillOrdersAsync(
+        orderFillRequests: OrderFillRequest[],
+        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+        takerAddress: string,
+        orderTransactionOpts: OrderTransactionOpts = {},
+    ): Promise<string> {
         assert.doesConformToSchema('orderFillRequests', orderFillRequests, schemas.orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillRequests,
             orderFillRequest => orderFillRequest.signedOrder.exchangeContractAddress,
         );
-        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
-                                       ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
+        assert.hasAtMostOneUniqueValue(
+            exchangeContractAddresses,
+            ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress,
+        );
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
-                               SHOULD_VALIDATE_BY_DEFAULT :
-                               orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
+            ? SHOULD_VALIDATE_BY_DEFAULT
+            : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
             for (const orderFillRequest of orderFillRequests) {
                 await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
-                    exchangeTradeEmulator, orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount,
-                    takerAddress, zrxTokenAddress,
+                    exchangeTradeEmulator,
+                    orderFillRequest.signedOrder,
+                    orderFillRequest.takerTokenFillAmount,
+                    takerAddress,
+                    zrxTokenAddress,
                 );
             }
         }
@@ -373,23 +405,31 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber,
-                                      takerAddress: string,
-                                      orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
+    public async fillOrKillOrderAsync(
+        signedOrder: SignedOrder,
+        fillTakerTokenAmount: BigNumber,
+        takerAddress: string,
+        orderTransactionOpts: OrderTransactionOpts = {},
+    ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
-                               SHOULD_VALIDATE_BY_DEFAULT :
-                               orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
+            ? SHOULD_VALIDATE_BY_DEFAULT
+            : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
             await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
-                exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+                exchangeTradeEmulator,
+                signedOrder,
+                fillTakerTokenAmount,
+                takerAddress,
+                zrxTokenAddress,
+            );
         }
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(signedOrder);
@@ -418,33 +458,39 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async batchFillOrKillAsync(orderFillRequests: OrderFillRequest[],
-                                      takerAddress: string,
-                                      orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
-        assert.doesConformToSchema('orderFillRequests', orderFillRequests,
-                                   schemas.orderFillRequestsSchema);
+    public async batchFillOrKillAsync(
+        orderFillRequests: OrderFillRequest[],
+        takerAddress: string,
+        orderTransactionOpts: OrderTransactionOpts = {},
+    ): Promise<string> {
+        assert.doesConformToSchema('orderFillRequests', orderFillRequests, schemas.orderFillRequestsSchema);
         const exchangeContractAddresses = _.map(
             orderFillRequests,
             orderFillRequest => orderFillRequest.signedOrder.exchangeContractAddress,
         );
-        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
-                                       ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
+        assert.hasAtMostOneUniqueValue(
+            exchangeContractAddresses,
+            ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress,
+        );
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         if (_.isEmpty(orderFillRequests)) {
             throw new Error(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
-                               SHOULD_VALIDATE_BY_DEFAULT :
-                               orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
+            ? SHOULD_VALIDATE_BY_DEFAULT
+            : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
             for (const orderFillRequest of orderFillRequests) {
                 await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
-                    exchangeTradeEmulator, orderFillRequest.signedOrder, orderFillRequest.takerTokenFillAmount,
-                    takerAddress, zrxTokenAddress,
+                    exchangeTradeEmulator,
+                    orderFillRequest.signedOrder,
+                    orderFillRequest.takerTokenFillAmount,
+                    takerAddress,
+                    zrxTokenAddress,
                 );
             }
         }
@@ -460,8 +506,9 @@ export class ExchangeWrapper extends ContractWrapper {
         });
 
         // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
-        const [orderAddresses, orderValues, fillTakerTokenAmounts, vParams, rParams, sParams] =
-              _.unzip<any>(orderAddressesValuesAndTakerTokenFillAmounts);
+        const [orderAddresses, orderValues, fillTakerTokenAmounts, vParams, rParams, sParams] = _.unzip<any>(
+            orderAddressesValuesAndTakerTokenFillAmounts,
+        );
         const txHash = await exchangeInstance.batchFillOrKillOrders.sendTransactionAsync(
             orderAddresses,
             orderValues,
@@ -486,23 +533,28 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async cancelOrderAsync(order: Order|SignedOrder,
-                                  cancelTakerTokenAmount: BigNumber,
-                                  orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
+    public async cancelOrderAsync(
+        order: Order | SignedOrder,
+        cancelTakerTokenAmount: BigNumber,
+        orderTransactionOpts: OrderTransactionOpts = {},
+    ): Promise<string> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isValidBaseUnitAmount('takerTokenCancelAmount', cancelTakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
-                               SHOULD_VALIDATE_BY_DEFAULT :
-                               orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
+            ? SHOULD_VALIDATE_BY_DEFAULT
+            : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             const orderHash = utils.getOrderHashHex(order);
             const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
             OrderValidationUtils.validateCancelOrderThrowIfInvalid(
-                order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
+                order,
+                cancelTakerTokenAmount,
+                unavailableTakerTokenAmount,
+            );
         }
 
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
@@ -527,33 +579,40 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async batchCancelOrdersAsync(orderCancellationRequests: OrderCancellationRequest[],
-                                        orderTransactionOpts: OrderTransactionOpts = {}): Promise<string> {
-        assert.doesConformToSchema('orderCancellationRequests', orderCancellationRequests,
-                                   schemas.orderCancellationRequestsSchema);
+    public async batchCancelOrdersAsync(
+        orderCancellationRequests: OrderCancellationRequest[],
+        orderTransactionOpts: OrderTransactionOpts = {},
+    ): Promise<string> {
+        assert.doesConformToSchema(
+            'orderCancellationRequests',
+            orderCancellationRequests,
+            schemas.orderCancellationRequestsSchema,
+        );
         const exchangeContractAddresses = _.map(
             orderCancellationRequests,
             orderCancellationRequest => orderCancellationRequest.order.exchangeContractAddress,
         );
-        assert.hasAtMostOneUniqueValue(exchangeContractAddresses,
-                                       ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress);
+        assert.hasAtMostOneUniqueValue(
+            exchangeContractAddresses,
+            ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress,
+        );
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed);
         const maker = makers[0];
         await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
-        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate) ?
-                               SHOULD_VALIDATE_BY_DEFAULT :
-                               orderTransactionOpts.shouldValidate;
+        const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
+            ? SHOULD_VALIDATE_BY_DEFAULT
+            : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
             for (const orderCancellationRequest of orderCancellationRequests) {
                 const orderHash = utils.getOrderHashHex(orderCancellationRequest.order);
                 const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
                 OrderValidationUtils.validateCancelOrderThrowIfInvalid(
-                    orderCancellationRequest.order, orderCancellationRequest.takerTokenCancelAmount,
+                    orderCancellationRequest.order,
+                    orderCancellationRequest.takerTokenCancelAmount,
                     unavailableTakerTokenAmount,
                 );
             }
-
         }
         if (_.isEmpty(orderCancellationRequests)) {
             throw new Error(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
@@ -566,8 +625,9 @@ export class ExchangeWrapper extends ContractWrapper {
             ];
         });
         // We use _.unzip<any> because _.unzip doesn't type check if values have different types :'(
-        const [orderAddresses, orderValues, cancelTakerTokenAmounts] =
-            _.unzip<any>(orderAddressesValuesAndTakerTokenCancelAmounts);
+        const [orderAddresses, orderValues, cancelTakerTokenAmounts] = _.unzip<any>(
+            orderAddressesValuesAndTakerTokenCancelAmounts,
+        );
         const txHash = await exchangeInstance.batchCancelOrders.sendTransactionAsync(
             orderAddresses,
             orderValues,
@@ -589,14 +649,20 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ExchangeContractEventArgs>(
-        eventName: ExchangeEvents, indexFilterValues: IndexedFilterValues,
-        callback: EventCallback<ArgsType>): string {
+        eventName: ExchangeEvents,
+        indexFilterValues: IndexedFilterValues,
+        callback: EventCallback<ArgsType>,
+    ): string {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const exchangeContractAddress = this.getContractAddress();
         const subscriptionToken = this._subscribe<ArgsType>(
-            exchangeContractAddress, eventName, indexFilterValues, artifacts.ExchangeArtifact.abi, callback,
+            exchangeContractAddress,
+            eventName,
+            indexFilterValues,
+            artifacts.ExchangeArtifact.abi,
+            callback,
         );
         return subscriptionToken;
     }
@@ -622,14 +688,20 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends ExchangeContractEventArgs>(
-        eventName: ExchangeEvents, blockRange: BlockRange, indexFilterValues: IndexedFilterValues,
+        eventName: ExchangeEvents,
+        blockRange: BlockRange,
+        indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const exchangeContractAddress = this.getContractAddress();
         const logs = await this._getLogsAsync<ArgsType>(
-            exchangeContractAddress, eventName, blockRange, indexFilterValues, artifacts.ExchangeArtifact.abi,
+            exchangeContractAddress,
+            eventName,
+            blockRange,
+            indexFilterValues,
+            artifacts.ExchangeArtifact.abi,
         );
         return logs;
     }
@@ -652,14 +724,18 @@ export class ExchangeWrapper extends ContractWrapper {
      *                          to validate for.
      */
     public async validateOrderFillableOrThrowAsync(
-        signedOrder: SignedOrder, opts?: ValidateOrderFillableOpts,
+        signedOrder: SignedOrder,
+        opts?: ValidateOrderFillableOpts,
     ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const zrxTokenAddress = this.getZRXTokenAddress();
         const expectedFillTakerTokenAmount = !_.isUndefined(opts) ? opts.expectedFillTakerTokenAmount : undefined;
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
         await this._orderValidationUtils.validateOrderFillableOrThrowAsync(
-            exchangeTradeEmulator, signedOrder, zrxTokenAddress, expectedFillTakerTokenAmount,
+            exchangeTradeEmulator,
+            signedOrder,
+            zrxTokenAddress,
+            expectedFillTakerTokenAmount,
         );
     }
     /**
@@ -670,16 +746,23 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
-    public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
-                                                      fillTakerTokenAmount: BigNumber,
-                                                      takerAddress: string): Promise<void> {
+    public async validateFillOrderThrowIfInvalidAsync(
+        signedOrder: SignedOrder,
+        fillTakerTokenAmount: BigNumber,
+        takerAddress: string,
+    ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = this.getZRXTokenAddress();
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
         await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
-            exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+            exchangeTradeEmulator,
+            signedOrder,
+            fillTakerTokenAmount,
+            takerAddress,
+            zrxTokenAddress,
+        );
     }
     /**
      * Checks if cancelling a given order will succeed and throws an informative error if it won't.
@@ -688,13 +771,18 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   cancelTakerTokenAmount  The amount (specified in taker tokens) that you would like to cancel.
      */
     public async validateCancelOrderThrowIfInvalidAsync(
-        order: Order, cancelTakerTokenAmount: BigNumber): Promise<void> {
+        order: Order,
+        cancelTakerTokenAmount: BigNumber,
+    ): Promise<void> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isValidBaseUnitAmount('cancelTakerTokenAmount', cancelTakerTokenAmount);
         const orderHash = utils.getOrderHashHex(order);
         const unavailableTakerTokenAmount = await this.getUnavailableTakerAmountAsync(orderHash);
         OrderValidationUtils.validateCancelOrderThrowIfInvalid(
-            order, cancelTakerTokenAmount, unavailableTakerTokenAmount);
+            order,
+            cancelTakerTokenAmount,
+            unavailableTakerTokenAmount,
+        );
     }
     /**
      * Checks if calling fillOrKill on a given order will succeed and throws an informative error if it won't.
@@ -704,16 +792,23 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
-    public async validateFillOrKillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
-                                                            fillTakerTokenAmount: BigNumber,
-                                                            takerAddress: string): Promise<void> {
+    public async validateFillOrKillOrderThrowIfInvalidAsync(
+        signedOrder: SignedOrder,
+        fillTakerTokenAmount: BigNumber,
+        takerAddress: string,
+    ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const zrxTokenAddress = this.getZRXTokenAddress();
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
         await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
-            exchangeTradeEmulator, signedOrder, fillTakerTokenAmount, takerAddress, zrxTokenAddress);
+            exchangeTradeEmulator,
+            signedOrder,
+            fillTakerTokenAmount,
+            takerAddress,
+            zrxTokenAddress,
+        );
     }
     /**
      * Checks if rounding error will be > 0.1% when computing makerTokenAmount by doing:
@@ -724,15 +819,19 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   takerTokenAmount       The order size on the taker side
      * @param   makerTokenAmount       The order size on the maker side
      */
-    public async isRoundingErrorAsync(fillTakerTokenAmount: BigNumber,
-                                      takerTokenAmount: BigNumber,
-                                      makerTokenAmount: BigNumber): Promise<boolean> {
+    public async isRoundingErrorAsync(
+        fillTakerTokenAmount: BigNumber,
+        takerTokenAmount: BigNumber,
+        makerTokenAmount: BigNumber,
+    ): Promise<boolean> {
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isValidBaseUnitAmount('takerTokenAmount', takerTokenAmount);
         assert.isValidBaseUnitAmount('makerTokenAmount', makerTokenAmount);
         const exchangeInstance = await this._getExchangeContractAsync();
         const isRoundingError = await exchangeInstance.isRoundingError.callAsync(
-            fillTakerTokenAmount, takerTokenAmount, makerTokenAmount,
+            fillTakerTokenAmount,
+            takerTokenAmount,
+            makerTokenAmount,
         );
         return isRoundingError;
     }
@@ -740,10 +839,10 @@ export class ExchangeWrapper extends ContractWrapper {
      * Checks if logs contain LogError, which is emmited by Exchange contract on transaction failure.
      * @param   logs   Transaction logs as returned by `zeroEx.awaitTransactionMinedAsync`
      */
-    public throwLogErrorsAsErrors(logs: Array<LogWithDecodedArgs<DecodedLogArgs>|Web3.LogEntry>): void {
+    public throwLogErrorsAsErrors(logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>): void {
         const errLog = _.find(logs, {
             event: ExchangeEvents.LogError,
-        }) as LogWithDecodedArgs<LogErrorContractEventArgs>|undefined;
+        }) as LogWithDecodedArgs<LogErrorContractEventArgs> | undefined;
         if (!_.isUndefined(errLog)) {
             const logArgs = errLog.args;
             const errCode = logArgs.errorId.toNumber();
@@ -756,17 +855,18 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return Address of ZRX token
      */
     public getZRXTokenAddress(): string {
-        const contractAddress = this._getContractAddress(
-            artifacts.ZRXArtifact, this._zrxContractAddressIfExists,
-        );
+        const contractAddress = this._getContractAddress(artifacts.ZRXArtifact, this._zrxContractAddressIfExists);
         return contractAddress;
     }
     private _invalidateContractInstances(): void {
         this.unsubscribeAll();
         delete this._exchangeContractIfExists;
     }
-    private async _isValidSignatureUsingContractCallAsync(dataHex: string, ecSignature: ECSignature,
-                                                          signerAddressHex: string): Promise<boolean> {
+    private async _isValidSignatureUsingContractCallAsync(
+        dataHex: string,
+        ecSignature: ECSignature,
+        signerAddressHex: string,
+    ): Promise<boolean> {
         assert.isHexString('dataHex', dataHex);
         assert.doesConformToSchema('ecSignature', ecSignature, schemas.ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
@@ -782,7 +882,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return isValidSignature;
     }
-    private async _getOrderHashHexUsingContractCallAsync(order: Order|SignedOrder): Promise<string> {
+    private async _getOrderHashHexUsingContractCallAsync(order: Order | SignedOrder): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
         const orderHashHex = await exchangeInstance.getOrderHash.callAsync(orderAddresses, orderValues);
@@ -793,7 +893,8 @@ export class ExchangeWrapper extends ContractWrapper {
             return this._exchangeContractIfExists;
         }
         const web3ContractInstance = await this._instantiateContractIfExistsAsync(
-            artifacts.ExchangeArtifact, this._contractAddressIfExists,
+            artifacts.ExchangeArtifact,
+            this._contractAddressIfExists,
         );
         const contractInstance = new ExchangeContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
         this._exchangeContractIfExists = contractInstance;

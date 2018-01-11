@@ -1,5 +1,4 @@
-@0xproject/tslint-config
-------
+## @0xproject/tslint-config
 
 TSLint configuration and custom linter rules used by 0xProject.
 
@@ -12,11 +11,10 @@ yarn add --dev @0xproject/tslint-config
 ## Usage
 
 Add the following to your `tslint.json` file
+
 ```json
 {
-  "extends": [
-    "@0xproject/tslint-config"
-  ]
+    "extends": ["@0xproject/tslint-config"]
 }
 ```
 
@@ -29,11 +27,13 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 ### Install Dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
 
 Then install dependencies
+
 ```bash
 yarn install
 ```

@@ -1,23 +1,19 @@
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
-import {commands} from './src/commands';
-import {
-    CliOptions,
-    CompilerOptions,
-    DeployerOptions,
-} from './src/utils/types';
+import { commands } from './src/commands';
+import { CliOptions, CompilerOptions, DeployerOptions } from './src/utils/types';
 
 const DEFAULT_OPTIMIZER_ENABLED = false;
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = `${path.resolve('build')}/artifacts/`;
 const DEFAULT_NETWORK_ID = 50;
 const DEFAULT_JSONRPC_PORT = 8545;
-const DEFAULT_GAS_PRICE = ((10 ** 9) * 2).toString();
+const DEFAULT_GAS_PRICE = (10 ** 9 * 2).toString();
 
 /**
  * Compiles all contracts with options passed in through CLI.
@@ -108,8 +104,7 @@ function deployCommandBuilder(yargsInstance: any) {
             description: 'comma separated list of constructor args to deploy contract with',
         })
         .demandOption(['contract', 'args'])
-        .help()
-        .argv;
+        .help().argv;
 }
 
 (() => {
@@ -149,18 +144,13 @@ function deployCommandBuilder(yargsInstance: any) {
             type: 'string',
             description: 'account to use for deploying contracts',
         })
-        .command('compile',
-                 'compile contracts',
-                 identityCommandBuilder,
-                 onCompileCommand)
-        .command('migrate',
-                 'compile and deploy contracts using migration scripts',
-                 identityCommandBuilder,
-                 onMigrateCommand)
-        .command('deploy',
-                 'deploy a single contract with provided arguments',
-                 deployCommandBuilder,
-                 onDeployCommand)
-        .help()
-        .argv;
+        .command('compile', 'compile contracts', identityCommandBuilder, onCompileCommand)
+        .command(
+            'migrate',
+            'compile and deploy contracts using migration scripts',
+            identityCommandBuilder,
+            onMigrateCommand,
+        )
+        .command('deploy', 'deploy a single contract with provided arguments', deployCommandBuilder, onDeployCommand)
+        .help().argv;
 })();

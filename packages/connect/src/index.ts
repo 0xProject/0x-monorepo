@@ -1,5 +1,5 @@
-export {HttpClient} from './http_client';
-export {WebSocketOrderbookChannel} from './ws_orderbook_channel';
+export { HttpClient } from './http_client';
+export { WebSocketOrderbookChannel } from './ws_orderbook_channel';
 export {
     Client,
     ECSignature,

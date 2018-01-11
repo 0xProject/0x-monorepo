@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Styles} from 'ts/types';
+import { Styles } from 'ts/types';
 
 const styles: Styles = {
     badge: {
@@ -42,14 +42,14 @@ export class Badge extends React.Component<BadgeProps, BadgeState> {
             <div
                 className="p1 center"
                 style={badgeStyle}
-                onMouseOver={this.setHoverState.bind(this, true)}
-                onMouseOut={this.setHoverState.bind(this, false)}
+                onMouseOver={this._setHoverState.bind(this, true)}
+                onMouseOut={this._setHoverState.bind(this, false)}
             >
                 {this.props.title}
             </div>
         );
     }
-    private setHoverState(isHovering: boolean) {
+    private _setHoverState(isHovering: boolean) {
         this.setState({
             isHovering,
         });

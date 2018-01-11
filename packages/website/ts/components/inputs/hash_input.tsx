@@ -1,11 +1,11 @@
-import {Order, ZeroEx} from '0x.js';
+import { Order, ZeroEx } from '0x.js';
 import * as _ from 'lodash';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
-import {Blockchain} from 'ts/blockchain';
-import {FakeTextField} from 'ts/components/ui/fake_text_field';
-import {HashData, Styles} from 'ts/types';
-import {constants} from 'ts/utils/constants';
+import { Blockchain } from 'ts/blockchain';
+import { FakeTextField } from 'ts/components/ui/fake_text_field';
+import { HashData, Styles } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 const styles: Styles = {
     textField: {
@@ -27,15 +27,11 @@ interface HashInputState {}
 
 export class HashInput extends React.Component<HashInputProps, HashInputState> {
     public render() {
-        const msgHashHex = this.props.blockchainIsLoaded ? this.generateMessageHashHex() : '';
+        const msgHashHex = this.props.blockchainIsLoaded ? this._generateMessageHashHex() : '';
         return (
             <div>
                 <FakeTextField label={this.props.label}>
-                    <div
-                        style={styles.textField}
-                        data-tip={true}
-                        data-for="hashTooltip"
-                    >
+                    <div style={styles.textField} data-tip={true} data-for="hashTooltip">
                         {msgHashHex}
                     </div>
                 </FakeTextField>
@@ -43,7 +39,7 @@ export class HashInput extends React.Component<HashInputProps, HashInputState> {
             </div>
         );
     }
-    private generateMessageHashHex() {
+    private _generateMessageHashHex() {
         const exchangeContractAddress = this.props.blockchain.getExchangeContractAddressIfExists();
         const hashData = this.props.hashData;
         const order: Order = {

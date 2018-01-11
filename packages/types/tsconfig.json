@@ -1,16 +1,7 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "lib": [ "es2017", "dom"],
-    "outDir": "lib",
-    "sourceMap": true,
-    "declaration": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true
-  },
-  "include": [
-    "./src/**/*",
-    "../../node_modules/web3-typescript-typings/index.d.ts"
-  ]
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "outDir": "lib"
+    },
+    "include": ["./src/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
 }

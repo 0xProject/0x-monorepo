@@ -1,69 +1,69 @@
 {
-  "name": "@0xproject/connect",
-  "version": "0.3.1",
-  "description": "A javascript library for interacting with the standard relayer api",
-  "keywords": [
-    "connect",
-    "0xproject",
-    "ethereum",
-    "tokens",
-    "exchange"
-  ],
-  "main": "lib/src/index.js",
-  "types": "lib/src/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "clean": "shx rm -rf _bundles lib test_temp",
-    "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
-    "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
-    "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
-    "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
-    "run_mocha": "mocha lib/test/**/*_test.js",
-    "test": "run-s clean build copy_test_fixtures run_mocha",
-    "test:circleci": "yarn test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/0xProject/0x.js.git"
-  },
-  "author": "Brandon Millman",
-  "license": "Apache-2.0",
-  "engines": {
-    "node": ">=6.0.0"
-  },
-  "bugs": {
-    "url": "https://github.com/0xProject/0x.js/issues"
-  },
-  "homepage": "https://github.com/0xProject/0x.js/packages/connect/README.md",
-  "dependencies": {
-    "@0xproject/assert": "^0.0.8",
-    "@0xproject/json-schemas": "^0.7.0",
-    "bignumber.js": "~4.1.0",
-    "isomorphic-fetch": "^2.2.1",
-    "lodash": "^4.17.4",
-    "query-string": "^5.0.1",
-    "websocket": "^1.0.25"
-  },
-  "devDependencies": {
-    "@0xproject/tslint-config": "^0.3.0",
-    "@types/fetch-mock": "^5.12.1",
-    "@types/lodash": "^4.14.86",
-    "@types/mocha": "^2.2.42",
-    "@types/query-string": "^5.0.1",
-    "@types/websocket": "^0.0.34",
-    "chai": "^4.0.1",
-    "chai-as-promised": "^7.1.0",
-    "chai-as-promised-typescript-typings": "^0.0.3",
-    "chai-typescript-typings": "^0.0.1",
-    "copyfiles": "^1.2.0",
-    "dirty-chai": "^2.0.1",
-    "fetch-mock": "^5.13.1",
-    "mocha": "^4.0.1",
-    "npm-run-all": "^4.1.2",
-    "shx": "^0.2.2",
-    "tslint": "5.8.0",
-    "typedoc": "~0.8.0",
-    "typescript": "~2.6.1",
-    "web3-typescript-typings": "^0.7.2"
-  }
+    "name": "@0xproject/connect",
+    "version": "0.4.0",
+    "description": "A javascript library for interacting with the standard relayer api",
+    "keywords": [
+        "connect",
+        "0xproject",
+        "ethereum",
+        "tokens",
+        "exchange"
+    ],
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "clean": "shx rm -rf _bundles lib test_temp",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
+        "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
+        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
+        "run_mocha": "mocha lib/test/**/*_test.js",
+        "test": "run-s clean build copy_test_fixtures run_mocha",
+        "test:circleci": "yarn test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x.js.git"
+    },
+    "author": "Brandon Millman",
+    "license": "Apache-2.0",
+    "engines": {
+        "node": ">=6.0.0"
+    },
+    "bugs": {
+        "url": "https://github.com/0xProject/0x.js/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x.js/packages/connect/README.md",
+    "dependencies": {
+        "@0xproject/assert": "^0.0.10",
+        "@0xproject/json-schemas": "^0.7.2",
+        "@0xproject/utils": "^0.1.3",
+        "isomorphic-fetch": "^2.2.1",
+        "lodash": "^4.17.4",
+        "query-string": "^5.0.1",
+        "websocket": "^1.0.25"
+    },
+    "devDependencies": {
+        "@0xproject/tslint-config": "^0.4.1",
+        "@types/fetch-mock": "^5.12.1",
+        "@types/lodash": "^4.14.86",
+        "@types/mocha": "^2.2.42",
+        "@types/query-string": "^5.0.1",
+        "@types/websocket": "^0.0.34",
+        "chai": "^4.0.1",
+        "chai-as-promised": "^7.1.0",
+        "chai-as-promised-typescript-typings": "^0.0.3",
+        "chai-typescript-typings": "^0.0.1",
+        "copyfiles": "^1.2.0",
+        "dirty-chai": "^2.0.1",
+        "fetch-mock": "^5.13.1",
+        "mocha": "^4.0.1",
+        "npm-run-all": "^4.1.2",
+        "shx": "^0.2.2",
+        "tslint": "5.8.0",
+        "typedoc": "~0.8.0",
+        "typescript": "~2.6.1",
+        "web3-typescript-typings": "^0.9.1"
+    }
 }

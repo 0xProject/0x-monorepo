@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {AssetPicker} from 'ts/components/generate_order/asset_picker';
-import {InputLabel} from 'ts/components/ui/input_label';
-import {TokenIcon} from 'ts/components/ui/token_icon';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {AssetToken, BlockchainErrs, Side, Token, TokenByAddress} from 'ts/types';
-import {colors} from 'ts/utils/colors';
+import { Blockchain } from 'ts/blockchain';
+import { AssetPicker } from 'ts/components/generate_order/asset_picker';
+import { InputLabel } from 'ts/components/ui/input_label';
+import { TokenIcon } from 'ts/components/ui/token_icon';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { AssetToken, BlockchainErrs, Side, Token, TokenByAddress } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 const TOKEN_ICON_DIMENSION = 80;
 
@@ -51,18 +51,15 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
                 </div>
                 <Paper
                     zDepth={1}
-                    style={{cursor: 'pointer'}}
-                    onMouseEnter={this.onToggleHover.bind(this, true)}
-                    onMouseLeave={this.onToggleHover.bind(this, false)}
-                    onClick={this.onAssetClicked.bind(this)}
+                    style={{ cursor: 'pointer' }}
+                    onMouseEnter={this._onToggleHover.bind(this, true)}
+                    onMouseLeave={this._onToggleHover.bind(this, false)}
+                    onClick={this._onAssetClicked.bind(this)}
                 >
-                    <div
-                        className="mx-auto pt2"
-                        style={{width: TOKEN_ICON_DIMENSION, ...iconStyles}}
-                    >
+                    <div className="mx-auto pt2" style={{ width: TOKEN_ICON_DIMENSION, ...iconStyles }}>
                         <TokenIcon token={token} diameter={TOKEN_ICON_DIMENSION} />
                     </div>
-                    <div className="py1 center" style={{color: colors.grey}}>
+                    <div className="py1 center" style={{ color: colors.grey }}>
                         {token.name}
                     </div>
                 </Paper>
@@ -73,13 +70,13 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
                     dispatcher={this.props.dispatcher}
                     isOpen={this.state.isPickerOpen}
                     currentTokenAddress={this.props.assetToken.address}
-                    onTokenChosen={this.onTokenChosen.bind(this)}
+                    onTokenChosen={this._onTokenChosen.bind(this)}
                     tokenByAddress={this.props.tokenByAddress}
                 />
             </div>
         );
     }
-    private onTokenChosen(tokenAddress: string) {
+    private _onTokenChosen(tokenAddress: string) {
         const assetToken: AssetToken = {
             address: tokenAddress,
             amount: this.props.assetToken.amount,
@@ -89,12 +86,12 @@ export class TokenInput extends React.Component<TokenInputProps, TokenInputState
             isPickerOpen: false,
         });
     }
-    private onToggleHover(isHoveringIcon: boolean) {
+    private _onToggleHover(isHoveringIcon: boolean) {
         this.setState({
             isHoveringIcon,
         });
     }
-    private onAssetClicked() {
+    private _onAssetClicked() {
         if (this.props.blockchainErr !== BlockchainErrs.NoError) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;

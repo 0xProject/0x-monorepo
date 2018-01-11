@@ -1,10 +1,10 @@
 import * as chai from 'chai';
 
-import {ZeroEx} from '../src';
+import { ZeroEx } from '../src';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;

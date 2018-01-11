@@ -1,10 +1,10 @@
-import {schemas} from '@0xproject/json-schemas';
-import {BigNumber} from 'bignumber.js';
+import { schemas } from '@0xproject/json-schemas';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 
-import {assert} from '../src/index';
+import { assert } from '../src/index';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
@@ -14,75 +14,31 @@ describe('Assertions', () => {
     const variableName = 'variable';
     describe('#isBigNumber', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [
-                new BigNumber(23),
-                new BigNumber('45'),
-            ];
+            const validInputs = [new BigNumber(23), new BigNumber('45')];
             validInputs.forEach(input => expect(assert.isBigNumber.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                'test',
-                42,
-                false,
-                {random: 'test'},
-                undefined,
-            ];
+            const invalidInputs = ['test', 42, false, { random: 'test' }, undefined];
             invalidInputs.forEach(input => expect(assert.isBigNumber.bind(assert, variableName, input)).to.throw());
-        });
-    });
-    describe('#isUndefined', () => {
-        it('should not throw for valid input', () => {
-            const validInputs = [
-                undefined,
-            ];
-            validInputs.forEach(input => expect(assert.isUndefined.bind(assert, input, variableName)).to.not.throw());
-        });
-        it('should throw for invalid input', () => {
-            const invalidInputs = [
-                'test',
-                42,
-                false,
-                {random: 'test'},
-            ];
-            invalidInputs.forEach(input => expect(assert.isUndefined.bind(assert, input, variableName)).to.throw());
         });
     });
     describe('#isString', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [
-                'hello',
-                'goodbye',
-            ];
+            const validInputs = ['hello', 'goodbye'];
             validInputs.forEach(input => expect(assert.isString.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                42,
-                false,
-                {random: 'test'},
-                undefined,
-                new BigNumber(45),
-            ];
+            const invalidInputs = [42, false, { random: 'test' }, undefined, new BigNumber(45)];
             invalidInputs.forEach(input => expect(assert.isString.bind(assert, variableName, input)).to.throw());
         });
     });
     describe('#isFunction', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [
-                BigNumber,
-                assert.isString.bind(this),
-            ];
+            const validInputs = [BigNumber, assert.isString];
             validInputs.forEach(input => expect(assert.isFunction.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                42,
-                false,
-                {random: 'test'},
-                undefined,
-                new BigNumber(45),
-            ];
+            const invalidInputs = [42, false, { random: 'test' }, undefined, new BigNumber(45)];
             invalidInputs.forEach(input => expect(assert.isFunction.bind(assert, variableName, input)).to.throw());
         });
     });
@@ -98,7 +54,7 @@ describe('Assertions', () => {
             const invalidInputs = [
                 42,
                 false,
-                {random: 'test'},
+                { random: 'test' },
                 undefined,
                 new BigNumber(45),
                 '0x61a3ed31B43c8780e905a260a35faYfEc527be7516aa11c0256729b5b351bc33',
@@ -121,15 +77,13 @@ describe('Assertions', () => {
             const invalidInputs = [
                 42,
                 false,
-                {random: 'test'},
+                { random: 'test' },
                 undefined,
                 new BigNumber(45),
                 '0x6FFFd0ae3f7d88c9b4925323f54c6e4b2918c5fd',
                 '0x6FFFd0ae3f7d88c9b4925323f54c6e4',
             ];
-            invalidInputs.forEach(input =>
-                expect(assert.isETHAddressHex.bind(assert, variableName, input)).to.throw(),
-            );
+            invalidInputs.forEach(input => expect(assert.isETHAddressHex.bind(assert, variableName, input)).to.throw());
         });
     });
     describe('#doesBelongToStringEnum', () => {
@@ -138,22 +92,13 @@ describe('Assertions', () => {
             Test2 = 'Test2',
         }
         it('should not throw for valid input', () => {
-            const validInputs = [
-                TestEnums.Test1,
-                TestEnums.Test2,
-            ];
+            const validInputs = [TestEnums.Test1, TestEnums.Test2];
             validInputs.forEach(input =>
                 expect(assert.doesBelongToStringEnum.bind(assert, variableName, input, TestEnums)).to.not.throw(),
             );
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                42,
-                false,
-                {random: 'test'},
-                undefined,
-                new BigNumber(45),
-            ];
+            const invalidInputs = [42, false, { random: 'test' }, undefined, new BigNumber(45)];
             invalidInputs.forEach(input =>
                 expect(assert.doesBelongToStringEnum.bind(assert, variableName, input, TestEnums)).to.throw(),
             );
@@ -162,19 +107,13 @@ describe('Assertions', () => {
     describe('#hasAtMostOneUniqueValue', () => {
         const errorMsg = 'more than one unique value';
         it('should not throw for valid input', () => {
-            const validInputs = [
-                ['hello'],
-                ['goodbye', 'goodbye', 'goodbye'],
-            ];
+            const validInputs = [['hello'], ['goodbye', 'goodbye', 'goodbye']];
             validInputs.forEach(input =>
                 expect(assert.hasAtMostOneUniqueValue.bind(assert, input, errorMsg)).to.not.throw(),
             );
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                ['hello', 'goodbye'],
-                ['goodbye', 42, false, false],
-            ];
+            const invalidInputs = [['hello', 'goodbye'], ['goodbye', 42, false, false]];
             invalidInputs.forEach(input =>
                 expect(assert.hasAtMostOneUniqueValue.bind(assert, input, errorMsg)).to.throw(),
             );
@@ -182,61 +121,34 @@ describe('Assertions', () => {
     });
     describe('#isNumber', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [
-                42,
-                0,
-                21e+42,
-            ];
+            const validInputs = [42, 0, 21e42];
             validInputs.forEach(input => expect(assert.isNumber.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                false,
-                {random: 'test'},
-                undefined,
-                new BigNumber(45),
-            ];
+            const invalidInputs = [false, { random: 'test' }, undefined, new BigNumber(45)];
             invalidInputs.forEach(input => expect(assert.isNumber.bind(assert, variableName, input)).to.throw());
         });
     });
     describe('#isBoolean', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [
-                true,
-                false,
-            ];
+            const validInputs = [true, false];
             validInputs.forEach(input => expect(assert.isBoolean.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                42,
-                {random: 'test'},
-                undefined,
-                new BigNumber(45),
-            ];
+            const invalidInputs = [42, { random: 'test' }, undefined, new BigNumber(45)];
             invalidInputs.forEach(input => expect(assert.isBoolean.bind(assert, variableName, input)).to.throw());
         });
     });
     describe('#isWeb3Provider', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [
-                {send: () => 45},
-                {sendAsync: () => 45},
-            ];
+            const validInputs = [{ send: () => 45 }, { sendAsync: () => 45 }];
             validInputs.forEach(input =>
                 expect(assert.isWeb3Provider.bind(assert, variableName, input)).to.not.throw(),
             );
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                42,
-                {random: 'test'},
-                undefined,
-                new BigNumber(45),
-            ];
-            invalidInputs.forEach(input =>
-                expect(assert.isWeb3Provider.bind(assert, variableName, input)).to.throw(),
-            );
+            const invalidInputs = [42, { random: 'test' }, undefined, new BigNumber(45)];
+            invalidInputs.forEach(input => expect(assert.isWeb3Provider.bind(assert, variableName, input)).to.throw());
         });
     });
     describe('#doesConformToSchema', () => {
@@ -251,12 +163,7 @@ describe('Assertions', () => {
             );
         });
         it('should throw for invalid input', () => {
-            const invalidInputs = [
-                42,
-                {random: 'test'},
-                undefined,
-                new BigNumber(45),
-            ];
+            const invalidInputs = [42, { random: 'test' }, undefined, new BigNumber(45)];
             invalidInputs.forEach(input =>
                 expect(assert.doesConformToSchema.bind(assert, variableName, input, schema)).to.throw(),
             );
@@ -270,14 +177,12 @@ describe('Assertions', () => {
                 'https://api.radarrelay.com/0x/v0/',
                 'https://zeroex.beta.radarrelay.com:8000/0x/v0/',
             ];
-            validInputs.forEach(input =>
-                expect(assert.isHttpUrl.bind(assert, variableName, input)).to.not.throw(),
-            );
+            validInputs.forEach(input => expect(assert.isHttpUrl.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
             const invalidInputs = [
                 42,
-                {random: 'test'},
+                { random: 'test' },
                 undefined,
                 new BigNumber(45),
                 'ws://www.api.example-relayer.net',
@@ -286,9 +191,7 @@ describe('Assertions', () => {
                 'user:password@api.example-relayer.net',
                 '//api.example-relayer.net',
             ];
-            invalidInputs.forEach(input =>
-                expect(assert.isHttpUrl.bind(assert, variableName, input)).to.throw(),
-            );
+            invalidInputs.forEach(input => expect(assert.isHttpUrl.bind(assert, variableName, input)).to.throw());
         });
     });
     describe('#isUri', () => {
@@ -302,23 +205,19 @@ describe('Assertions', () => {
                 'wss://www.api.example-relayer.net',
                 'user:password@api.example-relayer.net',
             ];
-            validInputs.forEach(input =>
-                expect(assert.isUri.bind(assert, variableName, input)).to.not.throw(),
-            );
+            validInputs.forEach(input => expect(assert.isUri.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
             const invalidInputs = [
                 42,
-                {random: 'test'},
+                { random: 'test' },
                 undefined,
                 new BigNumber(45),
                 'www.google.com',
                 'api.example-relayer.net',
                 '//api.example-relayer.net',
             ];
-            invalidInputs.forEach(input =>
-                expect(assert.isUri.bind(assert, variableName, input)).to.throw(),
-            );
+            invalidInputs.forEach(input => expect(assert.isUri.bind(assert, variableName, input)).to.throw());
         });
     });
     describe('#assert', () => {
@@ -332,8 +231,9 @@ describe('Assertions', () => {
     });
     describe('#typeAssertionMessage', () => {
         it('should render correct message', () => {
-            expect(assert.typeAssertionMessage('variable', 'string', 'number'))
-            .to.equal(`Expected variable to be of type string, encountered: number`);
+            expect(assert.typeAssertionMessage('variable', 'string', 'number')).to.equal(
+                `Expected variable to be of type string, encountered: number`,
+            );
         });
     });
 });

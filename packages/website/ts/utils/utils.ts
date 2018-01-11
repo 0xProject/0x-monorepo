@@ -1,5 +1,5 @@
-import {ExchangeContractErrs, ZeroExError} from '0x.js';
-import BigNumber from 'bignumber.js';
+import { ExchangeContractErrs, ZeroExError } from '0x.js';
+import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import isMobile = require('is-mobile');
 import * as _ from 'lodash';
@@ -15,8 +15,8 @@ import {
     Token,
     TokenByAddress,
 } from 'ts/types';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
+import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
 
 const LG_MIN_EM = 64;
@@ -58,10 +58,20 @@ export const utils = {
         const formattedDate: string = m.format('h:MMa MMMM D YYYY');
         return formattedDate;
     },
-    generateOrder(networkId: number, exchangeContract: string, sideToAssetToken: SideToAssetToken,
-                  orderExpiryTimestamp: BigNumber, orderTakerAddress: string, orderMakerAddress: string,
-                  makerFee: BigNumber, takerFee: BigNumber, feeRecipient: string,
-                  signatureData: SignatureData, tokenByAddress: TokenByAddress, orderSalt: BigNumber): Order {
+    generateOrder(
+        networkId: number,
+        exchangeContract: string,
+        sideToAssetToken: SideToAssetToken,
+        orderExpiryTimestamp: BigNumber,
+        orderTakerAddress: string,
+        orderMakerAddress: string,
+        makerFee: BigNumber,
+        takerFee: BigNumber,
+        feeRecipient: string,
+        signatureData: SignatureData,
+        tokenByAddress: TokenByAddress,
+        orderSalt: BigNumber,
+    ): Order {
         const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
         const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
@@ -104,7 +114,7 @@ export const utils = {
     async sleepAsync(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
-    deepEqual(actual: any, expected: any, opts?: {strict: boolean}) {
+    deepEqual(actual: any, expected: any, opts?: { strict: boolean }) {
         return deepEqual(actual, expected, opts);
     },
     getColSize(items: number) {
@@ -148,7 +158,7 @@ export const utils = {
         window.location.hash = anchorId;
     },
     async isU2FSupportedAsync(): Promise<boolean> {
-        const w = (window as any);
+        const w = window as any;
         return new Promise((resolve: (isSupported: boolean) => void) => {
             if (w.u2f && !w.u2f.getApiVersion) {
                 // u2f object was found (Firefox with extension)
@@ -176,9 +186,10 @@ export const utils = {
         const metamaskDenialErrMsg = 'User denied message';
         const paritySignerDenialErrMsg = 'Request has been rejected';
         const ledgerDenialErrMsg = 'Invalid status 6985';
-        const isUserDeniedErrMsg = _.includes(errMsg, metamaskDenialErrMsg) ||
-                                   _.includes(errMsg, paritySignerDenialErrMsg) ||
-                                   _.includes(errMsg, ledgerDenialErrMsg);
+        const isUserDeniedErrMsg =
+            _.includes(errMsg, metamaskDenialErrMsg) ||
+            _.includes(errMsg, paritySignerDenialErrMsg) ||
+            _.includes(errMsg, ledgerDenialErrMsg);
         return isUserDeniedErrMsg;
     },
     getCurrentEnvironment() {
@@ -206,14 +217,18 @@ export const utils = {
             return true; // Since it's registered, it is the canonical token
         }
         const registeredTokens = _.filter(tokens, t => t.isRegistered);
-        const tokenWithSameNameIfExists = _.find(registeredTokens, {name: token.name});
+        const tokenWithSameNameIfExists = _.find(registeredTokens, {
+            name: token.name,
+        });
         const isUniqueName = _.isUndefined(tokenWithSameNameIfExists);
-        const tokenWithSameSymbolIfExists = _.find(registeredTokens, {name: token.symbol});
+        const tokenWithSameSymbolIfExists = _.find(registeredTokens, {
+            name: token.symbol,
+        });
         const isUniqueSymbol = _.isUndefined(tokenWithSameSymbolIfExists);
         return isUniqueName && isUniqueSymbol;
     },
-    zeroExErrToHumanReadableErrMsg(error: ZeroExError|ExchangeContractErrs, takerAddress: string): string {
-        const ZeroExErrorToHumanReadableError: {[error: string]: string} = {
+    zeroExErrToHumanReadableErrMsg(error: ZeroExError | ExchangeContractErrs, takerAddress: string): string {
+        const ZeroExErrorToHumanReadableError: { [error: string]: string } = {
             [ZeroExError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
             [ZeroExError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
             [ZeroExError.TokenTransferProxyContractDoesNotExist]: 'TokenTransferProxy contract does not exist',
@@ -228,37 +243,37 @@ export const utils = {
             [ZeroExError.OutOfGas]: 'Transaction ran out of gas',
             [ZeroExError.NoNetworkId]: 'No network id detected',
         };
-        const exchangeContractErrorToHumanReadableError: {[error: string]: string} = {
+        const exchangeContractErrorToHumanReadableError: {
+            [error: string]: string;
+        } = {
             [ExchangeContractErrs.OrderFillExpired]: 'This order has expired',
             [ExchangeContractErrs.OrderCancelExpired]: 'This order has expired',
-            [ExchangeContractErrs.OrderCancelAmountZero]: 'Order cancel amount can\'t be 0',
+            [ExchangeContractErrs.OrderCancelAmountZero]: "Order cancel amount can't be 0",
             [ExchangeContractErrs.OrderAlreadyCancelledOrFilled]:
-            'This order has already been completely filled or cancelled',
-            [ExchangeContractErrs.OrderFillAmountZero]: 'Order fill amount can\'t be 0',
+                'This order has already been completely filled or cancelled',
+            [ExchangeContractErrs.OrderFillAmountZero]: "Order fill amount can't be 0",
             [ExchangeContractErrs.OrderRemainingFillAmountZero]:
-            'This order has already been completely filled or cancelled',
+                'This order has already been completely filled or cancelled',
             [ExchangeContractErrs.OrderFillRoundingError]: 'Rounding error will occur when filling this order',
             [ExchangeContractErrs.InsufficientTakerBalance]:
-            'Taker no longer has a sufficient balance to complete this order',
+                'Taker no longer has a sufficient balance to complete this order',
             [ExchangeContractErrs.InsufficientTakerAllowance]:
-            'Taker no longer has a sufficient allowance to complete this order',
+                'Taker no longer has a sufficient allowance to complete this order',
             [ExchangeContractErrs.InsufficientMakerBalance]:
-            'Maker no longer has a sufficient balance to complete this order',
+                'Maker no longer has a sufficient balance to complete this order',
             [ExchangeContractErrs.InsufficientMakerAllowance]:
-            'Maker no longer has a sufficient allowance to complete this order',
+                'Maker no longer has a sufficient allowance to complete this order',
             [ExchangeContractErrs.InsufficientTakerFeeBalance]: 'Taker no longer has a sufficient balance to pay fees',
             [ExchangeContractErrs.InsufficientTakerFeeAllowance]:
-            'Taker no longer has a sufficient allowance to pay fees',
+                'Taker no longer has a sufficient allowance to pay fees',
             [ExchangeContractErrs.InsufficientMakerFeeBalance]: 'Maker no longer has a sufficient balance to pay fees',
             [ExchangeContractErrs.InsufficientMakerFeeAllowance]:
-            'Maker no longer has a sufficient allowance to pay fees',
-            [ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker]:
-            `This order can only be filled by ${takerAddress}`,
-            [ExchangeContractErrs.InsufficientRemainingFillAmount]:
-            'Insufficient remaining fill amount',
+                'Maker no longer has a sufficient allowance to pay fees',
+            [ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker]: `This order can only be filled by ${takerAddress}`,
+            [ExchangeContractErrs.InsufficientRemainingFillAmount]: 'Insufficient remaining fill amount',
         };
-        const humanReadableErrorMsg = exchangeContractErrorToHumanReadableError[error] ||
-                                      ZeroExErrorToHumanReadableError[error];
+        const humanReadableErrorMsg =
+            exchangeContractErrorToHumanReadableError[error] || ZeroExErrorToHumanReadableError[error];
         return humanReadableErrorMsg;
     },
 };

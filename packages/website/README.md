@@ -1,5 +1,4 @@
-Website & 0x Portal DApp
------
+## Website & 0x Portal DApp
 
 This repository contains our website and [0x Portal DApp][portal-url] (over-the-counter exchange), facilitating trustless over-the-counter trading of Ethereum-based tokens using 0x protocol.
 
@@ -59,11 +58,11 @@ yarn lint
 
 ##### Toolkit
 
-- [Material Design Icon Font](http://zavoloklom.github.io/material-design-iconic-font/icons.html#directional)
-- [BassCSS toolkit](http://basscss.com/)
-- [Material-UI component library](http://www.material-ui.com/#/)
+* [Material Design Icon Font](http://zavoloklom.github.io/material-design-iconic-font/icons.html#directional)
+* [BassCSS toolkit](http://basscss.com/)
+* [Material-UI component library](http://www.material-ui.com/#/)
 
 ##### Recommended Atom packages:
 
-- [atom-typescript](https://atom.io/packages/atom-typescript)
-- [linter-tslint](https://atom.io/packages/linter-tslint)
+* [atom-typescript](https://atom.io/packages/atom-typescript)
+* [linter-tslint](https://atom.io/packages/linter-tslint)

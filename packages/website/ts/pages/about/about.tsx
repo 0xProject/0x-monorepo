@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import {Footer} from 'ts/components/footer';
-import {TopBar} from 'ts/components/top_bar';
-import {Profile} from 'ts/pages/about/profile';
-import {ProfileInfo, Styles} from 'ts/types';
-import {colors} from 'ts/utils/colors';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
+import { Footer } from 'ts/components/footer';
+import { TopBar } from 'ts/components/top_bar';
+import { Profile } from 'ts/pages/about/profile';
+import { ProfileInfo, Styles } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const teamRow1: ProfileInfo[] = [
     {
@@ -155,73 +155,61 @@ export class About extends React.Component<AboutProps, AboutState> {
     }
     public render() {
         return (
-            <div style={{backgroundColor: colors.lightestGrey}}>
-                <DocumentTitle title="0x About Us"/>
+            <div style={{ backgroundColor: colors.lightestGrey }}>
+                <DocumentTitle title="0x About Us" />
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
-                    style={{backgroundColor: colors.lightestGrey}}
+                    style={{ backgroundColor: colors.lightestGrey }}
                 />
-                <div
-                    id="about"
-                    className="mx-auto max-width-4 py4"
-                    style={{color: colors.grey800}}
-                >
-                    <div
-                        className="mx-auto pb4 sm-px3"
-                        style={{maxWidth: 435}}
-                    >
-                        <div
-                            style={styles.header}
-                        >
-                            About us:
-                        </div>
+                <div id="about" className="mx-auto max-width-4 py4" style={{ color: colors.grey800 }}>
+                    <div className="mx-auto pb4 sm-px3" style={{ maxWidth: 435 }}>
+                        <div style={styles.header}>About us:</div>
                         <div
                             className="pt3"
-                            style={{fontSize: 17, color: colors.darkestGrey, lineHeight: 1.5}}
+                            style={{
+                                fontSize: 17,
+                                color: colors.darkestGrey,
+                                lineHeight: 1.5,
+                            }}
                         >
-                            Our team is a diverse and globally distributed group with backgrounds
-                            in engineering, research, business and design. We are passionate about
-                            decentralized technology and its potential to act as an equalizing force
-                            in the world.
+                            Our team is a diverse and globally distributed group with backgrounds in engineering,
+                            research, business and design. We are passionate about decentralized technology and its
+                            potential to act as an equalizing force in the world.
                         </div>
                     </div>
                     <div className="pt3 md-px4 lg-px0">
-                        <div className="clearfix pb3">
-                            {this.renderProfiles(teamRow1)}
-                        </div>
-                        <div className="clearfix">
-                            {this.renderProfiles(teamRow2)}
-                        </div>
+                        <div className="clearfix pb3">{this._renderProfiles(teamRow1)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow2)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
                             className="pt2 pb3 sm-center md-pl4 lg-pl0 md-ml3"
-                            style={{color: colors.grey, fontSize: 24, fontFamily: 'Roboto Mono'}}
+                            style={{
+                                color: colors.grey,
+                                fontSize: 24,
+                                fontFamily: 'Roboto Mono',
+                            }}
                         >
                             Advisors:
                         </div>
-                        <div className="clearfix">
-                            {this.renderProfiles(advisors)}
-                        </div>
+                        <div className="clearfix">{this._renderProfiles(advisors)}</div>
                     </div>
-                    <div className="mx-auto py4 sm-px3" style={{maxWidth: 308}}>
-                        <div
-                            className="pb2"
-                            style={styles.weAreHiring}
-                        >
+                    <div className="mx-auto py4 sm-px3" style={{ maxWidth: 308 }}>
+                        <div className="pb2" style={styles.weAreHiring}>
                             WE'RE HIRING
                         </div>
                         <div
                             className="pb4 mb4"
-                            style={{fontSize: 16, color: colors.darkestGrey, lineHeight: 1.5, letterSpacing: '0.5px'}}
+                            style={{
+                                fontSize: 16,
+                                color: colors.darkestGrey,
+                                lineHeight: 1.5,
+                                letterSpacing: '0.5px',
+                            }}
                         >
                             We are seeking outstanding candidates to{' '}
-                            <a
-                                href={constants.URL_ANGELLIST}
-                                target="_blank"
-                                style={{color: 'black'}}
-                            >
+                            <a href={constants.URL_ANGELLIST} target="_blank" style={{ color: 'black' }}>
                                 join our team
                             </a>
                             . We value passion, diversity and unique perspectives.
@@ -232,18 +220,13 @@ export class About extends React.Component<AboutProps, AboutState> {
             </div>
         );
     }
-    private renderProfiles(profiles: ProfileInfo[]) {
+    private _renderProfiles(profiles: ProfileInfo[]) {
         const numIndiv = profiles.length;
         const colSize = utils.getColSize(numIndiv);
         return _.map(profiles, profile => {
             return (
-                <div
-                    key={`profile-${profile.name}`}
-                >
-                    <Profile
-                        colSize={colSize}
-                        profileInfo={profile}
-                    />
+                <div key={`profile-${profile.name}`}>
+                    <Profile colSize={colSize} profileInfo={profile} />
                 </div>
             );
         });

@@ -1,10 +1,10 @@
-import {ZeroEx} from '0x.js';
-import BigNumber from 'bignumber.js';
+import { ZeroEx } from '0x.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Token} from 'ts/types';
-import {colors} from 'ts/utils/colors';
-import {utils} from 'ts/utils/utils';
+import { Token } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { utils } from 'ts/utils/utils';
 
 interface TokenSendCompletedProps {
     etherScanLinkIfExists?: string;
@@ -17,16 +17,11 @@ interface TokenSendCompletedState {}
 
 export class TokenSendCompleted extends React.Component<TokenSendCompletedProps, TokenSendCompletedState> {
     public render() {
-        const etherScanLink = !_.isUndefined(this.props.etherScanLinkIfExists) &&
-                            (
-                                <a
-                                    style={{color: colors.white}}
-                                    href={`${this.props.etherScanLinkIfExists}`}
-                                    target="_blank"
-                                >
-                                    Verify on Etherscan
-                                </a>
-                            );
+        const etherScanLink = !_.isUndefined(this.props.etherScanLinkIfExists) && (
+            <a style={{ color: colors.white }} href={`${this.props.etherScanLinkIfExists}`} target="_blank">
+                Verify on Etherscan
+            </a>
+        );
         const amountInUnits = ZeroEx.toUnitAmount(this.props.amountInBaseUnits, this.props.token.decimals);
         const truncatedAddress = utils.getAddressBeginAndEnd(this.props.toAddress);
         return (

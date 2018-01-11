@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {colors} from 'ts/utils/colors';
+import { colors } from 'ts/utils/colors';
 
 interface TransactionSubmittedProps {
     etherScanLinkIfExists?: string;
@@ -16,11 +16,7 @@ export class TransactionSubmitted extends React.Component<TransactionSubmittedPr
             return (
                 <div>
                     Transaction submitted to the network:{' '}
-                    <a
-                        style={{color: colors.white}}
-                        href={`${this.props.etherScanLinkIfExists}`}
-                        target="_blank"
-                    >
+                    <a style={{ color: colors.white }} href={`${this.props.etherScanLinkIfExists}`} target="_blank">
                         Verify on Etherscan
                     </a>
                 </div>

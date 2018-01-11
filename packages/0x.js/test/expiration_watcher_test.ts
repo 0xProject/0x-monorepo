@@ -1,23 +1,23 @@
-import {BlockchainLifecycle} from '@0xproject/dev-utils';
-import BigNumber from 'bignumber.js';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 
-import {ZeroEx} from '../src/0x';
-import {ExpirationWatcher} from '../src/order_watcher/expiration_watcher';
-import {DoneCallback, Token} from '../src/types';
-import {constants} from '../src/utils/constants';
-import {utils} from '../src/utils/utils';
+import { ZeroEx } from '../src/0x';
+import { ExpirationWatcher } from '../src/order_watcher/expiration_watcher';
+import { DoneCallback, Token } from '../src/types';
+import { constants } from '../src/utils/constants';
+import { utils } from '../src/utils/utils';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants as testConstants} from './utils/constants';
-import {FillScenarios} from './utils/fill_scenarios';
-import {reportCallbackErrors} from './utils/report_callback_errors';
-import {TokenUtils} from './utils/token_utils';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { constants as testConstants } from './utils/constants';
+import { FillScenarios } from './utils/fill_scenarios';
+import { reportNoErrorCallbackErrors } from './utils/report_callback_errors';
+import { TokenUtils } from './utils/token_utils';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -62,7 +62,7 @@ describe('ExpirationWatcher', () => {
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
-        const sinonTimerConfig = {shouldAdvanceTime: true} as any;
+        const sinonTimerConfig = { shouldAdvanceTime: true } as any;
         // This constructor has incorrect types
         timer = Sinon.useFakeTimers(sinonTimerConfig);
         currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
@@ -78,31 +78,38 @@ describe('ExpirationWatcher', () => {
             const orderLifetimeSec = 60;
             const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeSec);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
                 expirationUnixTimestampSec,
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(1000));
-            const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
+            const callbackAsync = reportNoErrorCallbackErrors(done)((hash: string) => {
                 expect(hash).to.be.equal(orderHash);
                 expect(utils.getCurrentUnixTimestampSec()).to.be.bignumber.gte(expirationUnixTimestampSec);
-                done();
             });
             expirationWatcher.subscribe(callbackAsync);
             timer.tick(orderLifetimeSec * 1000);
         })().catch(done);
     });
-    it('doesn\'t emit events before order expires', (done: DoneCallback) => {
+    it("doesn't emit events before order expires", (done: DoneCallback) => {
         (async () => {
             const orderLifetimeSec = 60;
             const expirationUnixTimestampSec = currentUnixTimestampSec.plus(orderLifetimeSec);
             const signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
                 expirationUnixTimestampSec,
             );
             const orderHash = ZeroEx.getOrderHashHex(signedOrder);
             expirationWatcher.addOrder(orderHash, signedOrder.expirationUnixTimestampSec.times(1000));
-            const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
+            const callbackAsync = reportNoErrorCallbackErrors(done)(async (hash: string) => {
                 done(new Error('Emitted expiration went before the order actually expired'));
             });
             expirationWatcher.subscribe(callbackAsync);
@@ -118,11 +125,19 @@ describe('ExpirationWatcher', () => {
             const order1ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order1Lifetime);
             const order2ExpirationUnixTimestampSec = currentUnixTimestampSec.plus(order2Lifetime);
             const signedOrder1 = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
                 order1ExpirationUnixTimestampSec,
             );
             const signedOrder2 = await fillScenarios.createFillableSignedOrderAsync(
-                makerTokenAddress, takerTokenAddress, makerAddress, takerAddress, fillableAmount,
+                makerTokenAddress,
+                takerTokenAddress,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
                 order2ExpirationUnixTimestampSec,
             );
             const orderHash1 = ZeroEx.getOrderHashHex(signedOrder1);
@@ -130,7 +145,8 @@ describe('ExpirationWatcher', () => {
             expirationWatcher.addOrder(orderHash2, signedOrder2.expirationUnixTimestampSec.times(1000));
             expirationWatcher.addOrder(orderHash1, signedOrder1.expirationUnixTimestampSec.times(1000));
             const expirationOrder = [orderHash1, orderHash2];
-            const callbackAsync = reportCallbackErrors(done)(async (hash: string) => {
+            const expectToBeCalledOnce = false;
+            const callbackAsync = reportNoErrorCallbackErrors(done, expectToBeCalledOnce)((hash: string) => {
                 const orderHash = expirationOrder.shift();
                 expect(hash).to.be.equal(orderHash);
                 if (_.isEmpty(expirationOrder)) {

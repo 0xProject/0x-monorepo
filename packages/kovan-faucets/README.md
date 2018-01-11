@@ -1,5 +1,4 @@
-@0xproject/kovan_faucets
-------
+## @0xproject/kovan_faucets
 
 This faucet dispenses 0.1 test ether to one recipient per second and 0.1 test ZRX every 5 seconds. It has a max queue size of 1000.
 
@@ -16,11 +15,13 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 ### Install Dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
 
 Then install dependencies
+
 ```bash
 yarn install
 ```
@@ -47,11 +48,11 @@ yarn dev
 
 ### Endpoints
 
-```GET /ether/:recipient```
+`GET /ether/:recipient`
 
 Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
 
-```GET /zrx/:recipient```
+`GET /zrx/:recipient`
 
 Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
 

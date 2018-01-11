@@ -1,19 +1,18 @@
-import {RPC} from '@0xproject/dev-utils';
-import {promisify} from '@0xproject/utils';
-import {BigNumber} from 'bignumber.js';
+import { RPC } from '@0xproject/dev-utils';
+import { BigNumber, promisify } from '@0xproject/utils';
 import * as chai from 'chai';
 import Web3 = require('web3');
 
 import * as multiSigWalletJSON from '../../build/contracts/MultiSigWalletWithTimeLock.json';
 import * as truffleConf from '../../truffle.js';
-import {Artifacts} from '../../util/artifacts';
-import {constants} from '../../util/constants';
-import {MultiSigWrapper} from '../../util/multi_sig_wrapper';
-import {ContractInstance} from '../../util/types';
+import { Artifacts } from '../../util/artifacts';
+import { constants } from '../../util/constants';
+import { MultiSigWrapper } from '../../util/multi_sig_wrapper';
+import { ContractInstance } from '../../util/types';
 
-import {chaiSetup} from './utils/chai_setup';
+import { chaiSetup } from './utils/chai_setup';
 
-const {MultiSigWalletWithTimeLock} = new Artifacts(artifacts);
+const { MultiSigWalletWithTimeLock } = new Artifacts(artifacts);
 
 const MULTI_SIG_ABI = (multiSigWalletJSON as any).abi;
 chaiSetup.configure();
@@ -45,8 +44,9 @@ contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
 
     describe('changeTimeLock', () => {
         it('should throw when not called by wallet', async () => {
-            return expect(multiSig.changeTimeLock(SECONDS_TIME_LOCKED, {from: owners[0]}))
-                .to.be.rejectedWith(constants.REVERT);
+            return expect(multiSig.changeTimeLock(SECONDS_TIME_LOCKED, { from: owners[0] })).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
 
         it('should throw without enough confirmations', async () => {
@@ -64,7 +64,7 @@ contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
         });
 
         it('should set confirmation time with enough confirmations', async () => {
-            const res = await multiSig.confirmTransaction(txId, {from: owners[1]});
+            const res = await multiSig.confirmTransaction(txId, { from: owners[1] });
             expect(res.logs).to.have.length(2);
             const blockNum = await promisify<number>(web3.eth.getBlockNumber)();
             const blockInfo = await promisify<Web3.BlockWithoutTransactionData>(web3.eth.getBlock)(blockNum);
@@ -96,7 +96,9 @@ contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
             const subRes = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
 
             txId = subRes.logs[0].args.transactionId.toNumber();
-            const confRes = await multiSig.confirmTransaction(txId, {from: owners[1]});
+            const confRes = await multiSig.confirmTransaction(txId, {
+                from: owners[1],
+            });
             expect(confRes.logs).to.have.length(2);
 
             return expect(multiSig.executeTransaction(txId)).to.be.rejectedWith(constants.REVERT);

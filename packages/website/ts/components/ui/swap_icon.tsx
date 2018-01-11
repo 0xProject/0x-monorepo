@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {colors} from 'ts/utils/colors';
+import { colors } from 'ts/utils/colors';
 
 interface SwapIconProps {
     swapTokensFn: () => void;
@@ -25,19 +25,16 @@ export class SwapIcon extends React.Component<SwapIconProps, SwapIconState> {
         return (
             <div
                 className="mx-auto pt4"
-                style={{cursor: 'pointer', height: 50, width: 37.5}}
+                style={{ cursor: 'pointer', height: 50, width: 37.5 }}
                 onClick={this.props.swapTokensFn}
-                onMouseEnter={this.onToggleHover.bind(this, true)}
-                onMouseLeave={this.onToggleHover.bind(this, false)}
+                onMouseEnter={this._onToggleHover.bind(this, true)}
+                onMouseLeave={this._onToggleHover.bind(this, false)}
             >
-                <i
-                    style={swapStyles}
-                    className="zmdi zmdi-swap"
-                />
+                <i style={swapStyles} className="zmdi zmdi-swap" />
             </div>
         );
     }
-    private onToggleHover(isHovering: boolean) {
+    private _onToggleHover(isHovering: boolean) {
         this.setState({
             isHovering,
         });

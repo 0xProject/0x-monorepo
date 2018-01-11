@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as web3Abi from 'web3-eth-abi';
 
-import {AbiType} from './types';
+import { AbiType } from './types';
 
 export const encoder = {
     encodeConstructorArgsFromAbi(args: any[], abi: Web3.ContractAbi): string {

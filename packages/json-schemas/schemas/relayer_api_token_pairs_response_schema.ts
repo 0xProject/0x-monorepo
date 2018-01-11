@@ -3,8 +3,8 @@ export const relayerApiTokenPairsResponseSchema = {
     type: 'array',
     items: {
         properties: {
-            tokenA: {$ref: '/RelayerApiTokenTradeInfo'},
-            tokenB: {$ref: '/RelayerApiTokenTradeInfo'},
+            tokenA: { $ref: '/RelayerApiTokenTradeInfo' },
+            tokenB: { $ref: '/RelayerApiTokenTradeInfo' },
         },
         required: ['tokenA', 'tokenB'],
         type: 'object',
@@ -15,10 +15,10 @@ export const relayerApiTokenTradeInfoSchema = {
     id: '/RelayerApiTokenTradeInfo',
     type: 'object',
     properties: {
-        address: {$ref: '/Address'},
-        minAmount: {$ref: '/Number'},
-        maxAmount: {$ref: '/Number'},
-        precision: {type: 'number'},
+        address: { $ref: '/Address' },
+        minAmount: { $ref: '/Number' },
+        maxAmount: { $ref: '/Number' },
+        precision: { type: 'number' },
     },
     required: ['address'],
 };

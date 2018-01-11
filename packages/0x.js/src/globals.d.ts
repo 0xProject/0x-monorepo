@@ -57,8 +57,7 @@ declare module 'truffle-hdwallet-provider' {
 }
 
 // abi-decoder declarations
-interface DecodedLogArg {
-}
+interface DecodedLogArg {}
 interface DecodedLog {
     name: string;
     events: DecodedLogArg[];

@@ -1,5 +1,5 @@
-import {assert} from '@0xproject/assert';
-import {addressUtils} from '@0xproject/utils';
+import { assert } from '@0xproject/assert';
+import { addressUtils } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
@@ -16,7 +16,7 @@ import {
     ResponseWithTxParams,
 } from '../types';
 
-import {Subprovider} from './subprovider';
+import { Subprovider } from './subprovider';
 
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
 const NUM_ADDRESSES_TO_FETCH = 10;
@@ -32,7 +32,7 @@ export class LedgerSubprovider extends Subprovider {
     private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
-    private static validateSender(sender: string) {
+    private static _validateSender(sender: string) {
         if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
             throw new Error(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
         }
@@ -44,12 +44,11 @@ export class LedgerSubprovider extends Subprovider {
         this._networkId = config.networkId;
         this._ledgerEthereumClientFactoryAsync = config.ledgerEthereumClientFactoryAsync;
         this._derivationPath = config.derivationPath || DEFAULT_DERIVATION_PATH;
-        this._shouldAlwaysAskForConfirmation = !_.isUndefined(config.accountFetchingConfigs) &&
-                                               !_.isUndefined(
-                                                   config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation,
-                                               ) ?
-                                               config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation :
-                                               ASK_FOR_ON_DEVICE_CONFIRMATION;
+        this._shouldAlwaysAskForConfirmation =
+            !_.isUndefined(config.accountFetchingConfigs) &&
+            !_.isUndefined(config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation)
+                ? config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation
+                : ASK_FOR_ON_DEVICE_CONFIRMATION;
         this._derivationPathIndex = 0;
     }
     public getPath(): string {
@@ -62,7 +61,9 @@ export class LedgerSubprovider extends Subprovider {
         this._derivationPathIndex = pathIndex;
     }
     public async handleRequest(
-        payload: Web3.JSONRPCRequestPayload, next: () => void, end: (err: Error|null, result?: any) => void,
+        payload: Web3.JSONRPCRequestPayload,
+        next: () => void,
+        end: (err: Error | null, result?: any) => void,
     ) {
         let accounts;
         let txParams;
@@ -88,8 +89,8 @@ export class LedgerSubprovider extends Subprovider {
             case 'eth_sendTransaction':
                 txParams = payload.params[0];
                 try {
-                    LedgerSubprovider.validateSender(txParams.from);
-                    const result = await this.sendTransactionAsync(txParams);
+                    LedgerSubprovider._validateSender(txParams.from);
+                    const result = await this._sendTransactionAsync(txParams);
                     end(null, result);
                 } catch (err) {
                     end(err);
@@ -99,15 +100,16 @@ export class LedgerSubprovider extends Subprovider {
             case 'eth_signTransaction':
                 txParams = payload.params[0];
                 try {
-                    const result = await this.signTransactionWithoutSendingAsync(txParams);
+                    const result = await this._signTransactionWithoutSendingAsync(txParams);
                     end(null, result);
                 } catch (err) {
                     end(err);
                 }
                 return;
 
+            case 'eth_sign':
             case 'personal_sign':
-                const data = payload.params[0];
+                const data = payload.method === 'eth_sign' ? payload.params[1] : payload.params[0];
                 try {
                     if (_.isUndefined(data)) {
                         throw new Error(LedgerSubproviderErrors.DataMissingForSignPersonalMessage);
@@ -126,15 +128,17 @@ export class LedgerSubprovider extends Subprovider {
         }
     }
     public async getAccountsAsync(): Promise<string[]> {
-        this._ledgerClientIfExists = await this.createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         let ledgerResponse;
         try {
             ledgerResponse = await this._ledgerClientIfExists.getAddress_async(
-                this._derivationPath, this._shouldAlwaysAskForConfirmation, SHOULD_GET_CHAIN_CODE,
+                this._derivationPath,
+                this._shouldAlwaysAskForConfirmation,
+                SHOULD_GET_CHAIN_CODE,
             );
         } finally {
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
         }
 
         const hdKey = new HDNode();
@@ -146,16 +150,16 @@ export class LedgerSubprovider extends Subprovider {
             const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
             const derivedPublicKey = derivedHDNode.publicKey;
             const shouldSanitizePublicKey = true;
-            const ethereumAddressUnprefixed = ethUtil.publicToAddress(
-                derivedPublicKey, shouldSanitizePublicKey,
-            ).toString('hex');
+            const ethereumAddressUnprefixed = ethUtil
+                .publicToAddress(derivedPublicKey, shouldSanitizePublicKey)
+                .toString('hex');
             const ethereumAddressPrefixed = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
             accounts.push(ethereumAddressPrefixed.toLowerCase());
         }
         return accounts;
     }
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        this._ledgerClientIfExists = await this.createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         const tx = new EthereumTx(txParams);
 
@@ -166,7 +170,7 @@ export class LedgerSubprovider extends Subprovider {
 
         const txHex = tx.serialize().toString('hex');
         try {
-            const derivationPath = this.getDerivationPath();
+            const derivationPath = this._getDerivationPath();
             const result = await this._ledgerClientIfExists.signTransaction_async(derivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
@@ -176,43 +180,45 @@ export class LedgerSubprovider extends Subprovider {
             // EIP155: v should be chain_id * 2 + {35, 36}
             const signedChainId = Math.floor((tx.v[0] - 35) / 2);
             if (signedChainId !== this._networkId) {
-                await this.destoryLedgerClientAsync();
+                await this._destroyLedgerClientAsync();
                 const err = new Error(LedgerSubproviderErrors.TooOldLedgerFirmware);
                 throw err;
             }
 
             const signedTxHex = `0x${tx.serialize().toString('hex')}`;
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
             return signedTxHex;
         } catch (err) {
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
             throw err;
         }
     }
     public async signPersonalMessageAsync(data: string): Promise<string> {
-        this._ledgerClientIfExists = await this.createLedgerClientAsync();
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
         try {
-            const derivationPath = this.getDerivationPath();
+            const derivationPath = this._getDerivationPath();
             const result = await this._ledgerClientIfExists.signPersonalMessage_async(
-                derivationPath, ethUtil.stripHexPrefix(data));
+                derivationPath,
+                ethUtil.stripHexPrefix(data),
+            );
             const v = result.v - 27;
             let vHex = v.toString(16);
             if (vHex.length < 2) {
                 vHex = `0${v}`;
             }
             const signature = `0x${result.r}${result.s}${vHex}`;
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
             return signature;
         } catch (err) {
-            await this.destoryLedgerClientAsync();
+            await this._destroyLedgerClientAsync();
             throw err;
         }
     }
-    private getDerivationPath() {
+    private _getDerivationPath() {
         const derivationPath = `${this.getPath()}/${this._derivationPathIndex}`;
         return derivationPath;
     }
-    private async createLedgerClientAsync(): Promise<LedgerEthereumClient> {
+    private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
         await this._connectionLock.wait();
         if (!_.isUndefined(this._ledgerClientIfExists)) {
             this._connectionLock.signal();
@@ -222,7 +228,7 @@ export class LedgerSubprovider extends Subprovider {
         this._connectionLock.signal();
         return ledgerEthereumClient;
     }
-    private async destoryLedgerClientAsync() {
+    private async _destroyLedgerClientAsync() {
         await this._connectionLock.wait();
         if (_.isUndefined(this._ledgerClientIfExists)) {
             this._connectionLock.signal();
@@ -232,11 +238,11 @@ export class LedgerSubprovider extends Subprovider {
         this._ledgerClientIfExists = undefined;
         this._connectionLock.signal();
     }
-    private async sendTransactionAsync(txParams: PartialTxParams): Promise<Web3.JSONRPCResponsePayload> {
+    private async _sendTransactionAsync(txParams: PartialTxParams): Promise<string> {
         await this._nonceLock.wait();
         try {
             // fill in the extras
-            const filledParams = await this.populateMissingTxParamsAsync(txParams);
+            const filledParams = await this._populateMissingTxParamsAsync(txParams);
             // sign it
             const signedTx = await this.signTransactionAsync(filledParams);
             // emit a submit
@@ -246,17 +252,17 @@ export class LedgerSubprovider extends Subprovider {
             };
             const result = await this.emitPayloadAsync(payload);
             this._nonceLock.signal();
-            return result;
+            return result.result;
         } catch (err) {
             this._nonceLock.signal();
             throw err;
         }
     }
-    private async signTransactionWithoutSendingAsync(txParams: PartialTxParams): Promise<ResponseWithTxParams> {
+    private async _signTransactionWithoutSendingAsync(txParams: PartialTxParams): Promise<ResponseWithTxParams> {
         await this._nonceLock.wait();
         try {
             // fill in the extras
-            const filledParams = await this.populateMissingTxParamsAsync(txParams);
+            const filledParams = await this._populateMissingTxParamsAsync(txParams);
             // sign it
             const signedTx = await this.signTransactionAsync(filledParams);
 
@@ -271,7 +277,7 @@ export class LedgerSubprovider extends Subprovider {
             throw err;
         }
     }
-    private async populateMissingTxParamsAsync(txParams: PartialTxParams): Promise<PartialTxParams> {
+    private async _populateMissingTxParamsAsync(txParams: PartialTxParams): Promise<PartialTxParams> {
         if (_.isUndefined(txParams.gasPrice)) {
             const gasPriceResult = await this.emitPayloadAsync({
                 method: 'eth_gasPrice',

@@ -1,4 +1,4 @@
-import {promisify} from '@0xproject/utils';
+import { promisify } from '@0xproject/utils';
 import * as fs from 'fs';
 
 export const fsWrapper = {

@@ -1,23 +1,23 @@
-import {Order, ZeroEx} from '0x.js';
-import BigNumber from 'bignumber.js';
+import { Order, ZeroEx } from '0x.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {ExpirationInput} from 'ts/components/inputs/expiration_input';
-import {HashInput} from 'ts/components/inputs/hash_input';
-import {IdenticonAddressInput} from 'ts/components/inputs/identicon_address_input';
-import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
-import {TokenInput} from 'ts/components/inputs/token_input';
-import {OrderJSON} from 'ts/components/order_json';
-import {Alert} from 'ts/components/ui/alert';
-import {HelpTooltip} from 'ts/components/ui/help_tooltip';
-import {LifeCycleRaisedButton} from 'ts/components/ui/lifecycle_raised_button';
-import {SwapIcon} from 'ts/components/ui/swap_icon';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {orderSchema} from 'ts/schemas/order_schema';
-import {SchemaValidator} from 'ts/schemas/validator';
+import { Blockchain } from 'ts/blockchain';
+import { ExpirationInput } from 'ts/components/inputs/expiration_input';
+import { HashInput } from 'ts/components/inputs/hash_input';
+import { IdenticonAddressInput } from 'ts/components/inputs/identicon_address_input';
+import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
+import { TokenInput } from 'ts/components/inputs/token_input';
+import { OrderJSON } from 'ts/components/order_json';
+import { Alert } from 'ts/components/ui/alert';
+import { HelpTooltip } from 'ts/components/ui/help_tooltip';
+import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
+import { SwapIcon } from 'ts/components/ui/swap_icon';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { orderSchema } from 'ts/schemas/order_schema';
+import { SchemaValidator } from 'ts/schemas/validator';
 import {
     AlertTypes,
     BlockchainErrs,
@@ -29,9 +29,9 @@ import {
     TokenByAddress,
     TokenStateByAddress,
 } from 'ts/types';
-import {colors} from 'ts/utils/colors';
-import {errorReporter} from 'ts/utils/error_reporter';
-import {utils} from 'ts/utils/utils';
+import { colors } from 'ts/utils/colors';
+import { errorReporter } from 'ts/utils/error_reporter';
+import { utils } from 'ts/utils/utils';
 
 enum SigningState {
     UNSIGNED,
@@ -63,7 +63,7 @@ interface GenerateOrderFormState {
 }
 
 export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, GenerateOrderFormState> {
-    private validator: SchemaValidator;
+    private _validator: SchemaValidator;
     constructor(props: GenerateOrderFormProps) {
         super(props);
         this.state = {
@@ -71,7 +71,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             shouldShowIncompleteErrs: false,
             signingState: SigningState.UNSIGNED,
         };
-        this.validator = new SchemaValidator();
+        this._validator = new SchemaValidator();
     }
     public componentDidMount() {
         window.scrollTo(0, 0);
@@ -84,7 +84,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         const receiveTokenAddress = this.props.sideToAssetToken[Side.Receive].address;
         const receiveToken = this.props.tokenByAddress[receiveTokenAddress];
         const receiveTokenState = this.props.tokenStateByAddress[receiveTokenAddress];
-        const takerExplanation = 'If a taker is specified, only they are<br> \
+        const takerExplanation =
+            'If a taker is specified, only they are<br> \
                                   allowed to fill this order. If no taker is<br> \
                                   specified, anyone is able to fill it.';
         const exchangeContractIfExists = this.props.blockchain.getExchangeContractAddressIfExists();
@@ -92,7 +93,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             <div className="clearfix mb2 lg-px4 md-px4 sm-px2">
                 <h3>Generate an order</h3>
                 <Divider />
-                <div className="mx-auto" style={{maxWidth: 580}}>
+                <div className="mx-auto" style={{ maxWidth: 580 }}>
                     <div className="pt3">
                         <div className="mx-auto clearfix">
                             <div className="lg-col md-col lg-col-5 md-col-5 sm-col sm-col-5 sm-pb2">
@@ -113,7 +114,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     token={depositToken}
                                     tokenState={depositTokenState}
                                     amount={this.props.sideToAssetToken[Side.Deposit].amount}
-                                    onChange={this.onTokenAmountChange.bind(this, depositToken, Side.Deposit)}
+                                    onChange={this._onTokenAmountChange.bind(this, depositToken, Side.Deposit)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                     shouldCheckBalance={true}
                                     shouldCheckAllowance={true}
@@ -121,9 +122,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                             </div>
                             <div className="lg-col md-col lg-col-2 md-col-2 sm-col sm-col-2 xs-hide">
                                 <div className="p1">
-                                    <SwapIcon
-                                        swapTokensFn={dispatcher.swapAssetTokenSymbols.bind(dispatcher)}
-                                    />
+                                    <SwapIcon swapTokensFn={dispatcher.swapAssetTokenSymbols.bind(dispatcher)} />
                                 </div>
                             </div>
                             <div className="lg-col md-col lg-col-5 md-col-5 sm-col sm-col-5 sm-pb2">
@@ -144,7 +143,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     token={receiveToken}
                                     tokenState={receiveTokenState}
                                     amount={this.props.sideToAssetToken[Side.Receive].amount}
-                                    onChange={this.onTokenAmountChange.bind(this, receiveToken, Side.Receive)}
+                                    onChange={this._onTokenAmountChange.bind(this, receiveToken, Side.Receive)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                     shouldCheckBalance={false}
                                     shouldCheckAllowance={false}
@@ -154,7 +153,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     </div>
                     <div className="pt1 sm-pb2 lg-px4 md-px4">
                         <div className="lg-px3 md-px3">
-                            <div style={{fontSize: 12, color: colors.grey}}>Expiration</div>
+                            <div style={{ fontSize: 12, color: colors.grey }}>Expiration</div>
                             <ExpirationInput
                                 orderExpiryTimestamp={this.props.orderExpiryTimestamp}
                                 updateOrderExpiry={dispatcher.updateOrderExpiry.bind(dispatcher)}
@@ -165,13 +164,11 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                         <IdenticonAddressInput
                             label="Taker"
                             initialAddress={this.props.orderTakerAddress}
-                            updateOrderAddress={this.updateOrderAddress.bind(this)}
+                            updateOrderAddress={this._updateOrderAddress.bind(this)}
                         />
                         <div className="pt3">
                             <div className="pl1">
-                                <HelpTooltip
-                                    explanation={takerExplanation}
-                                />
+                                <HelpTooltip explanation={takerExplanation} />
                             </div>
                         </div>
                     </div>
@@ -189,20 +186,20 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                 labelReady="Sign hash"
                                 labelLoading="Signing..."
                                 labelComplete="Hash signed!"
-                                onClickAsyncFn={this.onSignClickedAsync.bind(this)}
+                                onClickAsyncFn={this._onSignClickedAsync.bind(this)}
                             />
                         </div>
-                        {this.state.globalErrMsg !== '' &&
+                        {this.state.globalErrMsg !== '' && (
                             <Alert type={AlertTypes.ERROR} message={this.state.globalErrMsg} />
-                        }
+                        )}
                     </div>
                 </div>
                 <Dialog
                     title="Order JSON"
-                    titleStyle={{fontWeight: 100}}
+                    titleStyle={{ fontWeight: 100 }}
                     modal={false}
                     open={this.state.signingState === SigningState.SIGNED}
-                    onRequestClose={this.onCloseOrderJSONDialog.bind(this)}
+                    onRequestClose={this._onCloseOrderJSONDialog.bind(this)}
                 >
                     <OrderJSON
                         exchangeContractIfExists={exchangeContractIfExists}
@@ -222,10 +219,13 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             </div>
         );
     }
-    private onTokenAmountChange(token: Token, side: Side, isValid: boolean, amount?: BigNumber) {
-        this.props.dispatcher.updateChosenAssetToken(side, {address: token.address, amount});
+    private _onTokenAmountChange(token: Token, side: Side, isValid: boolean, amount?: BigNumber) {
+        this.props.dispatcher.updateChosenAssetToken(side, {
+            address: token.address,
+            amount,
+        });
     }
-    private onCloseOrderJSONDialog() {
+    private _onCloseOrderJSONDialog() {
         // Upon closing the order JSON dialog, we update the orderSalt stored in the Redux store
         // with a new value so that if a user signs the identical order again, the newly signed
         // orderHash will not collide with the previously generated orderHash.
@@ -234,7 +234,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             signingState: SigningState.UNSIGNED,
         });
     }
-    private async onSignClickedAsync(): Promise<boolean> {
+    private async _onSignClickedAsync(): Promise<boolean> {
         if (this.props.blockchainErr !== BlockchainErrs.NoError) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return false;
@@ -245,11 +245,16 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         const debitBalance = this.props.tokenStateByAddress[debitToken.address].balance;
         const debitAllowance = this.props.tokenStateByAddress[debitToken.address].allowance;
         const receiveAmount = this.props.sideToAssetToken[Side.Receive].amount;
-        if (!_.isUndefined(debitToken.amount) && !_.isUndefined(receiveAmount) &&
-            debitToken.amount.gt(0) && receiveAmount.gt(0) &&
+        if (
+            !_.isUndefined(debitToken.amount) &&
+            !_.isUndefined(receiveAmount) &&
+            debitToken.amount.gt(0) &&
+            receiveAmount.gt(0) &&
             this.props.userAddress !== '' &&
-            debitBalance.gte(debitToken.amount) && debitAllowance.gte(debitToken.amount)) {
-            const didSignSuccessfully = await this.signTransactionAsync();
+            debitBalance.gte(debitToken.amount) &&
+            debitAllowance.gte(debitToken.amount)
+        ) {
+            const didSignSuccessfully = await this._signTransactionAsync();
             if (didSignSuccessfully) {
                 this.setState({
                     globalErrMsg: '',
@@ -270,7 +275,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             return false;
         }
     }
-    private async signTransactionAsync(): Promise<boolean> {
+    private async _signTransactionAsync(): Promise<boolean> {
         this.setState({
             signingState: SigningState.SIGNING,
         });
@@ -303,12 +308,21 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         let globalErrMsg = '';
         try {
             const signatureData = await this.props.blockchain.signOrderHashAsync(orderHash);
-            const order = utils.generateOrder(this.props.networkId, exchangeContractAddr, this.props.sideToAssetToken,
-                                              hashData.orderExpiryTimestamp, this.props.orderTakerAddress,
-                                              this.props.userAddress, hashData.makerFee, hashData.takerFee,
-                                              hashData.feeRecipientAddress, signatureData, this.props.tokenByAddress,
-                                              hashData.orderSalt);
-            const validationResult = this.validator.validate(order, orderSchema);
+            const order = utils.generateOrder(
+                this.props.networkId,
+                exchangeContractAddr,
+                this.props.sideToAssetToken,
+                hashData.orderExpiryTimestamp,
+                this.props.orderTakerAddress,
+                this.props.userAddress,
+                hashData.makerFee,
+                hashData.takerFee,
+                hashData.feeRecipientAddress,
+                signatureData,
+                this.props.tokenByAddress,
+                hashData.orderSalt,
+            );
+            const validationResult = this._validator.validate(order, orderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';
                 utils.consoleLog(`Unexpected error occured: Order validation failed:
@@ -331,7 +345,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         });
         return globalErrMsg === '';
     }
-    private updateOrderAddress(address?: string): void {
+    private _updateOrderAddress(address?: string): void {
         if (!_.isUndefined(address)) {
             this.props.dispatcher.updateOrderTakerAddress(address);
         }

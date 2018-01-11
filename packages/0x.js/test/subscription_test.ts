@@ -1,27 +1,19 @@
-import {BlockchainLifecycle} from '@0xproject/dev-utils';
-import BigNumber from 'bignumber.js';
-import * as chai from 'chai';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 
-import {
-    ApprovalContractEventArgs,
-    DecodedLogEvent,
-    Token,
-    TokenEvents,
-    ZeroEx,
-} from '../src';
-import {DoneCallback} from '../src/types';
+import { ApprovalContractEventArgs, DecodedLogEvent, Token, TokenEvents, ZeroEx } from '../src';
+import { DoneCallback } from '../src/types';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
-import {reportCallbackErrors} from './utils/report_callback_errors';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
+import { assertNodeCallbackError } from './utils/report_callback_errors';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
-const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('SubscriptionTest', () => {
@@ -65,50 +57,26 @@ describe('SubscriptionTest', () => {
         it('Should receive the Error when an error occurs while fetching the block', (done: DoneCallback) => {
             (async () => {
                 const errMsg = 'Error fetching block';
-                const callback = reportCallbackErrors(done)(
-                    (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                        expect(err.message).to.be.equal(errMsg);
-                        expect(logEvent).to.be.undefined();
-                        done();
-                    },
-                );
-                stubs = [
-                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws(new Error(errMsg)),
-                ];
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                const callback = assertNodeCallbackError(done, errMsg);
+                stubs = [Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync').throws(new Error(errMsg))];
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
         });
         it('Should receive the Error when an error occurs while reconciling the new block', (done: DoneCallback) => {
             (async () => {
                 const errMsg = 'Error fetching logs';
-                const callback = reportCallbackErrors(done)(
-                    (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => {
-                        expect(err.message).to.be.equal(errMsg);
-                        expect(logEvent).to.be.undefined();
-                        done();
-                    },
-                );
-                stubs = [
-                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getLogsAsync')
-                   .throws(new Error(errMsg)),
-                ];
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                const callback = assertNodeCallbackError(done, errMsg);
+                stubs = [Sinon.stub((zeroEx as any)._web3Wrapper, 'getLogsAsync').throws(new Error(errMsg))];
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 await zeroEx.token.setAllowanceAsync(tokenAddress, coinbase, addressWithoutFunds, allowanceAmount);
             })().catch(done);
         });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
-                const callback = (err: Error, logEvent: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
-                zeroEx.token.subscribe(
-                    tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
-                stubs = [
-                  Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync')
-                   .throws(new Error('JSON RPC error')),
-                ];
+                const callback = (err: Error | null, logEvent?: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
+                zeroEx.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
+                stubs = [Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync').throws(new Error('JSON RPC error'))];
                 zeroEx.token.unsubscribeAll();
                 done();
             })().catch(done);

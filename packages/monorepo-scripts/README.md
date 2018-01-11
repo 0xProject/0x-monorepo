@@ -1,11 +1,11 @@
-Mono repo scripts
-------
+## Mono repo scripts
 
 This repository contains a few helpful scripts for working with this mono repo.
 
 ## Usage
 
 #### Dependency versions
+
 In order to reduce the size of this repo, we try and use the same versions of dependencies between packages. To make it easier to discover version discrepancies between packages, you can run:
 
 ```bash
@@ -23,11 +23,13 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 ### Install Dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
 ```bash
 yarn config set workspaces-experimental true
 ```
 
 Then install dependencies
+
 ```bash
 yarn install
 ```

@@ -1,5 +1,5 @@
-import {ZeroEx} from '0x.js';
-import BigNumber from 'bignumber.js';
+import { ZeroEx } from '0x.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import {
     Action,
@@ -15,7 +15,7 @@ import {
     TokenState,
     TokenStateByAddress,
 } from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import { utils } from 'ts/utils/utils';
 
 // Instead of defaulting the docs version to an empty string, we pre-populate it with
 // a valid version value. This does not need to be updated however, since onLoad, it
@@ -48,7 +48,7 @@ export interface State {
     availableDocVersions: string[];
 
     // Shared
-    flashMessage: string|React.ReactNode;
+    flashMessage: string | React.ReactNode;
     providerType: ProviderType;
     injectedProviderName: string;
 }

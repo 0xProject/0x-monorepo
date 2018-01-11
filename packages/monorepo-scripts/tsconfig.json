@@ -1,13 +1,7 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "lib": ["es2015", "dom"],
-    "outDir": "lib",
-    "noImplicitAny": true,
-    "strictNullChecks": true
-  },
-  "include": [
-    "./src/**/*"
-  ]
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "outDir": "lib"
+    },
+    "include": ["./src/**/*"]
 }

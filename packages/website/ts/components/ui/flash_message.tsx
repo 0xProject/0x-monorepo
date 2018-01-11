@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import Snackbar from 'material-ui/Snackbar';
 import * as React from 'react';
-import {Dispatcher} from 'ts/redux/dispatcher';
+import { Dispatcher } from 'ts/redux/dispatcher';
 
 const SHOW_DURATION_MS = 4000;
 
 interface FlashMessageProps {
     dispatcher: Dispatcher;
-    flashMessage?: string|React.ReactNode;
+    flashMessage?: string | React.ReactNode;
     showDurationMs?: number;
     bodyStyle?: React.CSSProperties;
 }
@@ -26,7 +26,7 @@ export class FlashMessage extends React.Component<FlashMessageProps, FlashMessag
                     open={true}
                     message={this.props.flashMessage}
                     autoHideDuration={this.props.showDurationMs}
-                    onRequestClose={this.onClose.bind(this)}
+                    onRequestClose={this._onClose.bind(this)}
                     bodyStyle={this.props.bodyStyle}
                 />
             );
@@ -34,7 +34,7 @@ export class FlashMessage extends React.Component<FlashMessageProps, FlashMessag
             return null;
         }
     }
-    private onClose() {
+    private _onClose() {
         this.props.dispatcher.hideFlashMessage();
     }
 }
