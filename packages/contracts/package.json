@@ -8,7 +8,8 @@
         "test": "test"
     },
     "scripts": {
-        "build": "rm -rf ./lib; copyfiles ./build/**/* ./deploy/solc/solc_bin/* ./deploy/test/fixtures/contracts/**/* ./deploy/test/fixtures/contracts/* ./lib; tsc;",
+        "build":
+            "rm -rf ./lib; copyfiles ./build/**/* ./deploy/solc/solc_bin/* ./deploy/test/fixtures/contracts/**/* ./deploy/test/fixtures/contracts/* ./lib; tsc;",
         "test": "npm run build; truffle test",
         "compile": "npm run build; node lib/deploy/cli.js compile",
         "clean": "rm -rf ./lib",
