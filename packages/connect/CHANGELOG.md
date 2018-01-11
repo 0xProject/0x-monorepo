@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.x.x - _TBD, 2017_
+
+    * Sanitize api endpoint url and remove trailing slashes (#315)
+    * Improve error message text in HttpClient (#315)
+
 ## v0.4.0 - _January 11, 2017_
 
     * Prevent getFeesAsync method on HttpClient from mutating input (#296)

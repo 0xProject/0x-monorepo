@@ -29,6 +29,15 @@ describe('HttpClient', () => {
     afterEach(() => {
         fetchMock.restore();
     });
+    describe('#constructor', () => {
+        it('should remove trailing slashes from api url', async () => {
+            const urlWithTrailingSlash = 'https://slash.com/';
+            const urlWithoutTrailingSlash = 'https://slash.com';
+            const client = new HttpClient(urlWithTrailingSlash);
+            const sanitizedUrl = (client as any)._apiEndpointUrl;
+            expect(sanitizedUrl).to.be.deep.equal(urlWithoutTrailingSlash);
+        });
+    });
     describe('#getTokenPairsAsync', () => {
         const url = `${relayUrl}/v0/token_pairs`;
         it('gets token pairs', async () => {
@@ -36,7 +45,7 @@ describe('HttpClient', () => {
             const tokenPairs = await relayerClient.getTokenPairsAsync();
             expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
         });
-        it('gets specfic token pairs for request', async () => {
+        it('gets specific token pairs for request', async () => {
             const tokenAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
             const tokenPairsRequest = {
                 tokenA: tokenAddress,

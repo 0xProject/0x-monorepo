@@ -20,6 +20,7 @@ import {
 } from './types';
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
+const TRAILING_SLASHES_REGEX = /\/+$/;
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
  * that implement the standard relayer API v0
@@ -33,7 +34,7 @@ export class HttpClient implements Client {
      */
     constructor(url: string) {
         assert.isHttpUrl('url', url);
-        this._apiEndpointUrl = url;
+        this._apiEndpointUrl = url.replace(TRAILING_SLASHES_REGEX, ''); // remove trailing slashes
     }
     /**
      * Retrieve token pair info from the API
@@ -134,16 +135,18 @@ export class HttpClient implements Client {
         const headers = new Headers({
             'content-type': 'application/json',
         });
-
         const response = await fetch(url, {
             method: requestType,
             body: JSON.stringify(payload),
             headers,
         });
-        if (!response.ok) {
-            throw Error(response.statusText);
-        }
         const json = await response.json();
+        if (!response.ok) {
+            const errorString = `${response.status} - ${response.statusText}\n${requestType} ${url}\n${JSON.stringify(
+                json,
+            )}`;
+            throw Error(errorString);
+        }
         return json;
     }
 }
