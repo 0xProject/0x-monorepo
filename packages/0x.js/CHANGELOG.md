@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.29.1 - _January 11, 2018_
+
+    * Fixed bignumber config issue #301 (#305)
+
 ## v0.29.0 - _December 28, 2017_
 
     * Assert baseUnit amount supplied to `toUnitAmount` is integer amount. (#287)

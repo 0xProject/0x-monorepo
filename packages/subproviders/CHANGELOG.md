@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.4.0 - _January 28, 2017_
+
+    * Return a transaction hash from `_sendTransactionAsync` (#303)
+
 ## v0.3.0 - _December 28, 2017_
 
     * Allow LedgerSubprovider to handle `eth_sign` in addition to `personal_sign` RPC requests
