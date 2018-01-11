@@ -2,28 +2,26 @@
     "name": "0x.js",
     "version": "0.29.2",
     "description": "A javascript library for interacting with the 0x protocol",
-    "keywords": [
-        "0x.js",
-        "0xproject",
-        "ethereum",
-        "tokens",
-        "exchange"
-    ],
+    "keywords": ["0x.js", "0xproject", "ethereum", "tokens", "exchange"],
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
         "prebuild": "run-s clean generate_contract_wrappers",
         "build": "run-p build:umd:prod build:commonjs; exit 0;",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
-        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abiGlob 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --templates contract_templates --output src/contract_wrappers/generated",
+        "upload_docs_json":
+            "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
+        "generate_contract_wrappers":
+            "node ../abi-gen/lib/index.js --abiGlob 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --templates contract_templates --output src/contract_wrappers/generated",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
-        "test:circleci": "run-s test:coverage report_test_coverage && if [ $CIRCLE_BRANCH = \"development\" ]; then yarn test:umd; fi",
+        "test:circleci":
+            "run-s test:coverage report_test_coverage && if [ $CIRCLE_BRANCH = \"development\" ]; then yarn test:umd; fi",
         "test": "run-s clean test:commonjs",
         "test:umd": "./scripts/test_umd.sh",
         "test:coverage": "nyc npm run test --all",
         "report_test_coverage": "nyc report --reporter=text-lcov | coveralls",
-        "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
+        "update_contracts":
+            "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
         "clean": "shx rm -rf _bundles lib test_temp",
         "build:umd:dev": "webpack",
         "build:umd:prod": "NODE_ENV=production webpack",
