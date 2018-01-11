@@ -12,6 +12,4 @@ const client = {
 
 const options = {};
 
-const redshiftClient = new Redshift(client, options);
-
-export default redshiftClient;
+export const redshiftClient = new Redshift(client, options);
