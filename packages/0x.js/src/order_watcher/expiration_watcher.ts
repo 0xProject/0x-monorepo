@@ -30,16 +30,17 @@ export class ExpirationWatcher {
         if (!_.isUndefined(this._orderExpirationCheckingIntervalIdIfExists)) {
             throw new Error(ZeroExError.SubscriptionAlreadyPresent);
         }
-        this._orderExpirationCheckingIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
+        this._orderExpirationCheckingIntervalIdIfExists = intervalUtils.setInterval(
             this._pruneExpiredOrders.bind(this, callback),
             this._orderExpirationCheckingIntervalMs,
+            _.noop, // _pruneExpiredOrders never throws
         );
     }
     public unsubscribe(): void {
         if (_.isUndefined(this._orderExpirationCheckingIntervalIdIfExists)) {
             throw new Error(ZeroExError.SubscriptionNotFound);
         }
-        intervalUtils.clearAsyncExcludingInterval(this._orderExpirationCheckingIntervalIdIfExists);
+        intervalUtils.clearInterval(this._orderExpirationCheckingIntervalIdIfExists);
         delete this._orderExpirationCheckingIntervalIdIfExists;
     }
     public addOrder(orderHash: string, expirationUnixTimestampMs: BigNumber): void {
