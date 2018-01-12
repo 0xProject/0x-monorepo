@@ -221,8 +221,9 @@ export class OrderStateWatcher {
                 this._callbackIfExists(err);
                 this.unsubscribe();
             }
+            return;
         }
-        const log = logIfExists as LogEvent;
+        const log = logIfExists as LogEvent; // At this moment we are sure that no error occured and log is defined.
         const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
         const isLogDecoded = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
         if (!isLogDecoded) {
