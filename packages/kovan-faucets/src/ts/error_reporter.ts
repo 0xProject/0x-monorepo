@@ -12,9 +12,9 @@ export const errorReporter = {
 
         rollbar.handleUncaughtExceptions(configs.ROLLBAR_ACCESS_KEY);
 
-        process.on('unhandledRejection', (err: Error) => {
+        process.on('unhandledRejection', async (err: Error) => {
             utils.consoleLog(`Uncaught exception ${err}. Stack: ${err.stack}`);
-            this.reportAsync(err);
+            await this.reportAsync(err);
             process.exit(1);
         });
     },

@@ -4,9 +4,6 @@
     "description": "Typescript type definitions for chai-as-promised",
     "main": "index.d.ts",
     "types": "index.d.ts",
-    "scripts": {
-        "lint": "tslint index.d.ts"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/0xProject/0x.js.git"
