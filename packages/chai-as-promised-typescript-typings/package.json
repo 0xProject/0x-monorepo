@@ -17,7 +17,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x.js/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/chai-as-promises-typescript-typings#readme",
+    "homepage": "https://github.com/0xProject/0x.js/packages/chai-as-promised-typescript-typings#readme",
     "dependencies": {
         "chai-typescript-typings": "^0.0.0"
     }

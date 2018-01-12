@@ -1,5 +1,3 @@
-/// <reference types='chai-typescript-typings' />
-/// <reference types='chai-as-promised-typescript-typings' />
 declare module 'web3_beta';
 declare module 'chai-bignumber';
 declare module 'dirty-chai';

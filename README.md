@@ -32,6 +32,7 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 | [`@0xproject/web3-wrapper`](/packages/web3-wrapper)                                    | [![npm](https://img.shields.io/npm/v/@0xproject/web3-wrapper.svg)](https://www.npmjs.com/package/@0xproject/web3-wrapper)                         | Web3 wrapper                                                       |
 | [`web3-typescript-typings`](/packages/web3-typescript-typings)                         | [![npm](https://img.shields.io/npm/v/web3-typescript-typings.svg)](https://www.npmjs.com/package/web3-typescript-typings)                         | Web3 typescript typings                                            |
 | [`chai-as-promised-typescript-typings`](/packages/chai-as-promised-typescript-typings) | [![npm](https://img.shields.io/npm/v/chai-as-promised-typescript-typings.svg)](https://www.npmjs.com/package/chai-as-promised-typescript-typings) | Chai as promised typescript typings                                |
+| [`chai-typescript-typings`](/packages/chai-typescript-typings)                         | [![npm](https://img.shields.io/npm/v/chai-typescript-typings.svg)](https://www.npmjs.com/package/chai-typescript-typings)                         | Chai typescript typings                                            |
 
 ### Private Packages
 

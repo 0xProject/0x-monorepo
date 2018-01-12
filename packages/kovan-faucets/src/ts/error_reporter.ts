@@ -14,7 +14,7 @@ export const errorReporter = {
 
         process.on('unhandledRejection', (err: Error) => {
             utils.consoleLog(`Uncaught exception ${err}. Stack: ${err.stack}`);
-            this.report(err);
+            this.reportAsync(err);
             process.exit(1);
         });
     },

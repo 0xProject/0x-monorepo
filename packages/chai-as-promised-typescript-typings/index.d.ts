@@ -5,9 +5,10 @@
 
 declare module 'chai-as-promised' {
     function chaiAsPromised(chai: any, utils: any): void;
-    export namespace chaiAsPromised {
+    namespace chaiAsPromised {
 
     }
+    export = chaiAsPromised;
 }
 
 // tslint:disable:no-namespace ban-types member-ordering

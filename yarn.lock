@@ -1694,10 +1694,6 @@ chai-typescript-typings@^0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/chai-typescript-typings/-/chai-typescript-typings-0.0.0.tgz#52e076d72cf29129c94ab1dba6e33ce3828a0724"
 
-chai-typescript-typings@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/chai-typescript-typings/-/chai-typescript-typings-0.0.1.tgz#433dee303b0b2978ad0dd03129df0a5afb791274"
-
 chai@^4.0.1:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.1.2.tgz#0f64584ba642f0f2ace2806279f4f06ca23ad73c"
