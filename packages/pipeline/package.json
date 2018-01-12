@@ -1,33 +1,38 @@
 {
-  "name": "@0xproject/pipeline",
-  "version": "0.0.1",
-  "private": true,
-  "description": "Data pipeline for offline analysis",
-  "scripts": {
-    "lint": "tslint --project . 'src/**/*.ts'",
-    "clean": "shx rm -rf lib",
-    "build": "tsc"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/0xProject/0x.js.git"
-  },
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/0xProject/0x.js/issues"
-  },
-  "homepage": "https://github.com/0xProject/0x.js/packages/pipeline/README.md",
-  "devDependencies": {
-    "@0xproject/tslint-config": "^0.4.0",
-    "@types/glob": "^5.0.33",
-    "@types/node": "^8.0.53",
-    "@types/dotenv": "^4.0.2",
-    "shx": "^0.2.2",
-    "tslint": "5.8.0",
-    "typescript": "~2.6.1"
-  },
-  "dependencies": {
-    "dotenv": "^4.0.0",
-    "node-redshift": "^0.1.5"
-  }
+    "name": "@0xproject/pipeline",
+    "version": "0.0.1",
+    "private": true,
+    "description": "Data pipeline for offline analysis",
+    "scripts": {
+        "lint": "tslint --project . 'src/**/*.ts'",
+        "clean": "shx rm -rf lib",
+        "build": "tsc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x.js.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x.js/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x.js/packages/pipeline/README.md",
+    "devDependencies": {
+        "@0xproject/tslint-config": "^0.4.0",
+        "@types/command-line-args": "^4.0.2",
+        "@types/dotenv": "^4.0.2",
+        "@types/glob": "^5.0.33",
+        "@types/node": "^8.0.53",
+        "shx": "^0.2.2",
+        "tslint": "5.8.0",
+        "typescript": "~2.6.1",
+        "web3-typescript-typings": "^0.9.3"
+    },
+    "dependencies": {
+        "0x.js": "^0.29.2",
+        "command-line-args": "^4.0.7",
+        "dotenv": "^4.0.0",
+        "node-redshift": "^0.1.5",
+        "web3": "^0.20.0"
+    }
 }
