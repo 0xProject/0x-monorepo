@@ -131,7 +131,7 @@ export class HttpClient implements Client {
             const stringifiedParams = queryString.stringify(params);
             query = `?${stringifiedParams}`;
         }
-        const url = `${this._apiEndpointUrl}/v0${path}${query}`;
+        const url = `${this._apiEndpointUrl}${path}${query}`;
         const headers = new Headers({
             'content-type': 'application/json',
         });
