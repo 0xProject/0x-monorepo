@@ -82,7 +82,7 @@ const teamRow3: ProfileInfo[] = [
         description: `Full-stack engineer. Previously senior software engineer at \
                       Twitter. Electrical and Computer Engineering at Duke.`,
         image: '/images/team/brandon.png',
-        linkedIn: 'https://www.linkedin.com/company-beta/17942619/',
+        linkedIn: 'https://www.linkedin.com/in/brandon-millman-b093a022/',
         github: 'https://github.com/BMillman19',
         medium: 'https://medium.com/@bchillman',
     },
