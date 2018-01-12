@@ -47,7 +47,7 @@ export function Profile(props: ProfileProps) {
                 <div style={{ minHeight: 60, lineHeight: 1.4 }} className="pt1 pb2 mx-auto lg-h6 md-h6 sm-h5 sm-center">
                     {props.profileInfo.description}
                 </div>
-                <div className="flex pb3 mx-auto sm-hide xs-hide" style={{ width: 180, opacity: 0.5 }}>
+                <div className="flex pb3 mx-auto sm-hide xs-hide" style={{ width: 280, opacity: 0.5 }}>
                     {renderSocialMediaIcons(props.profileInfo)}
                 </div>
             </div>
