@@ -9,15 +9,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/0xProject/web3-typescript-typings.git"
+        "url": "git+https://github.com/0xProject/0x.js.git"
     },
     "author": "Fabio Berger",
     "contributors": ["Leonid Logvinov <logvinov.leon@gmail.com>"],
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/0xProject/web3-typescript-typings/issues"
+        "url": "https://github.com/0xProject/0x.js/issues"
     },
-    "homepage": "https://github.com/0xProject/web3-typescript-typings#readme",
+    "homepage": "https://github.com/0xProject/0x.js/packages/web3-typescript-typings#readme",
     "devDependencies": {
         "@types/bignumber.js": "^4.0.2",
         "tslint": "^5.5.0",

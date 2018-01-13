@@ -1,5 +1,3 @@
-/// <reference types='chai-typescript-typings' />
-/// <reference types='chai-as-promised-typescript-typings' />
 declare module 'dirty-chai';
 declare module 'es6-promisify';
 

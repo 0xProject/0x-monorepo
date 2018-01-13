@@ -8,22 +8,20 @@ const S3BucketPath = 's3://connect-docs-jsons/';
 
 let tag;
 let version;
-postpublish_utils.getLatestTagAndVersionAsync(subPackageName)
+postpublish_utils
+    .getLatestTagAndVersionAsync(subPackageName)
     .then(function(result) {
         tag = result.tag;
         version = result.version;
-         const releaseName = postpublish_utils.getReleaseName(subPackageName, version);
-         return postpublish_utils.publishReleaseNotes(tag, releaseName);
+        const releaseName = postpublish_utils.getReleaseName(subPackageName, version);
+        return postpublish_utils.publishReleaseNotes(tag, releaseName);
     })
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
         const jsonFilePath = __dirname + '/../' + postpublish_utils.generatedDocsDirectoryName + '/index.json';
-        return execAsync(
-            'JSON_FILE_PATH=' + jsonFilePath + ' PROJECT_DIR=' + __dirname + '/.. yarn docs:json',
-            {
-                cwd,
-            }
-        );
+        return execAsync('JSON_FILE_PATH=' + jsonFilePath + ' PROJECT_DIR=' + __dirname + '/.. yarn docs:json', {
+            cwd,
+        });
     })
     .then(function(result) {
         if (result.stderr !== '') {
@@ -35,6 +33,7 @@ postpublish_utils.getLatestTagAndVersionAsync(subPackageName)
         return execAsync('S3_URL=' + s3Url + ' yarn upload_docs_json', {
             cwd,
         });
-    }).catch (function(err) {
+    })
+    .catch(function(err) {
         throw err;
     });
