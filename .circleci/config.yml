@@ -21,6 +21,8 @@ jobs:
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
       - run: yarn lerna:run build
   test:
+    docker:
+      - image: circleci/node:6.12
     steps:
       - run:
           name: testrpc
@@ -28,9 +30,13 @@ jobs:
           background: true
       - run: yarn lerna:run test:circleci
   lint:
+    docker:
+      - image: circleci/node:6.12
     steps:
       - run: yarn lerna:run lint
   prettier:
+    docker:
+      - image: circleci/node:6.12
     steps:
       - run: yarn prettier:ci
 workflows:
