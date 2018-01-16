@@ -52,7 +52,20 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --scope contracts test:circleci
+      - run: yarn lerna:run --scope contracts test:circleci:contracts
+  test-deployer:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: testrpc
+          command: npm run testrpc -- --db testrpc_snapshot
+          background: true
+      - run: yarn lerna:run --scope contracts test:circleci:deployer
   test-rest:
     docker:
       - image: circleci/node:6.12
@@ -95,12 +108,15 @@ workflows:
       - test-contracts:
           requires:
             - build
+      - test-deployer:
+          requires:
+            - build
       - test-rest:
           requires:
             - build
-      - lint:
+      - prettier:
           requires:
             - build
-      - prettier:
+      - lint:
           requires:
             - build
