@@ -4,6 +4,7 @@
 
     * Add an error parameter to the order watcher callback (#312)
     * Fix the bug making it impossible to catch some errors from awaitTransactionMinedAsync (#312)
+    * Fix the bug in fillOrdersUpTo validation making it impossible to fill up to if user doesn't have enough balance to fully fill all the orders (#321)
 
 ## v0.29.1 - _January 11, 2018_
 
