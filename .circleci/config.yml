@@ -20,10 +20,30 @@ jobs:
       - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
       - run: yarn lerna:run build
+  test:
+    steps:
       - run:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run test:circleci
+  lint:
+    steps:
       - run: yarn lerna:run lint
+  prettier:
+    steps:
       - run: yarn prettier:ci
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - lint:
+          requires:
+            - build
+      - prettier:
+          requires:
+            - build
