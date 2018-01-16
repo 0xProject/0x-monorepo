@@ -568,6 +568,20 @@ describe('ExchangeWrapper', () => {
                     expect(anotherFilledAmount).to.be.bignumber.equal(remainingFillAmount);
                 });
             });
+            describe('failed batch fills', () => {
+                it("should fail validation if user doesn't have enough balance wo fill up to", async () => {
+                    const missingBalance = new BigNumber(2); // User will only have anough balance to fill up to 8
+                    await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinbase, missingBalance);
+                    return expect(
+                        zeroEx.exchange.fillOrdersUpToAsync(
+                            signedOrders,
+                            fillUpToAmount,
+                            shouldThrowOnInsufficientBalanceOrAllowance,
+                            takerAddress,
+                        ),
+                    ).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
+                });
+            });
             describe('order transaction options', () => {
                 const emptyFillUpToAmount = new BigNumber(0);
                 it('should validate when orderTransactionOptions are not present', async () => {
