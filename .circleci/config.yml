@@ -40,7 +40,7 @@ jobs:
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run --scope 0x.js test:circleci
-  test-rest:
+  test-contracts:
     docker:
       - image: circleci/node:6.12
     working_directory: ~/repo
@@ -52,7 +52,16 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --ignore 0x.js test:circleci
+      - run: yarn lerna:run --scope contracts test:circleci
+  test-rest:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn lerna:run --ignore contracts,0x.js test:circleci
   lint:
     working_directory: ~/repo
     docker:
@@ -77,6 +86,9 @@ workflows:
     jobs:
       - build
       - test-0xjs:
+          requires:
+            - build
+      - test-contracts:
           requires:
             - build
       - test-rest:
