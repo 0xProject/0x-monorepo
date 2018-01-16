@@ -65,7 +65,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --ignore contracts,0x.js test:circleci
+      - run: yarn lerna:run --ignore "contracts|0x.js" test:circleci
   lint:
     working_directory: ~/repo
     docker:
