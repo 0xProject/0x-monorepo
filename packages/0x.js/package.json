@@ -14,21 +14,16 @@
         "generate_contract_wrappers":
             "node ../abi-gen/lib/index.js --abiGlob 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --templates contract_templates --output src/contract_wrappers/generated",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
-        "test:circleci":
-            "run-s test:coverage report_test_coverage && if [ $CIRCLE_BRANCH = \"development\" ]; then yarn test:umd; fi",
+        "test:circleci": "run-s test:coverage report_test_coverage",
         "test": "run-s clean test:commonjs",
-        "test:umd": "./scripts/test_umd.sh",
         "test:coverage": "nyc npm run test --all",
         "report_test_coverage": "nyc report --reporter=text-lcov | coveralls",
         "update_contracts":
             "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
         "clean": "shx rm -rf _bundles lib test_temp",
-        "build:umd:dev": "webpack",
         "build:umd:prod": "NODE_ENV=production webpack",
         "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts;",
         "test:commonjs": "run-s build:commonjs run_mocha",
-        "pretest:umd": "run-s clean build:umd:dev build:commonjs",
-        "substitute_umd_bundle": "shx mv _bundles/* lib/src",
         "run_mocha": "mocha lib/test/**/*_test.js --timeout 10000 --bail --exit"
     },
     "config": {
