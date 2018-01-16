@@ -18,7 +18,7 @@ jobs:
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - ~/.cache/yarn
+            - ./node_modules
       - run: wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
       - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
