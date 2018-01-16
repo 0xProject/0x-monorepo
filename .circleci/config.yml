@@ -6,6 +6,7 @@ jobs:
       - image: circleci/node:6.12
     environment:
       CONTRACTS_COMMIT_HASH: '9ed05f5'
+    working_directory: ~/repo
     steps:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
@@ -20,24 +21,40 @@ jobs:
       - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
       - run: yarn lerna:run build
+      - save_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo
   test:
     docker:
       - image: circleci/node:6.12
+    working_directory: ~/repo
     steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run test:circleci
   lint:
+    working_directory: ~/repo
     docker:
       - image: circleci/node:6.12
     steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn lerna:run lint
   prettier:
+    working_directory: ~/repo
     docker:
       - image: circleci/node:6.12
     steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn prettier:ci
 workflows:
   version: 2
