@@ -25,7 +25,7 @@ jobs:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
-  test:
+  test-0xjs:
     docker:
       - image: circleci/node:6.12
     working_directory: ~/repo
@@ -37,7 +37,20 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run test:circleci
+      - run: yarn lerna:run --scope 0x.js test:circleci
+  test-rest:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: testrpc
+          command: npm run testrpc -- --db testrpc_snapshot
+          background: true
+      - run: yarn lerna:run --ignore 0x.js test:circleci
   lint:
     working_directory: ~/repo
     docker:
@@ -61,7 +74,10 @@ workflows:
   main:
     jobs:
       - build
-      - test:
+      - test-0xjs:
+          requires:
+            - build
+      - test-rest:
           requires:
             - build
       - lint:
