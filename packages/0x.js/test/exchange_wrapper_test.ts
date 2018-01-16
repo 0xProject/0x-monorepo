@@ -536,7 +536,24 @@ describe('ExchangeWrapper', () => {
                         ),
                     ).to.be.rejectedWith(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
                 });
-                it('should successfully fill up to specified amount', async () => {
+                it('should successfully fill up to specified amount when all orders are fully funded', async () => {
+                    const txHash = await zeroEx.exchange.fillOrdersUpToAsync(
+                        signedOrders,
+                        fillUpToAmount,
+                        shouldThrowOnInsufficientBalanceOrAllowance,
+                        takerAddress,
+                    );
+                    await zeroEx.awaitTransactionMinedAsync(txHash);
+                    const filledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(signedOrderHashHex);
+                    const anotherFilledAmount = await zeroEx.exchange.getFilledTakerAmountAsync(anotherOrderHashHex);
+                    expect(filledAmount).to.be.bignumber.equal(fillableAmount);
+                    const remainingFillAmount = fillableAmount.minus(1);
+                    expect(anotherFilledAmount).to.be.bignumber.equal(remainingFillAmount);
+                });
+                it('should successfully fill up to specified amount even if filling all orders will fail', async () => {
+                    const missingBalance = new BigNumber(1); // User will still have enough balance to fill up to 9,
+                    // but won't have 10 to fully fill all orders in a batch.
+                    await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinbase, missingBalance);
                     const txHash = await zeroEx.exchange.fillOrdersUpToAsync(
                         signedOrders,
                         fillUpToAmount,
