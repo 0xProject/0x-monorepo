@@ -1,5 +1,5 @@
-import { constants } from './../../src/utils/constants';
-import { Token } from './../../src/utils/types';
+import { constants } from '../../src/utils/constants';
+import { Token } from '../../types';
 
 export const tokenInfo: Token[] = [
     {

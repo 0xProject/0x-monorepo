@@ -113,7 +113,6 @@ export class Compiler {
     public async compileAllAsync(): Promise<void> {
         await this._createArtifactsDirIfDoesNotExistAsync();
         this._contractSourcesIfExists = await Compiler._getContractSourcesAsync(this._contractsDir);
-
         const contractBaseNames = _.keys(this._contractSourcesIfExists);
         const compiledContractPromises = _.map(contractBaseNames, async (contractBaseName: string): Promise<void> => {
             return this._compileContractAsync(contractBaseName);
@@ -167,7 +166,7 @@ export class Compiler {
         };
         const solcVersion = Compiler._parseSolidityVersion(source);
         const fullSolcVersion = binPaths[solcVersion];
-        const solcBinPath = `./../solc/solc_bin/${fullSolcVersion}`;
+        const solcBinPath = `../solc/solc_bin/${fullSolcVersion}`;
         const solcBin = require(solcBinPath);
         const solcInstance = solc.setupMethods(solcBin);
 
