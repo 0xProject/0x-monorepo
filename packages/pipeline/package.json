@@ -22,6 +22,7 @@
         "@types/command-line-args": "^4.0.2",
         "@types/dotenv": "^4.0.2",
         "@types/glob": "^5.0.33",
+        "@types/lodash": "^4.14.92",
         "@types/node": "^8.0.53",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
@@ -32,7 +33,9 @@
         "0x.js": "^0.29.2",
         "command-line-args": "^4.0.7",
         "dotenv": "^4.0.0",
+        "lodash": "^4.17.4",
         "node-redshift": "^0.1.5",
+        "queue": "^4.4.2",
         "web3": "^0.20.0"
     }
 }

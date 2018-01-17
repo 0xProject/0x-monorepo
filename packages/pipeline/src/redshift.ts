@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as Redshift from 'node-redshift';
+
 dotenv.config();
 
 const client = {
@@ -12,4 +13,6 @@ const client = {
 
 const options = {};
 
-export const redshiftClient = new Redshift(client, options);
+const redshiftClient = new Redshift(client, options);
+
+export { redshiftClient };
