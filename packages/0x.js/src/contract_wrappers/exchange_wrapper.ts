@@ -258,16 +258,18 @@ export class ExchangeWrapper extends ContractWrapper {
             ? SHOULD_VALIDATE_BY_DEFAULT
             : orderTransactionOpts.shouldValidate;
         if (shouldValidate) {
+            let filledTakerTokenAmount = new BigNumber(0);
             const zrxTokenAddress = this.getZRXTokenAddress();
             const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
             for (const signedOrder of signedOrders) {
-                await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+                const singleFilledTakerTokenAmount = await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
                     exchangeTradeEmulator,
                     signedOrder,
-                    fillTakerTokenAmount,
+                    fillTakerTokenAmount.minus(filledTakerTokenAmount),
                     takerAddress,
                     zrxTokenAddress,
                 );
+                filledTakerTokenAmount = filledTakerTokenAmount.plus(singleFilledTakerTokenAmount);
             }
         }
 
