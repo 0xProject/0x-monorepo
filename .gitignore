@@ -71,3 +71,6 @@ packages/website/public/bundle*
 
 # generated binaries
 bin/
+
+#Finder files
+.DS_STORE
