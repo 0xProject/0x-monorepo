@@ -550,7 +550,7 @@ describe('ExchangeWrapper', () => {
                     const remainingFillAmount = fillableAmount.minus(1);
                     expect(anotherFilledAmount).to.be.bignumber.equal(remainingFillAmount);
                 });
-                it('should successfully fill up to specified amount even if filling all orders will fail', async () => {
+                it('should successfully fill up to specified amount even if filling all orders would fail', async () => {
                     const missingBalance = new BigNumber(1); // User will still have enough balance to fill up to 9,
                     // but won't have 10 to fully fill all orders in a batch.
                     await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinbase, missingBalance);
@@ -569,8 +569,8 @@ describe('ExchangeWrapper', () => {
                 });
             });
             describe('failed batch fills', () => {
-                it("should fail validation if user doesn't have enough balance wo fill up to", async () => {
-                    const missingBalance = new BigNumber(2); // User will only have anough balance to fill up to 8
+                it("should fail validation if user doesn't have enough balance without fill up to", async () => {
+                    const missingBalance = new BigNumber(2); // User will only have enough balance to fill up to 8
                     await zeroEx.token.transferAsync(makerTokenAddress, makerAddress, coinbase, missingBalance);
                     return expect(
                         zeroEx.exchange.fillOrdersUpToAsync(
