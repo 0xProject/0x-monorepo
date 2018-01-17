@@ -514,7 +514,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.props.dispatcher.showFlashMessage(`Successfully minted ${amount.toString(10)} ${token.symbol}`);
             return true;
         } catch (err) {
-            const errMsg = '' + err;
+            const errMsg = `${err}`;
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return false;
