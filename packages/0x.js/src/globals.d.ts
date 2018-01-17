@@ -25,18 +25,6 @@ declare module '*.json' {
     /* tslint:enable */
 }
 
-// find-version declarations
-declare function findVersions(version: string): string[];
-declare module 'find-versions' {
-    export = findVersions;
-}
-
-// compare-version declarations
-declare function compareVersions(firstVersion: string, secondVersion: string): number;
-declare module 'compare-versions' {
-    export = compareVersions;
-}
-
 declare module 'ethereumjs-abi' {
     const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
 }
