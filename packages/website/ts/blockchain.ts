@@ -375,7 +375,11 @@ export class Blockchain {
                 clearInterval(this._zrxPollIntervalId);
                 delete this._zrxPollIntervalId;
             }
-        }, 5000);
+        }, 5000, (err: Error) => {
+            utils.consoleLog(`Polling tokenBalance failed: ${err}`);
+            clearInterval(this._zrxPollIntervalId);
+            delete this._zrxPollIntervalId;
+        });
     }
     public async signOrderHashAsync(orderHash: string): Promise<SignatureData> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');

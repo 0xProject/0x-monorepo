@@ -1,6 +1,7 @@
 import { BigNumber, intervalUtils, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { utils } from 'ts/utils/utils';
 import * as Web3 from 'web3';
 
 export class Web3Wrapper {
@@ -135,7 +136,10 @@ export class Web3Wrapper {
                     await this._updateUserEtherBalanceAsync(this._prevUserAddress);
                 }
             }
-        }, 5000);
+        }, 5000, (err: Error) => {
+            utils.consoleLog(`Watching network and balances failed: ${err}`);
+            this._stopEmittingNetworkConnectionAndUserBalanceStateAsync();
+        });
     }
     private async _updateUserEtherBalanceAsync(userAddress: string) {
         const balance = await this.getBalanceInEthAsync(userAddress);
