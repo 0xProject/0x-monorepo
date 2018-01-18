@@ -65,6 +65,7 @@ export const constants = {
     URL_BIGNUMBERJS_GITHUB: 'http://mikemcl.github.io/bignumber.js',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
     URL_BLOG: 'https://blog.0xproject.com/latest',
+    URL_DISCOURSE_FORUM: 'https://forum.0xproject.com',
     URL_FIREFOX_U2F_ADDON: 'https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/',
     URL_ETHER_FAUCET: 'https://faucet.0xproject.com',
     URL_GITHUB_ORG: 'https://github.com/0xProject',
