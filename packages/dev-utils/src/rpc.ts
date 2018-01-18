@@ -41,7 +41,7 @@ export class RPC {
             method,
             params,
         });
-        this._url += 1;
+        this._id += 1;
         return payload;
     }
     private async _sendAsync(payload: string): Promise<any> {

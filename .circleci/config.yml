@@ -6,24 +6,117 @@ jobs:
       - image: circleci/node:6.12
     environment:
       CONTRACTS_COMMIT_HASH: '9ed05f5'
+    working_directory: ~/repo
     steps:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: yarn
-          command: yarn
+          command: yarn --frozen-lockfile
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - ~/.cache/yarn
+            - ./node_modules
       - run: wget https://s3.amazonaws.com/testrpc-shapshots/${CONTRACTS_COMMIT_HASH}.zip
       - run: unzip ${CONTRACTS_COMMIT_HASH}.zip -d testrpc_snapshot
       - run: node ./node_modules/lerna/bin/lerna.js bootstrap
       - run: yarn lerna:run build
+      - save_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo
+  test-0xjs:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run test:circleci
+      - run: yarn lerna:run --scope 0x.js test:circleci
+  test-contracts:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: testrpc
+          command: npm run testrpc -- --db testrpc_snapshot
+          background: true
+      - run: yarn lerna:run --scope contracts test:circleci:contracts
+  test-deployer:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: testrpc
+          command: npm run testrpc -- --db testrpc_snapshot
+          background: true
+      - run: yarn lerna:run --scope contracts test:circleci:deployer
+  test-rest:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: testrpc
+          command: npm run testrpc -- --db testrpc_snapshot
+          background: true
+      - run: yarn lerna:run --ignore contracts --ignore 0x.js --ignore subproviders test:circleci
+  lint:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:6.12
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn lerna:run lint
+  prettier:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:6.12
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn prettier:ci
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
+      - test-0xjs:
+          requires:
+            - build
+      - test-contracts:
+          requires:
+            - build
+      - test-deployer:
+          requires:
+            - build
+      - test-rest:
+          requires:
+            - build
+      - prettier:
+          requires:
+            - build
+      - lint:
+          requires:
+            - build
