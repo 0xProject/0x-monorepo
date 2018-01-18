@@ -71,6 +71,11 @@ const menuItemsBySection: MenuItemsBySection = {
             isExternal: true,
             path: constants.URL_REDDIT,
         },
+        {
+            title: 'Forum',
+            isExternal: true,
+            path: constants.URL_DISCOURSE_FORUM,
+        },
     ],
     Organization: [
         {
@@ -100,6 +105,7 @@ const titleToIcon: { [title: string]: string } = {
     Blog: 'medium.png',
     Twitter: 'twitter.png',
     Reddit: 'reddit.png',
+    Forum: 'discourse.png',
 };
 
 export interface FooterProps {}
