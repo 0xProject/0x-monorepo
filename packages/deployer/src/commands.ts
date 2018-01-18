@@ -1,4 +1,4 @@
-import { migrator } from './../migrations/migrate';
+import { migrator } from './migrations/migrate';
 import { Compiler } from './compiler';
 import { Deployer } from './deployer';
 import { CompilerOptions, DeployerOptions } from './utils/types';

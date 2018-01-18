@@ -4,7 +4,7 @@ import * as path from 'path';
 import solc = require('solc');
 import * as Web3 from 'web3';
 
-import { binPaths } from './../solc/bin_paths';
+import { binPaths } from './solc/bin_paths';
 import { fsWrapper } from './utils/fs_wrapper';
 import {
     CompilerOptions,
@@ -166,7 +166,7 @@ export class Compiler {
         };
         const solcVersion = Compiler._parseSolidityVersion(source);
         const fullSolcVersion = binPaths[solcVersion];
-        const solcBinPath = `../solc/solc_bin/${fullSolcVersion}`;
+        const solcBinPath = `./solc/solc_bin/${fullSolcVersion}`;
         const solcBin = require(solcBinPath);
         const solcInstance = solc.setupMethods(solcBin);
 
