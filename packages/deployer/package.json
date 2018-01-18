@@ -12,6 +12,9 @@
         "lint": "tslint --project . 'src/**/*.ts'",
         "test:circleci": "yarn test"
     },
+    "bin": {
+        "0x-deployer": "lib/cli.js"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/0xProject/0x.js.git"
