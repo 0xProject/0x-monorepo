@@ -52,7 +52,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --scope contracts test:circleci:contracts
+      - run: yarn lerna:run --scope contracts test:circleci
   test-deployer:
     docker:
       - image: circleci/node:6.12
@@ -65,7 +65,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --scope contracts test:circleci:deployer
+      - run: yarn lerna:run --scope deployer test:circleci
   test-rest:
     docker:
       - image: circleci/node:6.12
@@ -78,7 +78,7 @@ jobs:
           name: testrpc
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
-      - run: yarn lerna:run --ignore contracts --ignore 0x.js --ignore subproviders test:circleci
+      - run: yarn lerna:run --ignore contracts --ignore 0x.js --ignore deployer test:circleci
   lint:
     working_directory: ~/repo
     docker:
