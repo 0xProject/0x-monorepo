@@ -1,6 +1,6 @@
 {
     "name": "web3-typescript-typings",
-    "version": "0.9.3",
+    "version": "0.9.4",
     "description": "Typescript type definitions for web3",
     "main": "index.d.ts",
     "types": "index.d.ts",
@@ -12,7 +12,9 @@
         "url": "git+https://github.com/0xProject/0x.js.git"
     },
     "author": "Fabio Berger",
-    "contributors": ["Leonid Logvinov <logvinov.leon@gmail.com>"],
+    "contributors": [
+        "Leonid Logvinov <logvinov.leon@gmail.com>"
+    ],
     "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/0xProject/0x.js/issues"
