@@ -21,7 +21,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x.js/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/contracts/README.md",
+    "homepage": "https://github.com/0xProject/0x.js/packages/deployer/README.md",
     "devDependencies": {
         "copyfiles": "^1.2.0",
         "web3-typescript-typings": "^0.9.3",
