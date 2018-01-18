@@ -15,13 +15,7 @@
         "clean": "rm -rf ./lib",
         "migrate": "node ../deployer/lib/cli.js migrate",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
-<<<<<<< HEAD
-        "test:circleci:contracts": "yarn test",
-        "test:circleci:deployer": "yarn test:deployer",
-        "test:deployer": "npm run build; mocha lib/deploy/test/*_test.js"
-=======
         "test:circleci": "yarn test"
->>>>>>> Move deployer to a separate package
     },
     "repository": {
         "type": "git",
