@@ -13,7 +13,7 @@ export const assert = {
     isValidBaseUnitAmount(variableName: string, value: BigNumber) {
         assert.isBigNumber(variableName, value);
         const isNegative = value.lessThan(0);
-        this.assert(!isNegative, `${variableName} should not be a negative number, found value: ${value.toNumber()}` );
+        this.assert(!isNegative, `${variableName} cannot be a negative number, found value: ${value.toNumber()}` );
         const hasDecimals = value.decimalPlaces() !== 0;
         this.assert(
             !hasDecimals,
