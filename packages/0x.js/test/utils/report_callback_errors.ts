@@ -25,7 +25,7 @@ export const reportNoErrorCallbackErrors = (done: DoneCallback, expectToBeCalled
     };
 };
 
-export const reportNodeCallbackErrors = (done: DoneCallback) => {
+export const reportNodeCallbackErrors = (done: DoneCallback, expectToBeCalledOnce = true) => {
     return <T>(f?: (value: T) => void) => {
         const wrapped = (error: Error | null, value: T | undefined) => {
             if (!_.isNull(error)) {
@@ -37,7 +37,9 @@ export const reportNodeCallbackErrors = (done: DoneCallback) => {
                 }
                 try {
                     f(value as T);
-                    done();
+                    if (expectToBeCalledOnce) {
+                        done();
+                    }
                 } catch (err) {
                     done(err);
                 }

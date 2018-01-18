@@ -29,14 +29,23 @@ describe('HttpClient', () => {
     afterEach(() => {
         fetchMock.restore();
     });
+    describe('#constructor', () => {
+        it('should remove trailing slashes from api url', async () => {
+            const urlWithTrailingSlash = 'https://slash.com/';
+            const urlWithoutTrailingSlash = 'https://slash.com';
+            const client = new HttpClient(urlWithTrailingSlash);
+            const sanitizedUrl = (client as any)._apiEndpointUrl;
+            expect(sanitizedUrl).to.be.deep.equal(urlWithoutTrailingSlash);
+        });
+    });
     describe('#getTokenPairsAsync', () => {
-        const url = `${relayUrl}/v0/token_pairs`;
+        const url = `${relayUrl}/token_pairs`;
         it('gets token pairs', async () => {
             fetchMock.get(url, tokenPairsResponseJSON);
             const tokenPairs = await relayerClient.getTokenPairsAsync();
             expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
         });
-        it('gets specfic token pairs for request', async () => {
+        it('gets specific token pairs for request', async () => {
             const tokenAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
             const tokenPairsRequest = {
                 tokenA: tokenAddress,
@@ -52,7 +61,7 @@ describe('HttpClient', () => {
         });
     });
     describe('#getOrdersAsync', () => {
-        const url = `${relayUrl}/v0/orders`;
+        const url = `${relayUrl}/orders`;
         it('gets orders', async () => {
             fetchMock.get(url, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync();
@@ -75,7 +84,7 @@ describe('HttpClient', () => {
     });
     describe('#getOrderAsync', () => {
         const orderHash = '0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
-        const url = `${relayUrl}/v0/order/${orderHash}`;
+        const url = `${relayUrl}/order/${orderHash}`;
         it('gets order', async () => {
             fetchMock.get(url, orderResponseJSON);
             const order = await relayerClient.getOrderAsync(orderHash);
@@ -91,7 +100,7 @@ describe('HttpClient', () => {
             baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
             quoteTokenAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
         };
-        const url = `${relayUrl}/v0/orderbook?baseTokenAddress=${request.baseTokenAddress}&quoteTokenAddress=${
+        const url = `${relayUrl}/orderbook?baseTokenAddress=${request.baseTokenAddress}&quoteTokenAddress=${
             request.quoteTokenAddress
         }`;
         it('gets order book', async () => {
@@ -116,7 +125,7 @@ describe('HttpClient', () => {
             salt: new BigNumber('256'),
             expirationUnixTimestampSec: new BigNumber('42'),
         };
-        const url = `${relayUrl}/v0/fees`;
+        const url = `${relayUrl}/fees`;
         it('gets fees', async () => {
             fetchMock.post(url, feesResponseJSON);
             const fees = await relayerClient.getFeesAsync(request);

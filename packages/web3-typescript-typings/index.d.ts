@@ -107,6 +107,7 @@ declare module 'web3' {
 
         interface Contract<A extends ContractInstance> {
             at(address: string): A;
+            getData(...args: any[]): string;
             'new'(...args: any[]): A;
         }
 
@@ -169,7 +170,7 @@ declare module 'web3' {
             gasPrice: BigNumber.BigNumber;
             accounts: string[];
             blockNumber: number;
-            defaultAccount: string;
+            defaultAccount?: string;
             defaultBlock: Web3.BlockParam;
             syncing: Web3.SyncingResult;
             compile: {

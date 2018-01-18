@@ -36,6 +36,10 @@ export class EventWatcher {
         this._intervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             this._pollForBlockchainEventsAsync.bind(this, callback),
             this._pollingIntervalMs,
+            (err: Error) => {
+                this.unsubscribe();
+                callback(err);
+            },
         );
     }
     public unsubscribe(): void {
@@ -78,7 +82,7 @@ export class EventWatcher {
                 ...log,
             };
             if (!_.isUndefined(this._intervalIdIfExists)) {
-                callback(logEvent);
+                callback(null, logEvent);
             }
         }
     }

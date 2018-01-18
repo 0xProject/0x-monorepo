@@ -51,7 +51,7 @@ export interface DecodedLogEvent<ArgsType> {
 }
 
 export type EventCallback<ArgsType> = (err: null | Error, log?: DecodedLogEvent<ArgsType>) => void;
-export type EventWatcherCallback = (log: LogEvent) => void;
+export type EventWatcherCallback = (err: null | Error, log?: LogEvent) => void;
 
 export enum SolidityTypes {
     Address = 'address',
@@ -406,5 +406,5 @@ export interface OrderStateInvalid {
 
 export type OrderState = OrderStateValid | OrderStateInvalid;
 
-export type OnOrderStateChangeCallback = (orderState: OrderState) => void;
+export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;
 // tslint:disable:max-file-line-count
