@@ -149,6 +149,6 @@ export class Web3Wrapper {
         }
     }
     private _stopEmittingNetworkConnectionAndUserBalanceStateAsync() {
-        clearInterval(this._watchNetworkAndBalanceIntervalId);
+        intervalUtils.clearAsyncExcludingInterval(this._watchNetworkAndBalanceIntervalId);
     }
 }
