@@ -2,18 +2,18 @@
     "name": "@0xproject/deployer",
     "version": "0.0.1",
     "description": "Smart contract deployer of 0x protocol",
-    "main": "lib/cli.js",
+    "main": "lib/src/cli.js",
     "scripts": {
-        "build": "yarn clean && copyfiles -u 1 'src/test/fixtures/contracts/**/*' src/solc/solc_bin/* ./lib && tsc",
+        "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' src/solc/solc_bin/* ./lib && tsc",
         "test": "npm run build; mocha lib/test/*_test.js",
-        "compile": "npm run build; node lib/cli.js compile",
+        "compile": "npm run build; node lib/src/cli.js compile",
         "clean": "rm -rf ./lib",
-        "migrate": "npm run build; node lib/cli.js migrate",
-        "lint": "tslint --project . 'src/**/*.ts'",
+        "migrate": "npm run build; node lib/src/cli.js migrate",
+        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test:circleci": "yarn test"
     },
     "bin": {
-        "0x-deployer": "lib/cli.js"
+        "0x-deployer": "lib/src/cli.js"
     },
     "repository": {
         "type": "git",
