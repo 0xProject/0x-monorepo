@@ -1,12 +1,12 @@
 # CHANGELOG
 
-## v0.x.x - _TBD, 2017_
+## v0.5.0 - _January 17, 2018_
 
     * Sanitize api endpoint url and remove trailing slashes (#318)
     * Improve error message text in HttpClient (#318)
     * Stop appending '/v0' to api endpoint url in HttpClient (#318)
 
-## v0.4.0 - _January 11, 2017_
+## v0.4.0 - _January 11, 2018_
 
     * Prevent getFeesAsync method on HttpClient from mutating input (#296)
 

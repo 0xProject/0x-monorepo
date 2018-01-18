@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.x.x - _TBD, 2018_
+## v0.30.0 - _January 17, 2018_
 
     * Add an error parameter to the order watcher callback (#312)
     * Fix a bug making it impossible to catch some errors from awaitTransactionMinedAsync (#312)
