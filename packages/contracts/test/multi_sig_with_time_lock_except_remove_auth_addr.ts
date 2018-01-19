@@ -1,4 +1,7 @@
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import * as Web3 from 'web3';
 
 import * as tokenTransferProxyJSON from '../../build/contracts/TokenTransferProxy.json';
 import { Artifacts } from '../util/artifacts';
@@ -13,29 +16,38 @@ const PROXY_ABI = (tokenTransferProxyJSON as any).abi;
 
 chaiSetup.configure();
 const expect = chai.expect;
+// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
+// with type `any` to a variable of type `Web3`.
+const web3: Web3 = (global as any).web3;
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
-contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: string[]) => {
-    const owners = [accounts[0], accounts[1]];
+describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+    let accounts: string[];
+    let owners: string[];
     const requiredApprovals = 2;
     const SECONDS_TIME_LOCKED = 1000000;
 
     // initialize fake addresses
-    const authorizedAddress = `0x${crypto
-        .solSHA3([accounts[0]])
-        .slice(0, 20)
-        .toString('hex')}`;
-    const unauthorizedAddress = `0x${crypto
-        .solSHA3([accounts[1]])
-        .slice(0, 20)
-        .toString('hex')}`;
+    let authorizedAddress: string;
+    let unauthorizedAddress: string;
 
     let tokenTransferProxy: ContractInstance;
     let multiSig: ContractInstance;
     let multiSigWrapper: MultiSigWrapper;
 
     let validDestination: string;
-
-    beforeEach(async () => {
+    before(async () => {
+        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        owners = [accounts[0], accounts[1]];
+        authorizedAddress = `0x${crypto
+            .solSHA3([accounts[0]])
+            .slice(0, 20)
+            .toString('hex')}`;
+        unauthorizedAddress = `0x${crypto
+            .solSHA3([accounts[1]])
+            .slice(0, 20)
+            .toString('hex')}`;
         const initialOwner = accounts[0];
         tokenTransferProxy = await TokenTransferProxy.new({ from: initialOwner });
         await tokenTransferProxy.addAuthorizedAddress(authorizedAddress, {
@@ -52,6 +64,12 @@ contract('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', (accounts: s
         });
         multiSigWrapper = new MultiSigWrapper(multiSig);
         validDestination = tokenTransferProxy.address;
+    });
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
     });
 
     describe('isFunctionRemoveAuthorizedAddress', () => {

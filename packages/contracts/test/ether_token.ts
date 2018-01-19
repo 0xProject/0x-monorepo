@@ -20,7 +20,7 @@ const expect = chai.expect;
 const web3: Web3 = (global as any).web3;
 const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
-describe.only('EtherToken', () => {
+describe('EtherToken', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
     let accounts: string[];
     let account: string;
