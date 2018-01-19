@@ -5,8 +5,8 @@ import * as path from 'path';
 import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
-import { commands } from './src/commands';
-import { CliOptions, CompilerOptions, DeployerOptions } from './src/utils/types';
+import { commands } from './commands';
+import { CliOptions, CompilerOptions, DeployerOptions } from './utils/types';
 
 const DEFAULT_OPTIMIZER_ENABLED = false;
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');

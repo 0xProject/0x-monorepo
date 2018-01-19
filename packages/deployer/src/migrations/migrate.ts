@@ -2,8 +2,8 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { Deployer } from './../src/deployer';
-import { constants } from './../src/utils/constants';
+import { Deployer } from '../deployer';
+import { constants } from '../utils/constants';
 import { tokenInfo } from './config/token_info';
 
 export const migrator = {
