@@ -1,7 +1,10 @@
 import { ZeroEx } from '0x.js';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
+import * as Web3 from 'web3';
 
 import { Artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
@@ -13,10 +16,31 @@ import { chaiSetup } from './utils/chai_setup';
 const { TokenRegistry } = new Artifacts(artifacts);
 chaiSetup.configure();
 const expect = chai.expect;
+// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
+// with type `any` to a variable of type `Web3`.
+const web3: Web3 = (global as any).web3;
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
-contract('TokenRegistry', (accounts: string[]) => {
-    const owner = accounts[0];
-    const notOwner = accounts[1];
+describe('TokenRegistry', () => {
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+    let accounts: string[];
+    let owner: string;
+    let notOwner: string;
+    let tokenReg: ContractInstance;
+    let tokenRegWrapper: TokenRegWrapper;
+    before(async () => {
+        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        owner = accounts[0];
+        notOwner = accounts[1];
+        tokenReg = await TokenRegistry.new();
+        tokenRegWrapper = new TokenRegWrapper(tokenReg);
+    });
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
 
     const tokenAddress1 = `0x${ethUtil.setLength(ethUtil.toBuffer('0x1'), 20, false).toString('hex')}`;
     const tokenAddress2 = `0x${ethUtil.setLength(ethUtil.toBuffer('0x2'), 20, false).toString('hex')}`;
@@ -47,14 +71,6 @@ contract('TokenRegistry', (accounts: string[]) => {
         ipfsHash: constants.NULL_BYTES,
         swarmHash: constants.NULL_BYTES,
     };
-
-    let tokenReg: ContractInstance;
-    let tokenRegWrapper: TokenRegWrapper;
-
-    beforeEach(async () => {
-        tokenReg = await TokenRegistry.new();
-        tokenRegWrapper = new TokenRegWrapper(tokenReg);
-    });
 
     describe('addToken', () => {
         it('should throw when not called by owner', async () => {
