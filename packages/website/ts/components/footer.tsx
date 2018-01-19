@@ -13,7 +13,6 @@ interface FooterMenuItem {
     title: string;
     path?: string;
     isExternal?: boolean;
-    fileName?: string;
 }
 
 enum Sections {
@@ -56,25 +55,26 @@ const menuItemsBySection: MenuItemsBySection = {
             title: 'Rocket.chat',
             isExternal: true,
             path: constants.URL_ZEROEX_CHAT,
-            fileName: 'rocketchat.png',
         },
         {
             title: 'Blog',
             isExternal: true,
             path: constants.URL_BLOG,
-            fileName: 'medium.png',
         },
         {
             title: 'Twitter',
             isExternal: true,
             path: constants.URL_TWITTER,
-            fileName: 'twitter.png',
         },
         {
             title: 'Reddit',
             isExternal: true,
             path: constants.URL_REDDIT,
-            fileName: 'reddit.png',
+        },
+        {
+            title: 'Forum',
+            isExternal: true,
+            path: constants.URL_DISCOURSE_FORUM,
         },
     ],
     Organization: [
@@ -105,6 +105,7 @@ const titleToIcon: { [title: string]: string } = {
     Blog: 'medium.png',
     Twitter: 'twitter.png',
     Reddit: 'reddit.png',
+    Forum: 'discourse.png',
 };
 
 export interface FooterProps {}

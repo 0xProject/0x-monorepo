@@ -368,14 +368,22 @@ export class Blockchain {
 
         const [currBalance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
 
-        this._zrxPollIntervalId = intervalUtils.setAsyncExcludingInterval(async () => {
-            const [balance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
-            if (!balance.eq(currBalance)) {
-                this._dispatcher.replaceTokenBalanceByAddress(token.address, balance);
-                clearInterval(this._zrxPollIntervalId);
+        this._zrxPollIntervalId = intervalUtils.setAsyncExcludingInterval(
+            async () => {
+                const [balance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
+                if (!balance.eq(currBalance)) {
+                    this._dispatcher.replaceTokenBalanceByAddress(token.address, balance);
+                    intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
+                    delete this._zrxPollIntervalId;
+                }
+            },
+            5000,
+            (err: Error) => {
+                utils.consoleLog(`Polling tokenBalance failed: ${err}`);
+                intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
                 delete this._zrxPollIntervalId;
-            }
-        }, 5000);
+            },
+        );
     }
     public async signOrderHashAsync(orderHash: string): Promise<SignatureData> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
@@ -471,7 +479,7 @@ export class Blockchain {
         this._web3Wrapper.updatePrevUserAddress(newUserAddress);
     }
     public destroy() {
-        clearInterval(this._zrxPollIntervalId);
+        intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
         this._web3Wrapper.destroy();
         this._stopWatchingExchangeLogFillEvents();
     }
