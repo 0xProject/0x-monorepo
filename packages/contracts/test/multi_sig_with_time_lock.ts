@@ -22,6 +22,7 @@ const expect = chai.expect;
 // In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
 // with type `any` to a variable of type `Web3`.
 const web3: Web3 = (global as any).web3;
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('MultiSigWalletWithTimeLock', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
@@ -46,6 +47,12 @@ describe('MultiSigWalletWithTimeLock', () => {
         initialSecondsTimeLocked = secondsTimeLocked.toNumber();
         const rpcUrl = `http://${truffleConf.networks.development.host}:${truffleConf.networks.development.port}`;
         rpc = new RPC(rpcUrl);
+    });
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
     });
 
     describe('changeTimeLock', () => {

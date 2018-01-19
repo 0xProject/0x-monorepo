@@ -1,5 +1,7 @@
 import { ZeroEx } from '0x.js';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
@@ -10,28 +12,40 @@ import { ContractInstance } from '../util/types';
 import { chaiSetup } from './utils/chai_setup';
 
 const { DummyToken } = new Artifacts(artifacts);
+// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
+// with type `any` to a variable of type `Web3`.
 const web3: Web3 = (global as any).web3;
 chaiSetup.configure();
 const expect = chai.expect;
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
-contract('UnlimitedAllowanceToken', (accounts: string[]) => {
+describe('UnlimitedAllowanceToken', () => {
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+    let owner: string;
+    let spender: string;
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     const zeroEx = new ZeroEx(web3.currentProvider, config);
-    const owner = accounts[0];
-    const spender = accounts[1];
 
     const MAX_MINT_VALUE = new BigNumber(100000000000000000000);
     let tokenAddress: string;
     let token: ContractInstance;
 
-    beforeEach(async () => {
+    before(async () => {
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        owner = accounts[0];
+        spender = accounts[1];
         token = await DummyToken.new({ from: owner });
         await token.mint(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });
-
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('transfer', () => {
         it('should transfer balance from sender to receiver', async () => {
             const receiver = spender;
