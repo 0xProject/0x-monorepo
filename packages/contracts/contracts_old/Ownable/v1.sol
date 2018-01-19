@@ -25,4 +25,3 @@ contract Ownable {
         }
     }
 }
-

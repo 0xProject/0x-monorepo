@@ -1,6 +1,6 @@
 pragma solidity 0.4.18;
 
-contract Token_v2 {
+contract Token {
 
     /// @notice send `_value` token to `_to` from `msg.sender`
     /// @param _to The address of the recipient
@@ -33,4 +33,3 @@ contract Token_v2 {
     event Transfer(address indexed _from, address indexed _to, uint _value);
     event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
-

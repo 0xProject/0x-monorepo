@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.11;
 
-import "./MultiSigWallet.sol";
+import "../MultiSigWallet/MultiSigWallet.sol";
 
 /// @title Multisignature wallet with time lock- Allows multiple parties to execute a transaction after a time lock has passed.
 /// @author Amir Bandeali - <amir@0xProject.com>
@@ -130,4 +130,3 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
         ConfirmationTimeSet(transactionId, confirmationTime);
     }
 }
-

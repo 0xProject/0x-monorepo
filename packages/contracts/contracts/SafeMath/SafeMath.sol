@@ -1,6 +1,6 @@
 pragma solidity 0.4.18;
 
-contract SafeMath_v2 {
+contract SafeMath {
     function safeMul(uint a, uint b)
         internal
         pure
@@ -71,4 +71,3 @@ contract SafeMath_v2 {
         return a < b ? a : b;
     }
 }
-

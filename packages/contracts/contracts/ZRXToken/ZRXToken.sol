@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.11;
 
-import "./UnlimitedAllowanceToken.sol";
+import "../../contracts_old/UnlimitedAllowanceToken/v1.sol";
 
 contract ZRXToken is UnlimitedAllowanceToken {
 
@@ -31,4 +31,3 @@ contract ZRXToken is UnlimitedAllowanceToken {
         balances[msg.sender] = totalSupply;
     }
 }
-

@@ -1,14 +1,14 @@
-pragma solidity ^0.4.11;
+pragma solidity 0.4.18;
 
-import "./../tokens/UnlimitedAllowanceToken.sol";
-import "./../utils/SafeMath.sol";
+import "../UnlimitedAllowanceToken/UnlimitedAllowanceToken.sol";
+import "../SafeMath/SafeMath.sol";
 
 /*
  * Mintable
  * Base contract that creates a mintable UnlimitedAllowanceToken
  */
 contract Mintable is UnlimitedAllowanceToken, SafeMath {
-    function mint(uint _value) 
+    function mint(uint _value)
         public
     {
         require(_value <= 100000000000000000000);
@@ -16,4 +16,3 @@ contract Mintable is UnlimitedAllowanceToken, SafeMath {
         totalSupply = safeAdd(totalSupply, _value);
     }
 }
-

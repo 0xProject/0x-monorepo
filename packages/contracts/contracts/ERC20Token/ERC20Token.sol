@@ -1,14 +1,14 @@
 pragma solidity 0.4.18;
 
-import "./Token_v2.sol";
+import "../Token/Token.sol";
 
-contract ERC20Token is Token_v2 {
+contract ERC20Token is Token {
 
     function transfer(address _to, uint _value)
         public
-        returns (bool) 
+        returns (bool)
     {
-        require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]); 
+        require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         Transfer(msg.sender, _to, _value);
@@ -16,10 +16,10 @@ contract ERC20Token is Token_v2 {
     }
 
     function transferFrom(address _from, address _to, uint _value)
-        public 
-        returns (bool) 
+        public
+        returns (bool)
     {
-        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]); 
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
@@ -27,7 +27,7 @@ contract ERC20Token is Token_v2 {
         return true;
     }
 
-    function approve(address _spender, uint _value) 
+    function approve(address _spender, uint _value)
         public
         returns (bool)
     {
@@ -44,7 +44,7 @@ contract ERC20Token is Token_v2 {
         return balances[_owner];
     }
 
-    function allowance(address _owner, address _spender) 
+    function allowance(address _owner, address _spender)
         public
         view
         returns (uint)
@@ -56,4 +56,3 @@ contract ERC20Token is Token_v2 {
     mapping (address => mapping (address => uint)) allowed;
     uint public totalSupply;
 }
-

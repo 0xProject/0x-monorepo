@@ -1,12 +1,12 @@
 pragma solidity ^0.4.11;
 
-import "./../tokens/StandardToken.sol";
+import "../StandardToken/StandardToken.sol";
 
 contract MaliciousToken is StandardToken {
     uint8 stateToUpdate = 1;  // Not null so that change only requires 5000 gas
 
-    function updateState() 
-        internal 
+    function updateState()
+        internal
     {
         stateToUpdate++;
     }
@@ -29,4 +29,3 @@ contract MaliciousToken is StandardToken {
         return allowed[_owner][_spender];
     }
 }
-
