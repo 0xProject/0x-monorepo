@@ -189,8 +189,8 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
         const tokenWithSymbolExists = !_.isUndefined(_.find(tokens, { symbol }));
         if (symbol === '') {
             symbolErrText = 'Symbol is required';
-        } else if (!this._isLetters(symbol)) {
-            symbolErrText = 'Can only include letters';
+        } else if (!this._isAlphanumeric(symbol)) {
+            symbolErrText = 'Can only include alphanumeric characters';
         } else if (symbol.length > maxLength) {
             symbolErrText = `Max length is ${maxLength}`;
         } else if (tokenWithSymbolExists) {
@@ -231,7 +231,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
     private _isInteger(input: string) {
         return /^[0-9]+$/i.test(input);
     }
-    private _isLetters(input: string) {
-        return /^[a-zA-Z]+$/i.test(input);
+    private _isAlphanumeric(input: string) {
+        return /^[a-zA-Z0-9]+$/i.test(input);
     }
 }
