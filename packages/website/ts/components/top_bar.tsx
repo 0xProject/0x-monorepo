@@ -168,7 +168,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     )}
                     {this.props.blockchainIsLoaded &&
-                        _.isEmpty(this.props.userAddress) && (
+                        !_.isEmpty(this.props.userAddress) && (
                             <div className="col col-5 sm-hide xs-hide">{this._renderUser()}</div>
                         )}
                     <div className={`col ${isFullWidthPage ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}>
