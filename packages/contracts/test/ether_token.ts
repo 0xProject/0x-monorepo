@@ -3,8 +3,8 @@ import { BigNumber, promisify } from '@0xproject/utils';
 import * as chai from 'chai';
 import Web3 = require('web3');
 
-import { Artifacts } from '../../util/artifacts';
-import { constants } from '../../util/constants';
+import { Artifacts } from '../util/artifacts';
+import { constants } from '../util/constants';
 
 import { chaiSetup } from './utils/chai_setup';
 

@@ -1,21 +1,36 @@
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import * as Web3 from 'web3';
 
-import { Artifacts } from '../../../util/artifacts';
-import { Balances } from '../../../util/balances';
-import { constants } from '../../../util/constants';
-import { ContractInstance } from '../../../util/types';
+import { Artifacts } from '../../util/artifacts';
+import { Balances } from '../../util/balances';
+import { constants } from '../../util/constants';
+import { ContractInstance } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const { TokenTransferProxy, DummyToken, TokenRegistry } = new Artifacts(artifacts);
+// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
+// with type `any` to a variable of type `Web3`.
+const web3: Web3 = (global as any).web3;
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
-contract('TokenTransferProxy', (accounts: string[]) => {
+describe('TokenTransferProxy', () => {
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+    let accounts: string[];
+    let owner: string;
+    let notAuthorized: string;
+    const config = {
+        networkId: constants.TESTRPC_NETWORK_ID,
+    };
+    before(async () => {
+        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        owner = notAuthorized = accounts[0];
+    });
     const INIT_BAL = 100000000;
     const INIT_ALLOW = 100000000;
-
-    const owner = accounts[0];
-    const notAuthorized = owner;
 
     let tokenTransferProxy: ContractInstance;
     let tokenRegistry: ContractInstance;
@@ -41,6 +56,12 @@ contract('TokenTransferProxy', (accounts: string[]) => {
             }),
             rep.setBalance(accounts[1], INIT_BAL, { from: owner }),
         ]);
+    });
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
     });
 
     describe('transferFrom', () => {

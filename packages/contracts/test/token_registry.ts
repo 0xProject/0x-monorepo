@@ -3,10 +3,10 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { Artifacts } from '../../util/artifacts';
-import { constants } from '../../util/constants';
-import { TokenRegWrapper } from '../../util/token_registry_wrapper';
-import { ContractInstance } from '../../util/types';
+import { Artifacts } from '../util/artifacts';
+import { constants } from '../util/constants';
+import { TokenRegWrapper } from '../util/token_registry_wrapper';
+import { ContractInstance } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 

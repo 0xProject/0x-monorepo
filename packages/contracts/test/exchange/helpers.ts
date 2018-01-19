@@ -3,10 +3,10 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
-import { Artifacts } from '../../../util/artifacts';
-import { ExchangeWrapper } from '../../../util/exchange_wrapper';
-import { Order } from '../../../util/order';
-import { OrderFactory } from '../../../util/order_factory';
+import { Artifacts } from '../../util/artifacts';
+import { ExchangeWrapper } from '../../util/exchange_wrapper';
+import { Order } from '../../util/order';
+import { OrderFactory } from '../../util/order_factory';
 import { chaiSetup } from '../utils/chai_setup';
 
 chaiSetup.configure();

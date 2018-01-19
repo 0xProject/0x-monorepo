@@ -3,13 +3,13 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { Artifacts } from '../../../util/artifacts';
-import { Balances } from '../../../util/balances';
-import { constants } from '../../../util/constants';
-import { ExchangeWrapper } from '../../../util/exchange_wrapper';
-import { Order } from '../../../util/order';
-import { OrderFactory } from '../../../util/order_factory';
-import { BalancesByOwner, ContractInstance } from '../../../util/types';
+import { Artifacts } from '../../util/artifacts';
+import { Balances } from '../../util/balances';
+import { constants } from '../../util/constants';
+import { ExchangeWrapper } from '../../util/exchange_wrapper';
+import { Order } from '../../util/order';
+import { OrderFactory } from '../../util/order_factory';
+import { BalancesByOwner, ContractInstance } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
 chaiSetup.configure();

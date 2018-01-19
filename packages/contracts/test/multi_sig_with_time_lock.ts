@@ -4,11 +4,11 @@ import * as chai from 'chai';
 import Web3 = require('web3');
 
 import * as multiSigWalletJSON from '../../build/contracts/MultiSigWalletWithTimeLock.json';
-import * as truffleConf from '../../truffle.js';
-import { Artifacts } from '../../util/artifacts';
-import { constants } from '../../util/constants';
-import { MultiSigWrapper } from '../../util/multi_sig_wrapper';
-import { ContractInstance } from '../../util/types';
+import * as truffleConf from '../truffle.js';
+import { Artifacts } from '../util/artifacts';
+import { constants } from '../util/constants';
+import { MultiSigWrapper } from '../util/multi_sig_wrapper';
+import { ContractInstance } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 

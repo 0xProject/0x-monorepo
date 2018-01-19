@@ -4,14 +4,14 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
-import { Artifacts } from '../../../util/artifacts';
-import { Balances } from '../../../util/balances';
-import { constants } from '../../../util/constants';
-import { crypto } from '../../../util/crypto';
-import { ExchangeWrapper } from '../../../util/exchange_wrapper';
-import { Order } from '../../../util/order';
-import { OrderFactory } from '../../../util/order_factory';
-import { BalancesByOwner, ContractInstance, ExchangeContractErrs } from '../../../util/types';
+import { Artifacts } from '../../util/artifacts';
+import { Balances } from '../../util/balances';
+import { constants } from '../../util/constants';
+import { crypto } from '../../util/crypto';
+import { ExchangeWrapper } from '../../util/exchange_wrapper';
+import { Order } from '../../util/order';
+import { OrderFactory } from '../../util/order_factory';
+import { BalancesByOwner, ContractInstance, ExchangeContractErrs } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
 chaiSetup.configure();

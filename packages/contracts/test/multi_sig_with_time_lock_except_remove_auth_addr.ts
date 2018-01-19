@@ -1,11 +1,11 @@
 import * as chai from 'chai';
 
 import * as tokenTransferProxyJSON from '../../build/contracts/TokenTransferProxy.json';
-import { Artifacts } from '../../util/artifacts';
-import { constants } from '../../util/constants';
-import { crypto } from '../../util/crypto';
-import { MultiSigWrapper } from '../../util/multi_sig_wrapper';
-import { ContractInstance, TransactionDataParams } from '../../util/types';
+import { Artifacts } from '../util/artifacts';
+import { constants } from '../util/constants';
+import { crypto } from '../util/crypto';
+import { MultiSigWrapper } from '../util/multi_sig_wrapper';
+import { ContractInstance, TransactionDataParams } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 const { TokenTransferProxy, MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress } = new Artifacts(artifacts);

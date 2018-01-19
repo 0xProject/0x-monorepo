@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 
-import { constants } from '../../../util/constants';
-import { ContractInstance } from '../../../util/types';
+import { constants } from '../../util/constants';
+import { ContractInstance } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 
 chaiSetup.configure();
