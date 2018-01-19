@@ -1,4 +1,4 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import 'mocha';
@@ -11,10 +11,9 @@ import { DoneCallback } from '../src/types';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { assertNodeCallbackError } from './utils/report_callback_errors';
-import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('SubscriptionTest', () => {
     let web3: Web3;

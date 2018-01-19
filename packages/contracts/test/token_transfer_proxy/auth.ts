@@ -1,7 +1,6 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import * as Web3 from 'web3';
 
 import { constants } from '../../util/constants';
 import { ContractInstance } from '../../util/types';
@@ -10,10 +9,8 @@ import { chaiSetup } from '../utils/chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 const TokenTransferProxy = artifacts.require('./db/TokenTransferProxy.sol');
-// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
-// with type `any` to a variable of type `Web3`.
-const web3: Web3 = (global as any).web3;
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('TokenTransferProxy', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);

@@ -1,8 +1,7 @@
-import { BlockchainLifecycle, RPC } from '@0xproject/dev-utils';
-import { BigNumber, promisify } from '@0xproject/utils';
+import { BlockchainLifecycle, devConstants, RPC, web3Factory } from '@0xproject/dev-utils';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import * as Web3 from 'web3';
 
 import * as multiSigWalletJSON from '../../build/contracts/MultiSigWalletWithTimeLock.json';
 import * as truffleConf from '../truffle.js';
@@ -19,10 +18,8 @@ const MULTI_SIG_ABI = (multiSigWalletJSON as any).abi;
 chaiSetup.configure();
 const expect = chai.expect;
 
-// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
-// with type `any` to a variable of type `Web3`.
-const web3: Web3 = (global as any).web3;
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('MultiSigWalletWithTimeLock', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
@@ -79,8 +76,9 @@ describe('MultiSigWalletWithTimeLock', () => {
         it('should set confirmation time with enough confirmations', async () => {
             const res = await multiSig.confirmTransaction(txId, { from: owners[1] });
             expect(res.logs).to.have.length(2);
-            const blockNum = await promisify<number>(web3.eth.getBlockNumber)();
-            const blockInfo = await promisify<Web3.BlockWithoutTransactionData>(web3.eth.getBlock)(blockNum);
+
+            const blockNum = await web3Wrapper.getBlockNumberAsync();
+            const blockInfo = await web3Wrapper.getBlockAsync(blockNum);
             const timestamp = new BigNumber(blockInfo.timestamp);
             const confirmationTimeBigNum = new BigNumber(await multiSig.confirmationTimes.call(txId));
 

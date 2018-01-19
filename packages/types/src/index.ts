@@ -25,3 +25,8 @@ export interface TransactionReceipt {
     contractAddress: string | null;
     logs: Web3.LogEntry[];
 }
+
+export interface JSONRPCPayload {
+    params: any[];
+    method: string;
+}

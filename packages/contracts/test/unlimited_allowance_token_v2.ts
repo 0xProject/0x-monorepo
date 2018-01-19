@@ -1,9 +1,8 @@
 import { ZeroEx } from '0x.js';
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import * as Web3 from 'web3';
 
 import { Artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
@@ -14,8 +13,8 @@ import { chaiSetup } from './utils/chai_setup';
 const { DummyTokenV2 } = new Artifacts(artifacts);
 chaiSetup.configure();
 const expect = chai.expect;
-const web3: Web3 = (global as any).web3;
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('UnlimitedAllowanceTokenV2', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);

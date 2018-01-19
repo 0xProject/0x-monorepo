@@ -1,9 +1,8 @@
 import { ZeroEx } from '0x.js';
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import Web3 = require('web3');
 
 import { Artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
@@ -14,10 +13,8 @@ import { chaiSetup } from './utils/chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 const { Exchange, ZRXToken } = new Artifacts(artifacts);
-// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
-// with type `any` to a variable of type `Web3`.
-const web3: Web3 = (global as any).web3;
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('ZRXToken', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
@@ -140,10 +137,10 @@ describe('ZRXToken', () => {
             const initOwnerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = MAX_UINT;
-            let txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, initSpenderAllowance, {
+            await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, initSpenderAllowance, {
                 gasLimit: constants.MAX_TOKEN_APPROVE_GAS,
             });
-            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer, {
+            await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
             });
 
@@ -156,8 +153,8 @@ describe('ZRXToken', () => {
             const initSpenderBalance = await zeroEx.token.getBalanceAsync(zrxAddress, spender);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
-            let txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, initSpenderAllowance);
-            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer, {
+            await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, initSpenderAllowance);
+            await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
             });
 
@@ -171,8 +168,8 @@ describe('ZRXToken', () => {
         it('should modify allowance if spender has sufficient allowance less than 2^256 - 1', async () => {
             const initOwnerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
             const amountToTransfer = initOwnerBalance;
-            let txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer);
-            txHash = await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer, {
+            await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer);
+            await zeroEx.token.transferFromAsync(zrxAddress, owner, spender, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_TRANSFERFROM_GAS,
             });
 

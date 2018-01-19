@@ -1,4 +1,4 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -10,9 +10,8 @@ import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, Zero
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { TokenUtils } from './utils/token_utils';
-import { web3Factory } from './utils/web3_factory';
 
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 chaiSetup.configure();
 const expect = chai.expect;
 

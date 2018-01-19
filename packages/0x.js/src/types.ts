@@ -267,11 +267,6 @@ export type SyncMethod = (...args: any[]) => any;
  */
 export type Web3Provider = Web3.Provider;
 
-export interface JSONRPCPayload {
-    params: any[];
-    method: string;
-}
-
 /*
  * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
  * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Defaults: 200

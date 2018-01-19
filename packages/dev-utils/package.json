@@ -21,6 +21,7 @@
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.5",
         "@types/lodash": "^4.14.86",
+        "@0xproject/types": "^0.1.4",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
@@ -32,6 +33,8 @@
         "@0xproject/utils": "^0.2.3",
         "ethereumjs-util": "^5.1.2",
         "lodash": "^4.17.4",
-        "request-promise-native": "^1.0.5"
+        "request-promise-native": "^1.0.5",
+        "web3": "^0.20.0",
+        "web3-provider-engine": "^13.0.1"
     }
 }
