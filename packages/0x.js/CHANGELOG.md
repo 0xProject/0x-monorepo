@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.30.1 - _January 18, 2018_
+
+    * Fix a bug allowing negative fill values  (#212)
+
 ## v0.30.0 - _January 17, 2018_
 
     * Add an error parameter to the order watcher callback (#312)

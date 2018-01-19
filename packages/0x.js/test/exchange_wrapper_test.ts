@@ -390,6 +390,29 @@ describe('ExchangeWrapper', () => {
                     ).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
                 });
             });
+            describe('negative fill amount', async () => {
+                let signedOrder: SignedOrder;
+                const negativeFillTakerAmount = new BigNumber(-100);
+                beforeEach(async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerTokenAddress,
+                        takerTokenAddress,
+                        makerAddress,
+                        takerAddress,
+                        fillableAmount,
+                    );
+                });
+                it('should not allow the exchange wrapper to fill if amount is negative', async () => {
+                    return expect(
+                        zeroEx.exchange.fillOrderAsync(
+                            signedOrder,
+                            negativeFillTakerAmount,
+                            shouldThrowOnInsufficientBalanceOrAllowance,
+                            takerAddress,
+                        ),
+                    ).to.be.rejected();
+                });
+            });
         });
         describe('#batchFillOrdersAsync', () => {
             let signedOrder: SignedOrder;
@@ -496,6 +519,30 @@ describe('ExchangeWrapper', () => {
                             },
                         ),
                     ).to.not.be.rejectedWith(ExchangeContractErrs.OrderFillAmountZero);
+                });
+            });
+            describe('negative batch fill amount', async () => {
+                beforeEach(async () => {
+                    const negativeFillTakerAmount = new BigNumber(-100);
+                    orderFillBatch = [
+                        {
+                            signedOrder,
+                            takerTokenFillAmount,
+                        },
+                        {
+                            signedOrder: anotherSignedOrder,
+                            takerTokenFillAmount: negativeFillTakerAmount,
+                        },
+                    ];
+                });
+                it('should not allow the exchange wrapper to batch fill if any amount is negative', async () => {
+                    return expect(
+                        zeroEx.exchange.batchFillOrdersAsync(
+                            orderFillBatch,
+                            shouldThrowOnInsufficientBalanceOrAllowance,
+                            takerAddress,
+                        ),
+                    ).to.be.rejected();
                 });
             });
         });
