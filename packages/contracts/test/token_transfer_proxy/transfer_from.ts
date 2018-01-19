@@ -22,13 +22,6 @@ describe('TokenTransferProxy', () => {
     let accounts: string[];
     let owner: string;
     let notAuthorized: string;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
-    before(async () => {
-        accounts = await web3Wrapper.getAvailableAddressesAsync();
-        owner = notAuthorized = accounts[0];
-    });
     const INIT_BAL = 100000000;
     const INIT_ALLOW = 100000000;
 
@@ -38,6 +31,8 @@ describe('TokenTransferProxy', () => {
     let dmyBalances: Balances;
 
     before(async () => {
+        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        owner = notAuthorized = accounts[0];
         [tokenTransferProxy, tokenRegistry] = await Promise.all([
             TokenTransferProxy.deployed(),
             TokenRegistry.deployed(),
