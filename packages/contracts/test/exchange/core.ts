@@ -1,5 +1,7 @@
 import { ZeroEx } from '0x.js';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
@@ -21,13 +23,14 @@ const { Exchange, TokenTransferProxy, DummyToken, TokenRegistry, MaliciousToken 
 // In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
 // with type `any` to a variable of type `Web3`.
 const web3: Web3 = (global as any).web3;
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
-contract('Exchange', (accounts: string[]) => {
-    const maker = accounts[0];
-    const tokenOwner = accounts[0];
-    const taker = accounts[1] || accounts[accounts.length - 1];
-    const feeRecipient = accounts[2] || accounts[accounts.length - 1];
-
+describe('Exchange', () => {
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+    let maker: string;
+    let tokenOwner: string;
+    let taker: string;
+    let feeRecipient: string;
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 
@@ -46,6 +49,11 @@ contract('Exchange', (accounts: string[]) => {
     let zeroEx: ZeroEx;
 
     before(async () => {
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        maker = accounts[0];
+        tokenOwner = accounts[0];
+        taker = accounts[1] || accounts[accounts.length - 1];
+        feeRecipient = accounts[2] || accounts[accounts.length - 1];
         [tokenRegistry, exchange] = await Promise.all([TokenRegistry.deployed(), Exchange.deployed()]);
         exWrapper = new ExchangeWrapper(exchange);
         zeroEx = new ZeroEx(web3.currentProvider, {
@@ -105,7 +113,12 @@ contract('Exchange', (accounts: string[]) => {
             zrx.setBalance(taker, INITIAL_BALANCE, { from: tokenOwner }),
         ]);
     });
-
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('internal functions', () => {
         it('should include transferViaTokenTransferProxy', () => {
             expect(exchange.transferViaTokenTransferProxy).to.be.undefined();

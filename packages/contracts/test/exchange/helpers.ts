@@ -1,9 +1,13 @@
 import { ZeroEx } from '0x.js';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
+import * as Web3 from 'web3';
 
 import { Artifacts } from '../../util/artifacts';
+import { constants } from '../../util/constants';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { Order } from '../../util/order';
 import { OrderFactory } from '../../util/order_factory';
@@ -13,16 +17,24 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 const { Exchange, TokenRegistry } = new Artifacts(artifacts);
+// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
+// with type `any` to a variable of type `Web3`.
+const web3: Web3 = (global as any).web3;
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
-contract('Exchange', (accounts: string[]) => {
-    const maker = accounts[0];
-    const feeRecipient = accounts[1] || accounts[accounts.length - 1];
+describe('Exchange', () => {
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+    let maker: string;
+    let feeRecipient: string;
 
     let order: Order;
     let exchangeWrapper: ExchangeWrapper;
     let orderFactory: OrderFactory;
 
     before(async () => {
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        maker = accounts[0];
+        feeRecipient = accounts[1] || accounts[accounts.length - 1];
         const [tokenRegistry, exchange] = await Promise.all([TokenRegistry.deployed(), Exchange.deployed()]);
         exchangeWrapper = new ExchangeWrapper(exchange);
         const [repAddress, dgdAddress] = await Promise.all([
@@ -41,12 +53,15 @@ contract('Exchange', (accounts: string[]) => {
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
         orderFactory = new OrderFactory(defaultOrderParams);
-    });
-
-    beforeEach(async () => {
         order = await orderFactory.newSignedOrderAsync();
     });
 
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('getOrderHash', () => {
         it('should output the correct orderHash', async () => {
             const orderHashHex = await exchangeWrapper.getOrderHashAsync(order);
