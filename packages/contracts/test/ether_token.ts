@@ -1,7 +1,9 @@
 import { ZeroEx, ZeroExError } from '0x.js';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { BigNumber, promisify } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import Web3 = require('web3');
+import * as Web3 from 'web3';
 
 import { Artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
@@ -16,28 +18,36 @@ const expect = chai.expect;
 // In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
 // with type `any` to a variable of type `Web3`.
 const web3: Web3 = (global as any).web3;
+const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
-contract('EtherToken', (accounts: string[]) => {
-    const account = accounts[0];
+describe.only('EtherToken', () => {
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+    let accounts: string[];
+    let account: string;
     const gasPrice = ZeroEx.toBaseUnitAmount(new BigNumber(20), 9);
     let zeroEx: ZeroEx;
     let etherTokenAddress: string;
-
-    before(async () => {
-        etherTokenAddress = EtherToken.address;
-        zeroEx = new ZeroEx(web3.currentProvider, {
-            gasPrice,
-            networkId: constants.TESTRPC_NETWORK_ID,
-        });
-    });
-
     const sendTransactionAsync = promisify<string>(web3.eth.sendTransaction);
     const getEthBalanceAsync = async (owner: string) => {
         const balanceStr = await promisify<string>(web3.eth.getBalance)(owner);
         const balance = new BigNumber(balanceStr);
         return balance;
     };
-
+    before(async () => {
+        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        account = accounts[0];
+        etherTokenAddress = EtherToken.address;
+        zeroEx = new ZeroEx(web3.currentProvider, {
+            gasPrice,
+            networkId: constants.TESTRPC_NETWORK_ID,
+        });
+    });
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('deposit', () => {
         it('should throw if caller attempts to deposit more Ether than caller balance', async () => {
             const initEthBalance = await getEthBalanceAsync(account);
@@ -77,6 +87,8 @@ contract('EtherToken', (accounts: string[]) => {
         });
 
         it('should convert ether tokens to ether with sufficient balance', async () => {
+            const ethToDeposit = new BigNumber(web3.toWei(1, 'ether'));
+            await zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
             const initEthBalance = await getEthBalanceAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;
