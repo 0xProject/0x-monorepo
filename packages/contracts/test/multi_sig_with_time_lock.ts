@@ -1,7 +1,8 @@
-import { RPC } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, RPC } from '@0xproject/dev-utils';
 import { BigNumber, promisify } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
-import Web3 = require('web3');
+import * as Web3 from 'web3';
 
 import * as multiSigWalletJSON from '../../build/contracts/MultiSigWalletWithTimeLock.json';
 import * as truffleConf from '../truffle.js';
@@ -22,8 +23,13 @@ const expect = chai.expect;
 // with type `any` to a variable of type `Web3`.
 const web3: Web3 = (global as any).web3;
 
-contract('MultiSigWalletWithTimeLock', (accounts: string[]) => {
-    const owners = [accounts[0], accounts[1]];
+describe('MultiSigWalletWithTimeLock', () => {
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+    let owners: string[];
+    before(async () => {
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        owners = [accounts[0], accounts[1]];
+    });
     const SECONDS_TIME_LOCKED = 10000;
 
     let multiSig: ContractInstance;
