@@ -23,7 +23,6 @@ const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-    let accounts: string[];
     let owners: string[];
     const requiredApprovals = 2;
     const SECONDS_TIME_LOCKED = 1000000;
@@ -38,7 +37,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
 
     let validDestination: string;
     before(async () => {
-        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owners = [accounts[0], accounts[1]];
         authorizedAddress = `0x${crypto
             .solSHA3([accounts[0]])

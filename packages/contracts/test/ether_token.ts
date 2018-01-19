@@ -22,7 +22,6 @@ const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('EtherToken', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-    let accounts: string[];
     let account: string;
     const gasPrice = ZeroEx.toBaseUnitAmount(new BigNumber(20), 9);
     let zeroEx: ZeroEx;
@@ -34,7 +33,7 @@ describe('EtherToken', () => {
         return balance;
     };
     before(async () => {
-        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
         account = accounts[0];
         etherTokenAddress = EtherToken.address;
         zeroEx = new ZeroEx(web3.currentProvider, {

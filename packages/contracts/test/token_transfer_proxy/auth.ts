@@ -17,13 +17,12 @@ const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
 
 describe('TokenTransferProxy', () => {
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-    let accounts: string[];
     let owner: string;
     let notOwner: string;
     let address: string;
     let tokenTransferProxy: ContractInstance;
     before(async () => {
-        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = address = accounts[0];
         notOwner = accounts[1];
         tokenTransferProxy = await TokenTransferProxy.deployed();
