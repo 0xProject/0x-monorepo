@@ -1,7 +1,11 @@
 import * as _ from 'lodash';
 import 'reflect-metadata';
 
-import { AsyncMethod, SyncMethod, ZeroExError, ParameterTransformer } from '../types';
+import {
+    AsyncMethod,
+    ParameterTransformer,
+    SyncMethod,
+    ZeroExError } from '../types';
 
 import { constants } from './constants';
 
