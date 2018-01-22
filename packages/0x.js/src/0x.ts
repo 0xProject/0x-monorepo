@@ -285,18 +285,18 @@ export class ZeroEx {
      * @param   timeoutMs         How long (in ms) to poll for transaction mined until aborting.
      * @return  Transaction receipt with decoded log args.
      */
-    public async awaitTransactionMinedAsync<ArgsType>(
+    public async awaitTransactionMinedAsync(
         txHash: string,
         pollingIntervalMs = 1000,
         timeoutMs?: number,
-    ): Promise<TransactionReceiptWithDecodedLogs<ArgsType>> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         let timeoutExceeded = false;
         if (timeoutMs) {
             setTimeout(() => (timeoutExceeded = true), timeoutMs);
         }
 
         const txReceiptPromise = new Promise(
-            (resolve: (receipt: TransactionReceiptWithDecodedLogs<ArgsType>) => void, reject) => {
+            (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
                 const intervalId = intervalUtils.setAsyncExcludingInterval(
                     async () => {
                         if (timeoutExceeded) {
@@ -311,7 +311,7 @@ export class ZeroEx {
                                 transactionReceipt.logs,
                                 this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
                             );
-                            const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs<ArgsType> = {
+                            const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
                                 ...transactionReceipt,
                                 logs: logsWithDecodedArgs,
                             };

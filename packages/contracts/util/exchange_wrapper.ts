@@ -20,7 +20,7 @@ export class ExchangeWrapper {
             fillTakerTokenAmount?: BigNumber;
             shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
         } = {},
-    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = order.createFill(shouldThrowOnInsufficientBalanceOrAllowance, opts.fillTakerTokenAmount);
         const txHash = await this._exchange.fillOrder(
@@ -42,7 +42,7 @@ export class ExchangeWrapper {
         order: Order,
         from: string,
         opts: { cancelTakerTokenAmount?: BigNumber } = {},
-    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = order.createCancel(opts.cancelTakerTokenAmount);
         const txHash = await this._exchange.cancelOrder(
             params.orderAddresses,
@@ -59,7 +59,7 @@ export class ExchangeWrapper {
         order: Order,
         from: string,
         opts: { fillTakerTokenAmount?: BigNumber } = {},
-    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
         const params = order.createFill(shouldThrowOnInsufficientBalanceOrAllowance, opts.fillTakerTokenAmount);
         const txHash = await this._exchange.fillOrKillOrder(
@@ -83,7 +83,7 @@ export class ExchangeWrapper {
             fillTakerTokenAmounts?: BigNumber[];
             shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
         } = {},
-    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = formatters.createBatchFill(
             orders,
@@ -109,7 +109,7 @@ export class ExchangeWrapper {
         orders: Order[],
         from: string,
         opts: { fillTakerTokenAmounts?: BigNumber[] } = {},
-    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchFill(orders, undefined, opts.fillTakerTokenAmounts);
         const txHash = await this._exchange.batchFillOrKillOrders(
             params.orderAddresses,
@@ -132,7 +132,7 @@ export class ExchangeWrapper {
             fillTakerTokenAmount?: BigNumber;
             shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
         } = {},
-    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = formatters.createFillUpTo(
             orders,
@@ -158,7 +158,7 @@ export class ExchangeWrapper {
         orders: Order[],
         from: string,
         opts: { cancelTakerTokenAmounts?: BigNumber[] } = {},
-    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchCancel(orders, opts.cancelTakerTokenAmounts);
         const txHash = await this._exchange.batchCancelOrders(
             params.orderAddresses,

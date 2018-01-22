@@ -53,6 +53,6 @@ export enum SolidityTypes {
     Uint = 'uint',
 }
 
-export interface TransactionReceiptWithDecodedLogs<ArgsType> extends TransactionReceipt {
-    logs: Array<LogWithDecodedArgs<ArgsType> | Web3.LogEntry>;
+export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
+    logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>;
 }
