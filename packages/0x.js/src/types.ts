@@ -404,11 +404,6 @@ export interface OrderStateInvalid {
     error: ExchangeContractErrs;
 }
 
-export interface ParameterTransformer {
-    parameterIndex: number;
-    transformer: (value: any) => any;
-}
-
 export type OrderState = OrderStateValid | OrderStateInvalid;
 
 export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;

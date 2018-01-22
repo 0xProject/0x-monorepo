@@ -1,13 +1,14 @@
 import * as _ from 'lodash';
 import 'reflect-metadata';
 
-import {
-    AsyncMethod,
-    ParameterTransformer,
-    SyncMethod,
-    ZeroExError } from '../types';
+import { AsyncMethod, SyncMethod, ZeroExError } from '../types';
 
 import { constants } from './constants';
+
+interface ParameterTransformer {
+    parameterIndex: number;
+    transform: (value: any) => any;
+}
 
 type ErrorTransformer = (err: Error) => Error;
 
@@ -98,17 +99,17 @@ const addParameterTransformer = (target: any, key: string, transformer: Paramete
 };
 
 const ethereumAddressParameterDecorator = (target: any, key: string, parameterIndex: number) => {
-    const transformer = { parameterIndex, transformer: (value: string): string => value.toLowerCase() };
+    const transformer = { parameterIndex, transform: (value: string): string => value.toLowerCase() };
     addParameterTransformer(target, key, transformer);
 };
 
 const parameterTransformerMethodDecorator = (target: object, key: string, descriptor: TypedPropertyDescriptor<any>) => {
     const param_key = `parameter_transformer_${key}`;
-    const transformableParams = Reflect.getOwnMetadata(param_key, target, key) || [];
+    const transformableParams: ParameterTransformer[] = Reflect.getOwnMetadata(param_key, target, key) || [];
     return {
         value: (...args: any[]) => {
-            _.map(transformableParams, (pt: ParameterTransformer) => {
-                args[pt.parameterIndex] = pt.transformer(args[pt.parameterIndex]);
+            _.map(transformableParams, transformer => {
+                args[transformer.parameterIndex] = transformer.transform(args[transformer.parameterIndex]);
             });
             return descriptor.value.apply(target, args);
         },
