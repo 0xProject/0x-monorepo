@@ -148,6 +148,7 @@ export class ExchangeWrapper extends ContractWrapper {
         cancelledAmountInBaseUnits = new BigNumber(cancelledAmountInBaseUnits);
         return cancelledAmountInBaseUnits;
     }
+
     /**
      * Fills a signed order with an amount denominated in baseUnits of the taker token.
      * Since the order in which transactions are included in the next block is indeterminate, race-conditions
@@ -168,11 +169,12 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
+    @decorators.parameterTransformer
     public async fillOrderAsync(
         signedOrder: SignedOrder,
         fillTakerTokenAmount: BigNumber,
         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-        takerAddress: string,
+        @decorators.ethereumAddress takerAddress: string,
         orderTransactionOpts: OrderTransactionOpts = {},
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
