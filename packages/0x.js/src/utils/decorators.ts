@@ -91,29 +91,35 @@ const syncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
 // _.flow(f, g) = f ∘ g
 const zeroExErrorTransformer = _.flow(schemaErrorTransformer, contractCallErrorTransformer);
 
-const addParameterTransformer = (target: any, key: string, transformer: ParameterTransformer) => {
+const addParameterTransformer = (target: object, key: string | symbol, transformer: ParameterTransformer) => {
     const param_key = `parameter_transformer_${key}`;
     const transformableParams: ParameterTransformer[] = Reflect.getOwnMetadata(param_key, target, key) || [];
     transformableParams.push(transformer);
     Reflect.defineMetadata(param_key, transformableParams, target, key);
 };
 
-const ethereumAddressParameterDecorator = (target: any, key: string, parameterIndex: number) => {
+const ethereumAddressParameterDecorator = (target: object, key: string | symbol, parameterIndex: number) => {
     const transformer = { parameterIndex, transform: (value: string): string => value.toLowerCase() };
     addParameterTransformer(target, key, transformer);
 };
 
-const parameterTransformerMethodDecorator = (target: object, key: string, descriptor: TypedPropertyDescriptor<any>) => {
+const parameterTransformerMethodDecorator = (
+    target: object,
+    key: string | symbol,
+    descriptor: TypedPropertyDescriptor<any>,
+) => {
     const param_key = `parameter_transformer_${key}`;
     const transformableParams: ParameterTransformer[] = Reflect.getOwnMetadata(param_key, target, key) || [];
-    return {
-        value: (...args: any[]) => {
-            _.map(transformableParams, transformer => {
-                args[transformer.parameterIndex] = transformer.transform(args[transformer.parameterIndex]);
-            });
-            return descriptor.value.apply(target, args);
-        },
+    // Do not use arrow syntax here. Use a function expression in
+    // order to use the correct value of `this` in this method
+    // tslint:disable-next-line:only-arrow-functions
+    descriptor.value = function(...args: any[]) {
+        _.each(transformableParams, transformer => {
+            args[transformer.parameterIndex] = transformer.transform(args[transformer.parameterIndex]);
+        });
+        return descriptor.value.apply(this, args);
     };
+    return descriptor;
 };
 
 export const decorators = {
