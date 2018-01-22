@@ -11,7 +11,7 @@
         "build":
             "rm -rf ./lib; copyfiles ./build/**/* ./deploy/solc/solc_bin/* ./deploy/test/fixtures/contracts/**/* ./deploy/test/fixtures/contracts/* ./lib; tsc;",
         "test": "run-s build compile run_mocha",
-        "run_mocha": "mocha 'lib/test/**/*.js' --timeout 10000 --exit",
+        "run_mocha": "mocha 'lib/test/**/*.js' --timeout 10000 --bail --exit",
         "compile:comment":
             "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../deployer/lib/src/cli.js compile",
