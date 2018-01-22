@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.11;
 
-import "../../packages/StandardToken/StandardToken.sol";
+import "../../contracts/StandardToken/StandardToken.sol";
 
 contract UnlimitedAllowanceToken is StandardToken {
 
