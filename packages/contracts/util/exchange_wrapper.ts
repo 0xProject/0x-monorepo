@@ -1,14 +1,17 @@
+import { ExchangeContractEventArgs, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
+import * as Web3 from 'web3';
 
 import { formatters } from './formatters';
 import { Order } from './order';
-import { ContractInstance } from './types';
 
 export class ExchangeWrapper {
-    private _exchange: ContractInstance;
-    constructor(exchangeContractInstance: ContractInstance) {
+    private _exchange: Web3.ContractInstance;
+    private _zeroEx: ZeroEx;
+    constructor(exchangeContractInstance: Web3.ContractInstance, zeroEx: ZeroEx) {
         this._exchange = exchangeContractInstance;
+        this._zeroEx = zeroEx;
     }
     public async fillOrderAsync(
         order: Order,
@@ -17,10 +20,10 @@ export class ExchangeWrapper {
             fillTakerTokenAmount?: BigNumber;
             shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
         } = {},
-    ) {
+    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
         const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = order.createFill(shouldThrowOnInsufficientBalanceOrAllowance, opts.fillTakerTokenAmount);
-        const tx = await this._exchange.fillOrder(
+        const txHash = await this._exchange.fillOrder(
             params.orderAddresses,
             params.orderValues,
             params.fillTakerTokenAmount,
@@ -30,24 +33,36 @@ export class ExchangeWrapper {
             params.s,
             { from },
         );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }
-    public async cancelOrderAsync(order: Order, from: string, opts: { cancelTakerTokenAmount?: BigNumber } = {}) {
+    public async cancelOrderAsync(
+        order: Order,
+        from: string,
+        opts: { cancelTakerTokenAmount?: BigNumber } = {},
+    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
         const params = order.createCancel(opts.cancelTakerTokenAmount);
-        const tx = await this._exchange.cancelOrder(
+        const txHash = await this._exchange.cancelOrder(
             params.orderAddresses,
             params.orderValues,
             params.cancelTakerTokenAmount,
             { from },
         );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }
-    public async fillOrKillOrderAsync(order: Order, from: string, opts: { fillTakerTokenAmount?: BigNumber } = {}) {
+    public async fillOrKillOrderAsync(
+        order: Order,
+        from: string,
+        opts: { fillTakerTokenAmount?: BigNumber } = {},
+    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
         const params = order.createFill(shouldThrowOnInsufficientBalanceOrAllowance, opts.fillTakerTokenAmount);
-        const tx = await this._exchange.fillOrKillOrder(
+        const txHash = await this._exchange.fillOrKillOrder(
             params.orderAddresses,
             params.orderValues,
             params.fillTakerTokenAmount,
@@ -56,6 +71,8 @@ export class ExchangeWrapper {
             params.s,
             { from },
         );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }
@@ -66,14 +83,14 @@ export class ExchangeWrapper {
             fillTakerTokenAmounts?: BigNumber[];
             shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
         } = {},
-    ) {
+    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
         const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = formatters.createBatchFill(
             orders,
             shouldThrowOnInsufficientBalanceOrAllowance,
             opts.fillTakerTokenAmounts,
         );
-        const tx = await this._exchange.batchFillOrders(
+        const txHash = await this._exchange.batchFillOrders(
             params.orderAddresses,
             params.orderValues,
             params.fillTakerTokenAmounts,
@@ -83,6 +100,8 @@ export class ExchangeWrapper {
             params.s,
             { from },
         );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }
@@ -90,9 +109,9 @@ export class ExchangeWrapper {
         orders: Order[],
         from: string,
         opts: { fillTakerTokenAmounts?: BigNumber[] } = {},
-    ) {
+    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
         const params = formatters.createBatchFill(orders, undefined, opts.fillTakerTokenAmounts);
-        const tx = await this._exchange.batchFillOrKillOrders(
+        const txHash = await this._exchange.batchFillOrKillOrders(
             params.orderAddresses,
             params.orderValues,
             params.fillTakerTokenAmounts,
@@ -101,6 +120,8 @@ export class ExchangeWrapper {
             params.s,
             { from },
         );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }
@@ -111,14 +132,14 @@ export class ExchangeWrapper {
             fillTakerTokenAmount?: BigNumber;
             shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
         } = {},
-    ) {
+    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
         const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = formatters.createFillUpTo(
             orders,
             shouldThrowOnInsufficientBalanceOrAllowance,
             opts.fillTakerTokenAmount,
         );
-        const tx = await this._exchange.fillOrdersUpTo(
+        const txHash = await this._exchange.fillOrdersUpTo(
             params.orderAddresses,
             params.orderValues,
             params.fillTakerTokenAmount,
@@ -128,6 +149,8 @@ export class ExchangeWrapper {
             params.s,
             { from },
         );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }
@@ -135,14 +158,16 @@ export class ExchangeWrapper {
         orders: Order[],
         from: string,
         opts: { cancelTakerTokenAmounts?: BigNumber[] } = {},
-    ) {
+    ): Promise<TransactionReceiptWithDecodedLogs<ExchangeContractEventArgs>> {
         const params = formatters.createBatchCancel(orders, opts.cancelTakerTokenAmounts);
-        const tx = await this._exchange.batchCancelOrders(
+        const txHash = await this._exchange.batchCancelOrders(
             params.orderAddresses,
             params.orderValues,
             params.cancelTakerTokenAmounts,
             { from },
         );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }

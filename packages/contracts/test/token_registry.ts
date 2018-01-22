@@ -4,31 +4,30 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
+import * as Web3 from 'web3';
 
-import { Artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 import { TokenRegWrapper } from '../util/token_registry_wrapper';
-import { ContractInstance } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
+import { deployer } from './utils/deployer';
 
-const { TokenRegistry } = new Artifacts(artifacts);
 chaiSetup.configure();
 const expect = chai.expect;
 const web3 = web3Factory.create();
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('TokenRegistry', () => {
-    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
     let owner: string;
     let notOwner: string;
-    let tokenReg: ContractInstance;
+    let tokenReg: Web3.ContractInstance;
     let tokenRegWrapper: TokenRegWrapper;
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         notOwner = accounts[1];
-        tokenReg = await TokenRegistry.new();
+        tokenReg = await deployer.deployAsync('TokenRegistry');
         tokenRegWrapper = new TokenRegWrapper(tokenReg);
     });
     beforeEach(async () => {
@@ -137,10 +136,9 @@ describe('TokenRegistry', () => {
             });
 
             it('should change the token name when called by owner', async () => {
-                const res = await tokenReg.setTokenName(token1.address, token2.name, {
+                await tokenReg.setTokenName(token1.address, token2.name, {
                     from: owner,
                 });
-                expect(res.logs).to.have.length(1);
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenByNameAsync(token2.name),
                     tokenRegWrapper.getTokenByNameAsync(token1.name),
@@ -178,7 +176,6 @@ describe('TokenRegistry', () => {
 
             it('should change the token symbol when called by owner', async () => {
                 const res = await tokenReg.setTokenSymbol(token1.address, token2.symbol, { from: owner });
-                expect(res.logs).to.have.length(1);
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenBySymbolAsync(token2.symbol),
                     tokenRegWrapper.getTokenBySymbolAsync(token1.symbol),
@@ -222,7 +219,6 @@ describe('TokenRegistry', () => {
                 const res = await tokenReg.removeToken(token1.address, index, {
                     from: owner,
                 });
-                expect(res.logs).to.have.length(1);
                 const tokenData = await tokenRegWrapper.getTokenMetaDataAsync(token1.address);
                 expect(tokenData).to.be.deep.equal(nullToken);
             });

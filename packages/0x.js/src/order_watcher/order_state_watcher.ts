@@ -1,5 +1,6 @@
 import { schemas } from '@0xproject/json-schemas';
-import { intervalUtils } from '@0xproject/utils';
+import { LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -19,7 +20,6 @@ import {
     LogCancelContractEventArgs,
     LogEvent,
     LogFillContractEventArgs,
-    LogWithDecodedArgs,
     OnOrderStateChangeCallback,
     OrderState,
     OrderStateWatcherConfig,
@@ -29,7 +29,6 @@ import {
     WithdrawalContractEventArgs,
     ZeroExError,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { assert } from '../utils/assert';
 import { OrderStateUtils } from '../utils/order_state_utils';
 import { utils } from '../utils/utils';

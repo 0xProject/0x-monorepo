@@ -3,10 +3,10 @@ import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import { ContractInstance, TransactionDataParams } from './types';
+import { TransactionDataParams } from './types';
 
 export class MultiSigWrapper {
-    private _multiSig: ContractInstance;
+    private _multiSig: Web3.ContractInstance;
     public static encodeFnArgs(name: string, abi: Web3.AbiDefinition[], args: any[]) {
         const abiEntity = _.find(abi, { name }) as Web3.MethodAbi;
         if (_.isUndefined(abiEntity)) {
@@ -21,7 +21,7 @@ export class MultiSigWrapper {
         });
         return funcSig + argsData.join('');
     }
-    constructor(multiSigContractInstance: ContractInstance) {
+    constructor(multiSigContractInstance: Web3.ContractInstance) {
         this._multiSig = multiSigContractInstance;
     }
     public async submitTransactionAsync(

@@ -22,10 +22,12 @@
         "@0xproject/tslint-config": "^0.4.5",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
+        "web3-typescript-typings": "^0.9.4",
         "typescript": "~2.6.1"
     },
     "dependencies": {
         "@0xproject/utils": "^0.2.3",
+        "bignumber.js": "~4.1.0",
         "web3": "^0.20.0"
     }
 }

@@ -1,49 +1,46 @@
+import { LogWithDecodedArgs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, RPC, web3Factory } from '@0xproject/dev-utils';
-import { BigNumber } from '@0xproject/utils';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import * as Web3 from 'web3';
 
 import * as multiSigWalletJSON from '../../build/contracts/MultiSigWalletWithTimeLock.json';
-import * as truffleConf from '../truffle.js';
-import { Artifacts } from '../util/artifacts';
+import { artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 import { MultiSigWrapper } from '../util/multi_sig_wrapper';
-import { ContractInstance } from '../util/types';
+import { SubmissionContractEventArgs } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
+import { deployer } from './utils/deployer';
 
-const { MultiSigWalletWithTimeLock } = new Artifacts(artifacts);
-
-const MULTI_SIG_ABI = (multiSigWalletJSON as any).abi;
+const MULTI_SIG_ABI = artifacts.MultiSigWalletWithTimeLockArtifact.networks[constants.TESTRPC_NETWORK_ID].abi;
 chaiSetup.configure();
 const expect = chai.expect;
 
 const web3 = web3Factory.create();
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
+const abiDecoder = new AbiDecoder([MULTI_SIG_ABI]);
 
 describe('MultiSigWalletWithTimeLock', () => {
-    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
     let owners: string[];
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owners = [accounts[0], accounts[1]];
     });
+    const SIGNATURES_REQUIRED = 2;
     const SECONDS_TIME_LOCKED = 10000;
 
-    let multiSig: ContractInstance;
+    let multiSig: Web3.ContractInstance;
     let multiSigWrapper: MultiSigWrapper;
     let txId: number;
     let initialSecondsTimeLocked: number;
     let rpc: RPC;
 
     before(async () => {
-        multiSig = await MultiSigWalletWithTimeLock.deployed();
-        multiSigWrapper = new MultiSigWrapper(multiSig);
-
-        const secondsTimeLocked = await multiSig.secondsTimeLocked.call();
-        initialSecondsTimeLocked = secondsTimeLocked.toNumber();
-        const rpcUrl = `http://${truffleConf.networks.development.host}:${truffleConf.networks.development.port}`;
-        rpc = new RPC(rpcUrl);
+        rpc = new RPC(devConstants.RPC_URL);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -53,74 +50,138 @@ describe('MultiSigWalletWithTimeLock', () => {
     });
 
     describe('changeTimeLock', () => {
-        it('should throw when not called by wallet', async () => {
-            return expect(multiSig.changeTimeLock(SECONDS_TIME_LOCKED, { from: owners[0] })).to.be.rejectedWith(
-                constants.REVERT,
-            );
-        });
+        describe('initially non-time-locked', async () => {
+            before('deploy a walet', async () => {
+                multiSig = await deployer.deployAsync('MultiSigWalletWithTimeLock', [owners, SIGNATURES_REQUIRED, 0]);
+                multiSigWrapper = new MultiSigWrapper(multiSig);
 
-        it('should throw without enough confirmations', async () => {
-            const destination = multiSig.address;
-            const from = owners[0];
-            const dataParams = {
-                name: 'changeTimeLock',
-                abi: MULTI_SIG_ABI,
-                args: [SECONDS_TIME_LOCKED],
-            };
-            const subRes = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
-
-            txId = subRes.logs[0].args.transactionId.toNumber();
-            return expect(multiSig.executeTransaction(txId)).to.be.rejectedWith(constants.REVERT);
-        });
-
-        it('should set confirmation time with enough confirmations', async () => {
-            const res = await multiSig.confirmTransaction(txId, { from: owners[1] });
-            expect(res.logs).to.have.length(2);
-
-            const blockNum = await web3Wrapper.getBlockNumberAsync();
-            const blockInfo = await web3Wrapper.getBlockAsync(blockNum);
-            const timestamp = new BigNumber(blockInfo.timestamp);
-            const confirmationTimeBigNum = new BigNumber(await multiSig.confirmationTimes.call(txId));
-
-            expect(timestamp).to.be.bignumber.equal(confirmationTimeBigNum);
-        });
-
-        it('should be executable with enough confirmations and secondsTimeLocked of 0', async () => {
-            expect(initialSecondsTimeLocked).to.be.equal(0);
-
-            const res = await multiSig.executeTransaction(txId);
-            expect(res.logs).to.have.length(2);
-
-            const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.call());
-            expect(secondsTimeLocked).to.be.bignumber.equal(SECONDS_TIME_LOCKED);
-        });
-
-        const newSecondsTimeLocked = 0;
-        it('should throw if it has enough confirmations but is not past the time lock', async () => {
-            const destination = multiSig.address;
-            const from = owners[0];
-            const dataParams = {
-                name: 'changeTimeLock',
-                abi: MULTI_SIG_ABI,
-                args: [newSecondsTimeLocked],
-            };
-            const subRes = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
-
-            txId = subRes.logs[0].args.transactionId.toNumber();
-            const confRes = await multiSig.confirmTransaction(txId, {
-                from: owners[1],
+                const secondsTimeLocked = await multiSig.secondsTimeLocked();
+                initialSecondsTimeLocked = secondsTimeLocked.toNumber();
             });
-            expect(confRes.logs).to.have.length(2);
+            it('should throw when not called by wallet', async () => {
+                return expect(multiSig.changeTimeLock(SECONDS_TIME_LOCKED, { from: owners[0] })).to.be.rejectedWith(
+                    constants.REVERT,
+                );
+            });
 
-            return expect(multiSig.executeTransaction(txId)).to.be.rejectedWith(constants.REVERT);
+            it('should throw without enough confirmations', async () => {
+                const destination = multiSig.address;
+                const from = owners[0];
+                const dataParams = {
+                    name: 'changeTimeLock',
+                    abi: MULTI_SIG_ABI,
+                    args: [SECONDS_TIME_LOCKED],
+                };
+                const txHash = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
+                const subRes = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const log = abiDecoder.tryToDecodeLogOrNoop(subRes.logs[0]) as LogWithDecodedArgs<
+                    SubmissionContractEventArgs
+                >;
+
+                txId = log.args.transactionId.toNumber();
+                return expect(multiSig.executeTransaction(txId, { from: owners[0] })).to.be.rejectedWith(
+                    constants.REVERT,
+                );
+            });
+
+            it('should set confirmation time with enough confirmations', async () => {
+                const destination = multiSig.address;
+                const from = owners[0];
+                const dataParams = {
+                    name: 'changeTimeLock',
+                    abi: MULTI_SIG_ABI,
+                    args: [SECONDS_TIME_LOCKED],
+                };
+                let txHash = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
+                const subRes = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const log = abiDecoder.tryToDecodeLogOrNoop(subRes.logs[0]) as LogWithDecodedArgs<
+                    SubmissionContractEventArgs
+                >;
+
+                txId = log.args.transactionId.toNumber();
+                txHash = await multiSig.confirmTransaction(txId, { from: owners[1] });
+                const res = await zeroEx.awaitTransactionMinedAsync(txHash);
+                expect(res.logs).to.have.length(2);
+
+                const blockNum = await web3Wrapper.getBlockNumberAsync();
+                const blockInfo = await web3Wrapper.getBlockAsync(blockNum);
+                const timestamp = new BigNumber(blockInfo.timestamp);
+                const confirmationTimeBigNum = new BigNumber(await multiSig.confirmationTimes.call(txId));
+
+                expect(timestamp).to.be.bignumber.equal(confirmationTimeBigNum);
+            });
+
+            it('should be executable with enough confirmations and secondsTimeLocked of 0', async () => {
+                const destination = multiSig.address;
+                const from = owners[0];
+                const dataParams = {
+                    name: 'changeTimeLock',
+                    abi: MULTI_SIG_ABI,
+                    args: [SECONDS_TIME_LOCKED],
+                };
+                let txHash = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
+                const subRes = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const log = abiDecoder.tryToDecodeLogOrNoop(subRes.logs[0]) as LogWithDecodedArgs<
+                    SubmissionContractEventArgs
+                >;
+
+                txId = log.args.transactionId.toNumber();
+                txHash = await multiSig.confirmTransaction(txId, { from: owners[1] });
+
+                expect(initialSecondsTimeLocked).to.be.equal(0);
+
+                txHash = await multiSig.executeTransaction(txId, { from: owners[0] });
+                const res = await zeroEx.awaitTransactionMinedAsync(txHash);
+                expect(res.logs).to.have.length(2);
+
+                const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.call());
+                expect(secondsTimeLocked).to.be.bignumber.equal(SECONDS_TIME_LOCKED);
+            });
         });
+        describe('initially time-locked', async () => {
+            before('deploy a walet', async () => {
+                multiSig = await deployer.deployAsync('MultiSigWalletWithTimeLock', [
+                    owners,
+                    SIGNATURES_REQUIRED,
+                    SECONDS_TIME_LOCKED,
+                ]);
+                multiSigWrapper = new MultiSigWrapper(multiSig);
 
-        it('should execute if it has enough confirmations and is past the time lock', async () => {
-            await rpc.increaseTimeAsync(SECONDS_TIME_LOCKED);
-            await multiSig.executeTransaction(txId);
+                const secondsTimeLocked = await multiSig.secondsTimeLocked();
+                initialSecondsTimeLocked = secondsTimeLocked.toNumber();
+                const destination = multiSig.address;
+                const from = owners[0];
+                const dataParams = {
+                    name: 'changeTimeLock',
+                    abi: MULTI_SIG_ABI,
+                    args: [newSecondsTimeLocked],
+                };
+                let txHash = await multiSigWrapper.submitTransactionAsync(destination, from, dataParams);
+                const subRes = await zeroEx.awaitTransactionMinedAsync(txHash);
+                const log = abiDecoder.tryToDecodeLogOrNoop(subRes.logs[0]) as LogWithDecodedArgs<
+                    SubmissionContractEventArgs
+                >;
+                txId = log.args.transactionId.toNumber();
+                txHash = await multiSig.confirmTransaction(txId, {
+                    from: owners[1],
+                });
+                const confRes = await zeroEx.awaitTransactionMinedAsync(txHash);
+                expect(confRes.logs).to.have.length(2);
+            });
+            const newSecondsTimeLocked = 0;
+            it('should throw if it has enough confirmations but is not past the time lock', async () => {
+                return expect(multiSig.executeTransaction(txId, { from: owners[0] })).to.be.rejectedWith(
+                    constants.REVERT,
+                );
+            });
 
-            const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.call());
-            expect(secondsTimeLocked).to.be.bignumber.equal(newSecondsTimeLocked);
+            it('should execute if it has enough confirmations and is past the time lock', async () => {
+                await rpc.increaseTimeAsync(SECONDS_TIME_LOCKED);
+                await multiSig.executeTransaction(txId, { from: owners[0] });
+
+                const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.call());
+                expect(secondsTimeLocked).to.be.bignumber.equal(newSecondsTimeLocked);
+            });
         });
     });
 });

@@ -4,21 +4,18 @@ import { BigNumber, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 
-import { Artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 
 import { chaiSetup } from './utils/chai_setup';
-
-const { EtherToken } = new Artifacts(artifacts);
+import { deployer } from './utils/deployer';
 
 chaiSetup.configure();
 const expect = chai.expect;
-
 const web3 = web3Factory.create();
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('EtherToken', () => {
-    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
     let account: string;
     const gasPrice = ZeroEx.toBaseUnitAmount(new BigNumber(20), 9);
     let zeroEx: ZeroEx;
@@ -32,7 +29,9 @@ describe('EtherToken', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         account = accounts[0];
-        etherTokenAddress = EtherToken.address;
+
+        const etherToken = await deployer.deployAsync('WETH9');
+        etherTokenAddress = etherToken.address;
         zeroEx = new ZeroEx(web3.currentProvider, {
             gasPrice,
             networkId: constants.TESTRPC_NETWORK_ID,

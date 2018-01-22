@@ -1,5 +1,6 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
+import { DecodedLogArgs, LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -8,7 +9,6 @@ import { artifacts } from '../artifacts';
 import {
     BlockParamLiteral,
     BlockRange,
-    DecodedLogArgs,
     ECSignature,
     EventCallback,
     ExchangeContractErrCodes,
@@ -17,7 +17,6 @@ import {
     ExchangeEvents,
     IndexedFilterValues,
     LogErrorContractEventArgs,
-    LogWithDecodedArgs,
     MethodOpts,
     Order,
     OrderAddresses,
@@ -28,7 +27,6 @@ import {
     SignedOrder,
     ValidateOrderFillableOpts,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 import { ExchangeTransferSimulator } from '../utils/exchange_transfer_simulator';

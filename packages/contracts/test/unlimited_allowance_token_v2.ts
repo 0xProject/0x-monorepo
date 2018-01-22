@@ -3,21 +3,20 @@ import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-u
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import * as Web3 from 'web3';
 
-import { Artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
-import { ContractInstance } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
+import { deployer } from './utils/deployer';
 
-const { DummyTokenV2 } = new Artifacts(artifacts);
 chaiSetup.configure();
 const expect = chai.expect;
 const web3 = web3Factory.create();
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('UnlimitedAllowanceTokenV2', () => {
-    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
@@ -27,13 +26,13 @@ describe('UnlimitedAllowanceTokenV2', () => {
 
     const MAX_MINT_VALUE = new BigNumber(100000000000000000000);
     let tokenAddress: string;
-    let token: ContractInstance;
+    let token: Web3.ContractInstance;
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        token = await DummyTokenV2.new({ from: owner });
+        token = await deployer.deployAsync('DummyToken_v2');
         await token.mint(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });

@@ -1,4 +1,5 @@
 import { BigNumber, promisify } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import Web3 = require('web3');
@@ -12,8 +13,10 @@ const web3: Web3 = (global as any).web3;
 
 export class Order {
     public params: OrderParams;
-    constructor(params: OrderParams) {
+    private _web3Wrapper: Web3Wrapper;
+    constructor(web3Wrapper: Web3Wrapper, params: OrderParams) {
         this.params = params;
+        this._web3Wrapper = web3Wrapper;
     }
     public isValidSignature() {
         const { v, r, s } = this.params;
@@ -32,7 +35,7 @@ export class Order {
     }
     public async signAsync() {
         const orderHash = this._getOrderHash();
-        const signature = await promisify<string>(web3.eth.sign)(this.params.maker, orderHash);
+        const signature = await this._web3Wrapper.signTransactionAsync(this.params.maker, orderHash);
         const { v, r, s } = ethUtil.fromRpcSig(signature);
         this.params = _.assign(this.params, {
             orderHashHex: orderHash,

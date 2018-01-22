@@ -1,4 +1,4 @@
-import { TransactionReceipt } from '@0xproject/types';
+import { ContractEventArg, DecodedLogArgs, LogWithDecodedArgs, TransactionReceipt } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
@@ -53,13 +53,6 @@ export interface DecodedLogEvent<ArgsType> {
 export type EventCallback<ArgsType> = (err: null | Error, log?: DecodedLogEvent<ArgsType>) => void;
 export type EventWatcherCallback = (err: null | Error, log?: LogEvent) => void;
 
-export enum SolidityTypes {
-    Address = 'address',
-    Uint256 = 'uint256',
-    Uint8 = 'uint8',
-    Uint = 'uint',
-}
-
 export enum ExchangeContractErrCodes {
     ERROR_FILL_EXPIRED, // Order has already expired
     ERROR_FILL_NO_VALUE, // Order has already been fully filled or cancelled
@@ -93,8 +86,6 @@ export enum ExchangeContractErrs {
     BatchOrdersMustHaveSameExchangeAddress = 'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
     BatchOrdersMustHaveAtLeastOneItem = 'BATCH_ORDERS_MUST_HAVE_AT_LEAST_ONE_ITEM',
 }
-
-export type RawLog = Web3.LogEntry;
 
 export interface ContractEvent {
     logIndex: number;
@@ -163,7 +154,6 @@ export type EtherTokenContractEventArgs =
     | DepositContractEventArgs
     | WithdrawalContractEventArgs;
 export type ContractEventArgs = ExchangeContractEventArgs | TokenContractEventArgs | EtherTokenContractEventArgs;
-export type ContractEventArg = string | BigNumber;
 
 export interface Order {
     maker: string;
@@ -298,23 +288,6 @@ export interface ZeroExConfig {
     tokenRegistryContractAddress?: string;
     tokenTransferProxyContractAddress?: string;
     orderWatcherConfig?: OrderStateWatcherConfig;
-}
-
-export enum AbiType {
-    Function = 'function',
-    Constructor = 'constructor',
-    Event = 'event',
-    Fallback = 'fallback',
-}
-
-export interface DecodedLogArgs {
-    [argName: string]: ContractEventArg;
-}
-
-export interface LogWithDecodedArgs<ArgsType> extends Web3.DecodedLogEntry<ArgsType> {}
-
-export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
-    logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>;
 }
 
 export type ArtifactContractName = 'ZRX' | 'TokenTransferProxy' | 'TokenRegistry' | 'Token' | 'Exchange' | 'EtherToken';

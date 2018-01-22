@@ -3,28 +3,27 @@ import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-u
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
+import * as Web3 from 'web3';
 
-import { Artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
-import { ContractInstance } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
+import { deployer } from './utils/deployer';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const { Exchange, ZRXToken } = new Artifacts(artifacts);
 const web3 = web3Factory.create();
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
 
 describe('ZRXToken', () => {
-    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
     let owner: string;
     let spender: string;
     let zeroEx: ZeroEx;
 
     let MAX_UINT: BigNumber;
 
-    let zrx: ContractInstance;
+    let zrx: Web3.ContractInstance;
     let zrxAddress: string;
 
     before(async () => {
@@ -32,10 +31,9 @@ describe('ZRXToken', () => {
         owner = accounts[0];
         spender = accounts[1];
         zeroEx = new ZeroEx(web3.currentProvider, {
-            exchangeContractAddress: Exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        zrx = await ZRXToken.new();
+        zrx = await deployer.deployAsync('ZRXToken');
         zrxAddress = zrx.address;
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });
@@ -47,25 +45,25 @@ describe('ZRXToken', () => {
     });
     describe('constants', () => {
         it('should have 18 decimals', async () => {
-            const decimals = new BigNumber(await zrx.decimals.call());
+            const decimals = new BigNumber(await zrx.decimals());
             const expectedDecimals = 18;
             expect(decimals).to.be.bignumber.equal(expectedDecimals);
         });
 
         it('should have a total supply of 1 billion tokens', async () => {
-            const totalSupply = new BigNumber(await zrx.totalSupply.call());
+            const totalSupply = new BigNumber(await zrx.totalSupply());
             const expectedTotalSupply = 1000000000;
             expect(ZeroEx.toUnitAmount(totalSupply, 18)).to.be.bignumber.equal(expectedTotalSupply);
         });
 
         it('should be named 0x Protocol Token', async () => {
-            const name = await zrx.name.call();
+            const name = await zrx.name();
             const expectedName = '0x Protocol Token';
             expect(name).to.be.equal(expectedName);
         });
 
         it('should have the symbol ZRX', async () => {
-            const symbol = await zrx.symbol.call();
+            const symbol = await zrx.symbol();
             const expectedSymbol = 'ZRX';
             expect(symbol).to.be.equal(expectedSymbol);
         });
@@ -74,7 +72,7 @@ describe('ZRXToken', () => {
     describe('constructor', () => {
         it('should initialize owner balance to totalSupply', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
-            const totalSupply = new BigNumber(await zrx.totalSupply.call());
+            const totalSupply = new BigNumber(await zrx.totalSupply());
             expect(totalSupply).to.be.bignumber.equal(ownerBalance);
         });
     });
@@ -84,8 +82,7 @@ describe('ZRXToken', () => {
             const receiver = spender;
             const initOwnerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
             const amountToTransfer = new BigNumber(1);
-            const txHash = await zeroEx.token.transferAsync(zrxAddress, owner, receiver, amountToTransfer);
-            await zeroEx.awaitTransactionMinedAsync(txHash);
+            await zeroEx.token.transferAsync(zrxAddress, owner, receiver, amountToTransfer);
             const finalOwnerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
             const finalReceiverBalance = await zeroEx.token.getBalanceAsync(zrxAddress, receiver);
 
@@ -107,10 +104,9 @@ describe('ZRXToken', () => {
         it('should return false if owner has insufficient balance', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
-            const txHash = await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer, {
+            await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_APPROVE_GAS,
             });
-            await zeroEx.awaitTransactionMinedAsync(txHash);
             const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.false();
         });
