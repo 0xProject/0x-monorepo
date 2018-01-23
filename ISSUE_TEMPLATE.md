@@ -1,4 +1,7 @@
-<!--- Before submitting please check the current Issues to see if it was already reported -->
+<!--- Thank you for taking the time to file an Issue -->
+
+<!--- Before submitting please check to see if this issue was already reported -->
+
 <!--- Provide a general summary of the issue in the Title above -->
 
 ## Expected Behavior
