@@ -257,10 +257,10 @@ declare module 'web3' {
             sign(address: string, data: string): string;
             sign(address: string, data: string, callback: (err: Error, signature: string) => void): void;
 
-            getTransactionReceipt(txHash: string): Web3.TransactionReceipt;
+            getTransactionReceipt(txHash: string): Web3.TransactionReceipt | null;
             getTransactionReceipt(
                 txHash: string,
-                callback: (err: Error, receipt: Web3.TransactionReceipt) => void,
+                callback: (err: Error, receipt: Web3.TransactionReceipt | null) => void,
             ): void;
 
             // TODO block param
