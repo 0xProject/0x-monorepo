@@ -1,4 +1,4 @@
-## @0xproject/kovan_faucets
+## @0xproject/testnet_faucets
 
 This faucet dispenses 0.1 test ether to one recipient per second and 0.1 test ZRX every 5 seconds. It has a max queue size of 1000.
 
@@ -61,14 +61,14 @@ Where recipient_address is a hex encoded Ethereum address prefixed with `0x`.
 ```
 docker run -d \
 -p 80:3000 \
---name kovan-faucets \
+--name testnet-faucets \
 --log-opt max-size=100m \
 --log-opt max-file=20 \
 -e DISPENSER_ADDRESS=$DISPENSER_ADDRESS \
 -e DISPENSER_PRIVATE_KEY=$DISPENSER_PRIVATE_KEY \
 -e FAUCET_ROLLBAR_ACCESS_KEY=$FAUCET_ROLLBAR_ACCESS_KEY \
 -e FAUCET_ENVIRONMENT=production \
-kovan-faucets
+testnet-faucets
 ```
 
 ### Lint
