@@ -1,9 +1,10 @@
 # CHANGELOG
 
-## v0.30.1 - _January 18, 2018_
+## v0.30.1 - _TBD, 2018_
 
     * Fix a bug allowing negative fill values  (#212)
     * Fix a bug that made it impossible to pass a custom ZRX address  (#341)
+    * Add Rinkeby testnet addresses to artifacts  (#337)
 
 ## v0.30.0 - _January 17, 2018_
 
