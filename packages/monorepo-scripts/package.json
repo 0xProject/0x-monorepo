@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/monorepo-scripts",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "private": true,
     "description": "Helper scripts for the monorepo",
     "scripts": {
@@ -19,7 +19,7 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/monorepo-scripts/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.2",
+        "@0xproject/tslint-config": "^0.4.3",
         "@types/glob": "^5.0.33",
         "@types/node": "^8.0.53",
         "shx": "^0.2.2",
