@@ -191,6 +191,7 @@ export class ZeroEx {
             this._abiDecoder,
             this.token,
             config.exchangeContractAddress,
+            config.zrxContractAddress,
         );
         this.tokenRegistry = new TokenRegistryWrapper(
             this._web3Wrapper,
