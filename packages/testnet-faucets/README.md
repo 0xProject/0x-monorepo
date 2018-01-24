@@ -1,4 +1,4 @@
-## @0xproject/testnet_faucets
+## @0xproject/testnet-faucets
 
 This faucet dispenses 0.1 test ether to one recipient per second and 0.1 test ZRX every 5 seconds. It has a max queue size of 1000.
 

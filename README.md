@@ -41,7 +41,7 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 | ----------------------------------------------------------- | ---------------------------------------------------------------- |
 | [`@0xproject/contracts`](/packages/contracts)               | 0x solidity smart contracts & tests                              |
 | [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts) | Shared monorepo scripts                                          |
-| [`@0xproject/testnet_faucets`](/packages/testnet-faucets)   | A faucet micro-service that dispenses test ERC20 tokens or Ether |
+| [`@0xproject/testnet-faucets`](/packages/testnet-faucets)   | A faucet micro-service that dispenses test ERC20 tokens or Ether |
 | [`@0xproject/website`](/packages/website)                   | 0x website & Portal DApp                                         |
 
 ## Usage
