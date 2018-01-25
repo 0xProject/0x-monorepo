@@ -290,6 +290,7 @@ export interface OrderStateWatcherConfig {
  * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
+ * zrxContractAddress: The address of the ZRX contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
  * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
@@ -298,6 +299,7 @@ export interface ZeroExConfig {
     networkId: number;
     gasPrice?: BigNumber;
     exchangeContractAddress?: string;
+    zrxContractAddress?: string;
     tokenRegistryContractAddress?: string;
     tokenTransferProxyContractAddress?: string;
     orderWatcherConfig?: OrderStateWatcherConfig;
