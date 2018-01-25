@@ -1,10 +1,10 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
-import {localStorage} from 'ts/local_storage/local_storage';
-import {Fill} from 'ts/types';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
+import { localStorage } from 'ts/local_storage/local_storage';
+import { Fill } from 'ts/types';
+import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
 
 const FILLS_KEY = 'fills';
 const FILLS_LATEST_BLOCK = 'fillsLatestBlock';
@@ -16,7 +16,7 @@ export const tradeHistoryStorage = {
     // the blockchain
     clearIfRequired() {
         const lastClearFillDate = localStorage.getItemIfExists(FILL_CLEAR_KEY);
-        if (lastClearFillDate !== configs.lastLocalStorageFillClearanceDate) {
+        if (lastClearFillDate !== configs.LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE) {
             const localStorageKeys = localStorage.getAllKeys();
             _.each(localStorageKeys, key => {
                 if (_.startsWith(key, `${FILLS_KEY}-`) || _.startsWith(key, `${FILLS_LATEST_BLOCK}-`)) {
@@ -24,7 +24,7 @@ export const tradeHistoryStorage = {
                 }
             });
         }
-        localStorage.setItem(FILL_CLEAR_KEY, configs.lastLocalStorageFillClearanceDate);
+        localStorage.setItem(FILL_CLEAR_KEY, configs.LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE);
     },
     addFillToUser(userAddress: string, networkId: number, fill: Fill) {
         const fillsByHash = this.getUserFillsByHash(userAddress, networkId);
@@ -50,7 +50,7 @@ export const tradeHistoryStorage = {
         const userFillsKey = this._getUserFillsKey(userAddress, networkId);
         localStorage.setItem(userFillsKey, userFillsJSONString);
     },
-    getUserFillsByHash(userAddress: string, networkId: number): {[fillHash: string]: Fill} {
+    getUserFillsByHash(userAddress: string, networkId: number): { [fillHash: string]: Fill } {
         const userFillsKey = this._getUserFillsKey(userAddress, networkId);
         const userFillsJSONString = localStorage.getItemIfExists(userFillsKey);
         if (_.isEmpty(userFillsJSONString)) {
@@ -58,10 +58,10 @@ export const tradeHistoryStorage = {
         }
         const userFillsByHash = JSON.parse(userFillsJSONString);
         _.each(userFillsByHash, (fill, hash) => {
-          fill.paidMakerFee = new BigNumber(fill.paidMakerFee);
-          fill.paidTakerFee = new BigNumber(fill.paidTakerFee);
-          fill.filledTakerTokenAmount = new BigNumber(fill.filledTakerTokenAmount);
-          fill.filledMakerTokenAmount = new BigNumber(fill.filledMakerTokenAmount);
+            fill.paidMakerFee = new BigNumber(fill.paidMakerFee);
+            fill.paidTakerFee = new BigNumber(fill.paidTakerFee);
+            fill.filledTakerTokenAmount = new BigNumber(fill.filledTakerTokenAmount);
+            fill.filledMakerTokenAmount = new BigNumber(fill.filledMakerTokenAmount);
         });
         return userFillsByHash;
     },

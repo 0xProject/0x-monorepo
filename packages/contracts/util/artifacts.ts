@@ -6,6 +6,7 @@ export class Artifacts {
     public Exchange: any;
     public ZRXToken: any;
     public DummyToken: any;
+    public DummyTokenV2: any;
     public EtherToken: any;
     public MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress: any;
     public MaliciousToken: any;
@@ -17,9 +18,11 @@ export class Artifacts {
         this.Exchange = artifacts.require('Exchange');
         this.ZRXToken = artifacts.require('ZRXToken');
         this.DummyToken = artifacts.require('DummyToken');
-        this.EtherToken = artifacts.require('EtherToken');
+        this.DummyTokenV2 = artifacts.require('DummyToken_v2');
+        this.EtherToken = artifacts.require('WETH9');
         this.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = artifacts.require(
-                'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress');
+            'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
+        );
         this.MaliciousToken = artifacts.require('MaliciousToken');
     }
 }

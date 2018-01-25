@@ -1,0 +1,37 @@
+{
+    "name": "@0xproject/dev-utils",
+    "version": "0.0.6",
+    "description": "0x dev TS utils",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "clean": "shx rm -rf lib",
+        "lint": "tslint --project . 'src/**/*.ts'"
+    },
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x.js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/0xProject/0x.js/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x.js/packages/dev-utils/README.md",
+    "devDependencies": {
+        "@0xproject/tslint-config": "^0.4.3",
+        "@types/lodash": "^4.14.86",
+        "npm-run-all": "^4.1.2",
+        "shx": "^0.2.2",
+        "tslint": "5.8.0",
+        "types-bn": "^0.0.1",
+        "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
+        "typescript": "~2.6.1"
+    },
+    "dependencies": {
+        "@0xproject/utils": "^0.2.1",
+        "ethereumjs-util": "^5.1.2",
+        "lodash": "^4.17.4",
+        "request-promise-native": "^1.0.5"
+    }
+}

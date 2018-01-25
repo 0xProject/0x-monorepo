@@ -1,14 +1,11 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import RadioButton from 'material-ui/RadioButton';
-import RadioButtonGroup from 'material-ui/RadioButton/RadioButtonGroup';
 import * as React from 'react';
-import {AddressInput} from 'ts/components/inputs/address_input';
-import {EthAmountInput} from 'ts/components/inputs/eth_amount_input';
-import {TokenAmountInput} from 'ts/components/inputs/token_amount_input';
-import {Side, Token, TokenState} from 'ts/types';
+import { AddressInput } from 'ts/components/inputs/address_input';
+import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
+import { Token, TokenState } from 'ts/types';
 
 interface SendDialogProps {
     onComplete: (recipient: string, value: BigNumber) => void;
@@ -36,37 +33,33 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
     }
     public render() {
         const transferDialogActions = [
-            <FlatButton
-                key="cancelTransfer"
-                label="Cancel"
-                onTouchTap={this.onCancel.bind(this)}
-            />,
+            <FlatButton key="cancelTransfer" label="Cancel" onTouchTap={this._onCancel.bind(this)} />,
             <FlatButton
                 key="sendTransfer"
-                disabled={this.hasErrors()}
+                disabled={this._hasErrors()}
                 label="Send"
                 primary={true}
-                onTouchTap={this.onSendClick.bind(this)}
+                onTouchTap={this._onSendClick.bind(this)}
             />,
         ];
         return (
             <Dialog
                 title="I want to send"
-                titleStyle={{fontWeight: 100}}
+                titleStyle={{ fontWeight: 100 }}
                 actions={transferDialogActions}
                 open={this.props.isOpen}
             >
-                {this.renderSendDialogBody()}
+                {this._renderSendDialogBody()}
             </Dialog>
         );
     }
-    private renderSendDialogBody() {
+    private _renderSendDialogBody() {
         return (
-            <div className="mx-auto" style={{maxWidth: 300}}>
-                <div style={{height: 80}}>
+            <div className="mx-auto" style={{ maxWidth: 300 }}>
+                <div style={{ height: 80 }}>
                     <AddressInput
                         initialAddress={this.state.recipient}
-                        updateAddress={this.onRecipientChange.bind(this)}
+                        updateAddress={this._onRecipientChange.bind(this)}
                         isRequired={true}
                         label={'Recipient address'}
                         hintText={'Address'}
@@ -79,27 +72,27 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                     shouldCheckBalance={true}
                     shouldCheckAllowance={false}
-                    onChange={this.onValueChange.bind(this)}
+                    onChange={this._onValueChange.bind(this)}
                     amount={this.state.value}
                     onVisitBalancesPageClick={this.props.onCancelled}
                 />
             </div>
         );
     }
-    private onRecipientChange(recipient?: string) {
+    private _onRecipientChange(recipient?: string) {
         this.setState({
             shouldShowIncompleteErrs: false,
             recipient,
         });
     }
-    private onValueChange(isValid: boolean, amount?: BigNumber) {
+    private _onValueChange(isValid: boolean, amount?: BigNumber) {
         this.setState({
             isAmountValid: isValid,
             value: amount,
         });
     }
-    private onSendClick() {
-        if (this.hasErrors()) {
+    private _onSendClick() {
+        if (this._hasErrors()) {
             this.setState({
                 shouldShowIncompleteErrs: true,
             });
@@ -112,15 +105,13 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
             this.props.onComplete(this.state.recipient, value);
         }
     }
-    private onCancel() {
+    private _onCancel() {
         this.setState({
             value: undefined,
         });
         this.props.onCancelled();
     }
-    private hasErrors() {
-        return _.isUndefined(this.state.recipient) ||
-               _.isUndefined(this.state.value) ||
-               !this.state.isAmountValid;
+    private _hasErrors() {
+        return _.isUndefined(this.state.recipient) || _.isUndefined(this.state.value) || !this.state.isAmountValid;
     }
 }

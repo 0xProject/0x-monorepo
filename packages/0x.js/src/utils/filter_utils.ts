@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as uuid from 'uuid/v4';
 import * as Web3 from 'web3';
 
-import {ContractEvents, IndexedFilterValues, SubscriptionOpts} from '../types';
+import { BlockRange, ContractEvents, IndexedFilterValues } from '../types';
 
 const TOPIC_LENGTH = 32;
 
@@ -12,10 +12,14 @@ export const filterUtils = {
     generateUUID(): string {
         return uuid();
     },
-    getFilter(address: string, eventName: ContractEvents,
-              indexFilterValues: IndexedFilterValues, abi: Web3.ContractAbi,
-              subscriptionOpts?: SubscriptionOpts): Web3.FilterObject {
-        const eventAbi = _.find(abi, {name: eventName}) as Web3.EventAbi;
+    getFilter(
+        address: string,
+        eventName: ContractEvents,
+        indexFilterValues: IndexedFilterValues,
+        abi: Web3.ContractAbi,
+        blockRange?: BlockRange,
+    ): Web3.FilterObject {
+        const eventAbi = _.find(abi, { name: eventName }) as Web3.EventAbi;
         const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi, eventName);
         const topicForEventSignature = ethUtil.addHexPrefix(jsSHA3.keccak256(eventSignature));
         const topicsForIndexedArgs = filterUtils.getTopicsForIndexedArgs(eventAbi, indexFilterValues);
@@ -24,9 +28,9 @@ export const filterUtils = {
             address,
             topics,
         };
-        if (!_.isUndefined(subscriptionOpts)) {
+        if (!_.isUndefined(blockRange)) {
             filter = {
-                ...subscriptionOpts,
+                ...blockRange,
                 ...filter,
             };
         }
@@ -37,8 +41,8 @@ export const filterUtils = {
         const signature = `${eventAbi.name}(${types.join(',')})`;
         return signature;
     },
-    getTopicsForIndexedArgs(abi: Web3.EventAbi, indexFilterValues: IndexedFilterValues): Array<string|null> {
-        const topics: Array<string|null> = [];
+    getTopicsForIndexedArgs(abi: Web3.EventAbi, indexFilterValues: IndexedFilterValues): Array<string | null> {
+        const topics: Array<string | null> = [];
         for (const eventInput of abi.inputs) {
             if (!eventInput.indexed) {
                 continue;
@@ -65,12 +69,12 @@ export const filterUtils = {
         }
         return true;
     },
-    matchesTopics(logTopics: string[], filterTopics: Array<string[]|string|null>): boolean {
+    matchesTopics(logTopics: string[], filterTopics: Array<string[] | string | null>): boolean {
         const matchesTopic = _.zipWith(logTopics, filterTopics, filterUtils.matchesTopic.bind(filterUtils));
         const matchesTopics = _.every(matchesTopic);
         return matchesTopics;
     },
-    matchesTopic(logTopic: string, filterTopic: string[]|string|null): boolean {
+    matchesTopic(logTopic: string, filterTopic: string[] | string | null): boolean {
         if (_.isArray(filterTopic)) {
             return _.includes(filterTopic, logTopic);
         }

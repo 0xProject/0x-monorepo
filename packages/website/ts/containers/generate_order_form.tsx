@@ -1,12 +1,11 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {Dispatch, Store as ReduxStore} from 'redux';
-import {Blockchain} from 'ts/blockchain';
-import {GenerateOrderForm as GenerateOrderFormComponent} from 'ts/components/generate_order/generate_order_form';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
+import { connect } from 'react-redux';
+import { Blockchain } from 'ts/blockchain';
+import { GenerateOrderForm as GenerateOrderFormComponent } from 'ts/components/generate_order/generate_order_form';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { State } from 'ts/redux/reducer';
 import {
     BlockchainErrs,
     HashData,
@@ -50,5 +49,6 @@ const mapStateToProps = (state: State, ownProps: GenerateOrderFormProps): Connec
     userAddress: state.userAddress,
 });
 
-export const GenerateOrderForm: React.ComponentClass<GenerateOrderFormProps> =
-  connect(mapStateToProps)(GenerateOrderFormComponent);
+export const GenerateOrderForm: React.ComponentClass<GenerateOrderFormProps> = connect(mapStateToProps)(
+    GenerateOrderFormComponent,
+);

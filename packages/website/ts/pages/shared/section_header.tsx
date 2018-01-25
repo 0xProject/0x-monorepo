@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {Element as ScrollElement} from 'react-scroll';
-import {AnchorTitle} from 'ts/pages/shared/anchor_title';
-import {HeaderSizes} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import { Element as ScrollElement } from 'react-scroll';
+import { AnchorTitle } from 'ts/pages/shared/anchor_title';
+import { HeaderSizes } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 
 interface SectionHeaderProps {
     sectionName: string;
@@ -28,13 +28,13 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
         const id = utils.getIdFromName(sectionName);
         return (
             <div
-                onMouseOver={this.setAnchorVisibility.bind(this, true)}
-                onMouseOut={this.setAnchorVisibility.bind(this, false)}
+                onMouseOver={this._setAnchorVisibility.bind(this, true)}
+                onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <ScrollElement name={id}>
                     <AnchorTitle
                         headerSize={this.props.headerSize}
-                        title={<span style={{textTransform: 'capitalize'}}>{sectionName}</span>}
+                        title={<span style={{ textTransform: 'capitalize' }}>{sectionName}</span>}
                         id={id}
                         shouldShowAnchor={this.state.shouldShowAnchor}
                     />
@@ -42,7 +42,7 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
             </div>
         );
     }
-    private setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean) {
         this.setState({
             shouldShowAnchor,
         });

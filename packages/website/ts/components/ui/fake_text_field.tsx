@@ -1,7 +1,6 @@
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import {InputLabel} from 'ts/components/ui/input_label';
-import {Styles} from 'ts/types';
+import { InputLabel } from 'ts/components/ui/input_label';
+import { Styles } from 'ts/types';
 
 const styles: Styles = {
     hr: {
@@ -26,7 +25,7 @@ export function FakeTextField(props: FakeTextFieldProps) {
     return (
         <div className="relative">
             {props.label !== '' && <InputLabel text={props.label} />}
-            <div className="pb2" style={{height: 23}}>
+            <div className="pb2" style={{ height: 23 }}>
                 {props.children}
             </div>
             <hr style={styles.hr} />

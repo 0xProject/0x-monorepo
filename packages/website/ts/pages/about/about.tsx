@@ -1,21 +1,13 @@
 import * as _ from 'lodash';
-import RaisedButton from 'material-ui/RaisedButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import {Link} from 'react-router-dom';
-import {Footer} from 'ts/components/footer';
-import {TopBar} from 'ts/components/top_bar';
-import {Profile} from 'ts/pages/about/profile';
-import {Question} from 'ts/pages/faq/question';
-import {ProfileInfo, Styles} from 'ts/types';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
-
-const CUSTOM_BACKGROUND_COLOR = '#F0F0F0';
-const CUSTOM_GRAY = '#4C4C4C';
-const CUSTOM_LIGHT_GRAY = '#A2A2A2';
+import { Footer } from 'ts/components/footer';
+import { TopBar } from 'ts/components/top_bar';
+import { Profile } from 'ts/pages/about/profile';
+import { ProfileInfo, Styles } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const teamRow1: ProfileInfo[] = [
     {
@@ -48,6 +40,9 @@ const teamRow1: ProfileInfo[] = [
         github: 'https://github.com/fabioberger',
         medium: 'https://medium.com/@fabioberger',
     },
+];
+
+const teamRow2: ProfileInfo[] = [
     {
         name: 'Alex Xu',
         title: 'Director of Operations',
@@ -56,11 +51,8 @@ const teamRow1: ProfileInfo[] = [
         image: '/images/team/alex.jpg',
         linkedIn: 'https://www.linkedin.com/in/alex-xu/',
         github: '',
-        medium: '',
+        medium: 'https://medium.com/@aqxu',
     },
-];
-
-const teamRow2: ProfileInfo[] = [
     {
         name: 'Leonid Logvinov',
         title: 'Engineer',
@@ -69,7 +61,7 @@ const teamRow2: ProfileInfo[] = [
         image: '/images/team/leonid.png',
         linkedIn: 'https://www.linkedin.com/in/leonidlogvinov/',
         github: 'https://github.com/LogvinovLeon',
-        medium: '',
+        medium: 'https://medium.com/@Logvinov',
     },
     {
         name: 'Ben Burns',
@@ -81,23 +73,36 @@ const teamRow2: ProfileInfo[] = [
         github: '',
         medium: '',
     },
-    {
-        name: 'Philippe Castonguay',
-        title: 'Dev Relations Manager',
-        description: `Developer relations. Previously computational neuroscience \
-                      research at Janelia. Statistics at Western University. MA Dropout.`,
-        image: '/images/team/philippe.png',
-        linkedIn: '',
-        github: 'https://github.com/PhABC',
-        medium: '',
-    },
+];
+
+const teamRow3: ProfileInfo[] = [
     {
         name: 'Brandon Millman',
         title: 'Senior Engineer',
         description: `Full-stack engineer. Previously senior software engineer at \
                       Twitter. Electrical and Computer Engineering at Duke.`,
         image: '/images/team/brandon.png',
-        linkedIn: 'https://www.linkedin.com/company-beta/17942619/',
+        linkedIn: 'https://www.linkedin.com/in/brandon-millman-b093a022/',
+        github: 'https://github.com/BMillman19',
+        medium: 'https://medium.com/@bchillman',
+    },
+    {
+        name: 'Tom Schmidt',
+        title: 'Product Manager',
+        description: `Previously engineering at Apple, product management at Facebook and Instagram. Computer Science at Stanford.`,
+        image: '/images/team/tom.jpg',
+        linkedIn: 'https://www.linkedin.com/in/tomhschmidt/',
+        github: 'https://github.com/tomhschmidt',
+        medium: '',
+    },
+    {
+        name: 'Jacob Evans',
+        title: 'Blockchain Engineer',
+        description: `Previously software engineer at Qantas and RSA Security.`,
+        image: '/images/team/jacob.jpg',
+        linkedIn: 'https://www.linkedin.com/in/dekzter/',
+        github: 'https://github.com/dekz',
+        medium: '',
     },
 ];
 
@@ -149,6 +154,12 @@ const styles: Styles = {
         color: 'black',
         paddingTop: 110,
     },
+    weAreHiring: {
+        fontSize: 30,
+        color: colors.darkestGrey,
+        fontFamily: 'Roboto Mono',
+        letterSpacing: 7.5,
+    },
 };
 
 export class About extends React.Component<AboutProps, AboutState> {
@@ -157,95 +168,79 @@ export class About extends React.Component<AboutProps, AboutState> {
     }
     public render() {
         return (
-            <div style={{backgroundColor: CUSTOM_BACKGROUND_COLOR}}>
-                <DocumentTitle title="0x About Us"/>
+            <div style={{ backgroundColor: colors.lightestGrey }}>
+                <DocumentTitle title="0x About Us" />
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
-                    style={{backgroundColor: CUSTOM_BACKGROUND_COLOR}}
+                    style={{ backgroundColor: colors.lightestGrey }}
                 />
-                <div
-                    id="about"
-                    className="mx-auto max-width-4 py4"
-                    style={{color: colors.grey800}}
-                >
-                    <div
-                        className="mx-auto pb4 sm-px3"
-                        style={{maxWidth: 435}}
-                    >
-                        <div
-                            style={styles.header}
-                        >
-                            About us:
-                        </div>
+                <div id="about" className="mx-auto max-width-4 py4" style={{ color: colors.grey800 }}>
+                    <div className="mx-auto pb4 sm-px3" style={{ maxWidth: 435 }}>
+                        <div style={styles.header}>About us:</div>
                         <div
                             className="pt3"
-                            style={{fontSize: 17, color: CUSTOM_GRAY, lineHeight: 1.5}}
+                            style={{
+                                fontSize: 17,
+                                color: colors.darkestGrey,
+                                lineHeight: 1.5,
+                            }}
                         >
-                            Our team is a diverse and globally distributed group with backgrounds
-                            in engineering, research, business and design. We are passionate about
-                            decentralized technology and its potential to act as an equalizing force
-                            in the world.
+                            Our team is a diverse and globally distributed group with backgrounds in engineering,
+                            research, business and design. We are passionate about decentralized technology and its
+                            potential to act as an equalizing force in the world.
                         </div>
                     </div>
                     <div className="pt3 md-px4 lg-px0">
-                        <div className="clearfix pb3">
-                            {this.renderProfiles(teamRow1)}
-                        </div>
-                        <div className="clearfix">
-                            {this.renderProfiles(teamRow2)}
-                        </div>
+                        <div className="clearfix pb3">{this._renderProfiles(teamRow1)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow2)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow3)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
                             className="pt2 pb3 sm-center md-pl4 lg-pl0 md-ml3"
-                            style={{color: CUSTOM_LIGHT_GRAY, fontSize: 24, fontFamily: 'Roboto Mono'}}
+                            style={{
+                                color: colors.grey,
+                                fontSize: 24,
+                                fontFamily: 'Roboto Mono',
+                            }}
                         >
                             Advisors:
                         </div>
-                        <div className="clearfix">
-                            {this.renderProfiles(advisors)}
-                        </div>
+                        <div className="clearfix">{this._renderProfiles(advisors)}</div>
                     </div>
-                    <div className="mx-auto py4 sm-px3" style={{maxWidth: 308}}>
-                        <div
-                            className="pb2"
-                            style={{fontSize: 30, color: CUSTOM_GRAY, fontFamily: 'Roboto Mono', letterSpacing: 7.5}}
-                        >
+                    <div className="mx-auto py4 sm-px3" style={{ maxWidth: 308 }}>
+                        <div className="pb2" style={styles.weAreHiring}>
                             WE'RE HIRING
                         </div>
                         <div
                             className="pb4 mb4"
-                            style={{fontSize: 16, color: CUSTOM_GRAY, lineHeight: 1.5, letterSpacing: '0.5px'}}
+                            style={{
+                                fontSize: 16,
+                                color: colors.darkestGrey,
+                                lineHeight: 1.5,
+                                letterSpacing: '0.5px',
+                            }}
                         >
                             We are seeking outstanding candidates to{' '}
-                            <a
-                                href={constants.ANGELLIST_URL}
-                                target="_blank"
-                                style={{color: 'black'}}
-                            >
+                            <a href={constants.URL_ANGELLIST} target="_blank" style={{ color: 'black' }}>
                                 join our team
                             </a>
                             . We value passion, diversity and unique perspectives.
                         </div>
                     </div>
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }
-    private renderProfiles(profiles: ProfileInfo[]) {
+    private _renderProfiles(profiles: ProfileInfo[]) {
         const numIndiv = profiles.length;
-        const colSize = utils.getColSize(profiles.length);
+        const colSize = utils.getColSize(numIndiv);
         return _.map(profiles, profile => {
             return (
-                <div
-                    key={`profile-${profile.name}`}
-                >
-                    <Profile
-                        colSize={colSize}
-                        profileInfo={profile}
-                    />
+                <div key={`profile-${profile.name}`}>
+                    <Profile colSize={colSize} profileInfo={profile} />
                 </div>
             );
         });

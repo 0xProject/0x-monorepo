@@ -1,4 +1,4 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 
 export const orderResponse = {
     maker: '0x9e56625509c2f60af937f23b7b532600390e8c8b',

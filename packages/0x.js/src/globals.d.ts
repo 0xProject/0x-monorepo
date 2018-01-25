@@ -1,5 +1,3 @@
-/// <reference types='chai-typescript-typings' />
-/// <reference types='chai-as-promised-typescript-typings' />
 declare module 'web3_beta';
 declare module 'chai-bignumber';
 declare module 'dirty-chai';
@@ -27,18 +25,6 @@ declare module '*.json' {
     /* tslint:enable */
 }
 
-// find-version declarations
-declare function findVersions(version: string): string[];
-declare module 'find-versions' {
-    export = findVersions;
-}
-
-// compare-version declarations
-declare function compareVersions(firstVersion: string, secondVersion: string): number;
-declare module 'compare-versions' {
-    export = compareVersions;
-}
-
 declare module 'ethereumjs-abi' {
     const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
 }
@@ -57,8 +43,7 @@ declare module 'truffle-hdwallet-provider' {
 }
 
 // abi-decoder declarations
-interface DecodedLogArg {
-}
+interface DecodedLogArg {}
 interface DecodedLog {
     name: string;
     events: DecodedLogArg[];

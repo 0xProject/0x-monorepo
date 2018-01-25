@@ -1,14 +1,12 @@
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {TrackTokenConfirmation} from 'ts/components/track_token_confirmation';
-import {trackedTokenStorage} from 'ts/local_storage/tracked_token_storage';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {Token, TokenByAddress} from 'ts/types';
-import {constants} from 'ts/utils/constants';
+import { Blockchain } from 'ts/blockchain';
+import { TrackTokenConfirmation } from 'ts/components/track_token_confirmation';
+import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { Token, TokenByAddress } from 'ts/types';
 
 interface TrackTokenConfirmationDialogProps {
     tokens: Token[];
@@ -25,8 +23,10 @@ interface TrackTokenConfirmationDialogState {
     isAddingTokenToTracked: boolean;
 }
 
-export class TrackTokenConfirmationDialog extends
-    React.Component<TrackTokenConfirmationDialogProps, TrackTokenConfirmationDialogState> {
+export class TrackTokenConfirmationDialog extends React.Component<
+    TrackTokenConfirmationDialogProps,
+    TrackTokenConfirmationDialogState
+> {
     constructor(props: TrackTokenConfirmationDialogProps) {
         super(props);
         this.state = {
@@ -38,17 +38,17 @@ export class TrackTokenConfirmationDialog extends
         return (
             <Dialog
                 title="Tracking confirmation"
-                titleStyle={{fontWeight: 100}}
+                titleStyle={{ fontWeight: 100 }}
                 actions={[
                     <FlatButton
                         key="trackNo"
                         label="No"
-                        onTouchTap={this.onTrackConfirmationRespondedAsync.bind(this, false)}
+                        onTouchTap={this._onTrackConfirmationRespondedAsync.bind(this, false)}
                     />,
                     <FlatButton
                         key="trackYes"
                         label="Yes"
-                        onTouchTap={this.onTrackConfirmationRespondedAsync.bind(this, true)}
+                        onTouchTap={this._onTrackConfirmationRespondedAsync.bind(this, true)}
                     />,
                 ]}
                 open={this.props.isOpen}
@@ -66,7 +66,7 @@ export class TrackTokenConfirmationDialog extends
             </Dialog>
         );
     }
-    private async onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean) {
+    private async _onTrackConfirmationRespondedAsync(didUserAcceptTracking: boolean) {
         if (!didUserAcceptTracking) {
             this.props.onToggleDialog(didUserAcceptTracking);
             return;
@@ -75,16 +75,17 @@ export class TrackTokenConfirmationDialog extends
             isAddingTokenToTracked: true,
         });
         for (const token of this.props.tokens) {
-            const newTokenEntry = _.assign({}, token);
+            const newTokenEntry = {
+                ...token,
+            };
 
             newTokenEntry.isTracked = true;
             trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
             this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
 
-            const [
-                balance,
-                allowance,
-            ] = await this.props.blockchain.getCurrentUserTokenBalanceAndAllowanceAsync(token.address);
+            const [balance, allowance] = await this.props.blockchain.getCurrentUserTokenBalanceAndAllowanceAsync(
+                token.address,
+            );
             this.props.dispatcher.updateTokenStateByAddress({
                 [token.address]: {
                     balance,

@@ -1,9 +1,7 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import {Element as ScrollElement} from 'react-scroll';
-import {ProfileInfo, Styles} from 'ts/types';
-import {utils} from 'ts/utils/utils';
+import { ProfileInfo, Styles } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 const IMAGE_DIMENSION = 149;
 const styles: Styles = {
@@ -26,43 +24,30 @@ interface ProfileProps {
 
 export function Profile(props: ProfileProps) {
     return (
-        <div
-            className={`lg-col md-col lg-col-${props.colSize} md-col-6`}
-        >
-            <div
-                style={{maxWidth: 300}}
-                className="mx-auto lg-px3 md-px3 sm-px4 sm-pb3"
-            >
-                <div
-                    className="circle overflow-hidden mx-auto"
-                    style={styles.imageContainer}
-                >
-                    <img
-                        width={IMAGE_DIMENSION}
-                        src={props.profileInfo.image}
-                    />
+        <div className={`lg-col md-col lg-col-${props.colSize} md-col-6`}>
+            <div style={{ maxWidth: 300 }} className="mx-auto lg-px3 md-px3 sm-px4 sm-pb3">
+                <div className="circle overflow-hidden mx-auto" style={styles.imageContainer}>
+                    <img width={IMAGE_DIMENSION} src={props.profileInfo.image} />
                 </div>
-                <div
-                    className="center"
-                    style={{fontSize: 18, fontWeight: 'bold', paddingTop: 20}}
-                >
+                <div className="center" style={{ fontSize: 18, fontWeight: 'bold', paddingTop: 20 }}>
                     {props.profileInfo.name}
                 </div>
-                {!_.isUndefined(props.profileInfo.title) &&
+                {!_.isUndefined(props.profileInfo.title) && (
                     <div
                         className="pt1 center"
-                        style={{fontSize: 14, fontFamily: 'Roboto Mono', color: '#818181'}}
+                        style={{
+                            fontSize: 14,
+                            fontFamily: 'Roboto Mono',
+                            color: colors.darkGrey,
+                        }}
                     >
                         {props.profileInfo.title.toUpperCase()}
                     </div>
-                }
-                <div
-                    style={{minHeight: 60, lineHeight: 1.4}}
-                    className="pt1 pb2 mx-auto lg-h6 md-h6 sm-h5 sm-center"
-                >
+                )}
+                <div style={{ minHeight: 60, lineHeight: 1.4 }} className="pt1 pb2 mx-auto lg-h6 md-h6 sm-h5 sm-center">
                     {props.profileInfo.description}
                 </div>
-                <div className="flex pb3 mx-auto sm-hide xs-hide" style={{width: 180, opacity: 0.5}}>
+                <div className="flex pb3 mx-auto sm-hide xs-hide" style={{ width: 280, opacity: 0.5 }}>
                     {renderSocialMediaIcons(props.profileInfo)}
                 </div>
             </div>
@@ -86,13 +71,8 @@ function renderSocialMediaIcon(iconName: string, url: string) {
 
     return (
         <div key={url} className="pr1">
-            <a
-                href={url}
-                style={{color: 'inherit'}}
-                target="_blank"
-                className="text-decoration-none"
-            >
-                <i className={`zmdi ${iconName}`} style={{...styles.socalIcon}} />
+            <a href={url} style={{ color: 'inherit' }} target="_blank" className="text-decoration-none">
+                <i className={`zmdi ${iconName}`} style={{ ...styles.socalIcon }} />
             </a>
         </div>
     );

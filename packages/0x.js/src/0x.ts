@@ -1,38 +1,32 @@
-import {schemas, SchemaValidator} from '@0xproject/json-schemas';
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
-import BigNumber from 'bignumber.js';
+import { schemas, SchemaValidator } from '@0xproject/json-schemas';
+import { BigNumber, intervalUtils } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import {artifacts} from './artifacts';
-import {bigNumberConfigs} from './bignumber_config';
-import {EtherTokenWrapper} from './contract_wrappers/ether_token_wrapper';
-import {ExchangeWrapper} from './contract_wrappers/exchange_wrapper';
-import {TokenRegistryWrapper} from './contract_wrappers/token_registry_wrapper';
-import {TokenTransferProxyWrapper} from './contract_wrappers/token_transfer_proxy_wrapper';
-import {TokenWrapper} from './contract_wrappers/token_wrapper';
-import {OrderStateWatcher} from './order_watcher/order_state_watcher';
-import {zeroExConfigSchema} from './schemas/zero_ex_config_schema';
+import { artifacts } from './artifacts';
+import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
+import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
+import { TokenRegistryWrapper } from './contract_wrappers/token_registry_wrapper';
+import { TokenTransferProxyWrapper } from './contract_wrappers/token_transfer_proxy_wrapper';
+import { TokenWrapper } from './contract_wrappers/token_wrapper';
+import { OrderStateWatcher } from './order_watcher/order_state_watcher';
+import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
 import {
     ECSignature,
     Order,
-    OrderStateWatcherConfig,
     SignedOrder,
     TransactionReceiptWithDecodedLogs,
     Web3Provider,
     ZeroExConfig,
     ZeroExError,
 } from './types';
-import {AbiDecoder} from './utils/abi_decoder';
-import {assert} from './utils/assert';
-import {constants} from './utils/constants';
-import {intervalUtils} from './utils/interval_utils';
-import {OrderStateUtils} from './utils/order_state_utils';
-import {signatureUtils} from './utils/signature_utils';
-import {utils} from './utils/utils';
-
-// Customize our BigNumber instances
-bigNumberConfigs.configure();
+import { AbiDecoder } from './utils/abi_decoder';
+import { assert } from './utils/assert';
+import { constants } from './utils/constants';
+import { decorators } from './utils/decorators';
+import { signatureUtils } from './utils/signature_utils';
+import { utils } from './utils/utils';
 
 /**
  * The ZeroEx class is the single entry-point into the 0x.js library. It contains all of the library's functionality
@@ -130,7 +124,7 @@ export class ZeroEx {
      * @return  The amount in units.
      */
     public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
-        assert.isBigNumber('amount', amount);
+        assert.isValidBaseUnitAmount('amount', amount);
         assert.isNumber('decimals', decimals);
 
         const aUnit = new BigNumber(10).pow(decimals);
@@ -151,6 +145,10 @@ export class ZeroEx {
 
         const unit = new BigNumber(10).pow(decimals);
         const baseUnitAmount = amount.times(unit);
+        const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
+        if (hasDecimals) {
+            throw new Error(`Invalid unit amount: ${amount.toString()} - Too many decimal places`);
+        }
         return baseUnitAmount;
     }
     /**
@@ -158,7 +156,8 @@ export class ZeroEx {
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
      * @return  The resulting orderHash from hashing the supplied order.
      */
-    public static getOrderHashHex(order: Order|SignedOrder): string {
+    @decorators.syncZeroExErrorHandler
+    public static getOrderHashHex(order: Order | SignedOrder): string {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         const orderHashHex = utils.getOrderHashHex(order);
         return orderHashHex;
@@ -185,27 +184,27 @@ export class ZeroEx {
             config.networkId,
             config.tokenTransferProxyContractAddress,
         );
-        this.token = new TokenWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this._abiDecoder,
-            this.proxy,
-        );
+        this.token = new TokenWrapper(this._web3Wrapper, config.networkId, this._abiDecoder, this.proxy);
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             config.networkId,
             this._abiDecoder,
             this.token,
             config.exchangeContractAddress,
+            config.zrxContractAddress,
         );
         this.tokenRegistry = new TokenRegistryWrapper(
-            this._web3Wrapper, config.networkId, config.tokenRegistryContractAddress,
+            this._web3Wrapper,
+            config.networkId,
+            config.tokenRegistryContractAddress,
         );
-        this.etherToken = new EtherTokenWrapper(
-            this._web3Wrapper, config.networkId, this.token, config.etherTokenContractAddress,
-        );
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this._abiDecoder, this.token);
         this.orderStateWatcher = new OrderStateWatcher(
-            this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config.orderWatcherConfig,
+            this._web3Wrapper,
+            this._abiDecoder,
+            this.token,
+            this.exchange,
+            config.orderWatcherConfig,
         );
     }
     /**
@@ -215,12 +214,17 @@ export class ZeroEx {
      * @param   networkId   The id of the network your provider is connected to
      */
     public setProvider(provider: Web3Provider, networkId: number): void {
-        this._web3Wrapper.setProvider(provider, networkId);
+        this._web3Wrapper.setProvider(provider);
         (this.exchange as any)._invalidateContractInstances();
+        (this.exchange as any)._setNetworkId(networkId);
         (this.tokenRegistry as any)._invalidateContractInstance();
+        (this.tokenRegistry as any)._setNetworkId(networkId);
         (this.token as any)._invalidateContractInstances();
+        (this.token as any)._setNetworkId(networkId);
         (this.proxy as any)._invalidateContractInstance();
+        (this.proxy as any)._setNetworkId(networkId);
         (this.etherToken as any)._invalidateContractInstance();
+        (this.etherToken as any)._setNetworkId(networkId);
     }
     /**
      * Get user Ethereum addresses available through the supplied web3 provider available for sending transactions.
@@ -288,35 +292,46 @@ export class ZeroEx {
      * @return  Transaction receipt with decoded log args.
      */
     public async awaitTransactionMinedAsync(
-        txHash: string, pollingIntervalMs = 1000, timeoutMs?: number): Promise<TransactionReceiptWithDecodedLogs> {
+        txHash: string,
+        pollingIntervalMs = 1000,
+        timeoutMs?: number,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         let timeoutExceeded = false;
         if (timeoutMs) {
-            setTimeout(() => timeoutExceeded = true, timeoutMs);
+            setTimeout(() => (timeoutExceeded = true), timeoutMs);
         }
 
         const txReceiptPromise = new Promise(
             (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
-            const intervalId = intervalUtils.setAsyncExcludingInterval(async () => {
-                if (timeoutExceeded) {
-                    intervalUtils.clearAsyncExcludingInterval(intervalId);
-                    return reject(ZeroExError.TransactionMiningTimeout);
-                }
+                const intervalId = intervalUtils.setAsyncExcludingInterval(
+                    async () => {
+                        if (timeoutExceeded) {
+                            intervalUtils.clearAsyncExcludingInterval(intervalId);
+                            return reject(ZeroExError.TransactionMiningTimeout);
+                        }
 
-                const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
-                if (!_.isNull(transactionReceipt)) {
-                    intervalUtils.clearAsyncExcludingInterval(intervalId);
-                    const logsWithDecodedArgs = _.map(
-                        transactionReceipt.logs,
-                        this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
-                    );
-                    const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
-                        ...transactionReceipt,
-                        logs: logsWithDecodedArgs,
-                    };
-                    resolve(transactionReceiptWithDecodedLogArgs);
-                }
-            }, pollingIntervalMs);
-        });
+                        const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
+                        if (!_.isNull(transactionReceipt)) {
+                            intervalUtils.clearAsyncExcludingInterval(intervalId);
+                            const logsWithDecodedArgs = _.map(
+                                transactionReceipt.logs,
+                                this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
+                            );
+                            const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
+                                ...transactionReceipt,
+                                logs: logsWithDecodedArgs,
+                            };
+                            resolve(transactionReceiptWithDecodedLogArgs);
+                        }
+                    },
+                    pollingIntervalMs,
+                    (err: Error) => {
+                        intervalUtils.clearAsyncExcludingInterval(intervalId);
+                        reject(err);
+                    },
+                );
+            },
+        );
 
         return txReceiptPromise;
     }

@@ -1,44 +1,41 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import {Route, Switch} from 'react-router-dom';
-import {Blockchain} from 'ts/blockchain';
-import {BlockchainErrDialog} from 'ts/components/dialogs/blockchain_err_dialog';
-import {PortalDisclaimerDialog} from 'ts/components/dialogs/portal_disclaimer_dialog';
-import {FillOrder} from 'ts/components/fill_order';
-import {Footer} from 'ts/components/footer';
-import {PortalMenu} from 'ts/components/portal_menu';
-import {TokenBalances} from 'ts/components/token_balances';
-import {TopBar} from 'ts/components/top_bar';
-import {TradeHistory} from 'ts/components/trade_history/trade_history';
-import {FlashMessage} from 'ts/components/ui/flash_message';
-import {Loading} from 'ts/components/ui/loading';
-import {GenerateOrderForm} from 'ts/containers/generate_order_form';
-import {localStorage} from 'ts/local_storage/local_storage';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
-import {orderSchema} from 'ts/schemas/order_schema';
-import {SchemaValidator} from 'ts/schemas/validator';
+import { Route, Switch } from 'react-router-dom';
+import { Blockchain } from 'ts/blockchain';
+import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
+import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
+import { WrappedEthSectionNoticeDialog } from 'ts/components/dialogs/wrapped_eth_section_notice_dialog';
+import { EthWrappers } from 'ts/components/eth_wrappers';
+import { FillOrder } from 'ts/components/fill_order';
+import { Footer } from 'ts/components/footer';
+import { PortalMenu } from 'ts/components/portal_menu';
+import { TokenBalances } from 'ts/components/token_balances';
+import { TopBar } from 'ts/components/top_bar';
+import { TradeHistory } from 'ts/components/trade_history/trade_history';
+import { FlashMessage } from 'ts/components/ui/flash_message';
+import { Loading } from 'ts/components/ui/loading';
+import { GenerateOrderForm } from 'ts/containers/generate_order_form';
+import { localStorage } from 'ts/local_storage/local_storage';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { orderSchema } from 'ts/schemas/order_schema';
+import { SchemaValidator } from 'ts/schemas/validator';
 import {
     BlockchainErrs,
-    Fill,
     HashData,
     Order,
     ScreenWidths,
-    Side,
-    Styles,
     Token,
     TokenByAddress,
     TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
-import {configs} from 'ts/utils/configs';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
+import { colors } from 'ts/utils/colors';
+import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const THROTTLE_TIMEOUT = 100;
 
@@ -60,69 +57,57 @@ export interface PortalAllProps {
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
     location: Location;
-    flashMessage?: string|React.ReactNode;
+    flashMessage?: string | React.ReactNode;
 }
 
 interface PortalAllState {
     prevNetworkId: number;
     prevNodeVersion: string;
     prevUserAddress: string;
-    hasAcceptedDisclaimer: boolean;
+    prevPathname: string;
+    isDisclaimerDialogOpen: boolean;
+    isWethNoticeDialogOpen: boolean;
 }
 
-const styles: Styles = {
-    button: {
-        color: 'white',
-    },
-    headline: {
-        fontSize: 20,
-        fontWeight: 400,
-        marginBottom: 12,
-        paddingTop: 16,
-    },
-    inkBar: {
-        background: colors.amber600,
-    },
-    menuItem: {
-        padding: '0px 16px 0px 48px',
-    },
-    tabItemContainer: {
-        background: colors.blueGrey500,
-        borderRadius: '4px 4px 0 0',
-    },
-};
-
 export class Portal extends React.Component<PortalAllProps, PortalAllState> {
-    private blockchain: Blockchain;
-    private sharedOrderIfExists: Order;
-    private throttledScreenWidthUpdate: () => void;
+    private _blockchain: Blockchain;
+    private _sharedOrderIfExists: Order;
+    private _throttledScreenWidthUpdate: () => void;
+    public static hasAlreadyDismissedWethNotice() {
+        const didDismissWethNotice = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_DISMISS_WETH_NOTICE);
+        const hasAlreadyDismissedWethNotice = !_.isUndefined(didDismissWethNotice) && !_.isEmpty(didDismissWethNotice);
+        return hasAlreadyDismissedWethNotice;
+    }
     constructor(props: PortalAllProps) {
         super(props);
-        this.sharedOrderIfExists = this.getSharedOrderIfExists();
-        this.throttledScreenWidthUpdate = _.throttle(this.updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
+        this._sharedOrderIfExists = this._getSharedOrderIfExists();
+        this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
+
+        const isViewingBalances = _.includes(props.location.pathname, `${WebsitePaths.Portal}/balances`);
+        const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
+
+        const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
+        const hasAcceptedDisclaimer =
+            !_.isUndefined(didAcceptPortalDisclaimer) && !_.isEmpty(didAcceptPortalDisclaimer);
         this.state = {
             prevNetworkId: this.props.networkId,
             prevNodeVersion: this.props.nodeVersion,
             prevUserAddress: this.props.userAddress,
-            hasAcceptedDisclaimer: false,
+            prevPathname: this.props.location.pathname,
+            isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
+            isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
         };
     }
     public componentDidMount() {
-        window.addEventListener('resize', this.throttledScreenWidthUpdate);
+        window.addEventListener('resize', this._throttledScreenWidthUpdate);
         window.scrollTo(0, 0);
     }
     public componentWillMount() {
-        this.blockchain = new Blockchain(this.props.dispatcher);
-        const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY);
-        const hasAcceptedDisclaimer = !_.isUndefined(didAcceptPortalDisclaimer) &&
-                                      !_.isEmpty(didAcceptPortalDisclaimer);
-        this.setState({
-            hasAcceptedDisclaimer,
-        });
+        this._blockchain = new Blockchain(this.props.dispatcher);
     }
     public componentWillUnmount() {
-        this.blockchain.destroy();
-        window.removeEventListener('resize', this.throttledScreenWidthUpdate);
+        this._blockchain.destroy();
+        window.removeEventListener('resize', this._throttledScreenWidthUpdate);
         // We re-set the entire redux state when the portal is unmounted so that when it is re-rendered
         // the initialization process always occurs from the same base state. This helps avoid
         // initialization inconsistencies (i.e While the portal was unrendered, the user might have
@@ -132,19 +117,18 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     public componentWillReceiveProps(nextProps: PortalAllProps) {
         if (nextProps.networkId !== this.state.prevNetworkId) {
             // tslint:disable-next-line:no-floating-promises
-            this.blockchain.networkIdUpdatedFireAndForgetAsync(nextProps.networkId);
+            this._blockchain.networkIdUpdatedFireAndForgetAsync(nextProps.networkId);
             this.setState({
                 prevNetworkId: nextProps.networkId,
             });
         }
         if (nextProps.userAddress !== this.state.prevUserAddress) {
             // tslint:disable-next-line:no-floating-promises
-            this.blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
-            if (!_.isEmpty(nextProps.userAddress) &&
-                nextProps.blockchainIsLoaded) {
+            this._blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
+            if (!_.isEmpty(nextProps.userAddress) && nextProps.blockchainIsLoaded) {
                 const tokens = _.values(nextProps.tokenByAddress);
                 // tslint:disable-next-line:no-floating-promises
-                this.updateBalanceAndAllowanceWithLoadingScreenAsync(tokens);
+                this._updateBalanceAndAllowanceWithLoadingScreenAsync(tokens);
             }
             this.setState({
                 prevUserAddress: nextProps.userAddress,
@@ -152,105 +136,128 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         }
         if (nextProps.nodeVersion !== this.state.prevNodeVersion) {
             // tslint:disable-next-line:no-floating-promises
-            this.blockchain.nodeVersionUpdatedFireAndForgetAsync(nextProps.nodeVersion);
+            this._blockchain.nodeVersionUpdatedFireAndForgetAsync(nextProps.nodeVersion);
+        }
+        if (nextProps.location.pathname !== this.state.prevPathname) {
+            const isViewingBalances = _.includes(nextProps.location.pathname, `${WebsitePaths.Portal}/balances`);
+            const hasAlreadyDismissedWethNotice = Portal.hasAlreadyDismissedWethNotice();
+            this.setState({
+                prevPathname: nextProps.location.pathname,
+                isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
+            });
         }
     }
     public render() {
-        const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher
-                .updateShouldBlockchainErrDialogBeOpen.bind(this.props.dispatcher);
+        const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen.bind(
+            this.props.dispatcher,
+        );
         const portalStyle: React.CSSProperties = {
             minHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
         };
+        const portalMenuContainerStyle: React.CSSProperties = {
+            overflow: 'hidden',
+            backgroundColor: colors.darkestGrey,
+            color: colors.white,
+        };
         return (
             <div style={portalStyle}>
-                <DocumentTitle title="0x Portal DApp"/>
+                <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
                     blockchainIsLoaded={this.props.blockchainIsLoaded}
                     location={this.props.location}
                 />
-                <div id="portal" className="mx-auto max-width-4 pt4" style={{width: '100%'}}>
+                <div id="portal" className="mx-auto max-width-4" style={{ width: '100%' }}>
                     <Paper className="mb3 mt2">
-                        {!configs.isMainnetEnabled && this.props.networkId === constants.MAINNET_NETWORK_ID  ?
+                        {!configs.IS_MAINNET_ENABLED && this.props.networkId === constants.NETWORK_ID_MAINNET ? (
                             <div className="p3 center">
                                 <div className="h2 py2">Mainnet unavailable</div>
                                 <div className="mx-auto pb2 pt2">
-                                    <img
-                                        src="/images/zrx_token.png"
-                                        style={{width: 150}}
-                                    />
+                                    <img src="/images/zrx_token.png" style={{ width: 150 }} />
                                 </div>
                                 <div>
                                     0x portal is currently unavailable on the Ethereum mainnet.
-                                    <div>
-                                        To try it out, switch to the Kovan test network
-                                        (networkId: 42).
-                                    </div>
-                                    <div className="py2">
-                                        Check back soon!
-                                    </div>
+                                    <div>To try it out, switch to the Kovan test network (networkId: 42).</div>
+                                    <div className="py2">Check back soon!</div>
                                 </div>
-                            </div> :
+                            </div>
+                        ) : (
                             <div className="mx-auto flex">
-                                <div
-                                    className="col col-2 pr2 pt1 sm-hide xs-hide"
-                                    style={{overflow: 'hidden', backgroundColor: 'rgb(39, 39, 39)', color: 'white'}}
-                                >
-                                    <PortalMenu menuItemStyle={{color: 'white'}} />
+                                <div className="col col-2 pr2 pt1 sm-hide xs-hide" style={portalMenuContainerStyle}>
+                                    <PortalMenu menuItemStyle={{ color: colors.white }} />
                                 </div>
                                 <div className="col col-12 lg-col-10 md-col-10 sm-col sm-col-12">
-                                    <div className="py2" style={{backgroundColor: colors.grey50}}>
-                                        {this.props.blockchainIsLoaded ?
+                                    <div className="py2" style={{ backgroundColor: colors.grey50 }}>
+                                        {this.props.blockchainIsLoaded ? (
                                             <Switch>
                                                 <Route
+                                                    path={`${WebsitePaths.Portal}/weth`}
+                                                    render={this._renderEthWrapper.bind(this)}
+                                                />
+                                                <Route
                                                     path={`${WebsitePaths.Portal}/fill`}
-                                                    render={this.renderFillOrder.bind(this)}
+                                                    render={this._renderFillOrder.bind(this)}
                                                 />
                                                 <Route
                                                     path={`${WebsitePaths.Portal}/balances`}
-                                                    render={this.renderTokenBalances.bind(this)}
+                                                    render={this._renderTokenBalances.bind(this)}
                                                 />
                                                 <Route
                                                     path={`${WebsitePaths.Portal}/trades`}
-                                                    component={this.renderTradeHistory.bind(this)}
+                                                    component={this._renderTradeHistory.bind(this)}
                                                 />
                                                 <Route
                                                     path={`${WebsitePaths.Home}`}
-                                                    render={this.renderGenerateOrderForm.bind(this)}
+                                                    render={this._renderGenerateOrderForm.bind(this)}
                                                 />
-                                            </Switch> :
+                                            </Switch>
+                                        ) : (
                                             <Loading />
-                                        }
+                                        )}
                                     </div>
                                 </div>
                             </div>
-                        }
+                        )}
                     </Paper>
                     <BlockchainErrDialog
-                        blockchain={this.blockchain}
+                        blockchain={this._blockchain}
                         blockchainErr={this.props.blockchainErr}
                         isOpen={this.props.shouldBlockchainErrDialogBeOpen}
                         userAddress={this.props.userAddress}
                         toggleDialogFn={updateShouldBlockchainErrDialogBeOpen}
                         networkId={this.props.networkId}
                     />
+                    <WrappedEthSectionNoticeDialog
+                        isOpen={this.state.isWethNoticeDialogOpen}
+                        onToggleDialog={this._onWethNoticeAccepted.bind(this)}
+                    />
                     <PortalDisclaimerDialog
-                        isOpen={!this.state.hasAcceptedDisclaimer}
-                        onToggleDialog={this.onPortalDisclaimerAccepted.bind(this)}
+                        isOpen={this.state.isDisclaimerDialogOpen}
+                        onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
                     />
-                    <FlashMessage
-                        dispatcher={this.props.dispatcher}
-                        flashMessage={this.props.flashMessage}
-                    />
+                    <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
                 </div>
-                <Footer location={this.props.location} />
+                <Footer />
             </div>
         );
     }
-    private renderTradeHistory() {
+    private _renderEthWrapper() {
+        return (
+            <EthWrappers
+                networkId={this.props.networkId}
+                blockchain={this._blockchain}
+                dispatcher={this.props.dispatcher}
+                tokenByAddress={this.props.tokenByAddress}
+                tokenStateByAddress={this.props.tokenStateByAddress}
+                userAddress={this.props.userAddress}
+                userEtherBalance={this.props.userEtherBalance}
+            />
+        );
+    }
+    private _renderTradeHistory() {
         return (
             <TradeHistory
                 tokenByAddress={this.props.tokenByAddress}
@@ -259,10 +266,10 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             />
         );
     }
-    private renderTokenBalances() {
+    private _renderTokenBalances() {
         return (
             <TokenBalances
-                blockchain={this.blockchain}
+                blockchain={this._blockchain}
                 blockchainErr={this.props.blockchainErr}
                 blockchainIsLoaded={this.props.blockchainIsLoaded}
                 dispatcher={this.props.dispatcher}
@@ -275,16 +282,16 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             />
         );
     }
-    private renderFillOrder(match: any, location: Location, history: History) {
-        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache) ?
-                                 this.props.userSuppliedOrderCache :
-                                 this.sharedOrderIfExists;
+    private _renderFillOrder(match: any, location: Location, history: History) {
+        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
+            ? this.props.userSuppliedOrderCache
+            : this._sharedOrderIfExists;
         return (
             <FillOrder
-                blockchain={this.blockchain}
+                blockchain={this._blockchain}
                 blockchainErr={this.props.blockchainErr}
                 initialOrder={initialFillOrder}
-                isOrderInUrl={!_.isUndefined(this.sharedOrderIfExists)}
+                isOrderInUrl={!_.isUndefined(this._sharedOrderIfExists)}
                 orderFillAmount={this.props.orderFillAmount}
                 networkId={this.props.networkId}
                 userAddress={this.props.userAddress}
@@ -294,25 +301,31 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             />
         );
     }
-    private renderGenerateOrderForm(match: any, location: Location, history: History) {
+    private _renderGenerateOrderForm(match: any, location: Location, history: History) {
         return (
             <GenerateOrderForm
-                blockchain={this.blockchain}
+                blockchain={this._blockchain}
                 hashData={this.props.hashData}
                 dispatcher={this.props.dispatcher}
             />
         );
     }
-    private onPortalDisclaimerAccepted() {
-        localStorage.setItem(constants.ACCEPT_DISCLAIMER_LOCAL_STORAGE_KEY, 'set');
+    private _onPortalDisclaimerAccepted() {
+        localStorage.setItem(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER, 'set');
         this.setState({
-            hasAcceptedDisclaimer: true,
+            isDisclaimerDialogOpen: false,
         });
     }
-    private getSharedOrderIfExists(): Order {
+    private _onWethNoticeAccepted() {
+        localStorage.setItem(constants.LOCAL_STORAGE_KEY_DISMISS_WETH_NOTICE, 'set');
+        this.setState({
+            isWethNoticeDialogOpen: false,
+        });
+    }
+    private _getSharedOrderIfExists(): Order | undefined {
         const queryString = window.location.search;
         if (queryString.length === 0) {
-            return;
+            return undefined;
         }
         const queryParams = queryString.substring(1).split('&');
         const orderQueryParam = _.find(queryParams, queryParam => {
@@ -320,11 +333,11 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             return queryPair[0] === 'order';
         });
         if (_.isUndefined(orderQueryParam)) {
-            return;
+            return undefined;
         }
         const orderPair = orderQueryParam.split('=');
         if (orderPair.length !== 2) {
-            return;
+            return undefined;
         }
 
         const validator = new SchemaValidator();
@@ -332,17 +345,17 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const validationResult = validator.validate(order, orderSchema);
         if (validationResult.errors.length > 0) {
             utils.consoleLog(`Invalid shared order: ${validationResult.errors}`);
-            return;
+            return undefined;
         }
         return order;
     }
-    private updateScreenWidth() {
+    private _updateScreenWidth() {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
     }
-    private async updateBalanceAndAllowanceWithLoadingScreenAsync(tokens: Token[]) {
+    private async _updateBalanceAndAllowanceWithLoadingScreenAsync(tokens: Token[]) {
         this.props.dispatcher.updateBlockchainIsLoaded(false);
-        await this.blockchain.updateTokenBalancesAndAllowancesAsync(tokens);
+        await this._blockchain.updateTokenBalancesAndAllowancesAsync(tokens);
         this.props.dispatcher.updateBlockchainIsLoaded(true);
     }
 }

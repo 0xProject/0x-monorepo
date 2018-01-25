@@ -1,4 +1,5 @@
-import BigNumber from 'bignumber.js';
+import { TransactionReceipt } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 export enum ZeroExError {
@@ -27,6 +28,7 @@ export enum ZeroExError {
 export enum InternalZeroExError {
     NoAbiDecoder = 'NO_ABI_DECODER',
     ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
+    WethNotInTokenRegistry = 'WETH_NOT_IN_TOKEN_REGISTRY',
 }
 
 /**
@@ -40,8 +42,7 @@ export interface ECSignature {
 
 export type OrderAddresses = [string, string, string, string, string];
 
-export type OrderValues = [BigNumber, BigNumber, BigNumber,
-                           BigNumber, BigNumber, BigNumber];
+export type OrderValues = [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
 export type LogEvent = Web3.LogEntryEvent;
 export interface DecodedLogEvent<ArgsType> {
@@ -49,8 +50,8 @@ export interface DecodedLogEvent<ArgsType> {
     log: LogWithDecodedArgs<ArgsType>;
 }
 
-export type EventCallback<ArgsType> = (err: null|Error, log?: DecodedLogEvent<ArgsType>) => void;
-export type EventWatcherCallback = (log: LogEvent) => void;
+export type EventCallback<ArgsType> = (err: null | Error, log?: DecodedLogEvent<ArgsType>) => void;
+export type EventWatcherCallback = (err: null | Error, log?: LogEvent) => void;
 
 export enum SolidityTypes {
     Address = 'address',
@@ -134,7 +135,10 @@ export interface LogErrorContractEventArgs {
     errorId: BigNumber;
     orderHash: string;
 }
-export type ExchangeContractEventArgs = LogFillContractEventArgs|LogCancelContractEventArgs|LogErrorContractEventArgs;
+export type ExchangeContractEventArgs =
+    | LogFillContractEventArgs
+    | LogCancelContractEventArgs
+    | LogErrorContractEventArgs;
 export interface TransferContractEventArgs {
     _from: string;
     _to: string;
@@ -145,9 +149,21 @@ export interface ApprovalContractEventArgs {
     _spender: string;
     _value: BigNumber;
 }
-export type TokenContractEventArgs = TransferContractEventArgs|ApprovalContractEventArgs;
-export type ContractEventArgs = ExchangeContractEventArgs|TokenContractEventArgs;
-export type ContractEventArg = string|BigNumber;
+export interface DepositContractEventArgs {
+    _owner: string;
+    _value: BigNumber;
+}
+export interface WithdrawalContractEventArgs {
+    _owner: string;
+    _value: BigNumber;
+}
+export type TokenContractEventArgs = TransferContractEventArgs | ApprovalContractEventArgs;
+export type EtherTokenContractEventArgs =
+    | TokenContractEventArgs
+    | DepositContractEventArgs
+    | WithdrawalContractEventArgs;
+export type ContractEventArgs = ExchangeContractEventArgs | TokenContractEventArgs | EtherTokenContractEventArgs;
+export type ContractEventArg = string | BigNumber;
 
 export interface Order {
     maker: string;
@@ -200,7 +216,14 @@ export enum TokenEvents {
     Approval = 'Approval',
 }
 
-export type ContractEvents = TokenEvents|ExchangeEvents;
+export enum EtherTokenEvents {
+    Transfer = 'Transfer',
+    Approval = 'Approval',
+    Deposit = 'Deposit',
+    Withdrawal = 'Withdrawal',
+}
+
+export type ContractEvents = TokenEvents | ExchangeEvents | EtherTokenEvents;
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
@@ -214,9 +237,9 @@ export enum BlockParamLiteral {
     Pending = 'pending',
 }
 
-export type BlockParam = BlockParamLiteral|number;
+export type BlockParam = BlockParamLiteral | number;
 
-export interface SubscriptionOpts {
+export interface BlockRange {
     fromBlock: BlockParam;
     toBlock: BlockParam;
 }
@@ -224,7 +247,7 @@ export interface SubscriptionOpts {
 export type DoneCallback = (err?: Error) => void;
 
 export interface OrderCancellationRequest {
-    order: Order|SignedOrder;
+    order: Order | SignedOrder;
     takerTokenCancelAmount: BigNumber;
 }
 
@@ -234,6 +257,7 @@ export interface OrderFillRequest {
 }
 
 export type AsyncMethod = (...args: any[]) => Promise<any>;
+export type SyncMethod = (...args: any[]) => any;
 
 /**
  * We re-export the `Web3.Provider` type specified in the Web3 Typescript typings
@@ -266,8 +290,8 @@ export interface OrderStateWatcherConfig {
  * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
+ * zrxContractAddress: The address of the ZRX contract to use
  * tokenRegistryContractAddress: The address of a token registry contract to use
- * etherTokenContractAddress: The address of an ether token contract to use
  * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
  */
@@ -275,8 +299,8 @@ export interface ZeroExConfig {
     networkId: number;
     gasPrice?: BigNumber;
     exchangeContractAddress?: string;
+    zrxContractAddress?: string;
     tokenRegistryContractAddress?: string;
-    etherTokenContractAddress?: string;
     tokenTransferProxyContractAddress?: string;
     orderWatcherConfig?: OrderStateWatcherConfig;
 }
@@ -295,10 +319,10 @@ export interface DecodedLogArgs {
 export interface LogWithDecodedArgs<ArgsType> extends Web3.DecodedLogEntry<ArgsType> {}
 
 export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
-    logs: Array<LogWithDecodedArgs<DecodedLogArgs>|Web3.LogEntry>;
+    logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>;
 }
 
-export type ArtifactContractName = 'ZRX'|'TokenTransferProxy'|'TokenRegistry'|'Token'|'Exchange'|'EtherToken';
+export type ArtifactContractName = 'ZRX' | 'TokenTransferProxy' | 'TokenRegistry' | 'Token' | 'Exchange' | 'EtherToken';
 
 export interface Artifact {
     contract_name: ArtifactContractName;
@@ -382,31 +406,7 @@ export interface OrderStateInvalid {
     error: ExchangeContractErrs;
 }
 
-export type OrderState = OrderStateValid|OrderStateInvalid;
+export type OrderState = OrderStateValid | OrderStateInvalid;
 
-export type OnOrderStateChangeCallback = (orderState: OrderState) => void;
-
-export interface TxData {
-    from?: string;
-    gas?: number;
-    gasPrice?: BigNumber;
-    nonce?: number;
-}
-
-export interface TxDataPayable extends TxData {
-    value?: BigNumber;
-}
-
-export interface TransactionReceipt {
-    blockHash: string;
-    blockNumber: number;
-    transactionHash: string;
-    transactionIndex: number;
-    from: string;
-    to: string;
-    status: null|0|1;
-    cumulativeGasUsed: number;
-    gasUsed: number;
-    contractAddress: string|null;
-    logs: Web3.LogEntry[];
-} // tslint:disable:max-file-line-count
+export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;
+// tslint:disable:max-file-line-count

@@ -1,18 +1,14 @@
-import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {Dispatch, Store as ReduxStore} from 'redux';
-import {Blockchain} from 'ts/blockchain';
-import {DocsInfo} from 'ts/pages/documentation/docs_info';
-import {
-    Documentation as DocumentationComponent,
-    DocumentationAllProps,
-} from 'ts/pages/documentation/documentation';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
-import {DocsInfoConfig, WebsitePaths} from 'ts/types';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { DocsInfo } from 'ts/pages/documentation/docs_info';
+import { Documentation as DocumentationComponent, DocumentationAllProps } from 'ts/pages/documentation/documentation';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { State } from 'ts/redux/reducer';
+import { DocsInfoConfig, WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
+import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/connect/introduction');
@@ -23,7 +19,8 @@ const connectDocSections = {
     introduction: 'introduction',
     installation: 'installation',
     httpClient: 'httpClient',
-    types: 'types',
+    webSocketOrderbookChannel: 'webSocketOrderbookChannel',
+    types: constants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -33,18 +30,11 @@ const docsInfoConfig: DocsInfoConfig = {
     websitePath: WebsitePaths.Connect,
     docsJsonRoot: 'https://s3.amazonaws.com/connect-docs-jsons',
     menu: {
-        introduction: [
-            connectDocSections.introduction,
-        ],
-        install: [
-            connectDocSections.installation,
-        ],
-        httpClient: [
-            connectDocSections.httpClient,
-        ],
-        types: [
-            connectDocSections.types,
-        ],
+        introduction: [connectDocSections.introduction],
+        install: [connectDocSections.installation],
+        httpClient: [connectDocSections.httpClient],
+        webSocketOrderbookChannel: [connectDocSections.webSocketOrderbookChannel],
+        types: [connectDocSections.types],
     },
     sectionNameToMarkdown: {
         [connectDocSections.introduction]: IntroMarkdown,
@@ -56,6 +46,9 @@ const docsInfoConfig: DocsInfoConfig = {
         'Client',
         'FeesRequest',
         'FeesResponse',
+        'OrderbookChannel',
+        'OrderbookChannelHandler',
+        'OrderbookChannelSubscriptionOpts',
         'OrderbookRequest',
         'OrderbookResponse',
         'OrdersRequest',
@@ -64,14 +57,16 @@ const docsInfoConfig: DocsInfoConfig = {
         'TokenTradeInfo',
         'Order',
         'SignedOrder',
+        'ECSignature',
     ],
     sectionNameToModulePath: {
         [connectDocSections.httpClient]: ['"src/http_client"'],
+        [connectDocSections.webSocketOrderbookChannel]: ['"src/ws_orderbook_channel"'],
         [connectDocSections.types]: ['"src/types"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: connectDocSections,
-    visibleConstructors: [connectDocSections.httpClient],
+    visibleConstructors: [connectDocSections.httpClient, connectDocSections.webSocketOrderbookChannel],
     convertToDocAgnosticFormatFn: typeDocUtils.convertToDocAgnosticFormat.bind(typeDocUtils),
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
@@ -96,5 +91,6 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Documentation: React.ComponentClass<DocumentationAllProps> =
-  connect(mapStateToProps, mapDispatchToProps)(DocumentationComponent);
+export const Documentation: React.ComponentClass<DocumentationAllProps> = connect(mapStateToProps, mapDispatchToProps)(
+    DocumentationComponent,
+);

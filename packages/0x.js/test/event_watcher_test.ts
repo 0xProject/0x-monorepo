@@ -1,22 +1,17 @@
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
-import BigNumber from 'bignumber.js';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 
-import {
-    DecodedLogEvent,
-    LogEvent,
-    ZeroEx,
-} from '../src';
-import {EventWatcher} from '../src/order_watcher/event_watcher';
-import {DoneCallback} from '../src/types';
+import { LogEvent } from '../src';
+import { EventWatcher } from '../src/order_watcher/event_watcher';
+import { DoneCallback } from '../src/types';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
-import {web3Factory} from './utils/web3_factory';
+import { chaiSetup } from './utils/chai_setup';
+import { reportNodeCallbackErrors } from './utils/report_callback_errors';
+import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -26,7 +21,6 @@ describe('EventWatcher', () => {
     let stubs: Sinon.SinonStub[] = [];
     let eventWatcher: EventWatcher;
     let web3Wrapper: Web3Wrapper;
-    const numConfirmations = 0;
     const logA: Web3.LogEntry = {
         address: '0x71d271f8b14adef568f8f28f1587ce7271ac4ca5',
         blockHash: null,
@@ -43,7 +37,7 @@ describe('EventWatcher', () => {
         blockNumber: null,
         data: '',
         logIndex: null,
-        topics: [ '0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567' ],
+        topics: ['0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567'],
         transactionHash: '0x01ef3c048b18d9b09ea195b4ed94cf8dd5f3d857a1905ff886b152cfb1166f25',
         transactionIndex: 0,
     };
@@ -53,7 +47,7 @@ describe('EventWatcher', () => {
         blockNumber: null,
         data: '',
         logIndex: null,
-        topics: [ '0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567' ],
+        topics: ['0xf341246adaac6f497bc2a656f546ab9e182111d630394f0c57c710a59a2cb567'],
         transactionHash: '0x01ef3c048b18d9b09ea195b4ed94cf8dd5f3d857a1905ff886b152cfb1166f25',
         transactionIndex: 0,
     };
@@ -84,13 +78,14 @@ describe('EventWatcher', () => {
         const getLogsStub = Sinon.stub(web3Wrapper, 'getLogsAsync');
         getLogsStub.onCall(0).returns(logs);
         stubs.push(getLogsStub);
-        const callback = (event: LogEvent) => {
+        const expectedToBeCalledOnce = false;
+        const callback = reportNodeCallbackErrors(done, expectedToBeCalledOnce)((event: LogEvent) => {
             const expectedLogEvent = expectedLogEvents.shift();
             expect(event).to.be.deep.equal(expectedLogEvent);
             if (_.isEmpty(expectedLogEvents)) {
                 done();
             }
-        };
+        });
         eventWatcher.subscribe(callback);
     });
     it('correctly computes the difference and emits only changes', (done: DoneCallback) => {
@@ -118,13 +113,14 @@ describe('EventWatcher', () => {
         getLogsStub.onCall(0).returns(initialLogs);
         getLogsStub.onCall(1).returns(changedLogs);
         stubs.push(getLogsStub);
-        const callback = (event: LogEvent) => {
+        const expectedToBeCalledOnce = false;
+        const callback = reportNodeCallbackErrors(done, expectedToBeCalledOnce)((event: LogEvent) => {
             const expectedLogEvent = expectedLogEvents.shift();
             expect(event).to.be.deep.equal(expectedLogEvent);
             if (_.isEmpty(expectedLogEvents)) {
                 done();
             }
-        };
+        });
         eventWatcher.subscribe(callback);
     });
 });

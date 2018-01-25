@@ -1,6 +1,6 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 
-import {TokenPairsItem} from '../../../src/types';
+import { TokenPairsItem } from '../../../src/types';
 
 export const tokenPairsResponse: TokenPairsItem[] = [
     {

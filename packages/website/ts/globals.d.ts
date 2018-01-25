@@ -55,11 +55,6 @@ interface System {
 }
 declare var System: System;
 
-// ethereum-address declarations
-declare module 'ethereum-address' {
-    export const isAddress: (address: string) => boolean;
-}
-
 // jsonschema declarations
 // Source: https://github.com/tdegrunt/jsonschema/blob/master/lib/index.d.ts
 declare interface Schema {
@@ -96,7 +91,7 @@ declare interface Schema {
     dependencies?: {
         [name: string]: Schema | string[];
     };
-    'enum'?: any[];
+    enum?: any[];
     type?: string | string[];
     allOf?: Schema[];
     anyOf?: Schema[];
@@ -135,23 +130,25 @@ declare module 'web3-provider-engine/subproviders/subprovider' {
 declare module 'web3-provider-engine/subproviders/rpc' {
     import * as Web3 from 'web3';
     class RpcSubprovider {
-        constructor(options: {rpcUrl: string});
+        constructor(options: { rpcUrl: string });
         public handleRequest(
-            payload: Web3.JSONRPCRequestPayload, next: () => void, end: (err: Error|null, data?: any) =>  void,
+            payload: Web3.JSONRPCRequestPayload,
+            next: () => void,
+            end: (err: Error | null, data?: any) => void,
         ): void;
     }
     export = RpcSubprovider;
 }
 declare module 'web3-provider-engine' {
-  class Web3ProviderEngine {
-    public on(event: string, handler: () => void): void;
-    public send(payload: any): void;
-    public sendAsync(payload: any, callback: (error: any, response: any) => void): void;
-    public addProvider(provider: any): void;
-    public start(): void;
-    public stop(): void;
-  }
-  export = Web3ProviderEngine;
+    class Web3ProviderEngine {
+        public on(event: string, handler: () => void): void;
+        public send(payload: any): void;
+        public sendAsync(payload: any, callback: (error: any, response: any) => void): void;
+        public addProvider(provider: any): void;
+        public start(): void;
+        public stop(): void;
+    }
+    export = Web3ProviderEngine;
 }
 
 declare interface Artifact {

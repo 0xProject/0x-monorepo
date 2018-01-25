@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 
 // HACK: This module overrides the Chai namespace so that we can use BigNumber types inside.
 // Source: https://github.com/Microsoft/TypeScript/issues/7352#issuecomment-191547232
@@ -9,7 +9,7 @@ declare global {
     /* tslint:disable */
     namespace Chai {
         interface NumberComparer {
-            (value: number|BigNumber, message?: string): Assertion;
+            (value: number | BigNumber, message?: string): Assertion;
         }
         interface NumericComparison {
             greaterThan: NumberComparer;
@@ -18,6 +18,6 @@ declare global {
     /* tslint:enable */
     interface DecodedLogArg {
         name: string;
-        value: string|BigNumber;
+        value: string | BigNumber;
     }
 }

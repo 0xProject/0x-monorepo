@@ -1,51 +1,68 @@
-Contracts
------
+## Contracts
 
-## Useful 0x Wiki Articles
+Smart contracts that implement the 0x protocol.
 
-* [Architecture](https://0xproject.com/wiki#Architecture)
-* [Contract Interactions](https://0xproject.com/wiki#Contract-Interactions)
-* [Contract deployed addresses](https://0xproject.com/wiki#Deployed-Addresses)
-* [0x Protocol Message Format](https://0xproject.com/wiki#Message-Format)
-* [Bug Bounty Program](https://0xproject.com/wiki#Bug-Bounty)
+## Usage
 
-## Setup
-
-### Installing Dependencies
-
-Install [Node](https://nodejs.org/en/download/releases/)
-
-Install [yarn](https://yarnpkg.com/lang/en/docs/install/) in order to install the project dependencies more deterministically.
-
-Install project dependencies:
-
-```
-yarn
-```
-
-### Running Tests
-
-Start Testrpc
-
-```
-yarn testrpc
-```
-
-Run tests
-
-```
-yarn test
-```
+* [Docs](https://0xproject.com/docs/contracts)
+* [Overview of 0x protocol architecture](https://0xproject.com/wiki#Architecture)
+* [0x smart contract interactions](https://0xproject.com/wiki#Contract-Interactions)
+* [Deployed smart contract addresses](https://0xproject.com/wiki#Deployed-Addresses)
+* [0x protocol message format](https://0xproject.com/wiki#Message-Format)
 
 ## Contributing
 
-0x protocol is intended to serve as an open technical standard for EVM blockchains and we strongly encourage our community members to help us make improvements and to determine the future direction of the protocol. To report bugs within the 0x smart contracts or unit tests, please create an issue in this repository.
+We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
 
-### ZEIPs
-Significant changes to 0x protocol's smart contracts, architecture, message format or functionality should be proposed in the [0x Improvement Proposals (ZEIPs)](https://github.com/0xProject/ZEIPs) repository. Follow the contribution guidelines provided therein.
+For proposals regarding the 0x protocol's smart contract architecture, message format, or additional functionality, go to the [0x Improvement Proposals (ZEIPs)](https://github.com/0xProject/ZEIPs) repository and follow the contribution guidelines provided therein.
 
-### Coding conventions
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
-We use a custom set of [TSLint](https://palantir.github.io/tslint/) rules to enforce our coding conventions.
+### Install Dependencies
 
-In order to see style violation errors, install a tslinter for your text editor. e.g Atom's [atom-typescript](https://atom.io/packages/atom-typescript).
+If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
+
+```bash
+yarn config set workspaces-experimental true
+```
+
+Then install dependencies
+
+```bash
+yarn install
+```
+
+### Build
+
+```bash
+yarn build
+```
+
+### Clean
+
+```bash
+yarn clean
+```
+
+### Lint
+
+```bash
+yarn lint
+```
+
+### Run Tests
+
+Before running the tests, you will need to spin up a [TestRPC](https://www.npmjs.com/package/ethereumjs-testrpc) instance.
+
+In a separate terminal, start TestRPC (a convenience command is provided as part of the [0x.js monorepo](https://github.com/0xProject/0x.js))
+
+```bash
+cd ../..
+yarn testrpc
+```
+
+Then in your main terminal run
+
+```bash
+yarn test
+```

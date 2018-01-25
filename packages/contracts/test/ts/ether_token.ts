@@ -1,14 +1,14 @@
-import {ZeroEx, ZeroExError} from '0x.js';
-import {promisify} from '@0xproject/utils';
-import {BigNumber} from 'bignumber.js';
+import { ZeroEx, ZeroExError } from '0x.js';
+import { BigNumber, promisify } from '@0xproject/utils';
 import * as chai from 'chai';
 import Web3 = require('web3');
 
-import {Artifacts} from '../../util/artifacts';
+import { Artifacts } from '../../util/artifacts';
+import { constants } from '../../util/constants';
 
-import {chaiSetup} from './utils/chai_setup';
+import { chaiSetup } from './utils/chai_setup';
 
-const {EtherToken} = new Artifacts(artifacts);
+const { EtherToken } = new Artifacts(artifacts);
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -22,11 +22,12 @@ contract('EtherToken', (accounts: string[]) => {
     const gasPrice = ZeroEx.toBaseUnitAmount(new BigNumber(20), 9);
     let zeroEx: ZeroEx;
     let etherTokenAddress: string;
+
     before(async () => {
         etherTokenAddress = EtherToken.address;
         zeroEx = new ZeroEx(web3.currentProvider, {
-                gasPrice,
-                etherTokenContractAddress: etherTokenAddress,
+            gasPrice,
+            networkId: constants.TESTRPC_NETWORK_ID,
         });
     });
 
@@ -42,8 +43,9 @@ contract('EtherToken', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethToDeposit = initEthBalance.plus(1);
 
-            return expect(zeroEx.etherToken.depositAsync(ethToDeposit, account))
-                .to.be.rejectedWith(ZeroExError.InsufficientEthBalanceForDeposit);
+            return expect(zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account)).to.be.rejectedWith(
+                ZeroExError.InsufficientEthBalanceForDeposit,
+            );
         });
 
         it('should convert deposited Ether to wrapped Ether tokens', async () => {
@@ -52,7 +54,7 @@ contract('EtherToken', (accounts: string[]) => {
 
             const ethToDeposit = new BigNumber(web3.toWei(1, 'ether'));
 
-            const txHash = await zeroEx.etherToken.depositAsync(ethToDeposit, account);
+            const txHash = await zeroEx.etherToken.depositAsync(etherTokenAddress, ethToDeposit, account);
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
@@ -69,8 +71,9 @@ contract('EtherToken', (accounts: string[]) => {
             const initEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
             const ethTokensToWithdraw = initEthTokenBalance.plus(1);
 
-            return expect(zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account))
-                .to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
+            return expect(
+                zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account),
+            ).to.be.rejectedWith(ZeroExError.InsufficientWEthBalanceForWithdrawal);
         });
 
         it('should convert ether tokens to ether with sufficient balance', async () => {
@@ -78,15 +81,18 @@ contract('EtherToken', (accounts: string[]) => {
             const initEthBalance = await getEthBalanceAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;
             expect(ethTokensToWithdraw).to.not.be.bignumber.equal(0);
-            const txHash = await zeroEx.etherToken.withdrawAsync(ethTokensToWithdraw, account);
+            const txHash = await zeroEx.etherToken.withdrawAsync(etherTokenAddress, ethTokensToWithdraw, account, {
+                gasLimit: constants.MAX_ETHERTOKEN_WITHDRAW_GAS,
+            });
             const receipt = await zeroEx.awaitTransactionMinedAsync(txHash);
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
             const finalEthBalance = await getEthBalanceAsync(account);
             const finalEthTokenBalance = await zeroEx.token.getBalanceAsync(etherTokenAddress, account);
 
-            expect(finalEthBalance).to.be.bignumber
-                .equal(initEthBalance.plus(ethTokensToWithdraw.minus(ethSpentOnGas)));
+            expect(finalEthBalance).to.be.bignumber.equal(
+                initEthBalance.plus(ethTokensToWithdraw.minus(ethSpentOnGas)),
+            );
             expect(finalEthTokenBalance).to.be.bignumber.equal(initEthTokenBalance.minus(ethTokensToWithdraw));
         });
     });

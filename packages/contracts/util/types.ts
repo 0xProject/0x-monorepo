@@ -1,4 +1,4 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 export interface BalancesByOwner {
@@ -84,15 +84,6 @@ export interface TransactionDataParams {
     args: any[];
 }
 
-export interface Token {
-    address?: string;
-    name: string;
-    symbol: string;
-    decimals: number;
-    ipfsHash: string;
-    swarmHash: string;
-}
-
 export interface MultiSigConfig {
     owners: string[];
     confirmationsRequired: number;
@@ -101,6 +92,15 @@ export interface MultiSigConfig {
 
 export interface MultiSigConfigByNetwork {
     [networkName: string]: MultiSigConfig;
+}
+
+export interface Token {
+    address?: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    ipfsHash: string;
+    swarmHash: string;
 }
 
 export interface TokenInfoByNetwork {

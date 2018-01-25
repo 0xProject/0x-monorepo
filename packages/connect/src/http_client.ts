@@ -1,11 +1,10 @@
-import {assert} from '@0xproject/assert';
-import {schemas} from '@0xproject/json-schemas';
-import {BigNumber} from 'bignumber.js';
+import { assert } from '@0xproject/assert';
+import { schemas } from '@0xproject/json-schemas';
 import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
-import {schemas as clientSchemas} from './schemas/schemas';
+import { schemas as clientSchemas } from './schemas/schemas';
 import {
     Client,
     FeesRequest,
@@ -19,19 +18,15 @@ import {
     TokenPairsItem,
     TokenPairsRequest,
 } from './types';
-import {typeConverters} from './utils/type_converters';
+import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
-// TODO: move this and bigNumberConfigs in the 0x.js package into one place
-BigNumber.config({
-    EXPONENTIAL_AT: 1000,
-});
-
+const TRAILING_SLASHES_REGEX = /\/+$/;
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
  * that implement the standard relayer API v0
  */
 export class HttpClient implements Client {
-    private apiEndpointUrl: string;
+    private _apiEndpointUrl: string;
     /**
      * Instantiates a new HttpClient instance
      * @param   url    The relayer API base HTTP url you would like to interact with
@@ -39,7 +34,7 @@ export class HttpClient implements Client {
      */
     constructor(url: string) {
         assert.isHttpUrl('url', url);
-        this.apiEndpointUrl = url;
+        this._apiEndpointUrl = url.replace(TRAILING_SLASHES_REGEX, ''); // remove trailing slashes
     }
     /**
      * Retrieve token pair info from the API
@@ -54,17 +49,8 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const tokenPairs = await this._requestAsync('/token_pairs', HttpRequestType.Get, requestOpts);
-        assert.doesConformToSchema(
-            'tokenPairs', tokenPairs, schemas.relayerApiTokenPairsResponseSchema);
-        _.each(tokenPairs, (tokenPair: object) => {
-            typeConverters.convertStringsFieldsToBigNumbers(tokenPair, [
-                'tokenA.minAmount',
-                'tokenA.maxAmount',
-                'tokenB.minAmount',
-                'tokenB.maxAmount',
-            ]);
-        });
+        const responseJson = await this._requestAsync('/token_pairs', HttpRequestType.Get, requestOpts);
+        const tokenPairs = relayerResponseJsonParsers.parseTokenPairsJson(responseJson);
         return tokenPairs;
     }
     /**
@@ -79,9 +65,8 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const orders = await this._requestAsync(`/orders`, HttpRequestType.Get, requestOpts);
-        assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
-        _.each(orders, (order: object) => typeConverters.convertOrderStringFieldsToBigNumber(order));
+        const responseJson = await this._requestAsync(`/orders`, HttpRequestType.Get, requestOpts);
+        const orders = relayerResponseJsonParsers.parseOrdersJson(responseJson);
         return orders;
     }
     /**
@@ -91,9 +76,8 @@ export class HttpClient implements Client {
      */
     public async getOrderAsync(orderHash: string): Promise<SignedOrder> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        const order = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get);
-        assert.doesConformToSchema('order', order, schemas.signedOrderSchema);
-        typeConverters.convertOrderStringFieldsToBigNumber(order);
+        const responseJson = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get);
+        const order = relayerResponseJsonParsers.parseOrderJson(responseJson);
         return order;
     }
     /**
@@ -106,10 +90,9 @@ export class HttpClient implements Client {
         const requestOpts = {
             params: request,
         };
-        const orderBook = await this._requestAsync('/orderbook', HttpRequestType.Get, requestOpts);
-        assert.doesConformToSchema('orderBook', orderBook, schemas.relayerApiOrderBookResponseSchema);
-        typeConverters.convertOrderbookStringFieldsToBigNumber(orderBook);
-        return orderBook;
+        const responseJson = await this._requestAsync('/orderbook', HttpRequestType.Get, requestOpts);
+        const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(responseJson);
+        return orderbook;
     }
     /**
      * Retrieve fee information from the API
@@ -118,18 +101,11 @@ export class HttpClient implements Client {
      */
     public async getFeesAsync(request: FeesRequest): Promise<FeesResponse> {
         assert.doesConformToSchema('request', request, schemas.relayerApiFeesPayloadSchema);
-        typeConverters.convertBigNumberFieldsToStrings(request, [
-            'makerTokenAmount',
-            'takerTokenAmount',
-            'expirationUnixTimestampSec',
-            'salt',
-        ]);
         const requestOpts = {
             payload: request,
         };
-        const fees = await this._requestAsync('/fees', HttpRequestType.Post, requestOpts);
-        assert.doesConformToSchema('fees', fees, schemas.relayerApiFeesResponseSchema);
-        typeConverters.convertStringsFieldsToBigNumbers(fees, ['makerFee', 'takerFee']);
+        const responseJson = await this._requestAsync('/fees', HttpRequestType.Post, requestOpts);
+        const fees = relayerResponseJsonParsers.parseFeesResponseJson(responseJson);
         return fees;
     }
     /**
@@ -143,8 +119,11 @@ export class HttpClient implements Client {
         };
         await this._requestAsync('/order', HttpRequestType.Post, requestOpts);
     }
-    private async _requestAsync(path: string, requestType: HttpRequestType,
-                                requestOptions?: HttpRequestOptions): Promise<any> {
+    private async _requestAsync(
+        path: string,
+        requestType: HttpRequestType,
+        requestOptions?: HttpRequestOptions,
+    ): Promise<any> {
         const params = _.get(requestOptions, 'params');
         const payload = _.get(requestOptions, 'payload');
         let query = '';
@@ -152,20 +131,22 @@ export class HttpClient implements Client {
             const stringifiedParams = queryString.stringify(params);
             query = `?${stringifiedParams}`;
         }
-        const url = `${this.apiEndpointUrl}/v0${path}${query}`;
+        const url = `${this._apiEndpointUrl}${path}${query}`;
         const headers = new Headers({
             'content-type': 'application/json',
         });
-
         const response = await fetch(url, {
             method: requestType,
             body: JSON.stringify(payload),
             headers,
         });
-        if (!response.ok) {
-            throw Error(response.statusText);
-        }
         const json = await response.json();
+        if (!response.ok) {
+            const errorString = `${response.status} - ${response.statusText}\n${requestType} ${url}\n${JSON.stringify(
+                json,
+            )}`;
+            throw Error(errorString);
+        }
         return json;
     }
 }

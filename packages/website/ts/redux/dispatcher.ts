@@ -1,12 +1,10 @@
-import BigNumber from 'bignumber.js';
-import {Dispatch} from 'redux';
-import {State} from 'ts/redux/reducer';
+import { BigNumber } from '@0xproject/utils';
+import { Dispatch } from 'redux';
+import { State } from 'ts/redux/reducer';
 import {
     ActionTypes,
     AssetToken,
     BlockchainErrs,
-    Direction,
-    Fill,
     Order,
     ProviderType,
     ScreenWidths,
@@ -17,227 +15,221 @@ import {
 } from 'ts/types';
 
 export class Dispatcher {
-    private dispatch: Dispatch<State>;
+    private _dispatch: Dispatch<State>;
     constructor(dispatch: Dispatch<State>) {
-        this.dispatch = dispatch;
+        this._dispatch = dispatch;
     }
     // Portal
     public resetState() {
-        this.dispatch({
-            type: ActionTypes.RESET_STATE,
+        this._dispatch({
+            type: ActionTypes.ResetState,
         });
     }
     public updateNodeVersion(nodeVersion: string) {
-        this.dispatch({
+        this._dispatch({
             data: nodeVersion,
-            type: ActionTypes.UPDATE_NODE_VERSION,
+            type: ActionTypes.UpdateNodeVersion,
         });
     }
     public updateScreenWidth(screenWidth: ScreenWidths) {
-        this.dispatch({
+        this._dispatch({
             data: screenWidth,
-            type: ActionTypes.UPDATE_SCREEN_WIDTH,
+            type: ActionTypes.UpdateScreenWidth,
         });
     }
     public swapAssetTokenSymbols() {
-        this.dispatch({
-            type: ActionTypes.SWAP_ASSET_TOKENS,
-        });
-    }
-    public updateGenerateOrderStep(direction: Direction) {
-        this.dispatch({
-            data: direction,
-            type: ActionTypes.UPDATE_GENERATE_ORDER_STEP,
+        this._dispatch({
+            type: ActionTypes.SwapAssetTokens,
         });
     }
     public updateOrderSalt(salt: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: salt,
-            type: ActionTypes.UPDATE_ORDER_SALT,
+            type: ActionTypes.UpdateOrderSalt,
         });
     }
     public updateUserSuppliedOrderCache(order: Order) {
-        this.dispatch({
+        this._dispatch({
             data: order,
-            type: ActionTypes.UPDATE_USER_SUPPLIED_ORDER_CACHE,
+            type: ActionTypes.UpdateUserSuppliedOrderCache,
         });
     }
     public updateShouldBlockchainErrDialogBeOpen(shouldBeOpen: boolean) {
-        this.dispatch({
+        this._dispatch({
             data: shouldBeOpen,
-            type: ActionTypes.UPDATE_SHOULD_BLOCKCHAIN_ERR_DIALOG_BE_OPEN,
+            type: ActionTypes.UpdateShouldBlockchainErrDialogBeOpen,
         });
     }
     public updateChosenAssetToken(side: Side, token: AssetToken) {
-        this.dispatch({
+        this._dispatch({
             data: {
                 side,
                 token,
             },
-            type: ActionTypes.UPDATE_CHOSEN_ASSET_TOKEN,
+            type: ActionTypes.UpdateChosenAssetToken,
         });
     }
     public updateChosenAssetTokenAddress(side: Side, address: string) {
-        this.dispatch({
+        this._dispatch({
             data: {
                 address,
                 side,
             },
-            type: ActionTypes.UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS,
+            type: ActionTypes.UpdateChosenAssetTokenAddress,
         });
     }
     public updateOrderTakerAddress(address: string) {
-        this.dispatch({
+        this._dispatch({
             data: address,
-            type: ActionTypes.UPDATE_ORDER_TAKER_ADDRESS,
+            type: ActionTypes.UpdateOrderTakerAddress,
         });
     }
     public updateUserAddress(address: string) {
-        this.dispatch({
+        this._dispatch({
             data: address,
-            type: ActionTypes.UPDATE_USER_ADDRESS,
+            type: ActionTypes.UpdateUserAddress,
         });
     }
     public updateOrderExpiry(unixTimestampSec: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: unixTimestampSec,
-            type: ActionTypes.UPDATE_ORDER_EXPIRY,
+            type: ActionTypes.UpdateOrderExpiry,
         });
     }
     public encounteredBlockchainError(err: BlockchainErrs) {
-        this.dispatch({
-             data: err,
-             type: ActionTypes.BLOCKCHAIN_ERR_ENCOUNTERED,
-         });
+        this._dispatch({
+            data: err,
+            type: ActionTypes.BlockchainErrEncountered,
+        });
     }
     public updateBlockchainIsLoaded(isLoaded: boolean) {
-        this.dispatch({
-             data: isLoaded,
-             type: ActionTypes.UPDATE_BLOCKCHAIN_IS_LOADED,
-         });
+        this._dispatch({
+            data: isLoaded,
+            type: ActionTypes.UpdateBlockchainIsLoaded,
+        });
     }
     public addTokenToTokenByAddress(token: Token) {
-        this.dispatch({
-             data: token,
-             type: ActionTypes.ADD_TOKEN_TO_TOKEN_BY_ADDRESS,
-         });
+        this._dispatch({
+            data: token,
+            type: ActionTypes.AddTokenToTokenByAddress,
+        });
     }
     public removeTokenToTokenByAddress(token: Token) {
-        this.dispatch({
-             data: token,
-             type: ActionTypes.REMOVE_TOKEN_TO_TOKEN_BY_ADDRESS,
-         });
+        this._dispatch({
+            data: token,
+            type: ActionTypes.RemoveTokenFromTokenByAddress,
+        });
     }
     public clearTokenByAddress() {
-        this.dispatch({
-            type: ActionTypes.CLEAR_TOKEN_BY_ADDRESS,
-         });
+        this._dispatch({
+            type: ActionTypes.ClearTokenByAddress,
+        });
     }
     public updateTokenByAddress(tokens: Token[]) {
-        this.dispatch({
-             data: tokens,
-             type: ActionTypes.UPDATE_TOKEN_BY_ADDRESS,
-         });
+        this._dispatch({
+            data: tokens,
+            type: ActionTypes.UpdateTokenByAddress,
+        });
     }
     public updateTokenStateByAddress(tokenStateByAddress: TokenStateByAddress) {
-        this.dispatch({
-             data: tokenStateByAddress,
-             type: ActionTypes.UPDATE_TOKEN_STATE_BY_ADDRESS,
-         });
+        this._dispatch({
+            data: tokenStateByAddress,
+            type: ActionTypes.UpdateTokenStateByAddress,
+        });
     }
     public removeFromTokenStateByAddress(tokenAddress: string) {
-        this.dispatch({
+        this._dispatch({
             data: tokenAddress,
-            type: ActionTypes.REMOVE_FROM_TOKEN_STATE_BY_ADDRESS,
+            type: ActionTypes.RemoveFromTokenStateByAddress,
         });
     }
     public replaceTokenAllowanceByAddress(address: string, allowance: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: {
-              address,
-              allowance,
+                address,
+                allowance,
             },
-            type: ActionTypes.REPLACE_TOKEN_ALLOWANCE_BY_ADDRESS,
+            type: ActionTypes.ReplaceTokenAllowanceByAddress,
         });
     }
     public replaceTokenBalanceByAddress(address: string, balance: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: {
                 address,
                 balance,
             },
-            type: ActionTypes.REPLACE_TOKEN_BALANCE_BY_ADDRESS,
+            type: ActionTypes.ReplaceTokenBalanceByAddress,
         });
     }
     public updateTokenBalanceByAddress(address: string, balanceDelta: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: {
                 address,
                 balanceDelta,
             },
-            type: ActionTypes.UPDATE_TOKEN_BALANCE_BY_ADDRESS,
+            type: ActionTypes.UpdateTokenBalanceByAddress,
         });
     }
     public updateSignatureData(signatureData: SignatureData) {
-        this.dispatch({
-             data: signatureData,
-             type: ActionTypes.UPDATE_ORDER_SIGNATURE_DATA,
-         });
+        this._dispatch({
+            data: signatureData,
+            type: ActionTypes.UpdateOrderSignatureData,
+        });
     }
     public updateUserEtherBalance(balance: BigNumber) {
-        this.dispatch({
-             data: balance,
-             type: ActionTypes.UPDATE_USER_ETHER_BALANCE,
-         });
+        this._dispatch({
+            data: balance,
+            type: ActionTypes.UpdateUserEtherBalance,
+        });
     }
     public updateNetworkId(networkId: number) {
-        this.dispatch({
-             data: networkId,
-             type: ActionTypes.UPDATE_NETWORK_ID,
-         });
+        this._dispatch({
+            data: networkId,
+            type: ActionTypes.UpdateNetworkId,
+        });
     }
     public updateOrderFillAmount(amount: BigNumber) {
-        this.dispatch({
+        this._dispatch({
             data: amount,
-            type: ActionTypes.UPDATE_ORDER_FILL_AMOUNT,
+            type: ActionTypes.UpdateOrderFillAmount,
         });
     }
 
     // Docs
     public updateCurrentDocsVersion(version: string) {
-        this.dispatch({
+        this._dispatch({
             data: version,
-            type: ActionTypes.UPDATE_LIBRARY_VERSION,
+            type: ActionTypes.UpdateLibraryVersion,
         });
     }
     public updateAvailableDocVersions(versions: string[]) {
-        this.dispatch({
+        this._dispatch({
             data: versions,
-            type: ActionTypes.UPDATE_AVAILABLE_LIBRARY_VERSIONS,
+            type: ActionTypes.UpdateAvailableLibraryVersions,
         });
     }
 
     // Shared
-    public showFlashMessage(msg: string|React.ReactNode) {
-        this.dispatch({
+    public showFlashMessage(msg: string | React.ReactNode) {
+        this._dispatch({
             data: msg,
-            type: ActionTypes.SHOW_FLASH_MESSAGE,
+            type: ActionTypes.ShowFlashMessage,
         });
     }
     public hideFlashMessage() {
-        this.dispatch({
-            type: ActionTypes.HIDE_FLASH_MESSAGE,
+        this._dispatch({
+            type: ActionTypes.HideFlashMessage,
         });
     }
     public updateProviderType(providerType: ProviderType) {
-        this.dispatch({
-            type: ActionTypes.UPDATE_PROVIDER_TYPE,
+        this._dispatch({
+            type: ActionTypes.UpdateProviderType,
             data: providerType,
         });
     }
     public updateInjectedProviderName(injectedProviderName: string) {
-        this.dispatch({
-            type: ActionTypes.UPDATE_INJECTED_PROVIDER_NAME,
+        this._dispatch({
+            type: ActionTypes.UpdateInjectedProviderName,
             data: injectedProviderName,
         });
     }

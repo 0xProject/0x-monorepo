@@ -1,13 +1,13 @@
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import {artifacts} from '../artifacts';
-import {Token, TokenMetadata, ZeroExError} from '../types';
-import {assert} from '../utils/assert';
-import {constants} from '../utils/constants';
+import { artifacts } from '../artifacts';
+import { Token, TokenMetadata } from '../types';
+import { assert } from '../utils/assert';
+import { constants } from '../utils/constants';
 
-import {ContractWrapper} from './contract_wrapper';
-import {TokenRegistryContract} from './generated/token_registry';
+import { ContractWrapper } from './contract_wrapper';
+import { TokenRegistryContract } from './generated/token_registry';
 
 /**
  * This class includes all the functionality related to interacting with the 0x Token Registry smart contract.
@@ -15,7 +15,7 @@ import {TokenRegistryContract} from './generated/token_registry';
 export class TokenRegistryWrapper extends ContractWrapper {
     private _tokenRegistryContractIfExists?: TokenRegistryContract;
     private _contractAddressIfExists?: string;
-    private static _createTokenFromMetadata(metadata: TokenMetadata): Token|undefined {
+    private static _createTokenFromMetadata(metadata: TokenMetadata): Token | undefined {
         if (metadata[0] === constants.NULL_ADDRESS) {
             return undefined;
         }
@@ -36,12 +36,9 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * @return  An array of objects that conform to the Token interface.
      */
     public async getTokensAsync(): Promise<Token[]> {
-        const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-
         const addresses = await this.getTokenAddressesAsync();
-        const tokenPromises: Array<Promise<Token|undefined>> = _.map(
-            addresses,
-            async (address: string) => this.getTokenIfExistsAsync(address),
+        const tokenPromises: Array<Promise<Token | undefined>> = _.map(addresses, async (address: string) =>
+            this.getTokenIfExistsAsync(address),
         );
         const tokens = await Promise.all(tokenPromises);
         return tokens as Token[];
@@ -59,7 +56,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * Retrieves a token by address currently listed in the Token Registry smart contract
      * @return  An object that conforms to the Token interface or undefined if token not found.
      */
-    public async getTokenIfExistsAsync(address: string): Promise<Token|undefined> {
+    public async getTokenIfExistsAsync(address: string): Promise<Token | undefined> {
         assert.isETHAddressHex('address', address);
 
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
@@ -67,7 +64,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         const token = TokenRegistryWrapper._createTokenFromMetadata(metadata);
         return token;
     }
-    public async getTokenAddressBySymbolIfExistsAsync(symbol: string): Promise<string|undefined> {
+    public async getTokenAddressBySymbolIfExistsAsync(symbol: string): Promise<string | undefined> {
         assert.isString('symbol', symbol);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const addressIfExists = await tokenRegistryContract.getTokenAddressBySymbol.callAsync(symbol);
@@ -76,7 +73,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
         }
         return addressIfExists;
     }
-    public async getTokenAddressByNameIfExistsAsync(name: string): Promise<string|undefined> {
+    public async getTokenAddressByNameIfExistsAsync(name: string): Promise<string | undefined> {
         assert.isString('name', name);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const addressIfExists = await tokenRegistryContract.getTokenAddressByName.callAsync(name);
@@ -85,14 +82,14 @@ export class TokenRegistryWrapper extends ContractWrapper {
         }
         return addressIfExists;
     }
-    public async getTokenBySymbolIfExistsAsync(symbol: string): Promise<Token|undefined> {
+    public async getTokenBySymbolIfExistsAsync(symbol: string): Promise<Token | undefined> {
         assert.isString('symbol', symbol);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenBySymbol.callAsync(symbol);
         const token = TokenRegistryWrapper._createTokenFromMetadata(metadata);
         return token;
     }
-    public async getTokenByNameIfExistsAsync(name: string): Promise<Token|undefined> {
+    public async getTokenByNameIfExistsAsync(name: string): Promise<Token | undefined> {
         assert.isString('name', name);
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenByName.callAsync(name);
@@ -106,7 +103,8 @@ export class TokenRegistryWrapper extends ContractWrapper {
      */
     public getContractAddress(): string {
         const contractAddress = this._getContractAddress(
-            artifacts.TokenRegistryArtifact, this._contractAddressIfExists,
+            artifacts.TokenRegistryArtifact,
+            this._contractAddressIfExists,
         );
         return contractAddress;
     }
@@ -118,10 +116,12 @@ export class TokenRegistryWrapper extends ContractWrapper {
             return this._tokenRegistryContractIfExists;
         }
         const web3ContractInstance = await this._instantiateContractIfExistsAsync(
-            artifacts.TokenRegistryArtifact, this._contractAddressIfExists,
+            artifacts.TokenRegistryArtifact,
+            this._contractAddressIfExists,
         );
         const contractInstance = new TokenRegistryContract(
-            web3ContractInstance, this._web3Wrapper.getContractDefaults(),
+            web3ContractInstance,
+            this._web3Wrapper.getContractDefaults(),
         );
         this._tokenRegistryContractIfExists = contractInstance;
         return this._tokenRegistryContractIfExists;

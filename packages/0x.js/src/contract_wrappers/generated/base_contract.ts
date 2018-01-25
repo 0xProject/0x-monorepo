@@ -1,7 +1,6 @@
+import {TxData, TxDataPayable} from '@0xproject/types';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-
-import {TxData, TxDataPayable} from '../../types';
 
 export class BaseContract {
     protected web3ContractInstance: Web3.ContractInstance;

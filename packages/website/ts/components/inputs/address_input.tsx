@@ -1,10 +1,9 @@
-import {isAddress} from 'ethereum-address';
+import { addressUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
-import {Blockchain} from 'ts/blockchain';
-import {RequiredLabel} from 'ts/components/ui/required_label';
+import { RequiredLabel } from 'ts/components/ui/required_label';
+import { colors } from 'ts/utils/colors';
 
 interface AddressInputProps {
     disabled?: boolean;
@@ -31,16 +30,14 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
         };
     }
     public componentWillReceiveProps(nextProps: AddressInputProps) {
-        if (nextProps.shouldShowIncompleteErrs && this.props.isRequired &&
-            this.state.address === '') {
-                this.setState({
-                    errMsg: 'Address is required',
-                });
+        if (nextProps.shouldShowIncompleteErrs && this.props.isRequired && this.state.address === '') {
+            this.setState({
+                errMsg: 'Address is required',
+            });
         }
     }
     public render() {
-        const label = this.props.isRequired ? <RequiredLabel label={this.props.label} /> :
-                      this.props.label;
+        const label = this.props.isRequired ? <RequiredLabel label={this.props.label} /> : this.props.label;
         const labelDisplay = this.props.shouldHideLabel ? 'hidden' : 'block';
         const hintText = this.props.hintText ? this.props.hintText : '';
         return (
@@ -51,18 +48,18 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
                     fullWidth={true}
                     hintText={hintText}
                     floatingLabelFixed={true}
-                    floatingLabelStyle={{color: colors.grey500, display: labelDisplay}}
+                    floatingLabelStyle={{ color: colors.grey, display: labelDisplay }}
                     floatingLabelText={label}
                     errorText={this.state.errMsg}
                     value={this.state.address}
-                    onChange={this.onOrderTakerAddressUpdated.bind(this)}
+                    onChange={this._onOrderTakerAddressUpdated.bind(this)}
                 />
             </div>
         );
     }
-    private onOrderTakerAddressUpdated(e: any) {
+    private _onOrderTakerAddressUpdated(e: any) {
         const address = e.target.value.toLowerCase();
-        const isValidAddress = isAddress(address) || address === '';
+        const isValidAddress = addressUtils.isAddress(address) || address === '';
         const errMsg = isValidAddress ? '' : 'Invalid ethereum address';
         this.setState({
             address,

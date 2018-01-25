@@ -1,7 +1,8 @@
-export {ZeroEx} from './0x';
+export { ZeroEx } from './0x';
 
 export {
     Order,
+    BlockParamLiteral,
     SignedOrder,
     ECSignature,
     ZeroExError,
@@ -12,7 +13,7 @@ export {
     ExchangeEvents,
     TokenEvents,
     IndexedFilterValues,
-    SubscriptionOpts,
+    BlockRange,
     BlockParam,
     OrderCancellationRequest,
     OrderFillRequest,
@@ -23,11 +24,14 @@ export {
     TransferContractEventArgs,
     ApprovalContractEventArgs,
     TokenContractEventArgs,
+    EtherTokenContractEventArgs,
+    WithdrawalContractEventArgs,
+    DepositContractEventArgs,
     ContractEventArgs,
     ContractEventArg,
     Web3Provider,
     ZeroExConfig,
-    TransactionReceipt,
+    EtherTokenEvents,
     TransactionReceiptWithDecodedLogs,
     LogWithDecodedArgs,
     MethodOpts,
@@ -42,3 +46,5 @@ export {
     OrderStateInvalid,
     OrderState,
 } from './types';
+
+export { TransactionReceipt } from '@0xproject/types';

@@ -1,13 +1,15 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import {Order} from './order';
-import {BatchCancelOrders, BatchFillOrders, FillOrdersUpTo} from './types';
+import { Order } from './order';
+import { BatchCancelOrders, BatchFillOrders, FillOrdersUpTo } from './types';
 
 export const formatters = {
-    createBatchFill(orders: Order[],
-                    shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                    fillTakerTokenAmounts: BigNumber[] = []) {
+    createBatchFill(
+        orders: Order[],
+        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+        fillTakerTokenAmounts: BigNumber[] = [],
+    ) {
         const batchFill: BatchFillOrders = {
             orderAddresses: [],
             orderValues: [],
@@ -18,11 +20,21 @@ export const formatters = {
             s: [],
         };
         _.forEach(orders, order => {
-            batchFill.orderAddresses.push([order.params.maker, order.params.taker, order.params.makerToken,
-                                     order.params.takerToken, order.params.feeRecipient]);
-            batchFill.orderValues.push([order.params.makerTokenAmount, order.params.takerTokenAmount,
-                                        order.params.makerFee, order.params.takerFee,
-                                        order.params.expirationTimestampInSec, order.params.salt]);
+            batchFill.orderAddresses.push([
+                order.params.maker,
+                order.params.taker,
+                order.params.makerToken,
+                order.params.takerToken,
+                order.params.feeRecipient,
+            ]);
+            batchFill.orderValues.push([
+                order.params.makerTokenAmount,
+                order.params.takerTokenAmount,
+                order.params.makerFee,
+                order.params.takerFee,
+                order.params.expirationTimestampInSec,
+                order.params.salt,
+            ]);
             batchFill.v.push(order.params.v);
             batchFill.r.push(order.params.r);
             batchFill.s.push(order.params.s);
@@ -32,9 +44,11 @@ export const formatters = {
         });
         return batchFill;
     },
-    createFillUpTo(orders: Order[],
-                   shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-                   fillTakerTokenAmount: BigNumber) {
+    createFillUpTo(
+        orders: Order[],
+        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
+        fillTakerTokenAmount: BigNumber,
+    ) {
         const fillUpTo: FillOrdersUpTo = {
             orderAddresses: [],
             orderValues: [],
@@ -45,11 +59,21 @@ export const formatters = {
             s: [],
         };
         orders.forEach(order => {
-            fillUpTo.orderAddresses.push([order.params.maker, order.params.taker, order.params.makerToken,
-                                          order.params.takerToken, order.params.feeRecipient]);
-            fillUpTo.orderValues.push([order.params.makerTokenAmount, order.params.takerTokenAmount,
-                                       order.params.makerFee, order.params.takerFee,
-                                       order.params.expirationTimestampInSec, order.params.salt]);
+            fillUpTo.orderAddresses.push([
+                order.params.maker,
+                order.params.taker,
+                order.params.makerToken,
+                order.params.takerToken,
+                order.params.feeRecipient,
+            ]);
+            fillUpTo.orderValues.push([
+                order.params.makerTokenAmount,
+                order.params.takerTokenAmount,
+                order.params.makerFee,
+                order.params.takerFee,
+                order.params.expirationTimestampInSec,
+                order.params.salt,
+            ]);
             fillUpTo.v.push(order.params.v);
             fillUpTo.r.push(order.params.r);
             fillUpTo.s.push(order.params.s);
@@ -63,11 +87,21 @@ export const formatters = {
             cancelTakerTokenAmounts,
         };
         orders.forEach(order => {
-            batchCancel.orderAddresses.push([order.params.maker, order.params.taker, order.params.makerToken,
-                                       order.params.takerToken, order.params.feeRecipient]);
-            batchCancel.orderValues.push([order.params.makerTokenAmount, order.params.takerTokenAmount,
-                                          order.params.makerFee, order.params.takerFee,
-                                          order.params.expirationTimestampInSec, order.params.salt]);
+            batchCancel.orderAddresses.push([
+                order.params.maker,
+                order.params.taker,
+                order.params.makerToken,
+                order.params.takerToken,
+                order.params.feeRecipient,
+            ]);
+            batchCancel.orderValues.push([
+                order.params.makerTokenAmount,
+                order.params.takerTokenAmount,
+                order.params.makerFee,
+                order.params.takerFee,
+                order.params.expirationTimestampInSec,
+                order.params.salt,
+            ]);
             if (cancelTakerTokenAmounts.length < orders.length) {
                 batchCancel.cancelTakerTokenAmounts.push(order.params.takerTokenAmount);
             }

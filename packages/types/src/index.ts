@@ -1,4 +1,4 @@
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 export interface TxData {
@@ -8,6 +8,10 @@ export interface TxData {
     nonce?: number;
 }
 
+export interface TxDataPayable extends TxData {
+    value?: BigNumber;
+}
+
 export interface TransactionReceipt {
     blockHash: string;
     blockNumber: number;
@@ -15,9 +19,9 @@ export interface TransactionReceipt {
     transactionIndex: number;
     from: string;
     to: string;
-    status: null|0|1;
+    status: null | 0 | 1;
     cumulativeGasUsed: number;
     gasUsed: number;
-    contractAddress: string|null;
+    contractAddress: string | null;
     logs: Web3.LogEntry[];
 }

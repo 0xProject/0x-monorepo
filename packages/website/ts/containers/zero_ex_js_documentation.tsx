@@ -1,18 +1,14 @@
-import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {Dispatch, Store as ReduxStore} from 'redux';
-import {Blockchain} from 'ts/blockchain';
-import {DocsInfo} from 'ts/pages/documentation/docs_info';
-import {
-    Documentation as DocumentationComponent,
-    DocumentationAllProps,
-} from 'ts/pages/documentation/documentation';
-import {Dispatcher} from 'ts/redux/dispatcher';
-import {State} from 'ts/redux/reducer';
-import {DocsInfoConfig, WebsitePaths} from 'ts/types';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { DocsInfo } from 'ts/pages/documentation/docs_info';
+import { Documentation as DocumentationComponent, DocumentationAllProps } from 'ts/pages/documentation/documentation';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { State } from 'ts/redux/reducer';
+import { DocsInfoConfig, WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
+import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/0xjs/introduction');
@@ -36,7 +32,7 @@ const zeroExJsDocSections = {
     etherToken: 'etherToken',
     proxy: 'proxy',
     orderWatcher: 'orderWatcher',
-    types: 'types',
+    types: constants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -46,20 +42,10 @@ const docsInfoConfig: DocsInfoConfig = {
     websitePath: WebsitePaths.ZeroExJs,
     docsJsonRoot: 'https://s3.amazonaws.com/0xjs-docs-jsons',
     menu: {
-        introduction: [
-            zeroExJsDocSections.introduction,
-        ],
-        install: [
-            zeroExJsDocSections.installation,
-        ],
-        topics: [
-            zeroExJsDocSections.async,
-            zeroExJsDocSections.errors,
-            zeroExJsDocSections.versioning,
-        ],
-        zeroEx: [
-            zeroExJsDocSections.zeroEx,
-        ],
+        introduction: [zeroExJsDocSections.introduction],
+        install: [zeroExJsDocSections.installation],
+        topics: [zeroExJsDocSections.async, zeroExJsDocSections.errors, zeroExJsDocSections.versioning],
+        zeroEx: [zeroExJsDocSections.zeroEx],
         contracts: [
             zeroExJsDocSections.exchange,
             zeroExJsDocSections.token,
@@ -67,12 +53,8 @@ const docsInfoConfig: DocsInfoConfig = {
             zeroExJsDocSections.etherToken,
             zeroExJsDocSections.proxy,
         ],
-        orderWatcher: [
-            zeroExJsDocSections.orderWatcher,
-        ],
-        types: [
-            zeroExJsDocSections.types,
-        ],
+        orderWatcher: [zeroExJsDocSections.orderWatcher],
+        types: [zeroExJsDocSections.types],
     },
     sectionNameToMarkdown: {
         [zeroExJsDocSections.introduction]: IntroMarkdown,
@@ -97,6 +79,7 @@ const docsInfoConfig: DocsInfoConfig = {
         'ExchangeEvents',
         'IndexedFilterValues',
         'SubscriptionOpts',
+        'BlockRange',
         'BlockParam',
         'OrderFillOrKillRequest',
         'OrderCancellationRequest',
@@ -109,6 +92,9 @@ const docsInfoConfig: DocsInfoConfig = {
         'LogErrorContractEventArgs',
         'LogFillContractEventArgs',
         'LogCancelContractEventArgs',
+        'EtherTokenContractEventArgs',
+        'WithdrawalContractEventArgs',
+        'DepositContractEventArgs',
         'TokenEvents',
         'ExchangeContractEventArgs',
         'TransferContractEventArgs',
@@ -117,6 +103,8 @@ const docsInfoConfig: DocsInfoConfig = {
         'ZeroExConfig',
         'TransactionReceiptWithDecodedLogs',
         'LogWithDecodedArgs',
+        'EtherTokenEvents',
+        'BlockParamLiteral',
         'DecodedLogArgs',
         'MethodOpts',
         'ValidateOrderFillableOpts',
@@ -177,5 +165,6 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Documentation: React.ComponentClass<DocumentationAllProps> =
-  connect(mapStateToProps, mapDispatchToProps)(DocumentationComponent);
+export const Documentation: React.ComponentClass<DocumentationAllProps> = connect(mapStateToProps, mapDispatchToProps)(
+    DocumentationComponent,
+);

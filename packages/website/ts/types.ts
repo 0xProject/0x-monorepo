@@ -1,41 +1,10 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-// Utility function to create a K:V from a list of strings
-// Adapted from: https://basarat.gitbooks.io/typescript/content/docs/types/literal-types.html
-function strEnum(values: string[]): {[key: string]: string} {
-    return _.reduce(values, (result, key) => {
-        result[key] = key;
-        return result;
-    }, Object.create(null));
+export enum Side {
+    Receive = 'RECEIVE',
+    Deposit = 'DEPOSIT',
 }
-
-export enum GenerateOrderSteps {
-  ChooseAssets,
-  GrantAllowance,
-  RemainingConfigs,
-  SignTransaction,
-  CopyAndShare,
-}
-
-export const Side = strEnum([
-  'receive',
-  'deposit',
-]);
-export type Side = keyof typeof Side;
-
-export const BlockchainErrs = strEnum([
-  'A_CONTRACT_NOT_DEPLOYED_ON_NETWORK',
-  'DISCONNECTED_FROM_ETHEREUM_NODE',
-  'UNHANDLED_ERROR',
-]);
-export type BlockchainErrs = keyof typeof BlockchainErrs;
-
-export const Direction = strEnum([
-  'forward',
-  'backward',
-]);
-export type Direction = keyof typeof Direction;
 
 export interface Token {
     iconUrl?: string;
@@ -135,53 +104,50 @@ export enum BalanceErrs {
     faucetRequestFailed,
     faucetQueueIsFull,
     mintingFailed,
-    wethConversionFailed,
     sendFailed,
     allowanceSettingFailed,
 }
 
-export const ActionTypes = strEnum([
+export enum ActionTypes {
     // Portal
-    'UPDATE_SCREEN_WIDTH',
-    'UPDATE_NODE_VERSION',
-    'RESET_STATE',
-    'ADD_TOKEN_TO_TOKEN_BY_ADDRESS',
-    'BLOCKCHAIN_ERR_ENCOUNTERED',
-    'CLEAR_TOKEN_BY_ADDRESS',
-    'UPDATE_BLOCKCHAIN_IS_LOADED',
-    'UPDATE_NETWORK_ID',
-    'UPDATE_GENERATE_ORDER_STEP',
-    'UPDATE_CHOSEN_ASSET_TOKEN',
-    'UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS',
-    'UPDATE_ORDER_TAKER_ADDRESS',
-    'UPDATE_ORDER_SALT',
-    'UPDATE_ORDER_SIGNATURE_DATA',
-    'UPDATE_TOKEN_BY_ADDRESS',
-    'REMOVE_TOKEN_TO_TOKEN_BY_ADDRESS',
-    'UPDATE_TOKEN_STATE_BY_ADDRESS',
-    'REMOVE_FROM_TOKEN_STATE_BY_ADDRESS',
-    'REPLACE_TOKEN_ALLOWANCE_BY_ADDRESS',
-    'REPLACE_TOKEN_BALANCE_BY_ADDRESS',
-    'UPDATE_TOKEN_BALANCE_BY_ADDRESS',
-    'UPDATE_ORDER_EXPIRY',
-    'SWAP_ASSET_TOKENS',
-    'UPDATE_USER_ADDRESS',
-    'UPDATE_USER_ETHER_BALANCE',
-    'UPDATE_USER_SUPPLIED_ORDER_CACHE',
-    'UPDATE_ORDER_FILL_AMOUNT',
-    'UPDATE_SHOULD_BLOCKCHAIN_ERR_DIALOG_BE_OPEN',
+    UpdateScreenWidth = 'UPDATE_SCREEN_WIDTH',
+    UpdateNodeVersion = 'UPDATE_NODE_VERSION',
+    ResetState = 'RESET_STATE',
+    AddTokenToTokenByAddress = 'ADD_TOKEN_TO_TOKEN_BY_ADDRESS',
+    BlockchainErrEncountered = 'BLOCKCHAIN_ERR_ENCOUNTERED',
+    ClearTokenByAddress = 'CLEAR_TOKEN_BY_ADDRESS',
+    UpdateBlockchainIsLoaded = 'UPDATE_BLOCKCHAIN_IS_LOADED',
+    UpdateNetworkId = 'UPDATE_NETWORK_ID',
+    UpdateChosenAssetToken = 'UPDATE_CHOSEN_ASSET_TOKEN',
+    UpdateChosenAssetTokenAddress = 'UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS',
+    UpdateOrderTakerAddress = 'UPDATE_ORDER_TAKER_ADDRESS',
+    UpdateOrderSalt = 'UPDATE_ORDER_SALT',
+    UpdateOrderSignatureData = 'UPDATE_ORDER_SIGNATURE_DATA',
+    UpdateTokenByAddress = 'UPDATE_TOKEN_BY_ADDRESS',
+    RemoveTokenFromTokenByAddress = 'REMOVE_TOKEN_FROM_TOKEN_BY_ADDRESS',
+    UpdateTokenStateByAddress = 'UPDATE_TOKEN_STATE_BY_ADDRESS',
+    RemoveFromTokenStateByAddress = 'REMOVE_FROM_TOKEN_STATE_BY_ADDRESS',
+    ReplaceTokenAllowanceByAddress = 'REPLACE_TOKEN_ALLOWANCE_BY_ADDRESS',
+    ReplaceTokenBalanceByAddress = 'REPLACE_TOKEN_BALANCE_BY_ADDRESS',
+    UpdateTokenBalanceByAddress = 'UPDATE_TOKEN_BALANCE_BY_ADDRESS',
+    UpdateOrderExpiry = 'UPDATE_ORDER_EXPIRY',
+    SwapAssetTokens = 'SWAP_ASSET_TOKENS',
+    UpdateUserAddress = 'UPDATE_USER_ADDRESS',
+    UpdateUserEtherBalance = 'UPDATE_USER_ETHER_BALANCE',
+    UpdateUserSuppliedOrderCache = 'UPDATE_USER_SUPPLIED_ORDER_CACHE',
+    UpdateOrderFillAmount = 'UPDATE_ORDER_FILL_AMOUNT',
+    UpdateShouldBlockchainErrDialogBeOpen = 'UPDATE_SHOULD_BLOCKCHAIN_ERR_DIALOG_BE_OPEN',
 
     // Docs
-    'UPDATE_LIBRARY_VERSION',
-    'UPDATE_AVAILABLE_LIBRARY_VERSIONS',
+    UpdateLibraryVersion = 'UPDATE_LIBRARY_VERSION',
+    UpdateAvailableLibraryVersions = 'UPDATE_AVAILABLE_LIBRARY_VERSIONS',
 
     // Shared
-    'SHOW_FLASH_MESSAGE',
-    'HIDE_FLASH_MESSAGE',
-    'UPDATE_PROVIDER_TYPE',
-    'UPDATE_INJECTED_PROVIDER_NAME',
-]);
-export type ActionTypes = keyof typeof ActionTypes;
+    ShowFlashMessage = 'SHOW_FLASH_MESSAGE',
+    HideFlashMessage = 'HIDE_FLASH_MESSAGE',
+    UpdateProviderType = 'UPDATE_PROVIDER_TYPE',
+    UpdateInjectedProviderName = 'UPDATE_INJECTED_PROVIDER_NAME',
+}
 
 export interface Action {
     type: ActionTypes;
@@ -189,7 +155,11 @@ export interface Action {
 }
 
 export interface TrackedTokensByNetworkId {
-    [networkId: number]: Token;
+    [networkId: number]: Token[];
+}
+
+export interface TrackedTokensByUserAddress {
+    [userAddress: string]: TrackedTokensByNetworkId;
 }
 
 export interface Styles {
@@ -254,44 +224,47 @@ export interface ContractEvent {
 
 export type InputErrMsg = React.ReactNode | string | undefined;
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
-export const ScreenWidths = strEnum([
-  'SM',
-  'MD',
-  'LG',
-]);
-export type ScreenWidths = keyof typeof ScreenWidths;
+export enum ScreenWidths {
+    Sm = 'SM',
+    Md = 'MD',
+    Lg = 'LG',
+}
 
 export enum AlertTypes {
     ERROR,
     SUCCESS,
 }
 
-export const EtherscanLinkSuffixes = strEnum([
-  'address',
-  'tx',
-]);
-export type EtherscanLinkSuffixes = keyof typeof EtherscanLinkSuffixes;
+export enum EtherscanLinkSuffixes {
+    Address = 'address',
+    Tx = 'tx',
+}
 
-export const BlockchainCallErrs = strEnum([
-  'CONTRACT_DOES_NOT_EXIST',
-  'USER_HAS_NO_ASSOCIATED_ADDRESSES',
-  'UNHANDLED_ERROR',
-  'TOKEN_ADDRESS_IS_INVALID',
-  'INVALID_SIGNATURE',
-]);
-export type BlockchainCallErrs = keyof typeof BlockchainCallErrs;
+export enum BlockchainErrs {
+    AContractNotDeployedOnNetwork = 'A_CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    DisconnectedFromEthereumNode = 'DISCONNECTED_FROM_ETHEREUM_NODE',
+    NoError = 'NO_ERROR',
+}
 
-export const KindString = strEnum([
-  'Constructor',
-  'Property',
-  'Method',
-  'Interface',
-  'Type alias',
-  'Variable',
-  'Function',
-  'Enumeration',
-]);
-export type KindString = keyof typeof KindString;
+export enum BlockchainCallErrs {
+    ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
+    UserHasNoAssociatedAddresses = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
+    UnhandledError = 'UNHANDLED_ERROR',
+    TokenAddressIsInvalid = 'TOKEN_ADDRESS_IS_INVALID',
+}
+
+// Exception: We don't make the values uppercase because these KindString's need to
+// match up those returned by TypeDoc
+export enum KindString {
+    Constructor = 'Constructor',
+    Property = 'Property',
+    Method = 'Method',
+    Interface = 'Interface',
+    TypeAlias = 'Type alias',
+    Variable = 'Variable',
+    Function = 'Function',
+    Enumeration = 'Enumeration',
+}
 
 export interface EnumValue {
     name: string;
@@ -367,8 +340,8 @@ export interface DocAgnosticFormat {
 
 export interface DocSection {
     comment: string;
-    constructors: Array<TypescriptMethod|SolidityMethod>;
-    methods: Array<TypescriptMethod|SolidityMethod>;
+    constructors: Array<TypescriptMethod | SolidityMethod>;
+    methods: Array<TypescriptMethod | SolidityMethod>;
     properties: Property[];
     types: CustomType[];
     events?: Event[];
@@ -395,7 +368,7 @@ export interface Property {
 export interface BaseMethod {
     isConstructor: boolean;
     name: string;
-    returnComment?: string|undefined;
+    returnComment?: string | undefined;
     callPath: string;
     parameters: Parameter[];
     returnType: Type;
@@ -487,11 +460,10 @@ export interface MenuSubsectionsBySection {
     [section: string]: string[];
 }
 
-export const ProviderType = strEnum([
-  'INJECTED',
-  'LEDGER',
-]);
-export type ProviderType = keyof typeof ProviderType;
+export enum ProviderType {
+    Injected = 'INJECTED',
+    Ledger = 'LEDGER',
+}
 
 export interface Fact {
     title: string;
@@ -511,8 +483,11 @@ interface LedgerCommunication {
     close_async: () => Promise<void>;
 }
 export interface LedgerEthConnection {
-    getAddress_async: (derivationPath: string, askForDeviceConfirmation: boolean,
-                       shouldGetChainCode: boolean) => Promise<LedgerGetAddressResult>;
+    getAddress_async: (
+        derivationPath: string,
+        askForDeviceConfirmation: boolean,
+        shouldGetChainCode: boolean,
+    ) => Promise<LedgerGetAddressResult>;
     signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<LedgerSignResult>;
     signTransaction_async: (derivationPath: string, txHex: string) => Promise<LedgerSignResult>;
     comm: LedgerCommunication;
@@ -668,19 +643,39 @@ export interface SectionsMap {
 }
 
 export interface DocsInfoConfig {
-  displayName: string;
-  packageUrl: string;
-  websitePath: string;
-  docsJsonRoot: string;
-  menu: DocsMenu;
-  sections: SectionsMap;
-  sectionNameToMarkdown: {[sectionName: string]: string};
-  visibleConstructors: string[];
-  convertToDocAgnosticFormatFn: (docObj: DoxityDocObj|TypeDocNode, docsInfo?: any) => DocAgnosticFormat;
-  subPackageName?: string;
-  publicTypes?: string[];
-  sectionNameToModulePath?: {[sectionName: string]: string[]};
-  menuSubsectionToVersionWhenIntroduced?: {[sectionName: string]: string};
+    displayName: string;
+    packageUrl: string;
+    websitePath: string;
+    docsJsonRoot: string;
+    menu: DocsMenu;
+    sections: SectionsMap;
+    sectionNameToMarkdown: { [sectionName: string]: string };
+    visibleConstructors: string[];
+    convertToDocAgnosticFormatFn: (docObj: DoxityDocObj | TypeDocNode, docsInfo?: any) => DocAgnosticFormat;
+    subPackageName?: string;
+    publicTypes?: string[];
+    sectionNameToModulePath?: { [sectionName: string]: string[] };
+    menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };
+}
+
+export interface TimestampMsRange {
+    startTimestampMs: number;
+    endTimestampMs: number;
+}
+
+export interface OutdatedWrappedEtherByNetworkId {
+    [networkId: number]: {
+        address: string;
+        timestampMsRange: TimestampMsRange;
+    };
+}
+
+export enum SmartContractDocSections {
+    Introduction = 'Introduction',
+    Exchange = 'Exchange',
+    TokenTransferProxy = 'TokenTransferProxy',
+    TokenRegistry = 'TokenRegistry',
+    ZRXToken = 'ZRXToken',
 }
 
 // tslint:disable:max-file-line-count

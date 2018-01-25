@@ -1,16 +1,16 @@
 import * as React from 'react';
-import {Link as ScrollLink} from 'react-scroll';
-import {HeaderSizes, Styles} from 'ts/types';
-import {constants} from 'ts/utils/constants';
-import {utils} from 'ts/utils/utils';
+import { Link as ScrollLink } from 'react-scroll';
+import { HeaderSizes, Styles } from 'ts/types';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
-const headerSizeToScrollOffset: {[headerSize: string]: number} = {
+const headerSizeToScrollOffset: { [headerSize: string]: number } = {
     h2: -20,
     h3: 0,
 };
 
 interface AnchorTitleProps {
-    title: string|React.ReactNode;
+    title: string | React.ReactNode;
     id: string;
     headerSize: HeaderSizes;
     shouldShowAnchor: boolean;
@@ -62,11 +62,8 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
             opacity = this.state.isHovering ? 0.6 : 1;
         }
         return (
-            <div className="relative flex" style={{...styles[this.props.headerSize], ...styles.headers}}>
-                <div
-                    className="inline-block"
-                    style={{paddingRight: 4}}
-                >
+            <div className="relative flex" style={{ ...styles[this.props.headerSize], ...styles.headers }}>
+                <div className="inline-block" style={{ paddingRight: 4 }}>
                     {this.props.title}
                 </div>
                 <ScrollLink
@@ -78,15 +75,15 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                     <i
                         className="zmdi zmdi-link"
                         onClick={utils.setUrlHash.bind(utils, this.props.id)}
-                        style={{...styles.anchor, opacity}}
-                        onMouseOver={this.setHoverState.bind(this, true)}
-                        onMouseOut={this.setHoverState.bind(this, false)}
+                        style={{ ...styles.anchor, opacity }}
+                        onMouseOver={this._setHoverState.bind(this, true)}
+                        onMouseOut={this._setHoverState.bind(this, false)}
                     />
                 </ScrollLink>
             </div>
         );
     }
-    private setHoverState(isHovering: boolean) {
+    private _setHoverState(isHovering: boolean) {
         this.setState({
             isHovering,
         });

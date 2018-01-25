@@ -1,14 +1,12 @@
-import * as chai from 'chai';
 import * as fs from 'fs';
 import HDWalletProvider = require('truffle-hdwallet-provider');
 
-import {ZeroEx} from '../src';
+import { ZeroEx } from '../src';
 
-import {chaiSetup} from './utils/chai_setup';
-import {constants} from './utils/constants';
+import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
 
 chaiSetup.configure();
-const expect = chai.expect;
 
 // Those tests are slower cause they're talking to a remote node
 const TIMEOUT = 10000;

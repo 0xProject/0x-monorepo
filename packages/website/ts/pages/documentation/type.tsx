@@ -1,34 +1,30 @@
 import * as _ from 'lodash';
-import {colors} from 'material-ui/styles';
 import * as React from 'react';
-import {Link as ScrollLink} from 'react-scroll';
+import { Link as ScrollLink } from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
-import {DocsInfo} from 'ts/pages/documentation/docs_info';
-import {TypeDefinition} from 'ts/pages/documentation/type_definition';
-import {Type as TypeDef, TypeDefinitionByName, TypeDocTypes} from 'ts/types';
-import {constants} from 'ts/utils/constants';
-import {typeDocUtils} from 'ts/utils/typedoc_utils';
-import {utils} from 'ts/utils/utils';
-
-const BUILT_IN_TYPE_COLOR = '#e69d00';
-const STRING_LITERAL_COLOR = '#4da24b';
+import { DocsInfo } from 'ts/pages/documentation/docs_info';
+import { TypeDefinition } from 'ts/pages/documentation/type_definition';
+import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 // Some types reference other libraries. For these types, we want to link the user to the relevant documentation.
-const typeToUrl: {[typeName: string]: string} = {
-    Web3: constants.WEB3_DOCS_URL,
-    Provider: constants.WEB3_PROVIDER_DOCS_URL,
-    BigNumber: constants.BIGNUMBERJS_GITHUB_URL,
-    DecodedLogEntryEvent: constants.WEB3_DECODED_LOG_ENTRY_EVENT_URL,
-    LogEntryEvent: constants.WEB3_LOG_ENTRY_EVENT_URL,
+const typeToUrl: { [typeName: string]: string } = {
+    Web3: constants.URL_WEB3_DOCS,
+    Provider: constants.URL_WEB3_PROVIDER_DOCS,
+    BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
+    DecodedLogEntryEvent: constants.URL_WEB3_DECODED_LOG_ENTRY_EVENT,
+    LogEntryEvent: constants.URL_WEB3_LOG_ENTRY_EVENT,
 };
 
-const typePrefix: {[typeName: string]: string} = {
+const typePrefix: { [typeName: string]: string } = {
     Provider: 'Web3',
     DecodedLogEntryEvent: 'Web3',
     LogEntryEvent: 'Web3',
 };
 
-const typeToSection: {[typeName: string]: string} = {
+const typeToSection: { [typeName: string]: string } = {
     ExchangeWrapper: 'exchange',
     TokenWrapper: 'token',
     TokenRegistryWrapper: 'tokenRegistry',
@@ -41,6 +37,7 @@ const typeToSection: {[typeName: string]: string} = {
 interface TypeProps {
     type: TypeDef;
     docsInfo: DocsInfo;
+    sectionName: string;
     typeDefinitionByName?: TypeDefinitionByName;
 }
 
@@ -48,18 +45,16 @@ interface TypeProps {
 // <Type /> components (e.g when rendering the union type).
 export function Type(props: TypeProps): any {
     const type = props.type;
-    const isIntrinsic = type.typeDocType === TypeDocTypes.Intrinsic;
     const isReference = type.typeDocType === TypeDocTypes.Reference;
     const isArray = type.typeDocType === TypeDocTypes.Array;
-    const isStringLiteral = type.typeDocType === TypeDocTypes.StringLiteral;
     let typeNameColor = 'inherit';
-    let typeName: string|React.ReactNode;
+    let typeName: string | React.ReactNode;
     let typeArgs: React.ReactNode[] = [];
     switch (type.typeDocType) {
         case TypeDocTypes.Intrinsic:
         case TypeDocTypes.Unknown:
             typeName = type.name;
-            typeNameColor = BUILT_IN_TYPE_COLOR;
+            typeNameColor = colors.orange;
             break;
 
         case TypeDocTypes.Reference:
@@ -72,6 +67,7 @@ export function Type(props: TypeProps): any {
                             <Type
                                 key={key}
                                 type={arg.elementType}
+                                sectionName={props.sectionName}
                                 typeDefinitionByName={props.typeDefinitionByName}
                                 docsInfo={props.docsInfo}
                             />[]
@@ -82,6 +78,7 @@ export function Type(props: TypeProps): any {
                         <Type
                             key={`type-${arg.name}-${arg.value}-${arg.typeDocType}`}
                             type={arg}
+                            sectionName={props.sectionName}
                             typeDefinitionByName={props.typeDefinitionByName}
                             docsInfo={props.docsInfo}
                         />
@@ -93,7 +90,7 @@ export function Type(props: TypeProps): any {
 
         case TypeDocTypes.StringLiteral:
             typeName = `'${type.value}'`;
-            typeNameColor = STRING_LITERAL_COLOR;
+            typeNameColor = colors.green;
             break;
 
         case TypeDocTypes.Array:
@@ -106,6 +103,7 @@ export function Type(props: TypeProps): any {
                     <Type
                         key={`type-${t.name}-${t.value}-${t.typeDocType}`}
                         type={t}
+                        sectionName={props.sectionName}
                         typeDefinitionByName={props.typeDefinitionByName}
                         docsInfo={props.docsInfo}
                     />
@@ -132,25 +130,29 @@ export function Type(props: TypeProps): any {
         return [prev, ', ', curr];
     });
 
-    const typeNameUrlIfExists = typeToUrl[(typeName as string)];
-    const typePrefixIfExists = typePrefix[(typeName as string)];
-    const sectionNameIfExists = typeToSection[(typeName as string)];
+    const typeNameUrlIfExists = typeToUrl[typeName as string];
+    const typePrefixIfExists = typePrefix[typeName as string];
+    const sectionNameIfExists = typeToSection[typeName as string];
     if (!_.isUndefined(typeNameUrlIfExists)) {
         typeName = (
             <a
                 href={typeNameUrlIfExists}
                 target="_blank"
                 className="text-decoration-none"
-                style={{color: colors.lightBlueA700}}
+                style={{ color: colors.lightBlueA700 }}
             >
-                {!_.isUndefined(typePrefixIfExists) ? `${typePrefixIfExists}.` : ''}{typeName}
+                {!_.isUndefined(typePrefixIfExists) ? `${typePrefixIfExists}.` : ''}
+                {typeName}
             </a>
         );
-    } else if ((isReference || isArray) &&
-                (props.docsInfo.isPublicType(typeName as string) ||
-                !_.isUndefined(sectionNameIfExists))) {
+    } else if (
+        (isReference || isArray) &&
+        (props.docsInfo.isPublicType(typeName as string) || !_.isUndefined(sectionNameIfExists))
+    ) {
         const id = Math.random().toString();
-        const typeDefinitionAnchorId = _.isUndefined(sectionNameIfExists) ? typeName : sectionNameIfExists;
+        const typeDefinitionAnchorId = _.isUndefined(sectionNameIfExists)
+            ? `${props.sectionName}-${typeName}`
+            : sectionNameIfExists;
         let typeDefinition;
         if (props.typeDefinitionByName) {
             typeDefinition = props.typeDefinitionByName[typeName as string];
@@ -162,45 +164,49 @@ export function Type(props: TypeProps): any {
                 duration={constants.DOCS_SCROLL_DURATION_MS}
                 containerId={constants.DOCS_CONTAINER_ID}
             >
-            {_.isUndefined(typeDefinition) || utils.isUserOnMobile() ?
-                <span
-                    onClick={utils.setUrlHash.bind(null, typeDefinitionAnchorId)}
-                    style={{color: colors.lightBlueA700, cursor: 'pointer'}}
-                >
-                    {typeName}
-                </span> :
-                <span
-                    data-tip={true}
-                    data-for={id}
-                    onClick={utils.setUrlHash.bind(null, typeDefinitionAnchorId)}
-                    style={{color: colors.lightBlueA700, cursor: 'pointer', display: 'inline-block'}}
-                >
-                    {typeName}
-                    <ReactTooltip
-                        type="light"
-                        effect="solid"
-                        id={id}
-                        className="typeTooltip"
+                {_.isUndefined(typeDefinition) || utils.isUserOnMobile() ? (
+                    <span
+                        onClick={utils.setUrlHash.bind(null, typeDefinitionAnchorId)}
+                        style={{ color: colors.lightBlueA700, cursor: 'pointer' }}
                     >
-                        <TypeDefinition
-                            customType={typeDefinition}
-                            shouldAddId={false}
-                            docsInfo={props.docsInfo}
-                        />
-                    </ReactTooltip>
-                </span>
-            }
+                        {typeName}
+                    </span>
+                ) : (
+                    <span
+                        data-tip={true}
+                        data-for={id}
+                        onClick={utils.setUrlHash.bind(null, typeDefinitionAnchorId)}
+                        style={{
+                            color: colors.lightBlueA700,
+                            cursor: 'pointer',
+                            display: 'inline-block',
+                        }}
+                    >
+                        {typeName}
+                        <ReactTooltip type="light" effect="solid" id={id} className="typeTooltip">
+                            <TypeDefinition
+                                sectionName={props.sectionName}
+                                customType={typeDefinition}
+                                shouldAddId={false}
+                                docsInfo={props.docsInfo}
+                            />
+                        </ReactTooltip>
+                    </span>
+                )}
             </ScrollLink>
         );
     }
     return (
         <span>
-            <span style={{color: typeNameColor}}>{typeName}</span>
-            {isArray && '[]'}{!_.isEmpty(typeArgs) &&
+            <span style={{ color: typeNameColor }}>{typeName}</span>
+            {isArray && '[]'}
+            {!_.isEmpty(typeArgs) && (
                 <span>
-                    {'<'}{commaSeparatedTypeArgs}{'>'}
+                    {'<'}
+                    {commaSeparatedTypeArgs}
+                    {'>'}
                 </span>
-            }
+            )}
         </span>
     );
 }

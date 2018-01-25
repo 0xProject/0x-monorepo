@@ -9,29 +9,31 @@ import Web3ProviderEngine = require('web3-provider-engine');
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class InjectedWeb3Subprovider {
-    private injectedWeb3: Web3;
+    private _injectedWeb3: Web3;
     constructor(injectedWeb3: Web3) {
-        this.injectedWeb3 = injectedWeb3;
+        this._injectedWeb3 = injectedWeb3;
     }
     public handleRequest(
-        payload: Web3.JSONRPCRequestPayload, next: () => void, end: (err: Error|null, result: any) => void,
+        payload: Web3.JSONRPCRequestPayload,
+        next: () => void,
+        end: (err: Error | null, result: any) => void,
     ) {
         switch (payload.method) {
             case 'web3_clientVersion':
-                this.injectedWeb3.version.getNode(end);
+                this._injectedWeb3.version.getNode(end);
                 return;
             case 'eth_accounts':
-                this.injectedWeb3.eth.getAccounts(end);
+                this._injectedWeb3.eth.getAccounts(end);
                 return;
 
             case 'eth_sendTransaction':
                 const [txParams] = payload.params;
-                this.injectedWeb3.eth.sendTransaction(txParams, end);
+                this._injectedWeb3.eth.sendTransaction(txParams, end);
                 return;
 
             case 'eth_sign':
                 const [address, message] = payload.params;
-                this.injectedWeb3.eth.sign(address, message, end);
+                this._injectedWeb3.eth.sign(address, message, end);
                 return;
 
             default:
