@@ -12,9 +12,7 @@
         "url": "git+https://github.com/0xProject/0x.js.git"
     },
     "author": "Fabio Berger",
-    "contributors": [
-        "Leonid Logvinov <logvinov.leon@gmail.com>"
-    ],
+    "contributors": ["Leonid Logvinov <logvinov.leon@gmail.com>"],
     "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/0xProject/0x.js/issues"
