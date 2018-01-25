@@ -1,6 +1,6 @@
 {
     "private": true,
-    "name": "@0xproject/kovan_faucets",
+    "name": "@0xproject/testnet-faucets",
     "version": "1.0.6",
     "description": "A faucet micro-service that dispenses test ERC20 tokens or Ether",
     "main": "server.js",
