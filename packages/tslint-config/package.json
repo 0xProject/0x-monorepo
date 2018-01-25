@@ -8,22 +8,12 @@
         "clean": "shx rm -rf lib",
         "lint": "tslint --project . 'rules/**/*.ts'"
     },
-    "files": [
-        "tslint.js",
-        "README.md",
-        "LICENSE"
-    ],
+    "files": ["tslint.js", "README.md", "LICENSE"],
     "repository": {
         "type": "git",
         "url": "git://github.com/0xProject/0x.js.git"
     },
-    "keywords": [
-        "tslint",
-        "config",
-        "0xProject",
-        "typescript",
-        "ts"
-    ],
+    "keywords": ["tslint", "config", "0xProject", "typescript", "ts"],
     "author": {
         "name": "Fabio Berger",
         "email": "fabio@0xproject.com"

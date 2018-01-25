@@ -63,24 +63,24 @@ Returns a JSON payload describing the state of the queues for each network. For 
 
 ```json
 {
-    "3":{
-        "ether":{
-            "full":false,
-            "size":4
+    "3": {
+        "ether": {
+            "full": false,
+            "size": 4
         },
-        "zrx":{
-            "full":false,
-            "size":6
+        "zrx": {
+            "full": false,
+            "size": 6
         }
     },
-    "42":{
-        "ether":{
-            "full":false,
-            "size":8
+    "42": {
+        "ether": {
+            "full": false,
+            "size": 8
         },
-        "zrx":{
-            "full":false,
-            "size":20
+        "zrx": {
+            "full": false,
+            "size": 20
         }
     }
 }

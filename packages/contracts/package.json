@@ -8,9 +8,11 @@
         "test": "test"
     },
     "scripts": {
-        "build": "rm -rf ./lib; copyfiles ./build/**/* ./deploy/solc/solc_bin/* ./deploy/test/fixtures/contracts/**/* ./deploy/test/fixtures/contracts/* ./lib; tsc;",
+        "build":
+            "rm -rf ./lib; copyfiles ./build/**/* ./deploy/solc/solc_bin/* ./deploy/test/fixtures/contracts/**/* ./deploy/test/fixtures/contracts/* ./lib; tsc;",
         "test": "npm run build; truffle test",
-        "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
+        "compile:comment":
+            "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../deployer/lib/src/cli.js compile",
         "clean": "rm -rf ./lib",
         "migrate": "node ../deployer/lib/src/cli.js migrate",
