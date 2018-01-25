@@ -23,6 +23,11 @@ interface RequestQueueByNetworkId {
     [networkId: string]: RequestQueue;
 }
 
+enum QueueType {
+    ETH = 'ETH',
+    ZRX = 'ZRX',
+}
+
 const DEFAULT_NETWORK_ID = 42; // kovan
 
 export class Handler {
@@ -36,17 +41,37 @@ export class Handler {
             this._zrxRequestQueueByNetworkId[networkId] = new ZRXRequestQueue(web3, +networkId);
         });
     }
+    public getQueueInfo(req: express.Request, res: express.Response) {
+        res.setHeader('Content-Type', 'application/json');
+        const queueInfo = _.mapValues(rpcUrls, (rpcUrl: string, networkId: string) => {
+            utils.consoleLog(networkId);
+            const etherRequestQueue = this._etherRequestQueueByNetworkId[networkId];
+            const zrxRequestQueue = this._zrxRequestQueueByNetworkId[networkId];
+            return {
+                ether: {
+                    full: etherRequestQueue.isFull(),
+                    size: etherRequestQueue.size(),
+                },
+                zrx: {
+                    full: zrxRequestQueue.isFull(),
+                    size: zrxRequestQueue.size(),
+                },
+            };
+        });
+        const payload = JSON.stringify(queueInfo);
+        res.status(200).send(payload);
+    }
     public dispenseEther(req: express.Request, res: express.Response) {
-        this._dispense(req, res, this._etherRequestQueueByNetworkId, 'ETH');
+        this._dispense(req, res, this._etherRequestQueueByNetworkId, QueueType.ETH);
     }
     public dispenseZRX(req: express.Request, res: express.Response) {
-        this._dispense(req, res, this._zrxRequestQueueByNetworkId, 'ZRX');
+        this._dispense(req, res, this._zrxRequestQueueByNetworkId, QueueType.ZRX);
     }
     private _dispense(
         req: express.Request,
         res: express.Response,
         requestQueueByNetworkId: RequestQueueByNetworkId,
-        assetSymbol: string,
+        queueType: QueueType,
     ) {
         const recipientAddress = req.params.recipient;
         if (_.isUndefined(recipientAddress) || !this._isValidEthereumAddress(recipientAddress)) {
@@ -65,7 +90,7 @@ export class Handler {
             res.status(503).send('QUEUE_IS_FULL');
             return;
         }
-        utils.consoleLog(`Added ${lowerCaseRecipientAddress} to queue: ${assetSymbol} networkId: ${networkId}`);
+        utils.consoleLog(`Added ${lowerCaseRecipientAddress} to queue: ${queueType} networkId: ${networkId}`);
         res.status(200).end();
     }
     // tslint:disable-next-line:prefer-function-over-method

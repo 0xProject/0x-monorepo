@@ -53,6 +53,39 @@ yarn dev
 
 ### Endpoints
 
+`GET /ping`
+
+Returns `pong`
+
+`GET /info`
+
+Returns a JSON payload describing the state of the queues for each network. For example:
+
+```json
+{
+    "3":{
+        "ether":{
+            "full":false,
+            "size":4
+        },
+        "zrx":{
+            "full":false,
+            "size":6
+        }
+    },
+    "42":{
+        "ether":{
+            "full":false,
+            "size":8
+        },
+        "zrx":{
+            "full":false,
+            "size":20
+        }
+    }
+}
+```
+
 `GET /ether/:recipient`
 
 Where recipient is a hex encoded Ethereum address prefixed with `0x`.
@@ -63,7 +96,7 @@ Where recipient is a hex encoded Ethereum address prefixed with `0x`.
 
 #### Parameters
 
-Both endpoints take a query parameter named `networkId` to specify the desired network where you would like to receive the ETH or ZRX. For example:
+The endpoints `/ether` and `/zrx` take a query parameter named `networkId` to specify the desired network where you would like to receive the ETH or ZRX. For example:
 
 ```bash
 curl -i http://localhost:3000/ether/0x14e2F1F157E7DD4057D02817436D628A37120FD1\?networkId=3
