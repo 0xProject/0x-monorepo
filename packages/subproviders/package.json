@@ -49,7 +49,7 @@
         "types-bn": "^0.0.1",
         "types-ethereumjs-util": "0xproject/types-ethereumjs-util",
         "typescript": "~2.6.1",
-        "web3-typescript-typings": "^0.7.2",
+        "web3-typescript-typings": "^0.9.5",
         "webpack": "^3.1.0"
     }
 }

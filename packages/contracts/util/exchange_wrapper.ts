@@ -1,4 +1,4 @@
-import { ExchangeContractEventArgs, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
+import { TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -108,9 +108,14 @@ export class ExchangeWrapper {
     public async batchFillOrKillOrdersAsync(
         orders: Order[],
         from: string,
-        opts: { fillTakerTokenAmounts?: BigNumber[] } = {},
+        opts: { fillTakerTokenAmounts?: BigNumber[]; shouldThrowOnInsufficientBalanceOrAllowance?: boolean } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createBatchFill(orders, undefined, opts.fillTakerTokenAmounts);
+        const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
+        const params = formatters.createBatchFill(
+            orders,
+            shouldThrowOnInsufficientBalanceOrAllowance,
+            opts.fillTakerTokenAmounts,
+        );
         const txHash = await this._exchange.batchFillOrKillOrders(
             params.orderAddresses,
             params.orderValues,
@@ -128,10 +133,7 @@ export class ExchangeWrapper {
     public async fillOrdersUpToAsync(
         orders: Order[],
         from: string,
-        opts: {
-            fillTakerTokenAmount?: BigNumber;
-            shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
-        } = {},
+        opts: { fillTakerTokenAmount: BigNumber; shouldThrowOnInsufficientBalanceOrAllowance?: boolean },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = formatters.createFillUpTo(

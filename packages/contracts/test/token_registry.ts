@@ -175,7 +175,7 @@ describe('TokenRegistry', () => {
             });
 
             it('should change the token symbol when called by owner', async () => {
-                const res = await tokenReg.setTokenSymbol(token1.address, token2.symbol, { from: owner });
+                await tokenReg.setTokenSymbol(token1.address, token2.symbol, { from: owner });
                 const [newData, oldData] = await Promise.all([
                     tokenRegWrapper.getTokenBySymbolAsync(token2.symbol),
                     tokenRegWrapper.getTokenBySymbolAsync(token1.symbol),
@@ -216,7 +216,7 @@ describe('TokenRegistry', () => {
 
             it('should remove token metadata when called by owner', async () => {
                 const index = 0;
-                const res = await tokenReg.removeToken(token1.address, index, {
+                await tokenReg.removeToken(token1.address, index, {
                     from: owner,
                 });
                 const tokenData = await tokenRegWrapper.getTokenMetaDataAsync(token1.address);

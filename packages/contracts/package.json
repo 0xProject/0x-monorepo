@@ -52,7 +52,7 @@
         "truffle": "^4.0.1",
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
-        "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
+        "types-ethereumjs-util": "0xproject/types-ethereumjs-util",
         "typescript": "~2.6.1",
         "web3-typescript-typings": "^0.9.7",
         "yargs": "^10.0.3"

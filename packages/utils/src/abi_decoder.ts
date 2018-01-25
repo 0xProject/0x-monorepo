@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
 
+// tslint:disable-next-line:no-unused-variable
 import { BigNumber } from './configured_bignumber';
 
 export class AbiDecoder {

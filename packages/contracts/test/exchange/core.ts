@@ -147,9 +147,8 @@ describe('Exchange', () => {
                 takerTokenAmount: new BigNumber(3),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount1 = new BigNumber(2);
@@ -157,9 +156,8 @@ describe('Exchange', () => {
                 fillTakerTokenAmount: fillTakerTokenAmount1,
             });
 
-            const filledTakerTokenAmountAfter1 = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter1 = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter1).to.be.bignumber.equal(fillTakerTokenAmount1);
 
             const fillTakerTokenAmount2 = new BigNumber(1);
@@ -167,9 +165,8 @@ describe('Exchange', () => {
                 fillTakerTokenAmount: fillTakerTokenAmount2,
             });
 
-            const filledTakerTokenAmountAfter2 = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter2 = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter2).to.be.bignumber.equal(filledTakerTokenAmountAfter1);
         });
 
@@ -179,17 +176,15 @@ describe('Exchange', () => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
 
-            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
 
             const newBalances = await dmyBalances.getAsync();
@@ -232,17 +227,15 @@ describe('Exchange', () => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
 
-            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
 
             const newBalances = await dmyBalances.getAsync();
@@ -285,17 +278,15 @@ describe('Exchange', () => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
 
-            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
 
             const newBalances = await dmyBalances.getAsync();
@@ -339,17 +330,15 @@ describe('Exchange', () => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
 
-            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             const expectedFillAmountTAfter = fillTakerTokenAmount.add(filledTakerTokenAmountBefore);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(expectedFillAmountTAfter);
 
@@ -678,7 +667,7 @@ describe('Exchange', () => {
             expect(newBalances).to.be.deep.equal(balances);
         });
 
-        it.skip('should throw if getBalance or getAllowance attempts to change state and \
+        it('should throw if getBalance or getAllowance attempts to change state and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
             const maliciousToken = await deployer.deployAsync('MaliciousToken');
             await maliciousToken.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: taker });
@@ -691,7 +680,7 @@ describe('Exchange', () => {
                 exWrapper.fillOrderAsync(order, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: false,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            ).to.be.rejectedWith(constants.INVALID_OPCODE);
         });
 
         it('should not change balances if an order is expired', async () => {

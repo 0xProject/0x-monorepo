@@ -1,4 +1,4 @@
-import { ContractEventArg, DecodedLogArgs, LogWithDecodedArgs, TransactionReceipt } from '@0xproject/types';
+import { ContractEventArg, LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 

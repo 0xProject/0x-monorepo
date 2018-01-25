@@ -13,7 +13,7 @@ export class OrderFactory {
         this._defaultOrderParams = defaultOrderParams;
         this._web3Wrapper = web3Wrapper;
     }
-    public async newSignedOrderAsync(customOrderParams: OptionalOrderParams = {}) {
+    public async newSignedOrderAsync(customOrderParams: OptionalOrderParams = {}): Promise<Order> {
         const randomExpiration = new BigNumber(Math.floor((Date.now() + Math.random() * 100000000000) / 1000));
         const orderParams: OrderParams = _.assign(
             {},
