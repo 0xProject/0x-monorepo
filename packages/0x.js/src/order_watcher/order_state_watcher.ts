@@ -223,12 +223,12 @@ export class OrderStateWatcher {
             return;
         }
         const log = logIfExists as LogEvent; // At this moment we are sure that no error occured and log is defined.
-        const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
-        const isLogDecoded = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
+        const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
+        const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
         if (!isLogDecoded) {
             return; // noop
         }
-        const decodedLog = maybeDecodedLog as LogWithDecodedArgs<ContractEventArgs>;
+        const decodedLog = (maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>;
         let makerToken: string;
         let makerAddress: string;
         switch (decodedLog.event) {

@@ -844,9 +844,9 @@ export class ExchangeWrapper extends ContractWrapper {
     public throwLogErrorsAsErrors(logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>): void {
         const errLog = _.find(logs, {
             event: ExchangeEvents.LogError,
-        }) as LogWithDecodedArgs<LogErrorContractEventArgs> | undefined;
+        });
         if (!_.isUndefined(errLog)) {
-            const logArgs = errLog.args;
+            const logArgs = (errLog as LogWithDecodedArgs<LogErrorContractEventArgs>).args;
             const errCode = logArgs.errorId.toNumber();
             const errMessage = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
