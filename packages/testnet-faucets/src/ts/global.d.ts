@@ -24,3 +24,11 @@ declare module 'ethereumjs-tx' {
     }
     export = EthereumTx;
 }
+
+// Define extra params on Request for parameter extraction in middleware
+declare namespace Express {
+    export interface Request {
+        recipientAddress: string;
+        networkId: string;
+    }
+}

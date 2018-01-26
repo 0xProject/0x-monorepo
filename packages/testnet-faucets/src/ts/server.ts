@@ -3,6 +3,7 @@ import * as express from 'express';
 
 import { errorReporter } from './error_reporter';
 import { Handler } from './handler';
+import { parameterExtractor } from './parameter_extractor';
 
 // Setup the errorReporter to catch uncaught exceptions and unhandled rejections
 errorReporter.setup();
@@ -20,8 +21,10 @@ app.get('/ping', (req: express.Request, res: express.Response) => {
     res.status(200).send('pong');
 });
 app.get('/info', handler.getQueueInfo.bind(handler));
-app.get('/ether/:recipient', handler.dispenseEther.bind(handler));
-app.get('/zrx/:recipient', handler.dispenseZRX.bind(handler));
+app.get('/ether/:recipient', parameterExtractor.extract, handler.dispenseEther.bind(handler));
+app.get('/zrx/:recipient', parameterExtractor.extract, handler.dispenseZRX.bind(handler));
+app.get('/order/weth/:recipient', parameterExtractor.extract, handler.dispenseWETHOrder.bind(handler));
+app.get('/order/zrx/:recipient', parameterExtractor.extract, handler.dispenseZRXOrder.bind(handler));
 
 // Log to rollbar any errors unhandled by handlers
 app.use(errorReporter.errorHandler());

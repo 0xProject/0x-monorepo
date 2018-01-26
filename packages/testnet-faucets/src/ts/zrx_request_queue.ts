@@ -18,13 +18,10 @@ const QUEUE_INTERVAL_MS = 5000;
 
 export class ZRXRequestQueue extends RequestQueue {
     private _zeroEx: ZeroEx;
-    constructor(web3: Web3, networkId: number) {
+    constructor(web3: Web3, zeroEx: ZeroEx) {
         super(web3);
         this.queueIntervalMs = QUEUE_INTERVAL_MS;
-        const zeroExConfig = {
-            networkId,
-        };
-        this._zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
+        this._zeroEx = zeroEx;
     }
     protected async processNextRequestFireAndForgetAsync(recipientAddress: string) {
         utils.consoleLog(`Processing ZRX ${recipientAddress}`);

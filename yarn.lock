@@ -9097,6 +9097,14 @@ types-bn@^0.0.1:
   dependencies:
     bn.js "4.11.7"
 
+types-ethereumjs-util@0xProject/types-ethereumjs-util:
+  version "0.0.6"
+  resolved "https://codeload.github.com/0xProject/types-ethereumjs-util/tar.gz/0c5058e4f9d6585f7c7c1f88939546acb14323b8"
+  dependencies:
+    bn.js "^4.11.7"
+    buffer "^5.0.6"
+    rlp "^2.0.0"
+
 types-ethereumjs-util@0xproject/types-ethereumjs-util:
   version "0.0.6"
   resolved "https://codeload.github.com/0xproject/types-ethereumjs-util/tar.gz/0c5058e4f9d6585f7c7c1f88939546acb14323b8"
