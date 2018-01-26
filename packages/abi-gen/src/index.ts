@@ -20,21 +20,53 @@ const ABI_TYPE_EVENT = 'event';
 const MAIN_TEMPLATE_NAME = 'contract.mustache';
 
 const args = yargs
-    .option('abiGlob', {
+    .option('abis', {
+        alias: ['abiGlob'],
         describe: 'Glob pattern to search for ABI JSON files',
         type: 'string',
-        demand: true,
+        demandOption: true,
     })
+    .option('output', {
+        alias: ['o', 'out'],
+        describe: 'Folder where to put the output files',
+        type: 'string',
+        normalize: true,
+        demandOption: true,
+    })
+    .option('partials', {
+        describe: 'Glob pattern for the partial template files',
+        type: 'string',
+        implies: 'template',
+    })
+    .option('template', {
+        describe: 'Path for the main template file that will be used to generate each contract',
+        type: 'string',
+        normalize: true,
+    })
+    .group(['templates'], 'Deprecated')
     .option('templates', {
         describe: 'Folder where to search for templates',
         type: 'string',
-        demand: true,
     })
-    .option('output', {
-        describe: 'Folder where to put the output files',
-        type: 'string',
-        demand: true,
-    }).argv;
+    .conflicts('templates', ['partials', 'template-file'])
+    .check(argv => {
+        if (!argv.template && !argv.templates) {
+            throw new Error('You need specify the location of the template');
+        }
+        return true;
+    })
+    .example("$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'", 'Full usage example')
+    .argv;
+
+function registerPartials(partialsGlob: string) {
+    const partialTemplateFileNames = globSync(partialsGlob);
+    utils.log(`Found ${chalk.green(`${partialTemplateFileNames.length}`)} ${chalk.bold('partial')} templates`);
+    for (const partialTemplateFileName of partialTemplateFileNames) {
+        const namedContent = utils.getNamedContent(partialTemplateFileName);
+        Handlebars.registerPartial(namedContent.name, namedContent.content);
+    }
+    return partialsGlob;
+}
 
 function writeOutputFile(name: string, renderedTsCode: string): void {
     const fileName = toSnakeCase(name);
@@ -45,15 +77,18 @@ function writeOutputFile(name: string, renderedTsCode: string): void {
 
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output));
-const partialTemplateFileNames = globSync(`${args.templates}/partials/**/*.mustache`);
-for (const partialTemplateFileName of partialTemplateFileNames) {
-    const namedContent = utils.getNamedContent(partialTemplateFileName);
-    Handlebars.registerPartial(namedContent.name, namedContent.content);
+
+if (args.partials) {
+    registerPartials(args.partials);
+}
+if (args.templates) {
+    registerPartials(`${args.templates}/partials/**/*.{mustache,handlebars}`);
 }
 
-const mainTemplate = utils.getNamedContent(`${args.templates}/${MAIN_TEMPLATE_NAME}`);
+const mainTemplate = utils.getNamedContent(args.template ? args.template : `${args.templates}/${MAIN_TEMPLATE_NAME}`);
 const template = Handlebars.compile<ContextData>(mainTemplate.content);
-const abiFileNames = globSync(args.abiGlob);
+const abiFileNames = globSync(args.abis);
+
 if (_.isEmpty(abiFileNames)) {
     utils.log(`${chalk.red(`No ABI files found.`)}`);
     utils.log(`Please make sure you've passed the correct folder name and that the files have
