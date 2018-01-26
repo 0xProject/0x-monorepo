@@ -5,6 +5,7 @@ import * as Web3 from 'web3';
 
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
+import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 
@@ -28,8 +29,8 @@ describe('TokenTransferProxy', () => {
     before(async () => {
         accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = notAuthorized = accounts[0];
-        tokenTransferProxy = await deployer.deployAsync('TokenTransferProxy');
-        rep = await deployer.deployAsync('DummyToken');
+        tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+        rep = await deployer.deployAsync(ContractName.DummyToken);
 
         dmyBalances = new Balances([rep], [accounts[0], accounts[1]]);
         await Promise.all([

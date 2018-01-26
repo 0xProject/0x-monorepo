@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import { constants } from '../util/constants';
+import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
@@ -32,7 +33,7 @@ describe('UnlimitedAllowanceToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        token = await deployer.deployAsync('DummyToken');
+        token = await deployer.deployAsync(ContractName.DummyToken);
         await token.mint(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });

@@ -9,7 +9,7 @@ import { artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 import { crypto } from '../util/crypto';
 import { MultiSigWrapper } from '../util/multi_sig_wrapper';
-import { SubmissionContractEventArgs, TransactionDataParams } from '../util/types';
+import { ContractName, SubmissionContractEventArgs, TransactionDataParams } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
@@ -52,11 +52,11 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             .slice(0, 20)
             .toString('hex')}`;
         const initialOwner = accounts[0];
-        tokenTransferProxy = await deployer.deployAsync('TokenTransferProxy');
+        tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         await tokenTransferProxy.addAuthorizedAddress(authorizedAddress, {
             from: initialOwner,
         });
-        multiSig = await deployer.deployAsync('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', [
+        multiSig = await deployer.deployAsync(ContractName.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress, [
             owners,
             requiredApprovals,
             SECONDS_TIME_LOCKED,
@@ -106,7 +106,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         });
 
         it('should throw if tx destination is not the tokenTransferProxy', async () => {
-            const invalidTokenTransferProxy = await deployer.deployAsync('TokenTransferProxy');
+            const invalidTokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
             const invalidDestination = invalidTokenTransferProxy.address;
             const dataParams: TransactionDataParams = {
                 name: 'removeAuthorizedAddress',

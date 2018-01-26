@@ -9,7 +9,7 @@ import * as multiSigWalletJSON from '../../build/contracts/MultiSigWalletWithTim
 import { artifacts } from '../util/artifacts';
 import { constants } from '../util/constants';
 import { MultiSigWrapper } from '../util/multi_sig_wrapper';
-import { SubmissionContractEventArgs } from '../util/types';
+import { ContractName, SubmissionContractEventArgs } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
@@ -52,7 +52,11 @@ describe('MultiSigWalletWithTimeLock', () => {
     describe('changeTimeLock', () => {
         describe('initially non-time-locked', async () => {
             before('deploy a walet', async () => {
-                multiSig = await deployer.deployAsync('MultiSigWalletWithTimeLock', [owners, SIGNATURES_REQUIRED, 0]);
+                multiSig = await deployer.deployAsync(ContractName.MultiSigWalletWithTimeLock, [
+                    owners,
+                    SIGNATURES_REQUIRED,
+                    0,
+                ]);
                 multiSigWrapper = new MultiSigWrapper(multiSig);
 
                 const secondsTimeLocked = await multiSig.secondsTimeLocked();
@@ -140,7 +144,7 @@ describe('MultiSigWalletWithTimeLock', () => {
         });
         describe('initially time-locked', async () => {
             before('deploy a walet', async () => {
-                multiSig = await deployer.deployAsync('MultiSigWalletWithTimeLock', [
+                multiSig = await deployer.deployAsync(ContractName.MultiSigWalletWithTimeLock, [
                     owners,
                     SIGNATURES_REQUIRED,
                     SECONDS_TIME_LOCKED,

@@ -9,6 +9,7 @@ import { constants } from '../../util/constants';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { Order } from '../../util/order';
 import { OrderFactory } from '../../util/order_factory';
+import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 
@@ -31,14 +32,14 @@ describe('Exchange', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         maker = accounts[0];
         feeRecipient = accounts[1] || accounts[accounts.length - 1];
-        const tokenRegistry = await deployer.deployAsync('TokenRegistry');
-        const tokenTransferProxy = await deployer.deployAsync('TokenTransferProxy');
+        const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
+        const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const [rep, dgd, zrx] = await Promise.all([
-            deployer.deployAsync('DummyToken'),
-            deployer.deployAsync('DummyToken'),
-            deployer.deployAsync('DummyToken'),
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
         ]);
-        const exchange = await deployer.deployAsync('Exchange', [zrx.address, tokenTransferProxy.address]);
+        const exchange = await deployer.deployAsync(ContractName.Exchange, [zrx.address, tokenTransferProxy.address]);
         await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
         const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);

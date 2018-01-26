@@ -6,6 +6,7 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import { constants } from '../util/constants';
+import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
@@ -33,7 +34,7 @@ describe('ZRXToken', () => {
         zeroEx = new ZeroEx(web3.currentProvider, {
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        zrx = await deployer.deployAsync('ZRXToken');
+        zrx = await deployer.deployAsync(ContractName.ZRXToken);
         zrxAddress = zrx.address;
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });

@@ -19,7 +19,7 @@ import { crypto } from '../../util/crypto';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { Order } from '../../util/order';
 import { OrderFactory } from '../../util/order_factory';
-import { BalancesByOwner, ExchangeContractErrs } from '../../util/types';
+import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 
@@ -58,12 +58,12 @@ describe('Exchange', () => {
         taker = accounts[1] || accounts[accounts.length - 1];
         feeRecipient = accounts[2] || accounts[accounts.length - 1];
         [rep, dgd, zrx] = await Promise.all([
-            deployer.deployAsync('DummyToken'),
-            deployer.deployAsync('DummyToken'),
-            deployer.deployAsync('DummyToken'),
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
         ]);
-        tokenTransferProxy = await deployer.deployAsync('TokenTransferProxy');
-        exchange = await deployer.deployAsync('Exchange', [zrx.address, tokenTransferProxy.address]);
+        tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+        exchange = await deployer.deployAsync(ContractName.Exchange, [zrx.address, tokenTransferProxy.address]);
         await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
         zeroEx = new ZeroEx(web3.currentProvider, {
             exchangeContractAddress: exchange.address,
@@ -669,7 +669,7 @@ describe('Exchange', () => {
 
         it('should throw if getBalance or getAllowance attempts to change state and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const maliciousToken = await deployer.deployAsync('MaliciousToken');
+            const maliciousToken = await deployer.deployAsync(ContractName.MaliciousToken);
             await maliciousToken.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: taker });
 
             order = await orderFactory.newSignedOrderAsync({

@@ -5,6 +5,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 
 import { constants } from '../util/constants';
+import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
@@ -24,7 +25,7 @@ describe('EtherToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         account = accounts[0];
 
-        const etherToken = await deployer.deployAsync('WETH9');
+        const etherToken = await deployer.deployAsync(ContractName.EtherToken);
         etherTokenAddress = etherToken.address;
         zeroEx = new ZeroEx(web3.currentProvider, {
             gasPrice,

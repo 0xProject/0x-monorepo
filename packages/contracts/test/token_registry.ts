@@ -8,6 +8,7 @@ import * as Web3 from 'web3';
 
 import { constants } from '../util/constants';
 import { TokenRegWrapper } from '../util/token_registry_wrapper';
+import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
@@ -27,7 +28,7 @@ describe('TokenRegistry', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         notOwner = accounts[1];
-        tokenReg = await deployer.deployAsync('TokenRegistry');
+        tokenReg = await deployer.deployAsync(ContractName.TokenRegistry);
         tokenRegWrapper = new TokenRegWrapper(tokenReg);
     });
     beforeEach(async () => {

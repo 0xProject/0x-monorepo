@@ -119,20 +119,21 @@ export enum ExchangeContractErrs {
     ERROR_INSUFFICIENT_BALANCE_OR_ALLOWANCE,
 }
 
-export type ArtifactContractName =
-    | 'TokenTransferProxy'
-    | 'TokenRegistry'
-    | 'MultiSigWalletWithTimeLock'
-    | 'Exchange'
-    | 'ZRXToken'
-    | 'DummyToken'
-    | 'DummyToken_v2'
-    | 'WETH9'
-    | 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress'
-    | 'MaliciousToken';
+export enum ContractName {
+    TokenTransferProxy = 'TokenTransferProxy',
+    TokenRegistry = 'TokenRegistry',
+    MultiSigWalletWithTimeLock = 'MultiSigWalletWithTimeLock',
+    Exchange = 'Exchange',
+    ZRXToken = 'ZRXToken',
+    DummyToken = 'DummyToken',
+    DummyToken_v2 = 'DummyToken_v2',
+    EtherToken = 'WETH9',
+    MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
+    MaliciousToken = 'MaliciousToken',
+}
 
 export interface Artifact {
-    contract_name: ArtifactContractName;
+    contract_name: ContractName;
     networks: {
         [networkId: number]: {
             abi: Web3.ContractAbi;
