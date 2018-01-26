@@ -134,6 +134,10 @@ export class Web3Wrapper {
         const gas = await promisify<number>(this._web3.eth.estimateGas)({ data });
         return gas;
     }
+    public async sendTransactionAsync(txData: Web3.TxData): Promise<string> {
+        const txHash = await promisify<string>(this._web3.eth.sendTransaction)(txData);
+        return txHash;
+    }
     private async _sendRawPayloadAsync<A>(payload: Web3.JSONRPCRequestPayload): Promise<A> {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);
         const response = await promisify<Web3.JSONRPCResponsePayload>(sendAsync)(payload);
