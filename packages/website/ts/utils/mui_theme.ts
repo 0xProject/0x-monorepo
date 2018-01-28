@@ -8,6 +8,7 @@ export const muiTheme = getMuiTheme({
         textColor: colors.black,
     },
     palette: {
+        accent1Color: colors.lightBlueA700,
         pickerHeaderColor: colors.lightBlue,
         primary1Color: colors.lightBlue,
         primary2Color: colors.lightBlue,
