@@ -41,12 +41,14 @@ interface EthWrappersProps {
     blockchain: Blockchain;
     dispatcher: Dispatcher;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
     userAddress: string;
     userEtherBalance: BigNumber;
+    lastForceTokenStateRefetch: number;
 }
 
 interface EthWrappersState {
+    ethTokenState: TokenState;
+    isWethStateLoaded: boolean;
     outdatedWETHAddressToIsStateLoaded: OutdatedWETHAddressToIsStateLoaded;
     outdatedWETHStateByAddress: OutdatedWETHStateByAddress;
 }
@@ -67,18 +69,31 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         this.state = {
             outdatedWETHAddressToIsStateLoaded,
             outdatedWETHStateByAddress,
+            isWethStateLoaded: false,
+            ethTokenState: {
+                balance: new BigNumber(0),
+                allowance: new BigNumber(0),
+            },
         };
+    }
+    public componentWillReceiveProps(nextProps: EthWrappersProps) {
+        if (
+            nextProps.userAddress !== this.props.userAddress ||
+            nextProps.networkId !== this.props.networkId ||
+            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+        ) {
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchWETHStateAsync();
+        }
     }
     public componentDidMount() {
         window.scrollTo(0, 0);
         // tslint:disable-next-line:no-floating-promises
-        this._fetchOutdatedWETHStateAsync();
+        this._fetchWETHStateAsync();
     }
     public render() {
-        const tokens = _.values(this.props.tokenByAddress);
-        const etherToken = _.find(tokens, { symbol: 'WETH' });
-        const etherTokenState = this.props.tokenStateByAddress[etherToken.address];
-        const wethBalance = ZeroEx.toUnitAmount(etherTokenState.balance, constants.DECIMAL_PLACES_ETH);
+        const etherToken = this._getEthToken();
+        const wethBalance = ZeroEx.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
         const isBidirectional = true;
         const etherscanUrl = utils.getEtherScanLinkIfExists(
             etherToken.address,
@@ -136,10 +151,14 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     </TableRowColumn>
                                     <TableRowColumn>
                                         <EthWethConversionButton
+                                            refetchEthTokenStateAsync={this._refetchEthTokenStateAsync.bind(this)}
+                                            lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                            userAddress={this.props.userAddress}
+                                            networkId={this.props.networkId}
                                             isOutdatedWrappedEther={false}
                                             direction={Side.Deposit}
                                             ethToken={etherToken}
-                                            ethTokenState={etherTokenState}
+                                            ethTokenState={this.state.ethTokenState}
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
                                             userEtherBalance={this.props.userEtherBalance}
@@ -150,13 +169,24 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     <TableRowColumn className="py1">
                                         {this._renderTokenLink(tokenLabel, etherscanUrl)}
                                     </TableRowColumn>
-                                    <TableRowColumn>{wethBalance.toFixed(PRECISION)} WETH</TableRowColumn>
+                                    <TableRowColumn>
+                                        {this.state.isWethStateLoaded ? (
+                                            `${wethBalance.toFixed(PRECISION)} WETH`
+                                        ) : (
+                                            <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                                        )}
+                                    </TableRowColumn>
                                     <TableRowColumn>
                                         <EthWethConversionButton
+                                            refetchEthTokenStateAsync={this._refetchEthTokenStateAsync.bind(this)}
+                                            lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                            userAddress={this.props.userAddress}
+                                            networkId={this.props.networkId}
                                             isOutdatedWrappedEther={false}
                                             direction={Side.Receive}
+                                            isDisabled={!this.state.isWethStateLoaded}
                                             ethToken={etherToken}
-                                            ethTokenState={etherTokenState}
+                                            ethTokenState={this.state.ethTokenState}
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
                                             userEtherBalance={this.props.userEtherBalance}
@@ -190,7 +220,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                 </TableRow>
                             </TableHeader>
                             <TableBody displayRowCheckbox={false}>
-                                {this._renderOutdatedWeths(etherToken, etherTokenState)}
+                                {this._renderOutdatedWeths(etherToken, this.state.ethTokenState)}
                             </TableBody>
                         </Table>
                     </div>
@@ -269,6 +299,10 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                         </TableRowColumn>
                         <TableRowColumn>
                             <EthWethConversionButton
+                                refetchEthTokenStateAsync={this._refetchEthTokenStateAsync.bind(this)}
+                                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                userAddress={this.props.userAddress}
+                                networkId={this.props.networkId}
                                 isDisabled={!isStateLoaded}
                                 isOutdatedWrappedEther={true}
                                 direction={Side.Receive}
@@ -338,7 +372,14 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             },
         });
     }
-    private async _fetchOutdatedWETHStateAsync() {
+    private async _fetchWETHStateAsync() {
+        const tokens = _.values(this.props.tokenByAddress);
+        const wethToken = _.find(tokens, token => token.symbol === 'WETH');
+        const [wethBalance, wethAllowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+            this.props.userAddress,
+            wethToken.address,
+        );
+
         const outdatedWETHAddresses = this._getOutdatedWETHAddresses();
         const outdatedWETHAddressToIsStateLoaded: OutdatedWETHAddressToIsStateLoaded = {};
         const outdatedWETHStateByAddress: OutdatedWETHStateByAddress = {};
@@ -356,6 +397,11 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         this.setState({
             outdatedWETHStateByAddress,
             outdatedWETHAddressToIsStateLoaded,
+            ethTokenState: {
+                balance: wethBalance,
+                allowance: wethAllowance,
+            },
+            isWethStateLoaded: true,
         });
     }
     private _getOutdatedWETHAddresses(): string[] {
@@ -370,5 +416,23 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             }),
         );
         return outdatedWETHAddresses;
+    }
+    private _getEthToken() {
+        const tokens = _.values(this.props.tokenByAddress);
+        const etherToken = _.find(tokens, { symbol: 'WETH' });
+        return etherToken;
+    }
+    private async _refetchEthTokenStateAsync() {
+        const etherToken = this._getEthToken();
+        const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+            this.props.userAddress,
+            etherToken.address,
+        );
+        this.setState({
+            ethTokenState: {
+                balance,
+                allowance,
+            },
+        });
     }
 } // tslint:disable:max-file-line-count

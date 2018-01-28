@@ -66,7 +66,6 @@ export class Blockchain {
     private _cachedProvider: Web3.Provider;
     private _cachedProviderNetworkId: number;
     private _ledgerSubprovider: LedgerWalletSubprovider;
-    private _zrxPollIntervalId: NodeJS.Timer;
     private static async _onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
             return; // Already loaded
@@ -250,7 +249,6 @@ export class Blockchain {
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const allowance = amountInBaseUnits;
-        this._dispatcher.replaceTokenAllowanceByAddress(token.address, allowance);
     }
     public async transferAsync(token: Token, toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
         const txHash = await this._zeroEx.token.transferAsync(
@@ -368,22 +366,25 @@ export class Blockchain {
 
         const [currBalance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
 
-        this._zrxPollIntervalId = intervalUtils.setAsyncExcludingInterval(
-            async () => {
-                const [balance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
-                if (!balance.eq(currBalance)) {
-                    this._dispatcher.replaceTokenBalanceByAddress(token.address, balance);
-                    intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
-                    delete this._zrxPollIntervalId;
-                }
-            },
-            5000,
-            (err: Error) => {
-                utils.consoleLog(`Polling tokenBalance failed: ${err}`);
-                intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
-                delete this._zrxPollIntervalId;
-            },
-        );
+        const newTokenBalancePromise = new Promise((resolve: (balance: BigNumber) => void, reject) => {
+            const tokenPollInterval = intervalUtils.setAsyncExcludingInterval(
+                async () => {
+                    const [balance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
+                    if (!balance.eq(currBalance)) {
+                        intervalUtils.clearAsyncExcludingInterval(tokenPollInterval);
+                        resolve(balance);
+                    }
+                },
+                5000,
+                (err: Error) => {
+                    utils.consoleLog(`Polling tokenBalance failed: ${err}`);
+                    intervalUtils.clearAsyncExcludingInterval(tokenPollInterval);
+                    reject(err);
+                },
+            );
+        });
+
+        return newTokenBalancePromise;
     }
     public async signOrderHashAsync(orderHash: string): Promise<SignatureData> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
@@ -408,7 +409,6 @@ export class Blockchain {
             from: this._userAddress,
         });
         const balanceDelta = constants.MINT_AMOUNT;
-        this._dispatcher.updateTokenBalanceByAddress(token.address, balanceDelta);
     }
     public async getBalanceInEthAsync(owner: string): Promise<BigNumber> {
         const balance = await this._web3Wrapper.getBalanceInEthAsync(owner);
@@ -451,23 +451,6 @@ export class Blockchain {
         }
         return [balance, allowance];
     }
-    public async updateTokenBalancesAndAllowancesAsync(tokens: Token[]) {
-        const err = new Error('show stopper');
-        const tokenStateByAddress: TokenStateByAddress = {};
-        for (const token of tokens) {
-            let balance = new BigNumber(0);
-            let allowance = new BigNumber(0);
-            if (this._doesUserAddressExist()) {
-                [balance, allowance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
-            }
-            const tokenState = {
-                balance,
-                allowance,
-            };
-            tokenStateByAddress[token.address] = tokenState;
-        }
-        this._dispatcher.updateTokenStateByAddress(tokenStateByAddress);
-    }
     public async getUserAccountsAsync() {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         const userAccountsIfExists = await this._zeroEx.getAvailableAddressesAsync();
@@ -480,7 +463,6 @@ export class Blockchain {
         this._web3Wrapper.updatePrevUserAddress(newUserAddress);
     }
     public destroy() {
-        intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
         this._web3Wrapper.destroy();
         this._stopWatchingExchangeLogFillEvents();
     }
@@ -526,9 +508,6 @@ export class Blockchain {
         }
         const allTokens = _.uniq([...tokenRegistryTokens, ...trackedTokensIfExists]);
         this._dispatcher.updateTokenByAddress(allTokens);
-
-        // Get balance/allowance for tracked tokens
-        await this.updateTokenBalancesAndAllowancesAsync(trackedTokensIfExists);
 
         const mostPopularTradingPairTokens: Token[] = [
             _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0] }),

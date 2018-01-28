@@ -81,7 +81,7 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
         if (value === ProviderType.Ledger) {
             this.props.onToggleLedgerDialog();
         } else {
-            // Fire and forget
+            // tslint:disable-next-line:no-floating-promises
             this.props.blockchain.updateProviderToInjectedAsync();
         }
     }

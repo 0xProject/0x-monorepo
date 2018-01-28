@@ -19,7 +19,7 @@ import { VisualOrder } from 'ts/components/visual_order';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, TokenStateByAddress, WebsitePaths } from 'ts/types';
+import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -33,9 +33,9 @@ interface FillOrderProps {
     networkId: number;
     userAddress: string;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
     initialOrder: Order;
     dispatcher: Dispatcher;
+    lastForceTokenStateRefetch: number;
 }
 
 interface FillOrderState {
@@ -185,7 +185,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             symbol: takerToken.symbol,
         };
         const fillToken = this.props.tokenByAddress[takerToken.address];
-        const fillTokenState = this.props.tokenStateByAddress[takerToken.address];
         const makerTokenAddress = this.state.parsedOrder.maker.token.address;
         const makerToken = this.props.tokenByAddress[makerTokenAddress];
         const makerAssetToken = {
@@ -249,14 +248,17 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 {!isUserMaker && (
                     <div className="clearfix mx-auto relative" style={{ width: 235, height: 108 }}>
                         <TokenAmountInput
+                            blockchain={this.props.blockchain}
+                            userAddress={this.props.userAddress}
+                            networkId={this.props.networkId}
                             label="Fill amount"
                             onChange={this._onFillAmountChange.bind(this)}
                             shouldShowIncompleteErrs={false}
                             token={fillToken}
-                            tokenState={fillTokenState}
                             amount={fillAssetToken.amount}
                             shouldCheckBalance={true}
                             shouldCheckAllowance={true}
+                            lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                         />
                         <div
                             className="absolute sm-hide xs-hide"
@@ -556,11 +558,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 signedOrder,
                 this.props.orderFillAmount,
             );
-            // After fill completes, let's update the token balances
-            const makerToken = this.props.tokenByAddress[parsedOrder.maker.token.address];
-            const takerToken = this.props.tokenByAddress[parsedOrder.taker.token.address];
-            const tokens = [makerToken, takerToken];
-            await this.props.blockchain.updateTokenBalancesAndAllowancesAsync(tokens);
+            // After fill completes, let's force fetch the token balances
+            this.props.dispatcher.forceTokenStateRefetch();
             this.setState({
                 isFilling: false,
                 didFillOrderSucceed: true,

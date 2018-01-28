@@ -31,7 +31,6 @@ import {
     Styles,
     Token,
     TokenByAddress,
-    TokenStateByAddress,
     TokenVisibility,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
@@ -58,6 +57,14 @@ const styles: Styles = {
     },
 };
 
+interface TokenStateByAddress {
+    [address: string]: {
+        balance: BigNumber;
+        allowance: BigNumber;
+        isLoaded: boolean;
+    };
+}
+
 interface TokenBalancesProps {
     blockchain: Blockchain;
     blockchainErr: BlockchainErrs;
@@ -65,10 +72,11 @@ interface TokenBalancesProps {
     dispatcher: Dispatcher;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
+    trackedTokens: Token[];
     userAddress: string;
     userEtherBalance: BigNumber;
     networkId: number;
+    lastForceTokenStateRefetch: number;
 }
 
 interface TokenBalancesState {
@@ -76,14 +84,15 @@ interface TokenBalancesState {
     isBalanceSpinnerVisible: boolean;
     isDharmaDialogVisible: boolean;
     isZRXSpinnerVisible: boolean;
-    currentZrxBalance?: BigNumber;
     isTokenPickerOpen: boolean;
     isAddingToken: boolean;
+    trackedTokenStateByAddress: TokenStateByAddress;
 }
 
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {
     public constructor(props: TokenBalancesProps) {
         super(props);
+        const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(props.trackedTokens);
         this.state = {
             errorType: undefined,
             isBalanceSpinnerVisible: false,
@@ -91,7 +100,13 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isDharmaDialogVisible: DharmaLoanFrame.isAuthTokenPresent(),
             isTokenPickerOpen: false,
             isAddingToken: false,
+            trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
+    }
+    public componentWillMount() {
+        // tslint:disable-next-line:no-floating-promises
+        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
     public componentWillReceiveProps(nextProps: TokenBalancesProps) {
         if (nextProps.userEtherBalance !== this.props.userEtherBalance) {
@@ -103,18 +118,21 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 isBalanceSpinnerVisible: false,
             });
         }
-        const nextZrxToken = _.find(_.values(nextProps.tokenByAddress), t => t.symbol === ZRX_TOKEN_SYMBOL);
-        const nextZrxTokenBalance = nextProps.tokenStateByAddress[nextZrxToken.address].balance;
-        if (!_.isUndefined(this.state.currentZrxBalance) && !nextZrxTokenBalance.eq(this.state.currentZrxBalance)) {
-            if (this.state.isZRXSpinnerVisible) {
-                const receivedAmount = nextZrxTokenBalance.minus(this.state.currentZrxBalance);
-                const receiveAmountInUnits = ZeroEx.toUnitAmount(receivedAmount, constants.DECIMAL_PLACES_ZRX);
-                this.props.dispatcher.showFlashMessage(`Received ${receiveAmountInUnits.toString(10)} Kovan ZRX`);
-            }
-            this.setState({
-                isZRXSpinnerVisible: false,
-                currentZrxBalance: undefined,
-            });
+
+        if (
+            nextProps.userAddress !== this.props.userAddress ||
+            nextProps.networkId !== this.props.networkId ||
+            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+        ) {
+            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+        }
+
+        if (!_.isEqual(nextProps.trackedTokens, this.props.trackedTokens)) {
+            const newTokens = _.difference(nextProps.trackedTokens, this.props.trackedTokens);
+            const newTokenAddresses = _.map(newTokens, token => token.address);
+            this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
         }
     }
     public componentDidMount() {
@@ -303,8 +321,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const tokenColSpan = isSmallScreen ? TOKEN_COL_SPAN_SM : TOKEN_COL_SPAN_LG;
         const actionPaddingX = isSmallScreen ? 2 : 24;
-        const allTokens = _.values(this.props.tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        const trackedTokens = this.props.trackedTokens;
         const trackedTokensStartingWithEtherToken = trackedTokens.sort(
             firstBy((t: Token) => t.symbol !== ETHER_TOKEN_SYMBOL)
                 .thenBy((t: Token) => t.symbol !== ZRX_TOKEN_SYMBOL)
@@ -317,7 +334,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         return tableRows;
     }
     private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
-        const tokenState = this.props.tokenStateByAddress[token.address];
+        const tokenState = this.state.trackedTokenStateByAddress[token.address];
         const tokenLink = utils.getEtherScanLinkIfExists(
             token.address,
             this.props.networkId,
@@ -338,13 +355,19 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     )}
                 </TableRowColumn>
                 <TableRowColumn style={{ paddingRight: 3, paddingLeft: 3 }}>
-                    {this._renderAmount(tokenState.balance, token.decimals)} {token.symbol}
-                    {this.state.isZRXSpinnerVisible &&
-                        token.symbol === ZRX_TOKEN_SYMBOL && (
-                            <span className="pl1">
-                                <i className="zmdi zmdi-spinner zmdi-hc-spin" />
-                            </span>
-                        )}
+                    {tokenState.isLoaded ? (
+                        <span>
+                            {this._renderAmount(tokenState.balance, token.decimals)} {token.symbol}
+                            {this.state.isZRXSpinnerVisible &&
+                                token.symbol === ZRX_TOKEN_SYMBOL && (
+                                    <span className="pl1">
+                                        <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                                    </span>
+                                )}
+                        </span>
+                    ) : (
+                        <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                    )}
                 </TableRowColumn>
                 <TableRowColumn>
                     <AllowanceToggle
@@ -354,6 +377,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         tokenState={tokenState}
                         onErrorOccurred={this._onErrorOccurred.bind(this)}
                         userAddress={this.props.userAddress}
+                        isDisabled={!tokenState.isLoaded}
+                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                     />
                 </TableRowColumn>
                 <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
@@ -383,11 +408,15 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         }}
                     >
                         <SendButton
+                            userAddress={this.props.userAddress}
+                            networkId={this.props.networkId}
                             blockchain={this.props.blockchain}
                             dispatcher={this.props.dispatcher}
                             token={token}
                             tokenState={tokenState}
                             onError={this._onSendFailed.bind(this)}
+                            lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                            refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                         />
                     </TableRowColumn>
                 )}
@@ -414,7 +443,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             } else {
                 this.props.dispatcher.removeTokenToTokenByAddress(token);
             }
-            this.props.dispatcher.removeFromTokenStateByAddress(tokenAddress);
             trackedTokenStorage.removeTrackedToken(this.props.userAddress, this.props.networkId, tokenAddress);
         } else if (isDefaultTrackedToken) {
             this.props.dispatcher.showFlashMessage(`Cannot remove ${token.name} because it's a default token`);
@@ -510,6 +538,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     private async _onMintTestTokensAsync(token: Token): Promise<boolean> {
         try {
             await this.props.blockchain.mintTestTokensAsync(token);
+            await this._refetchTokenStateAsync(token.address);
             const amount = ZeroEx.toUnitAmount(constants.MINT_AMOUNT, token.decimals);
             this.props.dispatcher.showFlashMessage(`Successfully minted ${amount.toString(10)} ${token.symbol}`);
             return true;
@@ -569,15 +598,11 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 isBalanceSpinnerVisible: true,
             });
         } else {
-            const tokens = _.values(this.props.tokenByAddress);
-            const zrxToken = _.find(tokens, t => t.symbol === ZRX_TOKEN_SYMBOL);
-            const zrxTokenState = this.props.tokenStateByAddress[zrxToken.address];
             this.setState({
                 isZRXSpinnerVisible: true,
-                currentZrxBalance: zrxTokenState.balance,
             });
             // tslint:disable-next-line:no-floating-promises
-            this.props.blockchain.pollTokenBalanceAsync(zrxToken);
+            this._startPollingZrxBalanceAsync();
         }
         return true;
     }
@@ -601,6 +626,65 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         this.setState({
             isTokenPickerOpen: true,
             isAddingToken: false,
+        });
+    }
+    private async _startPollingZrxBalanceAsync() {
+        const tokens = _.values(this.props.tokenByAddress);
+        const zrxToken = _.find(tokens, t => t.symbol === ZRX_TOKEN_SYMBOL);
+
+        // tslint:disable-next-line:no-floating-promises
+        const balance = await this.props.blockchain.pollTokenBalanceAsync(zrxToken);
+        const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        trackedTokenStateByAddress[zrxToken.address] = {
+            ...trackedTokenStateByAddress[zrxToken.address],
+            balance,
+        };
+        this.setState({
+            isZRXSpinnerVisible: false,
+        });
+    }
+    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]) {
+        const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        for (const tokenAddress of tokenAddresses) {
+            const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+                this.props.userAddress,
+                tokenAddress,
+            );
+            trackedTokenStateByAddress[tokenAddress] = {
+                balance,
+                allowance,
+                isLoaded: true,
+            };
+        }
+        this.setState({
+            trackedTokenStateByAddress,
+        });
+    }
+    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]) {
+        const trackedTokenStateByAddress: TokenStateByAddress = {};
+        _.each(trackedTokens, token => {
+            trackedTokenStateByAddress[token.address] = {
+                balance: new BigNumber(0),
+                allowance: new BigNumber(0),
+                isLoaded: false,
+            };
+        });
+        return trackedTokenStateByAddress;
+    }
+    private async _refetchTokenStateAsync(tokenAddress: string) {
+        const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+            this.props.userAddress,
+            tokenAddress,
+        );
+        this.setState({
+            trackedTokenStateByAddress: {
+                ...this.state.trackedTokenStateByAddress,
+                [tokenAddress]: {
+                    balance,
+                    allowance,
+                    isLoaded: true,
+                },
+            },
         });
     }
 } // tslint:disable:max-file-line-count

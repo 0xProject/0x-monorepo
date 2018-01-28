@@ -53,7 +53,7 @@ interface GenerateOrderFormProps {
     orderSalt: BigNumber;
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
+    lastForceTokenStateRefetch: number;
 }
 
 interface GenerateOrderFormState {
@@ -80,10 +80,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         const dispatcher = this.props.dispatcher;
         const depositTokenAddress = this.props.sideToAssetToken[Side.Deposit].address;
         const depositToken = this.props.tokenByAddress[depositTokenAddress];
-        const depositTokenState = this.props.tokenStateByAddress[depositTokenAddress];
         const receiveTokenAddress = this.props.sideToAssetToken[Side.Receive].address;
         const receiveToken = this.props.tokenByAddress[receiveTokenAddress];
-        const receiveTokenState = this.props.tokenStateByAddress[receiveTokenAddress];
         const takerExplanation =
             'If a taker is specified, only they are<br> \
                                   allowed to fill this order. If no taker is<br> \
@@ -110,9 +108,12 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     tokenByAddress={this.props.tokenByAddress}
                                 />
                                 <TokenAmountInput
+                                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                    blockchain={this.props.blockchain}
+                                    userAddress={this.props.userAddress}
+                                    networkId={this.props.networkId}
                                     label="Sell amount"
                                     token={depositToken}
-                                    tokenState={depositTokenState}
                                     amount={this.props.sideToAssetToken[Side.Deposit].amount}
                                     onChange={this._onTokenAmountChange.bind(this, depositToken, Side.Deposit)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
@@ -139,9 +140,12 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                     tokenByAddress={this.props.tokenByAddress}
                                 />
                                 <TokenAmountInput
+                                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                    blockchain={this.props.blockchain}
+                                    userAddress={this.props.userAddress}
+                                    networkId={this.props.networkId}
                                     label="Receive amount"
                                     token={receiveToken}
-                                    tokenState={receiveTokenState}
                                     amount={this.props.sideToAssetToken[Side.Receive].amount}
                                     onChange={this._onTokenAmountChange.bind(this, receiveToken, Side.Receive)}
                                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
@@ -242,8 +246,10 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
 
         // Check if all required inputs were supplied
         const debitToken = this.props.sideToAssetToken[Side.Deposit];
-        const debitBalance = this.props.tokenStateByAddress[debitToken.address].balance;
-        const debitAllowance = this.props.tokenStateByAddress[debitToken.address].allowance;
+        const [debitBalance, debitAllowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+            this.props.userAddress,
+            debitToken.address,
+        );
         const receiveAmount = this.props.sideToAssetToken[Side.Receive].amount;
         if (
             !_.isUndefined(debitToken.amount) &&

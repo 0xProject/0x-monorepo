@@ -56,13 +56,13 @@ export interface PortalAllProps {
     providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
     userEtherBalance: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
     location: Location;
     flashMessage?: string | React.ReactNode;
+    lastForceTokenStateRefetch: number;
 }
 
 interface PortalAllState {
@@ -132,12 +132,6 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         if (nextProps.userAddress !== this.state.prevUserAddress) {
             // tslint:disable-next-line:no-floating-promises
             this._blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
-            if (!_.isEmpty(nextProps.userAddress) && nextProps.blockchainIsLoaded) {
-                const tokens = _.values(nextProps.tokenByAddress);
-                const trackedTokens = _.filter(tokens, t => t.isTracked);
-                // tslint:disable-next-line:no-floating-promises
-                this._updateBalanceAndAllowanceWithLoadingScreenAsync(trackedTokens);
-            }
             this.setState({
                 prevUserAddress: nextProps.userAddress,
             });
@@ -280,9 +274,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 blockchain={this._blockchain}
                 dispatcher={this.props.dispatcher}
                 tokenByAddress={this.props.tokenByAddress}
-                tokenStateByAddress={this.props.tokenStateByAddress}
                 userAddress={this.props.userAddress}
                 userEtherBalance={this.props.userEtherBalance}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
@@ -296,6 +290,8 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         );
     }
     private _renderTokenBalances() {
+        const allTokens = _.values(this.props.tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <TokenBalances
                 blockchain={this._blockchain}
@@ -304,10 +300,11 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 dispatcher={this.props.dispatcher}
                 screenWidth={this.props.screenWidth}
                 tokenByAddress={this.props.tokenByAddress}
-                tokenStateByAddress={this.props.tokenStateByAddress}
+                trackedTokens={trackedTokens}
                 userAddress={this.props.userAddress}
                 userEtherBalance={this.props.userEtherBalance}
                 networkId={this.props.networkId}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
@@ -325,8 +322,8 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 networkId={this.props.networkId}
                 userAddress={this.props.userAddress}
                 tokenByAddress={this.props.tokenByAddress}
-                tokenStateByAddress={this.props.tokenStateByAddress}
                 dispatcher={this.props.dispatcher}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
@@ -381,10 +378,5 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     private _updateScreenWidth() {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
-    }
-    private async _updateBalanceAndAllowanceWithLoadingScreenAsync(tokens: Token[]) {
-        this.props.dispatcher.updateBlockchainIsLoaded(false);
-        await this._blockchain.updateTokenBalancesAndAllowancesAsync(tokens);
-        this.props.dispatcher.updateBlockchainIsLoaded(true);
     }
 }

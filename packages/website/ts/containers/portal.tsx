@@ -28,7 +28,7 @@ interface ConnectedState {
     orderFillAmount: BigNumber;
     providerType: ProviderType;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
+    lastForceTokenStateRefetch: number;
     userEtherBalance: BigNumber;
     screenWidth: ScreenWidths;
     shouldBlockchainErrDialogBeOpen: boolean;
@@ -77,7 +77,7 @@ const mapStateToProps = (state: State, ownProps: PortalComponentAllProps): Conne
         screenWidth: state.screenWidth,
         shouldBlockchainErrDialogBeOpen: state.shouldBlockchainErrDialogBeOpen,
         tokenByAddress: state.tokenByAddress,
-        tokenStateByAddress: state.tokenStateByAddress,
+        lastForceTokenStateRefetch: state.lastForceTokenStateRefetch,
         userAddress: state.userAddress,
         userEtherBalance: state.userEtherBalance,
         userSuppliedOrderCache: state.userSuppliedOrderCache,

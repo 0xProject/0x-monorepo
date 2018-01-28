@@ -17,6 +17,8 @@ interface AllowanceToggleProps {
     token: Token;
     tokenState: TokenState;
     userAddress: string;
+    isDisabled: boolean;
+    refetchTokenStateAsync: () => Promise<void>;
 }
 
 interface AllowanceToggleState {
@@ -45,7 +47,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             <div className="flex">
                 <div>
                     <Toggle
-                        disabled={this.state.isSpinnerVisible}
+                        disabled={this.state.isSpinnerVisible || this.props.isDisabled}
                         toggled={this._isAllowanceSet()}
                         onToggle={this._onToggleAllowanceAsync.bind(this)}
                     />
@@ -73,6 +75,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         }
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
+            await this.props.refetchTokenStateAsync();
         } catch (err) {
             this.setState({
                 isSpinnerVisible: false,

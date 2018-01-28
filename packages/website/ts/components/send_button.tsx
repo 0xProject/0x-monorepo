@@ -10,11 +10,15 @@ import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
 interface SendButtonProps {
+    userAddress: string;
+    networkId: number;
     token: Token;
     tokenState: TokenState;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
     onError: () => void;
+    lastForceTokenStateRefetch: number;
+    refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
 }
 
 interface SendButtonState {
@@ -42,11 +46,14 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
                     onClick={this._toggleSendDialog.bind(this)}
                 />
                 <SendDialog
+                    blockchain={this.props.blockchain}
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
                     isOpen={this.state.isSendDialogVisible}
                     onComplete={this._onSendAmountSelectedAsync.bind(this)}
                     onCancelled={this._toggleSendDialog.bind(this)}
                     token={this.props.token}
-                    tokenState={this.props.tokenState}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
             </div>
         );
@@ -63,11 +70,9 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
         this._toggleSendDialog();
         const token = this.props.token;
         const tokenState = this.props.tokenState;
-        let balance = tokenState.balance;
         try {
             await this.props.blockchain.transferAsync(token, recipient, value);
-            balance = balance.minus(value);
-            this.props.dispatcher.replaceTokenBalanceByAddress(token.address, balance);
+            this.props.refetchTokenStateAsync(token.address);
         } catch (err) {
             const errMsg = `${err}`;
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {

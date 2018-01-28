@@ -131,43 +131,9 @@ export class Dispatcher {
             type: ActionTypes.UpdateTokenByAddress,
         });
     }
-    public updateTokenStateByAddress(tokenStateByAddress: TokenStateByAddress) {
+    public forceTokenStateRefetch() {
         this._dispatch({
-            data: tokenStateByAddress,
-            type: ActionTypes.UpdateTokenStateByAddress,
-        });
-    }
-    public removeFromTokenStateByAddress(tokenAddress: string) {
-        this._dispatch({
-            data: tokenAddress,
-            type: ActionTypes.RemoveFromTokenStateByAddress,
-        });
-    }
-    public replaceTokenAllowanceByAddress(address: string, allowance: BigNumber) {
-        this._dispatch({
-            data: {
-                address,
-                allowance,
-            },
-            type: ActionTypes.ReplaceTokenAllowanceByAddress,
-        });
-    }
-    public replaceTokenBalanceByAddress(address: string, balance: BigNumber) {
-        this._dispatch({
-            data: {
-                address,
-                balance,
-            },
-            type: ActionTypes.ReplaceTokenBalanceByAddress,
-        });
-    }
-    public updateTokenBalanceByAddress(address: string, balanceDelta: BigNumber) {
-        this._dispatch({
-            data: {
-                address,
-                balanceDelta,
-            },
-            type: ActionTypes.UpdateTokenBalanceByAddress,
+            type: ActionTypes.ForceTokenStateRefetch,
         });
     }
     public updateSignatureData(signatureData: SignatureData) {
