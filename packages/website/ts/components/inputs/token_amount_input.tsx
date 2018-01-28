@@ -41,7 +41,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
     }
     public componentWillMount() {
         // tslint:disable-next-line:no-floating-promises
-        this._fetchBalanceAndAllowanceAsync(this.props.token.address);
+        this._fetchBalanceAndAllowanceAsync(this.props.token.address, this.props.userAddress);
     }
     public componentWillReceiveProps(nextProps: TokenAmountInputProps) {
         if (
@@ -50,7 +50,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             nextProps.token.address !== this.props.token.address ||
             nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
-            this._fetchBalanceAndAllowanceAsync(nextProps.token.address);
+            this._fetchBalanceAndAllowanceAsync(nextProps.token.address, nextProps.userAddress);
         }
     }
     public render() {
@@ -99,12 +99,12 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             return undefined;
         }
     }
-    private async _fetchBalanceAndAllowanceAsync(tokenAddress: string) {
+    private async _fetchBalanceAndAllowanceAsync(tokenAddress: string, userAddress: string) {
         this.setState({
             isBalanceAndAllowanceLoaded: false,
         });
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddress,
             tokenAddress,
         );
         this.setState({

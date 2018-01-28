@@ -37,6 +37,7 @@ import {
     EtherscanLinkSuffixes,
     ProviderType,
     Side,
+    SideToAssetToken,
     SignatureData,
     Token,
     TokenByAddress,
@@ -212,6 +213,7 @@ export class Blockchain {
         this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
         this._zeroEx.setProvider(provider, this.networkId);
         await this._postInstantiationOrUpdatingProviderZeroExAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceStateAsync();
         this._dispatcher.updateProviderType(ProviderType.Ledger);
     }
     public async updateProviderToInjectedAsync() {
@@ -222,17 +224,18 @@ export class Blockchain {
         }
         const provider = this._cachedProvider;
         this.networkId = this._cachedProviderNetworkId;
-        this._dispatcher.updateNetworkId(this.networkId);
 
         this._web3Wrapper.destroy();
         const shouldPollUserAddress = true;
         this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
 
         this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
-        this._dispatcher.updateUserAddress(this._userAddress);
+
         this._zeroEx.setProvider(provider, this.networkId);
         await this._postInstantiationOrUpdatingProviderZeroExAsync();
+
         await this.fetchTokenInformationAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceStateAsync();
         this._dispatcher.updateProviderType(ProviderType.Injected);
         delete this._ledgerSubprovider;
         delete this._cachedProvider;
@@ -473,19 +476,9 @@ export class Blockchain {
         );
 
         this._dispatcher.updateBlockchainIsLoaded(false);
-        // HACK: Without this timeout, the second call to dispatcher somehow causes blockchainIsLoaded
-        // to flicker... Need to debug further :(((())))
-        await new Promise(resolve => setTimeout(resolve, 100));
         this._dispatcher.clearTokenByAddress();
 
         const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
-
-        // HACK: This is a hack so that the loading spinner doesn't show up twice...
-        // Once for loading the blockchain, another for loading the userAddress
-        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
-        if (!_.isEmpty(this._userAddress)) {
-            this._dispatcher.updateUserAddress(this._userAddress);
-        }
 
         let trackedTokensIfExists = trackedTokenStorage.getTrackedTokensIfExists(this._userAddress, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
@@ -507,14 +500,20 @@ export class Blockchain {
             });
         }
         const allTokens = _.uniq([...tokenRegistryTokens, ...trackedTokensIfExists]);
-        this._dispatcher.updateTokenByAddress(allTokens);
-
         const mostPopularTradingPairTokens: Token[] = [
             _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0] }),
             _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[1] }),
         ];
-        this._dispatcher.updateChosenAssetTokenAddress(Side.Deposit, mostPopularTradingPairTokens[0].address);
-        this._dispatcher.updateChosenAssetTokenAddress(Side.Receive, mostPopularTradingPairTokens[1].address);
+        const sideToAssetToken: SideToAssetToken = {
+            [Side.Deposit]: {
+                address: mostPopularTradingPairTokens[0].address,
+            },
+            [Side.Receive]: {
+                address: mostPopularTradingPairTokens[1].address,
+            },
+        };
+        this._dispatcher.batchDispatch(allTokens, this.networkId, this._userAddress, sideToAssetToken);
+
         this._dispatcher.updateBlockchainIsLoaded(true);
     }
     private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
@@ -699,17 +698,23 @@ export class Blockchain {
         }
 
         const provider = await Blockchain._getProviderAsync(injectedWeb3, networkIdIfExists);
-        const networkId = !_.isUndefined(networkIdIfExists)
+        this.networkId = !_.isUndefined(networkIdIfExists)
             ? networkIdIfExists
             : configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_TESTNET;
+        this._dispatcher.updateNetworkId(this.networkId);
         const zeroExConfigs = {
-            networkId,
+            networkId: this.networkId,
         };
         this._zeroEx = new ZeroEx(provider, zeroExConfigs);
         this._updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
-        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, networkId, shouldPollUserAddress);
+        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
         await this._postInstantiationOrUpdatingProviderZeroExAsync();
+        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
+        this._dispatcher.updateUserAddress(this._userAddress);
+        await this.fetchTokenInformationAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceStateAsync();
+        await this._rehydrateStoreWithContractEvents();
     }
     // This method should always be run after instantiating or updating the provider
     // of the ZeroEx instance.

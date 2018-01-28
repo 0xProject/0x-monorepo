@@ -9,6 +9,7 @@ import {
     ProviderType,
     ScreenWidths,
     Side,
+    SideToAssetToken,
     SignatureData,
     Token,
     TokenStateByAddress,
@@ -123,6 +124,17 @@ export class Dispatcher {
     public clearTokenByAddress() {
         this._dispatch({
             type: ActionTypes.ClearTokenByAddress,
+        });
+    }
+    public batchDispatch(tokens: Token[], networkId: number, userAddress: string, sideToAssetToken: SideToAssetToken) {
+        this._dispatch({
+            data: {
+                tokens,
+                networkId,
+                userAddress,
+                sideToAssetToken,
+            },
+            type: ActionTypes.BatchDispatch,
         });
     }
     public updateTokenByAddress(tokens: Token[]) {

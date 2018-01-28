@@ -110,6 +110,7 @@ export enum BalanceErrs {
 
 export enum ActionTypes {
     // Portal
+    BatchDispatch = 'BATCH_DISPATCH',
     UpdateScreenWidth = 'UPDATE_SCREEN_WIDTH',
     UpdateNodeVersion = 'UPDATE_NODE_VERSION',
     ResetState = 'RESET_STATE',
