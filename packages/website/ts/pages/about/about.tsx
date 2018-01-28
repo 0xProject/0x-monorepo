@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Footer } from 'ts/components/footer';
-import { TopBar } from 'ts/components/top_bar';
+import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Profile } from 'ts/pages/about/profile';
 import { ProfileInfo, Styles } from 'ts/types';
 import { colors } from 'ts/utils/colors';

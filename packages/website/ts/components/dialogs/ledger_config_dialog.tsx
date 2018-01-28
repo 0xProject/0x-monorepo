@@ -7,8 +7,10 @@ import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
+import { NetworkDropDown } from 'ts/components/dropdowns/network_drop_down';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { ProviderType } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -27,27 +29,30 @@ interface LedgerConfigDialogProps {
     dispatcher: Dispatcher;
     blockchain: Blockchain;
     networkId: number;
+    providerType: ProviderType;
 }
 
 interface LedgerConfigDialogState {
-    didConnectFail: boolean;
+    connectionErrMsg: string;
     stepIndex: LedgerSteps;
     userAddresses: string[];
     addressBalances: BigNumber[];
     derivationPath: string;
     derivationErrMsg: string;
+    preferredNetworkId: number;
 }
 
 export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps, LedgerConfigDialogState> {
     constructor(props: LedgerConfigDialogProps) {
         super(props);
         this.state = {
-            didConnectFail: false,
+            connectionErrMsg: '',
             stepIndex: LedgerSteps.CONNECT,
             userAddresses: [],
             addressBalances: [],
             derivationPath: configs.DEFAULT_DERIVATION_PATH,
             derivationErrMsg: '',
+            preferredNetworkId: props.networkId,
         };
     }
     public render() {
@@ -77,7 +82,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         return (
             <div>
                 <div className="h4 pt3">Follow these instructions before proceeding:</div>
-                <ol>
+                <ol className="mb0">
                     <li className="pb1">Connect your Ledger Nano S & Open the Ethereum application</li>
                     <li className="pb1">Verify that Browser Support is enabled in Settings</li>
                     <li className="pb1">
@@ -86,7 +91,15 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                             Firmware >1.2
                         </a>
                     </li>
+                    <li>Choose your desired network:</li>
                 </ol>
+                <div className="pb2">
+                    <NetworkDropDown
+                        updateSelectedNetwork={this._onSelectedNetworkUpdated.bind(this)}
+                        selectedNetworkId={this.state.preferredNetworkId}
+                        avialableNetworkIds={[1, 42]}
+                    />
+                </div>
                 <div className="center pb3">
                     <LifeCycleRaisedButton
                         isPrimary={true}
@@ -95,9 +108,9 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                         labelComplete="Connected!"
                         onClickAsyncFn={this._onConnectLedgerClickAsync.bind(this, true)}
                     />
-                    {this.state.didConnectFail && (
+                    {!_.isEmpty(this.state.connectionErrMsg) && (
                         <div className="pt2 left-align" style={{ color: colors.red200 }}>
-                            Failed to connect. Follow the instructions and try again.
+                            {this.state.connectionErrMsg}
                         </div>
                     )}
                 </div>
@@ -172,7 +185,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     }
     private _onClose() {
         this.setState({
-            didConnectFail: false,
+            connectionErrMsg: '',
         });
         const isOpen = false;
         this.props.toggleDialogFn(isOpen);
@@ -184,6 +197,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         const selectAddressBalance = this.state.addressBalances[selectedRowIndex];
         this.props.dispatcher.updateUserAddress(selectedAddress);
         this.props.blockchain.updateWeb3WrapperPrevUserAddress(selectedAddress);
+        this.props.blockchain.fetchTokenInformationAsync(); // fire and forget
         this.props.dispatcher.updateUserEtherBalance(selectAddressBalance);
         this.setState({
             stepIndex: LedgerSteps.CONNECT,
@@ -219,7 +233,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         } catch (err) {
             utils.consoleLog(`Ledger error: ${JSON.stringify(err)}`);
             this.setState({
-                didConnectFail: true,
+                connectionErrMsg: 'Failed to connect. Follow the instructions and try again.',
             });
             return false;
         }
@@ -241,6 +255,19 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         });
     }
     private async _onConnectLedgerClickAsync() {
+        const isU2FSupported = await utils.isU2FSupportedAsync();
+        if (!isU2FSupported) {
+            utils.consoleLog(`U2F not supported in this browser`);
+            this.setState({
+                connectionErrMsg: 'U2F not supported by this browser. Try using Chrome.',
+            });
+            return false;
+        }
+
+        if (this.props.providerType !== ProviderType.Ledger) {
+            await this.props.blockchain.updateProviderToLedgerAsync(this.state.preferredNetworkId);
+        }
+
         const didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (didSucceed) {
             this.setState({
@@ -257,5 +284,10 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             throw new Error('No addresses retrieved.');
         }
         return userAddresses;
+    }
+    private _onSelectedNetworkUpdated(e: any, index: number, networkId: number) {
+        this.setState({
+            preferredNetworkId: networkId,
+        });
     }
 }

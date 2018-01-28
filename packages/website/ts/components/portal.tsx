@@ -6,6 +6,7 @@ import * as DocumentTitle from 'react-document-title';
 import { Route, Switch } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
+import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
 import { WrappedEthSectionNoticeDialog } from 'ts/components/dialogs/wrapped_eth_section_notice_dialog';
 import { EthWrappers } from 'ts/components/eth_wrappers';
@@ -13,19 +14,21 @@ import { FillOrder } from 'ts/components/fill_order';
 import { Footer } from 'ts/components/footer';
 import { PortalMenu } from 'ts/components/portal_menu';
 import { TokenBalances } from 'ts/components/token_balances';
-import { TopBar } from 'ts/components/top_bar';
+import { TopBar } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { Loading } from 'ts/components/ui/loading';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { State } from 'ts/redux/reducer';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
 import {
     BlockchainErrs,
     HashData,
     Order,
+    ProviderType,
     ScreenWidths,
     Token,
     TokenByAddress,
@@ -46,9 +49,11 @@ export interface PortalAllProps {
     blockchainIsLoaded: boolean;
     dispatcher: Dispatcher;
     hashData: HashData;
+    injectedProviderName: string;
     networkId: number;
     nodeVersion: string;
     orderFillAmount: BigNumber;
+    providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
     tokenStateByAddress: TokenStateByAddress;
@@ -67,6 +72,7 @@ interface PortalAllState {
     prevPathname: string;
     isDisclaimerDialogOpen: boolean;
     isWethNoticeDialogOpen: boolean;
+    isLedgerDialogOpen: boolean;
 }
 
 export class Portal extends React.Component<PortalAllProps, PortalAllState> {
@@ -96,6 +102,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             prevPathname: this.props.location.pathname,
             isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
             isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
+            isLedgerDialogOpen: false,
         };
     }
     public componentDidMount() {
@@ -127,8 +134,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             this._blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
             if (!_.isEmpty(nextProps.userAddress) && nextProps.blockchainIsLoaded) {
                 const tokens = _.values(nextProps.tokenByAddress);
+                const trackedTokens = _.filter(tokens, t => t.isTracked);
                 // tslint:disable-next-line:no-floating-promises
-                this._updateBalanceAndAllowanceWithLoadingScreenAsync(tokens);
+                this._updateBalanceAndAllowanceWithLoadingScreenAsync(trackedTokens);
             }
             this.setState({
                 prevUserAddress: nextProps.userAddress,
@@ -167,8 +175,14 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
+                    injectedProviderName={this.props.injectedProviderName}
+                    onToggleLedgerDialog={this.onToggleLedgerDialog.bind(this)}
+                    dispatcher={this.props.dispatcher}
+                    providerType={this.props.providerType}
                     blockchainIsLoaded={this.props.blockchainIsLoaded}
                     location={this.props.location}
+                    blockchain={this._blockchain}
                 />
                 <div id="portal" className="mx-auto max-width-4" style={{ width: '100%' }}>
                     <Paper className="mb3 mt2">
@@ -239,10 +253,25 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
                     />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
+                    {this.props.blockchainIsLoaded && (
+                        <LedgerConfigDialog
+                            providerType={this.props.providerType}
+                            networkId={this.props.networkId}
+                            blockchain={this._blockchain}
+                            dispatcher={this.props.dispatcher}
+                            toggleDialogFn={this.onToggleLedgerDialog.bind(this)}
+                            isOpen={this.state.isLedgerDialogOpen}
+                        />
+                    )}
                 </div>
-                <Footer />
+                <Footer />;
             </div>
         );
+    }
+    public onToggleLedgerDialog() {
+        this.setState({
+            isLedgerDialogOpen: !this.state.isLedgerDialogOpen,
+        });
     }
     private _renderEthWrapper() {
         return (

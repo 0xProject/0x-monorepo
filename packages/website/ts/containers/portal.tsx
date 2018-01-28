@@ -6,16 +6,27 @@ import { Dispatch } from 'redux';
 import { Portal as PortalComponent, PortalAllProps as PortalComponentAllProps } from 'ts/components/portal';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { BlockchainErrs, HashData, Order, ScreenWidths, Side, TokenByAddress, TokenStateByAddress } from 'ts/types';
+import {
+    BlockchainErrs,
+    HashData,
+    Order,
+    ProviderType,
+    ScreenWidths,
+    Side,
+    TokenByAddress,
+    TokenStateByAddress,
+} from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
 interface ConnectedState {
     blockchainErr: BlockchainErrs;
     blockchainIsLoaded: boolean;
     hashData: HashData;
+    injectedProviderName: string;
     networkId: number;
     nodeVersion: string;
     orderFillAmount: BigNumber;
+    providerType: ProviderType;
     tokenByAddress: TokenByAddress;
     tokenStateByAddress: TokenStateByAddress;
     userEtherBalance: BigNumber;
@@ -57,10 +68,12 @@ const mapStateToProps = (state: State, ownProps: PortalComponentAllProps): Conne
     return {
         blockchainErr: state.blockchainErr,
         blockchainIsLoaded: state.blockchainIsLoaded,
+        hashData,
+        injectedProviderName: state.injectedProviderName,
         networkId: state.networkId,
         nodeVersion: state.nodeVersion,
         orderFillAmount: state.orderFillAmount,
-        hashData,
+        providerType: state.providerType,
         screenWidth: state.screenWidth,
         shouldBlockchainErrDialogBeOpen: state.shouldBlockchainErrDialogBeOpen,
         tokenByAddress: state.tokenByAddress,

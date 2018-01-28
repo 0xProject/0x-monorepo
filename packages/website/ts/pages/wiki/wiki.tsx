@@ -3,7 +3,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { scroller } from 'react-scroll';
-import { TopBar } from 'ts/components/top_bar';
+import { TopBar } from 'ts/components/top_bar/top_bar';
 import { MarkdownSection } from 'ts/pages/shared/markdown_section';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { SectionHeader } from 'ts/pages/shared/section_header';

@@ -5,7 +5,7 @@ import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { scroller } from 'react-scroll';
 import semverSort = require('semver-sort');
-import { TopBar } from 'ts/components/top_bar';
+import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Badge } from 'ts/components/ui/badge';
 import { Comment } from 'ts/pages/documentation/comment';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';

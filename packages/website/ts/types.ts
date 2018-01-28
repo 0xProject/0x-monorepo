@@ -678,4 +678,9 @@ export enum SmartContractDocSections {
     ZRXToken = 'ZRXToken',
 }
 
+export interface MaterialUIPosition {
+    vertical: 'bottom' | 'top' | 'center';
+    horizontal: 'left' | 'middle' | 'right';
+}
+
 // tslint:disable:max-file-line-count

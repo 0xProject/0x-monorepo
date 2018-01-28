@@ -64,6 +64,7 @@ export class Blockchain {
     private _exchangeAddress: string;
     private _userAddress: string;
     private _cachedProvider: Web3.Provider;
+    private _cachedProviderNetworkId: number;
     private _ledgerSubprovider: LedgerWalletSubprovider;
     private _zrxPollIntervalId: NodeJS.Timer;
     private static async _onPageLoadAsync(): Promise<void> {
@@ -133,14 +134,14 @@ export class Blockchain {
         } else if (this.networkId !== newNetworkId) {
             this.networkId = newNetworkId;
             this._dispatcher.encounteredBlockchainError(BlockchainErrs.NoError);
-            await this._fetchTokenInformationAsync();
+            await this.fetchTokenInformationAsync();
             await this._rehydrateStoreWithContractEvents();
         }
     }
     public async userAddressUpdatedFireAndForgetAsync(newUserAddress: string) {
         if (this._userAddress !== newUserAddress) {
             this._userAddress = newUserAddress;
-            await this._fetchTokenInformationAsync();
+            await this.fetchTokenInformationAsync();
             await this._rehydrateStoreWithContractEvents();
         }
     }
@@ -180,63 +181,62 @@ export class Blockchain {
         }
         this._ledgerSubprovider.setPathIndex(pathIndex);
     }
-    public async providerTypeUpdatedFireAndForgetAsync(providerType: ProviderType) {
+    public async updateProviderToLedgerAsync(networkId: number) {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
-        // Should actually be Web3.Provider|ProviderEngine union type but it causes issues
-        // later on in the logic.
-        let provider;
-        switch (providerType) {
-            case ProviderType.Ledger: {
-                const isU2FSupported = await utils.isU2FSupportedAsync();
-                if (!isU2FSupported) {
-                    throw new Error('Cannot update providerType to LEDGER without U2F support');
-                }
 
-                // Cache injected provider so that we can switch the user back to it easily
-                this._cachedProvider = this._web3Wrapper.getProviderObj();
-
-                this._dispatcher.updateUserAddress(''); // Clear old userAddress
-
-                provider = new ProviderEngine();
-                const ledgerWalletConfigs = {
-                    networkId: this.networkId,
-                    ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
-                };
-                this._ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
-                provider.addProvider(this._ledgerSubprovider);
-                provider.addProvider(new FilterSubprovider());
-                const networkId = configs.IS_MAINNET_ENABLED
-                    ? constants.NETWORK_ID_MAINNET
-                    : constants.NETWORK_ID_TESTNET;
-                provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
-                provider.start();
-                this._web3Wrapper.destroy();
-                const shouldPollUserAddress = false;
-                this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
-                this._zeroEx.setProvider(provider, networkId);
-                await this._postInstantiationOrUpdatingProviderZeroExAsync();
-                break;
-            }
-
-            case ProviderType.Injected: {
-                if (_.isUndefined(this._cachedProvider)) {
-                    return; // Going from injected to injected, so we noop
-                }
-                provider = this._cachedProvider;
-                const shouldPollUserAddress = true;
-                this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
-                this._zeroEx.setProvider(provider, this.networkId);
-                await this._postInstantiationOrUpdatingProviderZeroExAsync();
-                delete this._ledgerSubprovider;
-                delete this._cachedProvider;
-                break;
-            }
-
-            default:
-                throw utils.spawnSwitchErr('providerType', providerType);
+        const isU2FSupported = await utils.isU2FSupportedAsync();
+        if (!isU2FSupported) {
+            throw new Error('Cannot update providerType to LEDGER without U2F support');
         }
 
-        await this._fetchTokenInformationAsync();
+        // Cache injected provider so that we can switch the user back to it easily
+        this._cachedProvider = this._web3Wrapper.getProviderObj();
+        this._cachedProviderNetworkId = this.networkId;
+
+        this._userAddress = '';
+        this._dispatcher.updateUserAddress(''); // Clear old userAddress
+
+        const provider = new ProviderEngine();
+        const ledgerWalletConfigs = {
+            networkId,
+            ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
+        };
+        this._ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
+        provider.addProvider(this._ledgerSubprovider);
+        provider.addProvider(new FilterSubprovider());
+        provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
+        provider.start();
+        this._web3Wrapper.destroy();
+        this.networkId = networkId;
+        this._dispatcher.updateNetworkId(this.networkId);
+        const shouldPollUserAddress = false;
+        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
+        this._zeroEx.setProvider(provider, this.networkId);
+        await this._postInstantiationOrUpdatingProviderZeroExAsync();
+        this._dispatcher.updateProviderType(ProviderType.Ledger);
+    }
+    public async updateProviderToInjectedAsync() {
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+
+        if (_.isUndefined(this._cachedProvider)) {
+            return; // Going from injected to injected, so we noop
+        }
+        const provider = this._cachedProvider;
+        this.networkId = this._cachedProviderNetworkId;
+        this._dispatcher.updateNetworkId(this.networkId);
+
+        this._web3Wrapper.destroy();
+        const shouldPollUserAddress = true;
+        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
+
+        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
+        this._dispatcher.updateUserAddress(this._userAddress);
+        this._zeroEx.setProvider(provider, this.networkId);
+        await this._postInstantiationOrUpdatingProviderZeroExAsync();
+        await this.fetchTokenInformationAsync();
+        this._dispatcher.updateProviderType(ProviderType.Injected);
+        delete this._ledgerSubprovider;
+        delete this._cachedProvider;
     }
     public async setProxyAllowanceAsync(token: Token, amountInBaseUnits: BigNumber): Promise<void> {
         utils.assert(this.isValidAddress(token.address), BlockchainCallErrs.TokenAddressIsInvalid);
@@ -452,6 +452,7 @@ export class Blockchain {
         return [balance, allowance];
     }
     public async updateTokenBalancesAndAllowancesAsync(tokens: Token[]) {
+        const err = new Error('show stopper');
         const tokenStateByAddress: TokenStateByAddress = {};
         for (const token of tokens) {
             let balance = new BigNumber(0);
@@ -482,6 +483,60 @@ export class Blockchain {
         intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
         this._web3Wrapper.destroy();
         this._stopWatchingExchangeLogFillEvents();
+    }
+    public async fetchTokenInformationAsync() {
+        utils.assert(
+            !_.isUndefined(this.networkId),
+            'Cannot call fetchTokenInformationAsync if disconnected from Ethereum node',
+        );
+
+        this._dispatcher.updateBlockchainIsLoaded(false);
+        // HACK: Without this timeout, the second call to dispatcher somehow causes blockchainIsLoaded
+        // to flicker... Need to debug further :(((())))
+        await new Promise(resolve => setTimeout(resolve, 100));
+        this._dispatcher.clearTokenByAddress();
+
+        const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
+
+        // HACK: This is a hack so that the loading spinner doesn't show up twice...
+        // Once for loading the blockchain, another for loading the userAddress
+        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
+        if (!_.isEmpty(this._userAddress)) {
+            this._dispatcher.updateUserAddress(this._userAddress);
+        }
+
+        let trackedTokensIfExists = trackedTokenStorage.getTrackedTokensIfExists(this._userAddress, this.networkId);
+        const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
+        if (_.isUndefined(trackedTokensIfExists)) {
+            trackedTokensIfExists = _.map(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
+                const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
+                token.isTracked = true;
+                return token;
+            });
+            _.each(trackedTokensIfExists, token => {
+                trackedTokenStorage.addTrackedTokenToUser(this._userAddress, this.networkId, token);
+            });
+        } else {
+            // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
+            _.each(trackedTokensIfExists, trackedToken => {
+                if (!_.isUndefined(tokenRegistryTokensByAddress[trackedToken.address])) {
+                    tokenRegistryTokensByAddress[trackedToken.address].isTracked = true;
+                }
+            });
+        }
+        const allTokens = _.uniq([...tokenRegistryTokens, ...trackedTokensIfExists]);
+        this._dispatcher.updateTokenByAddress(allTokens);
+
+        // Get balance/allowance for tracked tokens
+        await this.updateTokenBalancesAndAllowancesAsync(trackedTokensIfExists);
+
+        const mostPopularTradingPairTokens: Token[] = [
+            _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0] }),
+            _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[1] }),
+        ];
+        this._dispatcher.updateChosenAssetTokenAddress(Side.Deposit, mostPopularTradingPairTokens[0].address);
+        this._dispatcher.updateChosenAssetTokenAddress(Side.Receive, mostPopularTradingPairTokens[1].address);
+        this._dispatcher.updateBlockchainIsLoaded(true);
     }
     private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string,
@@ -689,60 +744,6 @@ export class Blockchain {
             ? Blockchain._getNameGivenProvider(injectedWeb3.currentProvider)
             : constants.PROVIDER_NAME_PUBLIC;
         this._dispatcher.updateInjectedProviderName(providerName);
-    }
-    private async _fetchTokenInformationAsync() {
-        utils.assert(
-            !_.isUndefined(this.networkId),
-            'Cannot call fetchTokenInformationAsync if disconnected from Ethereum node',
-        );
-
-        this._dispatcher.updateBlockchainIsLoaded(false);
-        this._dispatcher.clearTokenByAddress();
-
-        const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
-
-        // HACK: We need to fetch the userAddress here because otherwise we cannot save the
-        // tracked tokens in localStorage under the users address nor fetch the token
-        // balances and allowances and we need to do this in order not to trigger the blockchain
-        // loading dialog to show up twice. First to load the contracts, and second to load the
-        // balances and allowances.
-        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
-        if (!_.isEmpty(this._userAddress)) {
-            this._dispatcher.updateUserAddress(this._userAddress);
-        }
-
-        let trackedTokensIfExists = trackedTokenStorage.getTrackedTokensIfExists(this._userAddress, this.networkId);
-        const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
-        if (_.isUndefined(trackedTokensIfExists)) {
-            trackedTokensIfExists = _.map(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
-                const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
-                token.isTracked = true;
-                return token;
-            });
-            _.each(trackedTokensIfExists, token => {
-                trackedTokenStorage.addTrackedTokenToUser(this._userAddress, this.networkId, token);
-            });
-        } else {
-            // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
-            _.each(trackedTokensIfExists, trackedToken => {
-                if (!_.isUndefined(tokenRegistryTokensByAddress[trackedToken.address])) {
-                    tokenRegistryTokensByAddress[trackedToken.address].isTracked = true;
-                }
-            });
-        }
-        const allTokens = _.uniq([...tokenRegistryTokens, ...trackedTokensIfExists]);
-        this._dispatcher.updateTokenByAddress(allTokens);
-
-        // Get balance/allowance for tracked tokens
-        await this.updateTokenBalancesAndAllowancesAsync(trackedTokensIfExists);
-
-        const mostPopularTradingPairTokens: Token[] = [
-            _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0] }),
-            _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[1] }),
-        ];
-        this._dispatcher.updateChosenAssetTokenAddress(Side.Deposit, mostPopularTradingPairTokens[0].address);
-        this._dispatcher.updateChosenAssetTokenAddress(Side.Receive, mostPopularTradingPairTokens[1].address);
-        this._dispatcher.updateBlockchainIsLoaded(true);
     }
     private async _instantiateContractIfExistsAsync(artifact: any, address?: string): Promise<ContractInstance> {
         const c = await contract(artifact);

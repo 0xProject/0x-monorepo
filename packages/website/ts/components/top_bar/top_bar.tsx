@@ -1,21 +1,32 @@
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
+import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
+import { Blockchain } from 'ts/blockchain';
 import { PortalMenu } from 'ts/components/portal_menu';
-import { TopBarMenuItem } from 'ts/components/top_bar_menu_item';
-import { DropDownMenuItem } from 'ts/components/ui/drop_down_menu_item';
+import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
+import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
+import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
-import { DocsMenu, MenuSubsectionsBySection, Styles, WebsitePaths } from 'ts/types';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { DocsMenu, MenuSubsectionsBySection, ProviderType, Styles, TypeDocNode, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
+import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 
 interface TopBarProps {
     userAddress?: string;
+    networkId?: number;
+    injectedProviderName?: string;
+    providerType?: ProviderType;
+    onToggleLedgerDialog?: () => void;
+    blockchain?: Blockchain;
+    dispatcher?: Dispatcher;
     blockchainIsLoaded: boolean;
     location: Location;
     docsVersion?: string;
@@ -125,6 +136,15 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             cursor: 'pointer',
             paddingTop: 16,
         };
+        const hoverActiveNode = (
+            <div className="flex relative" style={{ color: menuIconStyle.color }}>
+                <div style={{ paddingRight: 10 }}>Developers</div>
+                <div className="absolute" style={{ paddingLeft: 3, right: 3, top: -2 }}>
+                    <i className="zmdi zmdi-caret-right" style={{ fontSize: 22 }} />
+                </div>
+            </div>
+        );
+        const popoverContent = <Menu style={{ color: colors.darkGrey }}>{developerSectionMenuItems}</Menu>;
         return (
             <div style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style }} className="pb1">
                 <div className={parentClassNames}>
@@ -138,11 +158,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     {!this._isViewingPortal() && (
                         <div className={menuClasses}>
                             <div className="flex justify-between">
-                                <DropDownMenuItem
-                                    title="Developers"
-                                    subMenuItems={developerSectionMenuItems}
+                                <DropDown
+                                    hoverActiveNode={hoverActiveNode}
+                                    popoverContent={popoverContent}
+                                    anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
+                                    targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
                                     style={styles.menuItem}
-                                    isNightVersion={isNightVersion}
                                 />
                                 <TopBarMenuItem
                                     title="Wiki"
@@ -167,10 +188,19 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </div>
                         </div>
                     )}
-                    {this.props.blockchainIsLoaded &&
-                        !_.isEmpty(this.props.userAddress) && (
-                            <div className="col col-5 sm-hide xs-hide">{this._renderUser()}</div>
-                        )}
+                    {this.props.blockchainIsLoaded && (
+                        <div className="col col-5">
+                            <ProviderDisplay
+                                dispatcher={this.props.dispatcher}
+                                userAddress={this.props.userAddress}
+                                networkId={this.props.networkId}
+                                injectedProviderName={this.props.injectedProviderName}
+                                providerType={this.props.providerType}
+                                onToggleLedgerDialog={this.props.onToggleLedgerDialog}
+                                blockchain={this.props.blockchain}
+                            />
+                        </div>
+                    )}
                     <div className={`col ${isFullWidthPage ? 'col-2 pl2' : 'col-1'} md-hide lg-hide`}>
                         <div style={menuIconStyle}>
                             <i className="zmdi zmdi-menu" onClick={this._onMenuButtonClick.bind(this)} />
