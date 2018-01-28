@@ -73,7 +73,7 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return;
-            } else if (!_.includes(errMsg, 'User denied transaction')) {
+            } else if (!utils.didUserDenyWeb3Request(errMsg)) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
                 this.props.onError();

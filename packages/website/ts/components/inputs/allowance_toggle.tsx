@@ -78,7 +78,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
                 isSpinnerVisible: false,
             });
             const errMsg = `${err}`;
-            if (_.includes(errMsg, 'User denied transaction')) {
+            if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
             utils.consoleLog(`Unexpected error encountered: ${err}`);

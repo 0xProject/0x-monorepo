@@ -183,7 +183,7 @@ export const utils = {
     // after a user was prompted to sign a message or send a transaction and decided to
     // reject the request.
     didUserDenyWeb3Request(errMsg: string) {
-        const metamaskDenialErrMsg = 'User denied message';
+        const metamaskDenialErrMsg = 'User denied';
         const paritySignerDenialErrMsg = 'Request has been rejected';
         const ledgerDenialErrMsg = 'Invalid status 6985';
         const isUserDeniedErrMsg =

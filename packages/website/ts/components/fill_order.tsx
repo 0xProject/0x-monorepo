@@ -573,7 +573,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 isFilling: false,
             });
             const errMsg = `${err}`;
-            if (_.includes(errMsg, 'User denied transaction signature')) {
+            if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
             globalErrMsg = 'Failed to fill order, please refresh and try again';
@@ -653,7 +653,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 isCancelling: false,
             });
             const errMsg = `${err}`;
-            if (_.includes(errMsg, 'User denied transaction signature')) {
+            if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
             globalErrMsg = 'Failed to cancel order, please refresh and try again';

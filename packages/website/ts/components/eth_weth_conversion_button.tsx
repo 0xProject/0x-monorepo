@@ -108,7 +108,7 @@ export class EthWethConversionButton extends React.Component<
             const errMsg = `${err}`;
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
-            } else if (!_.includes(errMsg, 'User denied transaction')) {
+            } else if (!utils.didUserDenyWeb3Request(errMsg)) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
                 const errorMsg =

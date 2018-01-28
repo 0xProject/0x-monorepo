@@ -519,7 +519,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return false;
             }
-            if (_.includes(errMsg, 'User denied transaction')) {
+            if (utils.didUserDenyWeb3Request(errMsg)) {
                 return false;
             }
             utils.consoleLog(`Unexpected error encountered: ${err}`);
