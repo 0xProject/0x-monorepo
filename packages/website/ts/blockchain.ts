@@ -67,6 +67,7 @@ export class Blockchain {
     private _cachedProvider: Web3.Provider;
     private _cachedProviderNetworkId: number;
     private _ledgerSubprovider: LedgerWalletSubprovider;
+    private _defaultGasPrice: BigNumber;
     private static async _onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
             return; // Already loaded
@@ -122,6 +123,9 @@ export class Blockchain {
     constructor(dispatcher: Dispatcher, isSalePage: boolean = false) {
         this._dispatcher = dispatcher;
         this._userAddress = '';
+        this._defaultGasPrice = new BigNumber(30000000000);
+        // tslint:disable-next-line:no-floating-promises
+        this._updateDefaultGasPriceAsync();
         // tslint:disable-next-line:no-floating-promises
         this._onPageLoadInitFireAndForgetAsync();
     }
@@ -252,6 +256,9 @@ export class Blockchain {
             token.address,
             this._userAddress,
             amountInBaseUnits,
+            {
+                gasPrice: this._defaultGasPrice,
+            },
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const allowance = amountInBaseUnits;
@@ -263,6 +270,9 @@ export class Blockchain {
             this._userAddress,
             toAddress,
             amountInBaseUnits,
+            {
+                gasPrice: this._defaultGasPrice,
+            },
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
@@ -320,6 +330,9 @@ export class Blockchain {
             fillTakerTokenAmount,
             shouldThrowOnInsufficientBalanceOrAllowance,
             this._userAddress,
+            {
+                gasPrice: this._defaultGasPrice,
+            },
         );
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
@@ -331,7 +344,9 @@ export class Blockchain {
     }
     public async cancelOrderAsync(signedOrder: SignedOrder, cancelTakerTokenAmount: BigNumber): Promise<BigNumber> {
         this._showFlashMessageIfLedger();
-        const txHash = await this._zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerTokenAmount);
+        const txHash = await this._zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerTokenAmount, {
+            gasPrice: this._defaultGasPrice,
+        });
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
         this._zeroEx.exchange.throwLogErrorsAsErrors(logs);
@@ -418,6 +433,7 @@ export class Blockchain {
         this._showFlashMessageIfLedger();
         await mintableContract.mint(constants.MINT_AMOUNT, {
             from: this._userAddress,
+            gasPrice: this._defaultGasPrice,
         });
         const balanceDelta = constants.MINT_AMOUNT;
     }
@@ -430,7 +446,9 @@ export class Blockchain {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         this._showFlashMessageIfLedger();
-        const txHash = await this._zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this._userAddress);
+        const txHash = await this._zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this._userAddress, {
+            gasPrice: this._defaultGasPrice,
+        });
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async convertWrappedEthTokensToEthAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
@@ -438,7 +456,9 @@ export class Blockchain {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         this._showFlashMessageIfLedger();
-        const txHash = await this._zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this._userAddress);
+        const txHash = await this._zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this._userAddress, {
+            gasPrice: this._defaultGasPrice,
+        });
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async doesContractExistAtAddressAsync(address: string) {
@@ -778,5 +798,16 @@ export class Blockchain {
         if (!_.isUndefined(this._ledgerSubprovider)) {
             this._dispatcher.showFlashMessage('Confirm the transaction on your Ledger Nano S');
         }
+    }
+    private async _updateDefaultGasPriceAsync() {
+        const endpoint = `${configs.BACKEND_BASE_URL}/eth_gas_station`;
+        const response = await fetch(endpoint);
+        if (response.status !== 200) {
+            return; // noop and we keep hard-coded default
+        }
+        const gasInfo = await response.json();
+        const gasPriceInGwei = new BigNumber(gasInfo.average / 10);
+        const gasPriceInWei = gasPriceInGwei.mul(1000000000);
+        this._defaultGasPrice = gasPriceInWei;
     }
 } // tslint:disable:max-file-line-count
