@@ -133,7 +133,7 @@ export class Web3Wrapper {
             },
             5000,
             (err: Error) => {
-                utils.consoleLog(`Watching network and balances failed: ${err}`);
+                utils.consoleLog(`Watching network and balances failed: ${err}, ${err.stack}`);
                 this._stopEmittingNetworkConnectionAndUserBalanceStateAsync();
             },
         );
