@@ -103,7 +103,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             },
             () => {
                 const isValid = _.isUndefined(errMsg);
-                if (utils.isNumeric(amountString)) {
+                if (utils.isNumeric(amountString) && !_.includes(amountString, '-')) {
                     this.props.onChange(isValid, new BigNumber(amountString));
                 } else {
                     this.props.onChange(isValid);
