@@ -186,6 +186,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     private _onClose() {
         this.setState({
             connectionErrMsg: '',
+            stepIndex: LedgerSteps.CONNECT,
         });
         const isOpen = false;
         this.props.toggleDialogFn(isOpen);
