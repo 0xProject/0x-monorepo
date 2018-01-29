@@ -247,6 +247,7 @@ export class Blockchain {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
 
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.token.setProxyAllowanceAsync(
             token.address,
             this._userAddress,
@@ -256,6 +257,7 @@ export class Blockchain {
         const allowance = amountInBaseUnits;
     }
     public async transferAsync(token: Token, toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.token.transferAsync(
             token.address,
             this._userAddress,
@@ -312,6 +314,7 @@ export class Blockchain {
 
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
 
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.exchange.fillOrderAsync(
             signedOrder,
             fillTakerTokenAmount,
@@ -327,6 +330,7 @@ export class Blockchain {
         return filledTakerTokenAmount;
     }
     public async cancelOrderAsync(signedOrder: SignedOrder, cancelTakerTokenAmount: BigNumber): Promise<BigNumber> {
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerTokenAmount);
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
@@ -399,6 +403,7 @@ export class Blockchain {
         if (_.isUndefined(makerAddress)) {
             throw new Error('Tried to send a sign request but user has no associated addresses');
         }
+        this._showFlashMessageIfLedger();
         const ecSignature = await this._zeroEx.signOrderHashAsync(orderHash, makerAddress);
         const signatureData = _.extend({}, ecSignature, {
             hash: orderHash,
@@ -410,6 +415,7 @@ export class Blockchain {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         const mintableContract = await this._instantiateContractIfExistsAsync(MintableArtifacts, token.address);
+        this._showFlashMessageIfLedger();
         await mintableContract.mint(constants.MINT_AMOUNT, {
             from: this._userAddress,
         });
@@ -423,6 +429,7 @@ export class Blockchain {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this._userAddress);
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
@@ -430,6 +437,7 @@ export class Blockchain {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this._userAddress);
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
@@ -764,6 +772,11 @@ export class Blockchain {
                 await errorReporter.reportAsync(err);
                 throw new Error(BlockchainCallErrs.UnhandledError);
             }
+        }
+    }
+    private _showFlashMessageIfLedger() {
+        if (!_.isUndefined(this._ledgerSubprovider)) {
+            this._dispatcher.showFlashMessage('Confirm the transaction on your Ledger Nano S');
         }
     }
 } // tslint:disable:max-file-line-count
