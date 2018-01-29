@@ -265,7 +265,10 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             return false;
         }
 
-        if (this.props.providerType !== ProviderType.Ledger) {
+        if (
+            this.props.providerType !== ProviderType.Ledger ||
+            (this.props.providerType === ProviderType.Ledger && this.props.networkId !== this.state.preferredNetworkId)
+        ) {
             await this.props.blockchain.updateProviderToLedgerAsync(this.state.preferredNetworkId);
         }
 

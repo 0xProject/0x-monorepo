@@ -190,8 +190,10 @@ export class Blockchain {
         }
 
         // Cache injected provider so that we can switch the user back to it easily
-        this._cachedProvider = this._web3Wrapper.getProviderObj();
-        this._cachedProviderNetworkId = this.networkId;
+        if (_.isUndefined(this._cachedProvider)) {
+            this._cachedProvider = this._web3Wrapper.getProviderObj();
+            this._cachedProviderNetworkId = this.networkId;
+        }
 
         this._userAddress = '';
         this._dispatcher.updateUserAddress(''); // Clear old userAddress

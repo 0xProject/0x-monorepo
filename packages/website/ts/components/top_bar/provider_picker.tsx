@@ -37,17 +37,15 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
         // Show dropdown with two options
         return (
             <div style={{ width: 225, overflow: 'hidden' }}>
-                <RadioButtonGroup
-                    name="provider"
-                    defaultSelected={this.props.providerType}
-                    onChange={this._onProviderRadioChanged.bind(this)}
-                >
+                <RadioButtonGroup name="provider" defaultSelected={this.props.providerType}>
                     <RadioButton
+                        onClick={this._onProviderRadioChanged.bind(this, ProviderType.Injected)}
                         style={{ ...menuStyle, backgroundColor: !isLedgerSelected && colors.grey50 }}
                         value={ProviderType.Injected}
                         label={this._renderLabel(this.props.injectedProviderName, !isLedgerSelected)}
                     />
                     <RadioButton
+                        onClick={this._onProviderRadioChanged.bind(this, ProviderType.Ledger)}
                         style={{ ...menuStyle, backgroundColor: isLedgerSelected && colors.grey50 }}
                         value={ProviderType.Ledger}
                         label={this._renderLabel('Ledger Nano S', isLedgerSelected)}
@@ -80,7 +78,7 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
             </div>
         );
     }
-    private _onProviderRadioChanged(e: any, value: string) {
+    private _onProviderRadioChanged(value: string) {
         if (value === ProviderType.Ledger) {
             this.props.onToggleLedgerDialog();
         } else {
