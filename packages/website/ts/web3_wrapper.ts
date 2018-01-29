@@ -120,7 +120,7 @@ export class Web3Wrapper {
                     }
 
                     // Check for user ether balance changes
-                    if (userAddressIfExists !== '') {
+                    if (!_.isEmpty(userAddressIfExists)) {
                         await this._updateUserEtherBalanceAsync(userAddressIfExists);
                     }
                 } else {
@@ -133,7 +133,7 @@ export class Web3Wrapper {
             },
             5000,
             (err: Error) => {
-                utils.consoleLog(`Watching network and balances failed: ${err}, ${err.stack}`);
+                utils.consoleLog(`Watching network and balances failed: ${err.stack}`);
                 this._stopEmittingNetworkConnectionAndUserBalanceStateAsync();
             },
         );
