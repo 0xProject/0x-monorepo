@@ -16,7 +16,7 @@ const isDevelopment = _.includes(
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
-    BACKEND_BASE_URL: isDevelopment ? 'https://localhost:3001' : 'https://website-api.0xproject.com',
+    BACKEND_BASE_URL: 'https://website-api.0xproject.com',
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
     CONTRACT_ADDRESS: {
