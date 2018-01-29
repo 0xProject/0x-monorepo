@@ -49,11 +49,14 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                     <Identicon address={this.props.userAddress} diameter={IDENTICON_DIAMETER} />
                 </div>
                 <div style={{ marginLeft: 12, paddingTop: 1 }}>
-                    <div style={{ fontSize: 12, color: '#FF7F00' }}>{providerTitle}</div>
+                    <div style={{ fontSize: 12, color: colors.amber800 }}>{providerTitle}</div>
                     <div style={{ fontSize: 14 }}>{displayAddress}</div>
                 </div>
-                <div style={{ borderLeft: '1px solid #E0E0E0', marginLeft: 17, paddingTop: 1 }} className="px2">
-                    <i style={{ fontSize: 30, color: '#E0E0E0' }} className="zmdi zmdi zmdi-chevron-down" />
+                <div
+                    style={{ borderLeft: `1px solid ${colors.grey300}`, marginLeft: 17, paddingTop: 1 }}
+                    className="px2"
+                >
+                    <i style={{ fontSize: 30, color: colors.grey300 }} className="zmdi zmdi zmdi-chevron-down" />
                 </div>
             </div>
         );

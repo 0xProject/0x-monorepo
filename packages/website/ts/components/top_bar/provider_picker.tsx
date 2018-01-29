@@ -9,11 +9,11 @@ import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
 const IDENTICON_DIAMETER = 32;
-const SELECTED_BG_COLOR = '#F7F7F7';
 
 interface ProviderPickerProps {
     networkId: number;
@@ -43,12 +43,12 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
                     onChange={this._onProviderRadioChanged.bind(this)}
                 >
                     <RadioButton
-                        style={{ ...menuStyle, backgroundColor: !isLedgerSelected && SELECTED_BG_COLOR }}
+                        style={{ ...menuStyle, backgroundColor: !isLedgerSelected && colors.grey50 }}
                         value={ProviderType.Injected}
                         label={this._renderLabel(this.props.injectedProviderName, !isLedgerSelected)}
                     />
                     <RadioButton
-                        style={{ ...menuStyle, backgroundColor: isLedgerSelected && SELECTED_BG_COLOR }}
+                        style={{ ...menuStyle, backgroundColor: isLedgerSelected && colors.grey50 }}
                         value={ProviderType.Ledger}
                         label={this._renderLabel('Ledger Nano S', isLedgerSelected)}
                     />
@@ -76,7 +76,7 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
                         style={{ top: 6, width: 10 }}
                     />
                 </div>
-                <div style={{ color: '#BBBBBB', fontSize: 11 }}>{networkName}</div>
+                <div style={{ color: colors.lightGrey, fontSize: 11 }}>{networkName}</div>
             </div>
         );
     }
