@@ -1,5 +1,6 @@
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import Paper from 'material-ui/Paper';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
@@ -17,7 +18,6 @@ import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
-import { Loading } from 'ts/components/ui/loading';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -223,7 +223,19 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                                                 />
                                             </Switch>
                                         ) : (
-                                            <Loading />
+                                            <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
+                                                <div
+                                                    className="relative sm-px2 sm-pt2 sm-m1"
+                                                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
+                                                >
+                                                    <div className="center pb2">
+                                                        <CircularProgress size={40} thickness={5} />
+                                                    </div>
+                                                    <div className="center pt2" style={{ paddingBottom: 11 }}>
+                                                        Loading Portal...
+                                                    </div>
+                                                </div>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
