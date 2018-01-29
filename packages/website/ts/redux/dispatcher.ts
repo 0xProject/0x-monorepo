@@ -121,11 +121,6 @@ export class Dispatcher {
             type: ActionTypes.RemoveTokenFromTokenByAddress,
         });
     }
-    public clearTokenByAddress() {
-        this._dispatch({
-            type: ActionTypes.ClearTokenByAddress,
-        });
-    }
     public batchDispatch(tokens: Token[], networkId: number, userAddress: string, sideToAssetToken: SideToAssetToken) {
         this._dispatch({
             data: {

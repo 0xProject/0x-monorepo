@@ -506,7 +506,6 @@ export class Blockchain {
         );
 
         this._dispatcher.updateBlockchainIsLoaded(false);
-        this._dispatcher.clearTokenByAddress();
 
         const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
 

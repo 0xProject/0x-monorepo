@@ -140,13 +140,6 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
             };
         }
 
-        case ActionTypes.ClearTokenByAddress: {
-            return {
-                ...state,
-                tokenByAddress: {},
-            };
-        }
-
         case ActionTypes.AddTokenToTokenByAddress: {
             const newTokenByAddress = state.tokenByAddress;
             newTokenByAddress[action.data.address] = action.data;

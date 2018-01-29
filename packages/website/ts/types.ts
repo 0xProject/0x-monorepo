@@ -116,7 +116,6 @@ export enum ActionTypes {
     ResetState = 'RESET_STATE',
     AddTokenToTokenByAddress = 'ADD_TOKEN_TO_TOKEN_BY_ADDRESS',
     BlockchainErrEncountered = 'BLOCKCHAIN_ERR_ENCOUNTERED',
-    ClearTokenByAddress = 'CLEAR_TOKEN_BY_ADDRESS',
     UpdateBlockchainIsLoaded = 'UPDATE_BLOCKCHAIN_IS_LOADED',
     UpdateNetworkId = 'UPDATE_NETWORK_ID',
     UpdateChosenAssetToken = 'UPDATE_CHOSEN_ASSET_TOKEN',
