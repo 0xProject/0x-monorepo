@@ -3,7 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
-import { BlockchainErrs } from 'ts/types';
+import { BlockchainErrs, Networks } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -129,7 +129,7 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                 <div>
                     The 0x smart contracts are not deployed on the Ethereum network you are currently connected to
                     (network Id: {this.props.networkId}). In order to use the 0x portal dApp, please connect to the{' '}
-                    {constants.TESTNET_NAME} testnet (network Id: {constants.NETWORK_ID_TESTNET})
+                    {Networks.kovan} testnet (network Id: {constants.NETWORK_ID_KOVAN})
                     {configs.IS_MAINNET_ENABLED
                         ? ` or ${constants.MAINNET_NAME} (network Id: ${constants.NETWORK_ID_MAINNET}).`
                         : `.`}

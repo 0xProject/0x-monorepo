@@ -120,6 +120,8 @@ export const configs = {
     PUBLIC_NODE_URLS_BY_NETWORK_ID: {
         [1]: [`https://mainnet.infura.io/${INFURA_API_KEY}`, 'https://mainnet.0xproject.com'],
         [42]: [`https://kovan.infura.io/${INFURA_API_KEY}`, 'https://kovan.0xproject.com'],
+        [3]: [`https://ropsten.infura.io/${INFURA_API_KEY}`],
+        [4]: [`https://rinkeby.infura.io/${INFURA_API_KEY}`],
     } as PublicNodeUrlsByNetworkId,
     SHOULD_DEPRECATE_OLD_WETH_TOKEN: true,
     SYMBOLS_OF_MINTABLE_TOKENS: ['MKR', 'MLN', 'GNT', 'DGD', 'REP'],

@@ -27,6 +27,7 @@ import {
     BlockchainCallErrs,
     BlockchainErrs,
     EtherscanLinkSuffixes,
+    Networks,
     ScreenWidths,
     Styles,
     Token,
@@ -155,13 +156,13 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 onTouchTap={this._onDharmaDialogToggle.bind(this, false)}
             />,
         ];
-        const isTestNetwork = this.props.networkId === constants.NETWORK_ID_TESTNET;
+        const isKovanTestNetwork = this.props.networkId === constants.NETWORK_ID_KOVAN;
         const dharmaButtonColumnStyle = {
             paddingLeft: 3,
-            display: isTestNetwork ? 'table-cell' : 'none',
+            display: isKovanTestNetwork ? 'table-cell' : 'none',
         };
         const stubColumnStyle = {
-            display: isTestNetwork ? 'none' : 'table-cell',
+            display: isKovanTestNetwork ? 'none' : 'table-cell',
         };
         const allTokenRowHeight = _.size(this.props.tokenByAddress) * TOKEN_TABLE_ROW_HEIGHT;
         const tokenTableHeight =
@@ -180,10 +181,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                   smart contract so you can start trading that token.';
         return (
             <div className="lg-px4 md-px4 sm-px1 pb2">
-                <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
+                <h3>{isKovanTestNetwork ? 'Test ether' : 'Ether'}</h3>
                 <Divider />
                 <div className="pt2 pb2">
-                    {isTestNetwork
+                    {isKovanTestNetwork
                         ? 'In order to try out the 0x Portal Dapp, request some test ether to pay for \
                         gas costs. It might take a bit of time for the test ether to show up.'
                         : 'Ether must be converted to Ether Tokens in order to be tradable via 0x. \
@@ -195,12 +196,12 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             <TableHeaderColumn>Currency</TableHeaderColumn>
                             <TableHeaderColumn>Balance</TableHeaderColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isTestNetwork && (
+                            {isKovanTestNetwork && (
                                 <TableHeaderColumn style={{ paddingLeft: 3 }}>
                                     {isSmallScreen ? 'Faucet' : 'Request from faucet'}
                                 </TableHeaderColumn>
                             )}
-                            {isTestNetwork && (
+                            {isKovanTestNetwork && (
                                 <TableHeaderColumn style={dharmaButtonColumnStyle}>
                                     {isSmallScreen ? 'Loan' : 'Request Dharma loan'}
                                     <HelpTooltip style={{ paddingLeft: 4 }} explanation={dharmaLoanExplanation} />
@@ -222,7 +223,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 )}
                             </TableRowColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isTestNetwork && (
+                            {isKovanTestNetwork && (
                                 <TableRowColumn style={{ paddingLeft: 3 }}>
                                     <LifeCycleRaisedButton
                                         labelReady="Request"
@@ -232,7 +233,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                     />
                                 </TableRowColumn>
                             )}
-                            {isTestNetwork && (
+                            {isKovanTestNetwork && (
                                 <TableRowColumn style={dharmaButtonColumnStyle}>
                                     <RaisedButton
                                         label="Request"
@@ -246,7 +247,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </Table>
                 <div className="clearfix" style={{ paddingBottom: 1 }}>
                     <div className="col col-10">
-                        <h3 className="pt2">{isTestNetwork ? 'Test tokens' : 'Tokens'}</h3>
+                        <h3 className="pt2">{isKovanTestNetwork ? 'Test tokens' : 'Tokens'}</h3>
                     </div>
                     <div className="col col-1 pt3 align-right">
                         <FloatingActionButton mini={true} zDepth={0} onClick={this._onAddTokenClicked.bind(this)}>
@@ -261,7 +262,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </div>
                 <Divider />
                 <div className="pt2 pb2">
-                    {isTestNetwork
+                    {isKovanTestNetwork
                         ? "Mint some test tokens you'd like to use to generate or fill an order using 0x."
                         : "Set trading permissions for a token you'd like to start trading."}
                 </div>
@@ -391,7 +392,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         />
                     )}
                     {token.symbol === ZRX_TOKEN_SYMBOL &&
-                        this.props.networkId === constants.NETWORK_ID_TESTNET && (
+                        this.props.networkId === constants.NETWORK_ID_KOVAN && (
                             <LifeCycleRaisedButton
                                 labelReady="Request"
                                 labelLoading="Sending..."
@@ -477,9 +478,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             case BalanceErrs.incorrectNetworkForFaucet:
                 return (
                     <div>
-                        Our faucet can only send test Ether to addresses on the {constants.TESTNET_NAME} testnet
-                        (networkId {constants.NETWORK_ID_TESTNET}). Please make sure you are connected to the{' '}
-                        {constants.TESTNET_NAME} testnet and try requesting ether again.
+                        Our faucet can only send test Ether to addresses on the {Networks.kovan} testnet (networkId{' '}
+                        {constants.NETWORK_ID_KOVAN}). Please make sure you are connected to the {Networks.kovan}{' '}
+                        testnet and try requesting ether again.
                     </div>
                 );
 
@@ -568,7 +569,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
 
         // If on another network other then the testnet our faucet serves test ether
         // from, we must show user an error message
-        if (this.props.blockchain.networkId !== constants.NETWORK_ID_TESTNET) {
+        if (this.props.blockchain.networkId !== constants.NETWORK_ID_KOVAN) {
             this.setState({
                 errorType: BalanceErrs.incorrectNetworkForFaucet,
             });

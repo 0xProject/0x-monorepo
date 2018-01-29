@@ -10,6 +10,8 @@ export const constants = {
         1: 4145578,
         42: 3117574,
         50: 0,
+        3: 1719261,
+        4: 1570919,
     } as { [networkId: number]: number },
     HOME_SCROLL_DURATION_MS: 500,
     HTTP_NO_CONTENT_STATUS_CODE: 204,
@@ -19,7 +21,7 @@ export const constants = {
     MAINNET_NAME: 'Main network',
     MINT_AMOUNT: new BigNumber('100000000000000000000'),
     NETWORK_ID_MAINNET: 1,
-    NETWORK_ID_TESTNET: 42,
+    NETWORK_ID_KOVAN: 42,
     NETWORK_ID_TESTRPC: 50,
     NETWORK_NAME_BY_ID: {
         1: Networks.mainnet,

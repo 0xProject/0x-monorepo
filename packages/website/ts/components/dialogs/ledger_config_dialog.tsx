@@ -10,7 +10,7 @@ import { Blockchain } from 'ts/blockchain';
 import { NetworkDropDown } from 'ts/components/dropdowns/network_drop_down';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ProviderType } from 'ts/types';
+import { ProviderType, Networks } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -97,7 +97,11 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                     <NetworkDropDown
                         updateSelectedNetwork={this._onSelectedNetworkUpdated.bind(this)}
                         selectedNetworkId={this.state.preferredNetworkId}
-                        avialableNetworkIds={[1, 42]}
+                        avialableNetworkIds={[
+                            constants.NETWORK_ID_BY_NAME[Networks.mainnet],
+                            constants.NETWORK_ID_BY_NAME[Networks.kovan],
+                            constants.NETWORK_ID_BY_NAME[Networks.ropsten],
+                        ]}
                     />
                 </div>
                 <div className="center pb3">
