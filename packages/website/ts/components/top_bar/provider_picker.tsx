@@ -34,12 +34,6 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
             paddingTop: 15,
             paddingBottom: 15,
         };
-        const injectedLabel = (
-            <div className="flex">
-                <div>{this.props.injectedProviderName}</div>
-                {this._renderNetwork()}
-            </div>
-        );
         // Show dropdown with two options
         return (
             <div style={{ width: 225, overflow: 'hidden' }}>
@@ -51,29 +45,38 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
                     <RadioButton
                         style={{ ...menuStyle, backgroundColor: !isLedgerSelected && SELECTED_BG_COLOR }}
                         value={ProviderType.Injected}
-                        label={injectedLabel}
+                        label={this._renderLabel(this.props.injectedProviderName, !isLedgerSelected)}
                     />
                     <RadioButton
                         style={{ ...menuStyle, backgroundColor: isLedgerSelected && SELECTED_BG_COLOR }}
                         value={ProviderType.Ledger}
-                        label="Ledger Nano S"
+                        label={this._renderLabel('Ledger Nano S', isLedgerSelected)}
                     />
                 </RadioButtonGroup>
             </div>
         );
     }
+    private _renderLabel(title: string, shouldShowNetwork: boolean) {
+        const label = (
+            <div className="flex">
+                <div style={{ fontSize: 14 }}>{title}</div>
+                {shouldShowNetwork && this._renderNetwork()}
+            </div>
+        );
+        return label;
+    }
     private _renderNetwork() {
         const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
         return (
-            <div className="flex">
-                <div className="pr1 relative" style={{ width: 14, paddingLeft: 14 }}>
+            <div className="flex" style={{ marginTop: 1 }}>
+                <div className="relative" style={{ width: 14, paddingLeft: 14 }}>
                     <img
                         src={`/images/network_icons/${networkName.toLowerCase()}.png`}
                         className="absolute"
-                        style={{ top: 4, width: 14 }}
+                        style={{ top: 6, width: 10 }}
                     />
                 </div>
-                <div style={{ color: '#BBBBBB' }}>{networkName}</div>
+                <div style={{ color: '#BBBBBB', fontSize: 11 }}>{networkName}</div>
             </div>
         );
     }
