@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/deployer",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "description": "Smart contract deployer of 0x protocol",
     "main": "lib/src/cli.js",
     "scripts": {
@@ -29,11 +29,11 @@
         "copyfiles": "^1.2.0",
         "types-bn": "^0.0.1",
         "typescript": "~2.6.1",
-        "web3-typescript-typings": "^0.9.5"
+        "web3-typescript-typings": "^0.9.7"
     },
     "dependencies": {
         "@0xproject/utils": "^0.1.3",
-        "@0xproject/web3-wrapper": "^0.1.6",
+        "@0xproject/web3-wrapper": "^0.1.8",
         "lodash": "^4.17.4",
         "solc": "^0.4.18",
         "web3": "^0.20.0",

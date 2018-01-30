@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 
 import { SignedOrder, ZeroEx } from '../../src';
 
+const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
+
 export const orderFactory = {
     async createSignedOrderAsync(
         zeroEx: ZeroEx,
@@ -37,7 +39,7 @@ export const orderFactory = {
             expirationUnixTimestampSec,
         };
         const orderHash = ZeroEx.getOrderHashHex(order);
-        const ecSignature = await zeroEx.signOrderHashAsync(orderHash, maker);
+        const ecSignature = await zeroEx.signOrderHashAsync(orderHash, maker, SHOULD_ADD_PERSONAL_MESSAGE_PREFIX);
         const signedOrder: SignedOrder = _.assign(order, { ecSignature });
         return signedOrder;
     },
