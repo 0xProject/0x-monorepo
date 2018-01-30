@@ -12,6 +12,7 @@ import {
     SideToAssetToken,
     SignatureData,
     Token,
+    TokenByAddress,
     TokenStateByAddress,
 } from 'ts/types';
 
@@ -121,10 +122,15 @@ export class Dispatcher {
             type: ActionTypes.RemoveTokenFromTokenByAddress,
         });
     }
-    public batchDispatch(tokens: Token[], networkId: number, userAddress: string, sideToAssetToken: SideToAssetToken) {
+    public batchDispatch(
+        tokenByAddress: TokenByAddress,
+        networkId: number,
+        userAddress: string,
+        sideToAssetToken: SideToAssetToken,
+    ) {
         this._dispatch({
             data: {
-                tokens,
+                tokenByAddress,
                 networkId,
                 userAddress,
                 sideToAssetToken,

@@ -512,26 +512,30 @@ export class Blockchain {
 
         const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
 
-        let trackedTokensIfExists = trackedTokenStorage.getTrackedTokensIfExists(this._userAddress, this.networkId);
+        const trackedTokensByAddress = trackedTokenStorage.getTrackedTokensByAddress(this._userAddress, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
-        if (_.isUndefined(trackedTokensIfExists)) {
-            trackedTokensIfExists = _.map(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
+        if (_.isEmpty(trackedTokensByAddress)) {
+            _.each(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
                 const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
                 token.isTracked = true;
-                return token;
+                trackedTokensByAddress[token.address] = token;
             });
-            _.each(trackedTokensIfExists, token => {
+            _.each(trackedTokensByAddress, (token: Token, address: string) => {
                 trackedTokenStorage.addTrackedTokenToUser(this._userAddress, this.networkId, token);
             });
         } else {
             // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
-            _.each(trackedTokensIfExists, trackedToken => {
-                if (!_.isUndefined(tokenRegistryTokensByAddress[trackedToken.address])) {
-                    tokenRegistryTokensByAddress[trackedToken.address].isTracked = true;
+            _.each(trackedTokensByAddress, (trackedToken: Token, address: string) => {
+                if (!_.isUndefined(tokenRegistryTokensByAddress[address])) {
+                    tokenRegistryTokensByAddress[address].isTracked = true;
                 }
             });
         }
-        const allTokens = _.uniq([...tokenRegistryTokens, ...trackedTokensIfExists]);
+        const allTokensByAddress = {
+            ...tokenRegistryTokensByAddress,
+            ...trackedTokensByAddress,
+        };
+        const allTokens = _.values(allTokensByAddress);
         const mostPopularTradingPairTokens: Token[] = [
             _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0] }),
             _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[1] }),
@@ -544,7 +548,7 @@ export class Blockchain {
                 address: mostPopularTradingPairTokens[1].address,
             },
         };
-        this._dispatcher.batchDispatch(allTokens, this.networkId, this._userAddress, sideToAssetToken);
+        this._dispatcher.batchDispatch(allTokensByAddress, this.networkId, this._userAddress, sideToAssetToken);
 
         this._dispatcher.updateBlockchainIsLoaded(true);
     }

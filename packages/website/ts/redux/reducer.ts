@@ -175,21 +175,12 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.BatchDispatch: {
-            const tokenByAddress = state.tokenByAddress;
-            const tokens = action.data.tokens;
-            _.each(tokens, token => {
-                const updatedToken = {
-                    ...tokenByAddress[token.address],
-                    ...token,
-                };
-                tokenByAddress[token.address] = updatedToken;
-            });
             return {
                 ...state,
                 networkId: action.data.networkId,
                 userAddress: action.data.userAddress,
                 sideToAssetToken: action.data.sideToAssetToken,
-                tokenByAddress,
+                tokenByAddress: action.data.tokenByAddress,
             };
         }
 
