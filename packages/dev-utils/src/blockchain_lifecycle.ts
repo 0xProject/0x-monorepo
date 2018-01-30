@@ -1,10 +1,11 @@
+import { constants } from './constants';
 import { RPC } from './rpc';
 
 export class BlockchainLifecycle {
     private _rpc: RPC;
     private _snapshotIdsStack: number[];
-    constructor(url: string) {
-        this._rpc = new RPC(url);
+    constructor() {
+        this._rpc = new RPC(constants.RPC_URL);
         this._snapshotIdsStack = [];
     }
     // TODO: In order to run these tests on an actual node, we should check if we are running against

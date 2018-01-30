@@ -11,7 +11,7 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { TokenUtils } from './utils/token_utils';
 
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 chaiSetup.configure();
 const expect = chai.expect;
 

@@ -16,7 +16,7 @@ import { TokenUtils } from './utils/token_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('OrderValidation', () => {
     let web3: Web3;

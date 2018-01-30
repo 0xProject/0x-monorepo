@@ -27,7 +27,7 @@ const TIMEOUT_MS = 150;
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('OrderStateWatcher', () => {
     let web3: Web3;

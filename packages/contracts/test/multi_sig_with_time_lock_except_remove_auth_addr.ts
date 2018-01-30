@@ -22,7 +22,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const web3 = web3Factory.create();
 const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 const abiDecoder = new AbiDecoder([MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_AUTHORIZED_ADDRESS_ABI]);
 
 describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {

@@ -11,7 +11,7 @@ import { constants } from './utils/constants';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('ExchangeTransferSimulator', () => {
     const web3 = web3Factory.create();

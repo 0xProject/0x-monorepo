@@ -27,7 +27,7 @@ import { TokenUtils } from './utils/token_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 // Since the address depositing/withdrawing ETH/WETH also needs to pay gas costs for the transaction,
 // a small amount of ETH will be used to pay this gas cost. We therefore check that the difference between

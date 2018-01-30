@@ -15,7 +15,7 @@ const web3 = web3Factory.create();
 const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('UnlimitedAllowanceToken', () => {
     let owner: string;

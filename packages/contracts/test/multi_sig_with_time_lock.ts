@@ -1,5 +1,5 @@
 import { LogWithDecodedArgs, ZeroEx } from '0x.js';
-import { BlockchainLifecycle, devConstants, RPC, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, RPC, web3Factory } from '@0xproject/dev-utils';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -20,7 +20,7 @@ const expect = chai.expect;
 
 const web3 = web3Factory.create();
 const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
 const abiDecoder = new AbiDecoder([MULTI_SIG_ABI]);
 
@@ -40,7 +40,7 @@ describe('MultiSigWalletWithTimeLock', () => {
     let rpc: RPC;
 
     before(async () => {
-        rpc = new RPC(devConstants.RPC_URL);
+        rpc = new RPC();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

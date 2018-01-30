@@ -13,7 +13,7 @@ import { constants } from './utils/constants';
 import { assertNodeCallbackError } from './utils/report_callback_errors';
 
 chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('SubscriptionTest', () => {
     let web3: Web3;

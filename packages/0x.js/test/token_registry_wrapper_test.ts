@@ -11,7 +11,7 @@ import { constants } from './utils/constants';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(devConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 const TOKEN_REGISTRY_SIZE_AFTER_MIGRATION = 7;
 
