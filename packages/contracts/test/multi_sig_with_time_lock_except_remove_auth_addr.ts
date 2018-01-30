@@ -43,14 +43,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owners = [accounts[0], accounts[1]];
-        authorizedAddress = `0x${crypto
-            .solSHA3([accounts[0]])
-            .slice(0, 20)
-            .toString('hex')}`;
-        unauthorizedAddress = `0x${crypto
-            .solSHA3([accounts[1]])
-            .slice(0, 20)
-            .toString('hex')}`;
+        [authorizedAddress, unauthorizedAddress] = accounts;
         const initialOwner = accounts[0];
         tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         await tokenTransferProxy.addAuthorizedAddress(authorizedAddress, {
