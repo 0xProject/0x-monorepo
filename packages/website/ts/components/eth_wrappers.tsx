@@ -309,7 +309,6 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                 isOutdatedWrappedEther={true}
                                 direction={Side.Receive}
                                 ethToken={outdatedEtherToken}
-                                ethTokenState={outdatedEtherTokenState}
                                 dispatcher={this.props.dispatcher}
                                 blockchain={this.props.blockchain}
                                 userEtherBalance={this.props.userEtherBalance}
