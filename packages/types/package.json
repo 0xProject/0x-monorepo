@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/types",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "0x types",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -19,13 +19,13 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/types/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.4",
+        "@0xproject/tslint-config": "^0.4.5",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "~2.6.1"
     },
     "dependencies": {
-        "@0xproject/utils": "^0.2.2",
+        "@0xproject/utils": "^0.2.3",
         "web3": "^0.20.0"
     }
 }

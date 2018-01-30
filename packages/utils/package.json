@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/utils",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "0x TS utils",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -19,7 +19,7 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/utils/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.4",
+        "@0xproject/tslint-config": "^0.4.5",
         "@types/lodash": "^4.14.86",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
