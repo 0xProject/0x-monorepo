@@ -77,7 +77,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             this.setState({
                 isSpinnerVisible: false,
             });
-            const errMsg = '' + err;
+            const errMsg = `${err}`;
             if (_.includes(errMsg, 'User denied transaction')) {
                 return;
             }

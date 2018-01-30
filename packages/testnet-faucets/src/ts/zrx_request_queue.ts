@@ -18,11 +18,11 @@ const QUEUE_INTERVAL_MS = 5000;
 
 export class ZRXRequestQueue extends RequestQueue {
     private _zeroEx: ZeroEx;
-    constructor(web3: Web3) {
+    constructor(web3: Web3, networkId: number) {
         super(web3);
         this.queueIntervalMs = QUEUE_INTERVAL_MS;
         const zeroExConfig = {
-            networkId: configs.KOVAN_NETWORK_ID,
+            networkId,
         };
         this._zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
     }
@@ -30,13 +30,14 @@ export class ZRXRequestQueue extends RequestQueue {
         utils.consoleLog(`Processing ZRX ${recipientAddress}`);
         const baseUnitAmount = ZeroEx.toBaseUnitAmount(DISPENSE_AMOUNT_ZRX, 18);
         try {
-            await this._zeroEx.token.transferAsync(
-                configs.ZRX_TOKEN_ADDRESS,
+            const zrxTokenAddress = this._zeroEx.exchange.getZRXTokenAddress();
+            const txHash = await this._zeroEx.token.transferAsync(
+                zrxTokenAddress,
                 configs.DISPENSER_ADDRESS,
                 recipientAddress,
                 baseUnitAmount,
             );
-            utils.consoleLog(`Sent ${DISPENSE_AMOUNT_ZRX} ZRX to ${recipientAddress}`);
+            utils.consoleLog(`Sent ${DISPENSE_AMOUNT_ZRX} ZRX to ${recipientAddress} tx: ${txHash}`);
         } catch (err) {
             utils.consoleLog(`Unexpected err: ${err} - ${JSON.stringify(err)}`);
             await errorReporter.reportAsync(err);

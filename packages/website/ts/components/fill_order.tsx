@@ -493,7 +493,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         await this._checkForUntrackedTokensAndAskToAdd();
     }
     private async _onFillOrderClickFireAndForgetAsync(): Promise<void> {
-        if (!_.isEmpty(this.props.blockchainErr) || _.isEmpty(this.props.userAddress)) {
+        if (this.props.blockchainErr !== BlockchainErrs.NoError || _.isEmpty(this.props.userAddress)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;
         }
@@ -586,7 +586,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         }
     }
     private async _onCancelOrderClickFireAndForgetAsync(): Promise<void> {
-        if (!_.isEmpty(this.props.blockchainErr) || _.isEmpty(this.props.userAddress)) {
+        if (this.props.blockchainErr !== BlockchainErrs.NoError || _.isEmpty(this.props.userAddress)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             return;
         }

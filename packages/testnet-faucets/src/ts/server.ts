@@ -19,6 +19,7 @@ const handler = new Handler();
 app.get('/ping', (req: express.Request, res: express.Response) => {
     res.status(200).send('pong');
 });
+app.get('/info', handler.getQueueInfo.bind(handler));
 app.get('/ether/:recipient', handler.dispenseEther.bind(handler));
 app.get('/zrx/:recipient', handler.dispenseZRX.bind(handler));
 

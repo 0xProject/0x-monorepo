@@ -51,6 +51,6 @@ export class RequestQueue {
     }
     // tslint:disable-next-line:prefer-function-over-method
     protected async processNextRequestFireAndForgetAsync(recipientAddress: string) {
-        throw new Error('Expected processNextRequestFireAndForgetAsync to be implemented by a superclass');
+        throw new Error('Expected processNextRequestFireAndForgetAsync to be implemented by a subclass');
     }
 }

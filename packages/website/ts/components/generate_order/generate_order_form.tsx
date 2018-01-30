@@ -329,7 +329,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                   ${validationResult.errors}`);
             }
         } catch (err) {
-            const errMsg = '' + err;
+            const errMsg = `${err}`;
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 globalErrMsg = 'User denied sign request';
             } else {

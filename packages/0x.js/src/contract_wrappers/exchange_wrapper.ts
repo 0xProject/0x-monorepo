@@ -87,11 +87,13 @@ export class ExchangeWrapper extends ContractWrapper {
         abiDecoder: AbiDecoder,
         tokenWrapper: TokenWrapper,
         contractAddressIfExists?: string,
+        zrxContractAddressIfExists?: string,
     ) {
         super(web3Wrapper, networkId, abiDecoder);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(this);
         this._contractAddressIfExists = contractAddressIfExists;
+        this._zrxContractAddressIfExists = zrxContractAddressIfExists;
     }
     /**
      * Returns the unavailable takerAmount of an order. Unavailable amount is defined as the total

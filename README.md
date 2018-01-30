@@ -27,20 +27,21 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 | [`@0xproject/abi-gen`](/packages/abi-gen)                                              | [![npm](https://img.shields.io/npm/v/@0xproject/abi-gen.svg)](https://www.npmjs.com/package/@0xproject/abi-gen)                                   | Tool to generate TS wrappers from smart contract ABIs              |
 | [`@0xproject/assert`](/packages/assert)                                                | [![npm](https://img.shields.io/npm/v/@0xproject/assert.svg)](https://www.npmjs.com/package/@0xproject/assert)                                     | Type and schema assertions used by our packages                    |
 | [`@0xproject/connect`](/packages/connect)                                              | [![npm](https://img.shields.io/npm/v/@0xproject/connect.svg)](https://www.npmjs.com/package/@0xproject/connect)                                   | A Javascript library for interacting with the standard relayer api |
+| [`@0xproject/dev-utils`](/packages/dev-utils)                                          | [![npm](https://img.shields.io/npm/v/@0xproject/dev-utils.svg)](https://www.npmjs.com/package/@0xproject/dev-utils)                               | Dev utils to be shared across 0x projects and packages             |
 | [`@0xproject/json-schemas`](/packages/json-schemas)                                    | [![npm](https://img.shields.io/npm/v/@0xproject/json-schemas.svg)](https://www.npmjs.com/package/@0xproject/json-schemas)                         | 0x-related json schemas                                            |
 | [`@0xproject/subproviders`](/packages/subproviders)                                    | [![npm](https://img.shields.io/npm/v/@0xproject/subproviders.svg)](https://www.npmjs.com/package/@0xproject/subproviders)                         | Useful web3 subproviders (e.g LedgerSubprovider)                   |
 | [`@0xproject/tslint-config`](/packages/tslint-config)                                  | [![npm](https://img.shields.io/npm/v/@0xproject/tslint-config.svg)](https://www.npmjs.com/package/@0xproject/tslint-config)                       | Custom 0x development TSLint rules                                 |
 | [`@0xproject/types`](/packages/types)                                                  | [![npm](https://img.shields.io/npm/v/@0xproject/types.svg)](https://www.npmjs.com/package/@0xproject/types)                                       | Shared type declarations                                           |
 | [`@0xproject/utils`](/packages/utils)                                                  | [![npm](https://img.shields.io/npm/v/@0xproject/utils.svg)](https://www.npmjs.com/package/@0xproject/utils)                                       | Shared utilities                                                   |
-| [`@0xproject/web3-wrapper`](/packages/web3-wrapper)                                    | [![npm](https://img.shields.io/npm/v/@0xproject/web3-wrapper.svg)](https://www.npmjs.com/package/@0xproject/web3-wrapper)                         | Web3 wrapper                                                       |  |
+| [`@0xproject/web3-wrapper`](/packages/web3-wrapper)                                    | [![npm](https://img.shields.io/npm/v/@0xproject/web3-wrapper.svg)](https://www.npmjs.com/package/@0xproject/web3-wrapper)                         | Web3 wrapper                                                       |
 
 ### Private Packages
 
 | Package                                                     | Description                                                      |
 | ----------------------------------------------------------- | ---------------------------------------------------------------- |
 | [`@0xproject/contracts`](/packages/contracts)               | 0x solidity smart contracts & tests                              |
-| [`@0xproject/kovan_faucets`](/packages/kovan-faucets)       | A faucet micro-service that dispenses test ERC20 tokens or Ether |
 | [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts) | Shared monorepo scripts                                          |
+| [`@0xproject/testnet-faucets`](/packages/testnet-faucets)   | A faucet micro-service that dispenses test ERC20 tokens or Ether |
 | [`@0xproject/website`](/packages/website)                   | 0x website & Portal DApp                                         |
 
 ## Usage

@@ -169,7 +169,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         ? 'In order to try out the 0x Portal Dapp, request some test ether to pay for \
                         gas costs. It might take a bit of time for the test ether to show up.'
                         : 'Ether must be converted to Ether Tokens in order to be tradable via 0x. \
-                         You can convert between Ether and Ether Tokens by clicking the "convert" button below.'}
+                         You can convert between Ether and Ether Tokens from the "Wrap ETH" tab.'}
                 </div>
                 <Table selectable={false} style={styles.bgColor}>
                     <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
@@ -514,7 +514,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.props.dispatcher.showFlashMessage(`Successfully minted ${amount.toString(10)} ${token.symbol}`);
             return true;
         } catch (err) {
-            const errMsg = '' + err;
+            const errMsg = `${err}`;
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return false;

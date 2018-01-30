@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "contracts",
-    "version": "2.1.4",
+    "version": "2.1.7",
     "description": "Smart contract components of 0x protocol",
     "main": "index.js",
     "directories": {
@@ -10,13 +10,12 @@
     "scripts": {
         "build": "rm -rf ./lib; copyfiles ./build/**/* ./deploy/solc/solc_bin/* ./deploy/test/fixtures/contracts/**/* ./deploy/test/fixtures/contracts/* ./lib; tsc;",
         "test": "npm run build; truffle test",
-        "compile": "npm run build; node lib/deploy/cli.js compile",
+        "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
+        "compile": "node ../deployer/lib/src/cli.js compile",
         "clean": "rm -rf ./lib",
-        "migrate:truffle": "npm run build; truffle migrate",
-        "migrate": "npm run build; node lib/deploy/cli.js migrate",
+        "migrate": "node ../deployer/lib/src/cli.js migrate",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
-        "test:circleci": "yarn test; yarn test:deployer",
-        "test:deployer": "npm run build; mocha lib/deploy/test/*_test.js"
+        "test:circleci": "yarn test"
     },
     "repository": {
         "type": "git",
@@ -29,9 +28,9 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/contracts/README.md",
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.0.5",
-        "@0xproject/tslint-config": "^0.4.2",
-        "@0xproject/types": "^0.1.4",
+        "@0xproject/dev-utils": "^0.0.8",
+        "@0xproject/tslint-config": "^0.4.5",
+        "@0xproject/types": "^0.1.7",
         "@types/bluebird": "^3.5.3",
         "@types/lodash": "^4.14.86",
         "@types/node": "^8.0.53",
@@ -39,7 +38,7 @@
         "@types/yargs": "^10.0.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-as-promised-typescript-typings": "^0.0.4",
+        "chai-as-promised-typescript-typings": "^0.0.7",
         "chai-bignumber": "^2.0.1",
         "chai-typescript-typings": "^0.0.2",
         "copyfiles": "^1.2.0",
@@ -51,14 +50,15 @@
         "types-bn": "^0.0.1",
         "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
         "typescript": "~2.6.1",
-        "web3-typescript-typings": "^0.9.4",
+        "web3-typescript-typings": "^0.9.7",
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "0x.js": "^0.30.0",
-        "@0xproject/json-schemas": "^0.7.3",
-        "@0xproject/utils": "^0.2.0",
-        "@0xproject/web3-wrapper": "^0.1.5",
+        "0x.js": "^0.31.0",
+        "@0xproject/deployer": "^0.0.4",
+        "@0xproject/json-schemas": "^0.7.6",
+        "@0xproject/utils": "^0.2.3",
+        "@0xproject/web3-wrapper": "^0.1.8",
         "bluebird": "^3.5.0",
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",

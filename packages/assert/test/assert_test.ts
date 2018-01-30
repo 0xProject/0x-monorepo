@@ -22,6 +22,20 @@ describe('Assertions', () => {
             invalidInputs.forEach(input => expect(assert.isBigNumber.bind(assert, variableName, input)).to.throw());
         });
     });
+    describe('#isValidBaseUnitAmount', () => {
+        it('should not throw for valid input', () => {
+            const validInputs = [new BigNumber(23), new BigNumber('45000000')];
+            validInputs.forEach(input =>
+                expect(assert.isValidBaseUnitAmount.bind(assert, variableName, input)).to.not.throw(),
+            );
+        });
+        it('should throw for invalid input', () => {
+            const invalidInputs = [0, undefined, new BigNumber(3.145), 3.145, new BigNumber(-400)];
+            invalidInputs.forEach(input =>
+                expect(assert.isValidBaseUnitAmount.bind(assert, variableName, input)).to.throw(),
+            );
+        });
+    });
     describe('#isString', () => {
         it('should not throw for valid input', () => {
             const validInputs = ['hello', 'goodbye'];
