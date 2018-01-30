@@ -17,11 +17,9 @@ import { utils } from './utils';
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
 const ABI_TYPE_METHOD = 'function';
 const ABI_TYPE_EVENT = 'event';
-const MAIN_TEMPLATE_NAME = 'contract.mustache';
 
 const args = yargs
     .option('abis', {
-        alias: ['abiGlob'],
         describe: 'Glob pattern to search for ABI JSON files',
         type: 'string',
         demandOption: true,
@@ -41,19 +39,8 @@ const args = yargs
     .option('template', {
         describe: 'Path for the main template file that will be used to generate each contract',
         type: 'string',
+        demandOption: true,
         normalize: true,
-    })
-    .group(['templates'], 'Deprecated')
-    .option('templates', {
-        describe: 'Folder where to search for templates',
-        type: 'string',
-    })
-    .conflicts('templates', ['partials', 'template-file'])
-    .check(argv => {
-        if (!argv.template && !argv.templates) {
-            throw new Error('You need specify the location of the template');
-        }
-        return true;
     })
     .example("$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'", 'Full usage example')
     .argv;
@@ -81,11 +68,7 @@ Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamK
 if (args.partials) {
     registerPartials(args.partials);
 }
-if (args.templates) {
-    registerPartials(`${args.templates}/partials/**/*.{mustache,handlebars}`);
-}
-
-const mainTemplate = utils.getNamedContent(args.template ? args.template : `${args.templates}/${MAIN_TEMPLATE_NAME}`);
+const mainTemplate = utils.getNamedContent(args.template);
 const template = Handlebars.compile<ContextData>(mainTemplate.content);
 const abiFileNames = globSync(args.abis);
 
