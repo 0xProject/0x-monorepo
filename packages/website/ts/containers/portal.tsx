@@ -10,72 +10,72 @@ import { BlockchainErrs, HashData, Order, ScreenWidths, Side, TokenByAddress, To
 import { constants } from 'ts/utils/constants';
 
 interface ConnectedState {
-	blockchainErr: BlockchainErrs;
-	blockchainIsLoaded: boolean;
-	hashData: HashData;
-	networkId: number;
-	nodeVersion: string;
-	orderFillAmount: BigNumber;
-	tokenByAddress: TokenByAddress;
-	tokenStateByAddress: TokenStateByAddress;
-	userEtherBalance: BigNumber;
-	screenWidth: ScreenWidths;
-	shouldBlockchainErrDialogBeOpen: boolean;
-	userAddress: string;
-	userSuppliedOrderCache: Order;
-	flashMessage?: string | React.ReactNode;
+    blockchainErr: BlockchainErrs;
+    blockchainIsLoaded: boolean;
+    hashData: HashData;
+    networkId: number;
+    nodeVersion: string;
+    orderFillAmount: BigNumber;
+    tokenByAddress: TokenByAddress;
+    tokenStateByAddress: TokenStateByAddress;
+    userEtherBalance: BigNumber;
+    screenWidth: ScreenWidths;
+    shouldBlockchainErrDialogBeOpen: boolean;
+    userAddress: string;
+    userSuppliedOrderCache: Order;
+    flashMessage?: string | React.ReactNode;
 }
 
 interface ConnectedDispatch {
-	dispatcher: Dispatcher;
+    dispatcher: Dispatcher;
 }
 
 const mapStateToProps = (state: State, ownProps: PortalComponentAllProps): ConnectedState => {
-	const receiveAssetToken = state.sideToAssetToken[Side.Receive];
-	const depositAssetToken = state.sideToAssetToken[Side.Deposit];
-	const receiveAddress = !_.isUndefined(receiveAssetToken.address)
-		? receiveAssetToken.address
-		: constants.NULL_ADDRESS;
-	const depositAddress = !_.isUndefined(depositAssetToken.address)
-		? depositAssetToken.address
-		: constants.NULL_ADDRESS;
-	const receiveAmount = !_.isUndefined(receiveAssetToken.amount) ? receiveAssetToken.amount : new BigNumber(0);
-	const depositAmount = !_.isUndefined(depositAssetToken.amount) ? depositAssetToken.amount : new BigNumber(0);
-	const hashData = {
-		depositAmount,
-		depositTokenContractAddr: depositAddress,
-		feeRecipientAddress: constants.NULL_ADDRESS,
-		makerFee: constants.MAKER_FEE,
-		orderExpiryTimestamp: state.orderExpiryTimestamp,
-		orderMakerAddress: state.userAddress,
-		orderTakerAddress: state.orderTakerAddress !== '' ? state.orderTakerAddress : constants.NULL_ADDRESS,
-		receiveAmount,
-		receiveTokenContractAddr: receiveAddress,
-		takerFee: constants.TAKER_FEE,
-		orderSalt: state.orderSalt,
-	};
-	return {
-		blockchainErr: state.blockchainErr,
-		blockchainIsLoaded: state.blockchainIsLoaded,
-		networkId: state.networkId,
-		nodeVersion: state.nodeVersion,
-		orderFillAmount: state.orderFillAmount,
-		hashData,
-		screenWidth: state.screenWidth,
-		shouldBlockchainErrDialogBeOpen: state.shouldBlockchainErrDialogBeOpen,
-		tokenByAddress: state.tokenByAddress,
-		tokenStateByAddress: state.tokenStateByAddress,
-		userAddress: state.userAddress,
-		userEtherBalance: state.userEtherBalance,
-		userSuppliedOrderCache: state.userSuppliedOrderCache,
-		flashMessage: state.flashMessage,
-	};
+    const receiveAssetToken = state.sideToAssetToken[Side.Receive];
+    const depositAssetToken = state.sideToAssetToken[Side.Deposit];
+    const receiveAddress = !_.isUndefined(receiveAssetToken.address)
+        ? receiveAssetToken.address
+        : constants.NULL_ADDRESS;
+    const depositAddress = !_.isUndefined(depositAssetToken.address)
+        ? depositAssetToken.address
+        : constants.NULL_ADDRESS;
+    const receiveAmount = !_.isUndefined(receiveAssetToken.amount) ? receiveAssetToken.amount : new BigNumber(0);
+    const depositAmount = !_.isUndefined(depositAssetToken.amount) ? depositAssetToken.amount : new BigNumber(0);
+    const hashData = {
+        depositAmount,
+        depositTokenContractAddr: depositAddress,
+        feeRecipientAddress: constants.NULL_ADDRESS,
+        makerFee: constants.MAKER_FEE,
+        orderExpiryTimestamp: state.orderExpiryTimestamp,
+        orderMakerAddress: state.userAddress,
+        orderTakerAddress: state.orderTakerAddress !== '' ? state.orderTakerAddress : constants.NULL_ADDRESS,
+        receiveAmount,
+        receiveTokenContractAddr: receiveAddress,
+        takerFee: constants.TAKER_FEE,
+        orderSalt: state.orderSalt,
+    };
+    return {
+        blockchainErr: state.blockchainErr,
+        blockchainIsLoaded: state.blockchainIsLoaded,
+        networkId: state.networkId,
+        nodeVersion: state.nodeVersion,
+        orderFillAmount: state.orderFillAmount,
+        hashData,
+        screenWidth: state.screenWidth,
+        shouldBlockchainErrDialogBeOpen: state.shouldBlockchainErrDialogBeOpen,
+        tokenByAddress: state.tokenByAddress,
+        tokenStateByAddress: state.tokenStateByAddress,
+        userAddress: state.userAddress,
+        userEtherBalance: state.userEtherBalance,
+        userSuppliedOrderCache: state.userSuppliedOrderCache,
+        flashMessage: state.flashMessage,
+    };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
-	dispatcher: new Dispatcher(dispatch),
+    dispatcher: new Dispatcher(dispatch),
 });
 
 export const Portal: React.ComponentClass<PortalComponentAllProps> = connect(mapStateToProps, mapDispatchToProps)(
-	PortalComponent,
+    PortalComponent,
 );

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 export interface LedgerCommunicationClient {
-	close_async: () => Promise<void>;
+    close_async: () => Promise<void>;
 }
 
 /*
@@ -10,28 +10,28 @@ export interface LedgerCommunicationClient {
  * NodeJs and Browser communication are supported.
  */
 export interface LedgerEthereumClient {
-	// shouldGetChainCode is defined as `true` instead of `boolean` because other types rely on the assumption
-	// that we get back the chain code and we don't have dependent types to express it properly
-	getAddress_async: (
-		derivationPath: string,
-		askForDeviceConfirmation: boolean,
-		shouldGetChainCode: true,
-	) => Promise<LedgerGetAddressResult>;
-	signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
-	signTransaction_async: (derivationPath: string, txHex: string) => Promise<ECSignatureString>;
-	comm: LedgerCommunicationClient;
+    // shouldGetChainCode is defined as `true` instead of `boolean` because other types rely on the assumption
+    // that we get back the chain code and we don't have dependent types to express it properly
+    getAddress_async: (
+        derivationPath: string,
+        askForDeviceConfirmation: boolean,
+        shouldGetChainCode: true,
+    ) => Promise<LedgerGetAddressResult>;
+    signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
+    signTransaction_async: (derivationPath: string, txHex: string) => Promise<ECSignatureString>;
+    comm: LedgerCommunicationClient;
 }
 
 export interface ECSignatureString {
-	v: string;
-	r: string;
-	s: string;
+    v: string;
+    r: string;
+    s: string;
 }
 
 export interface ECSignature {
-	v: number;
-	r: string;
-	s: string;
+    v: number;
+    r: string;
+    s: string;
 }
 
 export type LedgerEthereumClientFactoryAsync = () => Promise<LedgerEthereumClient>;
@@ -43,10 +43,10 @@ export type LedgerEthereumClientFactoryAsync = () => Promise<LedgerEthereumClien
  * accountFetchingConfigs: configs related to fetching accounts from a Ledger
  */
 export interface LedgerSubproviderConfigs {
-	networkId: number;
-	ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
-	derivationPath?: string;
-	accountFetchingConfigs?: AccountFetchingConfigs;
+    networkId: number;
+    ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
+    derivationPath?: string;
+    accountFetchingConfigs?: AccountFetchingConfigs;
 }
 
 /*
@@ -55,60 +55,60 @@ export interface LedgerSubproviderConfigs {
  *                                   before fetching their addresses
  */
 export interface AccountFetchingConfigs {
-	numAddressesToReturn?: number;
-	shouldAskForOnDeviceConfirmation?: boolean;
+    numAddressesToReturn?: number;
+    shouldAskForOnDeviceConfirmation?: boolean;
 }
 
 export interface SignatureData {
-	hash: string;
-	r: string;
-	s: string;
-	v: number;
+    hash: string;
+    r: string;
+    s: string;
+    v: number;
 }
 
 export interface LedgerGetAddressResult {
-	address: string;
-	publicKey: string;
-	chainCode: string;
+    address: string;
+    publicKey: string;
+    chainCode: string;
 }
 
 export interface LedgerWalletSubprovider {
-	getPath: () => string;
-	setPath: (path: string) => void;
-	setPathIndex: (pathIndex: number) => void;
+    getPath: () => string;
+    setPath: (path: string) => void;
+    setPathIndex: (pathIndex: number) => void;
 }
 
 export interface PartialTxParams {
-	nonce: string;
-	gasPrice?: string;
-	gas: string;
-	to: string;
-	from?: string;
-	value?: string;
-	data?: string;
-	chainId: number; // EIP 155 chainId - mainnet: 1, ropsten: 3
+    nonce: string;
+    gasPrice?: string;
+    gas: string;
+    to: string;
+    from?: string;
+    value?: string;
+    data?: string;
+    chainId: number; // EIP 155 chainId - mainnet: 1, ropsten: 3
 }
 
 export type DoneCallback = (err?: Error) => void;
 
 export interface JSONRPCPayload {
-	params: any[];
-	method: string;
+    params: any[];
+    method: string;
 }
 
 export interface LedgerCommunication {
-	close_async: () => Promise<void>;
+    close_async: () => Promise<void>;
 }
 
 export interface ResponseWithTxParams {
-	raw: string;
-	tx: PartialTxParams;
+    raw: string;
+    tx: PartialTxParams;
 }
 
 export enum LedgerSubproviderErrors {
-	TooOldLedgerFirmware = 'TOO_OLD_LEDGER_FIRMWARE',
-	FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
-	DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
-	SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
-	MultipleOpenConnectionsDisallowed = 'MULTIPLE_OPEN_CONNECTIONS_DISALLOWED',
+    TooOldLedgerFirmware = 'TOO_OLD_LEDGER_FIRMWARE',
+    FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
+    DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
+    SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
+    MultipleOpenConnectionsDisallowed = 'MULTIPLE_OPEN_CONNECTIONS_DISALLOWED',
 }

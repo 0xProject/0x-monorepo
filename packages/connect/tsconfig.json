@@ -1,12 +1,12 @@
 {
-	"extends": "../../tsconfig",
-	"compilerOptions": {
-		"outDir": "lib"
-	},
-	"include": [
-		"./src/**/*",
-		"./test/**/*",
-		"../../node_modules/chai-as-promised-typescript-typings/index.d.ts",
-		"../../node_modules/chai-typescript-typings/index.d.ts"
-	]
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "outDir": "lib"
+    },
+    "include": [
+        "./src/**/*",
+        "./test/**/*",
+        "../../node_modules/chai-as-promised-typescript-typings/index.d.ts",
+        "../../node_modules/chai-typescript-typings/index.d.ts"
+    ]
 }

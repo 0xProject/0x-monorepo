@@ -1,23 +1,23 @@
 export interface MultiSigConfig {
-	owners: string[];
-	confirmationsRequired: number;
-	secondsRequired: number;
+    owners: string[];
+    confirmationsRequired: number;
+    secondsRequired: number;
 }
 
 export interface MultiSigConfigByNetwork {
-	[networkName: string]: MultiSigConfig;
+    [networkName: string]: MultiSigConfig;
 }
 
 export interface Token {
-	address?: string;
-	name: string;
-	symbol: string;
-	decimals: number;
-	ipfsHash: string;
-	swarmHash: string;
+    address?: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    ipfsHash: string;
+    swarmHash: string;
 }
 
 export interface TokenInfoByNetwork {
-	development: Token[];
-	live: Token[];
+    development: Token[];
+    live: Token[];
 }

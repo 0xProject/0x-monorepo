@@ -1,30 +1,30 @@
 {
-	"name": "web3-typescript-typings",
-	"version": "0.9.6",
-	"description": "Typescript type definitions for web3",
-	"main": "index.d.ts",
-	"types": "index.d.ts",
-	"scripts": {
-		"lint": "tslint index.d.ts"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/0xProject/0x.js.git"
-	},
-	"author": "Fabio Berger",
-	"contributors": ["Leonid Logvinov <logvinov.leon@gmail.com>"],
-	"license": "Apache-2.0",
-	"bugs": {
-		"url": "https://github.com/0xProject/0x.js/issues"
-	},
-	"homepage": "https://github.com/0xProject/0x.js/packages/web3-typescript-typings#readme",
-	"devDependencies": {
-		"@types/bignumber.js": "^4.0.2",
-		"tslint": "^5.5.0",
-		"tslint-config-0xproject": "^0.0.2",
-		"typescript": "~2.6.1"
-	},
-	"dependencies": {
-		"bignumber.js": "~4.1.0"
-	}
+    "name": "web3-typescript-typings",
+    "version": "0.9.6",
+    "description": "Typescript type definitions for web3",
+    "main": "index.d.ts",
+    "types": "index.d.ts",
+    "scripts": {
+        "lint": "tslint index.d.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/0xProject/0x.js.git"
+    },
+    "author": "Fabio Berger",
+    "contributors": ["Leonid Logvinov <logvinov.leon@gmail.com>"],
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x.js/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x.js/packages/web3-typescript-typings#readme",
+    "devDependencies": {
+        "@types/bignumber.js": "^4.0.2",
+        "tslint": "^5.5.0",
+        "tslint-config-0xproject": "^0.0.2",
+        "typescript": "~2.6.1"
+    },
+    "dependencies": {
+        "bignumber.js": "~4.1.0"
+    }
 }

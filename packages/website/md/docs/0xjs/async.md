@@ -14,13 +14,13 @@ _Promise syntax:_
 
 ```javascript
 zeroEx
-	.getAvailableAddressesAsync()
-	.then(function(availableAddresses) {
-		console.log(availableAddresses);
-	})
-	.catch(function(error) {
-		console.log('Caught error: ', error);
-	});
+    .getAvailableAddressesAsync()
+    .then(function(availableAddresses) {
+        console.log(availableAddresses);
+    })
+    .catch(function(error) {
+        console.log('Caught error: ', error);
+    });
 ```
 
 As is the convention with promise-based libraries, if an error occurs, it is thrown. It is the callers responsibility to catch thrown errors and to handle them appropriately.

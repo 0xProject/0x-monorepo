@@ -19,24 +19,24 @@ import { constants } from './constants';
 import * as Web3 from 'web3';
 
 export const web3Factory = {
-	create(hasAddresses: boolean = true): Web3 {
-		const provider = this.getRpcProvider(hasAddresses);
-		const web3 = new Web3();
-		web3.setProvider(provider);
-		return web3;
-	},
-	getRpcProvider(hasAddresses: boolean = true): Web3.Provider {
-		const provider = new ProviderEngine();
-		if (!hasAddresses) {
-			provider.addProvider(new EmptyWalletSubprovider());
-		}
-		provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_ESTIMATE));
-		provider.addProvider(
-			new RpcSubprovider({
-				rpcUrl: constants.RPC_URL,
-			}),
-		);
-		provider.start();
-		return provider;
-	},
+    create(hasAddresses: boolean = true): Web3 {
+        const provider = this.getRpcProvider(hasAddresses);
+        const web3 = new Web3();
+        web3.setProvider(provider);
+        return web3;
+    },
+    getRpcProvider(hasAddresses: boolean = true): Web3.Provider {
+        const provider = new ProviderEngine();
+        if (!hasAddresses) {
+            provider.addProvider(new EmptyWalletSubprovider());
+        }
+        provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_ESTIMATE));
+        provider.addProvider(
+            new RpcSubprovider({
+                rpcUrl: constants.RPC_URL,
+            }),
+        );
+        provider.start();
+        return provider;
+    },
 };

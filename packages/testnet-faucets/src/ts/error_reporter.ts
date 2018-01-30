@@ -5,36 +5,36 @@ import { configs } from './configs';
 import { utils } from './utils';
 
 export const errorReporter = {
-	setup() {
-		rollbar.init(configs.ROLLBAR_ACCESS_KEY, {
-			environment: configs.ENVIRONMENT,
-		});
+    setup() {
+        rollbar.init(configs.ROLLBAR_ACCESS_KEY, {
+            environment: configs.ENVIRONMENT,
+        });
 
-		rollbar.handleUncaughtExceptions(configs.ROLLBAR_ACCESS_KEY);
+        rollbar.handleUncaughtExceptions(configs.ROLLBAR_ACCESS_KEY);
 
-		process.on('unhandledRejection', async (err: Error) => {
-			utils.consoleLog(`Uncaught exception ${err}. Stack: ${err.stack}`);
-			await this.reportAsync(err);
-			process.exit(1);
-		});
-	},
-	async reportAsync(err: Error, req?: express.Request): Promise<any> {
-		if (configs.ENVIRONMENT === 'development') {
-			return; // Do not log development environment errors
-		}
+        process.on('unhandledRejection', async (err: Error) => {
+            utils.consoleLog(`Uncaught exception ${err}. Stack: ${err.stack}`);
+            await this.reportAsync(err);
+            process.exit(1);
+        });
+    },
+    async reportAsync(err: Error, req?: express.Request): Promise<any> {
+        if (configs.ENVIRONMENT === 'development') {
+            return; // Do not log development environment errors
+        }
 
-		return new Promise((resolve, reject) => {
-			rollbar.handleError(err, req, (rollbarErr: Error) => {
-				if (rollbarErr) {
-					utils.consoleLog(`Error reporting to rollbar, ignoring: ${rollbarErr}`);
-					reject(rollbarErr);
-				} else {
-					resolve();
-				}
-			});
-		});
-	},
-	errorHandler() {
-		return rollbar.errorHandler(configs.ROLLBAR_ACCESS_KEY);
-	},
+        return new Promise((resolve, reject) => {
+            rollbar.handleError(err, req, (rollbarErr: Error) => {
+                if (rollbarErr) {
+                    utils.consoleLog(`Error reporting to rollbar, ignoring: ${rollbarErr}`);
+                    reject(rollbarErr);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    },
+    errorHandler() {
+        return rollbar.errorHandler(configs.ROLLBAR_ACCESS_KEY);
+    },
 };

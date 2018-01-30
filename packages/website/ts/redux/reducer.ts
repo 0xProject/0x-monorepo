@@ -2,18 +2,18 @@ import { ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import {
-	Action,
-	ActionTypes,
-	BlockchainErrs,
-	Order,
-	ProviderType,
-	ScreenWidths,
-	Side,
-	SideToAssetToken,
-	SignatureData,
-	TokenByAddress,
-	TokenState,
-	TokenStateByAddress,
+    Action,
+    ActionTypes,
+    BlockchainErrs,
+    Order,
+    ProviderType,
+    ScreenWidths,
+    Side,
+    SideToAssetToken,
+    SignatureData,
+    TokenByAddress,
+    TokenState,
+    TokenStateByAddress,
 } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
@@ -23,367 +23,367 @@ import { utils } from 'ts/utils/utils';
 const DEFAULT_DOCS_VERSION = '0.0.0';
 
 export interface State {
-	// Portal
-	blockchainErr: BlockchainErrs;
-	blockchainIsLoaded: boolean;
-	networkId: number;
-	orderExpiryTimestamp: BigNumber;
-	orderFillAmount: BigNumber;
-	orderTakerAddress: string;
-	orderSignatureData: SignatureData;
-	orderSalt: BigNumber;
-	nodeVersion: string;
-	screenWidth: ScreenWidths;
-	shouldBlockchainErrDialogBeOpen: boolean;
-	sideToAssetToken: SideToAssetToken;
-	tokenByAddress: TokenByAddress;
-	tokenStateByAddress: TokenStateByAddress;
-	userAddress: string;
-	userEtherBalance: BigNumber;
-	// Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
-	userSuppliedOrderCache: Order;
+    // Portal
+    blockchainErr: BlockchainErrs;
+    blockchainIsLoaded: boolean;
+    networkId: number;
+    orderExpiryTimestamp: BigNumber;
+    orderFillAmount: BigNumber;
+    orderTakerAddress: string;
+    orderSignatureData: SignatureData;
+    orderSalt: BigNumber;
+    nodeVersion: string;
+    screenWidth: ScreenWidths;
+    shouldBlockchainErrDialogBeOpen: boolean;
+    sideToAssetToken: SideToAssetToken;
+    tokenByAddress: TokenByAddress;
+    tokenStateByAddress: TokenStateByAddress;
+    userAddress: string;
+    userEtherBalance: BigNumber;
+    // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
+    userSuppliedOrderCache: Order;
 
-	// Docs
-	docsVersion: string;
-	availableDocVersions: string[];
+    // Docs
+    docsVersion: string;
+    availableDocVersions: string[];
 
-	// Shared
-	flashMessage: string | React.ReactNode;
-	providerType: ProviderType;
-	injectedProviderName: string;
+    // Shared
+    flashMessage: string | React.ReactNode;
+    providerType: ProviderType;
+    injectedProviderName: string;
 }
 
 const INITIAL_STATE: State = {
-	// Portal
-	blockchainErr: BlockchainErrs.NoError,
-	blockchainIsLoaded: false,
-	networkId: undefined,
-	orderExpiryTimestamp: utils.initialOrderExpiryUnixTimestampSec(),
-	orderFillAmount: undefined,
-	orderSignatureData: {
-		hash: '',
-		r: '',
-		s: '',
-		v: 27,
-	},
-	orderTakerAddress: '',
-	orderSalt: ZeroEx.generatePseudoRandomSalt(),
-	nodeVersion: undefined,
-	screenWidth: utils.getScreenWidth(),
-	shouldBlockchainErrDialogBeOpen: false,
-	sideToAssetToken: {
-		[Side.Deposit]: {},
-		[Side.Receive]: {},
-	},
-	tokenByAddress: {},
-	tokenStateByAddress: {},
-	userAddress: '',
-	userEtherBalance: new BigNumber(0),
-	userSuppliedOrderCache: undefined,
+    // Portal
+    blockchainErr: BlockchainErrs.NoError,
+    blockchainIsLoaded: false,
+    networkId: undefined,
+    orderExpiryTimestamp: utils.initialOrderExpiryUnixTimestampSec(),
+    orderFillAmount: undefined,
+    orderSignatureData: {
+        hash: '',
+        r: '',
+        s: '',
+        v: 27,
+    },
+    orderTakerAddress: '',
+    orderSalt: ZeroEx.generatePseudoRandomSalt(),
+    nodeVersion: undefined,
+    screenWidth: utils.getScreenWidth(),
+    shouldBlockchainErrDialogBeOpen: false,
+    sideToAssetToken: {
+        [Side.Deposit]: {},
+        [Side.Receive]: {},
+    },
+    tokenByAddress: {},
+    tokenStateByAddress: {},
+    userAddress: '',
+    userEtherBalance: new BigNumber(0),
+    userSuppliedOrderCache: undefined,
 
-	// Docs
-	docsVersion: DEFAULT_DOCS_VERSION,
-	availableDocVersions: [DEFAULT_DOCS_VERSION],
+    // Docs
+    docsVersion: DEFAULT_DOCS_VERSION,
+    availableDocVersions: [DEFAULT_DOCS_VERSION],
 
-	// Shared
-	flashMessage: undefined,
-	providerType: ProviderType.Injected,
-	injectedProviderName: '',
+    // Shared
+    flashMessage: undefined,
+    providerType: ProviderType.Injected,
+    injectedProviderName: '',
 };
 
 export function reducer(state: State = INITIAL_STATE, action: Action) {
-	switch (action.type) {
-		// Portal
-		case ActionTypes.ResetState:
-			return INITIAL_STATE;
+    switch (action.type) {
+        // Portal
+        case ActionTypes.ResetState:
+            return INITIAL_STATE;
 
-		case ActionTypes.UpdateOrderSalt: {
-			return {
-				...state,
-				orderSalt: action.data,
-			};
-		}
+        case ActionTypes.UpdateOrderSalt: {
+            return {
+                ...state,
+                orderSalt: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateNodeVersion: {
-			return {
-				...state,
-				nodeVersion: action.data,
-			};
-		}
+        case ActionTypes.UpdateNodeVersion: {
+            return {
+                ...state,
+                nodeVersion: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateOrderFillAmount: {
-			return {
-				...state,
-				orderFillAmount: action.data,
-			};
-		}
+        case ActionTypes.UpdateOrderFillAmount: {
+            return {
+                ...state,
+                orderFillAmount: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateShouldBlockchainErrDialogBeOpen: {
-			return {
-				...state,
-				shouldBlockchainErrDialogBeOpen: action.data,
-			};
-		}
+        case ActionTypes.UpdateShouldBlockchainErrDialogBeOpen: {
+            return {
+                ...state,
+                shouldBlockchainErrDialogBeOpen: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateUserEtherBalance: {
-			return {
-				...state,
-				userEtherBalance: action.data,
-			};
-		}
+        case ActionTypes.UpdateUserEtherBalance: {
+            return {
+                ...state,
+                userEtherBalance: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateUserSuppliedOrderCache: {
-			return {
-				...state,
-				userSuppliedOrderCache: action.data,
-			};
-		}
+        case ActionTypes.UpdateUserSuppliedOrderCache: {
+            return {
+                ...state,
+                userSuppliedOrderCache: action.data,
+            };
+        }
 
-		case ActionTypes.ClearTokenByAddress: {
-			return {
-				...state,
-				tokenByAddress: {},
-			};
-		}
+        case ActionTypes.ClearTokenByAddress: {
+            return {
+                ...state,
+                tokenByAddress: {},
+            };
+        }
 
-		case ActionTypes.AddTokenToTokenByAddress: {
-			const newTokenByAddress = state.tokenByAddress;
-			newTokenByAddress[action.data.address] = action.data;
-			return {
-				...state,
-				tokenByAddress: newTokenByAddress,
-			};
-		}
+        case ActionTypes.AddTokenToTokenByAddress: {
+            const newTokenByAddress = state.tokenByAddress;
+            newTokenByAddress[action.data.address] = action.data;
+            return {
+                ...state,
+                tokenByAddress: newTokenByAddress,
+            };
+        }
 
-		case ActionTypes.RemoveTokenFromTokenByAddress: {
-			const newTokenByAddress = state.tokenByAddress;
-			delete newTokenByAddress[action.data.address];
-			return {
-				...state,
-				tokenByAddress: newTokenByAddress,
-			};
-		}
+        case ActionTypes.RemoveTokenFromTokenByAddress: {
+            const newTokenByAddress = state.tokenByAddress;
+            delete newTokenByAddress[action.data.address];
+            return {
+                ...state,
+                tokenByAddress: newTokenByAddress,
+            };
+        }
 
-		case ActionTypes.UpdateTokenByAddress: {
-			const tokenByAddress = state.tokenByAddress;
-			const tokens = action.data;
-			_.each(tokens, token => {
-				const updatedToken = {
-					...tokenByAddress[token.address],
-					...token,
-				};
-				tokenByAddress[token.address] = updatedToken;
-			});
-			return {
-				...state,
-				tokenByAddress,
-			};
-		}
+        case ActionTypes.UpdateTokenByAddress: {
+            const tokenByAddress = state.tokenByAddress;
+            const tokens = action.data;
+            _.each(tokens, token => {
+                const updatedToken = {
+                    ...tokenByAddress[token.address],
+                    ...token,
+                };
+                tokenByAddress[token.address] = updatedToken;
+            });
+            return {
+                ...state,
+                tokenByAddress,
+            };
+        }
 
-		case ActionTypes.UpdateTokenStateByAddress: {
-			const tokenStateByAddress = state.tokenStateByAddress;
-			const updatedTokenStateByAddress = action.data;
-			_.each(updatedTokenStateByAddress, (tokenState: TokenState, address: string) => {
-				const updatedTokenState = {
-					...tokenStateByAddress[address],
-					...tokenState,
-				};
-				tokenStateByAddress[address] = updatedTokenState;
-			});
-			return {
-				...state,
-				tokenStateByAddress,
-			};
-		}
+        case ActionTypes.UpdateTokenStateByAddress: {
+            const tokenStateByAddress = state.tokenStateByAddress;
+            const updatedTokenStateByAddress = action.data;
+            _.each(updatedTokenStateByAddress, (tokenState: TokenState, address: string) => {
+                const updatedTokenState = {
+                    ...tokenStateByAddress[address],
+                    ...tokenState,
+                };
+                tokenStateByAddress[address] = updatedTokenState;
+            });
+            return {
+                ...state,
+                tokenStateByAddress,
+            };
+        }
 
-		case ActionTypes.RemoveFromTokenStateByAddress: {
-			const tokenStateByAddress = state.tokenStateByAddress;
-			const tokenAddress = action.data;
-			delete tokenStateByAddress[tokenAddress];
-			return {
-				...state,
-				tokenStateByAddress,
-			};
-		}
+        case ActionTypes.RemoveFromTokenStateByAddress: {
+            const tokenStateByAddress = state.tokenStateByAddress;
+            const tokenAddress = action.data;
+            delete tokenStateByAddress[tokenAddress];
+            return {
+                ...state,
+                tokenStateByAddress,
+            };
+        }
 
-		case ActionTypes.ReplaceTokenAllowanceByAddress: {
-			const tokenStateByAddress = state.tokenStateByAddress;
-			const allowance = action.data.allowance;
-			const tokenAddress = action.data.address;
-			tokenStateByAddress[tokenAddress] = {
-				...tokenStateByAddress[tokenAddress],
-				allowance,
-			};
-			return {
-				...state,
-				tokenStateByAddress,
-			};
-		}
+        case ActionTypes.ReplaceTokenAllowanceByAddress: {
+            const tokenStateByAddress = state.tokenStateByAddress;
+            const allowance = action.data.allowance;
+            const tokenAddress = action.data.address;
+            tokenStateByAddress[tokenAddress] = {
+                ...tokenStateByAddress[tokenAddress],
+                allowance,
+            };
+            return {
+                ...state,
+                tokenStateByAddress,
+            };
+        }
 
-		case ActionTypes.ReplaceTokenBalanceByAddress: {
-			const tokenStateByAddress = state.tokenStateByAddress;
-			const balance = action.data.balance;
-			const tokenAddress = action.data.address;
-			tokenStateByAddress[tokenAddress] = {
-				...tokenStateByAddress[tokenAddress],
-				balance,
-			};
-			return {
-				...state,
-				tokenStateByAddress,
-			};
-		}
+        case ActionTypes.ReplaceTokenBalanceByAddress: {
+            const tokenStateByAddress = state.tokenStateByAddress;
+            const balance = action.data.balance;
+            const tokenAddress = action.data.address;
+            tokenStateByAddress[tokenAddress] = {
+                ...tokenStateByAddress[tokenAddress],
+                balance,
+            };
+            return {
+                ...state,
+                tokenStateByAddress,
+            };
+        }
 
-		case ActionTypes.UpdateTokenBalanceByAddress: {
-			const tokenStateByAddress = state.tokenStateByAddress;
-			const balanceDelta = action.data.balanceDelta;
-			const tokenAddress = action.data.address;
-			const currBalance = tokenStateByAddress[tokenAddress].balance;
-			tokenStateByAddress[tokenAddress] = {
-				...tokenStateByAddress[tokenAddress],
-				balance: currBalance.plus(balanceDelta),
-			};
-			return {
-				...state,
-				tokenStateByAddress,
-			};
-		}
+        case ActionTypes.UpdateTokenBalanceByAddress: {
+            const tokenStateByAddress = state.tokenStateByAddress;
+            const balanceDelta = action.data.balanceDelta;
+            const tokenAddress = action.data.address;
+            const currBalance = tokenStateByAddress[tokenAddress].balance;
+            tokenStateByAddress[tokenAddress] = {
+                ...tokenStateByAddress[tokenAddress],
+                balance: currBalance.plus(balanceDelta),
+            };
+            return {
+                ...state,
+                tokenStateByAddress,
+            };
+        }
 
-		case ActionTypes.UpdateOrderSignatureData: {
-			return {
-				...state,
-				orderSignatureData: action.data,
-			};
-		}
+        case ActionTypes.UpdateOrderSignatureData: {
+            return {
+                ...state,
+                orderSignatureData: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateScreenWidth: {
-			return {
-				...state,
-				screenWidth: action.data,
-			};
-		}
+        case ActionTypes.UpdateScreenWidth: {
+            return {
+                ...state,
+                screenWidth: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateBlockchainIsLoaded: {
-			return {
-				...state,
-				blockchainIsLoaded: action.data,
-			};
-		}
+        case ActionTypes.UpdateBlockchainIsLoaded: {
+            return {
+                ...state,
+                blockchainIsLoaded: action.data,
+            };
+        }
 
-		case ActionTypes.BlockchainErrEncountered: {
-			return {
-				...state,
-				blockchainErr: action.data,
-			};
-		}
+        case ActionTypes.BlockchainErrEncountered: {
+            return {
+                ...state,
+                blockchainErr: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateNetworkId: {
-			return {
-				...state,
-				networkId: action.data,
-			};
-		}
+        case ActionTypes.UpdateNetworkId: {
+            return {
+                ...state,
+                networkId: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateChosenAssetToken: {
-			const newSideToAssetToken = {
-				...state.sideToAssetToken,
-				[action.data.side]: action.data.token,
-			};
-			return {
-				...state,
-				sideToAssetToken: newSideToAssetToken,
-			};
-		}
+        case ActionTypes.UpdateChosenAssetToken: {
+            const newSideToAssetToken = {
+                ...state.sideToAssetToken,
+                [action.data.side]: action.data.token,
+            };
+            return {
+                ...state,
+                sideToAssetToken: newSideToAssetToken,
+            };
+        }
 
-		case ActionTypes.UpdateChosenAssetTokenAddress: {
-			const newAssetToken = state.sideToAssetToken[action.data.side];
-			newAssetToken.address = action.data.address;
-			const newSideToAssetToken = {
-				...state.sideToAssetToken,
-				[action.data.side]: newAssetToken,
-			};
-			return {
-				...state,
-				sideToAssetToken: newSideToAssetToken,
-			};
-		}
+        case ActionTypes.UpdateChosenAssetTokenAddress: {
+            const newAssetToken = state.sideToAssetToken[action.data.side];
+            newAssetToken.address = action.data.address;
+            const newSideToAssetToken = {
+                ...state.sideToAssetToken,
+                [action.data.side]: newAssetToken,
+            };
+            return {
+                ...state,
+                sideToAssetToken: newSideToAssetToken,
+            };
+        }
 
-		case ActionTypes.SwapAssetTokens: {
-			const newSideToAssetToken = {
-				[Side.Deposit]: state.sideToAssetToken[Side.Receive],
-				[Side.Receive]: state.sideToAssetToken[Side.Deposit],
-			};
-			return {
-				...state,
-				sideToAssetToken: newSideToAssetToken,
-			};
-		}
+        case ActionTypes.SwapAssetTokens: {
+            const newSideToAssetToken = {
+                [Side.Deposit]: state.sideToAssetToken[Side.Receive],
+                [Side.Receive]: state.sideToAssetToken[Side.Deposit],
+            };
+            return {
+                ...state,
+                sideToAssetToken: newSideToAssetToken,
+            };
+        }
 
-		case ActionTypes.UpdateOrderExpiry: {
-			return {
-				...state,
-				orderExpiryTimestamp: action.data,
-			};
-		}
+        case ActionTypes.UpdateOrderExpiry: {
+            return {
+                ...state,
+                orderExpiryTimestamp: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateOrderTakerAddress: {
-			return {
-				...state,
-				orderTakerAddress: action.data,
-			};
-		}
+        case ActionTypes.UpdateOrderTakerAddress: {
+            return {
+                ...state,
+                orderTakerAddress: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateUserAddress: {
-			return {
-				...state,
-				userAddress: action.data,
-			};
-		}
+        case ActionTypes.UpdateUserAddress: {
+            return {
+                ...state,
+                userAddress: action.data,
+            };
+        }
 
-		// Docs
-		case ActionTypes.UpdateLibraryVersion: {
-			return {
-				...state,
-				docsVersion: action.data,
-			};
-		}
-		case ActionTypes.UpdateAvailableLibraryVersions: {
-			return {
-				...state,
-				availableDocVersions: action.data,
-			};
-		}
+        // Docs
+        case ActionTypes.UpdateLibraryVersion: {
+            return {
+                ...state,
+                docsVersion: action.data,
+            };
+        }
+        case ActionTypes.UpdateAvailableLibraryVersions: {
+            return {
+                ...state,
+                availableDocVersions: action.data,
+            };
+        }
 
-		// Shared
-		case ActionTypes.ShowFlashMessage: {
-			return {
-				...state,
-				flashMessage: action.data,
-			};
-		}
+        // Shared
+        case ActionTypes.ShowFlashMessage: {
+            return {
+                ...state,
+                flashMessage: action.data,
+            };
+        }
 
-		case ActionTypes.HideFlashMessage: {
-			return {
-				...state,
-				flashMessage: undefined,
-			};
-		}
+        case ActionTypes.HideFlashMessage: {
+            return {
+                ...state,
+                flashMessage: undefined,
+            };
+        }
 
-		case ActionTypes.UpdateProviderType: {
-			return {
-				...state,
-				providerType: action.data,
-			};
-		}
+        case ActionTypes.UpdateProviderType: {
+            return {
+                ...state,
+                providerType: action.data,
+            };
+        }
 
-		case ActionTypes.UpdateInjectedProviderName: {
-			return {
-				...state,
-				injectedProviderName: action.data,
-			};
-		}
+        case ActionTypes.UpdateInjectedProviderName: {
+            return {
+                ...state,
+                injectedProviderName: action.data,
+            };
+        }
 
-		default:
-			return state;
-	}
+        default:
+            return state;
+    }
 }

@@ -4,17 +4,17 @@ const { TokenTransferProxy, MultiSigWalletWithTimeLock, TokenRegistry } = new Ar
 
 let tokenRegistry: ContractInstance;
 module.exports = (deployer: any, network: string) => {
-	if (network !== 'development') {
-		deployer.then(async () => {
-			return Promise.all([TokenTransferProxy.deployed(), TokenRegistry.deployed()])
-				.then((instances: ContractInstance[]) => {
-					let tokenTransferProxy: ContractInstance;
-					[tokenTransferProxy, tokenRegistry] = instances;
-					return tokenTransferProxy.transferOwnership(MultiSigWalletWithTimeLock.address);
-				})
-				.then(() => {
-					return tokenRegistry.transferOwnership(MultiSigWalletWithTimeLock.address);
-				});
-		});
-	}
+    if (network !== 'development') {
+        deployer.then(async () => {
+            return Promise.all([TokenTransferProxy.deployed(), TokenRegistry.deployed()])
+                .then((instances: ContractInstance[]) => {
+                    let tokenTransferProxy: ContractInstance;
+                    [tokenTransferProxy, tokenRegistry] = instances;
+                    return tokenTransferProxy.transferOwnership(MultiSigWalletWithTimeLock.address);
+                })
+                .then(() => {
+                    return tokenRegistry.transferOwnership(MultiSigWalletWithTimeLock.address);
+                });
+        });
+    }
 };

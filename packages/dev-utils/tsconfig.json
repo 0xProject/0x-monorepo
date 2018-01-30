@@ -1,11 +1,11 @@
 {
-	"extends": "../../tsconfig",
-	"compilerOptions": {
-		"outDir": "lib"
-	},
-	"include": [
-		"./src/**/*",
-		"../../node_modules/types-bn/index.d.ts",
-		"../../node_modules/types-ethereumjs-util/index.d.ts"
-	]
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "outDir": "lib"
+    },
+    "include": [
+        "./src/**/*",
+        "../../node_modules/types-bn/index.d.ts",
+        "../../node_modules/types-ethereumjs-util/index.d.ts"
+    ]
 }

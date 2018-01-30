@@ -6,31 +6,31 @@ declare module 'dirty-chai';
 // disallow `namespace`, we disable tslint for the following.
 /* tslint:disable */
 declare namespace Chai {
-	interface Assertion {
-		bignumber: Assertion;
-	}
+    interface Assertion {
+        bignumber: Assertion;
+    }
 }
 /* tslint:enable */
 
 declare module '*.json' {
-	const json: any;
-	/* tslint:disable */
-	export default json;
-	/* tslint:enable */
+    const json: any;
+    /* tslint:disable */
+    export default json;
+    /* tslint:enable */
 }
 
 declare module 'solc' {
-	export function compile(sources: any, optimizerEnabled: number, findImports: (importPath: string) => any): any;
-	export function setupMethods(solcBin: any): any;
+    export function compile(sources: any, optimizerEnabled: number, findImports: (importPath: string) => any): any;
+    export function setupMethods(solcBin: any): any;
 }
 
 declare module 'web3-eth-abi' {
-	export function encodeParameters(typesArray: string[], parameters: any[]): string;
+    export function encodeParameters(typesArray: string[], parameters: any[]): string;
 }
 
 declare module 'ethereumjs-abi' {
-	const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
-	const methodID: (name: string, types: string[]) => Buffer;
+    const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
+    const methodID: (name: string, types: string[]) => Buffer;
 }
 
 // Truffle injects the following into the global scope
