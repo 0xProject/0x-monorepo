@@ -85,7 +85,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                 <div className="h4 pt3">Follow these instructions before proceeding:</div>
                 <ol className="mb0">
                     <li className="pb1">Connect your Ledger Nano S & Open the Ethereum application</li>
-                    <li className="pb1">Verify that Browser Support is enabled in Settings</li>
+                    <li className="pb1">Verify that "Browser Support" AND "Contract Data" are enabled in Settings</li>
                     <li className="pb1">
                         If no Browser Support is found in settings, verify that you have{' '}
                         <a href="https://www.ledgerwallet.com/apps/manager" target="_blank">
