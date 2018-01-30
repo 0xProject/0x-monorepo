@@ -54,6 +54,7 @@ import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
 const BLOCK_NUMBER_BACK_TRACK = 50;
+const GWEI_IN_WEI = 1000000000;
 
 export class Blockchain {
     public networkId: number;
@@ -122,7 +123,8 @@ export class Blockchain {
     constructor(dispatcher: Dispatcher, isSalePage: boolean = false) {
         this._dispatcher = dispatcher;
         this._userAddress = '';
-        this._defaultGasPrice = new BigNumber(30000000000);
+        const defaultGasPrice = GWEI_IN_WEI * 30;
+        this._defaultGasPrice = new BigNumber(defaultGasPrice);
         // tslint:disable-next-line:no-floating-promises
         this._updateDefaultGasPriceAsync();
         // tslint:disable-next-line:no-floating-promises
