@@ -276,4 +276,10 @@ export const utils = {
             exchangeContractErrorToHumanReadableError[error] || ZeroExErrorToHumanReadableError[error];
         return humanReadableErrorMsg;
     },
+    isParityNode(nodeVersion: string): boolean {
+        return _.includes(nodeVersion, 'Parity');
+    },
+    isTestRpc(nodeVersion: string): boolean {
+        return _.includes(nodeVersion, 'TestRPC');
+    },
 };

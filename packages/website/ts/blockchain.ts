@@ -421,8 +421,21 @@ export class Blockchain {
         if (_.isUndefined(makerAddress)) {
             throw new Error('Tried to send a sign request but user has no associated addresses');
         }
+
         this._showFlashMessageIfLedger();
-        const ecSignature = await this._zeroEx.signOrderHashAsync(orderHash, makerAddress);
+        const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
+        const isParityNode = utils.isParityNode(nodeVersion);
+        const isTestRpc = utils.isTestRpc(nodeVersion);
+        const isLedgerSigner = !_.isUndefined(this._ledgerSubprovider);
+        let shouldAddPersonalMessagePrefix = true;
+        if ((isParityNode && !isLedgerSigner) || isTestRpc || isLedgerSigner) {
+            shouldAddPersonalMessagePrefix = false;
+        }
+        const ecSignature = await this._zeroEx.signOrderHashAsync(
+            orderHash,
+            makerAddress,
+            shouldAddPersonalMessagePrefix,
+        );
         const signatureData = _.extend({}, ecSignature, {
             hash: orderHash,
         });
