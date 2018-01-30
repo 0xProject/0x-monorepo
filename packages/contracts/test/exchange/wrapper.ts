@@ -45,9 +45,8 @@ describe('Exchange', () => {
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        tokenOwner = maker = accounts[0];
-        taker = accounts[1] || accounts[accounts.length - 1];
-        feeRecipient = accounts[2] || accounts[accounts.length - 1];
+        tokenOwner = accounts[0];
+        [maker, taker, feeRecipient] = accounts;
         [rep, dgd, zrx] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken),
             deployer.deployAsync(ContractName.DummyToken),
