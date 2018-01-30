@@ -17,7 +17,6 @@ import {
     ZeroEx,
     ZeroExError,
 } from '../src';
-import { artifacts } from '../src/artifacts';
 import { DoneCallback } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
