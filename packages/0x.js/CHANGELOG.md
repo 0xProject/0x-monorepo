@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.x.0 - _TBD, 2018_
+
+    * Add `zeroEx.etherToken.getContractAddressIfExists` (#350)
+
 ## v0.31.0 - _January 30, 2018_
 
     * Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the
