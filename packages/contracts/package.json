@@ -9,7 +9,7 @@
     },
     "scripts": {
         "build":
-            "rm -rf ./lib; copyfiles './build/**/*' './deploy/solc/solc_bin/*' './deploy/test/fixtures/contracts/**/*' './deploy/test/fixtures/contracts/*' ./lib; tsc;",
+            "rm -rf ./lib; copyfiles './build/**/*' './deploy/solc/solc_bin/*' './deploy/test/fixtures/contracts/**/*' './deploy/test/fixtures/contracts/*' ./lib; tsc",
         "test": "run-s build compile run_mocha",
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 10000 --bail --exit",
         "compile:comment":
