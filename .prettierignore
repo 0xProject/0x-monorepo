@@ -2,3 +2,4 @@ lib
 generated
 .nyc_output
 /packages/contracts/build/contracts
+package.json
