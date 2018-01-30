@@ -34,7 +34,7 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
-    private _networkId: number;
+    protected _networkId: number;
     private _abiDecoder?: AbiDecoder;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer | undefined;
     private _blockAndLogStreamInterval: NodeJS.Timer;

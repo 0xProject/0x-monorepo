@@ -163,6 +163,15 @@ export class EtherTokenWrapper extends ContractWrapper {
     public unsubscribeAll(): void {
         super.unsubscribeAll();
     }
+    /**
+     * Retrieves the Ethereum address of the EtherToken contract deployed on the network
+     * that the user-passed web3 provider is connected to. If it's an unknown private network - undefined is returned.
+     * @returns The Ethereum address of the EtherToken contract or undefined.
+     */
+    public getContractAddressIfExists(): string | undefined {
+        const contractAddress = artifacts.EtherTokenArtifact.networks[this._networkId].address;
+        return contractAddress;
+    }
     private _invalidateContractInstance(): void {
         this.unsubscribeAll();
         this._etherTokenContractsByAddress = {};
