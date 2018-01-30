@@ -23,15 +23,7 @@ import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
-import {
-    BlockchainErrs,
-    HashData,
-    Order,
-    ProviderType,
-    ScreenWidths,
-    TokenByAddress,
-    WebsitePaths,
-} from 'ts/types';
+import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
