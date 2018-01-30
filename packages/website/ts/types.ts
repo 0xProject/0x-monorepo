@@ -592,10 +592,10 @@ export interface AddressByContractName {
 }
 
 export enum Networks {
-    mainnet = 'Mainnet',
-    kovan = 'Kovan',
-    ropsten = 'Ropsten',
-    rinkeby = 'Rinkeby',
+    Mainnet = 'Mainnet',
+    Kovan = 'Kovan',
+    Ropsten = 'Ropsten',
+    Rinkeby = 'Rinkeby',
 }
 
 export enum AbiTypes {

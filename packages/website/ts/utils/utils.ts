@@ -151,7 +151,7 @@ export const utils = {
         if (_.isUndefined(networkName)) {
             return undefined;
         }
-        const etherScanPrefix = networkName === Networks.mainnet ? '' : `${networkName.toLowerCase()}.`;
+        const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
         return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
     },
     setUrlHash(anchorId: string) {

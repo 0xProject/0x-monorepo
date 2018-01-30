@@ -40,9 +40,9 @@ import { utils } from 'ts/utils/utils';
 const SCROLL_TOP_ID = 'docsScrollTop';
 
 const networkNameToColor: { [network: string]: string } = {
-    [Networks.kovan]: colors.purple,
-    [Networks.ropsten]: colors.red,
-    [Networks.mainnet]: colors.turquois,
+    [Networks.Kovan]: colors.purple,
+    [Networks.Ropsten]: colors.red,
+    [Networks.Mainnet]: colors.turquois,
 };
 
 export interface DocumentationAllProps {
