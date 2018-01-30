@@ -17,30 +17,30 @@ const DISPENSE_AMOUNT_ZRX = new BigNumber(0.1);
 const QUEUE_INTERVAL_MS = 5000;
 
 export class ZRXRequestQueue extends RequestQueue {
-    private _zeroEx: ZeroEx;
-    constructor(web3: Web3, networkId: number) {
-        super(web3);
-        this.queueIntervalMs = QUEUE_INTERVAL_MS;
-        const zeroExConfig = {
-            networkId,
-        };
-        this._zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
-    }
-    protected async processNextRequestFireAndForgetAsync(recipientAddress: string) {
-        utils.consoleLog(`Processing ZRX ${recipientAddress}`);
-        const baseUnitAmount = ZeroEx.toBaseUnitAmount(DISPENSE_AMOUNT_ZRX, 18);
-        try {
-            const zrxTokenAddress = this._zeroEx.exchange.getZRXTokenAddress();
-            const txHash = await this._zeroEx.token.transferAsync(
-                zrxTokenAddress,
-                configs.DISPENSER_ADDRESS,
-                recipientAddress,
-                baseUnitAmount,
-            );
-            utils.consoleLog(`Sent ${DISPENSE_AMOUNT_ZRX} ZRX to ${recipientAddress} tx: ${txHash}`);
-        } catch (err) {
-            utils.consoleLog(`Unexpected err: ${err} - ${JSON.stringify(err)}`);
-            await errorReporter.reportAsync(err);
-        }
-    }
+	private _zeroEx: ZeroEx;
+	constructor(web3: Web3, networkId: number) {
+		super(web3);
+		this.queueIntervalMs = QUEUE_INTERVAL_MS;
+		const zeroExConfig = {
+			networkId,
+		};
+		this._zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
+	}
+	protected async processNextRequestFireAndForgetAsync(recipientAddress: string) {
+		utils.consoleLog(`Processing ZRX ${recipientAddress}`);
+		const baseUnitAmount = ZeroEx.toBaseUnitAmount(DISPENSE_AMOUNT_ZRX, 18);
+		try {
+			const zrxTokenAddress = this._zeroEx.exchange.getZRXTokenAddress();
+			const txHash = await this._zeroEx.token.transferAsync(
+				zrxTokenAddress,
+				configs.DISPENSER_ADDRESS,
+				recipientAddress,
+				baseUnitAmount,
+			);
+			utils.consoleLog(`Sent ${DISPENSE_AMOUNT_ZRX} ZRX to ${recipientAddress} tx: ${txHash}`);
+		} catch (err) {
+			utils.consoleLog(`Unexpected err: ${err} - ${JSON.stringify(err)}`);
+			await errorReporter.reportAsync(err);
+		}
+	}
 }

@@ -14,7 +14,7 @@ Add the following to your `tslint.json` file
 
 ```json
 {
-    "extends": ["@0xproject/tslint-config"]
+	"extends": ["@0xproject/tslint-config"]
 }
 ```
 

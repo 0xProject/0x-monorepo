@@ -32,44 +32,44 @@ import 'less/all.less';
 // At the same time webpack statically parses for System.import() to determine bundle chunk split points
 // so each lazy import needs it's own `System.import()` declaration.
 const LazyPortal = createLazyComponent('Portal', async () =>
-    System.import<any>(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
+	System.import<any>(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
 );
 const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
+	System.import<any>(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
 );
 const LazySmartContractsDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
+	System.import<any>(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
 );
 const LazyConnectDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
+	System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
 
 const store: ReduxStore<State> = createStore(reducer);
 render(
-    <Router>
-        <div>
-            <MuiThemeProvider muiTheme={muiTheme}>
-                <Provider store={store}>
-                    <div>
-                        <Switch>
-                            <Route exact={true} path="/" component={Landing as any} />
-                            <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                            <Route path={`${WebsitePaths.Portal}`} component={LazyPortal} />
-                            <Route path={`${WebsitePaths.FAQ}`} component={FAQ as any} />
-                            <Route path={`${WebsitePaths.About}`} component={About as any} />
-                            <Route path={`${WebsitePaths.Wiki}`} component={Wiki as any} />
-                            <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
-                            <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
-                            <Route
-                                path={`${WebsitePaths.SmartContracts}/:version?`}
-                                component={LazySmartContractsDocumentation}
-                            />
-                            <Route component={NotFound as any} />
-                        </Switch>
-                    </div>
-                </Provider>
-            </MuiThemeProvider>
-        </div>
-    </Router>,
-    document.getElementById('app'),
+	<Router>
+		<div>
+			<MuiThemeProvider muiTheme={muiTheme}>
+				<Provider store={store}>
+					<div>
+						<Switch>
+							<Route exact={true} path="/" component={Landing as any} />
+							<Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
+							<Route path={`${WebsitePaths.Portal}`} component={LazyPortal} />
+							<Route path={`${WebsitePaths.FAQ}`} component={FAQ as any} />
+							<Route path={`${WebsitePaths.About}`} component={About as any} />
+							<Route path={`${WebsitePaths.Wiki}`} component={Wiki as any} />
+							<Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
+							<Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
+							<Route
+								path={`${WebsitePaths.SmartContracts}/:version?`}
+								component={LazySmartContractsDocumentation}
+							/>
+							<Route component={NotFound as any} />
+						</Switch>
+					</div>
+				</Provider>
+			</MuiThemeProvider>
+		</div>
+	</Router>,
+	document.getElementById('app'),
 );

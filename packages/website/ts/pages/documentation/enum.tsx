@@ -3,20 +3,20 @@ import * as React from 'react';
 import { EnumValue } from 'ts/types';
 
 interface EnumProps {
-    values: EnumValue[];
+	values: EnumValue[];
 }
 
 export function Enum(props: EnumProps) {
-    const values = _.map(props.values, (value, i) => {
-        const defaultValueIfAny = !_.isUndefined(value.defaultValue) ? ` = ${value.defaultValue}` : '';
-        return `\n\t${value.name}${defaultValueIfAny},`;
-    });
-    return (
-        <span>
-            {`{`}
-            {values}
-            <br />
-            {`}`}
-        </span>
-    );
+	const values = _.map(props.values, (value, i) => {
+		const defaultValueIfAny = !_.isUndefined(value.defaultValue) ? ` = ${value.defaultValue}` : '';
+		return `\n\t${value.name}${defaultValueIfAny},`;
+	});
+	return (
+		<span>
+			{`{`}
+			{values}
+			<br />
+			{`}`}
+		</span>
+	);
 }

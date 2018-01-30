@@ -10,14 +10,14 @@ errorReporter.setup();
 const app = express();
 app.use(bodyParser.json()); // for parsing application/json
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+	next();
 });
 
 const handler = new Handler();
 app.get('/ping', (req: express.Request, res: express.Response) => {
-    res.status(200).send('pong');
+	res.status(200).send('pong');
 });
 app.get('/info', handler.getQueueInfo.bind(handler));
 app.get('/ether/:recipient', handler.dispenseEther.bind(handler));

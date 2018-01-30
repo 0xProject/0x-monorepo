@@ -1,16 +1,16 @@
 {
-    "name": "chai-typescript-typings",
-    "version": "0.0.2",
-    "description": "Typescript type definitions for chai",
-    "main": "index.d.ts",
-    "types": "index.d.ts",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/0xProject/0x.js.git"
-    },
-    "license": "Apache-2.0",
-    "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
-    },
-    "homepage": "https://github.com/0xProject/0x.js/packages/chai-typescript-typings#readme"
+	"name": "chai-typescript-typings",
+	"version": "0.0.2",
+	"description": "Typescript type definitions for chai",
+	"main": "index.d.ts",
+	"types": "index.d.ts",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/0xProject/0x.js.git"
+	},
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/0xProject/0x.js/issues"
+	},
+	"homepage": "https://github.com/0xProject/0x.js/packages/chai-typescript-typings#readme"
 }

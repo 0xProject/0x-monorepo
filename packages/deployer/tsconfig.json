@@ -1,16 +1,16 @@
 {
-    "extends": "../../tsconfig",
-    "compilerOptions": {
-        "outDir": "lib",
-        "strictFunctionTypes": false,
-        "strictNullChecks": false
-    },
-    "include": [
-        "./src/**/*",
-        "./test/**/*",
-        "../../node_modules/types-bn/index.d.ts",
-        "../../node_modules/types-ethereumjs-util/index.d.ts",
-        "../../node_modules/chai-typescript-typings/index.d.ts",
-        "../../node_modules/web3-typescript-typings/index.d.ts"
-    ]
+	"extends": "../../tsconfig",
+	"compilerOptions": {
+		"outDir": "lib",
+		"strictFunctionTypes": false,
+		"strictNullChecks": false
+	},
+	"include": [
+		"./src/**/*",
+		"./test/**/*",
+		"../../node_modules/types-bn/index.d.ts",
+		"../../node_modules/types-ethereumjs-util/index.d.ts",
+		"../../node_modules/chai-typescript-typings/index.d.ts",
+		"../../node_modules/web3-typescript-typings/index.d.ts"
+	]
 }

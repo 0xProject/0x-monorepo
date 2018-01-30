@@ -4,70 +4,70 @@ import { MenuItem } from 'ts/components/ui/menu_item';
 import { WebsitePaths } from 'ts/types';
 
 export interface PortalMenuProps {
-    menuItemStyle: React.CSSProperties;
-    onClick?: () => void;
+	menuItemStyle: React.CSSProperties;
+	onClick?: () => void;
 }
 
 interface PortalMenuState {}
 
 export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState> {
-    public static defaultProps: Partial<PortalMenuProps> = {
-        onClick: _.noop,
-    };
-    public render() {
-        return (
-            <div>
-                <MenuItem
-                    style={this.props.menuItemStyle}
-                    className="py2"
-                    to={`${WebsitePaths.Portal}`}
-                    onClick={this.props.onClick.bind(this)}
-                >
-                    {this._renderMenuItemWithIcon('Generate order', 'zmdi-arrow-right-top')}
-                </MenuItem>
-                <MenuItem
-                    style={this.props.menuItemStyle}
-                    className="py2"
-                    to={`${WebsitePaths.Portal}/fill`}
-                    onClick={this.props.onClick.bind(this)}
-                >
-                    {this._renderMenuItemWithIcon('Fill order', 'zmdi-arrow-left-bottom')}
-                </MenuItem>
-                <MenuItem
-                    style={this.props.menuItemStyle}
-                    className="py2"
-                    to={`${WebsitePaths.Portal}/balances`}
-                    onClick={this.props.onClick.bind(this)}
-                >
-                    {this._renderMenuItemWithIcon('Balances', 'zmdi-balance-wallet')}
-                </MenuItem>
-                <MenuItem
-                    style={this.props.menuItemStyle}
-                    className="py2"
-                    to={`${WebsitePaths.Portal}/trades`}
-                    onClick={this.props.onClick.bind(this)}
-                >
-                    {this._renderMenuItemWithIcon('Trade history', 'zmdi-format-list-bulleted')}
-                </MenuItem>
-                <MenuItem
-                    style={this.props.menuItemStyle}
-                    className="py2"
-                    to={`${WebsitePaths.Portal}/weth`}
-                    onClick={this.props.onClick.bind(this)}
-                >
-                    {this._renderMenuItemWithIcon('Wrap ETH', 'zmdi-circle-o')}
-                </MenuItem>
-            </div>
-        );
-    }
-    private _renderMenuItemWithIcon(title: string, iconName: string) {
-        return (
-            <div className="flex" style={{ fontWeight: 100 }}>
-                <div className="pr1 pl2">
-                    <i style={{ fontSize: 20 }} className={`zmdi ${iconName}`} />
-                </div>
-                <div className="pl1">{title}</div>
-            </div>
-        );
-    }
+	public static defaultProps: Partial<PortalMenuProps> = {
+		onClick: _.noop,
+	};
+	public render() {
+		return (
+			<div>
+				<MenuItem
+					style={this.props.menuItemStyle}
+					className="py2"
+					to={`${WebsitePaths.Portal}`}
+					onClick={this.props.onClick.bind(this)}
+				>
+					{this._renderMenuItemWithIcon('Generate order', 'zmdi-arrow-right-top')}
+				</MenuItem>
+				<MenuItem
+					style={this.props.menuItemStyle}
+					className="py2"
+					to={`${WebsitePaths.Portal}/fill`}
+					onClick={this.props.onClick.bind(this)}
+				>
+					{this._renderMenuItemWithIcon('Fill order', 'zmdi-arrow-left-bottom')}
+				</MenuItem>
+				<MenuItem
+					style={this.props.menuItemStyle}
+					className="py2"
+					to={`${WebsitePaths.Portal}/balances`}
+					onClick={this.props.onClick.bind(this)}
+				>
+					{this._renderMenuItemWithIcon('Balances', 'zmdi-balance-wallet')}
+				</MenuItem>
+				<MenuItem
+					style={this.props.menuItemStyle}
+					className="py2"
+					to={`${WebsitePaths.Portal}/trades`}
+					onClick={this.props.onClick.bind(this)}
+				>
+					{this._renderMenuItemWithIcon('Trade history', 'zmdi-format-list-bulleted')}
+				</MenuItem>
+				<MenuItem
+					style={this.props.menuItemStyle}
+					className="py2"
+					to={`${WebsitePaths.Portal}/weth`}
+					onClick={this.props.onClick.bind(this)}
+				>
+					{this._renderMenuItemWithIcon('Wrap ETH', 'zmdi-circle-o')}
+				</MenuItem>
+			</div>
+		);
+	}
+	private _renderMenuItemWithIcon(title: string, iconName: string) {
+		return (
+			<div className="flex" style={{ fontWeight: 100 }}>
+				<div className="pr1 pl2">
+					<i style={{ fontSize: 20 }} className={`zmdi ${iconName}`} />
+				</div>
+				<div className="pl1">{title}</div>
+			</div>
+		);
+	}
 }
