@@ -45,12 +45,15 @@ interface LedgerConfigDialogState {
 export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps, LedgerConfigDialogState> {
     constructor(props: LedgerConfigDialogProps) {
         super(props);
+        const derivationPathIfExists = props.blockchain.getLedgerDerivationPathIfExists();
         this.state = {
             connectionErrMsg: '',
             stepIndex: LedgerSteps.CONNECT,
             userAddresses: [],
             addressBalances: [],
-            derivationPath: configs.DEFAULT_DERIVATION_PATH,
+            derivationPath: _.isUndefined(derivationPathIfExists)
+                ? configs.DEFAULT_DERIVATION_PATH
+                : derivationPathIfExists,
             derivationErrMsg: '',
             preferredNetworkId: props.networkId,
         };
