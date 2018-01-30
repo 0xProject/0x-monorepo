@@ -6,21 +6,24 @@ import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { EthWethConversionDialog } from 'ts/components/dialogs/eth_weth_conversion_dialog';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { BlockchainCallErrs, Side, Token, TokenState } from 'ts/types';
+import { BlockchainCallErrs, Side, Token } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
 interface EthWethConversionButtonProps {
+    userAddress: string;
+    networkId: number;
     direction: Side;
     ethToken: Token;
-    ethTokenState: TokenState;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
     userEtherBalance: BigNumber;
     isOutdatedWrappedEther: boolean;
     onConversionSuccessful?: () => void;
     isDisabled?: boolean;
+    lastForceTokenStateRefetch: number;
+    refetchEthTokenStateAsync: () => Promise<void>;
 }
 
 interface EthWethConversionButtonState {
@@ -64,13 +67,16 @@ export class EthWethConversionButton extends React.Component<
                     onClick={this._toggleConversionDialog.bind(this)}
                 />
                 <EthWethConversionDialog
+                    blockchain={this.props.blockchain}
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
                     direction={this.props.direction}
                     isOpen={this.state.isEthConversionDialogVisible}
                     onComplete={this._onConversionAmountSelectedAsync.bind(this)}
                     onCancelled={this._toggleConversionDialog.bind(this)}
                     etherBalance={this.props.userEtherBalance}
                     token={this.props.ethToken}
-                    tokenState={this.props.ethTokenState}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
             </div>
         );
@@ -86,29 +92,25 @@ export class EthWethConversionButton extends React.Component<
         });
         this._toggleConversionDialog();
         const token = this.props.ethToken;
-        const tokenState = this.props.ethTokenState;
-        let balance = tokenState.balance;
         try {
             if (direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(token.address, value);
                 const ethAmount = ZeroEx.toUnitAmount(value, constants.DECIMAL_PLACES_ETH);
                 this.props.dispatcher.showFlashMessage(`Successfully wrapped ${ethAmount.toString()} ETH to WETH`);
-                balance = balance.plus(value);
             } else {
                 await this.props.blockchain.convertWrappedEthTokensToEthAsync(token.address, value);
                 const tokenAmount = ZeroEx.toUnitAmount(value, token.decimals);
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount.toString()} WETH to ETH`);
-                balance = balance.minus(value);
             }
             if (!this.props.isOutdatedWrappedEther) {
-                this.props.dispatcher.replaceTokenBalanceByAddress(token.address, balance);
+                await this.props.refetchEthTokenStateAsync();
             }
             this.props.onConversionSuccessful();
         } catch (err) {
             const errMsg = `${err}`;
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
-            } else if (!_.includes(errMsg, 'User denied transaction')) {
+            } else if (!utils.didUserDenyWeb3Request(errMsg)) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
                 const errorMsg =

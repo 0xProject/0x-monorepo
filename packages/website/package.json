@@ -36,7 +36,6 @@
         "find-versions": "^2.0.0",
         "is-mobile": "^0.2.2",
         "jsonschema": "^1.2.0",
-        "ledgerco": "0xProject/ledger-node-js-api",
         "less": "^2.7.2",
         "lodash": "^4.17.4",
         "material-ui": "^0.17.1",

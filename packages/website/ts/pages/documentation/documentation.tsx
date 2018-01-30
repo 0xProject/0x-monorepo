@@ -5,7 +5,7 @@ import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { scroller } from 'react-scroll';
 import semverSort = require('semver-sort');
-import { TopBar } from 'ts/components/top_bar';
+import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Badge } from 'ts/components/ui/badge';
 import { Comment } from 'ts/pages/documentation/comment';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
@@ -40,9 +40,9 @@ import { utils } from 'ts/utils/utils';
 const SCROLL_TOP_ID = 'docsScrollTop';
 
 const networkNameToColor: { [network: string]: string } = {
-    [Networks.kovan]: colors.purple,
-    [Networks.ropsten]: colors.red,
-    [Networks.mainnet]: colors.turquois,
+    [Networks.Kovan]: colors.purple,
+    [Networks.Ropsten]: colors.red,
+    [Networks.Mainnet]: colors.turquois,
 };
 
 export interface DocumentationAllProps {
@@ -78,8 +78,10 @@ const styles: Styles = {
 };
 
 export class Documentation extends React.Component<DocumentationAllProps, DocumentationState> {
+    private _isUnmounted: boolean;
     constructor(props: DocumentationAllProps) {
         super(props);
+        this._isUnmounted = false;
         this.state = {
             docAgnosticFormat: undefined,
         };
@@ -91,6 +93,9 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
         const preferredVersionIfExists = versions.length > 0 ? versions[0] : undefined;
         // tslint:disable-next-line:no-floating-promises
         this._fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public render() {
         const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
@@ -367,13 +372,15 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
         );
         const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
 
-        this.setState(
-            {
-                docAgnosticFormat,
-            },
-            () => {
-                this._scrollToHash();
-            },
-        );
+        if (!this._isUnmounted) {
+            this.setState(
+                {
+                    docAgnosticFormat,
+                },
+                () => {
+                    this._scrollToHash();
+                },
+            );
+        }
     }
 }

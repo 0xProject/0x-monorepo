@@ -1,6 +1,7 @@
 import { ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import {
     Action,
     ActionTypes,
@@ -12,8 +13,6 @@ import {
     SideToAssetToken,
     SignatureData,
     TokenByAddress,
-    TokenState,
-    TokenStateByAddress,
 } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
@@ -37,7 +36,7 @@ export interface State {
     shouldBlockchainErrDialogBeOpen: boolean;
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
+    lastForceTokenStateRefetch: number;
     userAddress: string;
     userEtherBalance: BigNumber;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
@@ -76,7 +75,7 @@ const INITIAL_STATE: State = {
         [Side.Receive]: {},
     },
     tokenByAddress: {},
-    tokenStateByAddress: {},
+    lastForceTokenStateRefetch: moment().unix(),
     userAddress: '',
     userEtherBalance: new BigNumber(0),
     userSuppliedOrderCache: undefined,
@@ -139,13 +138,6 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
             };
         }
 
-        case ActionTypes.ClearTokenByAddress: {
-            return {
-                ...state,
-                tokenByAddress: {},
-            };
-        }
-
         case ActionTypes.AddTokenToTokenByAddress: {
             const newTokenByAddress = state.tokenByAddress;
             newTokenByAddress[action.data.address] = action.data;
@@ -180,74 +172,21 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
             };
         }
 
-        case ActionTypes.UpdateTokenStateByAddress: {
-            const tokenStateByAddress = state.tokenStateByAddress;
-            const updatedTokenStateByAddress = action.data;
-            _.each(updatedTokenStateByAddress, (tokenState: TokenState, address: string) => {
-                const updatedTokenState = {
-                    ...tokenStateByAddress[address],
-                    ...tokenState,
-                };
-                tokenStateByAddress[address] = updatedTokenState;
-            });
+        case ActionTypes.BatchDispatch: {
             return {
                 ...state,
-                tokenStateByAddress,
+                networkId: action.data.networkId,
+                userAddress: action.data.userAddress,
+                sideToAssetToken: action.data.sideToAssetToken,
+                tokenByAddress: action.data.tokenByAddress,
             };
         }
 
-        case ActionTypes.RemoveFromTokenStateByAddress: {
-            const tokenStateByAddress = state.tokenStateByAddress;
-            const tokenAddress = action.data;
-            delete tokenStateByAddress[tokenAddress];
+        case ActionTypes.ForceTokenStateRefetch:
             return {
                 ...state,
-                tokenStateByAddress,
+                lastForceTokenStateRefetch: moment().unix(),
             };
-        }
-
-        case ActionTypes.ReplaceTokenAllowanceByAddress: {
-            const tokenStateByAddress = state.tokenStateByAddress;
-            const allowance = action.data.allowance;
-            const tokenAddress = action.data.address;
-            tokenStateByAddress[tokenAddress] = {
-                ...tokenStateByAddress[tokenAddress],
-                allowance,
-            };
-            return {
-                ...state,
-                tokenStateByAddress,
-            };
-        }
-
-        case ActionTypes.ReplaceTokenBalanceByAddress: {
-            const tokenStateByAddress = state.tokenStateByAddress;
-            const balance = action.data.balance;
-            const tokenAddress = action.data.address;
-            tokenStateByAddress[tokenAddress] = {
-                ...tokenStateByAddress[tokenAddress],
-                balance,
-            };
-            return {
-                ...state,
-                tokenStateByAddress,
-            };
-        }
-
-        case ActionTypes.UpdateTokenBalanceByAddress: {
-            const tokenStateByAddress = state.tokenStateByAddress;
-            const balanceDelta = action.data.balanceDelta;
-            const tokenAddress = action.data.address;
-            const currBalance = tokenStateByAddress[tokenAddress].balance;
-            tokenStateByAddress[tokenAddress] = {
-                ...tokenStateByAddress[tokenAddress],
-                balance: currBalance.plus(balanceDelta),
-            };
-            return {
-                ...state,
-                tokenStateByAddress,
-            };
-        }
 
         case ActionTypes.UpdateOrderSignatureData: {
             return {

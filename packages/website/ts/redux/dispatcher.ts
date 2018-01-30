@@ -9,9 +9,10 @@ import {
     ProviderType,
     ScreenWidths,
     Side,
+    SideToAssetToken,
     SignatureData,
     Token,
-    TokenStateByAddress,
+    TokenByAddress,
 } from 'ts/types';
 
 export class Dispatcher {
@@ -120,9 +121,20 @@ export class Dispatcher {
             type: ActionTypes.RemoveTokenFromTokenByAddress,
         });
     }
-    public clearTokenByAddress() {
+    public batchDispatch(
+        tokenByAddress: TokenByAddress,
+        networkId: number,
+        userAddress: string,
+        sideToAssetToken: SideToAssetToken,
+    ) {
         this._dispatch({
-            type: ActionTypes.ClearTokenByAddress,
+            data: {
+                tokenByAddress,
+                networkId,
+                userAddress,
+                sideToAssetToken,
+            },
+            type: ActionTypes.BatchDispatch,
         });
     }
     public updateTokenByAddress(tokens: Token[]) {
@@ -131,43 +143,9 @@ export class Dispatcher {
             type: ActionTypes.UpdateTokenByAddress,
         });
     }
-    public updateTokenStateByAddress(tokenStateByAddress: TokenStateByAddress) {
+    public forceTokenStateRefetch() {
         this._dispatch({
-            data: tokenStateByAddress,
-            type: ActionTypes.UpdateTokenStateByAddress,
-        });
-    }
-    public removeFromTokenStateByAddress(tokenAddress: string) {
-        this._dispatch({
-            data: tokenAddress,
-            type: ActionTypes.RemoveFromTokenStateByAddress,
-        });
-    }
-    public replaceTokenAllowanceByAddress(address: string, allowance: BigNumber) {
-        this._dispatch({
-            data: {
-                address,
-                allowance,
-            },
-            type: ActionTypes.ReplaceTokenAllowanceByAddress,
-        });
-    }
-    public replaceTokenBalanceByAddress(address: string, balance: BigNumber) {
-        this._dispatch({
-            data: {
-                address,
-                balance,
-            },
-            type: ActionTypes.ReplaceTokenBalanceByAddress,
-        });
-    }
-    public updateTokenBalanceByAddress(address: string, balanceDelta: BigNumber) {
-        this._dispatch({
-            data: {
-                address,
-                balanceDelta,
-            },
-            type: ActionTypes.UpdateTokenBalanceByAddress,
+            type: ActionTypes.ForceTokenStateRefetch,
         });
     }
     public updateSignatureData(signatureData: SignatureData) {
