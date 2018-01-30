@@ -30,8 +30,10 @@ interface TokenAmountInputState {
 }
 
 export class TokenAmountInput extends React.Component<TokenAmountInputProps, TokenAmountInputState> {
+    private _isUnmounted: boolean;
     constructor(props: TokenAmountInputProps) {
         super(props);
+        this._isUnmounted = false;
         const defaultAmount = new BigNumber(0);
         this.state = {
             balance: defaultAmount,
@@ -42,6 +44,9 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
     public componentWillMount() {
         // tslint:disable-next-line:no-floating-promises
         this._fetchBalanceAndAllowanceAsync(this.props.token.address, this.props.userAddress);
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public componentWillReceiveProps(nextProps: TokenAmountInputProps) {
         if (
@@ -107,10 +112,12 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             userAddress,
             tokenAddress,
         );
-        this.setState({
-            balance,
-            allowance,
-            isBalanceAndAllowanceLoaded: true,
-        });
+        if (!this._isUnmounted) {
+            this.setState({
+                balance,
+                allowance,
+                isBalanceAndAllowanceLoaded: true,
+            });
+        }
     }
 }

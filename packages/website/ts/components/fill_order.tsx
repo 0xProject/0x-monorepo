@@ -59,8 +59,10 @@ interface FillOrderState {
 
 export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     private _validator: SchemaValidator;
+    private _isUnmounted: boolean;
     constructor(props: FillOrderProps) {
         super(props);
+        this._isUnmounted = false;
         this.state = {
             globalErrMsg: '',
             didOrderValidationRun: false,
@@ -89,6 +91,9 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     }
     public componentDidMount() {
         window.scrollTo(0, 0);
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public render() {
         return (
@@ -456,12 +461,14 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             if (!_.isEmpty(orderJSON)) {
                 orderJSONErrMsg = 'Submitted order JSON is not valid JSON';
             }
-            this.setState({
-                didOrderValidationRun: true,
-                orderJSON,
-                orderJSONErrMsg,
-                parsedOrder,
-            });
+            if (!this._isUnmounted) {
+                this.setState({
+                    didOrderValidationRun: true,
+                    orderJSON,
+                    orderJSONErrMsg,
+                    parsedOrder,
+                });
+            }
             return;
         }
 

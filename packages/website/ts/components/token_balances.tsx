@@ -91,8 +91,10 @@ interface TokenBalancesState {
 }
 
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {
+    private _isUnmounted: boolean;
     public constructor(props: TokenBalancesProps) {
         super(props);
+        this._isUnmounted = false;
         const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(props.trackedTokens);
         this.state = {
             errorType: undefined,
@@ -108,6 +110,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         // tslint:disable-next-line:no-floating-promises
         const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
         this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public componentWillReceiveProps(nextProps: TokenBalancesProps) {
         if (nextProps.userEtherBalance !== this.props.userEtherBalance) {
@@ -671,9 +676,11 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 isLoaded: true,
             };
         }
-        this.setState({
-            trackedTokenStateByAddress,
-        });
+        if (!this._isUnmounted) {
+            this.setState({
+                trackedTokenStateByAddress,
+            });
+        }
     }
     private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]) {
         const trackedTokenStateByAddress: TokenStateByAddress = {};

@@ -33,8 +33,10 @@ export class EthWethConversionDialog extends React.Component<
     EthWethConversionDialogProps,
     EthWethConversionDialogState
 > {
+    private _isUnmounted: boolean;
     constructor() {
         super();
+        this._isUnmounted = false;
         this.state = {
             shouldShowIncompleteErrs: false,
             hasErrors: false,
@@ -45,6 +47,9 @@ export class EthWethConversionDialog extends React.Component<
     public componentWillMount() {
         // tslint:disable-next-line:no-floating-promises
         this._fetchEthTokenBalanceAsync();
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public render() {
         const convertDialogActions = [
@@ -181,9 +186,11 @@ export class EthWethConversionDialog extends React.Component<
             this.props.userAddress,
             this.props.token.address,
         );
-        this.setState({
-            isEthTokenBalanceLoaded: true,
-            ethTokenBalance: balance,
-        });
+        if (!this._isUnmounted) {
+            this.setState({
+                isEthTokenBalanceLoaded: true,
+                ethTokenBalance: balance,
+            });
+        }
     }
 }

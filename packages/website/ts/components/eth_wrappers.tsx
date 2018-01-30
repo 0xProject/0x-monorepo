@@ -54,8 +54,10 @@ interface EthWrappersState {
 }
 
 export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersState> {
+    private _isUnmounted: boolean;
     constructor(props: EthWrappersProps) {
         super(props);
+        this._isUnmounted = false;
         const outdatedWETHAddresses = this._getOutdatedWETHAddresses();
         const outdatedWETHAddressToIsStateLoaded: OutdatedWETHAddressToIsStateLoaded = {};
         const outdatedWETHStateByAddress: OutdatedWETHStateByAddress = {};
@@ -90,6 +92,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         window.scrollTo(0, 0);
         // tslint:disable-next-line:no-floating-promises
         this._fetchWETHStateAsync();
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public render() {
         const etherToken = this._getEthToken();
@@ -394,15 +399,17 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             };
             outdatedWETHAddressToIsStateLoaded[address] = true;
         }
-        this.setState({
-            outdatedWETHStateByAddress,
-            outdatedWETHAddressToIsStateLoaded,
-            ethTokenState: {
-                balance: wethBalance,
-                allowance: wethAllowance,
-            },
-            isWethStateLoaded: true,
-        });
+        if (!this._isUnmounted) {
+            this.setState({
+                outdatedWETHStateByAddress,
+                outdatedWETHAddressToIsStateLoaded,
+                ethTokenState: {
+                    balance: wethBalance,
+                    allowance: wethAllowance,
+                },
+                isWethStateLoaded: true,
+            });
+        }
     }
     private _getOutdatedWETHAddresses(): string[] {
         const outdatedWETHAddresses = _.compact(

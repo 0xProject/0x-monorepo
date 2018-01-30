@@ -78,8 +78,10 @@ const styles: Styles = {
 };
 
 export class Documentation extends React.Component<DocumentationAllProps, DocumentationState> {
+    private _isUnmounted: boolean;
     constructor(props: DocumentationAllProps) {
         super(props);
+        this._isUnmounted = false;
         this.state = {
             docAgnosticFormat: undefined,
         };
@@ -91,6 +93,9 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
         const preferredVersionIfExists = versions.length > 0 ? versions[0] : undefined;
         // tslint:disable-next-line:no-floating-promises
         this._fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public render() {
         const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
@@ -367,13 +372,15 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
         );
         const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
 
-        this.setState(
-            {
-                docAgnosticFormat,
-            },
-            () => {
-                this._scrollToHash();
-            },
-        );
+        if (!this._isUnmounted) {
+            this.setState(
+                {
+                    docAgnosticFormat,
+                },
+                () => {
+                    this._scrollToHash();
+                },
+            );
+        }
     }
 }
