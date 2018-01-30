@@ -1,10 +1,21 @@
 # CHANGELOG
 
-## v0.30.1 - _TBD, 2018_
+## v0.31.0 - _January 30, 2018_
+
+    * Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the
+    caller can decide on whether to add the personalMessage prefix before relaying the request
+    to the signer. Parity Signer, Ledger and TestRPC add the prefix themselves, Metamask expects
+    it to have already been added.
+
+## v0.30.2 - _January 29, 2018_
+
+    * Add Rinkeby testnet addresses to artifacts  (#337)
+    * Move @0xproject/types to dependencies from devDependencies fixing missing type errors
+
+## v0.30.1 - _January 24, 2018_
 
     * Fix a bug allowing negative fill values  (#212)
     * Fix a bug that made it impossible to pass a custom ZRX address  (#341)
-    * Add Rinkeby testnet addresses to artifacts  (#337)
 
 ## v0.30.0 - _January 17, 2018_
 

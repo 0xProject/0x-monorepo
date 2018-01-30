@@ -20,12 +20,6 @@ export const utils = {
         // tslint:disable-next-line: no-console
         console.log(message);
     },
-    isParityNode(nodeVersion: string): boolean {
-        return _.includes(nodeVersion, 'Parity');
-    },
-    isTestRpc(nodeVersion: string): boolean {
-        return _.includes(nodeVersion, 'TestRPC');
-    },
     spawnSwitchErr(name: string, value: any): Error {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },
