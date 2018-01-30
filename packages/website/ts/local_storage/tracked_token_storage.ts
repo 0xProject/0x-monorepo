@@ -48,7 +48,7 @@ export const trackedTokenStorage = {
         const trackedTokensByUserAddress = JSON.parse(trackedTokensJSONString);
         const trackedTokensByNetworkId = trackedTokensByUserAddress[userAddress];
         if (_.isUndefined(trackedTokensByNetworkId)) {
-            return undefined;
+            return trackedTokensByAddress;
         }
         const trackedTokens = trackedTokensByNetworkId[networkId];
         _.each(trackedTokens, (trackedToken: Token) => {
