@@ -1,28 +1,27 @@
-export class Artifacts {
-    public Migrations: any;
-    public TokenTransferProxy: any;
-    public TokenRegistry: any;
-    public MultiSigWalletWithTimeLock: any;
-    public Exchange: any;
-    public ZRXToken: any;
-    public DummyToken: any;
-    public DummyTokenV2: any;
-    public EtherToken: any;
-    public MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress: any;
-    public MaliciousToken: any;
-    constructor(artifacts: any) {
-        this.Migrations = artifacts.require('Migrations');
-        this.TokenTransferProxy = artifacts.require('TokenTransferProxy');
-        this.TokenRegistry = artifacts.require('TokenRegistry');
-        this.MultiSigWalletWithTimeLock = artifacts.require('MultiSigWalletWithTimeLock');
-        this.Exchange = artifacts.require('Exchange');
-        this.ZRXToken = artifacts.require('ZRXToken');
-        this.DummyToken = artifacts.require('DummyToken');
-        this.DummyTokenV2 = artifacts.require('DummyToken_v2');
-        this.EtherToken = artifacts.require('WETH9');
-        this.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = artifacts.require(
-            'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
-        );
-        this.MaliciousToken = artifacts.require('MaliciousToken');
-    }
-}
+import * as DummyTokenArtifact from '../build/artifacts/DummyToken.json';
+import * as DummyTokenV2Artifact from '../build/artifacts/DummyToken_v2.json';
+import * as ExchangeArtifact from '../build/artifacts/Exchange.json';
+import * as MaliciousTokenArtifact from '../build/artifacts/MaliciousToken.json';
+import * as MultiSigWalletWithTimeLockArtifact from '../build/artifacts/MultiSigWalletWithTimeLock.json';
+import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact from '../build/artifacts/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
+import * as TokenArtifact from '../build/artifacts/Token.json';
+import * as TokenRegistryArtifact from '../build/artifacts/TokenRegistry.json';
+import * as TokenTransferProxyArtifact from '../build/artifacts/TokenTransferProxy.json';
+import * as EtherTokenArtifact from '../build/artifacts/WETH9.json';
+import * as ZRXArtifact from '../build/artifacts/ZRXToken.json';
+
+import { Artifact } from './types';
+
+export const artifacts = {
+    ZRXArtifact: (ZRXArtifact as any) as Artifact,
+    DummyTokenArtifact: (DummyTokenArtifact as any) as Artifact,
+    DummyTokenV2Artifact: (DummyTokenV2Artifact as any) as Artifact,
+    TokenArtifact: (TokenArtifact as any) as Artifact,
+    ExchangeArtifact: (ExchangeArtifact as any) as Artifact,
+    EtherTokenArtifact: (EtherTokenArtifact as any) as Artifact,
+    TokenRegistryArtifact: (TokenRegistryArtifact as any) as Artifact,
+    MaliciousTokenArtifact: (MaliciousTokenArtifact as any) as Artifact,
+    TokenTransferProxyArtifact: (TokenTransferProxyArtifact as any) as Artifact,
+    MultiSigWalletWithTimeLockArtifact: (MultiSigWalletWithTimeLockArtifact as any) as Artifact,
+    MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact: (MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact as any) as Artifact,
+};

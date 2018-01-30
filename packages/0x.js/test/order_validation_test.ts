@@ -1,4 +1,4 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as Sinon from 'sinon';
@@ -13,11 +13,10 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { TokenUtils } from './utils/token_utils';
-import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('OrderValidation', () => {
     let web3: Web3;

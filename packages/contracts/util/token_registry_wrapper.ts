@@ -1,8 +1,10 @@
-import { ContractInstance, Token } from './types';
+import * as Web3 from 'web3';
+
+import { Token } from './types';
 
 export class TokenRegWrapper {
-    private _tokenReg: ContractInstance;
-    constructor(tokenRegContractInstance: ContractInstance) {
+    private _tokenReg: Web3.ContractInstance;
+    constructor(tokenRegContractInstance: Web3.ContractInstance) {
         this._tokenReg = tokenRegContractInstance;
     }
     public addTokenAsync(token: Token, from: string) {

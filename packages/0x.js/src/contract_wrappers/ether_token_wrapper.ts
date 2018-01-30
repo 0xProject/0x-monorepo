@@ -1,5 +1,6 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
+import { LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -10,11 +11,9 @@ import {
     EtherTokenEvents,
     EventCallback,
     IndexedFilterValues,
-    LogWithDecodedArgs,
     TransactionOpts,
     ZeroExError,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';

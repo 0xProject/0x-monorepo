@@ -7,6 +7,10 @@ export interface BalancesByOwner {
     };
 }
 
+export interface SubmissionContractEventArgs {
+    transactionId: BigNumber;
+}
+
 export interface BatchFillOrders {
     orderAddresses: string[][];
     orderValues: BigNumber[][];
@@ -108,12 +112,38 @@ export interface TokenInfoByNetwork {
     live: Token[];
 }
 
-// Named type aliases to improve readability
-export type ContractInstance = any;
-
 export enum ExchangeContractErrs {
     ERROR_ORDER_EXPIRED,
     ERROR_ORDER_FULLY_FILLED_OR_CANCELLED,
     ERROR_ROUNDING_ERROR_TOO_LARGE,
     ERROR_INSUFFICIENT_BALANCE_OR_ALLOWANCE,
+}
+
+export enum ContractName {
+    TokenTransferProxy = 'TokenTransferProxy',
+    TokenRegistry = 'TokenRegistry',
+    MultiSigWalletWithTimeLock = 'MultiSigWalletWithTimeLock',
+    Exchange = 'Exchange',
+    ZRXToken = 'ZRXToken',
+    DummyToken = 'DummyToken',
+    DummyToken_v2 = 'DummyToken_v2',
+    EtherToken = 'WETH9',
+    MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
+    MaliciousToken = 'MaliciousToken',
+}
+
+export interface Artifact {
+    contract_name: ContractName;
+    networks: {
+        [networkId: number]: {
+            abi: Web3.ContractAbi;
+            solc_version: string;
+            keccak256: string;
+            optimizer_enabled: number;
+            unlinked_binary: string;
+            updated_at: number;
+            address: string;
+            constructor_args: string;
+        };
+    };
 }

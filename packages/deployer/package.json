@@ -2,7 +2,8 @@
     "name": "@0xproject/deployer",
     "version": "0.0.4",
     "description": "Smart contract deployer of 0x protocol",
-    "main": "lib/src/cli.js",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' src/solc/solc_bin/* ./lib && tsc",
         "test": "npm run build; mocha lib/test/*_test.js",
@@ -27,12 +28,13 @@
     "homepage": "https://github.com/0xProject/0x.js/packages/deployer/README.md",
     "devDependencies": {
         "copyfiles": "^1.2.0",
+        "web3-typescript-typings": "^0.9.4",
         "types-bn": "^0.0.1",
         "typescript": "~2.6.1",
         "web3-typescript-typings": "^0.9.7"
     },
     "dependencies": {
-        "@0xproject/utils": "^0.1.3",
+        "@0xproject/utils": "^0.2.1",
         "@0xproject/web3-wrapper": "^0.1.8",
         "lodash": "^4.17.4",
         "solc": "^0.4.18",

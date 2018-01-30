@@ -2,27 +2,24 @@
     "name": "0x.js",
     "version": "0.31.0",
     "description": "A javascript library for interacting with the 0x protocol",
-    "keywords": [
-        "0x.js",
-        "0xproject",
-        "ethereum",
-        "tokens",
-        "exchange"
-    ],
+    "keywords": ["0x.js", "0xproject", "ethereum", "tokens", "exchange"],
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
         "prebuild": "run-s clean generate_contract_wrappers",
         "build": "run-p build:umd:prod build:commonjs; exit 0;",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
-        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abiGlob 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --templates contract_templates --output src/contract_wrappers/generated",
+        "upload_docs_json":
+            "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
+        "generate_contract_wrappers":
+            "node ../abi-gen/lib/index.js --abiGlob 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --templates contract_templates --output src/contract_wrappers/generated",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test:circleci": "run-s test:coverage report_test_coverage",
         "test": "run-s clean test:commonjs",
         "test:coverage": "nyc npm run test --all",
         "report_test_coverage": "nyc report --reporter=text-lcov | coveralls",
-        "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
+        "update_contracts":
+            "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
         "clean": "shx rm -rf _bundles lib test_temp",
         "build:umd:prod": "NODE_ENV=production webpack",
         "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts;",
@@ -66,7 +63,7 @@
         "nyc": "^11.0.1",
         "opn-cli": "^3.1.0",
         "request": "^2.81.0",
-        "request-promise-native": "^1.0.4",
+        "request-promise-native": "^1.0.5",
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
         "source-map-support": "^0.5.0",
@@ -89,7 +86,7 @@
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-blockstream": "^2.0.6",
         "ethereumjs-util": "^5.1.1",
-        "js-sha3": "^0.6.1",
+        "js-sha3": "^0.7.0",
         "lodash": "^4.17.4",
         "uuid": "^3.1.0",
         "web3": "^0.20.0"

@@ -28,12 +28,9 @@ export {
     WithdrawalContractEventArgs,
     DepositContractEventArgs,
     ContractEventArgs,
-    ContractEventArg,
     Web3Provider,
     ZeroExConfig,
     EtherTokenEvents,
-    TransactionReceiptWithDecodedLogs,
-    LogWithDecodedArgs,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
@@ -46,5 +43,7 @@ export {
     OrderStateInvalid,
     OrderState,
 } from './types';
+
+export { ContractEventArg, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 
 export { TransactionReceipt } from '@0xproject/types';

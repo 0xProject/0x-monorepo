@@ -1,4 +1,4 @@
-import { JSONRPCPayload } from '../../../src/types';
+import { JSONRPCPayload } from '@0xproject/types';
 
 /*
  * This class implements the web3-provider-engine subprovider interface and returns

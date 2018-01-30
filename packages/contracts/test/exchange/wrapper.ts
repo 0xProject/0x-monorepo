@@ -1,35 +1,41 @@
 import { ZeroEx } from '0x.js';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
+import * as Web3 from 'web3';
 
-import { Artifacts } from '../../../util/artifacts';
-import { Balances } from '../../../util/balances';
-import { constants } from '../../../util/constants';
-import { ExchangeWrapper } from '../../../util/exchange_wrapper';
-import { Order } from '../../../util/order';
-import { OrderFactory } from '../../../util/order_factory';
-import { BalancesByOwner, ContractInstance } from '../../../util/types';
+import { Balances } from '../../util/balances';
+import { constants } from '../../util/constants';
+import { ExchangeWrapper } from '../../util/exchange_wrapper';
+import { Order } from '../../util/order';
+import { OrderFactory } from '../../util/order_factory';
+import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
+import { deployer } from '../utils/deployer';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const { Exchange, TokenTransferProxy, DummyToken, TokenRegistry } = new Artifacts(artifacts);
+const web3 = web3Factory.create();
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+const blockchainLifecycle = new BlockchainLifecycle();
 
-contract('Exchange', (accounts: string[]) => {
-    const maker = accounts[0];
-    const tokenOwner = accounts[0];
-    const taker = accounts[1] || accounts[accounts.length - 1];
-    const feeRecipient = accounts[2] || accounts[accounts.length - 1];
+describe('Exchange', () => {
+    let maker: string;
+    let tokenOwner: string;
+    let taker: string;
+    let feeRecipient: string;
 
     const INIT_BAL = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INIT_ALLOW = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 
-    let rep: ContractInstance;
-    let dgd: ContractInstance;
-    let zrx: ContractInstance;
-    let exchange: ContractInstance;
-    let tokenRegistry: ContractInstance;
+    let rep: Web3.ContractInstance;
+    let dgd: Web3.ContractInstance;
+    let zrx: Web3.ContractInstance;
+    let exchange: Web3.ContractInstance;
+    let tokenRegistry: Web3.ContractInstance;
+    let tokenTransferProxy: Web3.ContractInstance;
 
     let balances: BalancesByOwner;
 
@@ -38,49 +44,56 @@ contract('Exchange', (accounts: string[]) => {
     let orderFactory: OrderFactory;
 
     before(async () => {
-        [tokenRegistry, exchange] = await Promise.all([TokenRegistry.deployed(), Exchange.deployed()]);
-        exWrapper = new ExchangeWrapper(exchange);
-        const [repAddress, dgdAddress, zrxAddress] = await Promise.all([
-            tokenRegistry.getTokenAddressBySymbol('REP'),
-            tokenRegistry.getTokenAddressBySymbol('DGD'),
-            tokenRegistry.getTokenAddressBySymbol('ZRX'),
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        tokenOwner = accounts[0];
+        [maker, taker, feeRecipient] = accounts;
+        [rep, dgd, zrx] = await Promise.all([
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
         ]);
+        tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
+        tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+        exchange = await deployer.deployAsync(ContractName.Exchange, [zrx.address, tokenTransferProxy.address]);
+        await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
+        const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
+        exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
         const defaultOrderParams = {
-            exchangeContractAddress: Exchange.address,
+            exchangeContractAddress: exchange.address,
             maker,
             feeRecipient,
-            makerToken: repAddress,
-            takerToken: dgdAddress,
+            makerToken: rep.address,
+            takerToken: dgd.address,
             makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
-        orderFactory = new OrderFactory(defaultOrderParams);
 
-        [rep, dgd, zrx] = await Promise.all([
-            DummyToken.at(repAddress),
-            DummyToken.at(dgdAddress),
-            DummyToken.at(zrxAddress),
-        ]);
+        orderFactory = new OrderFactory(web3Wrapper, defaultOrderParams);
         dmyBalances = new Balances([rep, dgd, zrx], [maker, taker, feeRecipient]);
         await Promise.all([
-            rep.approve(TokenTransferProxy.address, INIT_ALLOW, { from: maker }),
-            rep.approve(TokenTransferProxy.address, INIT_ALLOW, { from: taker }),
+            rep.approve(tokenTransferProxy.address, INIT_ALLOW, { from: maker }),
+            rep.approve(tokenTransferProxy.address, INIT_ALLOW, { from: taker }),
             rep.setBalance(maker, INIT_BAL, { from: tokenOwner }),
             rep.setBalance(taker, INIT_BAL, { from: tokenOwner }),
-            dgd.approve(TokenTransferProxy.address, INIT_ALLOW, { from: maker }),
-            dgd.approve(TokenTransferProxy.address, INIT_ALLOW, { from: taker }),
+            dgd.approve(tokenTransferProxy.address, INIT_ALLOW, { from: maker }),
+            dgd.approve(tokenTransferProxy.address, INIT_ALLOW, { from: taker }),
             dgd.setBalance(maker, INIT_BAL, { from: tokenOwner }),
             dgd.setBalance(taker, INIT_BAL, { from: tokenOwner }),
-            zrx.approve(TokenTransferProxy.address, INIT_ALLOW, { from: maker }),
-            zrx.approve(TokenTransferProxy.address, INIT_ALLOW, { from: taker }),
+            zrx.approve(tokenTransferProxy.address, INIT_ALLOW, { from: maker }),
+            zrx.approve(tokenTransferProxy.address, INIT_ALLOW, { from: taker }),
             zrx.setBalance(maker, INIT_BAL, { from: tokenOwner }),
             zrx.setBalance(taker, INIT_BAL, { from: tokenOwner }),
         ]);
     });
-
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('fillOrKillOrder', () => {
         beforeEach(async () => {
             balances = await dmyBalances.getAsync();

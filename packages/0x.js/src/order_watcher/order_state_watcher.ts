@@ -1,5 +1,6 @@
 import { schemas } from '@0xproject/json-schemas';
-import { intervalUtils } from '@0xproject/utils';
+import { LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -19,7 +20,6 @@ import {
     LogCancelContractEventArgs,
     LogEvent,
     LogFillContractEventArgs,
-    LogWithDecodedArgs,
     OnOrderStateChangeCallback,
     OrderState,
     OrderStateWatcherConfig,
@@ -29,7 +29,6 @@ import {
     WithdrawalContractEventArgs,
     ZeroExError,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { assert } from '../utils/assert';
 import { OrderStateUtils } from '../utils/order_state_utils';
 import { utils } from '../utils/utils';
@@ -224,12 +223,12 @@ export class OrderStateWatcher {
             return;
         }
         const log = logIfExists as LogEvent; // At this moment we are sure that no error occured and log is defined.
-        const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
-        const isLogDecoded = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
+        const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
+        const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
         if (!isLogDecoded) {
             return; // noop
         }
-        const decodedLog = maybeDecodedLog as LogWithDecodedArgs<ContractEventArgs>;
+        const decodedLog = (maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>;
         let makerToken: string;
         let makerAddress: string;
         switch (decodedLog.event) {

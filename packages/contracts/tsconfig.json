@@ -4,8 +4,6 @@
         "outDir": "lib",
         "baseUrl": ".",
         "declaration": false,
-        "strictNullChecks": false,
-        "strictFunctionTypes": false,
         "allowJs": true
     },
     "include": [

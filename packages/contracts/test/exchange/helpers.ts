@@ -1,52 +1,68 @@
 import { ZeroEx } from '0x.js';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
-import { Artifacts } from '../../../util/artifacts';
-import { ExchangeWrapper } from '../../../util/exchange_wrapper';
-import { Order } from '../../../util/order';
-import { OrderFactory } from '../../../util/order_factory';
+import { constants } from '../../util/constants';
+import { ExchangeWrapper } from '../../util/exchange_wrapper';
+import { Order } from '../../util/order';
+import { OrderFactory } from '../../util/order_factory';
+import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
+import { deployer } from '../utils/deployer';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-const { Exchange, TokenRegistry } = new Artifacts(artifacts);
+const web3 = web3Factory.create();
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+const blockchainLifecycle = new BlockchainLifecycle();
 
-contract('Exchange', (accounts: string[]) => {
-    const maker = accounts[0];
-    const feeRecipient = accounts[1] || accounts[accounts.length - 1];
+describe('Exchange', () => {
+    let maker: string;
+    let feeRecipient: string;
 
     let order: Order;
     let exchangeWrapper: ExchangeWrapper;
     let orderFactory: OrderFactory;
 
     before(async () => {
-        const [tokenRegistry, exchange] = await Promise.all([TokenRegistry.deployed(), Exchange.deployed()]);
-        exchangeWrapper = new ExchangeWrapper(exchange);
-        const [repAddress, dgdAddress] = await Promise.all([
-            tokenRegistry.getTokenAddressBySymbol('REP'),
-            tokenRegistry.getTokenAddressBySymbol('DGD'),
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        [maker, feeRecipient] = accounts;
+        const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
+        const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+        const [rep, dgd, zrx] = await Promise.all([
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
         ]);
+        const exchange = await deployer.deployAsync(ContractName.Exchange, [zrx.address, tokenTransferProxy.address]);
+        await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
+        const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
+        exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
         const defaultOrderParams = {
-            exchangeContractAddress: Exchange.address,
+            exchangeContractAddress: exchange.address,
             maker,
             feeRecipient,
-            makerToken: repAddress,
-            takerToken: dgdAddress,
+            makerToken: rep.address,
+            takerToken: dgd.address,
             makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
-        orderFactory = new OrderFactory(defaultOrderParams);
-    });
-
-    beforeEach(async () => {
+        orderFactory = new OrderFactory(web3Wrapper, defaultOrderParams);
         order = await orderFactory.newSignedOrderAsync();
     });
 
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('getOrderHash', () => {
         it('should output the correct orderHash', async () => {
             const orderHashHex = await exchangeWrapper.getOrderHashAsync(order);

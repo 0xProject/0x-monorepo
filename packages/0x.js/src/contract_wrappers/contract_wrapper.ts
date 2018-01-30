@@ -1,4 +1,5 @@
-import { intervalUtils } from '@0xproject/utils';
+import { LogWithDecodedArgs, RawLog } from '@0xproject/types';
+import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Block, BlockAndLogStreamer } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
@@ -13,11 +14,8 @@ import {
     EventCallback,
     IndexedFilterValues,
     InternalZeroExError,
-    LogWithDecodedArgs,
-    RawLog,
     ZeroExError,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { constants } from '../utils/constants';
 import { filterUtils } from '../utils/filter_utils';
 

@@ -35,9 +35,9 @@ export const formatters = {
                 order.params.expirationTimestampInSec,
                 order.params.salt,
             ]);
-            batchFill.v.push(order.params.v);
-            batchFill.r.push(order.params.r);
-            batchFill.s.push(order.params.s);
+            batchFill.v.push(order.params.v as number);
+            batchFill.r.push(order.params.r as string);
+            batchFill.s.push(order.params.s as string);
             if (fillTakerTokenAmounts.length < orders.length) {
                 batchFill.fillTakerTokenAmounts.push(order.params.takerTokenAmount);
             }
@@ -74,9 +74,9 @@ export const formatters = {
                 order.params.expirationTimestampInSec,
                 order.params.salt,
             ]);
-            fillUpTo.v.push(order.params.v);
-            fillUpTo.r.push(order.params.r);
-            fillUpTo.s.push(order.params.s);
+            fillUpTo.v.push(order.params.v as number);
+            fillUpTo.r.push(order.params.r as string);
+            fillUpTo.s.push(order.params.s as string);
         });
         return fillUpTo;
     },

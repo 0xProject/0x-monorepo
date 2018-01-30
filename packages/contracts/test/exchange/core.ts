@@ -1,41 +1,47 @@
-import { ZeroEx } from '0x.js';
+import {
+    LogCancelContractEventArgs,
+    LogErrorContractEventArgs,
+    LogFillContractEventArgs,
+    LogWithDecodedArgs,
+    TransactionReceiptWithDecodedLogs,
+    ZeroEx,
+} from '0x.js';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
-import { Artifacts } from '../../../util/artifacts';
-import { Balances } from '../../../util/balances';
-import { constants } from '../../../util/constants';
-import { crypto } from '../../../util/crypto';
-import { ExchangeWrapper } from '../../../util/exchange_wrapper';
-import { Order } from '../../../util/order';
-import { OrderFactory } from '../../../util/order_factory';
-import { BalancesByOwner, ContractInstance, ExchangeContractErrs } from '../../../util/types';
+import { Balances } from '../../util/balances';
+import { constants } from '../../util/constants';
+import { crypto } from '../../util/crypto';
+import { ExchangeWrapper } from '../../util/exchange_wrapper';
+import { Order } from '../../util/order';
+import { OrderFactory } from '../../util/order_factory';
+import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
+import { deployer } from '../utils/deployer';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const { Exchange, TokenTransferProxy, DummyToken, TokenRegistry, MaliciousToken } = new Artifacts(artifacts);
+const web3 = web3Factory.create();
+const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+const blockchainLifecycle = new BlockchainLifecycle();
 
-// In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
-// with type `any` to a variable of type `Web3`.
-const web3: Web3 = (global as any).web3;
-
-contract('Exchange', (accounts: string[]) => {
-    const maker = accounts[0];
-    const tokenOwner = accounts[0];
-    const taker = accounts[1] || accounts[accounts.length - 1];
-    const feeRecipient = accounts[2] || accounts[accounts.length - 1];
-
+describe('Exchange', () => {
+    let maker: string;
+    let tokenOwner: string;
+    let taker: string;
+    let feeRecipient: string;
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 
-    let rep: ContractInstance;
-    let dgd: ContractInstance;
-    let zrx: ContractInstance;
-    let exchange: ContractInstance;
-    let tokenRegistry: ContractInstance;
+    let rep: Web3.ContractInstance;
+    let dgd: Web3.ContractInstance;
+    let zrx: Web3.ContractInstance;
+    let exchange: Web3.ContractInstance;
+    let tokenTransferProxy: Web3.ContractInstance;
 
     let order: Order;
     let balances: BalancesByOwner;
@@ -46,66 +52,69 @@ contract('Exchange', (accounts: string[]) => {
     let zeroEx: ZeroEx;
 
     before(async () => {
-        [tokenRegistry, exchange] = await Promise.all([TokenRegistry.deployed(), Exchange.deployed()]);
-        exWrapper = new ExchangeWrapper(exchange);
+        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        maker = accounts[0];
+        [tokenOwner, taker, feeRecipient] = accounts;
+        [rep, dgd, zrx] = await Promise.all([
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken),
+        ]);
+        tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+        exchange = await deployer.deployAsync(ContractName.Exchange, [zrx.address, tokenTransferProxy.address]);
+        await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
         zeroEx = new ZeroEx(web3.currentProvider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-
-        const [repAddress, dgdAddress, zrxAddress] = await Promise.all([
-            tokenRegistry.getTokenAddressBySymbol('REP'),
-            tokenRegistry.getTokenAddressBySymbol('DGD'),
-            tokenRegistry.getTokenAddressBySymbol('ZRX'),
-        ]);
+        exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
         const defaultOrderParams = {
-            exchangeContractAddress: Exchange.address,
+            exchangeContractAddress: exchange.address,
             maker,
             feeRecipient,
-            makerToken: repAddress,
-            takerToken: dgdAddress,
+            makerToken: rep.address,
+            takerToken: dgd.address,
             makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
-        orderFactory = new OrderFactory(defaultOrderParams);
-
-        [rep, dgd, zrx] = await Promise.all([
-            DummyToken.at(repAddress),
-            DummyToken.at(dgdAddress),
-            DummyToken.at(zrxAddress),
-        ]);
+        orderFactory = new OrderFactory(web3Wrapper, defaultOrderParams);
         dmyBalances = new Balances([rep, dgd, zrx], [maker, taker, feeRecipient]);
         await Promise.all([
-            rep.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            rep.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             }),
-            rep.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            rep.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             }),
             rep.setBalance(maker, INITIAL_BALANCE, { from: tokenOwner }),
             rep.setBalance(taker, INITIAL_BALANCE, { from: tokenOwner }),
-            dgd.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            dgd.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             }),
-            dgd.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            dgd.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             }),
             dgd.setBalance(maker, INITIAL_BALANCE, { from: tokenOwner }),
             dgd.setBalance(taker, INITIAL_BALANCE, { from: tokenOwner }),
-            zrx.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            zrx.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             }),
-            zrx.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            zrx.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             }),
             zrx.setBalance(maker, INITIAL_BALANCE, { from: tokenOwner }),
             zrx.setBalance(taker, INITIAL_BALANCE, { from: tokenOwner }),
         ]);
     });
-
+    beforeEach(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    afterEach(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
     describe('internal functions', () => {
         it('should include transferViaTokenTransferProxy', () => {
             expect(exchange.transferViaTokenTransferProxy).to.be.undefined();
@@ -136,9 +145,8 @@ contract('Exchange', (accounts: string[]) => {
                 takerTokenAmount: new BigNumber(3),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount1 = new BigNumber(2);
@@ -146,9 +154,8 @@ contract('Exchange', (accounts: string[]) => {
                 fillTakerTokenAmount: fillTakerTokenAmount1,
             });
 
-            const filledTakerTokenAmountAfter1 = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter1 = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter1).to.be.bignumber.equal(fillTakerTokenAmount1);
 
             const fillTakerTokenAmount2 = new BigNumber(1);
@@ -156,9 +163,8 @@ contract('Exchange', (accounts: string[]) => {
                 fillTakerTokenAmount: fillTakerTokenAmount2,
             });
 
-            const filledTakerTokenAmountAfter2 = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter2 = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter2).to.be.bignumber.equal(filledTakerTokenAmountAfter1);
         });
 
@@ -168,17 +174,15 @@ contract('Exchange', (accounts: string[]) => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
 
-            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
 
             const newBalances = await dmyBalances.getAsync();
@@ -221,17 +225,15 @@ contract('Exchange', (accounts: string[]) => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
 
-            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
 
             const newBalances = await dmyBalances.getAsync();
@@ -274,17 +276,15 @@ contract('Exchange', (accounts: string[]) => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
 
-            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
 
             const newBalances = await dmyBalances.getAsync();
@@ -328,17 +328,15 @@ contract('Exchange', (accounts: string[]) => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
 
-            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountBefore = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
             const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
 
-            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(
-                order.params.orderHashHex,
-            );
+            const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
+                .orderHashHex as string);
             const expectedFillAmountTAfter = fillTakerTokenAmount.add(filledTakerTokenAmountBefore);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(expectedFillAmountTAfter);
 
@@ -383,8 +381,8 @@ contract('Exchange', (accounts: string[]) => {
             const res = await exWrapper.fillOrderAsync(order, taker, {
                 fillTakerTokenAmount: order.params.takerTokenAmount,
             });
-
-            expect(res.logs[0].args.filledTakerTokenAmount).to.be.bignumber.equal(
+            const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
+            expect(log.args.filledTakerTokenAmount).to.be.bignumber.equal(
                 order.params.takerTokenAmount.minus(fillTakerTokenAmount),
             );
             const newBalances = await dmyBalances.getAsync();
@@ -419,7 +417,7 @@ contract('Exchange', (accounts: string[]) => {
             });
             expect(res.logs).to.have.length(1);
 
-            const logArgs = res.logs[0].args;
+            const logArgs = (res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>).args;
             const expectedFilledMakerTokenAmount = order.params.makerTokenAmount.div(divisor);
             const expectedFilledTakerTokenAmount = order.params.takerTokenAmount.div(divisor);
             const expectedFeeMPaid = order.params.makerFee.div(divisor);
@@ -450,7 +448,7 @@ contract('Exchange', (accounts: string[]) => {
             });
             expect(res.logs).to.have.length(1);
 
-            const logArgs = res.logs[0].args;
+            const logArgs = (res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>).args;
             const expectedFilledMakerTokenAmount = order.params.makerTokenAmount.div(divisor);
             const expectedFilledTakerTokenAmount = order.params.takerTokenAmount.div(divisor);
             const expectedFeeMPaid = new BigNumber(0);
@@ -567,9 +565,9 @@ contract('Exchange', (accounts: string[]) => {
 
         it('should not change balances if maker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            await rep.approve(TokenTransferProxy.address, 0, { from: maker });
+            await rep.approve(tokenTransferProxy.address, 0, { from: maker });
             await exWrapper.fillOrderAsync(order, taker);
-            await rep.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await rep.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             });
 
@@ -579,22 +577,22 @@ contract('Exchange', (accounts: string[]) => {
 
         it('should throw if maker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
-            await rep.approve(TokenTransferProxy.address, 0, { from: maker });
+            await rep.approve(tokenTransferProxy.address, 0, { from: maker });
             expect(
                 exWrapper.fillOrderAsync(order, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: true,
                 }),
             ).to.be.rejectedWith(constants.REVERT);
-            await rep.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await rep.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             });
         });
 
         it('should not change balances if taker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            await dgd.approve(TokenTransferProxy.address, 0, { from: taker });
+            await dgd.approve(tokenTransferProxy.address, 0, { from: taker });
             await exWrapper.fillOrderAsync(order, taker);
-            await dgd.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await dgd.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             });
 
@@ -604,13 +602,13 @@ contract('Exchange', (accounts: string[]) => {
 
         it('should throw if taker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
-            await dgd.approve(TokenTransferProxy.address, 0, { from: taker });
+            await dgd.approve(tokenTransferProxy.address, 0, { from: taker });
             expect(
                 exWrapper.fillOrderAsync(order, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: true,
                 }),
             ).to.be.rejectedWith(constants.REVERT);
-            await dgd.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await dgd.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             });
         });
@@ -630,7 +628,7 @@ contract('Exchange', (accounts: string[]) => {
 
         it('should not change balances if makerToken is ZRX, makerTokenAmount + makerFee > maker allowance, \
                 and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const makerZRXAllowance = await zrx.allowance(maker, TokenTransferProxy.address);
+            const makerZRXAllowance = await zrx.allowance(maker, tokenTransferProxy.address);
             order = await orderFactory.newSignedOrderAsync({
                 makerToken: zrx.address,
                 makerTokenAmount: new BigNumber(makerZRXAllowance),
@@ -656,7 +654,7 @@ contract('Exchange', (accounts: string[]) => {
 
         it('should not change balances if takerToken is ZRX, takerTokenAmount + takerFee > taker allowance, \
                 and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const takerZRXAllowance = await zrx.allowance(taker, TokenTransferProxy.address);
+            const takerZRXAllowance = await zrx.allowance(taker, tokenTransferProxy.address);
             order = await orderFactory.newSignedOrderAsync({
                 takerToken: zrx.address,
                 takerTokenAmount: new BigNumber(takerZRXAllowance),
@@ -669,8 +667,8 @@ contract('Exchange', (accounts: string[]) => {
 
         it('should throw if getBalance or getAllowance attempts to change state and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const maliciousToken = await MaliciousToken.new();
-            await maliciousToken.approve(TokenTransferProxy.address, INITIAL_ALLOWANCE, { from: taker });
+            const maliciousToken = await deployer.deployAsync(ContractName.MaliciousToken);
+            await maliciousToken.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: taker });
 
             order = await orderFactory.newSignedOrderAsync({
                 takerToken: maliciousToken.address,
@@ -680,7 +678,7 @@ contract('Exchange', (accounts: string[]) => {
                 exWrapper.fillOrderAsync(order, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: false,
                 }),
-            ).to.be.rejectedWith(constants.REVERT);
+            ).to.be.rejectedWith(constants.INVALID_OPCODE);
         });
 
         it('should not change balances if an order is expired', async () => {
@@ -700,16 +698,19 @@ contract('Exchange', (accounts: string[]) => {
 
             const res = await exWrapper.fillOrderAsync(order, taker);
             expect(res.logs).to.have.length(1);
-            const errCode = res.logs[0].args.errorId.toNumber();
+            const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const errCode = log.args.errorId.toNumber();
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
 
         it('should log an error event if no value is filled', async () => {
+            order = await orderFactory.newSignedOrderAsync({});
             await exWrapper.fillOrderAsync(order, taker);
 
             const res = await exWrapper.fillOrderAsync(order, taker);
             expect(res.logs).to.have.length(1);
-            const errCode = res.logs[0].args.errorId.toNumber();
+            const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const errCode = log.args.errorId.toNumber();
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
         });
     });
@@ -769,7 +770,8 @@ contract('Exchange', (accounts: string[]) => {
             const res = await exWrapper.fillOrderAsync(order, taker, {
                 fillTakerTokenAmount: order.params.takerTokenAmount,
             });
-            expect(res.logs[0].args.filledTakerTokenAmount).to.be.bignumber.equal(
+            const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
+            expect(log.args.filledTakerTokenAmount).to.be.bignumber.equal(
                 order.params.takerTokenAmount.minus(cancelTakerTokenAmount),
             );
 
@@ -813,7 +815,8 @@ contract('Exchange', (accounts: string[]) => {
             });
             expect(res.logs).to.have.length(1);
 
-            const logArgs = res.logs[0].args;
+            const log = res.logs[0] as LogWithDecodedArgs<LogCancelContractEventArgs>;
+            const logArgs = log.args;
             const expectedCancelledMakerTokenAmount = order.params.makerTokenAmount.div(divisor);
             const expectedCancelledTakerTokenAmount = order.params.takerTokenAmount.div(divisor);
             const tokensHashBuff = crypto.solSHA3([order.params.makerToken, order.params.takerToken]);
@@ -834,7 +837,8 @@ contract('Exchange', (accounts: string[]) => {
 
             const res = await exWrapper.cancelOrderAsync(order, maker);
             expect(res.logs).to.have.length(1);
-            const errCode = res.logs[0].args.errorId.toNumber();
+            const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const errCode = log.args.errorId.toNumber();
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
         });
 
@@ -845,7 +849,8 @@ contract('Exchange', (accounts: string[]) => {
 
             const res = await exWrapper.cancelOrderAsync(order, maker);
             expect(res.logs).to.have.length(1);
-            const errCode = res.logs[0].args.errorId.toNumber();
+            const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const errCode = log.args.errorId.toNumber();
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
     });

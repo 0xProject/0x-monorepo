@@ -1,9 +1,9 @@
-import { BigNumber } from '@0xproject/utils';
+import { AbiType, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import * as SolidityCoder from 'web3/lib/solidity/coder';
 
-import { AbiType, ContractEventArgs, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes } from '../types';
+import { BigNumber } from './configured_bignumber';
 
 export class AbiDecoder {
     private _savedABIs: Web3.AbiDefinition[] = [];
@@ -21,9 +21,7 @@ export class AbiDecoder {
         _.map(abiArrays, this._addABI.bind(this));
     }
     // This method can only decode logs from the 0x & ERC20 smart contracts
-    public tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
-        log: Web3.LogEntry,
-    ): LogWithDecodedArgs<ArgsType> | RawLog {
+    public tryToDecodeLogOrNoop<ArgsType>(log: Web3.LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
         const methodId = log.topics[0];
         const event = this._methodIds[methodId];
         if (_.isUndefined(event)) {
@@ -40,7 +38,7 @@ export class AbiDecoder {
 
         _.map(event.inputs, (param: Web3.EventParameter) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
-            let value = param.indexed ? log.topics[topicsIndex++] : decodedData[dataIndex++];
+            let value: BigNumber | string = param.indexed ? log.topics[topicsIndex++] : decodedData[dataIndex++];
             if (param.type === SolidityTypes.Address) {
                 value = AbiDecoder._padZeros(new BigNumber(value).toString(16));
             } else if (

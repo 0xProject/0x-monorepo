@@ -20,15 +20,18 @@
     "homepage": "https://github.com/0xProject/0x.js/packages/utils/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.5",
+        "@0xproject/types": "^0.1.5",
         "@types/lodash": "^4.14.86",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
+        "web3-typescript-typings": "^0.9.5",
         "typescript": "~2.6.1"
     },
     "dependencies": {
         "bignumber.js": "~4.1.0",
         "js-sha3": "^0.7.0",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.4",
+        "web3": "^0.20.0"
     }
 }
