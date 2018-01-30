@@ -107,8 +107,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         };
     }
     public componentWillMount() {
-        // tslint:disable-next-line:no-floating-promises
         const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+        // tslint:disable-next-line:no-floating-promises
         this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
     public componentWillUnmount() {
@@ -152,6 +152,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 trackedTokenStateByAddress,
             });
             // Fetch the actual balance/allowance.
+            // tslint:disable-next-line:no-floating-promises
             this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
         }
     }
@@ -433,7 +434,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             blockchain={this.props.blockchain}
                             dispatcher={this.props.dispatcher}
                             token={token}
-                            tokenState={tokenState}
                             onError={this._onSendFailed.bind(this)}
                             lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}

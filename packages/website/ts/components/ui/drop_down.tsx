@@ -1,9 +1,7 @@
 import * as _ from 'lodash';
-import Menu from 'material-ui/Menu';
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
 import * as React from 'react';
-import { MaterialUIPosition, Styles, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
+import { MaterialUIPosition } from 'ts/types';
 
 const CHECK_CLOSE_POPOVER_INTERVAL_MS = 300;
 const DEFAULT_STYLE = {

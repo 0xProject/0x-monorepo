@@ -16,7 +16,6 @@ import {
     Token,
     TokenByAddress,
     TokenState,
-    TokenStateByAddress,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
@@ -163,7 +162,6 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             isOutdatedWrappedEther={false}
                                             direction={Side.Deposit}
                                             ethToken={etherToken}
-                                            ethTokenState={this.state.ethTokenState}
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
                                             userEtherBalance={this.props.userEtherBalance}
@@ -191,7 +189,6 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             direction={Side.Receive}
                                             isDisabled={!this.state.isWethStateLoaded}
                                             ethToken={etherToken}
-                                            ethTokenState={this.state.ethTokenState}
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
                                             userEtherBalance={this.props.userEtherBalance}

@@ -87,7 +87,7 @@ export class Web3Wrapper {
     public updatePrevUserAddress(userAddress: string) {
         this._prevUserAddress = userAddress;
     }
-    public async startEmittingNetworkConnectionAndUserBalanceStateAsync() {
+    public startEmittingNetworkConnectionAndUserBalanceState() {
         if (!_.isUndefined(this._watchNetworkAndBalanceIntervalId)) {
             return; // we are already emitting the state
         }

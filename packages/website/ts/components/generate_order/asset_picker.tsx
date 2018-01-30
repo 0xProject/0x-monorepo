@@ -8,7 +8,7 @@ import { TrackTokenConfirmation } from 'ts/components/track_token_confirmation';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DialogConfigs, Token, TokenByAddress, TokenState, TokenVisibility } from 'ts/types';
+import { DialogConfigs, Token, TokenByAddress, TokenVisibility } from 'ts/types';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;

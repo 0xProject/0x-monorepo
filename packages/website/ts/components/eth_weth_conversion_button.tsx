@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { EthWethConversionDialog } from 'ts/components/dialogs/eth_weth_conversion_dialog';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { BlockchainCallErrs, Side, Token, TokenState } from 'ts/types';
+import { BlockchainCallErrs, Side, Token } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -16,7 +16,6 @@ interface EthWethConversionButtonProps {
     networkId: number;
     direction: Side;
     ethToken: Token;
-    ethTokenState: TokenState;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
     userEtherBalance: BigNumber;
@@ -93,7 +92,6 @@ export class EthWethConversionButton extends React.Component<
         });
         this._toggleConversionDialog();
         const token = this.props.ethToken;
-        const tokenState = this.props.ethTokenState;
         try {
             if (direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(token.address, value);
@@ -105,7 +103,7 @@ export class EthWethConversionButton extends React.Component<
                 this.props.dispatcher.showFlashMessage(`Successfully unwrapped ${tokenAmount.toString()} WETH to ETH`);
             }
             if (!this.props.isOutdatedWrappedEther) {
-                this.props.refetchEthTokenStateAsync();
+                await this.props.refetchEthTokenStateAsync();
             }
             this.props.onConversionSuccessful();
         } catch (err) {

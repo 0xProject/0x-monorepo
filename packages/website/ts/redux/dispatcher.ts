@@ -13,7 +13,6 @@ import {
     SignatureData,
     Token,
     TokenByAddress,
-    TokenStateByAddress,
 } from 'ts/types';
 
 export class Dispatcher {

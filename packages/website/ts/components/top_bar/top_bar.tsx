@@ -14,9 +14,8 @@ import { Identicon } from 'ts/components/ui/identicon';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DocsMenu, MenuSubsectionsBySection, ProviderType, Styles, TypeDocNode, WebsitePaths } from 'ts/types';
+import { DocsMenu, MenuSubsectionsBySection, ProviderType, Styles, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 
 interface TopBarProps {
@@ -189,7 +188,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         </div>
                     )}
                     {this.props.blockchainIsLoaded && (
-                        <div className="col col-5">
+                        <div className="sm-hide xs-hide col col-5">
                             <ProviderDisplay
                                 dispatcher={this.props.dispatcher}
                                 userAddress={this.props.userAddress}

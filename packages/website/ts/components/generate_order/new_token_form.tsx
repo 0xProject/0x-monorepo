@@ -1,4 +1,3 @@
-import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
@@ -7,7 +6,7 @@ import { AddressInput } from 'ts/components/inputs/address_input';
 import { Alert } from 'ts/components/ui/alert';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { RequiredLabel } from 'ts/components/ui/required_label';
-import { AlertTypes, Token, TokenByAddress, TokenState } from 'ts/types';
+import { AlertTypes, Token, TokenByAddress } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 
 interface NewTokenFormProps {

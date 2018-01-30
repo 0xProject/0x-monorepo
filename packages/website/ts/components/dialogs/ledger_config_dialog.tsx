@@ -10,7 +10,7 @@ import { Blockchain } from 'ts/blockchain';
 import { NetworkDropDown } from 'ts/components/dropdowns/network_drop_down';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Networks, ProviderType } from 'ts/types';
+import { ProviderType } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';

@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { BalanceBoundedInput } from 'ts/components/inputs/balance_bounded_input';
-import { InputErrMsg, Token, TokenState, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
+import { InputErrMsg, Token, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 
 interface TokenAmountInputProps {
@@ -55,6 +55,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             nextProps.token.address !== this.props.token.address ||
             nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
+            // tslint:disable-next-line:no-floating-promises
             this._fetchBalanceAndAllowanceAsync(nextProps.token.address, nextProps.userAddress);
         }
     }

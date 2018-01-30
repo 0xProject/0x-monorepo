@@ -25,10 +25,6 @@ export interface TokenState {
     balance: BigNumber;
 }
 
-export interface TokenStateByAddress {
-    [address: string]: TokenState;
-}
-
 export interface AssetToken {
     address?: string;
     amount?: BigNumber;

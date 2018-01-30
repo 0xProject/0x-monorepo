@@ -1,10 +1,6 @@
 import * as _ from 'lodash';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { ProviderPicker } from 'ts/components/top_bar/provider_picker';
 import { DropDown } from 'ts/components/ui/drop_down';

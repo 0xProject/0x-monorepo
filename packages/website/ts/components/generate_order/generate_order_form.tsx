@@ -27,7 +27,6 @@ import {
     SignatureData,
     Token,
     TokenByAddress,
-    TokenStateByAddress,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { errorReporter } from 'ts/utils/error_reporter';

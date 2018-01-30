@@ -1,19 +1,11 @@
 import * as _ from 'lodash';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
-import { DropDown } from 'ts/components/ui/drop_down';
-import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
-
-const IDENTICON_DIAMETER = 32;
 
 interface ProviderPickerProps {
     networkId: number;

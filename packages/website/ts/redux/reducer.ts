@@ -13,8 +13,6 @@ import {
     SideToAssetToken,
     SignatureData,
     TokenByAddress,
-    TokenState,
-    TokenStateByAddress,
 } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 

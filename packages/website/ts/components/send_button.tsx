@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { SendDialog } from 'ts/components/dialogs/send_dialog';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { BlockchainCallErrs, Token, TokenState } from 'ts/types';
+import { BlockchainCallErrs, Token } from 'ts/types';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
@@ -13,7 +13,6 @@ interface SendButtonProps {
     userAddress: string;
     networkId: number;
     token: Token;
-    tokenState: TokenState;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
     onError: () => void;
@@ -69,10 +68,9 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
         });
         this._toggleSendDialog();
         const token = this.props.token;
-        const tokenState = this.props.tokenState;
         try {
             await this.props.blockchain.transferAsync(token, recipient, value);
-            this.props.refetchTokenStateAsync(token.address);
+            await this.props.refetchTokenStateAsync(token.address);
         } catch (err) {
             const errMsg = `${err}`;
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {

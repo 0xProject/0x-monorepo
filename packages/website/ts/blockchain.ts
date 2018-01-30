@@ -41,7 +41,6 @@ import {
     SignatureData,
     Token,
     TokenByAddress,
-    TokenStateByAddress,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -220,7 +219,7 @@ export class Blockchain {
         this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
         this._zeroEx.setProvider(provider, this.networkId);
         await this._postInstantiationOrUpdatingProviderZeroExAsync();
-        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceStateAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
         this._dispatcher.updateProviderType(ProviderType.Ledger);
     }
     public async updateProviderToInjectedAsync() {
@@ -244,7 +243,7 @@ export class Blockchain {
         await this._postInstantiationOrUpdatingProviderZeroExAsync();
 
         await this.fetchTokenInformationAsync();
-        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceStateAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
         this._dispatcher.updateProviderType(ProviderType.Injected);
         delete this._ledgerSubprovider;
         delete this._cachedProvider;
@@ -264,7 +263,6 @@ export class Blockchain {
             },
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
-        const allowance = amountInBaseUnits;
     }
     public async transferAsync(token: Token, toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
         this._showFlashMessageIfLedger();
@@ -451,7 +449,6 @@ export class Blockchain {
             from: this._userAddress,
             gasPrice: this._defaultGasPrice,
         });
-        const balanceDelta = constants.MINT_AMOUNT;
     }
     public async getBalanceInEthAsync(owner: string): Promise<BigNumber> {
         const balance = await this._web3Wrapper.getBalanceInEthAsync(owner);
@@ -762,7 +759,7 @@ export class Blockchain {
         this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
         this._dispatcher.updateUserAddress(this._userAddress);
         await this.fetchTokenInformationAsync();
-        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceStateAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
         await this._rehydrateStoreWithContractEvents();
     }
     // This method should always be run after instantiating or updating the provider

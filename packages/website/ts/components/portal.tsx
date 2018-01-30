@@ -21,7 +21,6 @@ import { FlashMessage } from 'ts/components/ui/flash_message';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { State } from 'ts/redux/reducer';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
 import {
@@ -30,9 +29,7 @@ import {
     Order,
     ProviderType,
     ScreenWidths,
-    Token,
     TokenByAddress,
-    TokenStateByAddress,
     WebsitePaths,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
