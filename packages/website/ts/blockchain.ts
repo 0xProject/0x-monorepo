@@ -199,6 +199,8 @@ export class Blockchain {
             this._cachedProviderNetworkId = this.networkId;
         }
 
+        this._web3Wrapper.destroy();
+
         this._userAddress = '';
         this._dispatcher.updateUserAddress(''); // Clear old userAddress
 
@@ -212,7 +214,6 @@ export class Blockchain {
         provider.addProvider(new FilterSubprovider());
         provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
         provider.start();
-        this._web3Wrapper.destroy();
         this.networkId = networkId;
         this._dispatcher.updateNetworkId(this.networkId);
         const shouldPollUserAddress = false;
@@ -228,10 +229,12 @@ export class Blockchain {
         if (_.isUndefined(this._cachedProvider)) {
             return; // Going from injected to injected, so we noop
         }
+
+        this._web3Wrapper.destroy();
+
         const provider = this._cachedProvider;
         this.networkId = this._cachedProviderNetworkId;
 
-        this._web3Wrapper.destroy();
         const shouldPollUserAddress = true;
         this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
 

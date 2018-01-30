@@ -150,6 +150,8 @@ export class Web3Wrapper {
         }
     }
     private _stopEmittingNetworkConnectionAndUserBalanceStateAsync() {
-        intervalUtils.clearAsyncExcludingInterval(this._watchNetworkAndBalanceIntervalId);
+        if (!_.isUndefined(this._watchNetworkAndBalanceIntervalId)) {
+            intervalUtils.clearAsyncExcludingInterval(this._watchNetworkAndBalanceIntervalId);
+        }
     }
 }
