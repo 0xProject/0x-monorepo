@@ -2,7 +2,7 @@
 
 ## v0.5.0 - _TBD, 2018_
 
-    * Modified custom 'underscore-privates' rule, changing it to 'underscore-private-and-protected' requiring underscores to be prepended to both private and protected variable names
+    * Modified custom 'underscore-privates' rule, changing it to 'underscore-private-and-protected' requiring underscores to be prepended to both private and protected variable names (#354)
 
 ## v0.4.0 - _December 28, 2017_
 
