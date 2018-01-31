@@ -9,6 +9,7 @@ import { LedgerEthereumClient } from './types';
 export { InjectedWeb3Subprovider } from './subproviders/injected_web3';
 export { RedundantRPCSubprovider } from './subproviders/redundant_rpc';
 export { LedgerSubprovider } from './subproviders/ledger';
+export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
 export { ECSignature, LedgerWalletSubprovider, LedgerCommunicationClient } from './types';
 
 /**
