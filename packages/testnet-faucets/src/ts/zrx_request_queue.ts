@@ -20,10 +20,10 @@ export class ZRXRequestQueue extends RequestQueue {
     private _zeroEx: ZeroEx;
     constructor(web3: Web3, zeroEx: ZeroEx) {
         super(web3);
-        this.queueIntervalMs = QUEUE_INTERVAL_MS;
+        this._queueIntervalMs = QUEUE_INTERVAL_MS;
         this._zeroEx = zeroEx;
     }
-    protected async processNextRequestFireAndForgetAsync(recipientAddress: string) {
+    protected async _processNextRequestFireAndForgetAsync(recipientAddress: string) {
         utils.consoleLog(`Processing ZRX ${recipientAddress}`);
         const baseUnitAmount = ZeroEx.toBaseUnitAmount(DISPENSE_AMOUNT_ZRX, 18);
         try {

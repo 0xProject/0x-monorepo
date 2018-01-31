@@ -24,9 +24,6 @@ export class Web3Wrapper {
 
         this._web3 = new Web3();
         this._web3.setProvider(provider);
-
-        // tslint:disable-next-line:no-floating-promises
-        this._startEmittingNetworkConnectionAndUserBalanceStateAsync();
     }
     public isAddress(address: string) {
         return this._web3.isAddress(address);
@@ -90,11 +87,7 @@ export class Web3Wrapper {
     public updatePrevUserAddress(userAddress: string) {
         this._prevUserAddress = userAddress;
     }
-    private async _getNetworkAsync() {
-        const networkId = await promisify(this._web3.version.getNetwork)();
-        return networkId;
-    }
-    private async _startEmittingNetworkConnectionAndUserBalanceStateAsync() {
+    public startEmittingNetworkConnectionAndUserBalanceState() {
         if (!_.isUndefined(this._watchNetworkAndBalanceIntervalId)) {
             return; // we are already emitting the state
         }
@@ -127,7 +120,7 @@ export class Web3Wrapper {
                     }
 
                     // Check for user ether balance changes
-                    if (userAddressIfExists !== '') {
+                    if (!_.isEmpty(userAddressIfExists)) {
                         await this._updateUserEtherBalanceAsync(userAddressIfExists);
                     }
                 } else {
@@ -140,10 +133,14 @@ export class Web3Wrapper {
             },
             5000,
             (err: Error) => {
-                utils.consoleLog(`Watching network and balances failed: ${err}`);
+                utils.consoleLog(`Watching network and balances failed: ${err.stack}`);
                 this._stopEmittingNetworkConnectionAndUserBalanceStateAsync();
             },
         );
+    }
+    private async _getNetworkAsync() {
+        const networkId = await promisify(this._web3.version.getNetwork)();
+        return networkId;
     }
     private async _updateUserEtherBalanceAsync(userAddress: string) {
         const balance = await this.getBalanceInEthAsync(userAddress);
@@ -153,6 +150,8 @@ export class Web3Wrapper {
         }
     }
     private _stopEmittingNetworkConnectionAndUserBalanceStateAsync() {
-        intervalUtils.clearAsyncExcludingInterval(this._watchNetworkAndBalanceIntervalId);
+        if (!_.isUndefined(this._watchNetworkAndBalanceIntervalId)) {
+            intervalUtils.clearAsyncExcludingInterval(this._watchNetworkAndBalanceIntervalId);
+        }
     }
 }

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { localStorage } from 'ts/local_storage/local_storage';
-import { Token, TrackedTokensByUserAddress } from 'ts/types';
+import { Token, TokenByAddress, TrackedTokensByUserAddress } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 
 const TRACKED_TOKENS_KEY = 'trackedTokens';
@@ -39,18 +39,22 @@ export const trackedTokenStorage = {
         const trackedTokensByUserAddress = JSON.parse(trackedTokensJSONString);
         return trackedTokensByUserAddress;
     },
-    getTrackedTokensIfExists(userAddress: string, networkId: number): Token[] {
+    getTrackedTokensByAddress(userAddress: string, networkId: number): TokenByAddress {
+        const trackedTokensByAddress: TokenByAddress = {};
         const trackedTokensJSONString = localStorage.getItemIfExists(TRACKED_TOKENS_KEY);
         if (_.isEmpty(trackedTokensJSONString)) {
-            return undefined;
+            return trackedTokensByAddress;
         }
         const trackedTokensByUserAddress = JSON.parse(trackedTokensJSONString);
         const trackedTokensByNetworkId = trackedTokensByUserAddress[userAddress];
         if (_.isUndefined(trackedTokensByNetworkId)) {
-            return undefined;
+            return trackedTokensByAddress;
         }
         const trackedTokens = trackedTokensByNetworkId[networkId];
-        return trackedTokens;
+        _.each(trackedTokens, (trackedToken: Token) => {
+            trackedTokensByAddress[trackedToken.address] = trackedToken;
+        });
+        return trackedTokensByAddress;
     },
     removeTrackedToken(userAddress: string, networkId: number, tokenAddress: string): void {
         const trackedTokensByUserAddress = this.getTrackedTokensByUserAddress();

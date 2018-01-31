@@ -82,16 +82,6 @@ export class TrackTokenConfirmationDialog extends React.Component<
             newTokenEntry.isTracked = true;
             trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
             this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
-
-            const [balance, allowance] = await this.props.blockchain.getCurrentUserTokenBalanceAndAllowanceAsync(
-                token.address,
-            );
-            this.props.dispatcher.updateTokenStateByAddress({
-                [token.address]: {
-                    balance,
-                    allowance,
-                },
-            });
         }
 
         this.setState({

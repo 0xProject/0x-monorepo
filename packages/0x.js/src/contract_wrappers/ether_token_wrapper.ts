@@ -159,11 +159,11 @@ export class EtherTokenWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public unsubscribeAll(): void {
-        super.unsubscribeAll();
+    public _unsubscribeAll(): void {
+        super._unsubscribeAll();
     }
     private _invalidateContractInstance(): void {
-        this.unsubscribeAll();
+        this._unsubscribeAll();
         this._etherTokenContractsByAddress = {};
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<EtherTokenContract> {

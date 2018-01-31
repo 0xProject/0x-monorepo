@@ -17,24 +17,45 @@ import { utils } from './utils';
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
 const ABI_TYPE_METHOD = 'function';
 const ABI_TYPE_EVENT = 'event';
-const MAIN_TEMPLATE_NAME = 'contract.mustache';
 
 const args = yargs
-    .option('abiGlob', {
+    .option('abis', {
         describe: 'Glob pattern to search for ABI JSON files',
         type: 'string',
-        demand: true,
-    })
-    .option('templates', {
-        describe: 'Folder where to search for templates',
-        type: 'string',
-        demand: true,
+        demandOption: true,
     })
     .option('output', {
+        alias: ['o', 'out'],
         describe: 'Folder where to put the output files',
         type: 'string',
-        demand: true,
-    }).argv;
+        normalize: true,
+        demandOption: true,
+    })
+    .option('partials', {
+        describe: 'Glob pattern for the partial template files',
+        type: 'string',
+        implies: 'template',
+    })
+    .option('template', {
+        describe: 'Path for the main template file that will be used to generate each contract',
+        type: 'string',
+        demandOption: true,
+        normalize: true,
+    })
+    .example(
+        "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
+        'Full usage example',
+    ).argv;
+
+function registerPartials(partialsGlob: string) {
+    const partialTemplateFileNames = globSync(partialsGlob);
+    utils.log(`Found ${chalk.green(`${partialTemplateFileNames.length}`)} ${chalk.bold('partial')} templates`);
+    for (const partialTemplateFileName of partialTemplateFileNames) {
+        const namedContent = utils.getNamedContent(partialTemplateFileName);
+        Handlebars.registerPartial(namedContent.name, namedContent.content);
+    }
+    return partialsGlob;
+}
 
 function writeOutputFile(name: string, renderedTsCode: string): void {
     const fileName = toSnakeCase(name);
@@ -45,15 +66,14 @@ function writeOutputFile(name: string, renderedTsCode: string): void {
 
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output));
-const partialTemplateFileNames = globSync(`${args.templates}/partials/**/*.mustache`);
-for (const partialTemplateFileName of partialTemplateFileNames) {
-    const namedContent = utils.getNamedContent(partialTemplateFileName);
-    Handlebars.registerPartial(namedContent.name, namedContent.content);
-}
 
-const mainTemplate = utils.getNamedContent(`${args.templates}/${MAIN_TEMPLATE_NAME}`);
+if (args.partials) {
+    registerPartials(args.partials);
+}
+const mainTemplate = utils.getNamedContent(args.template);
 const template = Handlebars.compile<ContextData>(mainTemplate.content);
-const abiFileNames = globSync(args.abiGlob);
+const abiFileNames = globSync(args.abis);
+
 if (_.isEmpty(abiFileNames)) {
     utils.log(`${chalk.red(`No ABI files found.`)}`);
     utils.log(`Please make sure you've passed the correct folder name and that the files have

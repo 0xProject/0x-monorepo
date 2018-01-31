@@ -5,16 +5,19 @@ import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { SendDialog } from 'ts/components/dialogs/send_dialog';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { BlockchainCallErrs, Token, TokenState } from 'ts/types';
+import { BlockchainCallErrs, Token } from 'ts/types';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
 interface SendButtonProps {
+    userAddress: string;
+    networkId: number;
     token: Token;
-    tokenState: TokenState;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
     onError: () => void;
+    lastForceTokenStateRefetch: number;
+    refetchTokenStateAsync: (tokenAddress: string) => Promise<void>;
 }
 
 interface SendButtonState {
@@ -42,11 +45,14 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
                     onClick={this._toggleSendDialog.bind(this)}
                 />
                 <SendDialog
+                    blockchain={this.props.blockchain}
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
                     isOpen={this.state.isSendDialogVisible}
                     onComplete={this._onSendAmountSelectedAsync.bind(this)}
                     onCancelled={this._toggleSendDialog.bind(this)}
                     token={this.props.token}
-                    tokenState={this.props.tokenState}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
             </div>
         );
@@ -62,18 +68,15 @@ export class SendButton extends React.Component<SendButtonProps, SendButtonState
         });
         this._toggleSendDialog();
         const token = this.props.token;
-        const tokenState = this.props.tokenState;
-        let balance = tokenState.balance;
         try {
             await this.props.blockchain.transferAsync(token, recipient, value);
-            balance = balance.minus(value);
-            this.props.dispatcher.replaceTokenBalanceByAddress(token.address, balance);
+            await this.props.refetchTokenStateAsync(token.address);
         } catch (err) {
             const errMsg = `${err}`;
             if (_.includes(errMsg, BlockchainCallErrs.UserHasNoAssociatedAddresses)) {
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return;
-            } else if (!_.includes(errMsg, 'User denied transaction')) {
+            } else if (!utils.didUserDenyWeb3Request(errMsg)) {
                 utils.consoleLog(`Unexpected error encountered: ${err}`);
                 utils.consoleLog(err.stack);
                 this.props.onError();

@@ -18,6 +18,7 @@ interface BalanceBoundedInputProps {
     validate?: (amount: BigNumber) => InputErrMsg;
     onVisitBalancesPageClick?: () => void;
     shouldHideVisitBalancesLink?: boolean;
+    isDisabled?: boolean;
 }
 
 interface BalanceBoundedInputState {
@@ -29,6 +30,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
     public static defaultProps: Partial<BalanceBoundedInputProps> = {
         shouldShowIncompleteErrs: false,
         shouldHideVisitBalancesLink: false,
+        isDisabled: false,
     };
     constructor(props: BalanceBoundedInputProps) {
         super(props);
@@ -88,6 +90,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
                 hintText={<span style={{ textTransform: 'capitalize' }}>amount</span>}
                 onChange={this._onValueChange.bind(this)}
                 underlineStyle={{ width: 'calc(100% + 50px)' }}
+                disabled={this.props.isDisabled}
             />
         );
     }
@@ -100,7 +103,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             },
             () => {
                 const isValid = _.isUndefined(errMsg);
-                if (utils.isNumeric(amountString)) {
+                if (utils.isNumeric(amountString) && !_.includes(amountString, '-')) {
                     this.props.onChange(isValid, new BigNumber(amountString));
                 } else {
                     this.props.onChange(isValid);

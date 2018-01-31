@@ -6,14 +6,7 @@ import { Blockchain } from 'ts/blockchain';
 import { GenerateOrderForm as GenerateOrderFormComponent } from 'ts/components/generate_order/generate_order_form';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import {
-    BlockchainErrs,
-    HashData,
-    SideToAssetToken,
-    SignatureData,
-    TokenByAddress,
-    TokenStateByAddress,
-} from 'ts/types';
+import { BlockchainErrs, HashData, SideToAssetToken, SignatureData, TokenByAddress } from 'ts/types';
 
 interface GenerateOrderFormProps {
     blockchain: Blockchain;
@@ -32,7 +25,7 @@ interface ConnectedState {
     networkId: number;
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
+    lastForceTokenStateRefetch: number;
 }
 
 const mapStateToProps = (state: State, ownProps: GenerateOrderFormProps): ConnectedState => ({
@@ -45,8 +38,8 @@ const mapStateToProps = (state: State, ownProps: GenerateOrderFormProps): Connec
     networkId: state.networkId,
     sideToAssetToken: state.sideToAssetToken,
     tokenByAddress: state.tokenByAddress,
-    tokenStateByAddress: state.tokenStateByAddress,
     userAddress: state.userAddress,
+    lastForceTokenStateRefetch: state.lastForceTokenStateRefetch,
 });
 
 export const GenerateOrderForm: React.ComponentClass<GenerateOrderFormProps> = connect(mapStateToProps)(

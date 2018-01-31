@@ -1,11 +1,13 @@
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import Paper from 'material-ui/Paper';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Route, Switch } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
+import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
 import { WrappedEthSectionNoticeDialog } from 'ts/components/dialogs/wrapped_eth_section_notice_dialog';
 import { EthWrappers } from 'ts/components/eth_wrappers';
@@ -13,25 +15,15 @@ import { FillOrder } from 'ts/components/fill_order';
 import { Footer } from 'ts/components/footer';
 import { PortalMenu } from 'ts/components/portal_menu';
 import { TokenBalances } from 'ts/components/token_balances';
-import { TopBar } from 'ts/components/top_bar';
+import { TopBar } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
-import { Loading } from 'ts/components/ui/loading';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
-import {
-    BlockchainErrs,
-    HashData,
-    Order,
-    ScreenWidths,
-    Token,
-    TokenByAddress,
-    TokenStateByAddress,
-    WebsitePaths,
-} from 'ts/types';
+import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -46,18 +38,20 @@ export interface PortalAllProps {
     blockchainIsLoaded: boolean;
     dispatcher: Dispatcher;
     hashData: HashData;
+    injectedProviderName: string;
     networkId: number;
     nodeVersion: string;
     orderFillAmount: BigNumber;
+    providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
     userEtherBalance: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
     location: Location;
     flashMessage?: string | React.ReactNode;
+    lastForceTokenStateRefetch: number;
 }
 
 interface PortalAllState {
@@ -67,6 +61,7 @@ interface PortalAllState {
     prevPathname: string;
     isDisclaimerDialogOpen: boolean;
     isWethNoticeDialogOpen: boolean;
+    isLedgerDialogOpen: boolean;
 }
 
 export class Portal extends React.Component<PortalAllProps, PortalAllState> {
@@ -96,6 +91,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             prevPathname: this.props.location.pathname,
             isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
             isWethNoticeDialogOpen: !hasAlreadyDismissedWethNotice && isViewingBalances,
+            isLedgerDialogOpen: false,
         };
     }
     public componentDidMount() {
@@ -125,11 +121,6 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         if (nextProps.userAddress !== this.state.prevUserAddress) {
             // tslint:disable-next-line:no-floating-promises
             this._blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
-            if (!_.isEmpty(nextProps.userAddress) && nextProps.blockchainIsLoaded) {
-                const tokens = _.values(nextProps.tokenByAddress);
-                // tslint:disable-next-line:no-floating-promises
-                this._updateBalanceAndAllowanceWithLoadingScreenAsync(tokens);
-            }
             this.setState({
                 prevUserAddress: nextProps.userAddress,
             });
@@ -167,8 +158,14 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 <DocumentTitle title="0x Portal DApp" />
                 <TopBar
                     userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
+                    injectedProviderName={this.props.injectedProviderName}
+                    onToggleLedgerDialog={this.onToggleLedgerDialog.bind(this)}
+                    dispatcher={this.props.dispatcher}
+                    providerType={this.props.providerType}
                     blockchainIsLoaded={this.props.blockchainIsLoaded}
                     location={this.props.location}
+                    blockchain={this._blockchain}
                 />
                 <div id="portal" className="mx-auto max-width-4" style={{ width: '100%' }}>
                     <Paper className="mb3 mt2">
@@ -215,7 +212,19 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                                                 />
                                             </Switch>
                                         ) : (
-                                            <Loading />
+                                            <div className="pt4 sm-px2 sm-pt2 sm-m1" style={{ height: 500 }}>
+                                                <div
+                                                    className="relative sm-px2 sm-pt2 sm-m1"
+                                                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
+                                                >
+                                                    <div className="center pb2">
+                                                        <CircularProgress size={40} thickness={5} />
+                                                    </div>
+                                                    <div className="center pt2" style={{ paddingBottom: 11 }}>
+                                                        Loading Portal...
+                                                    </div>
+                                                </div>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -239,10 +248,25 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         onToggleDialog={this._onPortalDisclaimerAccepted.bind(this)}
                     />
                     <FlashMessage dispatcher={this.props.dispatcher} flashMessage={this.props.flashMessage} />
+                    {this.props.blockchainIsLoaded && (
+                        <LedgerConfigDialog
+                            providerType={this.props.providerType}
+                            networkId={this.props.networkId}
+                            blockchain={this._blockchain}
+                            dispatcher={this.props.dispatcher}
+                            toggleDialogFn={this.onToggleLedgerDialog.bind(this)}
+                            isOpen={this.state.isLedgerDialogOpen}
+                        />
+                    )}
                 </div>
-                <Footer />
+                <Footer />;
             </div>
         );
+    }
+    public onToggleLedgerDialog() {
+        this.setState({
+            isLedgerDialogOpen: !this.state.isLedgerDialogOpen,
+        });
     }
     private _renderEthWrapper() {
         return (
@@ -251,9 +275,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 blockchain={this._blockchain}
                 dispatcher={this.props.dispatcher}
                 tokenByAddress={this.props.tokenByAddress}
-                tokenStateByAddress={this.props.tokenStateByAddress}
                 userAddress={this.props.userAddress}
                 userEtherBalance={this.props.userEtherBalance}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
@@ -267,6 +291,8 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         );
     }
     private _renderTokenBalances() {
+        const allTokens = _.values(this.props.tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <TokenBalances
                 blockchain={this._blockchain}
@@ -275,10 +301,11 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 dispatcher={this.props.dispatcher}
                 screenWidth={this.props.screenWidth}
                 tokenByAddress={this.props.tokenByAddress}
-                tokenStateByAddress={this.props.tokenStateByAddress}
+                trackedTokens={trackedTokens}
                 userAddress={this.props.userAddress}
                 userEtherBalance={this.props.userEtherBalance}
                 networkId={this.props.networkId}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
@@ -296,8 +323,8 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 networkId={this.props.networkId}
                 userAddress={this.props.userAddress}
                 tokenByAddress={this.props.tokenByAddress}
-                tokenStateByAddress={this.props.tokenStateByAddress}
                 dispatcher={this.props.dispatcher}
+                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
     }
@@ -352,10 +379,5 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     private _updateScreenWidth() {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
-    }
-    private async _updateBalanceAndAllowanceWithLoadingScreenAsync(tokens: Token[]) {
-        this.props.dispatcher.updateBlockchainIsLoaded(false);
-        await this._blockchain.updateTokenBalancesAndAllowancesAsync(tokens);
-        this.props.dispatcher.updateBlockchainIsLoaded(true);
     }
 }
