@@ -3,9 +3,9 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 export class BaseContract {
-    protected web3ContractInstance: Web3.ContractInstance;
-    protected defaults: Partial<TxData>;
-    protected async applyDefaultsToTxDataAsync<T extends TxData|TxDataPayable>(
+    protected _web3ContractInstance: Web3.ContractInstance;
+    protected _defaults: Partial<TxData>;
+    protected async _applyDefaultsToTxDataAsync<T extends TxData|TxDataPayable>(
         txData: T,
         estimateGasAsync?: (txData: T) => Promise<number>,
     ): Promise<TxData> {
@@ -15,7 +15,7 @@ export class BaseContract {
         // 3. Gas estimate calculation + safety margin
         const removeUndefinedProperties = _.pickBy;
         const txDataWithDefaults = {
-            ...removeUndefinedProperties(this.defaults),
+            ...removeUndefinedProperties(this._defaults),
             ...removeUndefinedProperties(txData as any),
             // HACK: TS can't prove that T is spreadable.
             // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
@@ -27,7 +27,7 @@ export class BaseContract {
         return txDataWithDefaults;
     }
     constructor(web3ContractInstance: Web3.ContractInstance, defaults: Partial<TxData>) {
-        this.web3ContractInstance = web3ContractInstance;
-        this.defaults = defaults;
+        this._web3ContractInstance = web3ContractInstance;
+        this._defaults = defaults;
     }
 }

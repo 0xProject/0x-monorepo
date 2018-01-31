@@ -12,7 +12,7 @@ type RelevantClassMember =
 // Copied from: https://github.com/DanielRosenwasser/underscore-privates-tslint-rule
 // The version on github is not published on npm
 export class Rule extends Lint.Rules.AbstractRule {
-    public static FAILURE_STRING = 'private members must be prefixed with an underscore';
+    public static FAILURE_STRING = 'private and protected members must be prefixed with an underscore';
 
     public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
         return this.applyWithFunction(sourceFile, walk);
@@ -54,7 +54,7 @@ function nameStartsWithUnderscore(text: string) {
     return text.charCodeAt(0) === UNDERSCORE.charCodeAt(0);
 }
 function memberIsPrivate(node: ts.Declaration) {
-    return Lint.hasModifier(node.modifiers, ts.SyntaxKind.PrivateKeyword);
+    return Lint.hasModifier(node.modifiers, ts.SyntaxKind.PrivateKeyword, ts.SyntaxKind.ProtectedKeyword);
 }
 function nameIsIdentifier(node: ts.Node): node is ts.Identifier {
     return node.kind === ts.SyntaxKind.Identifier;
