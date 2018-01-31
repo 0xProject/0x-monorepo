@@ -101,7 +101,7 @@ declare module 'web3-provider-engine' {
 }
 declare module 'web3-provider-engine/util/rpc-cache-utils' {
     class ProviderEngineRpcUtils {
-        public static blockTagForPayload(payload: any): string|null;
+        public static blockTagForPayload(payload: any): string | null;
     }
     export = ProviderEngineRpcUtils;
 }

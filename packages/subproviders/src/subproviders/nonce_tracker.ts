@@ -10,12 +10,17 @@ import { Subprovider } from './subprovider';
 
 const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
 
+export type OptionalNextCallback = (callback?: (err: Error | null, result: any, cb: any) => void) => void;
+export type ErrorCallback = (err: Error | null, data?: any) => void;
+
 export class NonceTrackerSubprovider extends Subprovider {
     private _nonceCache: { [address: string]: string } = {};
     private static _reconstructTransaction(payload: JSONRPCPayload): EthereumTx {
         const raw = payload.params[0];
-        const transactionData = ethUtil.stripHexPrefix(raw);
-        const rawData = new Buffer(transactionData, 'hex');
+        if (_.isUndefined(raw)) {
+            throw new Error('Invalid transaction: empty parameters');
+        }
+        const rawData = ethUtil.toBuffer(raw);
         return new EthereumTx(rawData);
     }
     private static _determineAddress(payload: JSONRPCPayload): string {
@@ -26,25 +31,18 @@ export class NonceTrackerSubprovider extends Subprovider {
                 const transaction = NonceTrackerSubprovider._reconstructTransaction(payload);
                 return `0x${transaction.getSenderAddress().toString('hex')}`.toLowerCase();
             default:
-                throw new Error('Invalid Method');
+                throw new Error(`Invalid Method: ${payload.method}`);
         }
     }
-    constructor() {
-        super();
-    }
     // tslint:disable-next-line:async-suffix
-    public async handleRequest(
-        payload: JSONRPCPayload,
-        next: (callback?: (err: Error | null, result: any, cb: any) => void) => void,
-        end: (err: Error | null, data?: any) => void,
-    ): Promise<void> {
+    public async handleRequest(payload: JSONRPCPayload, next: OptionalNextCallback, end: ErrorCallback): Promise<void> {
         switch (payload.method) {
             case 'eth_getTransactionCount':
                 const blockTag = providerEngineUtils.blockTagForPayload(payload);
                 if (!_.isNull(blockTag) && blockTag === 'pending') {
                     const address = NonceTrackerSubprovider._determineAddress(payload);
                     const cachedResult = this._nonceCache[address];
-                    if (cachedResult) {
+                    if (!_.isUndefined(cachedResult)) {
                         return end(null, cachedResult);
                     } else {
                         return next((requestError: Error | null, requestResult: any, cb: any) => {
