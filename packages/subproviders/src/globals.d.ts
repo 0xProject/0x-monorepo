@@ -1,4 +1,3 @@
-
 declare module 'dirty-chai';
 declare module 'es6-promisify';
 

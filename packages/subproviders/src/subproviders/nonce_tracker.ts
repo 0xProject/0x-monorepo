@@ -1,4 +1,3 @@
-import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import EthereumTx = require('ethereumjs-tx');
@@ -46,21 +45,17 @@ export class NonceTrackerSubprovider extends Subprovider {
                     const address = NonceTrackerSubprovider._determineAddress(payload);
                     const cachedResult = this._nonceCache[address];
                     if (cachedResult) {
-                        end(null, cachedResult);
-                        return;
+                        return end(null, cachedResult);
                     } else {
-                        next((requestError: Error | null, requestResult: any, cb: any) => {
+                        return next((requestError: Error | null, requestResult: any, cb: any) => {
                             if (_.isNull(requestError)) {
                                 this._nonceCache[address] = requestResult as string;
                             }
                             cb();
-                            return;
                         });
-                        return;
                     }
                 } else {
-                    next();
-                    return;
+                    return next();
                 }
             case 'eth_sendRawTransaction':
                 return next(async (sendTransactionError: Error | null, txResult: any, cb: any) => {
