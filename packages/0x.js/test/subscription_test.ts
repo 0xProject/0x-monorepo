@@ -49,7 +49,7 @@ describe('SubscriptionTest', () => {
             tokenAddress = token.address;
         });
         afterEach(() => {
-            zeroEx.token.unsubscribeAll();
+            zeroEx.token._unsubscribeAll();
             _.each(stubs, s => s.restore());
             stubs = [];
         });
@@ -76,7 +76,7 @@ describe('SubscriptionTest', () => {
                 const callback = (err: Error | null, logEvent?: DecodedLogEvent<ApprovalContractEventArgs>) => _.noop;
                 zeroEx.token.subscribe(tokenAddress, TokenEvents.Approval, indexFilterValues, callback);
                 stubs = [Sinon.stub((zeroEx as any)._web3Wrapper, 'getBlockAsync').throws(new Error('JSON RPC error'))];
-                zeroEx.token.unsubscribeAll();
+                zeroEx.token._unsubscribeAll();
                 done();
             })().catch(done);
         });

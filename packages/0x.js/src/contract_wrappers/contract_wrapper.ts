@@ -52,7 +52,7 @@ export class ContractWrapper {
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
-    protected unsubscribeAll(): void {
+    protected _unsubscribeAll(): void {
         const filterTokens = _.keys(this._filterCallbacks);
         _.each(filterTokens, filterToken => {
             this._unsubscribe(filterToken);

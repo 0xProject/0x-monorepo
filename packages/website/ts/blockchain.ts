@@ -689,7 +689,7 @@ export class Blockchain {
         }
     }
     private _stopWatchingExchangeLogFillEvents(): void {
-        this._zeroEx.exchange.unsubscribeAll();
+        this._zeroEx.exchange._unsubscribeAll();
     }
     private async _getTokenRegistryTokensByAddressAsync(): Promise<TokenByAddress> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
