@@ -42,8 +42,10 @@ const args = yargs
         demandOption: true,
         normalize: true,
     })
-    .example("$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'", 'Full usage example')
-    .argv;
+    .example(
+        "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
+        'Full usage example',
+    ).argv;
 
 function registerPartials(partialsGlob: string) {
     const partialTemplateFileNames = globSync(partialsGlob);
