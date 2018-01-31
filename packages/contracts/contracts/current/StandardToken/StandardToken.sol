@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-import "../../contracts_old/Token/v1.sol";
+import "../../old/Token/v1.sol";
 
 contract StandardToken is Token {
 

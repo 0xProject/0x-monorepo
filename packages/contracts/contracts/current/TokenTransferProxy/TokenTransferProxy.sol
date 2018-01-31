@@ -18,8 +18,8 @@
 
 pragma solidity ^0.4.11;
 
-import "../../contracts_old/Token/v1.sol";
-import "../../contracts_old/Ownable/v1.sol";
+import "../../old/Token/v1.sol";
+import "../../old/Ownable/v1.sol";
 
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
