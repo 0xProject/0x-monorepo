@@ -1,5 +1,4 @@
 import * as DummyTokenArtifact from '../build/artifacts/DummyToken.json';
-import * as DummyTokenV2Artifact from '../build/artifacts/DummyToken_v2.json';
 import * as ExchangeArtifact from '../build/artifacts/Exchange.json';
 import * as MaliciousTokenArtifact from '../build/artifacts/MaliciousToken.json';
 import * as MultiSigWalletWithTimeLockArtifact from '../build/artifacts/MultiSigWalletWithTimeLock.json';
