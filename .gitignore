@@ -73,4 +73,4 @@ packages/website/public/bundle*
 bin/
 
 #Finder files
-.DS_STORE
+.DS_Store
