@@ -5,6 +5,7 @@
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
     "scripts": {
+        "build:watch": "tsc -w",
         "clean": "shx rm -rf lib",
         "build": "tsc",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",

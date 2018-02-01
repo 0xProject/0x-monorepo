@@ -5,6 +5,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "build": "tsc",
         "clean": "shx rm -rf _bundles lib test_temp",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",

@@ -4,6 +4,7 @@
     "private": true,
     "description": "Helper scripts for the monorepo",
     "scripts": {
+        "build:watch": "tsc -w",
         "deps_versions": "node ./lib/deps_versions.js",
         "lint": "tslint --project . 'src/**/*.ts'",
         "clean": "shx rm -rf lib",

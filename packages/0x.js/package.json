@@ -6,6 +6,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "prebuild": "run-s clean generate_contract_wrappers",
         "build": "run-p build:umd:prod build:commonjs; exit 0;",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",

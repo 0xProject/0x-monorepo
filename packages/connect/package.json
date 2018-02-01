@@ -6,6 +6,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "build": "tsc",
         "clean": "shx rm -rf _bundles lib test_temp",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",

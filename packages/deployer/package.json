@@ -5,6 +5,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' src/solc/solc_bin/* ./lib && tsc",
         "test": "npm run build; mocha lib/test/*_test.js",
         "compile": "npm run build; node lib/src/cli.js compile",
