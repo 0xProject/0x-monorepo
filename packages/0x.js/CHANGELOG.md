@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.31.1 - _February 1, 2018_
+
+    * Fix the bug causing order watcher to throw is makerToken === zrx (#357)
+
 ## v0.31.0 - _January 30, 2018_
 
     * Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the
