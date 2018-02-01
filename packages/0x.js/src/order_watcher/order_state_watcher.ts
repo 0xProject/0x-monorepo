@@ -133,10 +133,10 @@ export class OrderStateWatcher {
         delete this._orderStateByOrderHashCache[orderHash];
         const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
-        
+
         this._removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
         if (zrxTokenAddress !== signedOrder.makerTokenAddress) {
-            this.removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
+            this._removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
         }
 
         this._expirationWatcher.removeOrder(orderHash);
