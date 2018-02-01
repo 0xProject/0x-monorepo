@@ -24,6 +24,8 @@
         "@types/glob": "^5.0.33",
         "@types/lodash": "^4.14.92",
         "@types/node": "^8.0.53",
+        "@types/pg": "^7.4.1",
+        "@types/request": "^2.0.13",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "~2.6.1",
@@ -35,7 +37,9 @@
         "dotenv": "^4.0.0",
         "lodash": "^4.17.4",
         "node-redshift": "^0.1.5",
+        "pg": "^7.4.1",
         "queue": "^4.4.2",
+        "request": "^2.83.0",
         "web3": "^0.20.0"
     }
 }

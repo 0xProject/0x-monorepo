@@ -77,6 +77,10 @@ const logToEventSchemaMapping: any = {
     'args.paidMakerFee': 'maker_fee',
     'args.paidTakerFee': 'taker_fee',
     'args.orderHash': 'order_hash',
+    'args.cancelledMakerTokenAmount' : 'maker_amount',
+    'args.cancelledTakerTokenAmount' : 'taker_amount',
+    'args.errorId' : 'error_id',
+
 };
 
 export { event, logToEventSchemaMapping };
