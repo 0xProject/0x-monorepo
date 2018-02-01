@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## v0.4.0 - _January 28, 2017_
+## v0.4.1 - _Febuary 2, 2018_
+
+    * Added NonceTrackerSubprovider
+
+## v0.4.0 - _January 28, 2018_
 
     * Return a transaction hash from `_sendTransactionAsync` (#303)
 
