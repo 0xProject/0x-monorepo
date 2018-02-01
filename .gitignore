@@ -71,6 +71,3 @@ packages/website/public/bundle*
 
 # generated binaries
 bin/
-
-# contract artifacts
-packages/contracts/build/

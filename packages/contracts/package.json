@@ -9,7 +9,7 @@
     },
     "scripts": {
         "prebuild": "run-s clean copy_artifacts",
-        "copy_artifacts": "copyfiles './build/**/*' './deploy/solc/solc_bin/*' './deploy/test/fixtures/contracts/**/*' './deploy/test/fixtures/contracts/*' ./lib",
+        "copy_artifacts": "copyfiles './artifacts/**/*' ./lib",
         "build": "tsc",
         "test": "run-s compile build run_mocha",
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 10000 --bail --exit",

@@ -1,20 +1,19 @@
-import * as DummyTokenArtifact from '../build/artifacts/DummyToken.json';
-import * as ExchangeArtifact from '../build/artifacts/Exchange.json';
-import * as MaliciousTokenArtifact from '../build/artifacts/MaliciousToken.json';
-import * as MultiSigWalletWithTimeLockArtifact from '../build/artifacts/MultiSigWalletWithTimeLock.json';
-import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact from '../build/artifacts/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
-import * as TokenArtifact from '../build/artifacts/Token.json';
-import * as TokenRegistryArtifact from '../build/artifacts/TokenRegistry.json';
-import * as TokenTransferProxyArtifact from '../build/artifacts/TokenTransferProxy.json';
-import * as EtherTokenArtifact from '../build/artifacts/WETH9.json';
-import * as ZRXArtifact from '../build/artifacts/ZRXToken.json';
+import * as DummyTokenArtifact from '../artifacts/DummyToken.json';
+import * as ExchangeArtifact from '../artifacts/Exchange.json';
+import * as MaliciousTokenArtifact from '../artifacts/MaliciousToken.json';
+import * as MultiSigWalletWithTimeLockArtifact from '../artifacts/MultiSigWalletWithTimeLock.json';
+import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact from '../artifacts/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
+import * as TokenArtifact from '../artifacts/Token.json';
+import * as TokenRegistryArtifact from '../artifacts/TokenRegistry.json';
+import * as TokenTransferProxyArtifact from '../artifacts/TokenTransferProxy.json';
+import * as EtherTokenArtifact from '../artifacts/WETH9.json';
+import * as ZRXArtifact from '../artifacts/ZRXToken.json';
 
 import { Artifact } from './types';
 
 export const artifacts = {
     ZRXArtifact: (ZRXArtifact as any) as Artifact,
     DummyTokenArtifact: (DummyTokenArtifact as any) as Artifact,
-    DummyTokenV2Artifact: (DummyTokenV2Artifact as any) as Artifact,
     TokenArtifact: (TokenArtifact as any) as Artifact,
     ExchangeArtifact: (ExchangeArtifact as any) as Artifact,
     EtherTokenArtifact: (EtherTokenArtifact as any) as Artifact,
