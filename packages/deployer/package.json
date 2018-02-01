@@ -31,7 +31,7 @@
         "copyfiles": "^1.2.0",
         "web3-typescript-typings": "^0.9.4",
         "types-bn": "^0.0.1",
-        "typescript": "~2.6.1",
+        "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.7"
     },
     "dependencies": {

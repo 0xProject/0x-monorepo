@@ -99,7 +99,7 @@
         "source-map-loader": "^0.1.6",
         "style-loader": "0.13.x",
         "tslint": "5.8.0",
-        "typescript": "~2.6.1",
+        "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.7",
         "webpack": "^3.1.0",
         "webpack-dev-middleware": "^1.10.0",

@@ -27,7 +27,7 @@
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "web3-typescript-typings": "^0.9.5",
-        "typescript": "~2.6.1"
+        "typescript": "2.7.1"
     },
     "dependencies": {
         "bignumber.js": "~4.1.0",
