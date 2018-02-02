@@ -1,0 +1,46 @@
+{
+    "contract_name": "Ownable_v1",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.11",
+            "keccak256": "0x82a6595d8d4c3c9cd44ef0fd8f77528195c35c8173970d2b119374f5d74332f4",
+            "optimizer_enabled": 0,
+            "abi": [
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "owner",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "payable": false,
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "newOwner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "transferOwnership",
+                    "outputs": [],
+                    "payable": false,
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "payable": false,
+                    "type": "constructor"
+                }
+            ],
+            "unlinked_binary":
+                "0x6060604052341561000c57fe5b5b33600060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505b5b6101fa8061005f6000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680638da5cb5b14610046578063f2fde38b14610098575bfe5b341561004e57fe5b6100566100ce565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156100a057fe5b6100cc600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506100f4565b005b600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161415156101515760006000fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415156101c95780600060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505b5b5b505600a165627a7a723058201bce811586dc86b1fc25fa9779089c5bf0b5d2cf9e981a580ef44253300866520029",
+            "updated_at": 1517535966230
+        }
+    }
+}
