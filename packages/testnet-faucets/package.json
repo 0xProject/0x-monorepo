@@ -16,6 +16,7 @@
     "dependencies": {
         "0x.js": "^0.31.1",
         "@0xproject/utils": "^0.2.4",
+        "@0xproject/subproviders": "^0.3.5",
         "body-parser": "^1.17.1",
         "ethereumjs-tx": "^1.3.3",
         "express": "^4.15.2",
