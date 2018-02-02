@@ -181,10 +181,15 @@ export class Compiler {
         );
 
         if (!_.isUndefined(compiled.errors)) {
-            _.each(compiled.errors, errMsg => {
+            const warnings = _.filter(compiled.errors, error => error.includes('Warning'));
+            const errors = _.filter(compiled.errors, error => !error.includes('Warning'));
+            _.each(errors, errMsg => {
                 const normalizedErrMsg = Compiler._getNormalizedErrMsg(errMsg);
                 this._solcErrors.add(normalizedErrMsg);
             });
+            if (!_.isEmpty(errors)) {
+                return;
+            }
         }
 
         const contractIdentifier = `${contractBaseName}:${contractName}`;
