@@ -678,7 +678,7 @@ describe('Exchange', () => {
                 exWrapper.fillOrderAsync(order, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: false,
                 }),
-            ).to.be.rejectedWith(constants.INVALID_OPCODE);
+            ).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if an order is expired', async () => {
