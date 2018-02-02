@@ -200,6 +200,7 @@ describe('Arbitrage', () => {
                 ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
                 { from: edFrontRunner },
             );
+            // tslint:disable-next-line:await-promise
             await expect(arbitrage.makeAtomicTrade(addresses, values, v, r, s, { from: coinbase })).to.be.rejectedWith(
                 constants.REVERT,
             );
