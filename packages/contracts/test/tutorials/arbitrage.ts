@@ -22,7 +22,7 @@ const web3 = web3Factory.create();
 const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 const blockchainLifecycle = new BlockchainLifecycle();
 
-describe.only('Arbitrage', () => {
+describe('Arbitrage', () => {
     let coinbase: string;
     let maker: string;
     let edMaker: string;
@@ -177,13 +177,14 @@ describe.only('Arbitrage', () => {
             r = [order.params.r as string, edSignature.r];
             s = [order.params.s as string, edSignature.s];
         });
-        it('1', async () => {
+        it('should successfully execute the arbitrage if not front-runner', async () => {
             const txHash = await arbitrage.makeAtomicTrade(addresses, values, v, r, s, { from: coinbase });
             const res = await zeroEx.awaitTransactionMinedAsync(txHash);
             const postBalance = await weth.balanceOf(arbitrage.address);
             expect(postBalance).to.be.bignumber.equal(ZeroEx.toBaseUnitAmount(new BigNumber(2), 18));
         });
-        it('2', async () => {
+        it('should fail and revert if front-runned', async () => {
+            const preBalance = await weth.balanceOf(arbitrage.address);
             // Front-running transaction
             await etherDelta.trade(
                 tokenGet,
@@ -199,9 +200,11 @@ describe.only('Arbitrage', () => {
                 ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
                 { from: edFrontRunner },
             );
-            return expect(arbitrage.makeAtomicTrade(addresses, values, v, r, s, { from: coinbase })).to.be.rejectedWith(
+            await expect(arbitrage.makeAtomicTrade(addresses, values, v, r, s, { from: coinbase })).to.be.rejectedWith(
                 constants.REVERT,
             );
+            const postBalance = await weth.balanceOf(arbitrage.address);
+            expect(preBalance).to.be.bignumber.equal(postBalance);
         });
     });
 });
