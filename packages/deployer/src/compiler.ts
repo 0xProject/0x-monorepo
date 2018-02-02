@@ -209,6 +209,9 @@ export class Compiler {
                 const normalizedErrMsg = Compiler._getNormalizedErrMsg(errMsg);
                 this._solcErrors.add(normalizedErrMsg);
             });
+            if (!_.isEmpty(compiled.errors)) {
+                return;
+            }
         }
 
         const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
