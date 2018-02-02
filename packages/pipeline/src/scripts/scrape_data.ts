@@ -6,7 +6,7 @@ import * as request from 'request';
 import { postgresClient } from '../postgres.js';
 import { typeConverters } from '../utils.js';
 import { web3, zrx} from '../zrx.js';
-import { insertDataScripts } from './tables.js';
+import { insertDataScripts } from './create_tables.js';
 import { dataFetchingQueries } from './query_data.js';
 
 const optionDefinitions = [{ name: 'from', alias: 'f', type: Number }, { name: 'to', alias: 't', type: Number }, { name: 'type', type: String}, {name:'id', type: String}, {name:'force', type: Boolean}];
@@ -112,6 +112,7 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                 parsedEvents[ExchangeEvents.LogCancel] = [];
                 parsedEvents[ExchangeEvents.LogError] = [];
 
+
                 for (const index in data) {
                     for (const datum of data[index]) {
                         const event = typeConverters.convertLogEventToEventObject(datum);
@@ -121,7 +122,12 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
 
                 for (const event_type in parsedEvents) {
                     if(parsedEvents[event_type].length > 0) {
-                        insertDataScripts.insertMultipleRows('events_raw', parsedEvents[event_type], Object.keys(parsedEvents[event_type][0]));
+                        insertDataScripts.insertMultipleRows('events_raw', parsedEvents[event_type], Object.keys(parsedEvents[event_type][0])).
+                        catch((error:any) => {
+                            console.log(error);
+                            console.log(parsedEvents);
+                            console.log(data);
+                        })
                     }
                 }
                 cb();

@@ -21,7 +21,8 @@ const dataInsertionQueries: any = {
         taker_token,
         txn_hash,
         fee_recipient,
-        block_number
+        block_number,
+        log_index
     )
         (SELECT 
             b.timestamp,
@@ -38,7 +39,8 @@ const dataInsertionQueries: any = {
             a.taker_token,
             a.txn_hash,
             a.fee_recipient,
-            a.block_number
+            a.block_number,
+            a.log_index
         FROM
             events_raw a
         JOIN
@@ -66,6 +68,7 @@ const dataInsertionQueries: any = {
         txn_hash,
         fee_recipient,
         block_number,
+        log_index,
         gas_used,
         gas_price,
         method_id,
@@ -87,6 +90,7 @@ const dataInsertionQueries: any = {
             a.txn_hash,
             a.fee_recipient,
             a.block_number,
+            a.log_index,
             b.gas_used,
             b.gas_price,
             b.method_id,

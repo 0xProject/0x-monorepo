@@ -67,6 +67,7 @@ const logToEventSchemaMapping: any = {
     blockNumber: 'block_number',
     transactionHash: 'txn_hash',
     event: 'event_type',
+    logIndex: 'log_index',
     'args.maker': 'maker',
     'args.taker': 'taker',
     'args.feeRecipient': 'fee_recipient',
