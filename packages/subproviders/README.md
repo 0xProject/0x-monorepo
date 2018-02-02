@@ -64,6 +64,12 @@ yarn install
 yarn build
 ```
 
+or
+
+```bash
+yarn build:watch
+```
+
 ### Clean
 
 ```bash
