@@ -21,6 +21,7 @@ declare module 'ethereumjs-tx' {
     export = EthereumTx;
 }
 
+/* tslint:disable */
 declare module 'web3-provider-engine' {
     class Web3ProviderEngine {
         public on(event: string, handler: () => void): void;
@@ -32,6 +33,7 @@ declare module 'web3-provider-engine' {
     }
     export = Web3ProviderEngine;
 }
+/* tslint:enable */
 
 declare module 'web3-provider-engine/subproviders/rpc';
 declare module 'web3-provider-engine/subproviders/nonce-tracker';
