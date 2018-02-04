@@ -347,7 +347,7 @@ contract Exchange is SafeMath {
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
-        public
+        external
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrder(
@@ -374,7 +374,7 @@ contract Exchange is SafeMath {
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
-        public
+        external
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrKillOrder(
@@ -401,7 +401,7 @@ contract Exchange is SafeMath {
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
-        public
+        external
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrderNoThrow(
@@ -429,7 +429,7 @@ contract Exchange is SafeMath {
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
-        public
+        external
         returns (uint256 totalTakerTokenFilledAmount)
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
@@ -460,12 +460,12 @@ contract Exchange is SafeMath {
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
-        public
+        external
         returns (uint256 totalTakerTokenFilledAmount)
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             require(orderAddresses[i][3] == orderAddresses[0][3]); // takerToken must be the same for each order
-            var (success, takerTokenFilledAmount) = fillOrderNoThrow(
+            var (, takerTokenFilledAmount) = fillOrderNoThrow(
                 orderAddresses[i],
                 orderValues[i],
                 safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
@@ -485,7 +485,7 @@ contract Exchange is SafeMath {
         address[5][] orderAddresses,
         uint256[6][] orderValues,
         uint256[] takerTokenCancelAmounts)
-        public
+        external
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             cancelOrder(
@@ -497,33 +497,8 @@ contract Exchange is SafeMath {
     }
 
     /*
-    * Constant public functions
+    * Internal functions
     */
-
-    /// @dev Calculates Keccak-256 hash of order with specified parameters.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @return Keccak-256 hash of order.
-    function getOrderHash(address[5] orderAddresses, uint256[6] orderValues)
-        public
-        constant
-        returns (bytes32)
-    {
-        return keccak256(
-            address(this),
-            orderAddresses[0], // maker
-            orderAddresses[1], // taker
-            orderAddresses[2], // makerToken
-            orderAddresses[3], // takerToken
-            orderAddresses[4], // feeRecipient
-            orderValues[0],    // makerTokenAmount
-            orderValues[1],    // takerTokenAmount
-            orderValues[2],    // makerFee
-            orderValues[3],    // takerFee
-            orderValues[4],    // expirationTimestampInSec
-            orderValues[5]     // salt
-        );
-    }
 
     /// @dev Verifies that an order signature is valid.
     /// @param signer address of signer.
@@ -538,27 +513,50 @@ contract Exchange is SafeMath {
         uint8 v,
         bytes32 r,
         bytes32 s)
-        public
-        constant
-        returns (bool)
+        internal
+        pure
+        returns (bool isValid)
     {
-        return signer == ecrecover(
+        isValid = signer == ecrecover(
             keccak256("\x19Ethereum Signed Message:\n32", hash),
             v,
             r,
             s
         );
     }
-
+    /// @dev Calculates Keccak-256 hash of order with specified parameters.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @return Keccak-256 hash of order.
+    function getOrderHash(address[5] orderAddresses, uint256[6] orderValues)
+        internal
+        view
+        returns (bytes32 orderHash)
+    {
+        orderHash = keccak256(
+            address(this),
+            orderAddresses[0], // maker
+            orderAddresses[1], // taker
+            orderAddresses[2], // makerToken
+            orderAddresses[3], // takerToken
+            orderAddresses[4], // feeRecipient
+            orderValues[0],    // makerTokenAmount
+            orderValues[1],    // takerTokenAmount
+            orderValues[2],    // makerFee
+            orderValues[3],    // takerFee
+            orderValues[4],    // expirationTimestampInSec
+            orderValues[5]     // salt
+        );
+    }
     /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
     function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
-        public
-        constant
-        returns (bool)
+        internal
+        view
+        returns (bool isError)
     {
         uint256 remainder = mulmod(target, numerator, denominator);
         if (remainder == 0) return false; // No rounding error.
@@ -567,38 +565,30 @@ contract Exchange is SafeMath {
             safeMul(remainder, 1000000),
             safeMul(numerator, target)
         );
-        return errPercentageTimes1000000 > 1000;
+        isError = errPercentageTimes1000000 > 1000;
     }
-
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target.
     function getPartialAmount(uint256 numerator, uint256 denominator, uint256 target)
-        public
-        constant
-        returns (uint256)
+        internal
+        view
+        returns (uint256 partialAmount)
     {
-        return safeDiv(safeMul(numerator, target), denominator);
+        partialAmount = safeDiv(safeMul(numerator, target), denominator);
     }
-
     /// @dev Calculates the sum of values already filled and cancelled for a given order.
     /// @param orderHash The Keccak-256 hash of the given order.
     /// @return Sum of values already filled and cancelled.
     function getUnavailableTakerTokenAmount(bytes32 orderHash)
-        public
-        constant
-        returns (uint256)
+        internal
+        view
+        returns (uint256 unavailableTakerTokenAmount)
     {
-        return safeAdd(filled[orderHash], cancelled[orderHash]);
+        unavailableTakerTokenAmount = safeAdd(filled[orderHash], cancelled[orderHash]);
     }
-
-
-    /*
-    * Internal functions
-    */
-
     /// @dev Transfers a token using TokenTransferProxy transferFrom function.
     /// @param token Address of token to transferFrom.
     /// @param from Address transfering token.
@@ -611,8 +601,8 @@ contract Exchange is SafeMath {
         address to,
         uint256 value)
         internal
-        returns (bool)
+        returns (bool success)
     {
-        return TokenTransferProxy(TOKEN_TRANSFER_PROXY_CONTRACT).transferFrom(token, from, to, value);
+        success = TokenTransferProxy(TOKEN_TRANSFER_PROXY_CONTRACT).transferFrom(token, from, to, value);
     }
 }
