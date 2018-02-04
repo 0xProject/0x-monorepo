@@ -51,10 +51,9 @@ contract Exchange is SafeMath {
         address takerToken,
         uint256 makerTokenFilledAmount,
         uint256 takerTokenFilledAmount,
-        uint256 paidMakerFee,
-        uint256 paidTakerFee,
-        bytes32 indexed tokens, // keccak256(makerToken, takerToken), allows subscribing to a token pair
-        bytes32 orderHash
+        uint256 makerFeePaid,
+        uint256 takerFeePaid,
+        bytes32 indexed orderHash
     );
 
     event LogCancel(
@@ -62,10 +61,9 @@ contract Exchange is SafeMath {
         address indexed feeRecipient,
         address makerToken,
         address takerToken,
-        uint256 cancelledMakerTokenAmount,
+        uint256 makerTokenCancelledAmount,
         uint256 takerTokenCancelledAmount,
-        bytes32 indexed tokens,
-        bytes32 orderHash
+        bytes32 indexed orderHash
     );
 
     event LogError(uint8 indexed errorId, bytes32 indexed orderHash);
@@ -152,8 +150,8 @@ contract Exchange is SafeMath {
         }
 
         uint256 makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
-        uint256 paidMakerFee;
-        uint256 paidTakerFee;
+        uint256 makerFeePaid;
+        uint256 takerFeePaid;
         filled[order.orderHash] = safeAdd(filled[order.orderHash], takerTokenFilledAmount);
         require(transferViaTokenTransferProxy(
             order.makerToken,
@@ -169,21 +167,21 @@ contract Exchange is SafeMath {
         ));
         if (order.feeRecipient != address(0)) {
             if (order.makerFee > 0) {
-                paidMakerFee = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
+                makerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
                 require(transferViaTokenTransferProxy(
                     ZRX_TOKEN_CONTRACT,
                     order.maker,
                     order.feeRecipient,
-                    paidMakerFee
+                    makerFeePaid
                 ));
             }
             if (order.takerFee > 0) {
-                paidTakerFee = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
+                takerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
                 require(transferViaTokenTransferProxy(
                     ZRX_TOKEN_CONTRACT,
                     msg.sender,
                     order.feeRecipient,
-                    paidTakerFee
+                    takerFeePaid
                 ));
             }
         }
@@ -196,8 +194,8 @@ contract Exchange is SafeMath {
             order.takerToken,
             makerTokenFilledAmount,
             takerTokenFilledAmount,
-            paidMakerFee,
-            paidTakerFee,
+            makerFeePaid,
+            takerFeePaid,
             keccak256(order.makerToken, order.takerToken),
             order.orderHash
         );
