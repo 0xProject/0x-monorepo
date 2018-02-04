@@ -196,7 +196,6 @@ contract Exchange is SafeMath {
             takerTokenFilledAmount,
             makerFeePaid,
             takerFeePaid,
-            keccak256(order.makerToken, order.takerToken),
             order.orderHash
         );
     }
@@ -250,7 +249,6 @@ contract Exchange is SafeMath {
             order.takerToken,
             getPartialAmount(takerTokenCancelledAmount, order.takerTokenAmount, order.makerTokenAmount),
             takerTokenCancelledAmount,
-            keccak256(order.makerToken, order.takerToken),
             order.orderHash
         );
     }
