@@ -5,6 +5,8 @@ import { EtherDelta } from "../EtherDelta/EtherDelta.sol";
 import { Ownable } from "../../utils/Ownable/Ownable.sol";
 import { Token } from "../../tokens/Token/Token.sol";
 
+/// @title Arbitrage - Facilitates atomic arbitrage of ERC20 tokens between EtherDelta and 0x Exchange contract.
+/// @author Leonid Logvinov - <leo@0xProject.com>
 contract Arbitrage is Ownable {
 
     Exchange exchange;
@@ -27,7 +29,8 @@ contract Arbitrage is Ownable {
     }
 
     /*
-     * I 愛 the limitations on Solidity stack size!
+     * Because of the limits on the number of local variables in Solidity we need to compress parameters while loosing
+     * readability. Scheme of the parameter layout:
      *
      * addresses
      * 0..4 orderAddresses
