@@ -22,7 +22,7 @@ const web3 = web3Factory.create();
 const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 const blockchainLifecycle = new BlockchainLifecycle();
 
-describe.only('Arbitrage', () => {
+describe('Arbitrage', () => {
     let coinbase: string;
     let maker: string;
     let edMaker: string;
