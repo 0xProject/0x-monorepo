@@ -19,7 +19,7 @@ contract Arbitrage is Ownable {
         proxyAddress = _proxyAddress;
     }
 
-    function setAllowances(address tokenAddress) public onlyOwner {
+    function setAllowances(address tokenAddress) external onlyOwner {
         Token token = Token(tokenAddress);
         token.approve(address(etherDelta), MAX_UINT);
         token.approve(proxyAddress, MAX_UINT);
