@@ -36,9 +36,14 @@ export class AbiDecoder {
         const dataTypes = _.map(nonIndexedInputs, input => input.type);
         const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice('0x'.length));
 
+        let failedToDecode = false;
         _.map(event.inputs, (param: Web3.EventParameter) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
             let value: BigNumber | string = param.indexed ? log.topics[topicsIndex++] : decodedData[dataIndex++];
+            if (_.isUndefined(value)) {
+                failedToDecode = true;
+                return;
+            }
             if (param.type === SolidityTypes.Address) {
                 value = AbiDecoder._padZeros(new BigNumber(value).toString(16));
             } else if (
@@ -51,11 +56,15 @@ export class AbiDecoder {
             decodedParams[param.name] = value;
         });
 
-        return {
-            ...log,
-            event: event.name,
-            args: decodedParams,
-        };
+        if (failedToDecode) {
+            return log;
+        } else {
+            return {
+                ...log,
+                event: event.name,
+                args: decodedParams,
+            };
+        }
     }
     private _addABI(abiArray: Web3.AbiDefinition[]): void {
         _.map(abiArray, (abi: Web3.AbiDefinition) => {
