@@ -135,7 +135,6 @@ describe('Arbitrage', () => {
         let edSignature: ECSignature;
         before(async () => {
             order = await orderFactory.newSignedOrderAsync();
-            const shouldAddPersonalMessagePrefix = false;
             tokenGet = zrx.address;
             amountGet = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
             tokenGive = weth.address;
@@ -146,6 +145,7 @@ describe('Arbitrage', () => {
             const edOrderHash = `0x${crypto
                 .solSHA256([etherDelta.address, tokenGet, amountGet, tokenGive, amountGive, expires, nonce])
                 .toString('hex')}`;
+            const shouldAddPersonalMessagePrefix = false;
             edSignature = await zeroEx.signOrderHashAsync(edOrderHash, edMaker, shouldAddPersonalMessagePrefix);
             addresses = [
                 order.params.maker,
@@ -177,7 +177,7 @@ describe('Arbitrage', () => {
             r = [order.params.r as string, edSignature.r];
             s = [order.params.s as string, edSignature.s];
         });
-        it('should successfully execute the arbitrage if not front-runner', async () => {
+        it('should successfully execute the arbitrage if not front-runned', async () => {
             const txHash = await arbitrage.makeAtomicTrade(addresses, values, v, r, s, { from: coinbase });
             const res = await zeroEx.awaitTransactionMinedAsync(txHash);
             const postBalance = await weth.balanceOf(arbitrage.address);
