@@ -2,6 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
+import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
@@ -74,7 +75,17 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
         try {
-            await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
+            await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits)
+            .then((fulfilled: any) => {
+                ReactGA.event({
+                    category: 'Portal',
+                    action: 'Set Allowance',
+                    label: this.props.token.symbol,
+                    value: newAllowanceAmountInBaseUnits,
+                });
+            }, (rejected: any) => {
+                console.log(rejected);
+            });
             await this.props.refetchTokenStateAsync();
         } catch (err) {
             this.setState({
