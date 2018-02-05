@@ -1,8 +1,12 @@
 # CHANGELOG
 
+## v0.x.0 - _TBD, 2018_
+
+    * Add `zeroEx.etherToken.getContractAddressIfExists` (#350)
+
 ## v0.31.1 - _February 1, 2018_
 
-    * Fix the bug causing order watcher to throw is makerToken === zrx (#357)
+    * Fix the bug causing order watcher to throw if makerToken === zrx (#357)
 
 ## v0.31.0 - _January 30, 2018_
 

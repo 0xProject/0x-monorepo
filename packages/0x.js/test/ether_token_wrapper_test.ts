@@ -17,7 +17,6 @@ import {
     ZeroEx,
     ZeroExError,
 } from '../src';
-import { artifacts } from '../src/artifacts';
 import { DoneCallback } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -60,7 +59,7 @@ describe('EtherTokenWrapper', () => {
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
-        wethContractAddress = (zeroEx.etherToken as any)._getContractAddress(artifacts.EtherTokenArtifact);
+        wethContractAddress = zeroEx.etherToken.getContractAddressIfExists() as string;
         depositWeiAmount = (zeroEx as any)._web3Wrapper.toWei(new BigNumber(5));
         decimalPlaces = 7;
         addressWithoutFunds = userAddresses[1];
@@ -70,6 +69,18 @@ describe('EtherTokenWrapper', () => {
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
+    });
+    describe('#getContractAddressIfExists', async () => {
+        it('should return contract address if connected to a known network', () => {
+            const contractAddressIfExists = zeroEx.etherToken.getContractAddressIfExists();
+            expect(contractAddressIfExists).to.not.be.undefined();
+        });
+        it('should return undefined if connected to an unknown network', () => {
+            const UNKNOWN_NETWORK_NETWORK_ID = 10;
+            const unknownNetworkZeroEx = new ZeroEx(web3.currentProvider, { networkId: UNKNOWN_NETWORK_NETWORK_ID });
+            const contractAddressIfExists = unknownNetworkZeroEx.etherToken.getContractAddressIfExists();
+            expect(contractAddressIfExists).to.be.undefined();
+        });
     });
     describe('#depositAsync', () => {
         it('should successfully deposit ETH and issue Wrapped ETH tokens', async () => {
