@@ -109,7 +109,7 @@ describe('Arbitrage', () => {
         const amountGet = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
         // Fund the front runner on EtherDelta side
         await zrx.setBalance(edFrontRunner, amountGet, { from: coinbase });
-        // Set the allowance for the maker on EtherDelta side
+        // Set the allowance for the front-runner on EtherDelta side
         await zrx.approve(etherDelta.address, INITIAL_ALLOWANCE, { from: edFrontRunner });
         // Deposit front runner funds into EtherDelta
         await etherDelta.depositToken(zrx.address, amountGet, { from: edFrontRunner });
