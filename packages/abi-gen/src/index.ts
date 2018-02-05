@@ -17,6 +17,7 @@ import { utils } from './utils';
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
 const ABI_TYPE_METHOD = 'function';
 const ABI_TYPE_EVENT = 'event';
+const DEFAULT_NETWORK_ID = 50;
 
 const args = yargs
     .option('abis', {
@@ -41,6 +42,12 @@ const args = yargs
         type: 'string',
         demandOption: true,
         normalize: true,
+    })
+    .option('network-id', {
+        describe: 'ID of the network where contract ABIs are nested in artifacts',
+        type: 'number',
+        default: DEFAULT_NETWORK_ID,
+
     })
     .example(
         "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
@@ -87,9 +94,14 @@ for (const abiFileName of abiFileNames) {
     const namedContent = utils.getNamedContent(abiFileName);
     utils.log(`Processing: ${chalk.bold(namedContent.name)}...`);
     const parsedContent = JSON.parse(namedContent.content);
-    const ABI = _.isArray(parsedContent)
-        ? parsedContent // ABI file
-        : parsedContent.abi; // Truffle contracts file
+    let ABI;
+    if (_.isArray(parsedContent)) {
+        ABI = parsedContent;  // ABI file
+    } else if (!_.isUndefined(parsedContent.abi)) {
+        ABI = parsedContent.abi;  // Truffle artifact
+    } else if (!_.isUndefined(parsedContent.networks) && !_.isUndefined(parsedContent.networks[args.networkId])) {
+        ABI = parsedContent.networks[args.networkId];  // 0x contracts package artifact
+    }
     if (_.isUndefined(ABI)) {
         utils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
         utils.log(`Please make sure your ABI file is either an array with ABI entries or an object with the abi key`);

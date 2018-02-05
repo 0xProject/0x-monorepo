@@ -17,6 +17,7 @@
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../deployer/lib/src/cli.js compile",
         "clean": "rm -rf ./lib",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template contract_templates/contract.handlebars --partials 'contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
         "migrate": "node ../deployer/lib/src/cli.js migrate",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
         "test:circleci": "yarn test"
