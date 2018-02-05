@@ -18,25 +18,24 @@
 
 pragma solidity ^0.4.19;
 
-import "./MixinExchangeCore.sol";
-import "./MixinSignatureValidatorEcrecover.sol";
-import "./MixinSettlementProxy.sol";
-import "./MixinWrapperFunctions.sol";
-
-contract Exchange is
-    MixinExchangeCore,
-    MixinSignatureValidatorEcrecover,
-    MixinSettlementProxy,
-    MixinWrapperFunctions
-{
-    string constant public VERSION = "2.0.0-alpha";
-
-    function Exchange(address _zrxToken, address _tokenTransferProxy)
+contract MExchangeCore {
+    
+    function fillOrder(
+        address[5] orderAddresses,
+        uint[6] orderValues,
+        uint fillTakerTokenAmount,
+        bool shouldThrowOnInsufficientBalanceOrAllowance,
+        uint8 v,
+        bytes32 r,
+        bytes32 s)
         public
-        MixinExchangeCore(_zrxToken)
-        MixinSignatureValidatorEcrecover()
-        MixinSettlementProxy(_tokenTransferProxy, _zrxToken)
-        MixinWrapperFunctions()
-    {
-    }
+        returns (uint filledTakerTokenAmount);
+
+    function cancelOrder(
+        address[5] orderAddresses,
+        uint[6] orderValues,
+        uint cancelTakerTokenAmount)
+        public
+        returns (uint);
+
 }

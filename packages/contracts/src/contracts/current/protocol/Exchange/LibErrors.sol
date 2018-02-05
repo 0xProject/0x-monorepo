@@ -18,25 +18,16 @@
 
 pragma solidity ^0.4.19;
 
-import "./MixinExchangeCore.sol";
-import "./MixinSignatureValidatorEcrecover.sol";
-import "./MixinSettlementProxy.sol";
-import "./MixinWrapperFunctions.sol";
-
-contract Exchange is
-    MixinExchangeCore,
-    MixinSignatureValidatorEcrecover,
-    MixinSettlementProxy,
-    MixinWrapperFunctions
-{
-    string constant public VERSION = "2.0.0-alpha";
-
-    function Exchange(address _zrxToken, address _tokenTransferProxy)
-        public
-        MixinExchangeCore(_zrxToken)
-        MixinSignatureValidatorEcrecover()
-        MixinSettlementProxy(_tokenTransferProxy, _zrxToken)
-        MixinWrapperFunctions()
-    {
+contract LibErrors {
+  
+    // Error Codes
+    enum Errors {
+        ORDER_EXPIRED,                    // Order has already expired
+        ORDER_FULLY_FILLED_OR_CANCELLED,  // Order has already been fully filled or cancelled
+        ROUNDING_ERROR_TOO_LARGE,         // Rounding error too large
+        INSUFFICIENT_BALANCE_OR_ALLOWANCE // Insufficient balance or allowance for token transfer
     }
+    
+    event LogError(uint8 indexed errorId, bytes32 indexed orderHash);
+
 }
