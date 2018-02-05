@@ -126,7 +126,6 @@ export enum ContractName {
     Exchange = 'Exchange',
     ZRXToken = 'ZRXToken',
     DummyToken = 'DummyToken',
-    DummyToken_v2 = 'DummyToken_v2',
     EtherToken = 'WETH9',
     MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
     MaliciousToken = 'MaliciousToken',

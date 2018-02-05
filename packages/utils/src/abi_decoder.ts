@@ -18,7 +18,7 @@ export class AbiDecoder {
         return `0x${formatted}`;
     }
     constructor(abiArrays: Web3.AbiDefinition[][]) {
-        _.map(abiArrays, this._addABI.bind(this));
+        _.forEach(abiArrays, this._addABI.bind(this));
     }
     // This method can only decode logs from the 0x & ERC20 smart contracts
     public tryToDecodeLogOrNoop<ArgsType>(log: Web3.LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
@@ -36,9 +36,14 @@ export class AbiDecoder {
         const dataTypes = _.map(nonIndexedInputs, input => input.type);
         const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice('0x'.length));
 
-        _.map(event.inputs, (param: Web3.EventParameter) => {
+        let failedToDecode = false;
+        _.forEach(event.inputs, (param: Web3.EventParameter) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
             let value: BigNumber | string = param.indexed ? log.topics[topicsIndex++] : decodedData[dataIndex++];
+            if (_.isUndefined(value)) {
+                failedToDecode = true;
+                return;
+            }
             if (param.type === SolidityTypes.Address) {
                 value = AbiDecoder._padZeros(new BigNumber(value).toString(16));
             } else if (
@@ -51,11 +56,15 @@ export class AbiDecoder {
             decodedParams[param.name] = value;
         });
 
-        return {
-            ...log,
-            event: event.name,
-            args: decodedParams,
-        };
+        if (failedToDecode) {
+            return log;
+        } else {
+            return {
+                ...log,
+                event: event.name,
+                args: decodedParams,
+            };
+        }
     }
     private _addABI(abiArray: Web3.AbiDefinition[]): void {
         _.map(abiArray, (abi: Web3.AbiDefinition) => {

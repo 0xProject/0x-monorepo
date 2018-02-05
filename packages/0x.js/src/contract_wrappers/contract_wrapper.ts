@@ -32,10 +32,10 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
 
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
-    private _networkId: number;
+    protected _networkId: number;
     private _abiDecoder?: AbiDecoder;
-    private _blockAndLogStreamerIfExists: BlockAndLogStreamer | undefined;
-    private _blockAndLogStreamInterval: NodeJS.Timer;
+    private _blockAndLogStreamerIfExists?: BlockAndLogStreamer;
+    private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _filters: { [filterToken: string]: Web3.FilterObject };
     private _filterCallbacks: {
         [filterToken: string]: EventCallback<ContractEventArgs>;
@@ -162,7 +162,7 @@ export class ContractWrapper {
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
-        this._blockAndLogStreamInterval = intervalUtils.setAsyncExcludingInterval(
+        this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
             constants.DEFAULT_BLOCK_POLLING_INTERVAL,
             this._onReconcileBlockError.bind(this),
@@ -191,11 +191,12 @@ export class ContractWrapper {
         }
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
-        intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamInterval);
+        intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamIntervalIfExists as NodeJS.Timer);
         delete this._blockAndLogStreamerIfExists;
     }
     private async _reconcileBlockAsync(): Promise<void> {
         const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
+        console.log('latestBlock', latestBlock.number);
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined

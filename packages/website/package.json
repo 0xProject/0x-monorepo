@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/website",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "private": true,
     "description": "Website and 0x portal dapp",
     "scripts": {
@@ -8,12 +8,9 @@
         "clean": "shx rm -f public/bundle*",
         "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "dev": "webpack-dev-server --content-base public --https",
-        "update_contracts":
-            "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../website/contracts; done;",
-        "deploy_staging":
-            "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
-        "deploy_live":
-            "npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+        "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../website/contracts; done;",
+        "deploy_staging": "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "deploy_live": "npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
     },
     "config": {
         "artifacts": "Mintable"
@@ -21,9 +18,9 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.31.0",
-        "@0xproject/subproviders": "^0.3.4",
-        "@0xproject/utils": "^0.2.3",
+        "0x.js": "^0.31.1",
+        "@0xproject/subproviders": "^0.3.5",
+        "@0xproject/utils": "^0.2.4",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",
@@ -99,8 +96,8 @@
         "source-map-loader": "^0.1.6",
         "style-loader": "0.13.x",
         "tslint": "5.8.0",
-        "typescript": "~2.6.1",
-        "web3-typescript-typings": "^0.9.7",
+        "typescript": "2.7.1",
+        "web3-typescript-typings": "^0.9.8",
         "webpack": "^3.1.0",
         "webpack-dev-middleware": "^1.10.0",
         "webpack-dev-server": "^2.5.0"
