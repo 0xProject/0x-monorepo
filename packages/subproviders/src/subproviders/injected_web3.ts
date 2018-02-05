@@ -4,7 +4,7 @@ import Web3 = require('web3');
 /*
  * This class implements the web3-provider-engine subprovider interface and forwards
  * requests involving user accounts (getAccounts, sendTransaction, etc...) to the injected
- * MetamaskInpageProvider instance in their browser.
+ * provider instance in their browser.
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class InjectedWeb3Subprovider {
@@ -41,6 +41,7 @@ export class InjectedWeb3Subprovider {
         }
     }
     // Required to implement this method despite not needing it for this subprovider
+    // This type is Web3ProviderEngine, but there is no need to import this for a noop.
     // tslint:disable-next-line:prefer-function-over-method
     public setEngine(engine: any) {
         // noop
