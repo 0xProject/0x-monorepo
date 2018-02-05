@@ -50,7 +50,7 @@ contract Arbitrage is Ownable {
     function makeAtomicTrade(
         address[8] addresses, uint[12] values,
         uint8[2] v, bytes32[2] r, bytes32[2] s
-    ) public onlyOwner {
+    ) external onlyOwner {
         makeExchangeTrade(addresses, values, v, r, s);
         makeEtherDeltaTrade(addresses, values, v, r, s);
     }
