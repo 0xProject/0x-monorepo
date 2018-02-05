@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.x.x - _TBD, 2018_
+## v0.32.0 - _February 5, 2018_
 
     * Add `zeroEx.etherToken.getContractAddressIfExists` (#350)
     * Fixed the bug causing order watcher to throw if there is an event with the same signature but different indexed fields (#366)
