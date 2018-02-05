@@ -112,3 +112,16 @@ export enum LedgerSubproviderErrors {
     SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
     MultipleOpenConnectionsDisallowed = 'MULTIPLE_OPEN_CONNECTIONS_DISALLOWED',
 }
+
+export enum NonceSubproviderErrors {
+    EmptyParametersFound = 'EMPTY_PARAMETERS_FOUND',
+    CannotDetermineAddressFromPayload = 'CANNOT_DETERMINE_ADDRESS_FROM_PAYLOAD',
+}
+
+// Re-defined BlockParamLiteral here, rather than import it from 0x.js.
+export enum BlockParamLiteral {
+    Pending = 'pending',
+}
+
+export type OptionalNextCallback = (callback?: (err: Error | null, result: any, cb: any) => void) => void;
+export type ErrorCallback = (err: Error | null, data?: any) => void;

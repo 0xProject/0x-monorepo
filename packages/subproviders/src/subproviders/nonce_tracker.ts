@@ -4,42 +4,49 @@ import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import providerEngineUtils = require('web3-provider-engine/util/rpc-cache-utils');
 
-import { JSONRPCPayload } from '../types';
+import {
+    BlockParamLiteral,
+    ErrorCallback,
+    JSONRPCPayload,
+    NonceSubproviderErrors,
+    OptionalNextCallback,
+} from '../types';
 
 import { Subprovider } from './subprovider';
 
 const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
-
-export type OptionalNextCallback = (callback?: (err: Error | null, result: any, cb: any) => void) => void;
-export type ErrorCallback = (err: Error | null, data?: any) => void;
-
 export class NonceTrackerSubprovider extends Subprovider {
     private _nonceCache: { [address: string]: string } = {};
     private static _reconstructTransaction(payload: JSONRPCPayload): EthereumTx {
         const raw = payload.params[0];
         if (_.isUndefined(raw)) {
-            throw new Error('Invalid transaction: empty parameters');
+            throw new Error(NonceSubproviderErrors.EmptyParametersFound);
         }
         const rawData = ethUtil.toBuffer(raw);
-        return new EthereumTx(rawData);
+        const transaction = new EthereumTx(rawData);
+        return transaction;
     }
     private static _determineAddress(payload: JSONRPCPayload): string {
+        let address: string;
         switch (payload.method) {
             case 'eth_getTransactionCount':
-                return payload.params[0].toLowerCase();
+                address = payload.params[0].toLowerCase();
+                return address;
             case 'eth_sendRawTransaction':
                 const transaction = NonceTrackerSubprovider._reconstructTransaction(payload);
-                return `0x${transaction.getSenderAddress().toString('hex')}`.toLowerCase();
+                address = `0x${transaction.getSenderAddress().toString('hex')}`.toLowerCase();
+                return address;
             default:
-                throw new Error(`Invalid Method: ${payload.method}`);
+                throw new Error(NonceSubproviderErrors.CannotDetermineAddressFromPayload);
         }
     }
+    // Required to implement this public interface which doesn't conform to our linting rule.
     // tslint:disable-next-line:async-suffix
     public async handleRequest(payload: JSONRPCPayload, next: OptionalNextCallback, end: ErrorCallback): Promise<void> {
         switch (payload.method) {
             case 'eth_getTransactionCount':
-                const blockTag = providerEngineUtils.blockTagForPayload(payload);
-                if (!_.isNull(blockTag) && blockTag === 'pending') {
+                const requestDefaultBlock = providerEngineUtils.blockTagForPayload(payload);
+                if (requestDefaultBlock === BlockParamLiteral.Pending) {
                     const address = NonceTrackerSubprovider._determineAddress(payload);
                     const cachedResult = this._nonceCache[address];
                     if (!_.isUndefined(cachedResult)) {
@@ -56,11 +63,11 @@ export class NonceTrackerSubprovider extends Subprovider {
                     return next();
                 }
             case 'eth_sendRawTransaction':
-                return next(async (sendTransactionError: Error | null, txResult: any, cb: any) => {
+                return next((sendTransactionError: Error | null, txResult: any, cb: any) => {
                     if (_.isNull(sendTransactionError)) {
                         this._handleSuccessfulTransaction(payload);
                     } else {
-                        await this._handleSendTransactionErrorAsync(payload, sendTransactionError);
+                        this._handleSendTransactionError(payload, sendTransactionError);
                     }
                     cb();
                 });
@@ -81,25 +88,10 @@ export class NonceTrackerSubprovider extends Subprovider {
         nextHexNonce = `0x${nextHexNonce}`;
         this._nonceCache[address] = nextHexNonce;
     }
-    private async _handleSendTransactionErrorAsync(payload: JSONRPCPayload, err: Error): Promise<void> {
+    private _handleSendTransactionError(payload: JSONRPCPayload, err: Error): void {
         const address = NonceTrackerSubprovider._determineAddress(payload);
-        if (this._nonceCache[address]) {
-            if (_.includes(err.message, NONCE_TOO_LOW_ERROR_MESSAGE)) {
-                await this._handleNonceTooLowErrorAsync(address);
-            }
-        }
-    }
-    private async _handleNonceTooLowErrorAsync(address: string): Promise<void> {
-        const oldNonceInt = ethUtil.bufferToInt(new Buffer(this._nonceCache[address], 'hex'));
-        delete this._nonceCache[address];
-        const nonceResult = await this.emitPayloadAsync({
-            method: 'eth_getTransactionCount',
-            params: [address, 'pending'],
-        });
-        const nonce = nonceResult.result;
-        const latestNonceInt = ethUtil.bufferToInt(new Buffer(nonce, 'hex'));
-        if (latestNonceInt > oldNonceInt) {
-            this._nonceCache[address] = nonce;
+        if (this._nonceCache[address] && _.includes(err.message, NONCE_TOO_LOW_ERROR_MESSAGE)) {
+            delete this._nonceCache[address];
         }
     }
 }

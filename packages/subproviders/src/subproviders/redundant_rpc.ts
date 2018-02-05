@@ -35,6 +35,7 @@ export class RedundantRPCSubprovider extends Subprovider {
             });
         });
     }
+    // Required to implement this public interface which doesn't conform to our linting rule.
     // tslint:disable-next-line:async-suffix
     public async handleRequest(
         payload: JSONRPCPayload,
