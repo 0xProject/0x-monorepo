@@ -165,12 +165,16 @@ export class EtherTokenWrapper extends ContractWrapper {
     }
     /**
      * Retrieves the Ethereum address of the EtherToken contract deployed on the network
-     * that the user-passed web3 provider is connected to. If it's an unknown private network - undefined is returned.
+     * that the user-passed web3 provider is connected to. If it's not Kovan, Ropsten, Rinkeby, Mainnet or TestRPC
+     * (networkId: 50), it will return undefined (e.g a private network).
      * @returns The Ethereum address of the EtherToken contract or undefined.
      */
     public getContractAddressIfExists(): string | undefined {
-        const contractAddress = artifacts.EtherTokenArtifact.networks[this._networkId].address;
-        return contractAddress;
+        const networkSpecificArtifact = artifacts.EtherTokenArtifact.networks[this._networkId];
+        const contractAddressIfExists = _.isUndefined(networkSpecificArtifact)
+            ? undefined
+            : networkSpecificArtifact.address;
+        return contractAddressIfExists;
     }
     private _invalidateContractInstance(): void {
         this.unsubscribeAll();
