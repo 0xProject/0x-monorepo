@@ -1,10 +1,9 @@
 pragma solidity ^0.4.19;
-pragma experimental ABIEncoderV2;
 
-import "../Exchange.sol";
-import "../tokens/Token.sol";
-import "./EtherDelta.sol";
-import "../tokens/WETH9.sol";
+import { Exchange } from "../../protocol/Exchange/Exchange.sol";
+import { EtherDelta } from "../EtherDelta/EtherDelta.sol";
+import { Ownable } from "../../utils/Ownable/Ownable.sol";
+import { Token } from "../../tokens/Token/Token.sol";
 
 contract Arbitrage is Ownable {
 
