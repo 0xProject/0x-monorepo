@@ -4,7 +4,7 @@
     "version": "independent",
     "commands": {
         "publish": {
-            "ignore": ["test/**/*", "*.md", "scripts", "lib"]
+            "ignore": ["test/**/*", "*.md", "scripts", "lib", "tslint.json", "tsconfig.json"]
         }
     },
     "npmClient": "yarn",
