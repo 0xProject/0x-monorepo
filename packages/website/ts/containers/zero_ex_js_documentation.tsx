@@ -119,6 +119,7 @@ const docsInfoConfig: DocsInfoConfig = {
         'OrderStateValid',
         'OrderStateInvalid',
         'OrderState',
+        'OrderStateWatcherConfig',
         'FilterObject',
     ],
     sectionNameToModulePath: {

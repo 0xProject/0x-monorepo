@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/deployer",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Smart contract deployer of 0x protocol",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -29,14 +29,13 @@
     "homepage": "https://github.com/0xProject/0x.js/packages/deployer/README.md",
     "devDependencies": {
         "copyfiles": "^1.2.0",
-        "web3-typescript-typings": "^0.9.4",
         "types-bn": "^0.0.1",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.7"
+        "web3-typescript-typings": "^0.9.8"
     },
     "dependencies": {
-        "@0xproject/utils": "^0.2.1",
-        "@0xproject/web3-wrapper": "^0.1.8",
+        "@0xproject/utils": "^0.2.4",
+        "@0xproject/web3-wrapper": "^0.1.9",
         "lodash": "^4.17.4",
         "solc": "^0.4.18",
         "web3": "^0.20.0",
