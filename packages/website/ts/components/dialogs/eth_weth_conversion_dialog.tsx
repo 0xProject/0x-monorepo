@@ -2,37 +2,54 @@ import { BigNumber } from '@0xproject/utils';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
+import { Blockchain } from 'ts/blockchain';
 import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
-import { Side, Token, TokenState } from 'ts/types';
+import { Side, Token } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 
 interface EthWethConversionDialogProps {
+    blockchain: Blockchain;
+    userAddress: string;
+    networkId: number;
     direction: Side;
     onComplete: (direction: Side, value: BigNumber) => void;
     onCancelled: () => void;
     isOpen: boolean;
     token: Token;
-    tokenState: TokenState;
     etherBalance: BigNumber;
+    lastForceTokenStateRefetch: number;
 }
 
 interface EthWethConversionDialogState {
     value?: BigNumber;
     shouldShowIncompleteErrs: boolean;
     hasErrors: boolean;
+    isEthTokenBalanceLoaded: boolean;
+    ethTokenBalance: BigNumber;
 }
 
 export class EthWethConversionDialog extends React.Component<
     EthWethConversionDialogProps,
     EthWethConversionDialogState
 > {
+    private _isUnmounted: boolean;
     constructor() {
         super();
+        this._isUnmounted = false;
         this.state = {
             shouldShowIncompleteErrs: false,
             hasErrors: false,
+            isEthTokenBalanceLoaded: false,
+            ethTokenBalance: new BigNumber(0),
         };
+    }
+    public componentWillMount() {
+        // tslint:disable-next-line:no-floating-promises
+        this._fetchEthTokenBalanceAsync();
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public render() {
         const convertDialogActions = [
@@ -72,8 +89,11 @@ export class EthWethConversionDialog extends React.Component<
                     <div className="pt2 mx-auto" style={{ width: 245 }}>
                         {this.props.direction === Side.Receive ? (
                             <TokenAmountInput
+                                lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                blockchain={this.props.blockchain}
+                                userAddress={this.props.userAddress}
+                                networkId={this.props.networkId}
                                 token={this.props.token}
-                                tokenState={this.props.tokenState}
                                 shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                                 shouldCheckBalance={true}
                                 shouldCheckAllowance={false}
@@ -93,19 +113,20 @@ export class EthWethConversionDialog extends React.Component<
                         )}
                         <div className="pt1" style={{ fontSize: 12 }}>
                             <div className="left">1 ETH = 1 WETH</div>
-                            {this.props.direction === Side.Receive && (
-                                <div
-                                    className="right"
-                                    onClick={this._onMaxClick.bind(this)}
-                                    style={{
-                                        color: colors.darkBlue,
-                                        textDecoration: 'underline',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Max
-                                </div>
-                            )}
+                            {this.props.direction === Side.Receive &&
+                                this.state.isEthTokenBalanceLoaded && (
+                                    <div
+                                        className="right"
+                                        onClick={this._onMaxClick.bind(this)}
+                                        style={{
+                                            color: colors.darkBlue,
+                                            textDecoration: 'underline',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        Max
+                                    </div>
+                                )}
                         </div>
                     </div>
                 </div>
@@ -132,7 +153,7 @@ export class EthWethConversionDialog extends React.Component<
     }
     private _onMaxClick() {
         this.setState({
-            value: this.props.tokenState.balance,
+            value: this.state.ethTokenBalance,
         });
     }
     private _onValueChange(isValid: boolean, amount?: BigNumber) {
@@ -159,5 +180,17 @@ export class EthWethConversionDialog extends React.Component<
             value: undefined,
         });
         this.props.onCancelled();
+    }
+    private async _fetchEthTokenBalanceAsync() {
+        const [balance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+            this.props.userAddress,
+            this.props.token.address,
+        );
+        if (!this._isUnmounted) {
+            this.setState({
+                isEthTokenBalanceLoaded: true,
+                ethTokenBalance: balance,
+            });
+        }
     }
 }

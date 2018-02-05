@@ -8,7 +8,7 @@ import { TrackTokenConfirmation } from 'ts/components/track_token_confirmation';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DialogConfigs, Token, TokenByAddress, TokenState, TokenVisibility } from 'ts/types';
+import { DialogConfigs, Token, TokenByAddress, TokenVisibility } from 'ts/types';
 
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
@@ -223,10 +223,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
             assetView: AssetViews.NEW_TOKEN_FORM,
         });
     }
-    private _onNewTokenSubmitted(newToken: Token, newTokenState: TokenState) {
-        this.props.dispatcher.updateTokenStateByAddress({
-            [newToken.address]: newTokenState,
-        });
+    private _onNewTokenSubmitted(newToken: Token) {
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newToken);
         this.props.dispatcher.addTokenToTokenByAddress(newToken);
         this.setState({
@@ -256,15 +253,6 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         newTokenEntry.isTracked = true;
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newTokenEntry);
 
-        const [balance, allowance] = await this.props.blockchain.getCurrentUserTokenBalanceAndAllowanceAsync(
-            token.address,
-        );
-        this.props.dispatcher.updateTokenStateByAddress({
-            [token.address]: {
-                balance,
-                allowance,
-            },
-        });
         this.props.dispatcher.updateTokenByAddress([newTokenEntry]);
         this.setState({
             isAddingTokenToTracked: false,

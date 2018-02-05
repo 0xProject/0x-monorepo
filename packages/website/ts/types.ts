@@ -25,10 +25,6 @@ export interface TokenState {
     balance: BigNumber;
 }
 
-export interface TokenStateByAddress {
-    [address: string]: TokenState;
-}
-
 export interface AssetToken {
     address?: string;
     amount?: BigNumber;
@@ -110,12 +106,12 @@ export enum BalanceErrs {
 
 export enum ActionTypes {
     // Portal
+    BatchDispatch = 'BATCH_DISPATCH',
     UpdateScreenWidth = 'UPDATE_SCREEN_WIDTH',
     UpdateNodeVersion = 'UPDATE_NODE_VERSION',
     ResetState = 'RESET_STATE',
     AddTokenToTokenByAddress = 'ADD_TOKEN_TO_TOKEN_BY_ADDRESS',
     BlockchainErrEncountered = 'BLOCKCHAIN_ERR_ENCOUNTERED',
-    ClearTokenByAddress = 'CLEAR_TOKEN_BY_ADDRESS',
     UpdateBlockchainIsLoaded = 'UPDATE_BLOCKCHAIN_IS_LOADED',
     UpdateNetworkId = 'UPDATE_NETWORK_ID',
     UpdateChosenAssetToken = 'UPDATE_CHOSEN_ASSET_TOKEN',
@@ -125,11 +121,7 @@ export enum ActionTypes {
     UpdateOrderSignatureData = 'UPDATE_ORDER_SIGNATURE_DATA',
     UpdateTokenByAddress = 'UPDATE_TOKEN_BY_ADDRESS',
     RemoveTokenFromTokenByAddress = 'REMOVE_TOKEN_FROM_TOKEN_BY_ADDRESS',
-    UpdateTokenStateByAddress = 'UPDATE_TOKEN_STATE_BY_ADDRESS',
-    RemoveFromTokenStateByAddress = 'REMOVE_FROM_TOKEN_STATE_BY_ADDRESS',
-    ReplaceTokenAllowanceByAddress = 'REPLACE_TOKEN_ALLOWANCE_BY_ADDRESS',
-    ReplaceTokenBalanceByAddress = 'REPLACE_TOKEN_BALANCE_BY_ADDRESS',
-    UpdateTokenBalanceByAddress = 'UPDATE_TOKEN_BALANCE_BY_ADDRESS',
+    ForceTokenStateRefetch = 'FORCE_TOKEN_STATE_REFETCH',
     UpdateOrderExpiry = 'UPDATE_ORDER_EXPIRY',
     SwapAssetTokens = 'SWAP_ASSET_TOKENS',
     UpdateUserAddress = 'UPDATE_USER_ADDRESS',
@@ -496,16 +488,6 @@ export interface SignPersonalMessageParams {
     data: string;
 }
 
-export interface TxParams {
-    nonce: string;
-    gasPrice?: number;
-    gasLimit: string;
-    to: string;
-    value?: string;
-    data?: string;
-    chainId: number; // EIP 155 chainId - mainnet: 1, ropsten: 3
-}
-
 export interface PublicNodeUrlsByNetworkId {
     [networkId: number]: string[];
 }
@@ -610,10 +592,10 @@ export interface AddressByContractName {
 }
 
 export enum Networks {
-    mainnet = 'Mainnet',
-    kovan = 'Kovan',
-    ropsten = 'Ropsten',
-    rinkeby = 'Rinkeby',
+    Mainnet = 'Mainnet',
+    Kovan = 'Kovan',
+    Ropsten = 'Ropsten',
+    Rinkeby = 'Rinkeby',
 }
 
 export enum AbiTypes {
@@ -676,6 +658,11 @@ export enum SmartContractDocSections {
     TokenTransferProxy = 'TokenTransferProxy',
     TokenRegistry = 'TokenRegistry',
     ZRXToken = 'ZRXToken',
+}
+
+export interface MaterialUIPosition {
+    vertical: 'bottom' | 'top' | 'center';
+    horizontal: 'left' | 'middle' | 'right';
 }
 
 // tslint:disable:max-file-line-count

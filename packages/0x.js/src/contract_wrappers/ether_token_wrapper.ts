@@ -1,5 +1,6 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
+import { LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -10,11 +11,9 @@ import {
     EtherTokenEvents,
     EventCallback,
     IndexedFilterValues,
-    LogWithDecodedArgs,
     TransactionOpts,
     ZeroExError,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
@@ -160,8 +159,8 @@ export class EtherTokenWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public unsubscribeAll(): void {
-        super.unsubscribeAll();
+    public _unsubscribeAll(): void {
+        super._unsubscribeAll();
     }
     /**
      * Retrieves the Ethereum address of the EtherToken contract deployed on the network
@@ -177,7 +176,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         return contractAddressIfExists;
     }
     private _invalidateContractInstance(): void {
-        this.unsubscribeAll();
+        this._unsubscribeAll();
         this._etherTokenContractsByAddress = {};
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<EtherTokenContract> {

@@ -27,11 +27,11 @@ import {
     BlockchainCallErrs,
     BlockchainErrs,
     EtherscanLinkSuffixes,
+    Networks,
     ScreenWidths,
     Styles,
     Token,
     TokenByAddress,
-    TokenStateByAddress,
     TokenVisibility,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
@@ -58,6 +58,14 @@ const styles: Styles = {
     },
 };
 
+interface TokenStateByAddress {
+    [address: string]: {
+        balance: BigNumber;
+        allowance: BigNumber;
+        isLoaded: boolean;
+    };
+}
+
 interface TokenBalancesProps {
     blockchain: Blockchain;
     blockchainErr: BlockchainErrs;
@@ -65,10 +73,11 @@ interface TokenBalancesProps {
     dispatcher: Dispatcher;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    tokenStateByAddress: TokenStateByAddress;
+    trackedTokens: Token[];
     userAddress: string;
     userEtherBalance: BigNumber;
     networkId: number;
+    lastForceTokenStateRefetch: number;
 }
 
 interface TokenBalancesState {
@@ -76,14 +85,17 @@ interface TokenBalancesState {
     isBalanceSpinnerVisible: boolean;
     isDharmaDialogVisible: boolean;
     isZRXSpinnerVisible: boolean;
-    currentZrxBalance?: BigNumber;
     isTokenPickerOpen: boolean;
     isAddingToken: boolean;
+    trackedTokenStateByAddress: TokenStateByAddress;
 }
 
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {
+    private _isUnmounted: boolean;
     public constructor(props: TokenBalancesProps) {
         super(props);
+        this._isUnmounted = false;
+        const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(props.trackedTokens);
         this.state = {
             errorType: undefined,
             isBalanceSpinnerVisible: false,
@@ -91,7 +103,16 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isDharmaDialogVisible: DharmaLoanFrame.isAuthTokenPresent(),
             isTokenPickerOpen: false,
             isAddingToken: false,
+            trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
+    }
+    public componentWillMount() {
+        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+        // tslint:disable-next-line:no-floating-promises
+        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+    }
+    public componentWillUnmount() {
+        this._isUnmounted = true;
     }
     public componentWillReceiveProps(nextProps: TokenBalancesProps) {
         if (nextProps.userEtherBalance !== this.props.userEtherBalance) {
@@ -103,18 +124,36 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 isBalanceSpinnerVisible: false,
             });
         }
-        const nextZrxToken = _.find(_.values(nextProps.tokenByAddress), t => t.symbol === ZRX_TOKEN_SYMBOL);
-        const nextZrxTokenBalance = nextProps.tokenStateByAddress[nextZrxToken.address].balance;
-        if (!_.isUndefined(this.state.currentZrxBalance) && !nextZrxTokenBalance.eq(this.state.currentZrxBalance)) {
-            if (this.state.isZRXSpinnerVisible) {
-                const receivedAmount = nextZrxTokenBalance.minus(this.state.currentZrxBalance);
-                const receiveAmountInUnits = ZeroEx.toUnitAmount(receivedAmount, constants.DECIMAL_PLACES_ZRX);
-                this.props.dispatcher.showFlashMessage(`Received ${receiveAmountInUnits.toString(10)} Kovan ZRX`);
+
+        if (
+            nextProps.userAddress !== this.props.userAddress ||
+            nextProps.networkId !== this.props.networkId ||
+            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+        ) {
+            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+        }
+
+        if (!_.isEqual(nextProps.trackedTokens, this.props.trackedTokens)) {
+            const newTokens = _.difference(nextProps.trackedTokens, this.props.trackedTokens);
+            const newTokenAddresses = _.map(newTokens, token => token.address);
+            // Add placeholder entry for this token to the state, since fetching the
+            // balance/allowance is asynchronous
+            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+            for (const tokenAddress of newTokenAddresses) {
+                trackedTokenStateByAddress[tokenAddress] = {
+                    balance: new BigNumber(0),
+                    allowance: new BigNumber(0),
+                    isLoaded: false,
+                };
             }
             this.setState({
-                isZRXSpinnerVisible: false,
-                currentZrxBalance: undefined,
+                trackedTokenStateByAddress,
             });
+            // Fetch the actual balance/allowance.
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
         }
     }
     public componentDidMount() {
@@ -137,13 +176,13 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 onTouchTap={this._onDharmaDialogToggle.bind(this, false)}
             />,
         ];
-        const isTestNetwork = this.props.networkId === constants.NETWORK_ID_TESTNET;
+        const isKovanTestNetwork = this.props.networkId === constants.NETWORK_ID_KOVAN;
         const dharmaButtonColumnStyle = {
             paddingLeft: 3,
-            display: isTestNetwork ? 'table-cell' : 'none',
+            display: isKovanTestNetwork ? 'table-cell' : 'none',
         };
         const stubColumnStyle = {
-            display: isTestNetwork ? 'none' : 'table-cell',
+            display: isKovanTestNetwork ? 'none' : 'table-cell',
         };
         const allTokenRowHeight = _.size(this.props.tokenByAddress) * TOKEN_TABLE_ROW_HEIGHT;
         const tokenTableHeight =
@@ -162,10 +201,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                   smart contract so you can start trading that token.';
         return (
             <div className="lg-px4 md-px4 sm-px1 pb2">
-                <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
+                <h3>{isKovanTestNetwork ? 'Test ether' : 'Ether'}</h3>
                 <Divider />
                 <div className="pt2 pb2">
-                    {isTestNetwork
+                    {isKovanTestNetwork
                         ? 'In order to try out the 0x Portal Dapp, request some test ether to pay for \
                         gas costs. It might take a bit of time for the test ether to show up.'
                         : 'Ether must be converted to Ether Tokens in order to be tradable via 0x. \
@@ -177,12 +216,12 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             <TableHeaderColumn>Currency</TableHeaderColumn>
                             <TableHeaderColumn>Balance</TableHeaderColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isTestNetwork && (
+                            {isKovanTestNetwork && (
                                 <TableHeaderColumn style={{ paddingLeft: 3 }}>
                                     {isSmallScreen ? 'Faucet' : 'Request from faucet'}
                                 </TableHeaderColumn>
                             )}
-                            {isTestNetwork && (
+                            {isKovanTestNetwork && (
                                 <TableHeaderColumn style={dharmaButtonColumnStyle}>
                                     {isSmallScreen ? 'Loan' : 'Request Dharma loan'}
                                     <HelpTooltip style={{ paddingLeft: 4 }} explanation={dharmaLoanExplanation} />
@@ -204,7 +243,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 )}
                             </TableRowColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isTestNetwork && (
+                            {isKovanTestNetwork && (
                                 <TableRowColumn style={{ paddingLeft: 3 }}>
                                     <LifeCycleRaisedButton
                                         labelReady="Request"
@@ -214,7 +253,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                     />
                                 </TableRowColumn>
                             )}
-                            {isTestNetwork && (
+                            {isKovanTestNetwork && (
                                 <TableRowColumn style={dharmaButtonColumnStyle}>
                                     <RaisedButton
                                         label="Request"
@@ -228,7 +267,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </Table>
                 <div className="clearfix" style={{ paddingBottom: 1 }}>
                     <div className="col col-10">
-                        <h3 className="pt2">{isTestNetwork ? 'Test tokens' : 'Tokens'}</h3>
+                        <h3 className="pt2">{isKovanTestNetwork ? 'Test tokens' : 'Tokens'}</h3>
                     </div>
                     <div className="col col-1 pt3 align-right">
                         <FloatingActionButton mini={true} zDepth={0} onClick={this._onAddTokenClicked.bind(this)}>
@@ -243,7 +282,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </div>
                 <Divider />
                 <div className="pt2 pb2">
-                    {isTestNetwork
+                    {isKovanTestNetwork
                         ? "Mint some test tokens you'd like to use to generate or fill an order using 0x."
                         : "Set trading permissions for a token you'd like to start trading."}
                 </div>
@@ -303,8 +342,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const tokenColSpan = isSmallScreen ? TOKEN_COL_SPAN_SM : TOKEN_COL_SPAN_LG;
         const actionPaddingX = isSmallScreen ? 2 : 24;
-        const allTokens = _.values(this.props.tokenByAddress);
-        const trackedTokens = _.filter(allTokens, t => t.isTracked);
+        const trackedTokens = this.props.trackedTokens;
         const trackedTokensStartingWithEtherToken = trackedTokens.sort(
             firstBy((t: Token) => t.symbol !== ETHER_TOKEN_SYMBOL)
                 .thenBy((t: Token) => t.symbol !== ZRX_TOKEN_SYMBOL)
@@ -317,7 +355,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         return tableRows;
     }
     private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
-        const tokenState = this.props.tokenStateByAddress[token.address];
+        const tokenState = this.state.trackedTokenStateByAddress[token.address];
         const tokenLink = utils.getEtherScanLinkIfExists(
             token.address,
             this.props.networkId,
@@ -338,13 +376,19 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     )}
                 </TableRowColumn>
                 <TableRowColumn style={{ paddingRight: 3, paddingLeft: 3 }}>
-                    {this._renderAmount(tokenState.balance, token.decimals)} {token.symbol}
-                    {this.state.isZRXSpinnerVisible &&
-                        token.symbol === ZRX_TOKEN_SYMBOL && (
-                            <span className="pl1">
-                                <i className="zmdi zmdi-spinner zmdi-hc-spin" />
-                            </span>
-                        )}
+                    {tokenState.isLoaded ? (
+                        <span>
+                            {this._renderAmount(tokenState.balance, token.decimals)} {token.symbol}
+                            {this.state.isZRXSpinnerVisible &&
+                                token.symbol === ZRX_TOKEN_SYMBOL && (
+                                    <span className="pl1">
+                                        <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                                    </span>
+                                )}
+                        </span>
+                    ) : (
+                        <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                    )}
                 </TableRowColumn>
                 <TableRowColumn>
                     <AllowanceToggle
@@ -354,6 +398,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         tokenState={tokenState}
                         onErrorOccurred={this._onErrorOccurred.bind(this)}
                         userAddress={this.props.userAddress}
+                        isDisabled={!tokenState.isLoaded}
+                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                     />
                 </TableRowColumn>
                 <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
@@ -366,7 +412,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         />
                     )}
                     {token.symbol === ZRX_TOKEN_SYMBOL &&
-                        this.props.networkId === constants.NETWORK_ID_TESTNET && (
+                        this.props.networkId === constants.NETWORK_ID_KOVAN && (
                             <LifeCycleRaisedButton
                                 labelReady="Request"
                                 labelLoading="Sending..."
@@ -383,11 +429,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         }}
                     >
                         <SendButton
+                            userAddress={this.props.userAddress}
+                            networkId={this.props.networkId}
                             blockchain={this.props.blockchain}
                             dispatcher={this.props.dispatcher}
                             token={token}
-                            tokenState={tokenState}
                             onError={this._onSendFailed.bind(this)}
+                            lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                            refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                         />
                     </TableRowColumn>
                 )}
@@ -414,7 +463,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             } else {
                 this.props.dispatcher.removeTokenToTokenByAddress(token);
             }
-            this.props.dispatcher.removeFromTokenStateByAddress(tokenAddress);
             trackedTokenStorage.removeTrackedToken(this.props.userAddress, this.props.networkId, tokenAddress);
         } else if (isDefaultTrackedToken) {
             this.props.dispatcher.showFlashMessage(`Cannot remove ${token.name} because it's a default token`);
@@ -449,9 +497,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             case BalanceErrs.incorrectNetworkForFaucet:
                 return (
                     <div>
-                        Our faucet can only send test Ether to addresses on the {constants.TESTNET_NAME} testnet
-                        (networkId {constants.NETWORK_ID_TESTNET}). Please make sure you are connected to the{' '}
-                        {constants.TESTNET_NAME} testnet and try requesting ether again.
+                        Our faucet can only send test Ether to addresses on the {Networks.Kovan} testnet (networkId{' '}
+                        {constants.NETWORK_ID_KOVAN}). Please make sure you are connected to the {Networks.Kovan}{' '}
+                        testnet and try requesting ether again.
                     </div>
                 );
 
@@ -510,6 +558,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     private async _onMintTestTokensAsync(token: Token): Promise<boolean> {
         try {
             await this.props.blockchain.mintTestTokensAsync(token);
+            await this._refetchTokenStateAsync(token.address);
             const amount = ZeroEx.toUnitAmount(constants.MINT_AMOUNT, token.decimals);
             this.props.dispatcher.showFlashMessage(`Successfully minted ${amount.toString(10)} ${token.symbol}`);
             return true;
@@ -519,7 +568,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
                 return false;
             }
-            if (_.includes(errMsg, 'User denied transaction')) {
+            if (utils.didUserDenyWeb3Request(errMsg)) {
                 return false;
             }
             utils.consoleLog(`Unexpected error encountered: ${err}`);
@@ -539,7 +588,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
 
         // If on another network other then the testnet our faucet serves test ether
         // from, we must show user an error message
-        if (this.props.blockchain.networkId !== constants.NETWORK_ID_TESTNET) {
+        if (this.props.blockchain.networkId !== constants.NETWORK_ID_KOVAN) {
             this.setState({
                 errorType: BalanceErrs.incorrectNetworkForFaucet,
             });
@@ -569,15 +618,11 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 isBalanceSpinnerVisible: true,
             });
         } else {
-            const tokens = _.values(this.props.tokenByAddress);
-            const zrxToken = _.find(tokens, t => t.symbol === ZRX_TOKEN_SYMBOL);
-            const zrxTokenState = this.props.tokenStateByAddress[zrxToken.address];
             this.setState({
                 isZRXSpinnerVisible: true,
-                currentZrxBalance: zrxTokenState.balance,
             });
             // tslint:disable-next-line:no-floating-promises
-            this.props.blockchain.pollTokenBalanceAsync(zrxToken);
+            this._startPollingZrxBalanceAsync();
         }
         return true;
     }
@@ -601,6 +646,67 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         this.setState({
             isTokenPickerOpen: true,
             isAddingToken: false,
+        });
+    }
+    private async _startPollingZrxBalanceAsync() {
+        const tokens = _.values(this.props.tokenByAddress);
+        const zrxToken = _.find(tokens, t => t.symbol === ZRX_TOKEN_SYMBOL);
+
+        // tslint:disable-next-line:no-floating-promises
+        const balance = await this.props.blockchain.pollTokenBalanceAsync(zrxToken);
+        const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        trackedTokenStateByAddress[zrxToken.address] = {
+            ...trackedTokenStateByAddress[zrxToken.address],
+            balance,
+        };
+        this.setState({
+            isZRXSpinnerVisible: false,
+        });
+    }
+    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]) {
+        const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        for (const tokenAddress of tokenAddresses) {
+            const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+                this.props.userAddress,
+                tokenAddress,
+            );
+            trackedTokenStateByAddress[tokenAddress] = {
+                balance,
+                allowance,
+                isLoaded: true,
+            };
+        }
+        if (!this._isUnmounted) {
+            this.setState({
+                trackedTokenStateByAddress,
+            });
+        }
+    }
+    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]) {
+        const trackedTokenStateByAddress: TokenStateByAddress = {};
+        _.each(trackedTokens, token => {
+            trackedTokenStateByAddress[token.address] = {
+                balance: new BigNumber(0),
+                allowance: new BigNumber(0),
+                isLoaded: false,
+            };
+        });
+        return trackedTokenStateByAddress;
+    }
+    private async _refetchTokenStateAsync(tokenAddress: string) {
+        const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
+            this.props.userAddress,
+            tokenAddress,
+        );
+        this.setState({
+            trackedTokenStateByAddress: {
+                ...this.state.trackedTokenStateByAddress,
+                [tokenAddress]: {
+                    balance,
+                    allowance,
+                    isLoaded: true,
+                },
+            },
         });
     }
 } // tslint:disable:max-file-line-count

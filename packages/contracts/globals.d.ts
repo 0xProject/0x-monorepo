@@ -32,7 +32,3 @@ declare module 'ethereumjs-abi' {
     const soliditySHA3: (argTypes: string[], args: any[]) => Buffer;
     const methodID: (name: string, types: string[]) => Buffer;
 }
-
-// Truffle injects the following into the global scope
-declare var artifacts: any;
-declare var contract: any;

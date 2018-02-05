@@ -1,5 +1,6 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
+import { LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -8,14 +9,12 @@ import {
     BlockRange,
     EventCallback,
     IndexedFilterValues,
-    LogWithDecodedArgs,
     MethodOpts,
     TokenContractEventArgs,
     TokenEvents,
     TransactionOpts,
     ZeroExError,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { assert } from '../utils/assert';
 import { constants } from '../utils/constants';
 
@@ -343,8 +342,8 @@ export class TokenWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public unsubscribeAll(): void {
-        super.unsubscribeAll();
+    public _unsubscribeAll(): void {
+        super._unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -375,7 +374,7 @@ export class TokenWrapper extends ContractWrapper {
         return logs;
     }
     private _invalidateContractInstances(): void {
-        this.unsubscribeAll();
+        this._unsubscribeAll();
         this._tokenContractsByAddress = {};
     }
     private async _getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {

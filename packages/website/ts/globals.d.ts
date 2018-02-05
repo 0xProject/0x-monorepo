@@ -10,7 +10,6 @@ declare module 'thenby';
 declare module 'react-highlight';
 declare module 'react-recaptcha';
 declare module 'react-document-title';
-declare module 'ledgerco';
 declare module 'ethereumjs-tx';
 
 declare module '*.json' {

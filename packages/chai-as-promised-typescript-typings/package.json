@@ -1,6 +1,6 @@
 {
     "name": "chai-as-promised-typescript-typings",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "Typescript type definitions for chai-as-promised",
     "main": "index.d.ts",
     "types": "index.d.ts",
@@ -18,6 +18,6 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/chai-as-promised-typescript-typings#readme",
     "dependencies": {
-        "chai-typescript-typings": "^0.0.0"
+        "chai-typescript-typings": "^0.0.2"
     }
 }

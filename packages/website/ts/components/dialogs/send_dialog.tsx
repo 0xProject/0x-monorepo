@@ -3,16 +3,20 @@ import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
+import { Blockchain } from 'ts/blockchain';
 import { AddressInput } from 'ts/components/inputs/address_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
-import { Token, TokenState } from 'ts/types';
+import { Token } from 'ts/types';
 
 interface SendDialogProps {
+    blockchain: Blockchain;
+    userAddress: string;
+    networkId: number;
     onComplete: (recipient: string, value: BigNumber) => void;
     onCancelled: () => void;
     isOpen: boolean;
     token: Token;
-    tokenState: TokenState;
+    lastForceTokenStateRefetch: number;
 }
 
 interface SendDialogState {
@@ -66,15 +70,18 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
                     />
                 </div>
                 <TokenAmountInput
+                    blockchain={this.props.blockchain}
+                    userAddress={this.props.userAddress}
+                    networkId={this.props.networkId}
                     label="Amount to send"
                     token={this.props.token}
-                    tokenState={this.props.tokenState}
                     shouldShowIncompleteErrs={this.state.shouldShowIncompleteErrs}
                     shouldCheckBalance={true}
                     shouldCheckAllowance={false}
                     onChange={this._onValueChange.bind(this)}
                     amount={this.state.value}
                     onVisitBalancesPageClick={this.props.onCancelled}
+                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
             </div>
         );
