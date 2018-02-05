@@ -27,6 +27,10 @@ describe('Arbitrage', () => {
     let maker: string;
     let edMaker: string;
     let edFrontRunner: string;
+    let amountGet: BigNumber;
+    let amountGive: BigNumber;
+    let makerTokenAmount: BigNumber;
+    let takerTokenAmount: BigNumber;
     const feeRecipient = ZeroEx.NULL_ADDRESS;
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
@@ -42,6 +46,10 @@ describe('Arbitrage', () => {
 
     let zeroEx: ZeroEx;
 
+    // From a bird's eye view - we create two orders.
+    // 0x order of 1 ZRX (maker) for 1 WETH (taker)
+    // ED order of 2 WETH (tokenGive) for 1 ZRX (tokenGet)
+    // And then we do an atomic arbitrage between them which gives us 1 WETH.
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [coinbase, maker, edMaker, edFrontRunner] = accounts;
@@ -69,14 +77,16 @@ describe('Arbitrage', () => {
         });
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
+        makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
+        takerTokenAmount = makerTokenAmount;
         const defaultOrderParams = {
             exchangeContractAddress: exchange.address,
             maker,
             feeRecipient,
             makerToken: zrx.address,
             takerToken: weth.address,
-            makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            makerTokenAmount,
+            takerTokenAmount,
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
         };
@@ -91,22 +101,22 @@ describe('Arbitrage', () => {
         await arbitrage.setAllowances(zrx.address, { from: coinbase });
 
         // Give some tokens to arbitrage contract
-        await weth.setBalance(arbitrage.address, ZeroEx.toBaseUnitAmount(new BigNumber(1), 18), { from: coinbase });
+        await weth.setBalance(arbitrage.address, takerTokenAmount, { from: coinbase });
 
         // Fund the maker on exchange side
-        await zrx.setBalance(maker, ZeroEx.toBaseUnitAmount(new BigNumber(1), 18), { from: coinbase });
+        await zrx.setBalance(maker, makerTokenAmount, { from: coinbase });
         // Set the allowance for the maker on Exchange side
         await zrx.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: maker });
 
-        const amountGive = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
+        amountGive = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
         // Fund the maker on EtherDelta side
-        await weth.setBalance(edMaker, ZeroEx.toBaseUnitAmount(new BigNumber(2), 18), { from: coinbase });
+        await weth.setBalance(edMaker, amountGive, { from: coinbase });
         // Set the allowance for the maker on EtherDelta side
         await weth.approve(etherDelta.address, INITIAL_ALLOWANCE, { from: edMaker });
         // Deposit maker funds into EtherDelta
         await etherDelta.depositToken(weth.address, amountGive, { from: edMaker });
 
-        const amountGet = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
+        amountGet = makerTokenAmount;
         // Fund the front runner on EtherDelta side
         await zrx.setBalance(edFrontRunner, amountGet, { from: coinbase });
         // Set the allowance for the front-runner on EtherDelta side
@@ -128,19 +138,16 @@ describe('Arbitrage', () => {
         let s: string[];
         let tokenGet: string;
         let tokenGive: string;
-        let amountGet: BigNumber;
-        let amountGive: BigNumber;
         let expires: BigNumber;
         let nonce: BigNumber;
         let edSignature: ECSignature;
         before(async () => {
             order = await orderFactory.newSignedOrderAsync();
             tokenGet = zrx.address;
-            amountGet = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
             tokenGive = weth.address;
-            amountGive = ZeroEx.toBaseUnitAmount(new BigNumber(2), 18);
             const blockNumber = await web3Wrapper.getBlockNumberAsync();
-            expires = new BigNumber(blockNumber + 10);
+            const ED_ORDER_EXPIRATION_IN_BLOCKS = 10;
+            expires = new BigNumber(blockNumber + ED_ORDER_EXPIRATION_IN_BLOCKS);
             nonce = new BigNumber(42);
             const edOrderHash = `0x${crypto
                 .solSHA256([etherDelta.address, tokenGet, amountGet, tokenGive, amountGive, expires, nonce])
@@ -155,8 +162,8 @@ describe('Arbitrage', () => {
                 order.params.feeRecipient,
                 edMaker,
             ];
-            const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
-            const edFillAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
+            const fillTakerTokenAmount = takerTokenAmount;
+            const edFillAmount = makerTokenAmount;
             values = [
                 order.params.makerTokenAmount,
                 order.params.takerTokenAmount,
@@ -179,7 +186,7 @@ describe('Arbitrage', () => {
             const txHash = await arbitrage.makeAtomicTrade(addresses, values, v, r, s, { from: coinbase });
             const res = await zeroEx.awaitTransactionMinedAsync(txHash);
             const postBalance = await weth.balanceOf(arbitrage.address);
-            expect(postBalance).to.be.bignumber.equal(ZeroEx.toBaseUnitAmount(new BigNumber(2), 18));
+            expect(postBalance).to.be.bignumber.equal(amountGive);
         });
         it('should fail and revert if front-runned', async () => {
             const preBalance = await weth.balanceOf(arbitrage.address);
@@ -195,7 +202,7 @@ describe('Arbitrage', () => {
                 edSignature.v,
                 edSignature.r,
                 edSignature.s,
-                ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+                amountGet,
                 { from: edFrontRunner },
             );
             // tslint:disable-next-line:await-promise
