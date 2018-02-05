@@ -47,7 +47,6 @@ const args = yargs
         describe: 'ID of the network where contract ABIs are nested in artifacts',
         type: 'number',
         default: DEFAULT_NETWORK_ID,
-
     })
     .example(
         "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
@@ -96,11 +95,11 @@ for (const abiFileName of abiFileNames) {
     const parsedContent = JSON.parse(namedContent.content);
     let ABI;
     if (_.isArray(parsedContent)) {
-        ABI = parsedContent;  // ABI file
+        ABI = parsedContent; // ABI file
     } else if (!_.isUndefined(parsedContent.abi)) {
-        ABI = parsedContent.abi;  // Truffle artifact
+        ABI = parsedContent.abi; // Truffle artifact
     } else if (!_.isUndefined(parsedContent.networks) && !_.isUndefined(parsedContent.networks[args.networkId])) {
-        ABI = parsedContent.networks[args.networkId];  // 0x contracts package artifact
+        ABI = parsedContent.networks[args.networkId]; // 0x contracts package artifact
     }
     if (_.isUndefined(ABI)) {
         utils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
