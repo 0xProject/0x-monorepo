@@ -1,6 +1,5 @@
 # CHANGELOG
 
-
 ## v0.x.0 - _TBD, 2018_
 
     * Add `zeroEx.etherToken.getContractAddressIfExists` (#350)
