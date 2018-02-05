@@ -22,7 +22,7 @@ const web3 = web3Factory.create();
 const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 const blockchainLifecycle = new BlockchainLifecycle();
 
-describe('Arbitrage', () => {
+describe.only('Arbitrage', () => {
     let coinbase: string;
     let maker: string;
     let edMaker: string;
@@ -153,8 +153,6 @@ describe('Arbitrage', () => {
                 order.params.makerToken,
                 order.params.takerToken,
                 order.params.feeRecipient,
-                tokenGet,
-                tokenGive,
                 edMaker,
             ];
             const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
