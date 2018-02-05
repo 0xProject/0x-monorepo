@@ -21,6 +21,10 @@ contract Arbitrage is Ownable {
         proxyAddress = _proxyAddress;
     }
 
+    /*
+     * Makes token tradeable by setting an allowance for etherDelta and 0x proxy contract.
+     * Also sets an allowance for the owner of the contracts therefore allowing to withdraw tokens.
+     */
     function setAllowances(address tokenAddress) external onlyOwner {
         Token token = Token(tokenAddress);
         token.approve(address(etherDelta), MAX_UINT);
