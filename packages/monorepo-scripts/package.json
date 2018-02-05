@@ -25,7 +25,7 @@
         "@types/node": "^8.0.53",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
-        "typescript": "~2.6.1"
+        "typescript": "2.7.1"
     },
     "dependencies": {
         "chalk": "^2.3.0",
