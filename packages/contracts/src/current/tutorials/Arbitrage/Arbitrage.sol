@@ -31,9 +31,7 @@ contract Arbitrage is Ownable {
      *
      * addresses
      * 0..4 orderAddresses
-     * 5 tokenGet
-     * 6 tokenGive
-     * 7 user
+     * 5 user
      *
      * values
      * 0..5 orderValues
@@ -48,7 +46,7 @@ contract Arbitrage is Ownable {
      * exchange then etherDelta
      */
     function makeAtomicTrade(
-        address[8] addresses, uint[12] values,
+        address[6] addresses, uint[12] values,
         uint8[2] v, bytes32[2] r, bytes32[2] s
     ) external onlyOwner {
         makeExchangeTrade(addresses, values, v, r, s);
@@ -56,29 +54,29 @@ contract Arbitrage is Ownable {
     }
 
     function makeEtherDeltaTrade(
-        address[8] addresses, uint[12] values,
+        address[6] addresses, uint[12] values,
         uint8[2] v, bytes32[2] r, bytes32[2] s
     ) internal {
         uint amount = values[11];
-        etherDelta.depositToken(addresses[5], values[7]);
+        etherDelta.depositToken(addresses[2], values[7]);
         etherDelta.trade(
-            addresses[5],
+            addresses[2],
             values[7],
-            addresses[6],
+            addresses[3],
             values[8],
             values[9],
             values[10],
-            addresses[7],
+            addresses[5],
             v[1],
             r[1],
             s[1],
             amount
         );
-        etherDelta.withdrawToken(addresses[6], values[8]);
+        etherDelta.withdrawToken(addresses[3], values[8]);
     }
 
     function makeExchangeTrade(
-        address[8] addresses, uint[12] values,
+        address[6] addresses, uint[12] values,
         uint8[2] v, bytes32[2] r, bytes32[2] s
     ) internal {
         address[5] memory orderAddresses = [
