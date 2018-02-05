@@ -71,6 +71,18 @@ describe('EtherTokenWrapper', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
+    describe('#getContractAddressIfExists', async () => {
+        it('should return contract address if connected to a known network', () => {
+            const contractAddressIfExists = zeroEx.etherToken.getContractAddressIfExists();
+            expect(contractAddressIfExists).to.not.be.undefined();
+        });
+        it('should return undefined if connected to an unknown network', () => {
+            const UNKNOWN_NETWORK_NETWORK_ID = 10;
+            const unknownNetworkZeroEx = new ZeroEx(web3.currentProvider, { networkId: UNKNOWN_NETWORK_NETWORK_ID });
+            const contractAddressIfExists = unknownNetworkZeroEx.etherToken.getContractAddressIfExists();
+            expect(contractAddressIfExists).to.be.undefined();
+        });
+    });
     describe('#depositAsync', () => {
         it('should successfully deposit ETH and issue Wrapped ETH tokens', async () => {
             const preETHBalance = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
