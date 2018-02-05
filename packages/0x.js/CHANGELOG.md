@@ -2,7 +2,7 @@
 
 ## v0.x.x - _TBD, 2018_
 
-    * Fixed the bug causing order watcher to throw if there is the event with the same signature but different indexed fields (#)
+    * Fixed the bug causing order watcher to throw if there is the event with the same signature but different indexed fields (#366)
 
 ## v0.31.1 - _February 1, 2018_
 
