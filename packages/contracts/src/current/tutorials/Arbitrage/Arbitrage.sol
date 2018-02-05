@@ -58,21 +58,27 @@ contract Arbitrage is Ownable {
         uint8[2] v, bytes32[2] r, bytes32[2] s
     ) internal {
         uint amount = values[11];
-        etherDelta.depositToken(addresses[2], values[7]);
+        etherDelta.depositToken(
+            addresses[2], // tokenGet === makerToken
+            values[7] // amountGet
+        );
         etherDelta.trade(
-            addresses[2],
-            values[7],
-            addresses[3],
-            values[8],
-            values[9],
-            values[10],
-            addresses[5],
+            addresses[2], // tokenGet === makerToken
+            values[7], // amountGet
+            addresses[3], // tokenGive === takerToken
+            values[8], // amountGive
+            values[9], // expires
+            values[10], // nonce
+            addresses[5], // user
             v[1],
             r[1],
             s[1],
             amount
         );
-        etherDelta.withdrawToken(addresses[3], values[8]);
+        etherDelta.withdrawToken(
+            addresses[3], // tokenGive === tokenToken
+            values[8] // amountGive
+        );
     }
 
     function makeExchangeTrade(
@@ -80,21 +86,22 @@ contract Arbitrage is Ownable {
         uint8[2] v, bytes32[2] r, bytes32[2] s
     ) internal {
         address[5] memory orderAddresses = [
-            addresses[0],
-            addresses[1],
-            addresses[2],
-            addresses[3],
-            addresses[4]
+            addresses[0], // maker
+            addresses[1], // taker
+            addresses[2], // makerToken
+            addresses[3], // takerToken
+            addresses[4] // feeRecepient
         ];
         uint[6] memory orderValues = [
-            values[0],
-            values[1],
-            values[2],
-            values[3],
-            values[4],
-            values[5]
+            values[0], // makerTokenAmount
+            values[1], // takerTokenAmount
+            values[2], // makerFee
+            values[3], // takerFee
+            values[4], // expirationTimestampInSec
+            values[5]  // salt
         ];
-        uint fillTakerTokenAmount = values[6];
+        uint fillTakerTokenAmount = values[6]; // fillTakerTokenAmount
+        // Execute Exchange trade. It either succeeds in full or fails and reverts all the changes.
         exchange.fillOrKillOrder(orderAddresses, orderValues, fillTakerTokenAmount, v[0], r[0], s[0]);
     }
 }
