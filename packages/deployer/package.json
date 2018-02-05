@@ -5,6 +5,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' src/solc/solc_bin/* ./lib && tsc",
         "test": "npm run build; mocha lib/test/*_test.js",
         "compile": "npm run build; node lib/src/cli.js compile",
@@ -29,7 +30,7 @@
     "devDependencies": {
         "copyfiles": "^1.2.0",
         "types-bn": "^0.0.1",
-        "typescript": "~2.6.1",
+        "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.8"
     },
     "dependencies": {

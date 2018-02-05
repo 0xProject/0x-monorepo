@@ -5,6 +5,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test": "run-s clean build run_mocha",
         "test:circleci": "yarn test",
@@ -40,6 +41,6 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
-        "typescript": "~2.6.1"
+        "typescript": "2.7.1"
     }
 }

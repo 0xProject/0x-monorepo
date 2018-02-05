@@ -3,6 +3,7 @@
     "name": "0x.js",
     "workspaces": ["packages/*"],
     "scripts": {
+        "dev": "lerna run --parallel build:watch",
         "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",

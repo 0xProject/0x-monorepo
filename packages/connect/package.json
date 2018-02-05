@@ -12,6 +12,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "build": "tsc",
         "clean": "shx rm -rf _bundles lib test_temp",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
@@ -63,7 +64,7 @@
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typedoc": "~0.8.0",
-        "typescript": "~2.6.1",
+        "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.8"
     }
 }

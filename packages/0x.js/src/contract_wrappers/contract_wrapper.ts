@@ -34,8 +34,8 @@ export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     private _networkId: number;
     private _abiDecoder?: AbiDecoder;
-    private _blockAndLogStreamerIfExists: BlockAndLogStreamer | undefined;
-    private _blockAndLogStreamInterval: NodeJS.Timer;
+    private _blockAndLogStreamerIfExists?: BlockAndLogStreamer;
+    private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _filters: { [filterToken: string]: Web3.FilterObject };
     private _filterCallbacks: {
         [filterToken: string]: EventCallback<ContractEventArgs>;
@@ -162,7 +162,7 @@ export class ContractWrapper {
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
-        this._blockAndLogStreamInterval = intervalUtils.setAsyncExcludingInterval(
+        this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
             constants.DEFAULT_BLOCK_POLLING_INTERVAL,
             this._onReconcileBlockError.bind(this),
@@ -191,7 +191,7 @@ export class ContractWrapper {
         }
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
-        intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamInterval);
+        intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamIntervalIfExists as NodeJS.Timer);
         delete this._blockAndLogStreamerIfExists;
     }
     private async _reconcileBlockAsync(): Promise<void> {

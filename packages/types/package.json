@@ -5,6 +5,7 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "build": "tsc",
         "clean": "shx rm -rf lib",
         "lint": "tslint --project . 'src/**/*.ts'"
@@ -22,7 +23,7 @@
         "@0xproject/tslint-config": "^0.4.6",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
-        "typescript": "~2.6.1",
+        "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.8"
     },
     "dependencies": {

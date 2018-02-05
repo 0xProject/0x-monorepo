@@ -5,6 +5,7 @@
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
     "scripts": {
+        "build:watch": "tsc -w",
         "clean": "shx rm -rf lib",
         "build": "tsc",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
@@ -48,7 +49,7 @@
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
         "types-ethereumjs-util": "0xproject/types-ethereumjs-util",
-        "typescript": "~2.6.1",
+        "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.8",
         "webpack": "^3.1.0"
     }

@@ -5,6 +5,7 @@
     "description": "A faucet micro-service that dispenses test ERC20 tokens or Ether",
     "main": "server.js",
     "scripts": {
+        "build:watch": "tsc -w",
         "build": "node ../../node_modules/gulp/bin/gulp.js build",
         "dev": "node ../../node_modules/gulp/bin/gulp.js run",
         "start": "node ./bin/server.js",
@@ -35,7 +36,7 @@
         "shx": "^0.2.2",
         "source-map-loader": "^0.1.6",
         "tslint": "5.8.0",
-        "typescript": "~2.6.1",
+        "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.8",
         "webpack": "^3.1.0",
         "webpack-node-externals": "^1.6.0"
