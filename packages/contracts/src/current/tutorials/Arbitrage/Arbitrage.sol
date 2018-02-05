@@ -11,7 +11,7 @@ contract Arbitrage is Ownable {
     EtherDelta etherDelta;
     address proxyAddress;
 
-    uint constant MAX_UINT = 2**256 - 1;
+    uint256 constant MAX_UINT = 2**256 - 1;
 
     function Arbitrage(address _exchangeAddress, address _etherDeltaAddress, address _proxyAddress) {
         exchange = Exchange(_exchangeAddress);
