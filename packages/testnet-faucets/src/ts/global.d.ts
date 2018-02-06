@@ -1,4 +1,7 @@
 declare module 'rollbar';
+declare module 'web3-provider-engine/subproviders/rpc';
+declare module 'web3-provider-engine/subproviders/nonce-tracker';
+declare module 'web3-provider-engine/subproviders/hooked-wallet';
 
 declare module '*.json' {
     const json: any;
@@ -34,7 +37,3 @@ declare module 'web3-provider-engine' {
     export = Web3ProviderEngine;
 }
 /* tslint:enable */
-
-declare module 'web3-provider-engine/subproviders/rpc';
-declare module 'web3-provider-engine/subproviders/nonce-tracker';
-declare module 'web3-provider-engine/subproviders/hooked-wallet';
