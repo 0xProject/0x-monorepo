@@ -9,43 +9,28 @@ public {{this.name}} = {
     {{/this.payable}}
     ): Promise<string> {
         const self = this as {{contractName}}Contract;
-        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-            txData,
-            self.{{this.name}}.estimateGasAsync.bind(
-                self,
-                {{> params inputs=inputs}}
-            ),
-        );
-        const txHash = await promisify<string>(
-            self._web3ContractInstance.{{this.name}}, self._web3ContractInstance,
-        )(
+        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(txData);
+        const txHash = await self._web3ContractInstance.{{this.name}}(
             {{> params inputs=inputs}}
             txDataWithDefaults,
         );
         return txHash;
     },
-    async estimateGasAsync(
+    async callAsync(
     {{> typed_params inputs=inputs}}
+    {{#this.payable}}
+        txData: TxDataPayable = {},
+    {{/this.payable}}
+    {{^this.payable}}
         txData: TxData = {},
-    ): Promise<number> {
+    {{/this.payable}}
+    ): Promise<{{> return_type outputs=outputs}}> {
         const self = this as {{contractName}}Contract;
-        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-            txData,
-        );
-        const gas = await promisify<number>(
-            self._web3ContractInstance.{{this.name}}.estimateGas, self._web3ContractInstance,
-        )(
+        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(txData);
+        const returnValue = await self._web3ContractInstance.{{this.name}}.call(
             {{> params inputs=inputs}}
             txDataWithDefaults,
         );
-        return gas;
-    },
-    getABIEncodedTransactionData(
-    {{> typed_params inputs=inputs}}
-        txData: TxData = {},
-    ): string {
-        const self = this as {{contractName}}Contract;
-        const abiEncodedTransactionData = self._web3ContractInstance.{{this.name}}.getData();
-        return abiEncodedTransactionData;
+        return returnValue;
     },
 };
