@@ -75,7 +75,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
         try {
-            await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits)
+            await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
             ReactGA.event({
                 category: 'Portal',
                 action: 'Set Allowance Success',
