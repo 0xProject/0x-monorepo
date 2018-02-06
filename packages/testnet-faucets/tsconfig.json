@@ -1,7 +1,8 @@
 {
     "extends": "../../tsconfig",
     "compilerOptions": {
-        "outDir": "lib"
+        "outDir": "lib",
+        "strictPropertyInitialization": false
     },
     "include": ["./src/ts/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
 }
