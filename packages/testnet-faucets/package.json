@@ -37,6 +37,7 @@
         "shx": "^0.2.2",
         "source-map-loader": "^0.1.6",
         "tslint": "5.8.0",
+        "types-bn": "^0.0.1",
         "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
         "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.9",
