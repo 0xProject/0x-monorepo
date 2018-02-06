@@ -38,15 +38,16 @@ describe('NonceTrackerSubprovider', () => {
         '0x5bd428537f05f9830e93792f90ea6a3e2d1ee84952dd96edbae9f658f831ab13',
     ];
     function createFixtureSubprovider() {
-        let called = false;
+        let firstGetTransactionCount = true;
         const fixedBlockNumberAndTransactionCountProvider = new FixtureSubprovider({
             eth_getBlockByNumber: '0x01',
             eth_getTransactionCount: (data: any, next: any, end: any) => {
-                if (called) {
-                    return end(null, '0x99');
-                } else {
-                    called = true;
+                // For testing caching we return different results on the second call
+                if (firstGetTransactionCount) {
+                    firstGetTransactionCount = false;
                     end(null, '0x00');
+                } else {
+                    end(null, '0x99');
                 }
             },
         });
