@@ -10,7 +10,7 @@
     "scripts": {
         "build:watch": "tsc -w",
         "prebuild": "run-s clean copy_artifacts",
-        "copy_artifacts": "copyfiles './artifacts/**/*' ./lib",
+        "copy_artifacts": "copyfiles './src/artifacts/**/*' ./lib",
         "build": "tsc",
         "test": "run-s compile build run_mocha",
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 10000 --bail --exit",

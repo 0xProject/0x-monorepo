@@ -99,7 +99,7 @@ for (const abiFileName of abiFileNames) {
     } else if (!_.isUndefined(parsedContent.abi)) {
         ABI = parsedContent.abi; // Truffle artifact
     } else if (!_.isUndefined(parsedContent.networks) && !_.isUndefined(parsedContent.networks[args.networkId])) {
-        ABI = parsedContent.networks[args.networkId]; // 0x contracts package artifact
+        ABI = parsedContent.networks[args.networkId].abi; // 0x contracts package artifact
     }
     if (_.isUndefined(ABI)) {
         utils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);

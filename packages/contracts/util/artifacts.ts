@@ -1,13 +1,13 @@
-import * as DummyTokenArtifact from '../artifacts/DummyToken.json';
-import * as ExchangeArtifact from '../artifacts/Exchange.json';
-import * as MaliciousTokenArtifact from '../artifacts/MaliciousToken.json';
-import * as MultiSigWalletWithTimeLockArtifact from '../artifacts/MultiSigWalletWithTimeLock.json';
-import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact from '../artifacts/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
-import * as TokenArtifact from '../artifacts/Token.json';
-import * as TokenRegistryArtifact from '../artifacts/TokenRegistry.json';
-import * as TokenTransferProxyArtifact from '../artifacts/TokenTransferProxy.json';
-import * as EtherTokenArtifact from '../artifacts/WETH9.json';
-import * as ZRXArtifact from '../artifacts/ZRXToken.json';
+import * as DummyTokenArtifact from '../src/artifacts/DummyToken.json';
+import * as ExchangeArtifact from '../src/artifacts/Exchange.json';
+import * as MaliciousTokenArtifact from '../src/artifacts/MaliciousToken.json';
+import * as MultiSigWalletWithTimeLockArtifact from '../src/artifacts/MultiSigWalletWithTimeLock.json';
+import * as MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact from '../src/artifacts/MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress.json';
+import * as TokenArtifact from '../src/artifacts/Token.json';
+import * as TokenRegistryArtifact from '../src/artifacts/TokenRegistry.json';
+import * as TokenTransferProxyArtifact from '../src/artifacts/TokenTransferProxy.json';
+import * as EtherTokenArtifact from '../src/artifacts/WETH9.json';
+import * as ZRXArtifact from '../src/artifacts/ZRXToken.json';
 
 import { Artifact } from './types';
 
