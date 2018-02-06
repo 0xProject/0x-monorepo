@@ -114,10 +114,10 @@ for (const abiFileName of abiFileNames) {
 
     const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_METHOD) as Web3.MethodAbi[];
     const methodsData = _.map(methodAbis, methodAbi => {
-        _.map(methodAbi.inputs, input => {
+        _.map(methodAbi.inputs, (input, i: number) => {
             if (_.isEmpty(input.name)) {
                 // Auto-generated getters don't have parameter names
-                input.name = 'index';
+                input.name = `index_${i}`;
             }
         });
         // This will make templates simpler
