@@ -13,9 +13,9 @@ import {
     OptionalNextCallback,
 } from '../types';
 
-
 import { Subprovider } from './subprovider';
 
+// We do not export this since this is not our error, and we do not throw this error
 const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
 export class NonceTrackerSubprovider extends Subprovider {
     private _nonceCache: { [address: string]: string } = {};
@@ -36,7 +36,8 @@ export class NonceTrackerSubprovider extends Subprovider {
                 return address;
             case 'eth_sendRawTransaction':
                 const transaction = NonceTrackerSubprovider._reconstructTransaction(payload);
-                address = `0x${transaction.getSenderAddress().toString('hex')}`.toLowerCase();
+                const addressRaw = transaction.getSenderAddress().toString('hex').toLowerCase();
+                address = `0x${addressRaw}`;
                 return address;
             default:
                 throw new Error(NonceSubproviderErrors.CannotDetermineAddressFromPayload);
@@ -87,8 +88,8 @@ export class NonceTrackerSubprovider extends Subprovider {
         if (nextHexNonce.length % 2) {
             nextHexNonce = `0${nextHexNonce}`;
         }
-        nextHexNonce = `0x${nextHexNonce}`;
-        this._nonceCache[address] = nextHexNonce;
+        const nextPrefixedHexNonce = `0x${nextHexNonce}`;
+        this._nonceCache[address] = nextPrefixedHexNonce;
     }
     private _handleSendTransactionError(payload: JSONRPCPayload, err: Error): void {
         const address = NonceTrackerSubprovider._determineAddress(payload);
