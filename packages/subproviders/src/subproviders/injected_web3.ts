@@ -41,7 +41,8 @@ export class InjectedWeb3Subprovider {
         }
     }
     // Required to implement this method despite not needing it for this subprovider
-    // This type is Web3ProviderEngine, but there is no need to import this for a noop.
+    // The engine argument type should be Web3ProviderEngine, but we've decided to keep it as type any
+    // to remove the provider engine depdency given this method is a noop
     // tslint:disable-next-line:prefer-function-over-method
     public setEngine(engine: any) {
         // noop
