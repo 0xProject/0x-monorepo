@@ -1,17 +1,16 @@
 import * as _ from 'lodash';
 import Web3 = require('web3');
-import Web3ProviderEngine = require('web3-provider-engine');
 
 /*
  * This class implements the web3-provider-engine subprovider interface and forwards
  * requests involving user accounts (getAccounts, sendTransaction, etc...) to the injected
- * web3 instance in their browser.
+ * provider instance in their browser.
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class InjectedWeb3Subprovider {
     private _injectedWeb3: Web3;
-    constructor(injectedWeb3: Web3) {
-        this._injectedWeb3 = injectedWeb3;
+    constructor(subprovider: Web3.Provider) {
+        this._injectedWeb3 = new Web3(subprovider);
     }
     public handleRequest(
         payload: Web3.JSONRPCRequestPayload,
@@ -42,8 +41,9 @@ export class InjectedWeb3Subprovider {
         }
     }
     // Required to implement this method despite not needing it for this subprovider
+    // This type is Web3ProviderEngine, but there is no need to import this for a noop.
     // tslint:disable-next-line:prefer-function-over-method
-    public setEngine(engine: Web3ProviderEngine) {
+    public setEngine(engine: any) {
         // noop
     }
 }
