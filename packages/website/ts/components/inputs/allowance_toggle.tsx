@@ -76,15 +76,20 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         }
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits)
-            .then((fulfilled: any) => {
+            .then(() => {
                 ReactGA.event({
                     category: 'Portal',
-                    action: 'Set Allowance',
+                    action: 'Set Allowance Success',
                     label: this.props.token.symbol,
                     value: newAllowanceAmountInBaseUnits,
                 });
-            }, (rejected: any) => {
-                console.log(rejected);
+            }, () => {
+                ReactGA.event({
+                    category: 'Portal',
+                    action: 'Set Allowance Failure',
+                    label: this.props.token.symbol,
+                    value: newAllowanceAmountInBaseUnits,
+                });
             });
             await this.props.refetchTokenStateAsync();
         } catch (err) {

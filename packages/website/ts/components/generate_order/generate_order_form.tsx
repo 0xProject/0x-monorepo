@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import * as React from 'react';
+import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { ExpirationInput } from 'ts/components/inputs/expiration_input';
 import { HashInput } from 'ts/components/inputs/hash_input';
@@ -261,6 +262,12 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         ) {
             const didSignSuccessfully = await this._signTransactionAsync();
             if (didSignSuccessfully) {
+                ReactGA.event({
+                    category: 'Portal',
+                    action: 'Sign Order Success',
+                    label: this.props.tokenByAddress[debitToken.address].symbol,
+                    value: debitToken.amount,
+                });
                 this.setState({
                     globalErrMsg: '',
                     shouldShowIncompleteErrs: false,
@@ -273,6 +280,11 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'You must enable wallet communication';
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             }
+            ReactGA.event({
+                category: 'Portal',
+                action: 'Sign Order Failure',
+                label: globalErrMsg,
+            });
             this.setState({
                 globalErrMsg,
                 shouldShowIncompleteErrs: true,
