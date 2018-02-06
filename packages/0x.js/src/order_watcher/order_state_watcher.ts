@@ -25,7 +25,6 @@ import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
 import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
 import {
-    BlockParamLiteral,
     ContractEventArgs,
     ExchangeContractErrs,
     LogEvent,

@@ -106,7 +106,9 @@ for (const abiFileName of abiFileNames) {
     }
     if (_.isUndefined(ABI)) {
         utils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
-        utils.log(`Please make sure your ABI file is either an array with ABI entries or an object with the abi key`);
+        utils.log(
+            `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x deployer artifact`,
+        );
         process.exit(1);
     }
 
