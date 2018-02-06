@@ -14,10 +14,10 @@
         "../../node_modules/types-ethereumjs-util/index.d.ts",
         "../../node_modules/types-bn/index.d.ts",
         "./globals.d.ts",
+        "./src/**/*",
         "./util/**/*",
         "./test/**/*",
-        "./migrations/**/*",
-        "./deploy/**/*"
+        "./migrations/**/*"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }
