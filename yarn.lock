@@ -7272,6 +7272,13 @@ react-event-listener@^0.4.5:
     prop-types "^15.5.4"
     warning "^3.0.0"
 
+react-ga@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.4.1.tgz#dfbd5f028ed39a07067f7a8bf57dc0d240000767"
+  optionalDependencies:
+    prop-types "^15.6.0"
+    react "^15.6.2 || ^16.0"
+
 react-highlight@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/react-highlight/-/react-highlight-0.10.0.tgz#d386f9dceab867dc0dcc2364153fb1cc7645d046"
@@ -7421,6 +7428,15 @@ react@^15.5.4:
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
     prop-types "^15.5.10"
+
+"react@^15.6.2 || ^16.0":
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.2.0.tgz#a31bd2dab89bff65d42134fa187f24d054c273ba"
+  dependencies:
+    fbjs "^0.8.16"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 read-cmd-shim@^1.0.1:
   version "1.0.1"
