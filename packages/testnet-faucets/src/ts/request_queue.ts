@@ -13,7 +13,7 @@ const DEFAULT_QUEUE_INTERVAL_MS = 1000;
 export class RequestQueue {
     protected _queueIntervalMs: number;
     protected _queue: string[];
-    protected _queueIntervalId: NodeJS.Timer;
+    protected _queueIntervalId!: NodeJS.Timer;
     protected _web3: Web3;
     constructor(web3: any) {
         this._queueIntervalMs = DEFAULT_QUEUE_INTERVAL_MS;
@@ -45,9 +45,6 @@ export class RequestQueue {
             // tslint:disable-next-line:no-floating-promises
             this._processNextRequestFireAndForgetAsync(recipientAddress);
         }, this._queueIntervalMs);
-    }
-    protected _stop() {
-        clearInterval(this._queueIntervalId);
     }
     // tslint:disable-next-line:prefer-function-over-method
     protected async _processNextRequestFireAndForgetAsync(recipientAddress: string) {
