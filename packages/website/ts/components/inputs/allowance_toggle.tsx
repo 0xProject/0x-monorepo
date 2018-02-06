@@ -81,14 +81,14 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
                     category: 'Portal',
                     action: 'Set Allowance Success',
                     label: this.props.token.symbol,
-                    value: newAllowanceAmountInBaseUnits,
+                    value: newAllowanceAmountInBaseUnits.toNumber(),
                 });
             }, () => {
                 ReactGA.event({
                     category: 'Portal',
                     action: 'Set Allowance Failure',
                     label: this.props.token.symbol,
-                    value: newAllowanceAmountInBaseUnits,
+                    value: newAllowanceAmountInBaseUnits.toNumber(),
                 });
             });
             await this.props.refetchTokenStateAsync();

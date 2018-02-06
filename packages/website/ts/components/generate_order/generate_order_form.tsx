@@ -266,7 +266,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     category: 'Portal',
                     action: 'Sign Order Success',
                     label: this.props.tokenByAddress[debitToken.address].symbol,
-                    value: debitToken.amount,
+                    value: debitToken.amount.toNumber(),
                 });
                 this.setState({
                     globalErrMsg: '',
