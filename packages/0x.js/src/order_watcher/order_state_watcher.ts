@@ -6,26 +6,33 @@ import * as _ from 'lodash';
 
 import { ZeroEx } from '../0x';
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
+import {
+    DepositContractEventArgs,
+    EtherTokenEvents,
+    WithdrawalContractEventArgs,
+} from '../contract_wrappers/generated/ether_token';
+import {
+    ExchangeEvents,
+    LogCancelContractEventArgs,
+    LogFillContractEventArgs,
+} from '../contract_wrappers/generated/exchange';
+import {
+    ApprovalContractEventArgs,
+    TokenEvents,
+    TransferContractEventArgs,
+} from '../contract_wrappers/generated/token';
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
 import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
 import {
-    ApprovalContractEventArgs,
+    BlockParamLiteral,
     ContractEventArgs,
-    DepositContractEventArgs,
-    EtherTokenEvents,
     ExchangeContractErrs,
-    ExchangeEvents,
-    LogCancelContractEventArgs,
     LogEvent,
-    LogFillContractEventArgs,
     OnOrderStateChangeCallback,
     OrderState,
     OrderStateWatcherConfig,
     SignedOrder,
-    TokenEvents,
-    TransferContractEventArgs,
-    WithdrawalContractEventArgs,
     ZeroExError,
 } from '../types';
 import { assert } from '../utils/assert';

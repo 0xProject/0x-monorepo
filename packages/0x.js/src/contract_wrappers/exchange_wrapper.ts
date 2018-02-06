@@ -12,10 +12,7 @@ import {
     EventCallback,
     ExchangeContractErrCodes,
     ExchangeContractErrs,
-    ExchangeContractEventArgs,
-    ExchangeEvents,
     IndexedFilterValues,
-    LogErrorContractEventArgs,
     MethodOpts,
     Order,
     OrderAddresses,
@@ -33,7 +30,12 @@ import { OrderValidationUtils } from '../utils/order_validation_utils';
 import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
-import { ExchangeContract } from './generated/exchange';
+import {
+    ExchangeContract,
+    ExchangeContractEventArgs,
+    ExchangeEvents,
+    LogErrorContractEventArgs,
+} from './generated/exchange';
 import { TokenWrapper } from './token_wrapper';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;

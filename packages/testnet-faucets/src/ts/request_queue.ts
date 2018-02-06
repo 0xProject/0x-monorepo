@@ -44,11 +44,6 @@ export class RequestQueue {
             this._processNextRequestFireAndForgetAsync(recipientAddress);
         }, this._queueIntervalMs);
     }
-    protected _stop() {
-        if (!_.isUndefined(this._queueIntervalId)) {
-            clearInterval(this._queueIntervalId);
-        }
-    }
     // tslint:disable-next-line:prefer-function-over-method
     protected async _processNextRequestFireAndForgetAsync(recipientAddress: string) {
         throw new Error('Expected processNextRequestFireAndForgetAsync to be implemented by a subclass');
