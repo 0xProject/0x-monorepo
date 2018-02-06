@@ -64,7 +64,10 @@ function registerPartials(partialsGlob: string) {
 }
 
 function writeOutputFile(name: string, renderedTsCode: string): void {
-    const fileName = toSnakeCase(name);
+    let fileName = toSnakeCase(name);
+    if (fileName === 'z_r_x_token') {
+        fileName = 'zrx_token';
+    }
     const filePath = `${args.output}/${fileName}.ts`;
     fs.writeFileSync(filePath, renderedTsCode);
     utils.log(`Created: ${chalk.bold(filePath)}`);
