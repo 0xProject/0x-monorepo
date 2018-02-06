@@ -5,6 +5,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
+import { DummyTokenContract } from '../src/contract_wrappers/generated/dummy_token';
 import { constants } from '../util/constants';
 import { ContractName } from '../util/types';
 
@@ -27,14 +28,15 @@ describe('UnlimitedAllowanceToken', () => {
 
     const MAX_MINT_VALUE = new BigNumber(100000000000000000000);
     let tokenAddress: string;
-    let token: Web3.ContractInstance;
+    let token: DummyTokenContract;
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        token = await deployer.deployAsync(ContractName.DummyToken);
-        await token.mint(MAX_MINT_VALUE, { from: owner });
+        const tokenInstance = await deployer.deployAsync(ContractName.DummyToken);
+        token = new DummyTokenContract(tokenInstance);
+        await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });
     beforeEach(async () => {
@@ -47,7 +49,7 @@ describe('UnlimitedAllowanceToken', () => {
         it('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(tokenAddress, owner);
             const amountToTransfer = ownerBalance.plus(1);
-            return expect(token.transfer.call(spender, amountToTransfer, { from: owner })).to.be.rejectedWith(
+            return expect(token.transfer.callAsync(spender, amountToTransfer, { from: owner })).to.be.rejectedWith(
                 constants.REVERT,
             );
         });
@@ -67,7 +69,7 @@ describe('UnlimitedAllowanceToken', () => {
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const didReturnTrue = await token.transfer.call(spender, 0, {
+            const didReturnTrue = await token.transfer.callAsync(spender, new BigNumber(0), {
                 from: owner,
             });
             expect(didReturnTrue).to.be.true();
@@ -80,7 +82,7 @@ describe('UnlimitedAllowanceToken', () => {
             const amountToTransfer = ownerBalance.plus(1);
             await zeroEx.token.setAllowanceAsync(tokenAddress, owner, spender, amountToTransfer);
             return expect(
-                token.transferFrom.call(owner, spender, amountToTransfer, {
+                token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
             ).to.be.rejectedWith(constants.REVERT);
@@ -95,15 +97,17 @@ describe('UnlimitedAllowanceToken', () => {
             expect(spenderAllowanceIsInsufficient).to.be.true();
 
             return expect(
-                token.transferFrom.call(owner, spender, amountToTransfer, {
+                token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const amountToTransfer = 0;
-            const didReturnTrue = await token.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
+            const amountToTransfer = new BigNumber(0);
+            const didReturnTrue = await token.transferFrom.callAsync(owner, spender, amountToTransfer, {
+                from: spender,
+            });
             expect(didReturnTrue).to.be.true();
         });
 
