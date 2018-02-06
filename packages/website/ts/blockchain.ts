@@ -100,7 +100,7 @@ export class Blockchain {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
             provider = new ProviderEngine();
-            provider.addProvider(new InjectedWeb3Subprovider(injectedWeb3));
+            provider.addProvider(new InjectedWeb3Subprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
             provider.addProvider(new RedundantRPCSubprovider(publicNodeUrlsIfExistsForNetworkId));
             provider.start();
