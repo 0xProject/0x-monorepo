@@ -71,11 +71,12 @@ export class ZeroEx {
      * @return  Whether the signature is valid for the supplied signerAddress and data.
      */
     public static isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {
+        const normalizedSignerAddress = signerAddress.toLowerCase();
         assert.isHexString('data', data);
         assert.doesConformToSchema('signature', signature, schemas.ecSignatureSchema);
-        assert.isETHAddressHex('signerAddress', signerAddress);
+        assert.isETHAddressHex('signerAddress', normalizedSignerAddress);
 
-        const isValidSignature = signatureUtils.isValidSignature(data, signature, signerAddress);
+        const isValidSignature = signatureUtils.isValidSignature(data, signature, normalizedSignerAddress);
         return isValidSignature;
     }
     /**
@@ -244,7 +245,9 @@ export class ZeroEx {
         shouldAddPersonalMessagePrefix: boolean,
     ): Promise<ECSignature> {
         assert.isHexString('orderHash', orderHash);
-        await assert.isSenderAddressAsync('signerAddress', signerAddress, this._web3Wrapper);
+        const normalizedSignerAddress = signerAddress.toLowerCase();
+        assert.isETHAddressHex('signerAddress', normalizedSignerAddress);
+        await assert.isSenderAddressAsync('signerAddress', normalizedSignerAddress, this._web3Wrapper);
 
         let msgHashHex = orderHash;
         if (shouldAddPersonalMessagePrefix) {
@@ -253,7 +256,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const signature = await this._web3Wrapper.signTransactionAsync(signerAddress, msgHashHex);
+        const signature = await this._web3Wrapper.signTransactionAsync(normalizedSignerAddress, msgHashHex);
 
         // HACK: There is no consensus on whether the signatureHex string should be formatted as
         // v + r + s OR r + s + v, and different clients (even different versions of the same client)
@@ -262,7 +265,7 @@ export class ZeroEx {
         const validVParamValues = [27, 28];
         const ecSignatureVRS = signatureUtils.parseSignatureHexAsVRS(signature);
         if (_.includes(validVParamValues, ecSignatureVRS.v)) {
-            const isValidVRSSignature = ZeroEx.isValidSignature(orderHash, ecSignatureVRS, signerAddress);
+            const isValidVRSSignature = ZeroEx.isValidSignature(orderHash, ecSignatureVRS, normalizedSignerAddress);
             if (isValidVRSSignature) {
                 return ecSignatureVRS;
             }
@@ -270,7 +273,7 @@ export class ZeroEx {
 
         const ecSignatureRSV = signatureUtils.parseSignatureHexAsRSV(signature);
         if (_.includes(validVParamValues, ecSignatureRSV.v)) {
-            const isValidRSVSignature = ZeroEx.isValidSignature(orderHash, ecSignatureRSV, signerAddress);
+            const isValidRSVSignature = ZeroEx.isValidSignature(orderHash, ecSignatureRSV, normalizedSignerAddress);
             if (isValidRSVSignature) {
                 return ecSignatureRSV;
             }
