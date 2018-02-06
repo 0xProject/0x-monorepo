@@ -9,7 +9,7 @@ export class TokenRegWrapper {
     constructor(tokenRegContract: TokenRegistryContract) {
         this._tokenReg = tokenRegContract;
     }
-    public addTokenAsync(token: Token, from: string) {
+    public async addTokenAsync(token: Token, from: string) {
         const tx = this._tokenReg.addToken.sendTransactionAsync(
             token.address as string,
             token.name,
