@@ -5,6 +5,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
+import { ZRXTokenContract } from '../src/contract_wrappers/generated/z_r_x_token';
 import { constants } from '../util/constants';
 import { ContractName } from '../util/types';
 
@@ -24,7 +25,7 @@ describe('ZRXToken', () => {
 
     let MAX_UINT: BigNumber;
 
-    let zrx: Web3.ContractInstance;
+    let zrx: ZRXTokenContract;
     let zrxAddress: string;
 
     before(async () => {
@@ -34,7 +35,8 @@ describe('ZRXToken', () => {
         zeroEx = new ZeroEx(web3.currentProvider, {
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        zrx = await deployer.deployAsync(ContractName.ZRXToken);
+        const zrxInstance = await deployer.deployAsync(ContractName.ZRXToken);
+        zrx = new ZRXTokenContract(zrxInstance);
         zrxAddress = zrx.address;
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });
@@ -94,7 +96,7 @@ describe('ZRXToken', () => {
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const didReturnTrue = await zrx.transfer.call(spender, 0, {
+            const didReturnTrue = await zrx.transfer.callAsync(spender, new BigNumber(0), {
                 from: owner,
             });
             expect(didReturnTrue).to.be.true();
@@ -108,7 +110,7 @@ describe('ZRXToken', () => {
             await zeroEx.token.setAllowanceAsync(zrxAddress, owner, spender, amountToTransfer, {
                 gasLimit: constants.MAX_TOKEN_APPROVE_GAS,
             });
-            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
+            const didReturnTrue = await zrx.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.false();
         });
 
@@ -120,13 +122,13 @@ describe('ZRXToken', () => {
             const spenderAllowanceIsInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(spenderAllowanceIsInsufficient).to.be.true();
 
-            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
+            const didReturnTrue = await zrx.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.false();
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const amountToTransfer = 0;
-            const didReturnTrue = await zrx.transferFrom.call(owner, spender, amountToTransfer, { from: spender });
+            const amountToTransfer = new BigNumber(0);
+            const didReturnTrue = await zrx.transferFrom.callAsync(owner, spender, amountToTransfer, { from: spender });
             expect(didReturnTrue).to.be.true();
         });
 
