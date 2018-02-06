@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## v0.4.0 - _January 28, 2017_
+## v0.4.0 - _Feburary 02, 2018_
+
+    * InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object.
+
+## v0.3.5 - _January 28, 2018_
 
     * Return a transaction hash from `_sendTransactionAsync` (#303)
 
