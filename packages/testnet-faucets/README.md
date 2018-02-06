@@ -90,7 +90,6 @@ Returns a JSON payload describing the state of the queues for each network. For 
 
 Schedules a transaction that sends 0.1 ETH to the `recipient` on the network specified by `networkId` where `recipient` is a hex encoded Ethereum address prefixed with `0x`. If no `networkId` is provided via query parameters the faucet will default to network 42 (Kovan).
 
-
 `GET /zrx/:recipient?networkId=:networkId`
 
 Schedules a transaction that sends 0.1 ZRX to the `recipient` on the network specified by `networkId` where `recipient` is a hex encoded Ethereum address prefixed with `0x`. If no `networkId` is provided via query parameters the faucet will default to network 42 (Kovan).

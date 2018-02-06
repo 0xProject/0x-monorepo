@@ -54,7 +54,9 @@ export class Handler {
             res.status(503).send('QUEUE_IS_FULL');
             return;
         }
-        utils.consoleLog(`Added ${req.params.recipient} to queue: ${requestedAssetType} networkId: ${req.params.networkId}`);
+        utils.consoleLog(
+            `Added ${req.params.recipient} to queue: ${requestedAssetType} networkId: ${req.params.networkId}`,
+        );
         res.status(200).end();
     }
     private static _createProviderEngine(rpcUrl: string) {
