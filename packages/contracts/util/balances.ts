@@ -2,12 +2,14 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
+import { DummyTokenContract } from '../src/contract_wrappers/generated/dummy_token';
+
 import { BalancesByOwner } from './types';
 
 export class Balances {
-    private _tokenContractInstances: Web3.ContractInstance[];
+    private _tokenContractInstances: DummyTokenContract[];
     private _ownerAddresses: string[];
-    constructor(tokenContractInstances: Web3.ContractInstance[], ownerAddresses: string[]) {
+    constructor(tokenContractInstances: DummyTokenContract[], ownerAddresses: string[]) {
         this._tokenContractInstances = tokenContractInstances;
         this._ownerAddresses = ownerAddresses;
     }
