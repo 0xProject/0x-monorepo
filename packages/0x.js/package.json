@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "0.31.1",
+    "version": "0.32.0",
     "description": "A javascript library for interacting with the 0x protocol",
     "keywords": [
         "0x.js",
@@ -12,6 +12,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "prebuild": "run-s clean generate_contract_wrappers",
         "build": "run-p build:umd:prod build:commonjs; exit 0;",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
@@ -41,9 +42,9 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.1.6",
-        "@0xproject/dev-utils": "^0.0.9",
-        "@0xproject/tslint-config": "^0.4.6",
+        "@0xproject/abi-gen": "^0.1.7",
+        "@0xproject/dev-utils": "^0.0.10",
+        "@0xproject/tslint-config": "^0.4.7",
         "@types/bintrees": "^1.0.2",
         "@types/jsonschema": "^1.1.1",
         "@types/lodash": "^4.14.86",
@@ -73,17 +74,17 @@
         "truffle-hdwallet-provider": "^0.0.3",
         "tslint": "5.8.0",
         "typedoc": "~0.8.0",
-        "typescript": "~2.6.1",
+        "typescript": "2.7.1",
         "web3-provider-engine": "^13.0.1",
-        "web3-typescript-typings": "^0.9.8",
+        "web3-typescript-typings": "^0.9.9",
         "webpack": "^3.1.0"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.0.15",
-        "@0xproject/json-schemas": "^0.7.7",
-        "@0xproject/types": "^0.1.8",
-        "@0xproject/utils": "^0.2.4",
-        "@0xproject/web3-wrapper": "^0.1.9",
+        "@0xproject/assert": "^0.0.16",
+        "@0xproject/json-schemas": "^0.7.8",
+        "@0xproject/types": "^0.1.9",
+        "@0xproject/utils": "^0.3.0",
+        "@0xproject/web3-wrapper": "^0.1.10",
         "bintrees": "^1.0.2",
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",

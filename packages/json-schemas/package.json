@@ -1,10 +1,11 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "0.7.7",
+    "version": "0.7.8",
     "description": "0x-related json schemas",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
+        "build:watch": "tsc -w",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test": "run-s clean build run_mocha",
         "test:circleci": "yarn test",
@@ -27,8 +28,8 @@
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.6",
-        "@0xproject/utils": "^0.2.4",
+        "@0xproject/tslint-config": "^0.4.7",
+        "@0xproject/utils": "^0.3.0",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",
@@ -40,6 +41,6 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
-        "typescript": "~2.6.1"
+        "typescript": "2.7.1"
     }
 }
