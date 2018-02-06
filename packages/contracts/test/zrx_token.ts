@@ -5,7 +5,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as Web3 from 'web3';
 
-import { ZRXTokenContract } from '../src/contract_wrappers/generated/z_r_x_token';
+import { ZRXTokenContract } from '../src/contract_wrappers/generated/zrx_token';
 import { constants } from '../util/constants';
 import { ContractName } from '../util/types';
 
