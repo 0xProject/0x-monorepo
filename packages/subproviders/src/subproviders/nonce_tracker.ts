@@ -4,13 +4,15 @@ import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import providerEngineUtils = require('web3-provider-engine/util/rpc-cache-utils');
 
+import { BlockParamLiteral } from '@0xproject/types';
+
 import {
-    BlockParamLiteral,
     ErrorCallback,
     JSONRPCPayload,
     NonceSubproviderErrors,
     OptionalNextCallback,
 } from '../types';
+
 
 import { Subprovider } from './subprovider';
 
