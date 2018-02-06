@@ -3,7 +3,9 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import { BlockParamLiteral, EventWatcherCallback, ZeroExError } from '../types';
+import { BlockParamLiteral } from '@0xproject/types';
+
+import { EventWatcherCallback, ZeroExError } from '../types';
 import { assert } from '../utils/assert';
 
 const DEFAULT_EVENT_POLLING_INTERVAL_MS = 200;

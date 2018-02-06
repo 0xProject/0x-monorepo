@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { DecodedLogArgs, LogWithDecodedArgs } from '@0xproject/types';
+import { BlockParamLiteral, DecodedLogArgs, LogWithDecodedArgs } from '@0xproject/types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -7,7 +7,6 @@ import * as Web3 from 'web3';
 
 import { artifacts } from '../artifacts';
 import {
-    BlockParamLiteral,
     BlockRange,
     ECSignature,
     EventCallback,

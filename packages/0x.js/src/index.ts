@@ -42,6 +42,12 @@ export {
     OrderState,
 } from './types';
 
-export { BlockParamLiteral, BlockParam, ContractEventArg, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+export {
+    BlockParamLiteral,
+    BlockParam,
+    ContractEventArg,
+    LogWithDecodedArgs,
+    TransactionReceiptWithDecodedLogs,
+} from '@0xproject/types';
 
 export { TransactionReceipt } from '@0xproject/types';

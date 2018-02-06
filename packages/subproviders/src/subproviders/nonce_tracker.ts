@@ -6,12 +6,7 @@ import providerEngineUtils = require('web3-provider-engine/util/rpc-cache-utils'
 
 import { BlockParamLiteral } from '@0xproject/types';
 
-import {
-    ErrorCallback,
-    JSONRPCPayload,
-    NonceSubproviderErrors,
-    OptionalNextCallback,
-} from '../types';
+import { ErrorCallback, JSONRPCPayload, NonceSubproviderErrors, OptionalNextCallback } from '../types';
 
 import { Subprovider } from './subprovider';
 
@@ -36,7 +31,10 @@ export class NonceTrackerSubprovider extends Subprovider {
                 return address;
             case 'eth_sendRawTransaction':
                 const transaction = NonceTrackerSubprovider._reconstructTransaction(payload);
-                const addressRaw = transaction.getSenderAddress().toString('hex').toLowerCase();
+                const addressRaw = transaction
+                    .getSenderAddress()
+                    .toString('hex')
+                    .toLowerCase();
                 address = `0x${addressRaw}`;
                 return address;
             default:
