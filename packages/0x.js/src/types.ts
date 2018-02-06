@@ -1,5 +1,7 @@
-import { ContractEventArg, LogWithDecodedArgs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+
+import { BlockParam, BlockParamLiteral, ContractEventArg, LogWithDecodedArgs } from '@0xproject/types';
+
 import * as Web3 from 'web3';
 
 export enum ZeroExError {
@@ -218,16 +220,6 @@ export type ContractEvents = TokenEvents | ExchangeEvents | EtherTokenEvents;
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
 }
-
-// Earliest is omitted by design. It is simply an alias for the `0` constant and
-// is thus not very helpful. Moreover, this type is used in places that only accept
-// `latest` or `pending`.
-export enum BlockParamLiteral {
-    Latest = 'latest',
-    Pending = 'pending',
-}
-
-export type BlockParam = BlockParamLiteral | number;
 
 export interface BlockRange {
     fromBlock: BlockParam;

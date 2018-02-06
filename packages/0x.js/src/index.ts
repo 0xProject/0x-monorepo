@@ -2,7 +2,6 @@ export { ZeroEx } from './0x';
 
 export {
     Order,
-    BlockParamLiteral,
     SignedOrder,
     ECSignature,
     ZeroExError,
@@ -14,7 +13,6 @@ export {
     TokenEvents,
     IndexedFilterValues,
     BlockRange,
-    BlockParam,
     OrderCancellationRequest,
     OrderFillRequest,
     LogErrorContractEventArgs,
@@ -44,6 +42,12 @@ export {
     OrderState,
 } from './types';
 
-export { ContractEventArg, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+export {
+    BlockParamLiteral,
+    BlockParam,
+    ContractEventArg,
+    LogWithDecodedArgs,
+    TransactionReceiptWithDecodedLogs,
+} from '@0xproject/types';
 
 export { TransactionReceipt } from '@0xproject/types';

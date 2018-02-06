@@ -1,9 +1,10 @@
+import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
-import { BlockParamLiteral, ExchangeContractErrs, TradeSide, TransferType } from '../types';
+import { ExchangeContractErrs, TradeSide, TransferType } from '../types';
 
 enum FailureReason {
     Balance = 'balance',

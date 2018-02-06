@@ -60,6 +60,8 @@ export class LedgerSubprovider extends Subprovider {
     public setPathIndex(pathIndex: number) {
         this._derivationPathIndex = pathIndex;
     }
+    // Required to implement this public interface which doesn't conform to our linting rule.
+    // tslint:disable-next-line:async-suffix
     public async handleRequest(
         payload: Web3.JSONRPCRequestPayload,
         next: () => void,

@@ -1,9 +1,10 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
 import { ExchangeContractErrs, Token, ZeroEx } from '../src';
-import { BlockParamLiteral, TradeSide, TransferType } from '../src/types';
+import { TradeSide, TransferType } from '../src/types';
 import { ExchangeTransferSimulator } from '../src/utils/exchange_transfer_simulator';
 
 import { chaiSetup } from './utils/chai_setup';

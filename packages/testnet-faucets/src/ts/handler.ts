@@ -1,9 +1,9 @@
+import { NonceTrackerSubprovider } from '@0xproject/subproviders';
 import { addressUtils } from '@0xproject/utils';
 import * as express from 'express';
 import * as _ from 'lodash';
 import ProviderEngine = require('web3-provider-engine');
 import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
-import NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { EtherRequestQueue } from './ether_request_queue';
@@ -96,7 +96,7 @@ export class Handler {
     // tslint:disable-next-line:prefer-function-over-method
     private _createProviderEngine(rpcUrl: string) {
         const engine = new ProviderEngine();
-        engine.addProvider(new NonceSubprovider());
+        engine.addProvider(new NonceTrackerSubprovider());
         engine.addProvider(new HookedWalletSubprovider(idManagement));
         engine.addProvider(
             new RpcSubprovider({

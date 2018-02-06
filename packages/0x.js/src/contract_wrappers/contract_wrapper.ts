@@ -1,4 +1,4 @@
-import { LogWithDecodedArgs, RawLog } from '@0xproject/types';
+import { BlockParamLiteral, LogWithDecodedArgs, RawLog } from '@0xproject/types';
 import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Block, BlockAndLogStreamer } from 'ethereumjs-blockstream';
@@ -7,7 +7,6 @@ import * as Web3 from 'web3';
 
 import {
     Artifact,
-    BlockParamLiteral,
     BlockRange,
     ContractEventArgs,
     ContractEvents,

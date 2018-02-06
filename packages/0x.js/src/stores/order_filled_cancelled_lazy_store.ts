@@ -1,8 +1,8 @@
+import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
-import { BlockParamLiteral } from '../types';
 
 /**
  * Copy on read store for filled/cancelled taker amounts

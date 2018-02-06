@@ -1,11 +1,12 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as Sinon from 'sinon';
 import * as Web3 from 'web3';
 
 import { ExchangeContractErrs, SignedOrder, Token, ZeroEx, ZeroExError } from '../src';
-import { BlockParamLiteral, TradeSide, TransferType } from '../src/types';
+import { TradeSide, TransferType } from '../src/types';
 import { ExchangeTransferSimulator } from '../src/utils/exchange_transfer_simulator';
 import { OrderValidationUtils } from '../src/utils/order_validation_utils';
 
