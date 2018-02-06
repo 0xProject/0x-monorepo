@@ -1,11 +1,9 @@
 import {
-    LogCancelContractEventArgs,
-    LogErrorContractEventArgs,
-    LogFillContractEventArgs,
     LogWithDecodedArgs,
     TransactionReceiptWithDecodedLogs,
     ZeroEx,
 } from '0x.js';
+
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -14,7 +12,12 @@ import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
-import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import {
+    ExchangeContract,
+    LogCancelContractEventArgs,
+    LogErrorContractEventArgs,
+    LogFillContractEventArgs,
+ } from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
@@ -130,18 +133,6 @@ describe('Exchange', () => {
         it('should include transferViaTokenTransferProxy', () => {
             expect((exchange as any).transferViaTokenTransferProxy).to.be.undefined();
         });
-
-        it('should include isTransferable', () => {
-            expect((exchange as any).isTransferable).to.be.undefined();
-        });
-
-        it('should include getBalance', () => {
-            expect((exchange as any).getBalance).to.be.undefined();
-        });
-
-        it('should include getAllowance', () => {
-            expect((exchange as any).getAllowance).to.be.undefined();
-        });
     });
 
     describe('fillOrder', () => {
@@ -162,7 +153,7 @@ describe('Exchange', () => {
 
             const fillTakerTokenAmount1 = new BigNumber(2);
             await exWrapper.fillOrderAsync(order, taker, {
-                fillTakerTokenAmount: fillTakerTokenAmount1,
+                takerTokenFillAmount: fillTakerTokenAmount1,
             });
 
             const filledTakerTokenAmountAfter1 = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
@@ -171,7 +162,7 @@ describe('Exchange', () => {
 
             const fillTakerTokenAmount2 = new BigNumber(1);
             await exWrapper.fillOrderAsync(order, taker, {
-                fillTakerTokenAmount: fillTakerTokenAmount2,
+                takerTokenFillAmount: fillTakerTokenAmount2,
             });
 
             const filledTakerTokenAmountAfter2 = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
@@ -189,44 +180,44 @@ describe('Exchange', () => {
                 .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
-            const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
+            const takerTokenFillAmount = order.params.takerTokenAmount.div(2);
+            await exWrapper.fillOrderAsync(order, taker, { takerTokenFillAmount });
 
             const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
                 .orderHashHex as string);
-            expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
+            expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(takerTokenFillAmount);
 
             const newBalances = await dmyBalances.getAsync();
 
-            const fillMakerTokenAmount = fillTakerTokenAmount
+            const fillMakerTokenAmount = takerTokenFillAmount
                 .times(order.params.makerTokenAmount)
                 .dividedToIntegerBy(order.params.takerTokenAmount);
-            const paidMakerFee = order.params.makerFee
+            const makerFeePaid = order.params.makerFee
                 .times(fillMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
-            const paidTakerFee = order.params.takerFee
+            const takerFeePaid = order.params.takerFee
                 .times(fillMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
             expect(newBalances[maker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[maker][order.params.makerToken].minus(fillMakerTokenAmount),
             );
             expect(newBalances[maker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[maker][order.params.takerToken].add(fillTakerTokenAmount),
+                balances[maker][order.params.takerToken].add(takerTokenFillAmount),
             );
             expect(newBalances[maker][zrx.address]).to.be.bignumber.equal(
-                balances[maker][zrx.address].minus(paidMakerFee),
+                balances[maker][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[taker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[taker][order.params.takerToken].minus(fillTakerTokenAmount),
+                balances[taker][order.params.takerToken].minus(takerTokenFillAmount),
             );
             expect(newBalances[taker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[taker][order.params.makerToken].add(fillMakerTokenAmount),
             );
             expect(newBalances[taker][zrx.address]).to.be.bignumber.equal(
-                balances[taker][zrx.address].minus(paidTakerFee),
+                balances[taker][zrx.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipient][zrx.address]).to.be.bignumber.equal(
-                balances[feeRecipient][zrx.address].add(paidMakerFee.add(paidTakerFee)),
+                balances[feeRecipient][zrx.address].add(makerFeePaid.add(takerFeePaid)),
             );
         });
 
@@ -240,44 +231,44 @@ describe('Exchange', () => {
                 .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
-            const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
+            const takerTokenFillAmount = order.params.takerTokenAmount.div(2);
+            await exWrapper.fillOrderAsync(order, taker, { takerTokenFillAmount });
 
             const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
                 .orderHashHex as string);
-            expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
+            expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(takerTokenFillAmount);
 
             const newBalances = await dmyBalances.getAsync();
 
-            const fillMakerTokenAmount = fillTakerTokenAmount
+            const fillMakerTokenAmount = takerTokenFillAmount
                 .times(order.params.makerTokenAmount)
                 .dividedToIntegerBy(order.params.takerTokenAmount);
-            const paidMakerFee = order.params.makerFee
+            const makerFeePaid = order.params.makerFee
                 .times(fillMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
-            const paidTakerFee = order.params.takerFee
+            const takerFeePaid = order.params.takerFee
                 .times(fillMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
             expect(newBalances[maker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[maker][order.params.makerToken].minus(fillMakerTokenAmount),
             );
             expect(newBalances[maker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[maker][order.params.takerToken].add(fillTakerTokenAmount),
+                balances[maker][order.params.takerToken].add(takerTokenFillAmount),
             );
             expect(newBalances[maker][zrx.address]).to.be.bignumber.equal(
-                balances[maker][zrx.address].minus(paidMakerFee),
+                balances[maker][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[taker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[taker][order.params.takerToken].minus(fillTakerTokenAmount),
+                balances[taker][order.params.takerToken].minus(takerTokenFillAmount),
             );
             expect(newBalances[taker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[taker][order.params.makerToken].add(fillMakerTokenAmount),
             );
             expect(newBalances[taker][zrx.address]).to.be.bignumber.equal(
-                balances[taker][zrx.address].minus(paidTakerFee),
+                balances[taker][zrx.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipient][zrx.address]).to.be.bignumber.equal(
-                balances[feeRecipient][zrx.address].add(paidMakerFee.add(paidTakerFee)),
+                balances[feeRecipient][zrx.address].add(makerFeePaid.add(takerFeePaid)),
             );
         });
 
@@ -291,44 +282,44 @@ describe('Exchange', () => {
                 .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
-            const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
+            const takerTokenFillAmount = order.params.takerTokenAmount.div(2);
+            await exWrapper.fillOrderAsync(order, taker, { takerTokenFillAmount });
 
             const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
                 .orderHashHex as string);
-            expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(fillTakerTokenAmount);
+            expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(takerTokenFillAmount);
 
             const newBalances = await dmyBalances.getAsync();
 
-            const fillMakerTokenAmount = fillTakerTokenAmount
+            const fillMakerTokenAmount = takerTokenFillAmount
                 .times(order.params.makerTokenAmount)
                 .dividedToIntegerBy(order.params.takerTokenAmount);
-            const paidMakerFee = order.params.makerFee
+            const makerFeePaid = order.params.makerFee
                 .times(fillMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
-            const paidTakerFee = order.params.takerFee
+            const takerFeePaid = order.params.takerFee
                 .times(fillMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
             expect(newBalances[maker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[maker][order.params.makerToken].minus(fillMakerTokenAmount),
             );
             expect(newBalances[maker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[maker][order.params.takerToken].add(fillTakerTokenAmount),
+                balances[maker][order.params.takerToken].add(takerTokenFillAmount),
             );
             expect(newBalances[maker][zrx.address]).to.be.bignumber.equal(
-                balances[maker][zrx.address].minus(paidMakerFee),
+                balances[maker][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[taker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[taker][order.params.takerToken].minus(fillTakerTokenAmount),
+                balances[taker][order.params.takerToken].minus(takerTokenFillAmount),
             );
             expect(newBalances[taker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[taker][order.params.makerToken].add(fillMakerTokenAmount),
             );
             expect(newBalances[taker][zrx.address]).to.be.bignumber.equal(
-                balances[taker][zrx.address].minus(paidTakerFee),
+                balances[taker][zrx.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipient][zrx.address]).to.be.bignumber.equal(
-                balances[feeRecipient][zrx.address].add(paidMakerFee.add(paidTakerFee)),
+                balances[feeRecipient][zrx.address].add(makerFeePaid.add(takerFeePaid)),
             );
         });
 
@@ -343,58 +334,59 @@ describe('Exchange', () => {
                 .orderHashHex as string);
             expect(filledTakerTokenAmountBefore).to.be.bignumber.equal(0);
 
-            const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
+            const takerTokenFillAmount = order.params.takerTokenAmount.div(2);
+            await exWrapper.fillOrderAsync(order, taker, { takerTokenFillAmount });
 
             const filledTakerTokenAmountAfter = await zeroEx.exchange.getFilledTakerAmountAsync(order.params
                 .orderHashHex as string);
-            const expectedFillAmountTAfter = fillTakerTokenAmount.add(filledTakerTokenAmountBefore);
+            const expectedFillAmountTAfter = takerTokenFillAmount.add(filledTakerTokenAmountBefore);
             expect(filledTakerTokenAmountAfter).to.be.bignumber.equal(expectedFillAmountTAfter);
 
             const newBalances = await dmyBalances.getAsync();
 
-            const fillMakerTokenAmount = fillTakerTokenAmount
+            const fillMakerTokenAmount = takerTokenFillAmount
                 .times(order.params.makerTokenAmount)
                 .dividedToIntegerBy(order.params.takerTokenAmount);
-            const paidMakerFee = order.params.makerFee
+            const makerFeePaid = order.params.makerFee
                 .times(fillMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
-            const paidTakerFee = order.params.takerFee
+            const takerFeePaid = order.params.takerFee
                 .times(fillMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
             expect(newBalances[maker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[maker][order.params.makerToken].minus(fillMakerTokenAmount),
             );
             expect(newBalances[maker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[maker][order.params.takerToken].add(fillTakerTokenAmount),
+                balances[maker][order.params.takerToken].add(takerTokenFillAmount),
             );
             expect(newBalances[maker][zrx.address]).to.be.bignumber.equal(
-                balances[maker][zrx.address].minus(paidMakerFee),
+                balances[maker][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[taker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[taker][order.params.takerToken].minus(fillTakerTokenAmount),
+                balances[taker][order.params.takerToken].minus(takerTokenFillAmount),
             );
             expect(newBalances[taker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[taker][order.params.makerToken].add(fillMakerTokenAmount),
             );
             expect(newBalances[taker][zrx.address]).to.be.bignumber.equal(
-                balances[taker][zrx.address].minus(paidTakerFee),
+                balances[taker][zrx.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipient][zrx.address]).to.be.bignumber.equal(
-                balances[feeRecipient][zrx.address].add(paidMakerFee.add(paidTakerFee)),
+                balances[feeRecipient][zrx.address].add(makerFeePaid.add(takerFeePaid)),
             );
         });
 
-        it('should fill remaining value if fillTakerTokenAmount > remaining takerTokenAmount', async () => {
-            const fillTakerTokenAmount = order.params.takerTokenAmount.div(2);
-            await exWrapper.fillOrderAsync(order, taker, { fillTakerTokenAmount });
+        it('should fill remaining value if takerTokenFillAmount > remaining takerTokenAmount', async () => {
+            const takerTokenFillAmount = order.params.takerTokenAmount.div(2);
+            await exWrapper.fillOrderAsync(order, taker, { takerTokenFillAmount });
 
             const res = await exWrapper.fillOrderAsync(order, taker, {
-                fillTakerTokenAmount: order.params.takerTokenAmount,
+                takerTokenFillAmount: order.params.takerTokenAmount,
             });
             const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
-            expect(log.args.filledTakerTokenAmount).to.be.bignumber.equal(
-                order.params.takerTokenAmount.minus(fillTakerTokenAmount),
+            console.log(log);
+            expect(log.args.takerTokenFilledAmount).to.be.bignumber.equal(
+                order.params.takerTokenAmount.minus(takerTokenFillAmount),
             );
             const newBalances = await dmyBalances.getAsync();
 
@@ -424,7 +416,7 @@ describe('Exchange', () => {
         it('should log 1 event with the correct arguments when order has a feeRecipient', async () => {
             const divisor = 2;
             const res = await exWrapper.fillOrderAsync(order, taker, {
-                fillTakerTokenAmount: order.params.takerTokenAmount.div(divisor),
+                takerTokenFillAmount: order.params.takerTokenAmount.div(divisor),
             });
             expect(res.logs).to.have.length(1);
 
@@ -441,11 +433,10 @@ describe('Exchange', () => {
             expect(order.params.feeRecipient).to.be.equal(logArgs.feeRecipient);
             expect(order.params.makerToken).to.be.equal(logArgs.makerToken);
             expect(order.params.takerToken).to.be.equal(logArgs.takerToken);
-            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.filledMakerTokenAmount);
-            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.filledTakerTokenAmount);
-            expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.paidMakerFee);
-            expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.paidTakerFee);
-            expect(expectedTokens).to.be.equal(logArgs.tokens);
+            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenFilledAmount);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenFilledAmount);
+            expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
+            expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
             expect(order.params.orderHashHex).to.be.equal(logArgs.orderHash);
         });
 
@@ -455,7 +446,7 @@ describe('Exchange', () => {
             });
             const divisor = 2;
             const res = await exWrapper.fillOrderAsync(order, taker, {
-                fillTakerTokenAmount: order.params.takerTokenAmount.div(divisor),
+                takerTokenFillAmount: order.params.takerTokenAmount.div(divisor),
             });
             expect(res.logs).to.have.length(1);
 
@@ -472,11 +463,10 @@ describe('Exchange', () => {
             expect(order.params.feeRecipient).to.be.equal(logArgs.feeRecipient);
             expect(order.params.makerToken).to.be.equal(logArgs.makerToken);
             expect(order.params.takerToken).to.be.equal(logArgs.takerToken);
-            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.filledMakerTokenAmount);
-            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.filledTakerTokenAmount);
-            expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.paidMakerFee);
-            expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.paidTakerFee);
-            expect(expectedTokens).to.be.equal(logArgs.tokens);
+            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenFilledAmount);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenFilledAmount);
+            expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
+            expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
             expect(order.params.orderHashHex).to.be.equal(logArgs.orderHash);
         });
 
@@ -516,12 +506,12 @@ describe('Exchange', () => {
             return expect(exWrapper.fillOrderAsync(order, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if fillTakerTokenAmount is 0', async () => {
+        it('should throw if takerTokenFillAmount is 0', async () => {
             order = await orderFactory.newSignedOrderAsync();
 
             return expect(
                 exWrapper.fillOrderAsync(order, taker, {
-                    fillTakerTokenAmount: new BigNumber(0),
+                    takerTokenFillAmount: new BigNumber(0),
                 }),
             ).to.be.rejectedWith(constants.REVERT);
         });
@@ -544,9 +534,7 @@ describe('Exchange', () => {
             });
 
             return expect(
-                exWrapper.fillOrderAsync(order, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: true,
-                }),
+                exWrapper.fillOrderAsync(order, taker),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
@@ -568,9 +556,7 @@ describe('Exchange', () => {
             });
 
             return expect(
-                exWrapper.fillOrderAsync(order, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: true,
-                }),
+                exWrapper.fillOrderAsync(order, taker),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
@@ -590,9 +576,7 @@ describe('Exchange', () => {
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
             await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
             expect(
-                exWrapper.fillOrderAsync(order, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: true,
-                }),
+                exWrapper.fillOrderAsync(order, taker),
             ).to.be.rejectedWith(constants.REVERT);
             await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
@@ -615,9 +599,7 @@ describe('Exchange', () => {
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
             await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
             expect(
-                exWrapper.fillOrderAsync(order, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: true,
-                }),
+                exWrapper.fillOrderAsync(order, taker),
             ).to.be.rejectedWith(constants.REVERT);
             await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
@@ -688,9 +670,7 @@ describe('Exchange', () => {
             });
 
             return expect(
-                exWrapper.fillOrderAsync(order, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: false,
-                }),
+                exWrapper.fillOrderAsync(order, taker),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
@@ -754,12 +734,12 @@ describe('Exchange', () => {
             return expect(exWrapper.cancelOrderAsync(order, maker)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if cancelTakerTokenAmount is 0', async () => {
+        it('should throw if takerTokenCancelAmount is 0', async () => {
             order = await orderFactory.newSignedOrderAsync();
 
             return expect(
                 exWrapper.cancelOrderAsync(order, maker, {
-                    cancelTakerTokenAmount: new BigNumber(0),
+                    takerTokenCancelAmount: new BigNumber(0),
                 }),
             ).to.be.rejectedWith(constants.REVERT);
         });
@@ -767,7 +747,7 @@ describe('Exchange', () => {
         it('should be able to cancel a full order', async () => {
             await exWrapper.cancelOrderAsync(order, maker);
             await exWrapper.fillOrderAsync(order, taker, {
-                fillTakerTokenAmount: order.params.takerTokenAmount.div(2),
+                takerTokenFillAmount: order.params.takerTokenAmount.div(2),
             });
 
             const newBalances = await dmyBalances.getAsync();
@@ -775,56 +755,56 @@ describe('Exchange', () => {
         });
 
         it('should be able to cancel part of an order', async () => {
-            const cancelTakerTokenAmount = order.params.takerTokenAmount.div(2);
+            const takerTokenCancelAmount = order.params.takerTokenAmount.div(2);
             await exWrapper.cancelOrderAsync(order, maker, {
-                cancelTakerTokenAmount,
+                takerTokenCancelAmount,
             });
 
             const res = await exWrapper.fillOrderAsync(order, taker, {
-                fillTakerTokenAmount: order.params.takerTokenAmount,
+                takerTokenFillAmount: order.params.takerTokenAmount,
             });
             const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
-            expect(log.args.filledTakerTokenAmount).to.be.bignumber.equal(
-                order.params.takerTokenAmount.minus(cancelTakerTokenAmount),
+            expect(log.args.takerTokenFilledAmount).to.be.bignumber.equal(
+                order.params.takerTokenAmount.minus(takerTokenCancelAmount),
             );
 
             const newBalances = await dmyBalances.getAsync();
-            const cancelMakerTokenAmount = cancelTakerTokenAmount
+            const cancelMakerTokenAmount = takerTokenCancelAmount
                 .times(order.params.makerTokenAmount)
                 .dividedToIntegerBy(order.params.takerTokenAmount);
-            const paidMakerFee = order.params.makerFee
+            const makerFeePaid = order.params.makerFee
                 .times(cancelMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
-            const paidTakerFee = order.params.takerFee
+            const takerFeePaid = order.params.takerFee
                 .times(cancelMakerTokenAmount)
                 .dividedToIntegerBy(order.params.makerTokenAmount);
             expect(newBalances[maker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[maker][order.params.makerToken].minus(cancelMakerTokenAmount),
             );
             expect(newBalances[maker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[maker][order.params.takerToken].add(cancelTakerTokenAmount),
+                balances[maker][order.params.takerToken].add(takerTokenCancelAmount),
             );
             expect(newBalances[maker][zrx.address]).to.be.bignumber.equal(
-                balances[maker][zrx.address].minus(paidMakerFee),
+                balances[maker][zrx.address].minus(makerFeePaid),
             );
             expect(newBalances[taker][order.params.takerToken]).to.be.bignumber.equal(
-                balances[taker][order.params.takerToken].minus(cancelTakerTokenAmount),
+                balances[taker][order.params.takerToken].minus(takerTokenCancelAmount),
             );
             expect(newBalances[taker][order.params.makerToken]).to.be.bignumber.equal(
                 balances[taker][order.params.makerToken].add(cancelMakerTokenAmount),
             );
             expect(newBalances[taker][zrx.address]).to.be.bignumber.equal(
-                balances[taker][zrx.address].minus(paidTakerFee),
+                balances[taker][zrx.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipient][zrx.address]).to.be.bignumber.equal(
-                balances[feeRecipient][zrx.address].add(paidMakerFee.add(paidTakerFee)),
+                balances[feeRecipient][zrx.address].add(makerFeePaid.add(takerFeePaid)),
             );
         });
 
         it('should log 1 event with correct arguments', async () => {
             const divisor = 2;
             const res = await exWrapper.cancelOrderAsync(order, maker, {
-                cancelTakerTokenAmount: order.params.takerTokenAmount.div(divisor),
+                takerTokenCancelAmount: order.params.takerTokenAmount.div(divisor),
             });
             expect(res.logs).to.have.length(1);
 
@@ -839,9 +819,8 @@ describe('Exchange', () => {
             expect(order.params.feeRecipient).to.be.equal(logArgs.feeRecipient);
             expect(order.params.makerToken).to.be.equal(logArgs.makerToken);
             expect(order.params.takerToken).to.be.equal(logArgs.takerToken);
-            expect(expectedCancelledMakerTokenAmount).to.be.bignumber.equal(logArgs.cancelledMakerTokenAmount);
-            expect(expectedCancelledTakerTokenAmount).to.be.bignumber.equal(logArgs.cancelledTakerTokenAmount);
-            expect(expectedTokens).to.be.equal(logArgs.tokens);
+            expect(expectedCancelledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenCancelledAmount);
+            expect(expectedCancelledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenCancelledAmount);
             expect(order.params.orderHashHex).to.be.equal(logArgs.orderHash);
         });
 

@@ -15,17 +15,15 @@ export interface BatchFillOrders {
     orderAddresses: string[][];
     orderValues: BigNumber[][];
     fillTakerTokenAmounts: BigNumber[];
-    shouldThrowOnInsufficientBalanceOrAllowance: boolean;
     v: number[];
     r: string[];
     s: string[];
 }
 
-export interface FillOrdersUpTo {
+export interface MarketFillOrders {
     orderAddresses: string[][];
     orderValues: BigNumber[][];
-    fillTakerTokenAmount: BigNumber;
-    shouldThrowOnInsufficientBalanceOrAllowance: boolean;
+    takerTokenFillAmount: BigNumber;
     v: number[];
     r: string[];
     s: string[];

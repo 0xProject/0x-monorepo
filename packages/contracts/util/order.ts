@@ -39,7 +39,7 @@ export class Order {
             s: ethUtil.bufferToHex(s),
         });
     }
-    public createFill(shouldThrowOnInsufficientBalanceOrAllowance?: boolean, fillTakerTokenAmount?: BigNumber) {
+    public createFill(takerTokenFillAmount?: BigNumber) {
         const fill = {
             orderAddresses: [
                 this.params.maker,
@@ -56,15 +56,14 @@ export class Order {
                 this.params.expirationTimestampInSec,
                 this.params.salt,
             ],
-            fillTakerTokenAmount: fillTakerTokenAmount || this.params.takerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance: !!shouldThrowOnInsufficientBalanceOrAllowance,
+            takerTokenFillAmount: takerTokenFillAmount || this.params.takerTokenAmount,
             v: this.params.v,
             r: this.params.r,
             s: this.params.s,
         };
         return fill;
     }
-    public createCancel(cancelTakerTokenAmount?: BigNumber) {
+    public createCancel(takerTokenCancelAmount?: BigNumber) {
         const cancel = {
             orderAddresses: [
                 this.params.maker,
@@ -81,7 +80,7 @@ export class Order {
                 this.params.expirationTimestampInSec,
                 this.params.salt,
             ],
-            cancelTakerTokenAmount: cancelTakerTokenAmount || this.params.takerTokenAmount,
+            takerTokenCancelAmount: takerTokenCancelAmount || this.params.takerTokenAmount,
         };
         return cancel;
     }

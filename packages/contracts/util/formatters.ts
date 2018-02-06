@@ -2,19 +2,17 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { Order } from './order';
-import { BatchCancelOrders, BatchFillOrders, FillOrdersUpTo } from './types';
+import { BatchCancelOrders, BatchFillOrders, MarketFillOrders } from './types';
 
 export const formatters = {
     createBatchFill(
         orders: Order[],
-        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
         fillTakerTokenAmounts: BigNumber[] = [],
     ) {
         const batchFill: BatchFillOrders = {
             orderAddresses: [],
             orderValues: [],
             fillTakerTokenAmounts,
-            shouldThrowOnInsufficientBalanceOrAllowance,
             v: [],
             r: [],
             s: [],
@@ -44,29 +42,27 @@ export const formatters = {
         });
         return batchFill;
     },
-    createFillUpTo(
+    createMarketFillOrders(
         orders: Order[],
-        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-        fillTakerTokenAmount: BigNumber,
+        takerTokenFillAmount: BigNumber,
     ) {
-        const fillUpTo: FillOrdersUpTo = {
+        const marketFillOrders: MarketFillOrders = {
             orderAddresses: [],
             orderValues: [],
-            fillTakerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance,
+            takerTokenFillAmount,
             v: [],
             r: [],
             s: [],
         };
         orders.forEach(order => {
-            fillUpTo.orderAddresses.push([
+            marketFillOrders.orderAddresses.push([
                 order.params.maker,
                 order.params.taker,
                 order.params.makerToken,
                 order.params.takerToken,
                 order.params.feeRecipient,
             ]);
-            fillUpTo.orderValues.push([
+            marketFillOrders.orderValues.push([
                 order.params.makerTokenAmount,
                 order.params.takerTokenAmount,
                 order.params.makerFee,
@@ -74,11 +70,11 @@ export const formatters = {
                 order.params.expirationTimestampInSec,
                 order.params.salt,
             ]);
-            fillUpTo.v.push(order.params.v as number);
-            fillUpTo.r.push(order.params.r as string);
-            fillUpTo.s.push(order.params.s as string);
+            marketFillOrders.v.push(order.params.v as number);
+            marketFillOrders.r.push(order.params.r as string);
+            marketFillOrders.s.push(order.params.s as string);
         });
-        return fillUpTo;
+        return marketFillOrders;
     },
     createBatchCancel(orders: Order[], cancelTakerTokenAmounts: BigNumber[] = []) {
         const batchCancel: BatchCancelOrders = {
