@@ -12,6 +12,11 @@ import { Subprovider } from './subprovider';
 
 // We do not export this since this is not our error, and we do not throw this error
 const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
+/*
+    This class is heavily inspiried by the Web3ProviderEngine NonceSubprovider
+    We have added the additional feature of clearing any nonce balues when an error message
+    describes a nonce value being too low.
+*/
 export class NonceTrackerSubprovider extends Subprovider {
     private _nonceCache: { [address: string]: string } = {};
     private static _reconstructTransaction(payload: JSONRPCPayload): EthereumTx {
