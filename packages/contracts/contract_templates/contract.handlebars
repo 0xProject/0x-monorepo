@@ -2,6 +2,7 @@
  * This file is auto-generated using abi-gen. Don't edit directly.
  * Templates can be found at https://github.com/0xProject/0x.js/tree/development/packages/abi-gen-templates.
  */
+// tslint:disable:async-suffix member-ordering
 // tslint:disable-next-line:no-unused-variable
 import { TxData, TxDataPayable } from '@0xproject/types';
 import { BigNumber, classUtils, promisify } from '@0xproject/utils';
@@ -18,7 +19,7 @@ export class {{contractName}}Contract extends BaseContract {
     {{> tx contractName=../contractName}}
     {{/this.constant}}
 {{/each}}
-    constructor(web3ContractInstance: Web3.ContractInstance, defaults: Partial<TxData>) {
+    constructor(web3ContractInstance: Web3.ContractInstance, defaults?: Partial<TxData>) {
         super(web3ContractInstance, defaults);
         classUtils.bindAll(this, ['_web3ContractInstance', '_defaults']);
     }
