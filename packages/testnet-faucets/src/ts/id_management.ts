@@ -21,12 +21,12 @@ export const idManagement = {
         callback(null, rawTx);
     },
     signMessage(message: object, callback: Callback) {
-        const data = _.get(message, 'data');
-        if (_.isUndefined(data)) {
-            callback(new Error('No data to sign'), null);
+        const dataIfExists = _.get(message, 'data');
+        if (_.isUndefined(dataIfExists)) {
+            callback(new Error('NO_DATA_TO_SIGN'), null);
         }
         const privateKeyBuffer = new Buffer(configs.DISPENSER_PRIVATE_KEY as string, 'hex');
-        const dataBuff = ethUtil.toBuffer(data);
+        const dataBuff = ethUtil.toBuffer(dataIfExists);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
         const sig = ethUtil.ecsign(msgHashBuff, privateKeyBuffer);
         const rpcSig = ethUtil.toRpcSig(sig.v, sig.r, sig.s);

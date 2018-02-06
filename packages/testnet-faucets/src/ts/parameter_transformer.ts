@@ -8,27 +8,22 @@ import { utils } from './utils';
 
 const DEFAULT_NETWORK_ID = 42; // kovan
 
-export const parameterExtractor = {
-    extract(req: Request, res: Response, next: NextFunction) {
+export const parameterTransformer = {
+    transform(req: Request, res: Response, next: NextFunction) {
         const recipientAddress = req.params.recipient;
-        if (_.isUndefined(recipientAddress) || !_isValidEthereumAddress(recipientAddress)) {
+        if (_.isUndefined(recipientAddress) || !addressUtils.isAddress(recipientAddress)) {
             res.status(400).send('INVALID_RECIPIENT_ADDRESS');
             return;
         }
         const lowerCaseRecipientAddress = recipientAddress.toLowerCase();
-        req.recipientAddress = lowerCaseRecipientAddress;
+        req.params.recipient = lowerCaseRecipientAddress;
         const networkId = _.get(req.query, 'networkId', DEFAULT_NETWORK_ID);
-        const rpcUrl = _.get(rpcUrls, networkId);
-        if (_.isUndefined(rpcUrl)) {
+        const rpcUrlIfExists = _.get(rpcUrls, networkId);
+        if (_.isUndefined(rpcUrlIfExists)) {
             res.status(400).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
-        req.networkId = networkId;
+        req.params.networkId = networkId;
         next();
     },
 };
-
-function _isValidEthereumAddress(address: string): boolean {
-    const lowercaseAddress = address.toLowerCase();
-    return addressUtils.isAddress(lowercaseAddress);
-}
