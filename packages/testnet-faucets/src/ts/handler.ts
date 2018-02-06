@@ -1,4 +1,5 @@
 import { Order, SignedOrder, ZeroEx } from '0x.js';
+import { NonceTrackerSubprovider } from '@0xproject/subproviders';
 import { BigNumber } from '@0xproject/utils';
 import * as express from 'express';
 import * as _ from 'lodash';
@@ -11,7 +12,6 @@ import * as Web3 from 'web3';
 (global as any).XMLHttpRequest = undefined;
 import ProviderEngine = require('web3-provider-engine');
 import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
-import NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { configs } from './configs';
@@ -61,7 +61,7 @@ export class Handler {
     }
     private static _createProviderEngine(rpcUrl: string) {
         const engine = new ProviderEngine();
-        engine.addProvider(new NonceSubprovider());
+        engine.addProvider(new NonceTrackerSubprovider());
         engine.addProvider(new HookedWalletSubprovider(idManagement));
         engine.addProvider(
             new RpcSubprovider({

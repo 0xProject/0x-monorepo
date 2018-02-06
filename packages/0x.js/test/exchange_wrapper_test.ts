@@ -1,4 +1,5 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -18,7 +19,7 @@ import {
     Token,
     ZeroEx,
 } from '../src';
-import { BlockParamLiteral, DoneCallback } from '../src/types';
+import { DoneCallback } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';

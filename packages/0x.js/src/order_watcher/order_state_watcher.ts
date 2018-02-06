@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { LogWithDecodedArgs } from '@0xproject/types';
+import { BlockParamLiteral, LogWithDecodedArgs } from '@0xproject/types';
 import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -11,7 +11,6 @@ import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allow
 import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
 import {
     ApprovalContractEventArgs,
-    BlockParamLiteral,
     ContractEventArgs,
     DepositContractEventArgs,
     EtherTokenEvents,

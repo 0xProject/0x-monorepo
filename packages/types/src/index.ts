@@ -56,3 +56,13 @@ export enum SolidityTypes {
 export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
     logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>;
 }
+
+// Earliest is omitted by design. It is simply an alias for the `0` constant and
+// is thus not very helpful. Moreover, this type is used in places that only accept
+// `latest` or `pending`.
+export enum BlockParamLiteral {
+    Latest = 'latest',
+    Pending = 'pending',
+}
+
+export type BlockParam = BlockParamLiteral | number;

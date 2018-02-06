@@ -13,7 +13,9 @@ declare module 'ethereumjs-tx' {
         public r: Buffer;
         public s: Buffer;
         public v: Buffer;
+        public nonce: Buffer;
         public serialize(): Buffer;
+        public getSenderAddress(): Buffer;
         constructor(txParams: any);
     }
     export = EthereumTx;
@@ -96,6 +98,24 @@ declare module 'web3-provider-engine' {
         public stop(): void;
     }
     export = Web3ProviderEngine;
+}
+declare module 'web3-provider-engine/util/rpc-cache-utils' {
+    class ProviderEngineRpcUtils {
+        public static blockTagForPayload(payload: any): string | null;
+    }
+    export = ProviderEngineRpcUtils;
+}
+declare module 'web3-provider-engine/subproviders/fixture' {
+    import * as Web3 from 'web3';
+    class FixtureSubprovider {
+        constructor(staticResponses: any);
+        public handleRequest(
+            payload: Web3.JSONRPCRequestPayload,
+            next: () => void,
+            end: (err: Error | null, data?: any) => void,
+        ): void;
+    }
+    export = FixtureSubprovider;
 }
 
 // hdkey declarations

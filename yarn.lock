@@ -2,6 +2,15 @@
 # yarn lockfile v1
 
 
+"@0xproject/utils@^0.2.0":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.2.4.tgz#d84d0737f47730e5724a76797d30e716b587a0cf"
+  dependencies:
+    bignumber.js "~4.1.0"
+    js-sha3 "^0.7.0"
+    lodash "^4.17.4"
+    web3 "^0.20.0"
+
 "@types/accounting@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@types/accounting/-/accounting-0.4.1.tgz#865d9f5694fd7c438fba34eb4bc82eec6f34cdd5"
