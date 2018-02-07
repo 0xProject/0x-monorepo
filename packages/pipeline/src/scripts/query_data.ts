@@ -1,4 +1,3 @@
-import * as commandLineArgs from 'command-line-args';
 import { formatters } from '../utils';
 
 export const dataFetchingQueries: any = {

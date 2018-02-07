@@ -2,8 +2,10 @@ import * as commandLineArgs from 'command-line-args';
 import { postgresClient } from '../postgres';
 import { formatters } from '../utils';
 
-// const optionDefinitions = [{ name: 'script', alias: 's', type: String }];
-// const cli = commandLineArgs(optionDefinitions);
+//const optionDefinitions = [{ name: 'action', alias: 'a', type: String },
+//                           { name: 'table', alias: 't', type: String }];
+//const cli = commandLineArgs(optionDefinitions);
+
 
 const tableQueries: any = {
     events: `CREATE TABLE IF NOT EXISTS events (
@@ -94,7 +96,18 @@ const tableQueries: any = {
         timestamp TIMESTAMP WITH TIME ZONE,
         price NUMERIC(50),
         PRIMARY KEY (address, timestamp)
-    )`
+    )`,
+    histFullPrices: `CREATE TABLE IF NOT EXISTS historical_prices (
+        token VARCHAR,
+        base VARCHAR,
+        timestamp TIMESTAMP WITH TIME ZONE,
+        close NUMERIC(78, 18),
+        high NUMERIC(78, 18),
+        low NUMERIC(78, 18),
+        open NUMERIC(78, 18),
+        volume_from NUMERIC(78, 18),
+        volume_to NUMERIC(78, 18)
+    )`,
 };
 
 function _safeQuery(query: string): any {
@@ -102,11 +115,11 @@ function _safeQuery(query: string): any {
         postgresClient
             .query(query)
             .then((data: any) => {
-                console.log(data)
+                console.log(data);
                 resolve(data);
             })
             .catch((err: any) => {
-                console.error(err)
+                console.error(err);
                 reject(err);
             });
     });
@@ -189,3 +202,7 @@ export const insertDataScripts = {
         });
     },
 };
+
+//if (cli.action == 'create' && cli.table == 'historical_prices') {
+//    postgresClient.query(tableQueries['histFullPrices']);
+//}

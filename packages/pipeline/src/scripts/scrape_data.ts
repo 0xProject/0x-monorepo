@@ -9,13 +9,21 @@ import { web3, zrx} from '../zrx.js';
 import { insertDataScripts } from './create_tables.js';
 import { dataFetchingQueries } from './query_data.js';
 
-const optionDefinitions = [{ name: 'from', alias: 'f', type: Number }, { name: 'to', alias: 't', type: Number }, { name: 'type', type: String}, {name:'id', type: String}, {name:'force', type: Boolean}];
+const optionDefinitions = [{ name: 'from', alias: 'f', type: Number },
+                           { name: 'to', alias: 't', type: Number },
+                           { name: 'type', type: String},
+                           { name: 'id', type: String},
+                           { name: 'force', type: Boolean},
+                           { name: 'token', type: String}];
 const cli = commandLineArgs(optionDefinitions);
 
 const q = queue({ concurrency: 6, autostart: true });
 
 const BLOCK_INCREMENTS = 1000;
+const BASE_SYMBOL = 'USD';
+const HIST_LIMIT = 2000;
 const PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/pricehistorical?';
+const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday?';
 
 export const scrapeDataScripts = {
     getAllEvents(fromBlockNumber: number, toBlockNumber: number): any {
@@ -98,7 +106,29 @@ export const scrapeDataScripts = {
                 }
               });
         });
-    }
+    },
+    getHistoricalPriceSeries(fromSymbol: string,
+                             toSymbol: string,
+                             fromTimestamp: number,
+                             toTimestamp: number): any {
+        return new Promise((resolve, reject) => {
+            const limit = Math.min(
+                Math.round((toTimestamp - fromTimestamp) / (86400 * 1000)), 2000);
+            var parsedParams = querystring.stringify({
+                'fsym': fromSymbol,
+                'tsym': toSymbol,
+                'limit': limit,
+                'toTs': toTimestamp / 1000
+            });
+            request(HIST_PRICE_API_ENDPOINT + parsedParams, (error, response, body) => {
+                if(error){
+                    reject(error);
+                } else {
+                    resolve(JSON.parse(body));
+                }
+            });
+        });
+    },
 };
 
 function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
@@ -220,6 +250,37 @@ function _scrapePriceToDB(timestamp: number, token: any): any {
     };
 }
 
+function _scrapeHistoricalPricesToDB(token: any, fromTimestamp: number, toTimestamp: number): any {
+    return (cb: () => void) => {
+        scrapeDataScripts.getHistoricalPriceSeries(token, BASE_SYMBOL, fromTimestamp, toTimestamp)
+            .then((data: any) => {
+                const parsedHistFullPrices: any = []
+                for(const histFullPrice of data['Data']) {
+                    const parsedHistFullPrice = (
+                        typeConverters.convertLogHistFullPriceToHistFullPriceObject(histFullPrice));
+                    parsedHistFullPrice['token'] = token;
+                    parsedHistFullPrice['base'] = BASE_SYMBOL;
+                    parsedHistFullPrices.push(parsedHistFullPrice);
+                }
+                if(parsedHistFullPrices.length > 0) {
+                    insertDataScripts.insertMultipleRows('historical_prices',
+                                                         parsedHistFullPrices,
+                                                         Object.keys(parsedHistFullPrices[0]))
+                    .catch((error: any) => {
+                        console.log(error);
+                        console.log(parsedHistFullPrices);
+                        console.log(data);
+                    })
+                }
+                cb();
+            })
+            .catch((err: any) => {
+                console.error(err)
+                cb();
+            });
+    };
+}
+
 if(cli.type === 'events') {
     if (cli.from && cli.to) {
         const destToBlock = cli.to ? cli.to : cli.from;
@@ -273,7 +334,7 @@ if(cli.type === 'events') {
     }
 } else if(cli.type === 'tokens') {
     q.push(_scrapeTokenRegistryToDB());
-} else if (cli.type === 'prices') {
+} else if(cli.type === 'prices') {
     if (cli.from && cli.to) {
             const fromDate = new Date(cli.from);
             fromDate.setUTCHours(0);
@@ -292,6 +353,24 @@ if(cli.type === 'events') {
             .catch((err:any) => {
                 console.log(err);
             })
+    }
+} else if (cli.type == 'historical_prices') {
+    if (cli.token && cli.from && cli.to) {
+        q.push(_scrapeHistoricalPricesToDB(cli.token, cli.from, cli.to));
+    }
+} else if (cli.type == 'all_historical_prices') {
+    if (cli.from && cli.to) {
+        scrapeDataScripts.getTokenRegistry()
+            .then((data: any) => {
+                const curTokens:any = data.map((a: any): any => a.symbol);
+                for (const curToken of curTokens) {
+                    console.log('Historical data backfill: Pushing coin ' + curToken);
+                    q.push(_scrapeHistoricalPricesToDB(curToken, cli.from, cli.to));
+                }
+            })
+            .catch((err:any) => {
+                console.log(err);
+            });
     }
 } else if (cli.type === 'test') {
     scrapeDataScripts.getAllEvents(4930000, 4940000)

@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 import { block, logToBlockSchemaMapping } from './models/block';
 import { event, logToEventSchemaMapping } from './models/event';
-import { logToTransactionSchemaMapping, transaction } from './models/transaction';
-import { logToTokenSchemaMapping, token } from './models/tokens';
+import { transaction, logToTransactionSchemaMapping } from './models/transaction';
+import { histFullPrice, logToHistFullPriceSchemaMapping } from './models/historical_prices';
+import { token, logToTokenSchemaMapping } from './models/tokens';
 
 export const typeConverters = {
     convertLogEventToEventObject(log: any): any {
@@ -58,6 +59,15 @@ export const typeConverters = {
             }
         }
         return newTransaction;
+    },
+    convertLogHistFullPriceToHistFullPriceObject(logHistFullPrice: any): any {
+        const newHistFullPrice: any = {};
+        for (const key in logToHistFullPriceSchemaMapping) {
+            if (_.has(logHistFullPrice, key)) {
+                newHistFullPrice[logToHistFullPriceSchemaMapping[key]] = _.get(logHistFullPrice, key);
+            }
+        }
+        return newHistFullPrice;
     },
 };
 
