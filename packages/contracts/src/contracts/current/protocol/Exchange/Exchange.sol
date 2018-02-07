@@ -31,7 +31,10 @@ contract Exchange is
 {
     string constant public VERSION = "2.0.0-alpha";
 
-    function Exchange(address _zrxToken, address _tokenTransferProxy)
+    function Exchange(
+        IToken _zrxToken,
+        ITokenTransferProxy _tokenTransferProxy
+    )
         public
         MixinExchangeCore()
         MixinSignatureValidatorEcrecover()
