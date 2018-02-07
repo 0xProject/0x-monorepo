@@ -5,9 +5,9 @@ import {
     ActionTypes,
     AssetToken,
     BlockchainErrs,
-    Order,
     ProviderType,
     ScreenWidths,
+    SerializedOrder,
     Side,
     SideToAssetToken,
     SignatureData,
@@ -49,7 +49,7 @@ export class Dispatcher {
             type: ActionTypes.UpdateOrderSalt,
         });
     }
-    public updateUserSuppliedOrderCache(order: Order) {
+    public updateUserSuppliedOrderCache(order: SerializedOrder) {
         this._dispatch({
             data: order,
             type: ActionTypes.UpdateUserSuppliedOrderCache,

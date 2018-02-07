@@ -7,8 +7,8 @@ import * as moment from 'moment';
 import {
     EtherscanLinkSuffixes,
     Networks,
-    Order,
     ScreenWidths,
+    SerializedOrder,
     Side,
     SideToAssetToken,
     SignatureData,
@@ -71,7 +71,7 @@ export const utils = {
         signatureData: SignatureData,
         tokenByAddress: TokenByAddress,
         orderSalt: BigNumber,
-    ): Order {
+    ): SerializedOrder {
         const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
         const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
@@ -97,7 +97,7 @@ export const utils = {
                 amount: sideToAssetToken[Side.Receive].amount.toString(),
                 feeAmount: takerFee.toString(),
             },
-            expiration: orderExpiryTimestamp.toString(),
+            expirationUnixTimestampSec: orderExpiryTimestamp.toString(),
             feeRecipient,
             salt: orderSalt.toString(),
             signature: signatureData,

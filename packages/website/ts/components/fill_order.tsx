@@ -20,7 +20,7 @@ import { VisualOrder } from 'ts/components/visual_order';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, WebsitePaths } from 'ts/types';
+import { AlertTypes, BlockchainErrs, SerializedOrder, Token, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -34,7 +34,7 @@ interface FillOrderProps {
     networkId: number;
     userAddress: string;
     tokenByAddress: TokenByAddress;
-    initialOrder: Order;
+    initialOrder: SerializedOrder;
     dispatcher: Dispatcher;
     lastForceTokenStateRefetch: number;
 }
@@ -45,7 +45,7 @@ interface FillOrderState {
     globalErrMsg: string;
     orderJSON: string;
     orderJSONErrMsg: string;
-    parsedOrder: Order;
+    parsedOrder: SerializedOrder;
     didFillOrderSucceed: boolean;
     didCancelOrderSucceed: boolean;
     unavailableTakerAmount: BigNumber;
@@ -204,7 +204,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         const orderTaker = !_.isEmpty(this.state.parsedOrder.taker.address)
             ? this.state.parsedOrder.taker.address
             : this.props.userAddress;
-        const parsedOrderExpiration = new BigNumber(this.state.parsedOrder.expiration);
+        const parsedOrderExpiration = new BigNumber(this.state.parsedOrder.expirationUnixTimestampSec);
         const exchangeRate = orderMakerAmount.div(orderTakerAmount);
 
         let orderReceiveAmount = 0;
@@ -402,7 +402,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     }
     private async _validateFillOrderFireAndForgetAsync(orderJSON: string) {
         let orderJSONErrMsg = '';
-        let parsedOrder: Order;
+        let parsedOrder: SerializedOrder;
         try {
             const order = JSON.parse(orderJSON);
             const validationResult = this._validator.validate(order, orderSchema);
@@ -416,7 +416,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             const exchangeContractAddr = this.props.blockchain.getExchangeContractAddressIfExists();
             const makerAmount = new BigNumber(parsedOrder.maker.amount);
             const takerAmount = new BigNumber(parsedOrder.taker.amount);
-            const expiration = new BigNumber(parsedOrder.expiration);
+            const expiration = new BigNumber(parsedOrder.expirationUnixTimestampSec);
             const salt = new BigNumber(parsedOrder.salt);
             const parsedMakerFee = new BigNumber(parsedOrder.maker.feeAmount);
             const parsedTakerFee = new BigNumber(parsedOrder.taker.feeAmount);
@@ -538,7 +538,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             new BigNumber(parsedOrder.taker.amount),
             new BigNumber(parsedOrder.maker.feeAmount),
             new BigNumber(parsedOrder.taker.feeAmount),
-            new BigNumber(this.state.parsedOrder.expiration),
+            new BigNumber(this.state.parsedOrder.expirationUnixTimestampSec),
             parsedOrder.feeRecipient,
             parsedOrder.signature,
             new BigNumber(parsedOrder.salt),
@@ -641,7 +641,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             takerTokenAmount,
             new BigNumber(parsedOrder.maker.feeAmount),
             new BigNumber(parsedOrder.taker.feeAmount),
-            new BigNumber(this.state.parsedOrder.expiration),
+            new BigNumber(this.state.parsedOrder.expirationUnixTimestampSec),
             parsedOrder.feeRecipient,
             parsedOrder.signature,
             new BigNumber(parsedOrder.salt),
