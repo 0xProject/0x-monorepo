@@ -69,7 +69,7 @@ export const constants = {
     URL_BLOG: 'https://blog.0xproject.com/latest',
     URL_DISCOURSE_FORUM: 'https://forum.0xproject.com',
     URL_FIREFOX_U2F_ADDON: 'https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/',
-    URL_ETHER_FAUCET: 'https://faucet.0xproject.com',
+    URL_TESTNET_FAUCET: 'https://faucet.0xproject.com',
     URL_GITHUB_ORG: 'https://github.com/0xProject',
     URL_GITHUB_WIKI: 'https://github.com/0xProject/wiki',
     URL_METAMASK_CHROME_STORE: 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
