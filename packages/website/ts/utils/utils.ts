@@ -60,9 +60,9 @@ export const utils = {
     },
     generateOrder(
         networkId: number,
-        exchangeContract: string,
+        exchangeContractAddress: string,
         sideToAssetToken: SideToAssetToken,
-        orderExpiryTimestamp: BigNumber,
+        expirationUnixTimestampSec: BigNumber,
         orderTakerAddress: string,
         orderMakerAddress: string,
         makerFee: BigNumber,
@@ -97,11 +97,11 @@ export const utils = {
                 amount: sideToAssetToken[Side.Receive].amount.toString(),
                 feeAmount: takerFee.toString(),
             },
-            expirationUnixTimestampSec: orderExpiryTimestamp.toString(),
+            expirationUnixTimestampSec: expirationUnixTimestampSec.toString(),
             feeRecipient,
             salt: orderSalt.toString(),
             signature: signatureData,
-            exchangeContract,
+            exchangeContractAddress,
             networkId,
         };
         return order;

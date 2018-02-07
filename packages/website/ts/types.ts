@@ -87,7 +87,7 @@ export interface SerializedOrder {
     feeRecipient: string;
     salt: string;
     signature: SignatureData;
-    exchangeContract: string;
+    exchangeContractAddress: string;
     networkId: number;
 }
 

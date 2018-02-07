@@ -422,7 +422,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             const parsedTakerFee = new BigNumber(parsedOrder.taker.feeAmount);
 
             const zeroExOrder: ZeroExOrder = {
-                exchangeContractAddress: parsedOrder.exchangeContract,
+                exchangeContractAddress: parsedOrder.exchangeContractAddress,
                 expirationUnixTimestampSec: expiration,
                 feeRecipient: parsedOrder.feeRecipient,
                 maker: parsedOrder.maker.address,
@@ -443,7 +443,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 orderJSONErrMsg = `This order was made on another Ethereum network
                                    (id: ${parsedOrder.networkId}). Connect to this network to fill.`;
                 parsedOrder = undefined;
-            } else if (exchangeContractAddr !== parsedOrder.exchangeContract) {
+            } else if (exchangeContractAddr !== parsedOrder.exchangeContractAddress) {
                 orderJSONErrMsg = 'This order was made using a deprecated 0x Exchange contract.';
                 parsedOrder = undefined;
             } else if (orderHash !== signature.hash) {
