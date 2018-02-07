@@ -1,5 +1,4 @@
 import { Order, SignedOrder, ZeroEx } from '0x.js';
-import { NonceTrackerSubprovider } from '@0xproject/subproviders';
 import { BigNumber } from '@0xproject/utils';
 import * as express from 'express';
 import * as _ from 'lodash';
@@ -10,17 +9,23 @@ import * as Web3 from 'web3';
 // we are not running in a browser env.
 // Filed issue: https://github.com/ethereum/web3.js/issues/844
 (global as any).XMLHttpRequest = undefined;
+import { NonceTrackerSubprovider } from '@0xproject/subproviders';
 import ProviderEngine = require('web3-provider-engine');
 import HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { configs } from './configs';
-import { EtherRequestQueue } from './ether_request_queue';
+import { DispatchQueue } from './dispatch_queue';
+import { dispenseAssetTasks } from './dispense_asset_tasks';
 import { idManagement } from './id_management';
-import { RequestQueue } from './request_queue';
 import { rpcUrls } from './rpc_urls';
 import { utils } from './utils';
-import { ZRXRequestQueue } from './zrx_request_queue';
+
+interface NetworkConfig {
+    dispatchQueue: DispatchQueue;
+    web3: Web3;
+    zeroEx: ZeroEx;
+}
 
 interface ItemByNetworkId<T> {
     [networkId: string]: T;
@@ -35,30 +40,7 @@ enum RequestedAssetType {
 const FIVE_DAYS_IN_MS = 4.32e8; // TODO: make this configurable
 
 export class Handler {
-    private _zeroExByNetworkId: ItemByNetworkId<ZeroEx> = {};
-    private _etherRequestQueueByNetworkId: ItemByNetworkId<RequestQueue> = {};
-    private _zrxRequestQueueByNetworkId: ItemByNetworkId<RequestQueue> = {};
-    private static _dispenseAsset(
-        req: express.Request,
-        res: express.Response,
-        requestQueueByNetworkId: ItemByNetworkId<RequestQueue>,
-        requestedAssetType: RequestedAssetType,
-    ) {
-        const requestQueue = _.get(requestQueueByNetworkId, req.params.networkId);
-        if (_.isUndefined(requestQueue)) {
-            res.status(400).send('UNSUPPORTED_NETWORK_ID');
-            return;
-        }
-        const didAddToQueue = requestQueue.add(req.params.recipient);
-        if (!didAddToQueue) {
-            res.status(503).send('QUEUE_IS_FULL');
-            return;
-        }
-        utils.consoleLog(
-            `Added ${req.params.recipient} to queue: ${requestedAssetType} networkId: ${req.params.networkId}`,
-        );
-        res.status(200).end();
-    }
+    private _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
     private static _createProviderEngine(rpcUrl: string) {
         const engine = new ProviderEngine();
         engine.addProvider(new NonceTrackerSubprovider());
@@ -79,35 +61,31 @@ export class Handler {
                 networkId: +networkId,
             };
             const zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
-            this._zeroExByNetworkId[networkId] = zeroEx;
-            this._etherRequestQueueByNetworkId[networkId] = new EtherRequestQueue(web3);
-            this._zrxRequestQueueByNetworkId[networkId] = new ZRXRequestQueue(web3, zeroEx);
+            const dispatchQueue = new DispatchQueue();
+            this._networkConfigByNetworkId[networkId] = {
+                dispatchQueue,
+                web3,
+                zeroEx,
+            };
         });
     }
     public getQueueInfo(req: express.Request, res: express.Response) {
         res.setHeader('Content-Type', 'application/json');
         const queueInfo = _.mapValues(rpcUrls, (rpcUrl: string, networkId: string) => {
-            const etherRequestQueue = this._etherRequestQueueByNetworkId[networkId];
-            const zrxRequestQueue = this._zrxRequestQueueByNetworkId[networkId];
+            const dispatchQueue = this._networkConfigByNetworkId[networkId].dispatchQueue;
             return {
-                ether: {
-                    full: etherRequestQueue.isFull(),
-                    size: etherRequestQueue.size(),
-                },
-                zrx: {
-                    full: zrxRequestQueue.isFull(),
-                    size: zrxRequestQueue.size(),
-                },
+                full: dispatchQueue.isFull(),
+                size: dispatchQueue.size(),
             };
         });
         const payload = JSON.stringify(queueInfo);
         res.status(200).send(payload);
     }
     public dispenseEther(req: express.Request, res: express.Response) {
-        Handler._dispenseAsset(req, res, this._etherRequestQueueByNetworkId, RequestedAssetType.ETH);
+        this._dispenseAsset(req, res, RequestedAssetType.ETH);
     }
     public dispenseZRX(req: express.Request, res: express.Response) {
-        Handler._dispenseAsset(req, res, this._zrxRequestQueueByNetworkId, RequestedAssetType.ZRX);
+        this._dispenseAsset(req, res, RequestedAssetType.ZRX);
     }
     public async dispenseWETHOrder(req: express.Request, res: express.Response) {
         await this._dispenseOrder(req, res, RequestedAssetType.WETH);
@@ -115,12 +93,41 @@ export class Handler {
     public async dispenseZRXOrder(req: express.Request, res: express.Response, next: express.NextFunction) {
         await this._dispenseOrder(req, res, RequestedAssetType.ZRX);
     }
+    private _dispenseAsset(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType) {
+        const networkId = req.params.networkId;
+        const recipient = req.params.recipient;
+        const networkConfig = this._networkConfigByNetworkId[networkId];
+        let dispenserTask;
+        switch (requestedAssetType) {
+            case RequestedAssetType.ETH:
+                dispenserTask = dispenseAssetTasks.dispenseEtherTask(recipient, networkConfig.web3);
+                break;
+            case RequestedAssetType.WETH:
+            case RequestedAssetType.ZRX:
+                dispenserTask = dispenseAssetTasks.dispenseTokenTask(
+                    recipient,
+                    requestedAssetType,
+                    networkConfig.zeroEx,
+                );
+                break;
+            default:
+                throw new Error(`Unsupported asset type: ${requestedAssetType}`);
+        }
+        const didAddToQueue = networkConfig.dispatchQueue.add(dispenserTask);
+        if (!didAddToQueue) {
+            res.status(503).send('QUEUE_IS_FULL');
+            return;
+        }
+        utils.consoleLog(`Added ${recipient} to queue: ${requestedAssetType} networkId: ${networkId}`);
+        res.status(200).end();
+    }
     private async _dispenseOrder(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType) {
-        const zeroEx = _.get(this._zeroExByNetworkId, req.params.networkId);
-        if (_.isUndefined(zeroEx)) {
+        const networkConfig = _.get(this._networkConfigByNetworkId, req.params.networkId);
+        if (_.isUndefined(networkConfig)) {
             res.status(400).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
+        const zeroEx = networkConfig.zeroEx;
         res.setHeader('Content-Type', 'application/json');
         const makerTokenAddress = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(requestedAssetType);
         if (_.isUndefined(makerTokenAddress)) {
