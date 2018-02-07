@@ -7,7 +7,7 @@ export const orderSchema = {
         signature: { $ref: '/SignatureData' },
         expirationUnixTimestampSec: { type: 'string' },
         feeRecipient: { type: 'string' },
-        exchangeContract: { type: 'string' },
+        exchangeContractAddress: { type: 'string' },
         networkId: { type: 'number' },
     },
     required: [
@@ -17,7 +17,7 @@ export const orderSchema = {
         'signature',
         'expirationUnixTimestampSec',
         'feeRecipient',
-        'exchangeContract',
+        'exchangeContractAddress',
         'networkId',
     ],
     type: 'object',
