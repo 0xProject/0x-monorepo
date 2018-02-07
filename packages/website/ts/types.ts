@@ -1,3 +1,4 @@
+import { ECSignature } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
@@ -34,11 +35,8 @@ export interface SideToAssetToken {
     [side: string]: AssetToken;
 }
 
-export interface SignatureData {
+export interface SignatureData extends ECSignature {
     hash: string;
-    r: string;
-    s: string;
-    v: number;
 }
 
 export interface HashData {
