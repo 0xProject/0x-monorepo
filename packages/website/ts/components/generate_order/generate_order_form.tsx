@@ -216,7 +216,6 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                         orderMakerFee={this.props.hashData.makerFee}
                         orderTakerFee={this.props.hashData.takerFee}
                         orderFeeRecipient={this.props.hashData.feeRecipientAddress}
-                        networkId={this.props.networkId}
                         sideToAssetToken={this.props.sideToAssetToken}
                         tokenByAddress={this.props.tokenByAddress}
                     />
@@ -329,7 +328,6 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         try {
             const signatureData = await this.props.blockchain.signOrderHashAsync(orderHash);
             const order = utils.generateOrder(
-                this.props.networkId,
                 exchangeContractAddr,
                 this.props.sideToAssetToken,
                 hashData.orderExpiryTimestamp,

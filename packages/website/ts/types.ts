@@ -76,7 +76,6 @@ export interface SignedOrder {
 }
 
 export interface OrderMetadata {
-    networkId: number;
     makerToken: OrderToken;
     takerToken: OrderToken;
 }

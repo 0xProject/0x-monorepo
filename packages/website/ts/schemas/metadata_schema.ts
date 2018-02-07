@@ -3,8 +3,7 @@ export const orderMetadataSchema = {
     properties: {
         makerToken: { $ref: '/Token' },
         takerToken: { $ref: '/Token' },
-        networkId: { type: 'number' },
     },
-    required: ['makerToken', 'takerToken', 'networkId'],
+    required: ['makerToken', 'takerToken'],
     type: 'object',
 };
