@@ -1,4 +1,4 @@
-import { TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
+import { SignedOrder, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -6,7 +6,7 @@ import * as Web3 from 'web3';
 import { ExchangeContract } from '../src/contract_wrappers/generated/exchange';
 
 import { formatters } from './formatters';
-import { SignedOrder } from './signed_order';
+import { signedOrderUtils } from './signed_order_utils';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
@@ -24,7 +24,11 @@ export class ExchangeWrapper {
         } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
-        const params = signedOrder.createFill(shouldThrowOnInsufficientBalanceOrAllowance, opts.fillTakerTokenAmount);
+        const params = signedOrderUtils.createFill(
+            signedOrder,
+            shouldThrowOnInsufficientBalanceOrAllowance,
+            opts.fillTakerTokenAmount,
+        );
         const txHash = await this._exchange.fillOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
@@ -45,7 +49,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { cancelTakerTokenAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrder.createCancel(opts.cancelTakerTokenAmount);
+        const params = signedOrderUtils.createCancel(signedOrder, opts.cancelTakerTokenAmount);
         const txHash = await this._exchange.cancelOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
@@ -63,7 +67,11 @@ export class ExchangeWrapper {
         opts: { fillTakerTokenAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
-        const params = signedOrder.createFill(shouldThrowOnInsufficientBalanceOrAllowance, opts.fillTakerTokenAmount);
+        const params = signedOrderUtils.createFill(
+            signedOrder,
+            shouldThrowOnInsufficientBalanceOrAllowance,
+            opts.fillTakerTokenAmount,
+        );
         const txHash = await this._exchange.fillOrKillOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
@@ -177,17 +185,17 @@ export class ExchangeWrapper {
     }
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
         const shouldThrowOnInsufficientBalanceOrAllowance = false;
-        const params = signedOrder.createFill(shouldThrowOnInsufficientBalanceOrAllowance);
+        const params = signedOrderUtils.getOrderAddressesAndValues(signedOrder);
         const orderHash = await this._exchange.getOrderHash(params.orderAddresses, params.orderValues);
         return orderHash;
     }
     public async isValidSignatureAsync(signedOrder: SignedOrder): Promise<boolean> {
         const isValidSignature = await this._exchange.isValidSignature(
-            signedOrder.params.maker,
-            signedOrder.getOrderHashHex(),
-            signedOrder.params.v,
-            signedOrder.params.r,
-            signedOrder.params.s,
+            signedOrder.maker,
+            ZeroEx.getOrderHashHex(signedOrder),
+            signedOrder.ecSignature.v,
+            signedOrder.ecSignature.r,
+            signedOrder.ecSignature.s,
         );
         return isValidSignature;
     }
