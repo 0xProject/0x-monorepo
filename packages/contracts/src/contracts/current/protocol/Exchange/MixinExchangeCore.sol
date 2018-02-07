@@ -78,8 +78,10 @@ contract MixinExchangeCore is
     function fillOrder(
         address[5] orderAddresses,
         uint[6] orderValues,
+        address taker,
         uint takerTokenFillAmount,
-        bytes signature)
+        bytes makerSignature,
+        bytes takerSignature)
         public
         returns (uint256 takerTokenFilledAmount)
     {
@@ -110,8 +112,15 @@ contract MixinExchangeCore is
         
         // Validate taker
         if (order.taker != address(0)) {
-            require(order.taker == msg.sender);
+            require(taker == order.taker);
+        } else {
+            order.taker = taker;
         }
+        require(isValidSignature(
+            order.orderHash ^ 0x1, // Domain separator maker/taker
+            order.taker,
+            takerSignature
+        ));
         require(takerTokenFillAmount > 0);
 
         // Validate order expiration

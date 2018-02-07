@@ -94,7 +94,7 @@ contract MixinSignatureValidator is
         // Anything else is illegal
         } else {
             revert();
-          
+            
         }
         return false;
     }
