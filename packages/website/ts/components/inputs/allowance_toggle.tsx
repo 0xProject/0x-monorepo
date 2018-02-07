@@ -2,6 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
+import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
@@ -75,8 +76,20 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         }
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
+            ReactGA.event({
+                category: 'Portal',
+                action: 'Set Allowance Success',
+                label: this.props.token.symbol,
+                value: newAllowanceAmountInBaseUnits.toNumber(),
+            });
             await this.props.refetchTokenStateAsync();
         } catch (err) {
+            ReactGA.event({
+                category: 'Portal',
+                action: 'Set Allowance Failure',
+                label: this.props.token.symbol,
+                value: newAllowanceAmountInBaseUnits.toNumber(),
+            });
             this.setState({
                 isSpinnerVisible: false,
             });
