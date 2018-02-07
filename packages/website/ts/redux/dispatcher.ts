@@ -1,3 +1,4 @@
+import { ECSignature } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import { Dispatch } from 'redux';
 import { State } from 'ts/redux/reducer';
@@ -10,7 +11,6 @@ import {
     ScreenWidths,
     Side,
     SideToAssetToken,
-    SignatureData,
     Token,
     TokenByAddress,
 } from 'ts/types';
@@ -148,10 +148,10 @@ export class Dispatcher {
             type: ActionTypes.ForceTokenStateRefetch,
         });
     }
-    public updateSignatureData(signatureData: SignatureData) {
+    public updateECSignature(ecSignature: ECSignature) {
         this._dispatch({
-            data: signatureData,
-            type: ActionTypes.UpdateOrderSignatureData,
+            data: ecSignature,
+            type: ActionTypes.UpdateOrderECSignature,
         });
     }
     public updateUserEtherBalance(balance: BigNumber) {

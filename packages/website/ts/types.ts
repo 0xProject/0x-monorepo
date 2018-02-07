@@ -71,7 +71,7 @@ export interface SignedOrder {
     expirationUnixTimestampSec: string;
     feeRecipient: string;
     salt: string;
-    ecSignature: SignatureData;
+    ecSignature: ECSignature;
     exchangeContractAddress: string;
 }
 
@@ -123,7 +123,7 @@ export enum ActionTypes {
     UpdateChosenAssetTokenAddress = 'UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS',
     UpdateOrderTakerAddress = 'UPDATE_ORDER_TAKER_ADDRESS',
     UpdateOrderSalt = 'UPDATE_ORDER_SALT',
-    UpdateOrderSignatureData = 'UPDATE_ORDER_SIGNATURE_DATA',
+    UpdateOrderECSignature = 'UPDATE_ORDER_EC_SIGNATURE',
     UpdateTokenByAddress = 'UPDATE_TOKEN_BY_ADDRESS',
     RemoveTokenFromTokenByAddress = 'REMOVE_TOKEN_FROM_TOKEN_BY_ADDRESS',
     ForceTokenStateRefetch = 'FORCE_TOKEN_STATE_REFETCH',

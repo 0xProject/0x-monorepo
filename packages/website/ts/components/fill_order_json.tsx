@@ -33,8 +33,7 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
             },
         };
         const hintOrderExpiryTimestamp = utils.initialOrderExpiryUnixTimestampSec();
-        const hintSignatureData = {
-            hash: '0xf965a9978a0381ab58f5a2408ad967c...',
+        const hintECSignature = {
             r: '0xf01103f759e2289a28593eaf22e5820032...',
             s: '937862111edcba395f8a9e0cc1b2c5e12320...',
             v: 27,
@@ -50,7 +49,7 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
             constants.MAKER_FEE,
             constants.TAKER_FEE,
             feeRecipient,
-            hintSignatureData,
+            hintECSignature,
             this.props.tokenByAddress,
             hintSalt,
         );

@@ -1,3 +1,4 @@
+import { ECSignature } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -18,7 +19,7 @@ interface ConnectedState {
     blockchainErr: BlockchainErrs;
     blockchainIsLoaded: boolean;
     orderExpiryTimestamp: BigNumber;
-    orderSignatureData: SignatureData;
+    orderECSignature: ECSignature;
     userAddress: string;
     orderTakerAddress: string;
     orderSalt: BigNumber;
@@ -32,7 +33,7 @@ const mapStateToProps = (state: State, ownProps: GenerateOrderFormProps): Connec
     blockchainErr: state.blockchainErr,
     blockchainIsLoaded: state.blockchainIsLoaded,
     orderExpiryTimestamp: state.orderExpiryTimestamp,
-    orderSignatureData: state.orderSignatureData,
+    orderECSignature: state.orderECSignature,
     orderTakerAddress: state.orderTakerAddress,
     orderSalt: state.orderSalt,
     networkId: state.networkId,

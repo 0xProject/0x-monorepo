@@ -404,6 +404,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     private async _validateFillOrderFireAndForgetAsync(orderJSON: string) {
         let orderJSONErrMsg = '';
         let parsedOrder: Order;
+        let orderHash: string;
         try {
             const order = JSON.parse(orderJSON);
             const validationResult = this._validator.validate(order, orderSchema);
@@ -438,15 +439,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 takerTokenAddress: parsedOrder.signedOrder.takerTokenAddress,
                 takerTokenAmount: takerAmount,
             };
-            const orderHash = ZeroEx.getOrderHashHex(zeroExOrder);
+            orderHash = ZeroEx.getOrderHashHex(zeroExOrder);
 
             const signature = parsedOrder.signedOrder.ecSignature;
-            const isValidSignature = ZeroEx.isValidSignature(signature.hash, signature, parsedOrder.signedOrder.maker);
+            const isValidSignature = ZeroEx.isValidSignature(orderHash, signature, parsedOrder.signedOrder.maker);
             if (exchangeContractAddr !== parsedOrder.signedOrder.exchangeContractAddress) {
                 orderJSONErrMsg = 'This order was made on another network or using a deprecated Exchange contract';
-                parsedOrder = undefined;
-            } else if (orderHash !== signature.hash) {
-                orderJSONErrMsg = 'Order hash does not match supplied plaintext values';
                 parsedOrder = undefined;
             } else if (!isValidSignature) {
                 orderJSONErrMsg = 'Order signature is invalid';
@@ -477,7 +475,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             // Clear cache entry if user updates orderJSON to invalid entry
             this.props.dispatcher.updateUserSuppliedOrderCache(undefined);
         } else {
-            const orderHash = parsedOrder.signedOrder.ecSignature.hash;
             unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
             const isMakerTokenAddressInRegistry = await this.props.blockchain.isAddressInTokenRegistryAsync(
                 parsedOrder.signedOrder.makerTokenAddress,
@@ -617,7 +614,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         });
 
         const parsedOrder = this.state.parsedOrder;
-        const orderHash = parsedOrder.signedOrder.ecSignature.hash;
         const takerAddress = this.props.userAddress;
 
         if (_.isUndefined(takerAddress)) {
@@ -645,6 +641,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             parsedOrder.signedOrder.ecSignature,
             new BigNumber(parsedOrder.signedOrder.salt),
         );
+        const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
         const availableTakerTokenAmount = takerTokenAmount.minus(unavailableTakerAmount);
         try {

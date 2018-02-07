@@ -2,6 +2,7 @@ import {
     BlockParam,
     BlockRange,
     DecodedLogEvent,
+    ECSignature,
     ExchangeContractEventArgs,
     ExchangeEvents,
     IndexedFilterValues,
@@ -299,10 +300,9 @@ export class Blockchain {
         takerFee: BigNumber,
         expirationUnixTimestampSec: BigNumber,
         feeRecipient: string,
-        signatureData: SignatureData,
+        ecSignature: ECSignature,
         salt: BigNumber,
     ): SignedOrder {
-        const ecSignature = signatureData;
         const exchangeContractAddress = this.getExchangeContractAddressIfExists();
         const takerOrNullAddress = _.isEmpty(taker) ? constants.NULL_ADDRESS : taker;
         const signedOrder = {
@@ -413,7 +413,7 @@ export class Blockchain {
 
         return newTokenBalancePromise;
     }
-    public async signOrderHashAsync(orderHash: string): Promise<SignatureData> {
+    public async signOrderHashAsync(orderHash: string): Promise<ECSignature> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         const makerAddress = this._userAddress;
         // If makerAddress is undefined, this means they have a web3 instance injected into their browser
@@ -436,11 +436,8 @@ export class Blockchain {
             makerAddress,
             shouldAddPersonalMessagePrefix,
         );
-        const signatureData = _.extend({}, ecSignature, {
-            hash: orderHash,
-        });
-        this._dispatcher.updateSignatureData(signatureData);
-        return signatureData;
+        this._dispatcher.updateECSignature(ecSignature);
+        return ecSignature;
     }
     public async mintTestTokensAsync(token: Token) {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
