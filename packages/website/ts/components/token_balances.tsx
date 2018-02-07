@@ -377,7 +377,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     [constants.NETWORK_ID_BY_NAME[Networks.Rinkeby], constants.NETWORK_ID_BY_NAME[Networks.Ropsten]],
                     this.props.networkId,
                 ));
-        console.log('token', token);
         return (
             <TableRow key={token.address} style={{ height: TOKEN_TABLE_ROW_HEIGHT }}>
                 <TableRowColumn colSpan={tokenColSpan}>
