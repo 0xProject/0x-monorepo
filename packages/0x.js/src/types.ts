@@ -4,6 +4,10 @@ import { BlockParam, BlockParamLiteral, ContractEventArg, LogWithDecodedArgs } f
 
 import * as Web3 from 'web3';
 
+import { EtherTokenContractEventArgs, EtherTokenEvents } from './contract_wrappers/generated/ether_token';
+import { ExchangeContractEventArgs, ExchangeEvents } from './contract_wrappers/generated/exchange';
+import { TokenContractEventArgs, TokenEvents } from './contract_wrappers/generated/token';
+
 export enum ZeroExError {
     ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
     ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
@@ -101,60 +105,6 @@ export interface ContractEvent {
     args: ContractEventArgs;
 }
 
-export interface LogFillContractEventArgs {
-    maker: string;
-    taker: string;
-    feeRecipient: string;
-    makerToken: string;
-    takerToken: string;
-    filledMakerTokenAmount: BigNumber;
-    filledTakerTokenAmount: BigNumber;
-    paidMakerFee: BigNumber;
-    paidTakerFee: BigNumber;
-    tokens: string;
-    orderHash: string;
-}
-export interface LogCancelContractEventArgs {
-    maker: string;
-    feeRecipient: string;
-    makerToken: string;
-    takerToken: string;
-    cancelledMakerTokenAmount: BigNumber;
-    cancelledTakerTokenAmount: BigNumber;
-    tokens: string;
-    orderHash: string;
-}
-export interface LogErrorContractEventArgs {
-    errorId: BigNumber;
-    orderHash: string;
-}
-export type ExchangeContractEventArgs =
-    | LogFillContractEventArgs
-    | LogCancelContractEventArgs
-    | LogErrorContractEventArgs;
-export interface TransferContractEventArgs {
-    _from: string;
-    _to: string;
-    _value: BigNumber;
-}
-export interface ApprovalContractEventArgs {
-    _owner: string;
-    _spender: string;
-    _value: BigNumber;
-}
-export interface DepositContractEventArgs {
-    _owner: string;
-    _value: BigNumber;
-}
-export interface WithdrawalContractEventArgs {
-    _owner: string;
-    _value: BigNumber;
-}
-export type TokenContractEventArgs = TransferContractEventArgs | ApprovalContractEventArgs;
-export type EtherTokenContractEventArgs =
-    | TokenContractEventArgs
-    | DepositContractEventArgs
-    | WithdrawalContractEventArgs;
 export type ContractEventArgs = ExchangeContractEventArgs | TokenContractEventArgs | EtherTokenContractEventArgs;
 
 export interface Order {
@@ -195,24 +145,6 @@ export interface TxOpts {
 
 export interface TokenAddressBySymbol {
     [symbol: string]: string;
-}
-
-export enum ExchangeEvents {
-    LogFill = 'LogFill',
-    LogCancel = 'LogCancel',
-    LogError = 'LogError',
-}
-
-export enum TokenEvents {
-    Transfer = 'Transfer',
-    Approval = 'Approval',
-}
-
-export enum EtherTokenEvents {
-    Transfer = 'Transfer',
-    Approval = 'Approval',
-    Deposit = 'Deposit',
-    Withdrawal = 'Withdrawal',
 }
 
 export type ContractEvents = TokenEvents | ExchangeEvents | EtherTokenEvents;

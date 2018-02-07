@@ -5,7 +5,7 @@ import * as path from 'path';
 import { constants } from '../../util/constants';
 
 const deployerOpts = {
-    artifactsDir: path.resolve('artifacts'),
+    artifactsDir: path.resolve('src', 'artifacts'),
     jsonrpcPort: devConstants.RPC_PORT,
     networkId: constants.TESTRPC_NETWORK_ID,
     defaults: {

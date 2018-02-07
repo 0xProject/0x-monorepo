@@ -1,0 +1,36 @@
+public {{this.name}} = {
+    async sendTransactionAsync(
+    {{> typed_params inputs=inputs}}
+    {{#this.payable}}
+        txData: TxDataPayable = {},
+    {{/this.payable}}
+    {{^this.payable}}
+        txData: TxData = {},
+    {{/this.payable}}
+    ): Promise<string> {
+        const self = this as {{contractName}}Contract;
+        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(txData);
+        const txHash = await self._web3ContractInstance.{{this.name}}(
+            {{> params inputs=inputs}}
+            txDataWithDefaults,
+        );
+        return txHash;
+    },
+    async callAsync(
+    {{> typed_params inputs=inputs}}
+    {{#this.payable}}
+        txData: TxDataPayable = {},
+    {{/this.payable}}
+    {{^this.payable}}
+        txData: TxData = {},
+    {{/this.payable}}
+    ): Promise<{{> return_type outputs=outputs}}> {
+        const self = this as {{contractName}}Contract;
+        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(txData);
+        const returnValue = await self._web3ContractInstance.{{this.name}}.call(
+            {{> params inputs=inputs}}
+            txDataWithDefaults,
+        );
+        return returnValue;
+    },
+};

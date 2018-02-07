@@ -17,6 +17,7 @@ import { utils } from './utils';
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
 const ABI_TYPE_METHOD = 'function';
 const ABI_TYPE_EVENT = 'event';
+const DEFAULT_NETWORK_ID = 50;
 
 const args = yargs
     .option('abis', {
@@ -42,6 +43,11 @@ const args = yargs
         demandOption: true,
         normalize: true,
     })
+    .option('network-id', {
+        describe: 'ID of the network where contract ABIs are nested in artifacts',
+        type: 'number',
+        default: DEFAULT_NETWORK_ID,
+    })
     .example(
         "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
         'Full usage example',
@@ -58,7 +64,10 @@ function registerPartials(partialsGlob: string) {
 }
 
 function writeOutputFile(name: string, renderedTsCode: string): void {
-    const fileName = toSnakeCase(name);
+    let fileName = toSnakeCase(name);
+    if (fileName === 'z_r_x_token') {
+        fileName = 'zrx_token';
+    }
     const filePath = `${args.output}/${fileName}.ts`;
     fs.writeFileSync(filePath, renderedTsCode);
     utils.log(`Created: ${chalk.bold(filePath)}`);
@@ -87,12 +96,19 @@ for (const abiFileName of abiFileNames) {
     const namedContent = utils.getNamedContent(abiFileName);
     utils.log(`Processing: ${chalk.bold(namedContent.name)}...`);
     const parsedContent = JSON.parse(namedContent.content);
-    const ABI = _.isArray(parsedContent)
-        ? parsedContent // ABI file
-        : parsedContent.abi; // Truffle contracts file
+    let ABI;
+    if (_.isArray(parsedContent)) {
+        ABI = parsedContent; // ABI file
+    } else if (!_.isUndefined(parsedContent.abi)) {
+        ABI = parsedContent.abi; // Truffle artifact
+    } else if (!_.isUndefined(parsedContent.networks) && !_.isUndefined(parsedContent.networks[args.networkId])) {
+        ABI = parsedContent.networks[args.networkId].abi; // 0x contracts package artifact
+    }
     if (_.isUndefined(ABI)) {
         utils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
-        utils.log(`Please make sure your ABI file is either an array with ABI entries or an object with the abi key`);
+        utils.log(
+            `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x deployer artifact`,
+        );
         process.exit(1);
     }
 
@@ -103,10 +119,10 @@ for (const abiFileName of abiFileNames) {
 
     const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_METHOD) as Web3.MethodAbi[];
     const methodsData = _.map(methodAbis, methodAbi => {
-        _.map(methodAbi.inputs, input => {
+        _.map(methodAbi.inputs, (input, i: number) => {
             if (_.isEmpty(input.name)) {
                 // Auto-generated getters don't have parameter names
-                input.name = 'index';
+                input.name = `index_${i}`;
             }
         });
         // This will make templates simpler
