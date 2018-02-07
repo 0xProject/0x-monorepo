@@ -561,6 +561,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
+        const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const eventLabel = `${parsedOrder.taker.token.symbol}-${networkName}`;
         try {
             const orderFilledAmount: BigNumber = await this.props.blockchain.fillOrderAsync(
                 signedOrder,
@@ -569,7 +571,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             ReactGA.event({
                 category: 'Portal',
                 action: 'Fill Order Success',
-                label: parsedOrder.taker.token.symbol,
+                label: eventLabel,
                 value: parsedOrder.taker.amount,
             });
             // After fill completes, let's force fetch the token balances
@@ -588,7 +590,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             ReactGA.event({
                 category: 'Portal',
                 action: 'Fill Order Failure',
-                label: parsedOrder.taker.token.symbol,
+                label: eventLabel,
                 value: parsedOrder.taker.amount,
             });
             const errMsg = `${err}`;
@@ -658,6 +660,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
+        const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const eventLabel = `${parsedOrder.maker.token.symbol}-${networkName}`;
         try {
             await this.props.blockchain.cancelOrderAsync(signedOrder, availableTakerTokenAmount);
             this.setState({
@@ -669,7 +673,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             ReactGA.event({
                 category: 'Portal',
                 action: 'Cancel Order Success',
-                label: parsedOrder.maker.token.symbol,
+                label: eventLabel,
                 value: parsedOrder.maker.amount,
             });
             return;
@@ -684,7 +688,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             ReactGA.event({
                 category: 'Portal',
                 action: 'Cancel Order Failure',
-                label: parsedOrder.maker.token.symbol,
+                label: eventLabel,
                 value: parsedOrder.maker.amount,
             });
             globalErrMsg = 'Failed to cancel order, please refresh and try again';

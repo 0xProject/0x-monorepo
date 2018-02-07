@@ -5,21 +5,12 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import {
-    BlockRange,
-    EventCallback,
-    IndexedFilterValues,
-    MethodOpts,
-    TokenContractEventArgs,
-    TokenEvents,
-    TransactionOpts,
-    ZeroExError,
-} from '../types';
+import { BlockRange, EventCallback, IndexedFilterValues, MethodOpts, TransactionOpts, ZeroExError } from '../types';
 import { assert } from '../utils/assert';
 import { constants } from '../utils/constants';
 
 import { ContractWrapper } from './contract_wrapper';
-import { TokenContract } from './generated/token';
+import { TokenContract, TokenContractEventArgs, TokenEvents } from './generated/token';
 import { TokenTransferProxyWrapper } from './token_transfer_proxy_wrapper';
 
 /**

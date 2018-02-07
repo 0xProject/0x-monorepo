@@ -5,19 +5,11 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import {
-    BlockRange,
-    EtherTokenContractEventArgs,
-    EtherTokenEvents,
-    EventCallback,
-    IndexedFilterValues,
-    TransactionOpts,
-    ZeroExError,
-} from '../types';
+import { BlockRange, EventCallback, IndexedFilterValues, TransactionOpts, ZeroExError } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
-import { EtherTokenContract } from './generated/ether_token';
+import { EtherTokenContract, EtherTokenContractEventArgs, EtherTokenEvents } from './generated/ether_token';
 import { TokenWrapper } from './token_wrapper';
 
 /**

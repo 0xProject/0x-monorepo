@@ -13,6 +13,9 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
+import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
+import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
 import { crypto } from '../../util/crypto';
@@ -37,11 +40,11 @@ describe('Exchange', () => {
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
 
-    let rep: Web3.ContractInstance;
-    let dgd: Web3.ContractInstance;
-    let zrx: Web3.ContractInstance;
-    let exchange: Web3.ContractInstance;
-    let tokenTransferProxy: Web3.ContractInstance;
+    let rep: DummyTokenContract;
+    let dgd: DummyTokenContract;
+    let zrx: DummyTokenContract;
+    let exchange: ExchangeContract;
+    let tokenTransferProxy: TokenTransferProxyContract;
 
     let order: Order;
     let balances: BalancesByOwner;
@@ -55,14 +58,22 @@ describe('Exchange', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         maker = accounts[0];
         [tokenOwner, taker, feeRecipient] = accounts;
-        [rep, dgd, zrx] = await Promise.all([
+        const [repInstance, dgdInstance, zrxInstance] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken),
             deployer.deployAsync(ContractName.DummyToken),
             deployer.deployAsync(ContractName.DummyToken),
         ]);
-        tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        exchange = await deployer.deployAsync(ContractName.Exchange, [zrx.address, tokenTransferProxy.address]);
-        await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
+        rep = new DummyTokenContract(repInstance);
+        dgd = new DummyTokenContract(dgdInstance);
+        zrx = new DummyTokenContract(zrxInstance);
+        const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
+        tokenTransferProxy = new TokenTransferProxyContract(tokenTransferProxyInstance);
+        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+            zrx.address,
+            tokenTransferProxy.address,
+        ]);
+        exchange = new ExchangeContract(exchangeInstance);
+        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         zeroEx = new ZeroEx(web3.currentProvider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
@@ -83,30 +94,30 @@ describe('Exchange', () => {
         orderFactory = new OrderFactory(web3Wrapper, defaultOrderParams);
         dmyBalances = new Balances([rep, dgd, zrx], [maker, taker, feeRecipient]);
         await Promise.all([
-            rep.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             }),
-            rep.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             }),
-            rep.setBalance(maker, INITIAL_BALANCE, { from: tokenOwner }),
-            rep.setBalance(taker, INITIAL_BALANCE, { from: tokenOwner }),
-            dgd.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            rep.setBalance.sendTransactionAsync(maker, INITIAL_BALANCE, { from: tokenOwner }),
+            rep.setBalance.sendTransactionAsync(taker, INITIAL_BALANCE, { from: tokenOwner }),
+            dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             }),
-            dgd.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             }),
-            dgd.setBalance(maker, INITIAL_BALANCE, { from: tokenOwner }),
-            dgd.setBalance(taker, INITIAL_BALANCE, { from: tokenOwner }),
-            zrx.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            dgd.setBalance.sendTransactionAsync(maker, INITIAL_BALANCE, { from: tokenOwner }),
+            dgd.setBalance.sendTransactionAsync(taker, INITIAL_BALANCE, { from: tokenOwner }),
+            zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             }),
-            zrx.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             }),
-            zrx.setBalance(maker, INITIAL_BALANCE, { from: tokenOwner }),
-            zrx.setBalance(taker, INITIAL_BALANCE, { from: tokenOwner }),
+            zrx.setBalance.sendTransactionAsync(maker, INITIAL_BALANCE, { from: tokenOwner }),
+            zrx.setBalance.sendTransactionAsync(taker, INITIAL_BALANCE, { from: tokenOwner }),
         ]);
     });
     beforeEach(async () => {
@@ -117,19 +128,19 @@ describe('Exchange', () => {
     });
     describe('internal functions', () => {
         it('should include transferViaTokenTransferProxy', () => {
-            expect(exchange.transferViaTokenTransferProxy).to.be.undefined();
+            expect((exchange as any).transferViaTokenTransferProxy).to.be.undefined();
         });
 
         it('should include isTransferable', () => {
-            expect(exchange.isTransferable).to.be.undefined();
+            expect((exchange as any).isTransferable).to.be.undefined();
         });
 
         it('should include getBalance', () => {
-            expect(exchange.getBalance).to.be.undefined();
+            expect((exchange as any).getBalance).to.be.undefined();
         });
 
         it('should include getAllowance', () => {
-            expect(exchange.getAllowance).to.be.undefined();
+            expect((exchange as any).getAllowance).to.be.undefined();
         });
     });
 
@@ -565,9 +576,9 @@ describe('Exchange', () => {
 
         it('should not change balances if maker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            await rep.approve(tokenTransferProxy.address, 0, { from: maker });
+            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
             await exWrapper.fillOrderAsync(order, taker);
-            await rep.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             });
 
@@ -577,22 +588,22 @@ describe('Exchange', () => {
 
         it('should throw if maker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
-            await rep.approve(tokenTransferProxy.address, 0, { from: maker });
+            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
             expect(
                 exWrapper.fillOrderAsync(order, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: true,
                 }),
             ).to.be.rejectedWith(constants.REVERT);
-            await rep.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             });
         });
 
         it('should not change balances if taker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            await dgd.approve(tokenTransferProxy.address, 0, { from: taker });
+            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
             await exWrapper.fillOrderAsync(order, taker);
-            await dgd.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             });
 
@@ -602,13 +613,13 @@ describe('Exchange', () => {
 
         it('should throw if taker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
-            await dgd.approve(tokenTransferProxy.address, 0, { from: taker });
+            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
             expect(
                 exWrapper.fillOrderAsync(order, taker, {
                     shouldThrowOnInsufficientBalanceOrAllowance: true,
                 }),
             ).to.be.rejectedWith(constants.REVERT);
-            await dgd.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             });
         });
@@ -668,7 +679,9 @@ describe('Exchange', () => {
         it('should throw if getBalance or getAllowance attempts to change state and \
                 shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
             const maliciousToken = await deployer.deployAsync(ContractName.MaliciousToken);
-            await maliciousToken.approve(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: taker });
+            await maliciousToken.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+                from: taker,
+            });
 
             order = await orderFactory.newSignedOrderAsync({
                 takerToken: maliciousToken.address,

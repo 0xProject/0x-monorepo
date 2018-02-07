@@ -392,6 +392,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </TableRowColumn>
                 <TableRowColumn>
                     <AllowanceToggle
+                        networkId={this.props.networkId}
                         blockchain={this.props.blockchain}
                         dispatcher={this.props.dispatcher}
                         token={token}

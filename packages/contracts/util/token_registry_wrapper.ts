@@ -1,15 +1,17 @@
 import * as Web3 from 'web3';
 
+import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';
+
 import { Token } from './types';
 
 export class TokenRegWrapper {
-    private _tokenReg: Web3.ContractInstance;
-    constructor(tokenRegContractInstance: Web3.ContractInstance) {
-        this._tokenReg = tokenRegContractInstance;
+    private _tokenReg: TokenRegistryContract;
+    constructor(tokenRegContract: TokenRegistryContract) {
+        this._tokenReg = tokenRegContract;
     }
-    public addTokenAsync(token: Token, from: string) {
-        const tx = this._tokenReg.addToken(
-            token.address,
+    public async addTokenAsync(token: Token, from: string) {
+        const tx = this._tokenReg.addToken.sendTransactionAsync(
+            token.address as string,
             token.name,
             token.symbol,
             token.decimals,

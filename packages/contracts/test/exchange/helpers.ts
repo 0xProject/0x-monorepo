@@ -5,6 +5,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
+import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
 import { constants } from '../../util/constants';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { Order } from '../../util/order';
@@ -38,7 +39,11 @@ describe('Exchange', () => {
             deployer.deployAsync(ContractName.DummyToken),
             deployer.deployAsync(ContractName.DummyToken),
         ]);
-        const exchange = await deployer.deployAsync(ContractName.Exchange, [zrx.address, tokenTransferProxy.address]);
+        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+            zrx.address,
+            tokenTransferProxy.address,
+        ]);
+        const exchange = new ExchangeContract(exchangeInstance);
         await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
         const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
