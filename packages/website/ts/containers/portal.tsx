@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 import { Portal as PortalComponent, PortalAllProps as PortalComponentAllProps } from 'ts/components/portal';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { BlockchainErrs, HashData, ProviderType, ScreenWidths, SerializedOrder, Side, TokenByAddress } from 'ts/types';
+import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, Side, TokenByAddress } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
 interface ConnectedState {
@@ -24,7 +24,7 @@ interface ConnectedState {
     screenWidth: ScreenWidths;
     shouldBlockchainErrDialogBeOpen: boolean;
     userAddress: string;
-    userSuppliedOrderCache: SerializedOrder;
+    userSuppliedOrderCache: Order;
     flashMessage?: string | React.ReactNode;
 }
 
