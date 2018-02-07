@@ -184,7 +184,7 @@ export class ExchangeWrapper {
     public async isValidSignatureAsync(order: Order): Promise<boolean> {
         const isValidSignature = await this._exchange.isValidSignature(
             order.params.maker,
-            order.params.orderHashHex as string,
+            order.getOrderHashHex(),
             order.params.v as number,
             order.params.r as string,
             order.params.s as string,

@@ -71,7 +71,7 @@ describe('Exchange', () => {
     describe('getOrderHash', () => {
         it('should output the correct orderHash', async () => {
             const orderHashHex = await exchangeWrapper.getOrderHashAsync(order);
-            expect(order.params.orderHashHex).to.be.equal(orderHashHex);
+            expect(order.getOrderHashHex()).to.be.equal(orderHashHex);
         });
     });
 

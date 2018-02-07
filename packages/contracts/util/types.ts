@@ -76,7 +76,6 @@ export interface OrderParams {
     takerFee: BigNumber;
     expirationTimestampInSec: BigNumber;
     salt: BigNumber;
-    orderHashHex?: string;
     v?: number;
     r?: string;
     s?: string;
