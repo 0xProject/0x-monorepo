@@ -29,8 +29,25 @@ contract MixinSignatureValidator is
         Invalid,
         Caller,
         Ecrecover,
+        EIP712,
         Contract
     }
+    
+    bytes32 public constant orderSchemaHash = keccak256(
+        "address exchangeContractAddress",
+        "address makerAddress",
+        "address takerAddress",
+        "address makerTokenAddress",
+        "address takerTokenAddress",
+        "address feeRecipientAddress",
+        "uint256 makerTokenAmount",
+        "uint256 takerTokenAmount",
+        "uint256 makerFeeAmount",
+        "uint256 takerFeeAmount",
+        "uint256 expirationTimestamp",
+        "uint256 salt"
+    );
+
   
     function isValidSignature(
         bytes32 hash,
@@ -43,6 +60,11 @@ contract MixinSignatureValidator is
         
         require(signature.length >= 1);
         SignatureType signatureType = SignatureType(uint8(signature[0]));
+        
+        // Variables are not scoped in Solidity
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
         
         // Zero is always an invalid signature
         if (signatureType == SignatureType.Invalid) {
@@ -59,11 +81,25 @@ contract MixinSignatureValidator is
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.Ecrecover) {
             require(signature.length == 66);
-            uint8 v = uint8(signature[1]);
-            bytes32 r = get32(signature, 2);
-            bytes32 s = get32(signature, 34);
-            address recovered = ecrecover(
+            v = uint8(signature[1]);
+            r = get32(signature, 2);
+            s = get32(signature, 34);
+            recovered = ecrecover(
                 keccak256("\x19Ethereum Signed Message:\n32", hash),
+                v,
+                r,
+                s
+            );
+            isValid = signer == recovered;
+            return;
+            
+        // Signature using EIP712
+        } else if (signatureType == SignatureType.EIP712) {
+            v = uint8(signature[1]);
+            r = get32(signature, 2);
+            s = get32(signature, 35);
+            address recovered = ecrecover(
+                keccak256(orderSchemaHash, orderHash),
                 v,
                 r,
                 s
