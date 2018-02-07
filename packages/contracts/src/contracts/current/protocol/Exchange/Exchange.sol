@@ -33,7 +33,7 @@ contract Exchange is
 
     function Exchange(address _zrxToken, address _tokenTransferProxy)
         public
-        MixinExchangeCore(_zrxToken)
+        MixinExchangeCore()
         MixinSignatureValidatorEcrecover()
         MixinSettlementProxy(_tokenTransferProxy, _zrxToken)
         MixinWrapperFunctions()

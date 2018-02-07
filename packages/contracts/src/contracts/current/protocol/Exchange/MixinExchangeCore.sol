@@ -38,8 +38,6 @@ contract MixinExchangeCore is
     LibErrors,
     LibPartialAmount
 {
-    address public ZRX_TOKEN_CONTRACT;
-
     // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
     mapping (bytes32 => uint) public filled;
     mapping (bytes32 => uint) public cancelled;
@@ -68,12 +66,6 @@ contract MixinExchangeCore is
         bytes32 indexed tokens,
         bytes32 orderHash
     );
-
-    function MixinExchangeCore(address _zrxToken)
-      public
-    {
-        ZRX_TOKEN_CONTRACT = _zrxToken;
-    }
 
     /*
     * Core exchange functions
@@ -144,44 +136,18 @@ contract MixinExchangeCore is
             LogError(uint8(Errors.INSUFFICIENT_BALANCE_OR_ALLOWANCE), order.orderHash);
             return 0;
         }
-
-        uint filledMakerTokenAmount = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount);
-        uint paidMakerFee;
-        uint paidTakerFee;
+        
+        // Update state
         filled[order.orderHash] = safeAdd(filled[order.orderHash], filledTakerTokenAmount);
-        require(transferViaTokenTransferProxy(
-            order.makerToken,
-            order.maker,
-            msg.sender,
-            filledMakerTokenAmount
-        ));
-        require(transferViaTokenTransferProxy(
-            order.takerToken,
-            msg.sender,
-            order.maker,
-            filledTakerTokenAmount
-        ));
-        if (order.feeRecipient != address(0)) {
-            if (order.makerFee > 0) {
-                paidMakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerFee);
-                require(transferViaTokenTransferProxy(
-                    ZRX_TOKEN_CONTRACT,
-                    order.maker,
-                    order.feeRecipient,
-                    paidMakerFee
-                ));
-            }
-            if (order.takerFee > 0) {
-                paidTakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.takerFee);
-                require(transferViaTokenTransferProxy(
-                    ZRX_TOKEN_CONTRACT,
-                    msg.sender,
-                    order.feeRecipient,
-                    paidTakerFee
-                ));
-            }
-        }
-
+        
+        // Settle order
+        uint256 filledMakerTokenAmount;
+        uint256 paidMakerFee;
+        uint256 paidTakerFee;
+        (filledMakerTokenAmount, paidMakerFee, paidTakerFee) =
+            settleOrder(order, msg.sender, filledTakerTokenAmount);
+        
+        // Log order
         LogFill(
             order.maker,
             msg.sender,
