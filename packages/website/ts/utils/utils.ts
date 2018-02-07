@@ -1,4 +1,4 @@
-import { ExchangeContractErrs, ZeroExError } from '0x.js';
+import { ECSignature, ExchangeContractErrs, ZeroExError } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import isMobile = require('is-mobile');
@@ -67,7 +67,7 @@ export const utils = {
         makerFee: BigNumber,
         takerFee: BigNumber,
         feeRecipient: string,
-        ecSignature: SignatureData,
+        ecSignature: ECSignature,
         tokenByAddress: TokenByAddress,
         orderSalt: BigNumber,
     ): Order {

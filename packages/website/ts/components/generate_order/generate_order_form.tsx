@@ -1,4 +1,4 @@
-import { Order, ZeroEx } from '0x.js';
+import { ECSignature, Order, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -19,16 +19,7 @@ import { SwapIcon } from 'ts/components/ui/swap_icon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
-import {
-    AlertTypes,
-    BlockchainErrs,
-    HashData,
-    Side,
-    SideToAssetToken,
-    SignatureData,
-    Token,
-    TokenByAddress,
-} from 'ts/types';
+import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -49,7 +40,7 @@ interface GenerateOrderFormProps {
     orderExpiryTimestamp: BigNumber;
     networkId: number;
     userAddress: string;
-    orderSignatureData: SignatureData;
+    orderECSignature: ECSignature;
     orderTakerAddress: string;
     orderSalt: BigNumber;
     sideToAssetToken: SideToAssetToken;
@@ -209,7 +200,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     <OrderJSON
                         exchangeContractIfExists={exchangeContractIfExists}
                         orderExpiryTimestamp={this.props.orderExpiryTimestamp}
-                        orderSignatureData={this.props.orderSignatureData}
+                        orderECSignature={this.props.orderECSignature}
                         orderTakerAddress={this.props.orderTakerAddress}
                         orderMakerAddress={this.props.userAddress}
                         orderSalt={this.props.orderSalt}
