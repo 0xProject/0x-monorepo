@@ -2,15 +2,6 @@
 # yarn lockfile v1
 
 
-"@0xproject/utils@^0.2.0":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.2.4.tgz#d84d0737f47730e5724a76797d30e716b587a0cf"
-  dependencies:
-    bignumber.js "~4.1.0"
-    js-sha3 "^0.7.0"
-    lodash "^4.17.4"
-    web3 "^0.20.0"
-
 "@types/accounting@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@types/accounting/-/accounting-0.4.1.tgz#865d9f5694fd7c438fba34eb4bc82eec6f34cdd5"
@@ -9106,13 +9097,20 @@ types-bn@^0.0.1:
   dependencies:
     bn.js "4.11.7"
 
-types-ethereumjs-util@0xproject/types-ethereumjs-util:
-  version "0.0.6"
-  resolved "https://codeload.github.com/0xproject/types-ethereumjs-util/tar.gz/0c5058e4f9d6585f7c7c1f88939546acb14323b8"
+"types-bn@https://github.com/machinomy/types-bn.git":
+  version "0.0.1"
+  resolved "https://github.com/machinomy/types-bn.git#08ede69e138640d332b0dae0dc2e2fffee5f7160"
+  dependencies:
+    bn.js "4.11.7"
+
+types-ethereumjs-util@0xProject/types-ethereumjs-util:
+  version "0.0.7"
+  resolved "https://codeload.github.com/0xProject/types-ethereumjs-util/tar.gz/72722fc605bfa7f87ec4a959956b387320479ffc"
   dependencies:
     bn.js "^4.11.7"
     buffer "^5.0.6"
     rlp "^2.0.0"
+    types-bn "https://github.com/machinomy/types-bn.git"
 
 typescript@2.4.1:
   version "2.4.1"

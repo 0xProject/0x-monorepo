@@ -86,25 +86,29 @@ Returns a JSON payload describing the state of the queues for each network. For 
 }
 ```
 
-`GET /ether/:recipient`
+`GET /ether/:recipient?networkId=:networkId`
 
-Where recipient is a hex encoded Ethereum address prefixed with `0x`.
+Schedules a transaction that sends 0.1 ETH to the `recipient` on the network specified by `networkId` where `recipient` is a hex encoded Ethereum address prefixed with `0x`. If no `networkId` is provided via query parameters the faucet will default to network 42 (Kovan).
 
-`GET /zrx/:recipient`
+`GET /zrx/:recipient?networkId=:networkId`
 
-Where recipient is a hex encoded Ethereum address prefixed with `0x`.
+Schedules a transaction that sends 0.1 ZRX to the `recipient` on the network specified by `networkId` where `recipient` is a hex encoded Ethereum address prefixed with `0x`. If no `networkId` is provided via query parameters the faucet will default to network 42 (Kovan).
 
-#### Parameters
+`GET /order/weth/:recipient?networkId=:networkId`
 
-The endpoints `/ether` and `/zrx` take a query parameter named `networkId` to specify the desired network where you would like to receive the ETH or ZRX. For example:
+Returns a JSON payload describing an order for 0.1 WETH in exchange for 0.1 ZRX signed by the dispenser address on the network specified by `networkId`. The taker is specified by `recipient` where `recipient` is a hex encoded Ethereum address prefixed with `0x`. If no `networkId` is provided via query parameters the faucet will default to network 42 (Kovan).
+
+`GET /order/zrx/:recipient?networkId=:networkId`
+
+Returns a JSON payload describing an order for 0.1 ZRX in exchange for 0.1 WETH signed by the dispenser address on the network specified by `networkId`. The taker is specified by `recipient` where `recipient` is a hex encoded Ethereum address prefixed with `0x`. If no `networkId` is provided via query parameters the faucet will default to network 42 (Kovan).
+
+#### Example request
 
 ```bash
 curl -i http://localhost:3000/ether/0x14e2F1F157E7DD4057D02817436D628A37120FD1\?networkId=3
 ```
 
 This command will request the local server to initiate a transfer of 0.1 ETH from the dispensing address to `0x14e2F1F157E7DD4057D02817436D628A37120FD1` on the Ropsten testnet.
-
-If no `networkId` is provided via query parameters the faucet will default to network 42 (Kovan)
 
 ### Docker configs
 
