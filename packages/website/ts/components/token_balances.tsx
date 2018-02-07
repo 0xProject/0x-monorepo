@@ -176,13 +176,21 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 onTouchTap={this._onDharmaDialogToggle.bind(this, false)}
             />,
         ];
+        const isTestNetwork = _.includes(
+            [
+                constants.NETWORK_ID_BY_NAME[Networks.Kovan],
+                constants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
+                constants.NETWORK_ID_BY_NAME[Networks.Ropsten],
+            ],
+            this.props.networkId,
+        );
         const isKovanTestNetwork = this.props.networkId === constants.NETWORK_ID_KOVAN;
         const dharmaButtonColumnStyle = {
             paddingLeft: 3,
             display: isKovanTestNetwork ? 'table-cell' : 'none',
         };
         const stubColumnStyle = {
-            display: isKovanTestNetwork ? 'none' : 'table-cell',
+            display: isTestNetwork ? 'none' : 'table-cell',
         };
         const allTokenRowHeight = _.size(this.props.tokenByAddress) * TOKEN_TABLE_ROW_HEIGHT;
         const tokenTableHeight =
@@ -201,10 +209,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                   smart contract so you can start trading that token.';
         return (
             <div className="lg-px4 md-px4 sm-px1 pb2">
-                <h3>{isKovanTestNetwork ? 'Test ether' : 'Ether'}</h3>
+                <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
                 <Divider />
                 <div className="pt2 pb2">
-                    {isKovanTestNetwork
+                    {isTestNetwork
                         ? 'In order to try out the 0x Portal Dapp, request some test ether to pay for \
                         gas costs. It might take a bit of time for the test ether to show up.'
                         : 'Ether must be converted to Ether Tokens in order to be tradable via 0x. \
@@ -216,7 +224,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             <TableHeaderColumn>Currency</TableHeaderColumn>
                             <TableHeaderColumn>Balance</TableHeaderColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isKovanTestNetwork && (
+                            {isTestNetwork && (
                                 <TableHeaderColumn style={{ paddingLeft: 3 }}>
                                     {isSmallScreen ? 'Faucet' : 'Request from faucet'}
                                 </TableHeaderColumn>
@@ -243,7 +251,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 )}
                             </TableRowColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isKovanTestNetwork && (
+                            {isTestNetwork && (
                                 <TableRowColumn style={{ paddingLeft: 3 }}>
                                     <LifeCycleRaisedButton
                                         labelReady="Request"
@@ -267,7 +275,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </Table>
                 <div className="clearfix" style={{ paddingBottom: 1 }}>
                     <div className="col col-10">
-                        <h3 className="pt2">{isKovanTestNetwork ? 'Test tokens' : 'Tokens'}</h3>
+                        <h3 className="pt2">{isTestNetwork ? 'Test tokens' : 'Tokens'}</h3>
                     </div>
                     <div className="col col-1 pt3 align-right">
                         <FloatingActionButton mini={true} zDepth={0} onClick={this._onAddTokenClicked.bind(this)}>
@@ -282,7 +290,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 </div>
                 <Divider />
                 <div className="pt2 pb2">
-                    {isKovanTestNetwork
+                    {isTestNetwork
                         ? "Mint some test tokens you'd like to use to generate or fill an order using 0x."
                         : "Set trading permissions for a token you'd like to start trading."}
                 </div>
