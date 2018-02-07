@@ -41,6 +41,52 @@ contract MixinSettlementProxy is
       ZRX_TOKEN_CONTRACT = zrxToken;
       TOKEN_TRANSFER_PROXY_CONTRACT = proxyContract;
     }
+    
+    function settleOrder(
+        Order order,
+        address taker,
+        uint filledTakerTokenAmount)
+        internal
+        returns (
+            uint filledMakerTokenAmount,
+            uint paidMakerFee,
+            uint paidTakerFee
+        )
+    {
+        filledMakerTokenAmount = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount);
+        require(transferViaTokenTransferProxy(
+            order.makerToken,
+            order.maker,
+            taker,
+            filledMakerTokenAmount
+        ));
+        require(transferViaTokenTransferProxy(
+            order.takerToken,
+            taker,
+            order.maker,
+            filledTakerTokenAmount
+        ));
+        if (order.feeRecipient != address(0)) {
+            if (order.makerFee > 0) {
+                paidMakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerFee);
+                require(transferViaTokenTransferProxy(
+                    ZRX_TOKEN_CONTRACT,
+                    order.maker,
+                    order.feeRecipient,
+                    paidMakerFee
+                ));
+            }
+            if (order.takerFee > 0) {
+                paidTakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.takerFee);
+                require(transferViaTokenTransferProxy(
+                    ZRX_TOKEN_CONTRACT,
+                    taker,
+                    order.feeRecipient,
+                    paidTakerFee
+                ));
+            }
+        }
+    }
 
     /// @dev Transfers a token using TokenTransferProxy transferFrom function.
     /// @param token Address of token to transferFrom.
