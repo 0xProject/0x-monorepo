@@ -20,7 +20,6 @@ interface OrderJSONProps {
     orderMakerFee: BigNumber;
     orderTakerFee: BigNumber;
     orderFeeRecipient: string;
-    networkId: number;
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
 }
@@ -40,7 +39,6 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
     }
     public render() {
         const order = utils.generateOrder(
-            this.props.networkId,
             this.props.exchangeContractIfExists,
             this.props.sideToAssetToken,
             this.props.orderExpiryTimestamp,
@@ -162,7 +160,6 @@ You can see and fill it here: ${this.state.shareLink}`);
     }
     private _getOrderUrl() {
         const order = utils.generateOrder(
-            this.props.networkId,
             this.props.exchangeContractIfExists,
             this.props.sideToAssetToken,
             this.props.orderExpiryTimestamp,

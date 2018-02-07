@@ -59,7 +59,6 @@ export const utils = {
         return formattedDate;
     },
     generateOrder(
-        networkId: number,
         exchangeContractAddress: string,
         sideToAssetToken: SideToAssetToken,
         expirationUnixTimestampSec: BigNumber,
@@ -91,7 +90,6 @@ export const utils = {
                 exchangeContractAddress,
             },
             metadata: {
-                networkId,
                 makerToken: {
                     name: makerToken.name,
                     symbol: makerToken.symbol,

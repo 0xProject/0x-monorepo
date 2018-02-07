@@ -12,7 +12,6 @@ import { utils } from 'ts/utils/utils';
 interface FillOrderJSONProps {
     blockchain: Blockchain;
     tokenByAddress: TokenByAddress;
-    networkId: number;
     orderJSON: string;
     onFillOrderJSONChanged: (event: any) => void;
 }
@@ -43,7 +42,6 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
         const hintSalt = ZeroEx.generatePseudoRandomSalt();
         const feeRecipient = constants.NULL_ADDRESS;
         const hintOrder = utils.generateOrder(
-            this.props.networkId,
             exchangeContract,
             hintSideToAssetToken,
             hintOrderExpiryTimestamp,

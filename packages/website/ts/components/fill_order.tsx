@@ -109,7 +109,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                             <FillOrderJSON
                                 blockchain={this.props.blockchain}
                                 tokenByAddress={this.props.tokenByAddress}
-                                networkId={this.props.networkId}
                                 orderJSON={this.state.orderJSON}
                                 onFillOrderJSONChanged={this._onFillOrderJSONChanged.bind(this)}
                             />
@@ -136,7 +135,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                                     <FillOrderJSON
                                         blockchain={this.props.blockchain}
                                         tokenByAddress={this.props.tokenByAddress}
-                                        networkId={this.props.networkId}
                                         orderJSON={this.state.orderJSON}
                                         onFillOrderJSONChanged={this._onFillOrderJSONChanged.bind(this)}
                                     />
@@ -444,12 +442,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
 
             const signature = parsedOrder.signedOrder.ecSignature;
             const isValidSignature = ZeroEx.isValidSignature(signature.hash, signature, parsedOrder.signedOrder.maker);
-            if (this.props.networkId !== parsedOrder.metadata.networkId) {
-                orderJSONErrMsg = `This order was made on another Ethereum network
-                                   (id: ${parsedOrder.metadata.networkId}). Connect to this network to fill.`;
-                parsedOrder = undefined;
-            } else if (exchangeContractAddr !== parsedOrder.signedOrder.exchangeContractAddress) {
-                orderJSONErrMsg = 'This order was made using a deprecated 0x Exchange contract.';
+            if (exchangeContractAddr !== parsedOrder.signedOrder.exchangeContractAddress) {
+                orderJSONErrMsg = 'This order was made on another network or using a deprecated Exchange contract';
                 parsedOrder = undefined;
             } else if (orderHash !== signature.hash) {
                 orderJSONErrMsg = 'Order hash does not match supplied plaintext values';
