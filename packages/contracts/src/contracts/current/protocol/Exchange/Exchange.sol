@@ -16,11 +16,11 @@
 
 */
 
-pragma solidity ^0.4.14;
+pragma solidity ^0.4.19;
 
-import { TokenTransferProxy } from "../TokenTransferProxy/TokenTransferProxy.sol";
-import { Token_v1 as Token } from "../../../previous/Token/Token_v1.sol";
-import { SafeMath_v1 as SafeMath } from "../../../previous/SafeMath/SafeMath_v1.sol";
+import { ITokenTransferProxy } from "../TokenTransferProxy/ITokenTransferProxy.sol";
+import { IToken } from "../../tokens/Token/IToken.sol";
+import { SafeMath } from "../../utils/SafeMath/SafeMath.sol";
 
 /// @title Exchange - Facilitates exchange of ERC20 tokens.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
@@ -532,7 +532,7 @@ contract Exchange is SafeMath {
         internal
         returns (bool)
     {
-        return TokenTransferProxy(TOKEN_TRANSFER_PROXY_CONTRACT).transferFrom(token, from, to, value);
+        return ITokenTransferProxy(TOKEN_TRANSFER_PROXY_CONTRACT).transferFrom(token, from, to, value);
     }
 
     /// @dev Checks if any order transfers will fail.
@@ -585,7 +585,7 @@ contract Exchange is SafeMath {
         constant  // The called token contract may attempt to change state, but will not be able to due to an added gas limit.
         returns (uint)
     {
-        return Token(token).balanceOf.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner); // Limit gas to prevent reentrancy
+        return IToken(token).balanceOf.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner); // Limit gas to prevent reentrancy
     }
 
     /// @dev Get allowance of token given to TokenTransferProxy by an address.
@@ -597,6 +597,6 @@ contract Exchange is SafeMath {
         constant  // The called token contract may attempt to change state, but will not be able to due to an added gas limit.
         returns (uint)
     {
-        return Token(token).allowance.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner, TOKEN_TRANSFER_PROXY_CONTRACT); // Limit gas to prevent reentrancy
+        return IToken(token).allowance.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner, TOKEN_TRANSFER_PROXY_CONTRACT); // Limit gas to prevent reentrancy
     }
 }
