@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/deployer",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Smart contract deployer of 0x protocol",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -34,8 +34,8 @@
         "web3-typescript-typings": "^0.9.9"
     },
     "dependencies": {
-        "@0xproject/utils": "^0.3.0",
-        "@0xproject/web3-wrapper": "^0.1.10",
+        "@0xproject/utils": "^0.3.1",
+        "@0xproject/web3-wrapper": "^0.1.11",
         "lodash": "^4.17.4",
         "solc": "^0.4.18",
         "web3": "^0.20.0",
