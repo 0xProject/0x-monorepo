@@ -85,7 +85,9 @@ contract Exchange is SafeMath {
         bytes32 orderHash;
     }
 
-    function Exchange(address _zrxToken, address _tokenTransferProxy) {
+    function Exchange(address _zrxToken, address _tokenTransferProxy)
+        public
+    {
         ZRX_TOKEN_CONTRACT = _zrxToken;
         TOKEN_TRANSFER_PROXY_CONTRACT = _tokenTransferProxy;
     }
@@ -458,7 +460,7 @@ contract Exchange is SafeMath {
         bytes32 r,
         bytes32 s)
         public
-        constant
+        pure
         returns (bool)
     {
         return signer == ecrecover(
@@ -476,7 +478,7 @@ contract Exchange is SafeMath {
     /// @return Rounding error is present.
     function isRoundingError(uint numerator, uint denominator, uint target)
         public
-        constant
+        pure
         returns (bool)
     {
         uint remainder = mulmod(target, numerator, denominator);
@@ -496,7 +498,7 @@ contract Exchange is SafeMath {
     /// @return Partial value of target.
     function getPartialAmount(uint numerator, uint denominator, uint target)
         public
-        constant
+        pure
         returns (uint)
     {
         return safeDiv(safeMul(numerator, target), denominator);
