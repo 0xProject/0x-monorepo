@@ -1,6 +1,9 @@
 import { intervalUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
+import { errorReporter } from './error_reporter';
+import { utils } from './utils';
+
 const MAX_QUEUE_SIZE = 500;
 const DEFAULT_QUEUE_INTERVAL_MS = 1000;
 
@@ -13,11 +16,11 @@ export class DispatchQueue {
         this._queue = [];
         this._start();
     }
-    public add(task: () => Promise<void>): boolean {
+    public add(taskAsync: () => Promise<void>): boolean {
         if (this.isFull()) {
             return false;
         }
-        this._queue.push(task);
+        this._queue.push(taskAsync);
         return true;
     }
     public size(): number {
@@ -34,14 +37,18 @@ export class DispatchQueue {
     private _start() {
         this._queueIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             async () => {
-                const task = this._queue.shift();
-                if (_.isUndefined(task)) {
+                const taskAsync = this._queue.shift();
+                if (_.isUndefined(taskAsync)) {
                     return Promise.resolve();
                 }
-                await task();
+                await taskAsync();
             },
             this._queueIntervalMs,
-            _.noop,
+            (err: Error) => {
+                utils.consoleLog(`Unexpected err: ${err} - ${JSON.stringify(err)}`);
+                // tslint:disable-next-line:no-floating-promises
+                errorReporter.reportAsync(err);
+            },
         );
     }
 }

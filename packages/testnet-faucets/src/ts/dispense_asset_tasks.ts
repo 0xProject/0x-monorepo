@@ -15,40 +15,30 @@ export const dispenseAssetTasks = {
         return async () => {
             utils.consoleLog(`Processing ETH ${recipientAddress}`);
             const sendTransactionAsync = promisify(web3.eth.sendTransaction);
-            try {
-                const txHash = await sendTransactionAsync({
-                    from: configs.DISPENSER_ADDRESS,
-                    to: recipientAddress,
-                    value: web3.toWei(DISPENSE_AMOUNT_ETHER, 'ether'),
-                });
-                utils.consoleLog(`Sent ${DISPENSE_AMOUNT_ETHER} ETH to ${recipientAddress} tx: ${txHash}`);
-            } catch (err) {
-                utils.consoleLog(`Unexpected err: ${err} - ${JSON.stringify(err)}`);
-                await errorReporter.reportAsync(err);
-            }
+            const txHash = await sendTransactionAsync({
+                from: configs.DISPENSER_ADDRESS,
+                to: recipientAddress,
+                value: web3.toWei(DISPENSE_AMOUNT_ETHER, 'ether'),
+            });
+            utils.consoleLog(`Sent ${DISPENSE_AMOUNT_ETHER} ETH to ${recipientAddress} tx: ${txHash}`);
         };
     },
     dispenseTokenTask(recipientAddress: string, tokenSymbol: string, zeroEx: ZeroEx) {
         return async () => {
             utils.consoleLog(`Processing ${tokenSymbol} ${recipientAddress}`);
             const amountToDispense = new BigNumber(DISPENSE_AMOUNT_TOKEN);
-            try {
-                const token = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(tokenSymbol);
-                if (_.isUndefined(token)) {
-                    throw new Error(`Unsupported asset type: ${tokenSymbol}`);
-                }
-                const baseUnitAmount = ZeroEx.toBaseUnitAmount(amountToDispense, token.decimals);
-                const txHash = await zeroEx.token.transferAsync(
-                    token.address,
-                    configs.DISPENSER_ADDRESS,
-                    recipientAddress,
-                    baseUnitAmount,
-                );
-                utils.consoleLog(`Sent ${amountToDispense} ZRX to ${recipientAddress} tx: ${txHash}`);
-            } catch (err) {
-                utils.consoleLog(`Unexpected err: ${err} - ${JSON.stringify(err)}`);
-                await errorReporter.reportAsync(err);
+            const token = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(tokenSymbol);
+            if (_.isUndefined(token)) {
+                throw new Error(`Unsupported asset type: ${tokenSymbol}`);
             }
+            const baseUnitAmount = ZeroEx.toBaseUnitAmount(amountToDispense, token.decimals);
+            const txHash = await zeroEx.token.transferAsync(
+                token.address,
+                configs.DISPENSER_ADDRESS,
+                recipientAddress,
+                baseUnitAmount,
+            );
+            utils.consoleLog(`Sent ${amountToDispense} ZRX to ${recipientAddress} tx: ${txHash}`);
         };
     },
 };

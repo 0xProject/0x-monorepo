@@ -96,26 +96,19 @@ export class Handler {
     private _dispenseAsset(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType) {
         const networkId = req.params.networkId;
         const recipient = req.params.recipient;
-        const networkConfig = _.get(this._networkConfigByNetworkId, networkId);
-        if (_.isUndefined(networkConfig)) {
-            res.status(400).send('UNSUPPORTED_NETWORK_ID');
-            return;
-        }
+        const networkConfig = this._networkConfigByNetworkId[networkId];
         let dispenserTask;
         switch (requestedAssetType) {
             case RequestedAssetType.ETH:
                 dispenserTask = dispenseAssetTasks.dispenseEtherTask(recipient, networkConfig.web3);
                 break;
             case RequestedAssetType.WETH:
-                dispenserTask = dispenseAssetTasks.dispenseTokenTask(recipient, requestedAssetType, networkConfig.zeroEx);
-                break;
             case RequestedAssetType.ZRX:
                 dispenserTask = dispenseAssetTasks.dispenseTokenTask(recipient, requestedAssetType, networkConfig.zeroEx);
                 break;
             default:
                 throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
-
         const didAddToQueue = networkConfig.dispatchQueue.add(dispenserTask);
         if (!didAddToQueue) {
             res.status(503).send('QUEUE_IS_FULL');
