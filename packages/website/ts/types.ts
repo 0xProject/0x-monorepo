@@ -59,13 +59,11 @@ export interface OrderToken {
     decimals: number;
 }
 
-export interface Order {
+export interface SignedOrder {
     maker: string;
     taker: string;
     makerTokenAddress: string;
     takerTokenAddress: string;
-    makerToken: OrderToken;
-    takerToken: OrderToken;
     makerFee: string;
     takerFee: string;
     makerTokenAmount: string;
@@ -75,7 +73,17 @@ export interface Order {
     salt: string;
     ecSignature: SignatureData;
     exchangeContractAddress: string;
+}
+
+export interface OrderMetadata {
     networkId: number;
+    makerToken: OrderToken;
+    takerToken: OrderToken;
+}
+
+export interface Order {
+    signedOrder: SignedOrder;
+    metadata: OrderMetadata;
 }
 
 export interface Fill {

@@ -75,30 +75,34 @@ export const utils = {
         const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
         const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
-            maker: orderMakerAddress,
-            taker: orderTakerAddress,
-            makerFee: makerFee.toString(),
-            takerFee: takerFee.toString(),
-            makerTokenAmount: sideToAssetToken[Side.Deposit].amount.toString(),
-            takerTokenAmount: sideToAssetToken[Side.Receive].amount.toString(),
-            makerTokenAddress: makerToken.address,
-            takerTokenAddress: takerToken.address,
-            makerToken: {
-                name: makerToken.name,
-                symbol: makerToken.symbol,
-                decimals: makerToken.decimals,
+            signedOrder: {
+                maker: orderMakerAddress,
+                taker: orderTakerAddress,
+                makerFee: makerFee.toString(),
+                takerFee: takerFee.toString(),
+                makerTokenAmount: sideToAssetToken[Side.Deposit].amount.toString(),
+                takerTokenAmount: sideToAssetToken[Side.Receive].amount.toString(),
+                makerTokenAddress: makerToken.address,
+                takerTokenAddress: takerToken.address,
+                expirationUnixTimestampSec: expirationUnixTimestampSec.toString(),
+                feeRecipient,
+                salt: orderSalt.toString(),
+                ecSignature,
+                exchangeContractAddress,
             },
-            takerToken: {
-                name: takerToken.name,
-                symbol: takerToken.symbol,
-                decimals: takerToken.decimals,
+            metadata: {
+                networkId,
+                makerToken: {
+                    name: makerToken.name,
+                    symbol: makerToken.symbol,
+                    decimals: makerToken.decimals,
+                },
+                takerToken: {
+                    name: takerToken.name,
+                    symbol: takerToken.symbol,
+                    decimals: takerToken.decimals,
+                },
             },
-            expirationUnixTimestampSec: expirationUnixTimestampSec.toString(),
-            feeRecipient,
-            salt: orderSalt.toString(),
-            ecSignature,
-            exchangeContractAddress,
-            networkId,
         };
         return order;
     },
