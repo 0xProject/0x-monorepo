@@ -16,7 +16,7 @@
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
     },
     "devDependencies": {
-        "@0xproject/utils": "^0.3.0",
+        "@0xproject/utils": "^0.3.1",
         "async-child-process": "^1.1.1",
         "ethereumjs-testrpc": "^6.0.3",
         "lerna": "^2.5.1",
