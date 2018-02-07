@@ -437,7 +437,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             };
             const orderHash = ZeroEx.getOrderHashHex(zeroExOrder);
 
-            const signature = parsedOrder.signature;
+            const signature = parsedOrder.ecSignature;
             const isValidSignature = ZeroEx.isValidSignature(signature.hash, signature, parsedOrder.maker.address);
             if (this.props.networkId !== parsedOrder.networkId) {
                 orderJSONErrMsg = `This order was made on another Ethereum network
@@ -478,7 +478,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             // Clear cache entry if user updates orderJSON to invalid entry
             this.props.dispatcher.updateUserSuppliedOrderCache(undefined);
         } else {
-            const orderHash = parsedOrder.signature.hash;
+            const orderHash = parsedOrder.ecSignature.hash;
             unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
             const isMakerTokenAddressInRegistry = await this.props.blockchain.isAddressInTokenRegistryAsync(
                 parsedOrder.maker.token.address,
@@ -540,7 +540,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             new BigNumber(parsedOrder.taker.feeAmount),
             new BigNumber(this.state.parsedOrder.expirationUnixTimestampSec),
             parsedOrder.feeRecipient,
-            parsedOrder.signature,
+            parsedOrder.ecSignature,
             new BigNumber(parsedOrder.salt),
         );
         if (_.isEmpty(globalErrMsg)) {
@@ -618,7 +618,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         });
 
         const parsedOrder = this.state.parsedOrder;
-        const orderHash = parsedOrder.signature.hash;
+        const orderHash = parsedOrder.ecSignature.hash;
         const takerAddress = this.props.userAddress;
 
         if (_.isUndefined(takerAddress)) {
@@ -643,7 +643,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             new BigNumber(parsedOrder.taker.feeAmount),
             new BigNumber(this.state.parsedOrder.expirationUnixTimestampSec),
             parsedOrder.feeRecipient,
-            parsedOrder.signature,
+            parsedOrder.ecSignature,
             new BigNumber(parsedOrder.salt),
         );
         const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);

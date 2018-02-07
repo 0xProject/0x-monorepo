@@ -86,7 +86,7 @@ export interface SerializedOrder {
     expirationUnixTimestampSec: string;
     feeRecipient: string;
     salt: string;
-    signature: SignatureData;
+    ecSignature: SignatureData;
     exchangeContractAddress: string;
     networkId: number;
 }
