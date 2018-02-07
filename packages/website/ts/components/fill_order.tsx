@@ -20,7 +20,7 @@ import { VisualOrder } from 'ts/components/visual_order';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, SerializedOrder, Token, TokenByAddress, WebsitePaths } from 'ts/types';
+import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -34,7 +34,7 @@ interface FillOrderProps {
     networkId: number;
     userAddress: string;
     tokenByAddress: TokenByAddress;
-    initialOrder: SerializedOrder;
+    initialOrder: Order;
     dispatcher: Dispatcher;
     lastForceTokenStateRefetch: number;
 }
@@ -45,7 +45,7 @@ interface FillOrderState {
     globalErrMsg: string;
     orderJSON: string;
     orderJSONErrMsg: string;
-    parsedOrder: SerializedOrder;
+    parsedOrder: Order;
     didFillOrderSucceed: boolean;
     didCancelOrderSucceed: boolean;
     unavailableTakerAmount: BigNumber;
@@ -401,7 +401,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     }
     private async _validateFillOrderFireAndForgetAsync(orderJSON: string) {
         let orderJSONErrMsg = '';
-        let parsedOrder: SerializedOrder;
+        let parsedOrder: Order;
         try {
             const order = JSON.parse(orderJSON);
             const validationResult = this._validator.validate(order, orderSchema);

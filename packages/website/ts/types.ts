@@ -59,40 +59,15 @@ export interface OrderToken {
     name: string;
     symbol: string;
     decimals: number;
-    address: string;
-}
-
-export interface OrderParty {
-    address: string;
-    token: OrderToken;
-    amount: string;
-    feeAmount: string;
 }
 
 export interface Order {
-    maker: OrderParty;
-    taker: OrderParty;
-    expiration: string;
-    feeRecipient: string;
-    salt: string;
-    signature: SignatureData;
-    exchangeContract: string;
-    networkId: number;
-}
-
-export interface SerializedOrderToken {
-    name: string;
-    symbol: string;
-    decimals: number;
-}
-
-export interface SerializedOrder {
     maker: string;
     taker: string;
     makerTokenAddress: string;
     takerTokenAddress: string;
-    makerToken: SerializedOrderToken;
-    takerToken: SerializedOrderToken;
+    makerToken: OrderToken;
+    takerToken: OrderToken;
     makerFee: string;
     takerFee: string;
     makerTokenAmount: string;
