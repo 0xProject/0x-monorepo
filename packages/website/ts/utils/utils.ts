@@ -68,7 +68,7 @@ export const utils = {
         makerFee: BigNumber,
         takerFee: BigNumber,
         feeRecipient: string,
-        signatureData: SignatureData,
+        ecSignature: SignatureData,
         tokenByAddress: TokenByAddress,
         orderSalt: BigNumber,
     ): SerializedOrder {
@@ -100,7 +100,7 @@ export const utils = {
             expirationUnixTimestampSec: expirationUnixTimestampSec.toString(),
             feeRecipient,
             salt: orderSalt.toString(),
-            signature: signatureData,
+            ecSignature,
             exchangeContractAddress,
             networkId,
         };
