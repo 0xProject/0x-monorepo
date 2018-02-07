@@ -6,12 +6,14 @@ import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
 const DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1);
 
 interface AllowanceToggleProps {
+    networkId: number;
     blockchain: Blockchain;
     dispatcher: Dispatcher;
     onErrorOccurred: (errType: BalanceErrs) => void;
@@ -74,12 +76,14 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         if (!this._isAllowanceSet()) {
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
+        const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const eventLabel = `${this.props.token.symbol}-${networkName}`;
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
             ReactGA.event({
                 category: 'Portal',
                 action: 'Set Allowance Success',
-                label: this.props.token.symbol,
+                label: eventLabel,
                 value: newAllowanceAmountInBaseUnits.toNumber(),
             });
             await this.props.refetchTokenStateAsync();
@@ -87,7 +91,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             ReactGA.event({
                 category: 'Portal',
                 action: 'Set Allowance Failure',
-                label: this.props.token.symbol,
+                label: eventLabel,
                 value: newAllowanceAmountInBaseUnits.toNumber(),
             });
             this.setState({

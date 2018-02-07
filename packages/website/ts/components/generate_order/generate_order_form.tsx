@@ -30,6 +30,7 @@ import {
     TokenByAddress,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
+import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
@@ -262,10 +263,12 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         ) {
             const didSignSuccessfully = await this._signTransactionAsync();
             if (didSignSuccessfully) {
+                const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+                const eventLabel = `${this.props.tokenByAddress[debitToken.address].symbol}-${networkName}`;
                 ReactGA.event({
                     category: 'Portal',
                     action: 'Sign Order Success',
-                    label: this.props.tokenByAddress[debitToken.address].symbol,
+                    label: eventLabel,
                     value: debitToken.amount.toNumber(),
                 });
                 this.setState({
