@@ -3,8 +3,7 @@ export const orderTakerSchema = {
     properties: {
         address: { type: 'string' },
         token: { $ref: '/Token' },
-        amount: { type: 'string' },
     },
-    required: ['address', 'token', 'amount'],
+    required: ['address', 'token'],
     type: 'object',
 };
