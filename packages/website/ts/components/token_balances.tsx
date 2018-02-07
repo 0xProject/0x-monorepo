@@ -504,9 +504,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             case BalanceErrs.incorrectNetworkForFaucet:
                 return (
                     <div>
-                        Our faucet can only send test Ether to addresses on the {Networks.Kovan} testnet (networkId{' '}
-                        {constants.NETWORK_ID_KOVAN}). Please make sure you are connected to the {Networks.Kovan}{' '}
-                        testnet and try requesting ether again.
+                        Our faucet can only send test Ether to addresses on testnets. Please make sure you are connected
+                        to a testnet and try requesting again.
                     </div>
                 );
 
@@ -595,7 +594,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
 
         // If on another network other then the testnet our faucet serves test ether
         // from, we must show user an error message
-        if (this.props.blockchain.networkId !== constants.NETWORK_ID_KOVAN) {
+        if (!utils.isTestNetwork(this.props.blockchain.networkId)) {
             this.setState({
                 errorType: BalanceErrs.incorrectNetworkForFaucet,
             });
