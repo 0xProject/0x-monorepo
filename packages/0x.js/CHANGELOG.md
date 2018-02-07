@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.32.1 - _February 7, 2018_
+
+    * Reorganized `BlockParamLiteral` export into `@0xproject/types` package (#355)
+    * Now using `abi-gen` package to generate ContractEventArgs types (#371)
+
 ## v0.32.0 - _February 5, 2018_
 
     * Add `zeroEx.etherToken.getContractAddressIfExists` (#350)

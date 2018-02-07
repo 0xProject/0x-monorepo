@@ -1,9 +1,9 @@
 # CHANGELOG
 
-## v0.2.0 - _???_
+## v0.2.0 - _February 7, 2018_
 
 * Added CLI options for explicit specifying location of partials and main template (#346)
-* Added CLI option to specify networkId, adding support for the JSON artifact format found in @0xproject/contracts
+* Added CLI option to specify networkId, adding support for the JSON artifact format found in @0xproject/contracts (#388)
 
 ## v0.1.0 - _January 11, 2018_
 

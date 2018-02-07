@@ -1,11 +1,11 @@
 # CHANGELOG
 
-## v0.4.1 - _Febuary 2, 2018_
+## v0.4.0 - _February 7, 2018_
 
     * Added NonceTrackerSubprovider (#355)
     * InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object (#363)
 
-## v0.3.5 - _January 28, 2018_
+## v0.3.6 - _January 28, 2018_
 
     * Return a transaction hash from `_sendTransactionAsync` (#303)
 
