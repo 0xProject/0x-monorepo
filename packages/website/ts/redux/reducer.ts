@@ -6,9 +6,9 @@ import {
     Action,
     ActionTypes,
     BlockchainErrs,
-    Order,
     ProviderType,
     ScreenWidths,
+    SerializedOrder,
     Side,
     SideToAssetToken,
     SignatureData,
@@ -40,7 +40,7 @@ export interface State {
     userAddress: string;
     userEtherBalance: BigNumber;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
-    userSuppliedOrderCache: Order;
+    userSuppliedOrderCache: SerializedOrder;
 
     // Docs
     docsVersion: string;

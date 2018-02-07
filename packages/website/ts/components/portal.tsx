@@ -23,7 +23,15 @@ import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
 import { SchemaValidator } from 'ts/schemas/validator';
-import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
+import {
+    BlockchainErrs,
+    HashData,
+    ProviderType,
+    ScreenWidths,
+    SerializedOrder,
+    TokenByAddress,
+    WebsitePaths,
+} from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -48,7 +56,7 @@ export interface PortalAllProps {
     userEtherBalance: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
-    userSuppliedOrderCache: Order;
+    userSuppliedOrderCache: SerializedOrder;
     location: Location;
     flashMessage?: string | React.ReactNode;
     lastForceTokenStateRefetch: number;
@@ -66,7 +74,7 @@ interface PortalAllState {
 
 export class Portal extends React.Component<PortalAllProps, PortalAllState> {
     private _blockchain: Blockchain;
-    private _sharedOrderIfExists: Order;
+    private _sharedOrderIfExists: SerializedOrder;
     private _throttledScreenWidthUpdate: () => void;
     public static hasAlreadyDismissedWethNotice() {
         const didDismissWethNotice = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_DISMISS_WETH_NOTICE);
@@ -349,7 +357,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             isWethNoticeDialogOpen: false,
         });
     }
-    private _getSharedOrderIfExists(): Order | undefined {
+    private _getSharedOrderIfExists(): SerializedOrder | undefined {
         const queryString = window.location.search;
         if (queryString.length === 0) {
             return undefined;

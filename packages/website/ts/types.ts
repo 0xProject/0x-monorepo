@@ -80,6 +80,17 @@ export interface Order {
     networkId: number;
 }
 
+export interface SerializedOrder {
+    maker: OrderParty;
+    taker: OrderParty;
+    expirationUnixTimestampSec: string;
+    feeRecipient: string;
+    salt: string;
+    signature: SignatureData;
+    exchangeContract: string;
+    networkId: number;
+}
+
 export interface Fill {
     logIndex: number;
     maker: string;
