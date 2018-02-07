@@ -3,6 +3,8 @@ export const orderSchema = {
     properties: {
         maker: { $ref: '/OrderTaker' },
         taker: { $ref: '/OrderTaker' },
+        makerFee: { type: 'string' },
+        takerFee: { type: 'string' },
         salt: { type: 'string' },
         ecSignature: { $ref: '/SignatureData' },
         expirationUnixTimestampSec: { type: 'string' },
@@ -13,6 +15,8 @@ export const orderSchema = {
     required: [
         'maker',
         'taker',
+        'makerFee',
+        'takerFee',
         'salt',
         'ecSignature',
         'expirationUnixTimestampSec',

@@ -75,6 +75,8 @@ export const utils = {
         const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
         const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
+            makerFee: makerFee.toString(),
+            takerFee: takerFee.toString(),
             maker: {
                 address: orderMakerAddress,
                 token: {
@@ -84,7 +86,6 @@ export const utils = {
                     address: makerToken.address,
                 },
                 amount: sideToAssetToken[Side.Deposit].amount.toString(),
-                feeAmount: makerFee.toString(),
             },
             taker: {
                 address: orderTakerAddress,
@@ -95,7 +96,6 @@ export const utils = {
                     address: takerToken.address,
                 },
                 amount: sideToAssetToken[Side.Receive].amount.toString(),
-                feeAmount: takerFee.toString(),
             },
             expirationUnixTimestampSec: expirationUnixTimestampSec.toString(),
             feeRecipient,

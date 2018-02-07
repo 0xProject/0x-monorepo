@@ -4,8 +4,7 @@ export const orderTakerSchema = {
         address: { type: 'string' },
         token: { $ref: '/Token' },
         amount: { type: 'string' },
-        feeAmount: { type: 'string' },
     },
-    required: ['address', 'token', 'amount', 'feeAmount'],
+    required: ['address', 'token', 'amount'],
     type: 'object',
 };
