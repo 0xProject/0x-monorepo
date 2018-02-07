@@ -1,8 +1,12 @@
 export const orderSchema = {
     id: '/Order',
     properties: {
-        maker: { $ref: '/OrderTaker' },
-        taker: { $ref: '/OrderTaker' },
+        maker: { type: 'string' },
+        taker: { type: 'string' },
+        makerTokenAddress: { type: 'string' },
+        takerTokenAddress: { type: 'string' },
+        makerToken: { $ref: '/Token' },
+        takerToken: { $ref: '/Token' },
         makerFee: { type: 'string' },
         takerFee: { type: 'string' },
         makerTokenAmount: { type: 'string' },
@@ -17,6 +21,10 @@ export const orderSchema = {
     required: [
         'maker',
         'taker',
+        'makerTokenAddress',
+        'takerTokenAddress',
+        'makerToken',
+        'takerToken',
         'makerFee',
         'takerFee',
         'makerTokenAmount',
