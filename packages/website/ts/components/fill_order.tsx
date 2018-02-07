@@ -184,8 +184,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     private _renderVisualOrder() {
         const takerTokenAddress = this.state.parsedOrder.taker.token.address;
         const takerToken = this.props.tokenByAddress[takerTokenAddress];
-        const orderTakerAmount = new BigNumber(this.state.parsedOrder.taker.amount);
-        const orderMakerAmount = new BigNumber(this.state.parsedOrder.maker.amount);
+        const orderTakerAmount = new BigNumber(this.state.parsedOrder.takerTokenAmount);
+        const orderMakerAmount = new BigNumber(this.state.parsedOrder.makerTokenAmount);
         const takerAssetToken = {
             amount: orderTakerAmount.minus(this.state.unavailableTakerAmount),
             symbol: takerToken.symbol,
@@ -414,8 +414,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             parsedOrder = order;
 
             const exchangeContractAddr = this.props.blockchain.getExchangeContractAddressIfExists();
-            const makerAmount = new BigNumber(parsedOrder.maker.amount);
-            const takerAmount = new BigNumber(parsedOrder.taker.amount);
+            const makerAmount = new BigNumber(parsedOrder.makerTokenAmount);
+            const takerAmount = new BigNumber(parsedOrder.takerTokenAmount);
             const expiration = new BigNumber(parsedOrder.expirationUnixTimestampSec);
             const salt = new BigNumber(parsedOrder.salt);
             const parsedMakerFee = new BigNumber(parsedOrder.makerFee);
@@ -534,8 +534,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             parsedOrder.taker.address,
             parsedOrder.maker.token.address,
             parsedOrder.taker.token.address,
-            new BigNumber(parsedOrder.maker.amount),
-            new BigNumber(parsedOrder.taker.amount),
+            new BigNumber(parsedOrder.makerTokenAmount),
+            new BigNumber(parsedOrder.takerTokenAmount),
             new BigNumber(parsedOrder.makerFee),
             new BigNumber(parsedOrder.takerFee),
             new BigNumber(this.state.parsedOrder.expirationUnixTimestampSec),
@@ -572,7 +572,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 category: 'Portal',
                 action: 'Fill Order Success',
                 label: eventLabel,
-                value: parsedOrder.taker.amount,
+                value: parsedOrder.takerTokenAmount,
             });
             // After fill completes, let's force fetch the token balances
             this.props.dispatcher.forceTokenStateRefetch();
@@ -591,7 +591,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 category: 'Portal',
                 action: 'Fill Order Failure',
                 label: eventLabel,
-                value: parsedOrder.taker.amount,
+                value: parsedOrder.takerTokenAmount,
             });
             const errMsg = `${err}`;
             if (utils.didUserDenyWeb3Request(errMsg)) {
@@ -630,14 +630,14 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         }
         let globalErrMsg = '';
 
-        const takerTokenAmount = new BigNumber(parsedOrder.taker.amount);
+        const takerTokenAmount = new BigNumber(parsedOrder.takerTokenAmount);
 
         const signedOrder = this.props.blockchain.portalOrderToSignedOrder(
             parsedOrder.maker.address,
             parsedOrder.taker.address,
             parsedOrder.maker.token.address,
             parsedOrder.taker.token.address,
-            new BigNumber(parsedOrder.maker.amount),
+            new BigNumber(parsedOrder.makerTokenAmount),
             takerTokenAmount,
             new BigNumber(parsedOrder.makerFee),
             new BigNumber(parsedOrder.takerFee),
@@ -674,7 +674,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 category: 'Portal',
                 action: 'Cancel Order Success',
                 label: eventLabel,
-                value: parsedOrder.maker.amount,
+                value: parsedOrder.makerTokenAmount,
             });
             return;
         } catch (err) {
@@ -689,7 +689,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 category: 'Portal',
                 action: 'Cancel Order Failure',
                 label: eventLabel,
-                value: parsedOrder.maker.amount,
+                value: parsedOrder.makerTokenAmount,
             });
             globalErrMsg = 'Failed to cancel order, please refresh and try again';
             utils.consoleLog(`${err}`);

@@ -83,7 +83,6 @@ export interface Order {
 export interface SerializedOrderParty {
     address: string;
     token: OrderToken;
-    amount: string;
 }
 
 export interface SerializedOrder {
@@ -91,6 +90,8 @@ export interface SerializedOrder {
     taker: SerializedOrderParty;
     makerFee: string;
     takerFee: string;
+    makerTokenAmount: string;
+    takerTokenAmount: string;
     expirationUnixTimestampSec: string;
     feeRecipient: string;
     salt: string;
