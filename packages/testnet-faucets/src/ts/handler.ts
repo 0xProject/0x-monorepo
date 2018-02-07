@@ -104,7 +104,11 @@ export class Handler {
                 break;
             case RequestedAssetType.WETH:
             case RequestedAssetType.ZRX:
-                dispenserTask = dispenseAssetTasks.dispenseTokenTask(recipient, requestedAssetType, networkConfig.zeroEx);
+                dispenserTask = dispenseAssetTasks.dispenseTokenTask(
+                    recipient,
+                    requestedAssetType,
+                    networkConfig.zeroEx,
+                );
                 break;
             default:
                 throw new Error(`Unsupported asset type: ${requestedAssetType}`);
