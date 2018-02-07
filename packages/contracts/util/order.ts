@@ -4,6 +4,7 @@ import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 import { crypto } from './crypto';
+import { SignedOrder } from './signed_order';
 import { OrderParams } from './types';
 
 export class Order {
@@ -13,76 +14,17 @@ export class Order {
         this.params = params;
         this._web3Wrapper = web3Wrapper;
     }
-    public isValidSignature() {
-        const { v, r, s } = this.params;
-        if (_.isUndefined(v) || _.isUndefined(r) || _.isUndefined(s)) {
-            throw new Error('Cannot call isValidSignature on unsigned order');
-        }
-        const orderHash = this.getOrderHashHex();
-        const msgHash = ethUtil.hashPersonalMessage(ethUtil.toBuffer(orderHash));
-        try {
-            const pubKey = ethUtil.ecrecover(msgHash, v, ethUtil.toBuffer(r), ethUtil.toBuffer(s));
-            const recoveredAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
-            return recoveredAddress === this.params.maker;
-        } catch (err) {
-            return false;
-        }
-    }
-    public async signAsync() {
+    public async signAsync(): Promise<SignedOrder> {
         const orderHash = this.getOrderHashHex();
         const signature = await this._web3Wrapper.signTransactionAsync(this.params.maker, orderHash);
         const { v, r, s } = ethUtil.fromRpcSig(signature);
-        this.params = _.assign(this.params, {
+        const signedOrderParams = _.assign(this.params, {
             v,
             r: ethUtil.bufferToHex(r),
             s: ethUtil.bufferToHex(s),
         });
-    }
-    public createFill(shouldThrowOnInsufficientBalanceOrAllowance?: boolean, fillTakerTokenAmount?: BigNumber) {
-        const fill = {
-            orderAddresses: [
-                this.params.maker,
-                this.params.taker,
-                this.params.makerToken,
-                this.params.takerToken,
-                this.params.feeRecipient,
-            ],
-            orderValues: [
-                this.params.makerTokenAmount,
-                this.params.takerTokenAmount,
-                this.params.makerFee,
-                this.params.takerFee,
-                this.params.expirationTimestampInSec,
-                this.params.salt,
-            ],
-            fillTakerTokenAmount: fillTakerTokenAmount || this.params.takerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance: !!shouldThrowOnInsufficientBalanceOrAllowance,
-            v: this.params.v,
-            r: this.params.r,
-            s: this.params.s,
-        };
-        return fill;
-    }
-    public createCancel(cancelTakerTokenAmount?: BigNumber) {
-        const cancel = {
-            orderAddresses: [
-                this.params.maker,
-                this.params.taker,
-                this.params.makerToken,
-                this.params.takerToken,
-                this.params.feeRecipient,
-            ],
-            orderValues: [
-                this.params.makerTokenAmount,
-                this.params.takerTokenAmount,
-                this.params.makerFee,
-                this.params.takerFee,
-                this.params.expirationTimestampInSec,
-                this.params.salt,
-            ],
-            cancelTakerTokenAmount: cancelTakerTokenAmount || this.params.takerTokenAmount,
-        };
-        return cancel;
+        const signedOrder = new SignedOrder(this._web3Wrapper, signedOrderParams);
+        return signedOrder;
     }
     public getOrderHashHex(): string {
         const orderHash = crypto.solSHA3([

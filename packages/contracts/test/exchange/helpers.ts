@@ -10,6 +10,7 @@ import { constants } from '../../util/constants';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { Order } from '../../util/order';
 import { OrderFactory } from '../../util/order_factory';
+import { SignedOrder } from '../../util/signed_order';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
@@ -25,7 +26,7 @@ describe('Exchange', () => {
     let maker: string;
     let feeRecipient: string;
 
-    let order: Order;
+    let signedOrder: SignedOrder;
     let exchangeWrapper: ExchangeWrapper;
     let orderFactory: OrderFactory;
 
@@ -59,7 +60,7 @@ describe('Exchange', () => {
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
         orderFactory = new OrderFactory(web3Wrapper, defaultOrderParams);
-        order = await orderFactory.newSignedOrderAsync();
+        signedOrder = await orderFactory.newSignedOrderAsync();
     });
 
     beforeEach(async () => {
@@ -70,28 +71,28 @@ describe('Exchange', () => {
     });
     describe('getOrderHash', () => {
         it('should output the correct orderHash', async () => {
-            const orderHashHex = await exchangeWrapper.getOrderHashAsync(order);
-            expect(order.getOrderHashHex()).to.be.equal(orderHashHex);
+            const orderHashHex = await exchangeWrapper.getOrderHashAsync(signedOrder);
+            expect(signedOrder.getOrderHashHex()).to.be.equal(orderHashHex);
         });
     });
 
     describe('isValidSignature', () => {
         beforeEach(async () => {
-            order = await orderFactory.newSignedOrderAsync();
+            signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
         it('should return true with a valid signature', async () => {
-            const success = await exchangeWrapper.isValidSignatureAsync(order);
-            const isValidSignature = order.isValidSignature();
+            const success = await exchangeWrapper.isValidSignatureAsync(signedOrder);
+            const isValidSignature = signedOrder.isValidSignature();
             expect(isValidSignature).to.be.true();
             expect(success).to.be.true();
         });
 
         it('should return false with an invalid signature', async () => {
-            order.params.r = ethUtil.bufferToHex(ethUtil.sha3('invalidR'));
-            order.params.s = ethUtil.bufferToHex(ethUtil.sha3('invalidS'));
-            const success = await exchangeWrapper.isValidSignatureAsync(order);
-            expect(order.isValidSignature()).to.be.false();
+            signedOrder.params.r = ethUtil.bufferToHex(ethUtil.sha3('invalidR'));
+            signedOrder.params.s = ethUtil.bufferToHex(ethUtil.sha3('invalidS'));
+            const success = await exchangeWrapper.isValidSignatureAsync(signedOrder);
+            expect(signedOrder.isValidSignature()).to.be.false();
             expect(success).to.be.false();
         });
     });

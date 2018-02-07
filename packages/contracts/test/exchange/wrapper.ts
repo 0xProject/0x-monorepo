@@ -15,6 +15,7 @@ import { constants } from '../../util/constants';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { Order } from '../../util/order';
 import { OrderFactory } from '../../util/order_factory';
+import { SignedOrder } from '../../util/signed_order';
 import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
@@ -173,7 +174,7 @@ describe('Exchange', () => {
     });
 
     describe('batch functions', () => {
-        let orders: Order[];
+        let orders: SignedOrder[];
         beforeEach(async () => {
             orders = await Promise.all([
                 orderFactory.newSignedOrderAsync(),

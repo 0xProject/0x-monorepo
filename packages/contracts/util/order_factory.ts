@@ -4,6 +4,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { Order } from './order';
+import { SignedOrder } from './signed_order';
 import { DefaultOrderParams, OptionalOrderParams, OrderParams } from './types';
 
 export class OrderFactory {
@@ -13,7 +14,7 @@ export class OrderFactory {
         this._defaultOrderParams = defaultOrderParams;
         this._web3Wrapper = web3Wrapper;
     }
-    public async newSignedOrderAsync(customOrderParams: OptionalOrderParams = {}): Promise<Order> {
+    public async newSignedOrderAsync(customOrderParams: OptionalOrderParams = {}): Promise<SignedOrder> {
         const randomExpiration = new BigNumber(Math.floor((Date.now() + Math.random() * 100000000000) / 1000));
         const orderParams: OrderParams = _.assign(
             {},
@@ -26,7 +27,7 @@ export class OrderFactory {
             customOrderParams,
         );
         const order = new Order(this._web3Wrapper, orderParams);
-        await order.signAsync();
-        return order;
+        const signedOrder = await order.signAsync();
+        return signedOrder;
     }
 }

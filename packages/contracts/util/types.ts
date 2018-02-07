@@ -76,9 +76,12 @@ export interface OrderParams {
     takerFee: BigNumber;
     expirationTimestampInSec: BigNumber;
     salt: BigNumber;
-    v?: number;
-    r?: string;
-    s?: string;
+}
+
+export interface SignedOrderParams extends OrderParams {
+    v: number;
+    r: string;
+    s: string;
 }
 
 export interface TransactionDataParams {

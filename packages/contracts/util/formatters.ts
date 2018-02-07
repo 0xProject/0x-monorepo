@@ -1,12 +1,12 @@
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { Order } from './order';
+import { SignedOrder } from './signed_order';
 import { BatchCancelOrders, BatchFillOrders, FillOrdersUpTo } from './types';
 
 export const formatters = {
     createBatchFill(
-        orders: Order[],
+        orders: SignedOrder[],
         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
         fillTakerTokenAmounts: BigNumber[] = [],
     ) {
@@ -35,9 +35,9 @@ export const formatters = {
                 order.params.expirationTimestampInSec,
                 order.params.salt,
             ]);
-            batchFill.v.push(order.params.v as number);
-            batchFill.r.push(order.params.r as string);
-            batchFill.s.push(order.params.s as string);
+            batchFill.v.push(order.params.v);
+            batchFill.r.push(order.params.r);
+            batchFill.s.push(order.params.s);
             if (fillTakerTokenAmounts.length < orders.length) {
                 batchFill.fillTakerTokenAmounts.push(order.params.takerTokenAmount);
             }
@@ -45,7 +45,7 @@ export const formatters = {
         return batchFill;
     },
     createFillUpTo(
-        orders: Order[],
+        orders: SignedOrder[],
         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
         fillTakerTokenAmount: BigNumber,
     ) {
@@ -74,13 +74,13 @@ export const formatters = {
                 order.params.expirationTimestampInSec,
                 order.params.salt,
             ]);
-            fillUpTo.v.push(order.params.v as number);
-            fillUpTo.r.push(order.params.r as string);
-            fillUpTo.s.push(order.params.s as string);
+            fillUpTo.v.push(order.params.v);
+            fillUpTo.r.push(order.params.r);
+            fillUpTo.s.push(order.params.s);
         });
         return fillUpTo;
     },
-    createBatchCancel(orders: Order[], cancelTakerTokenAmounts: BigNumber[] = []) {
+    createBatchCancel(orders: SignedOrder[], cancelTakerTokenAmounts: BigNumber[] = []) {
         const batchCancel: BatchCancelOrders = {
             orderAddresses: [],
             orderValues: [],
