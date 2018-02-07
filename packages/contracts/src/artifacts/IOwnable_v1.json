@@ -1,0 +1,42 @@
+{
+    "contract_name": "IOwnable_v1",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.19",
+            "keccak256": "0x9f7631f32c92c5d4b62ab21d9e6ea779f1bd524c68ab67f870e7395a2ea9ce70",
+            "optimizer_enabled": 0,
+            "abi": [
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "owner",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "newOwner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "transferOwnership",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ],
+            "unlinked_binary": "0x",
+            "updated_at": 1518044180915
+        }
+    }
+}
