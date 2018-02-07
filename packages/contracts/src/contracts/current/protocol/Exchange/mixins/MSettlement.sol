@@ -21,20 +21,17 @@ pragma solidity ^0.4.19;
 import "../LibOrder.sol";
 
 contract MSettlement is LibOrder {
-
-    /// @dev Transfers a token using TokenTransferProxy transferFrom function.
-    /// @param token Address of token to transferFrom.
-    /// @param from Address transfering token.
-    /// @param to Address receiving token.
-    /// @param value Amount of token to transfer.
-    /// @return Success of token transfer.
-    function transferViaTokenTransferProxy(
-        address token,
-        address from,
-        address to,
-        uint value)
+  
+    function settleOrder(
+        Order order,
+        address taker,
+        uint filledTakerTokenAmount)
         internal
-        returns (bool);
+        returns (
+            uint filledMakerTokenAmount,
+            uint paidMakerFee,
+            uint paidTakerFee
+        );
 
     /// @dev Checks if any order transfers will fail.
     /// @param order Order struct of params that will be checked.
