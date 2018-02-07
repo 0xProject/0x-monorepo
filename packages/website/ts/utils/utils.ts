@@ -282,4 +282,15 @@ export const utils = {
     isTestRpc(nodeVersion: string): boolean {
         return _.includes(nodeVersion, 'TestRPC');
     },
+    isTestNetwork(networkId: number): boolean {
+        const isTestNetwork = _.includes(
+            [
+                constants.NETWORK_ID_BY_NAME[Networks.Kovan],
+                constants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
+                constants.NETWORK_ID_BY_NAME[Networks.Ropsten],
+            ],
+            networkId,
+        );
+        return isTestNetwork;
+    },
 };

@@ -176,14 +176,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 onTouchTap={this._onDharmaDialogToggle.bind(this, false)}
             />,
         ];
-        const isTestNetwork = _.includes(
-            [
-                constants.NETWORK_ID_BY_NAME[Networks.Kovan],
-                constants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
-                constants.NETWORK_ID_BY_NAME[Networks.Ropsten],
-            ],
-            this.props.networkId,
-        );
+        const isTestNetwork = utils.isTestNetwork(this.props.networkId);
         const isKovanTestNetwork = this.props.networkId === constants.NETWORK_ID_KOVAN;
         const dharmaButtonColumnStyle = {
             paddingLeft: 3,
@@ -426,7 +419,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                         />
                     )}
                     {token.symbol === ZRX_TOKEN_SYMBOL &&
-                        this.props.networkId === constants.NETWORK_ID_KOVAN && (
+                        utils.isTestNetwork(this.props.networkId) && (
                             <LifeCycleRaisedButton
                                 labelReady="Request"
                                 labelLoading="Sending..."
