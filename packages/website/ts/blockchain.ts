@@ -37,10 +37,10 @@ import {
     EtherscanLinkSuffixes,
     ProviderType,
     Side,
+    SideToAssetToken,
     SignatureData,
     Token,
     TokenByAddress,
-    TokenStateByAddress,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -54,6 +54,7 @@ import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
 const BLOCK_NUMBER_BACK_TRACK = 50;
+const GWEI_IN_WEI = 1000000000;
 
 export class Blockchain {
     public networkId: number;
@@ -64,8 +65,9 @@ export class Blockchain {
     private _exchangeAddress: string;
     private _userAddress: string;
     private _cachedProvider: Web3.Provider;
+    private _cachedProviderNetworkId: number;
     private _ledgerSubprovider: LedgerWalletSubprovider;
-    private _zrxPollIntervalId: NodeJS.Timer;
+    private _defaultGasPrice: BigNumber;
     private static async _onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
             return; // Already loaded
@@ -98,7 +100,7 @@ export class Blockchain {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
             provider = new ProviderEngine();
-            provider.addProvider(new InjectedWeb3Subprovider(injectedWeb3));
+            provider.addProvider(new InjectedWeb3Subprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
             provider.addProvider(new RedundantRPCSubprovider(publicNodeUrlsIfExistsForNetworkId));
             provider.start();
@@ -111,7 +113,7 @@ export class Blockchain {
             // injected into their browser.
             provider = new ProviderEngine();
             provider.addProvider(new FilterSubprovider());
-            const networkId = configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_TESTNET;
+            const networkId = configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_KOVAN;
             provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
             provider.start();
         }
@@ -121,6 +123,10 @@ export class Blockchain {
     constructor(dispatcher: Dispatcher, isSalePage: boolean = false) {
         this._dispatcher = dispatcher;
         this._userAddress = '';
+        const defaultGasPrice = GWEI_IN_WEI * 30;
+        this._defaultGasPrice = new BigNumber(defaultGasPrice);
+        // tslint:disable-next-line:no-floating-promises
+        this._updateDefaultGasPriceAsync();
         // tslint:disable-next-line:no-floating-promises
         this._onPageLoadInitFireAndForgetAsync();
     }
@@ -133,14 +139,14 @@ export class Blockchain {
         } else if (this.networkId !== newNetworkId) {
             this.networkId = newNetworkId;
             this._dispatcher.encounteredBlockchainError(BlockchainErrs.NoError);
-            await this._fetchTokenInformationAsync();
+            await this.fetchTokenInformationAsync();
             await this._rehydrateStoreWithContractEvents();
         }
     }
     public async userAddressUpdatedFireAndForgetAsync(newUserAddress: string) {
         if (this._userAddress !== newUserAddress) {
             this._userAddress = newUserAddress;
-            await this._fetchTokenInformationAsync();
+            await this.fetchTokenInformationAsync();
             await this._rehydrateStoreWithContractEvents();
         }
     }
@@ -180,84 +186,96 @@ export class Blockchain {
         }
         this._ledgerSubprovider.setPathIndex(pathIndex);
     }
-    public async providerTypeUpdatedFireAndForgetAsync(providerType: ProviderType) {
+    public async updateProviderToLedgerAsync(networkId: number) {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
-        // Should actually be Web3.Provider|ProviderEngine union type but it causes issues
-        // later on in the logic.
-        let provider;
-        switch (providerType) {
-            case ProviderType.Ledger: {
-                const isU2FSupported = await utils.isU2FSupportedAsync();
-                if (!isU2FSupported) {
-                    throw new Error('Cannot update providerType to LEDGER without U2F support');
-                }
 
-                // Cache injected provider so that we can switch the user back to it easily
-                this._cachedProvider = this._web3Wrapper.getProviderObj();
-
-                this._dispatcher.updateUserAddress(''); // Clear old userAddress
-
-                provider = new ProviderEngine();
-                const ledgerWalletConfigs = {
-                    networkId: this.networkId,
-                    ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
-                };
-                this._ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
-                provider.addProvider(this._ledgerSubprovider);
-                provider.addProvider(new FilterSubprovider());
-                const networkId = configs.IS_MAINNET_ENABLED
-                    ? constants.NETWORK_ID_MAINNET
-                    : constants.NETWORK_ID_TESTNET;
-                provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
-                provider.start();
-                this._web3Wrapper.destroy();
-                const shouldPollUserAddress = false;
-                this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
-                this._zeroEx.setProvider(provider, networkId);
-                await this._postInstantiationOrUpdatingProviderZeroExAsync();
-                break;
-            }
-
-            case ProviderType.Injected: {
-                if (_.isUndefined(this._cachedProvider)) {
-                    return; // Going from injected to injected, so we noop
-                }
-                provider = this._cachedProvider;
-                const shouldPollUserAddress = true;
-                this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
-                this._zeroEx.setProvider(provider, this.networkId);
-                await this._postInstantiationOrUpdatingProviderZeroExAsync();
-                delete this._ledgerSubprovider;
-                delete this._cachedProvider;
-                break;
-            }
-
-            default:
-                throw utils.spawnSwitchErr('providerType', providerType);
+        const isU2FSupported = await utils.isU2FSupportedAsync();
+        if (!isU2FSupported) {
+            throw new Error('Cannot update providerType to LEDGER without U2F support');
         }
 
-        await this._fetchTokenInformationAsync();
+        // Cache injected provider so that we can switch the user back to it easily
+        if (_.isUndefined(this._cachedProvider)) {
+            this._cachedProvider = this._web3Wrapper.getProviderObj();
+            this._cachedProviderNetworkId = this.networkId;
+        }
+
+        this._web3Wrapper.destroy();
+
+        this._userAddress = '';
+        this._dispatcher.updateUserAddress(''); // Clear old userAddress
+
+        const provider = new ProviderEngine();
+        const ledgerWalletConfigs = {
+            networkId,
+            ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
+        };
+        this._ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
+        provider.addProvider(this._ledgerSubprovider);
+        provider.addProvider(new FilterSubprovider());
+        provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
+        provider.start();
+        this.networkId = networkId;
+        this._dispatcher.updateNetworkId(this.networkId);
+        const shouldPollUserAddress = false;
+        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
+        this._zeroEx.setProvider(provider, this.networkId);
+        await this._postInstantiationOrUpdatingProviderZeroExAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
+        this._dispatcher.updateProviderType(ProviderType.Ledger);
+    }
+    public async updateProviderToInjectedAsync() {
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+
+        if (_.isUndefined(this._cachedProvider)) {
+            return; // Going from injected to injected, so we noop
+        }
+
+        this._web3Wrapper.destroy();
+
+        const provider = this._cachedProvider;
+        this.networkId = this._cachedProviderNetworkId;
+
+        const shouldPollUserAddress = true;
+        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
+
+        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
+
+        this._zeroEx.setProvider(provider, this.networkId);
+        await this._postInstantiationOrUpdatingProviderZeroExAsync();
+
+        await this.fetchTokenInformationAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
+        this._dispatcher.updateProviderType(ProviderType.Injected);
+        delete this._ledgerSubprovider;
+        delete this._cachedProvider;
     }
     public async setProxyAllowanceAsync(token: Token, amountInBaseUnits: BigNumber): Promise<void> {
         utils.assert(this.isValidAddress(token.address), BlockchainCallErrs.TokenAddressIsInvalid);
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
 
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.token.setProxyAllowanceAsync(
             token.address,
             this._userAddress,
             amountInBaseUnits,
+            {
+                gasPrice: this._defaultGasPrice,
+            },
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
-        const allowance = amountInBaseUnits;
-        this._dispatcher.replaceTokenAllowanceByAddress(token.address, allowance);
     }
     public async transferAsync(token: Token, toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.token.transferAsync(
             token.address,
             this._userAddress,
             toAddress,
             amountInBaseUnits,
+            {
+                gasPrice: this._defaultGasPrice,
+            },
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
@@ -309,11 +327,15 @@ export class Blockchain {
 
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
 
+        this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.exchange.fillOrderAsync(
             signedOrder,
             fillTakerTokenAmount,
             shouldThrowOnInsufficientBalanceOrAllowance,
             this._userAddress,
+            {
+                gasPrice: this._defaultGasPrice,
+            },
         );
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
@@ -324,7 +346,10 @@ export class Blockchain {
         return filledTakerTokenAmount;
     }
     public async cancelOrderAsync(signedOrder: SignedOrder, cancelTakerTokenAmount: BigNumber): Promise<BigNumber> {
-        const txHash = await this._zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerTokenAmount);
+        this._showFlashMessageIfLedger();
+        const txHash = await this._zeroEx.exchange.cancelOrderAsync(signedOrder, cancelTakerTokenAmount, {
+            gasPrice: this._defaultGasPrice,
+        });
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
         this._zeroEx.exchange.throwLogErrorsAsErrors(logs);
@@ -368,22 +393,25 @@ export class Blockchain {
 
         const [currBalance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
 
-        this._zrxPollIntervalId = intervalUtils.setAsyncExcludingInterval(
-            async () => {
-                const [balance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
-                if (!balance.eq(currBalance)) {
-                    this._dispatcher.replaceTokenBalanceByAddress(token.address, balance);
-                    intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
-                    delete this._zrxPollIntervalId;
-                }
-            },
-            5000,
-            (err: Error) => {
-                utils.consoleLog(`Polling tokenBalance failed: ${err}`);
-                intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
-                delete this._zrxPollIntervalId;
-            },
-        );
+        const newTokenBalancePromise = new Promise((resolve: (balance: BigNumber) => void, reject) => {
+            const tokenPollInterval = intervalUtils.setAsyncExcludingInterval(
+                async () => {
+                    const [balance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
+                    if (!balance.eq(currBalance)) {
+                        intervalUtils.clearAsyncExcludingInterval(tokenPollInterval);
+                        resolve(balance);
+                    }
+                },
+                5000,
+                (err: Error) => {
+                    utils.consoleLog(`Polling tokenBalance failed: ${err}`);
+                    intervalUtils.clearAsyncExcludingInterval(tokenPollInterval);
+                    reject(err);
+                },
+            );
+        });
+
+        return newTokenBalancePromise;
     }
     public async signOrderHashAsync(orderHash: string): Promise<SignatureData> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
@@ -393,7 +421,21 @@ export class Blockchain {
         if (_.isUndefined(makerAddress)) {
             throw new Error('Tried to send a sign request but user has no associated addresses');
         }
-        const ecSignature = await this._zeroEx.signOrderHashAsync(orderHash, makerAddress);
+
+        this._showFlashMessageIfLedger();
+        const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
+        const isParityNode = utils.isParityNode(nodeVersion);
+        const isTestRpc = utils.isTestRpc(nodeVersion);
+        const isLedgerSigner = !_.isUndefined(this._ledgerSubprovider);
+        let shouldAddPersonalMessagePrefix = true;
+        if ((isParityNode && !isLedgerSigner) || isTestRpc || isLedgerSigner) {
+            shouldAddPersonalMessagePrefix = false;
+        }
+        const ecSignature = await this._zeroEx.signOrderHashAsync(
+            orderHash,
+            makerAddress,
+            shouldAddPersonalMessagePrefix,
+        );
         const signatureData = _.extend({}, ecSignature, {
             hash: orderHash,
         });
@@ -404,11 +446,11 @@ export class Blockchain {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         const mintableContract = await this._instantiateContractIfExistsAsync(MintableArtifacts, token.address);
+        this._showFlashMessageIfLedger();
         await mintableContract.mint(constants.MINT_AMOUNT, {
             from: this._userAddress,
+            gasPrice: this._defaultGasPrice,
         });
-        const balanceDelta = constants.MINT_AMOUNT;
-        this._dispatcher.updateTokenBalanceByAddress(token.address, balanceDelta);
     }
     public async getBalanceInEthAsync(owner: string): Promise<BigNumber> {
         const balance = await this._web3Wrapper.getBalanceInEthAsync(owner);
@@ -418,14 +460,20 @@ export class Blockchain {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const txHash = await this._zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this._userAddress);
+        this._showFlashMessageIfLedger();
+        const txHash = await this._zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this._userAddress, {
+            gasPrice: this._defaultGasPrice,
+        });
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async convertWrappedEthTokensToEthAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const txHash = await this._zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this._userAddress);
+        this._showFlashMessageIfLedger();
+        const txHash = await this._zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this._userAddress, {
+            gasPrice: this._defaultGasPrice,
+        });
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async doesContractExistAtAddressAsync(address: string) {
@@ -451,22 +499,6 @@ export class Blockchain {
         }
         return [balance, allowance];
     }
-    public async updateTokenBalancesAndAllowancesAsync(tokens: Token[]) {
-        const tokenStateByAddress: TokenStateByAddress = {};
-        for (const token of tokens) {
-            let balance = new BigNumber(0);
-            let allowance = new BigNumber(0);
-            if (this._doesUserAddressExist()) {
-                [balance, allowance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
-            }
-            const tokenState = {
-                balance,
-                allowance,
-            };
-            tokenStateByAddress[token.address] = tokenState;
-        }
-        this._dispatcher.updateTokenStateByAddress(tokenStateByAddress);
-    }
     public async getUserAccountsAsync() {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         const userAccountsIfExists = await this._zeroEx.getAvailableAddressesAsync();
@@ -479,9 +511,58 @@ export class Blockchain {
         this._web3Wrapper.updatePrevUserAddress(newUserAddress);
     }
     public destroy() {
-        intervalUtils.clearAsyncExcludingInterval(this._zrxPollIntervalId);
         this._web3Wrapper.destroy();
         this._stopWatchingExchangeLogFillEvents();
+    }
+    public async fetchTokenInformationAsync() {
+        utils.assert(
+            !_.isUndefined(this.networkId),
+            'Cannot call fetchTokenInformationAsync if disconnected from Ethereum node',
+        );
+
+        this._dispatcher.updateBlockchainIsLoaded(false);
+
+        const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
+
+        const trackedTokensByAddress = trackedTokenStorage.getTrackedTokensByAddress(this._userAddress, this.networkId);
+        const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
+        if (_.isEmpty(trackedTokensByAddress)) {
+            _.each(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
+                const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
+                token.isTracked = true;
+                trackedTokensByAddress[token.address] = token;
+            });
+            _.each(trackedTokensByAddress, (token: Token, address: string) => {
+                trackedTokenStorage.addTrackedTokenToUser(this._userAddress, this.networkId, token);
+            });
+        } else {
+            // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
+            _.each(trackedTokensByAddress, (trackedToken: Token, address: string) => {
+                if (!_.isUndefined(tokenRegistryTokensByAddress[address])) {
+                    tokenRegistryTokensByAddress[address].isTracked = true;
+                }
+            });
+        }
+        const allTokensByAddress = {
+            ...tokenRegistryTokensByAddress,
+            ...trackedTokensByAddress,
+        };
+        const allTokens = _.values(allTokensByAddress);
+        const mostPopularTradingPairTokens: Token[] = [
+            _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0] }),
+            _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[1] }),
+        ];
+        const sideToAssetToken: SideToAssetToken = {
+            [Side.Deposit]: {
+                address: mostPopularTradingPairTokens[0].address,
+            },
+            [Side.Receive]: {
+                address: mostPopularTradingPairTokens[1].address,
+            },
+        };
+        this._dispatcher.batchDispatch(allTokensByAddress, this.networkId, this._userAddress, sideToAssetToken);
+
+        this._dispatcher.updateBlockchainIsLoaded(true);
     }
     private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string,
@@ -608,7 +689,7 @@ export class Blockchain {
         }
     }
     private _stopWatchingExchangeLogFillEvents(): void {
-        this._zeroEx.exchange.unsubscribeAll();
+        this._zeroEx.exchange._unsubscribeAll();
     }
     private async _getTokenRegistryTokensByAddressAsync(): Promise<TokenByAddress> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
@@ -665,17 +746,23 @@ export class Blockchain {
         }
 
         const provider = await Blockchain._getProviderAsync(injectedWeb3, networkIdIfExists);
-        const networkId = !_.isUndefined(networkIdIfExists)
+        this.networkId = !_.isUndefined(networkIdIfExists)
             ? networkIdIfExists
-            : configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_TESTNET;
+            : configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_KOVAN;
+        this._dispatcher.updateNetworkId(this.networkId);
         const zeroExConfigs = {
-            networkId,
+            networkId: this.networkId,
         };
         this._zeroEx = new ZeroEx(provider, zeroExConfigs);
         this._updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
-        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, networkId, shouldPollUserAddress);
+        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
         await this._postInstantiationOrUpdatingProviderZeroExAsync();
+        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
+        this._dispatcher.updateUserAddress(this._userAddress);
+        await this.fetchTokenInformationAsync();
+        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
+        await this._rehydrateStoreWithContractEvents();
     }
     // This method should always be run after instantiating or updating the provider
     // of the ZeroEx instance.
@@ -689,60 +776,6 @@ export class Blockchain {
             ? Blockchain._getNameGivenProvider(injectedWeb3.currentProvider)
             : constants.PROVIDER_NAME_PUBLIC;
         this._dispatcher.updateInjectedProviderName(providerName);
-    }
-    private async _fetchTokenInformationAsync() {
-        utils.assert(
-            !_.isUndefined(this.networkId),
-            'Cannot call fetchTokenInformationAsync if disconnected from Ethereum node',
-        );
-
-        this._dispatcher.updateBlockchainIsLoaded(false);
-        this._dispatcher.clearTokenByAddress();
-
-        const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
-
-        // HACK: We need to fetch the userAddress here because otherwise we cannot save the
-        // tracked tokens in localStorage under the users address nor fetch the token
-        // balances and allowances and we need to do this in order not to trigger the blockchain
-        // loading dialog to show up twice. First to load the contracts, and second to load the
-        // balances and allowances.
-        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
-        if (!_.isEmpty(this._userAddress)) {
-            this._dispatcher.updateUserAddress(this._userAddress);
-        }
-
-        let trackedTokensIfExists = trackedTokenStorage.getTrackedTokensIfExists(this._userAddress, this.networkId);
-        const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
-        if (_.isUndefined(trackedTokensIfExists)) {
-            trackedTokensIfExists = _.map(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
-                const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
-                token.isTracked = true;
-                return token;
-            });
-            _.each(trackedTokensIfExists, token => {
-                trackedTokenStorage.addTrackedTokenToUser(this._userAddress, this.networkId, token);
-            });
-        } else {
-            // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
-            _.each(trackedTokensIfExists, trackedToken => {
-                if (!_.isUndefined(tokenRegistryTokensByAddress[trackedToken.address])) {
-                    tokenRegistryTokensByAddress[trackedToken.address].isTracked = true;
-                }
-            });
-        }
-        const allTokens = _.uniq([...tokenRegistryTokens, ...trackedTokensIfExists]);
-        this._dispatcher.updateTokenByAddress(allTokens);
-
-        // Get balance/allowance for tracked tokens
-        await this.updateTokenBalancesAndAllowancesAsync(trackedTokensIfExists);
-
-        const mostPopularTradingPairTokens: Token[] = [
-            _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[0] }),
-            _.find(allTokens, { symbol: configs.DEFAULT_TRACKED_TOKEN_SYMBOLS[1] }),
-        ];
-        this._dispatcher.updateChosenAssetTokenAddress(Side.Deposit, mostPopularTradingPairTokens[0].address);
-        this._dispatcher.updateChosenAssetTokenAddress(Side.Receive, mostPopularTradingPairTokens[1].address);
-        this._dispatcher.updateBlockchainIsLoaded(true);
     }
     private async _instantiateContractIfExistsAsync(artifact: any, address?: string): Promise<ContractInstance> {
         const c = await contract(artifact);
@@ -778,5 +811,21 @@ export class Blockchain {
                 throw new Error(BlockchainCallErrs.UnhandledError);
             }
         }
+    }
+    private _showFlashMessageIfLedger() {
+        if (!_.isUndefined(this._ledgerSubprovider)) {
+            this._dispatcher.showFlashMessage('Confirm the transaction on your Ledger Nano S');
+        }
+    }
+    private async _updateDefaultGasPriceAsync() {
+        const endpoint = `${configs.BACKEND_BASE_URL}/eth_gas_station`;
+        const response = await fetch(endpoint);
+        if (response.status !== 200) {
+            return; // noop and we keep hard-coded default
+        }
+        const gasInfo = await response.json();
+        const gasPriceInGwei = new BigNumber(gasInfo.average / 10);
+        const gasPriceInWei = gasPriceInGwei.mul(1000000000);
+        this._defaultGasPrice = gasPriceInWei;
     }
 } // tslint:disable:max-file-line-count

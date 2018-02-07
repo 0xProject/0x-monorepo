@@ -1,35 +1,39 @@
 import { schemas } from '@0xproject/json-schemas';
-import { intervalUtils } from '@0xproject/utils';
+import { BlockParamLiteral, LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { ZeroEx } from '../0x';
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
+import {
+    DepositContractEventArgs,
+    EtherTokenEvents,
+    WithdrawalContractEventArgs,
+} from '../contract_wrappers/generated/ether_token';
+import {
+    ExchangeEvents,
+    LogCancelContractEventArgs,
+    LogFillContractEventArgs,
+} from '../contract_wrappers/generated/exchange';
+import {
+    ApprovalContractEventArgs,
+    TokenEvents,
+    TransferContractEventArgs,
+} from '../contract_wrappers/generated/token';
 import { TokenWrapper } from '../contract_wrappers/token_wrapper';
 import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
 import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
 import {
-    ApprovalContractEventArgs,
-    BlockParamLiteral,
     ContractEventArgs,
-    DepositContractEventArgs,
-    EtherTokenEvents,
     ExchangeContractErrs,
-    ExchangeEvents,
-    LogCancelContractEventArgs,
     LogEvent,
-    LogFillContractEventArgs,
-    LogWithDecodedArgs,
     OnOrderStateChangeCallback,
     OrderState,
     OrderStateWatcherConfig,
     SignedOrder,
-    TokenEvents,
-    TransferContractEventArgs,
-    WithdrawalContractEventArgs,
     ZeroExError,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { assert } from '../utils/assert';
 import { OrderStateUtils } from '../utils/order_state_utils';
 import { utils } from '../utils/utils';
@@ -134,8 +138,12 @@ export class OrderStateWatcher {
         delete this._orderStateByOrderHashCache[orderHash];
         const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
+
         this._removeFromDependentOrderHashes(signedOrder.maker, zrxTokenAddress, orderHash);
-        this._removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
+        if (zrxTokenAddress !== signedOrder.makerTokenAddress) {
+            this._removeFromDependentOrderHashes(signedOrder.maker, signedOrder.makerTokenAddress, orderHash);
+        }
+
         this._expirationWatcher.removeOrder(orderHash);
     }
     /**
@@ -224,12 +232,12 @@ export class OrderStateWatcher {
             return;
         }
         const log = logIfExists as LogEvent; // At this moment we are sure that no error occured and log is defined.
-        const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
-        const isLogDecoded = !_.isUndefined((maybeDecodedLog as LogWithDecodedArgs<any>).event);
+        const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
+        const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
         if (!isLogDecoded) {
             return; // noop
         }
-        const decodedLog = maybeDecodedLog as LogWithDecodedArgs<ContractEventArgs>;
+        const decodedLog = (maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>;
         let makerToken: string;
         let makerAddress: string;
         switch (decodedLog.event) {

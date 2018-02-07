@@ -1,4 +1,4 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -22,11 +22,10 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
-import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('TokenWrapper', () => {
     let web3: Web3;
@@ -378,7 +377,7 @@ describe('TokenWrapper', () => {
             tokenAddress = token.address;
         });
         afterEach(() => {
-            zeroEx.token.unsubscribeAll();
+            zeroEx.token._unsubscribeAll();
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
         // Since we need to await the receipt of the event in the `subscribe` callback,

@@ -1,6 +1,12 @@
-import { TransactionReceipt } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+
+import { BlockParam, BlockParamLiteral, ContractEventArg, LogWithDecodedArgs } from '@0xproject/types';
+
 import * as Web3 from 'web3';
+
+import { EtherTokenContractEventArgs, EtherTokenEvents } from './contract_wrappers/generated/ether_token';
+import { ExchangeContractEventArgs, ExchangeEvents } from './contract_wrappers/generated/exchange';
+import { TokenContractEventArgs, TokenEvents } from './contract_wrappers/generated/token';
 
 export enum ZeroExError {
     ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
@@ -53,13 +59,6 @@ export interface DecodedLogEvent<ArgsType> {
 export type EventCallback<ArgsType> = (err: null | Error, log?: DecodedLogEvent<ArgsType>) => void;
 export type EventWatcherCallback = (err: null | Error, log?: LogEvent) => void;
 
-export enum SolidityTypes {
-    Address = 'address',
-    Uint256 = 'uint256',
-    Uint8 = 'uint8',
-    Uint = 'uint',
-}
-
 export enum ExchangeContractErrCodes {
     ERROR_FILL_EXPIRED, // Order has already expired
     ERROR_FILL_NO_VALUE, // Order has already been fully filled or cancelled
@@ -94,8 +93,6 @@ export enum ExchangeContractErrs {
     BatchOrdersMustHaveAtLeastOneItem = 'BATCH_ORDERS_MUST_HAVE_AT_LEAST_ONE_ITEM',
 }
 
-export type RawLog = Web3.LogEntry;
-
 export interface ContractEvent {
     logIndex: number;
     transactionIndex: number;
@@ -108,62 +105,7 @@ export interface ContractEvent {
     args: ContractEventArgs;
 }
 
-export interface LogFillContractEventArgs {
-    maker: string;
-    taker: string;
-    feeRecipient: string;
-    makerToken: string;
-    takerToken: string;
-    filledMakerTokenAmount: BigNumber;
-    filledTakerTokenAmount: BigNumber;
-    paidMakerFee: BigNumber;
-    paidTakerFee: BigNumber;
-    tokens: string;
-    orderHash: string;
-}
-export interface LogCancelContractEventArgs {
-    maker: string;
-    feeRecipient: string;
-    makerToken: string;
-    takerToken: string;
-    cancelledMakerTokenAmount: BigNumber;
-    cancelledTakerTokenAmount: BigNumber;
-    tokens: string;
-    orderHash: string;
-}
-export interface LogErrorContractEventArgs {
-    errorId: BigNumber;
-    orderHash: string;
-}
-export type ExchangeContractEventArgs =
-    | LogFillContractEventArgs
-    | LogCancelContractEventArgs
-    | LogErrorContractEventArgs;
-export interface TransferContractEventArgs {
-    _from: string;
-    _to: string;
-    _value: BigNumber;
-}
-export interface ApprovalContractEventArgs {
-    _owner: string;
-    _spender: string;
-    _value: BigNumber;
-}
-export interface DepositContractEventArgs {
-    _owner: string;
-    _value: BigNumber;
-}
-export interface WithdrawalContractEventArgs {
-    _owner: string;
-    _value: BigNumber;
-}
-export type TokenContractEventArgs = TransferContractEventArgs | ApprovalContractEventArgs;
-export type EtherTokenContractEventArgs =
-    | TokenContractEventArgs
-    | DepositContractEventArgs
-    | WithdrawalContractEventArgs;
 export type ContractEventArgs = ExchangeContractEventArgs | TokenContractEventArgs | EtherTokenContractEventArgs;
-export type ContractEventArg = string | BigNumber;
 
 export interface Order {
     maker: string;
@@ -205,39 +147,11 @@ export interface TokenAddressBySymbol {
     [symbol: string]: string;
 }
 
-export enum ExchangeEvents {
-    LogFill = 'LogFill',
-    LogCancel = 'LogCancel',
-    LogError = 'LogError',
-}
-
-export enum TokenEvents {
-    Transfer = 'Transfer',
-    Approval = 'Approval',
-}
-
-export enum EtherTokenEvents {
-    Transfer = 'Transfer',
-    Approval = 'Approval',
-    Deposit = 'Deposit',
-    Withdrawal = 'Withdrawal',
-}
-
 export type ContractEvents = TokenEvents | ExchangeEvents | EtherTokenEvents;
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
 }
-
-// Earliest is omitted by design. It is simply an alias for the `0` constant and
-// is thus not very helpful. Moreover, this type is used in places that only accept
-// `latest` or `pending`.
-export enum BlockParamLiteral {
-    Latest = 'latest',
-    Pending = 'pending',
-}
-
-export type BlockParam = BlockParamLiteral | number;
 
 export interface BlockRange {
     fromBlock: BlockParam;
@@ -266,11 +180,6 @@ export type SyncMethod = (...args: any[]) => any;
  * about providers, visit https://0xproject.com/wiki#Web3-Provider-Explained
  */
 export type Web3Provider = Web3.Provider;
-
-export interface JSONRPCPayload {
-    params: any[];
-    method: string;
-}
 
 /*
  * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
@@ -303,23 +212,6 @@ export interface ZeroExConfig {
     tokenRegistryContractAddress?: string;
     tokenTransferProxyContractAddress?: string;
     orderWatcherConfig?: OrderStateWatcherConfig;
-}
-
-export enum AbiType {
-    Function = 'function',
-    Constructor = 'constructor',
-    Event = 'event',
-    Fallback = 'fallback',
-}
-
-export interface DecodedLogArgs {
-    [argName: string]: ContractEventArg;
-}
-
-export interface LogWithDecodedArgs<ArgsType> extends Web3.DecodedLogEntry<ArgsType> {}
-
-export interface TransactionReceiptWithDecodedLogs extends TransactionReceipt {
-    logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>;
 }
 
 export type ArtifactContractName = 'ZRX' | 'TokenTransferProxy' | 'TokenRegistry' | 'Token' | 'Exchange' | 'EtherToken';

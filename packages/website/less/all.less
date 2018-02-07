@@ -21,14 +21,19 @@ a {
 }
 
 #landing {
-    .h1, .h2, .h3, .h4 {
+    .h1,
+    .h2,
+    .h3,
+    .h4 {
         font-family: 'Roboto Mono';
     }
 }
 
-
 #portal {
-    h1, h2, h3, h4 {
+    h1,
+    h2,
+    h3,
+    h4 {
         font-weight: 100;
     }
 }
@@ -55,13 +60,13 @@ a {
  * Source: https://davidwalsh.name/osx-overflow
  */
 ::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 7px;
+    -webkit-appearance: none;
+    width: 7px;
 }
 ::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: rgba(0, 0, 0, .5);
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 // Hack: For some reason the animation applied to the material-ui textfield causes the overflow
@@ -87,18 +92,24 @@ code {
 
     &.hljs {
         background-color: #dde4e9 !important; // blue gray
-        border-left: 5px solid #0091EA !important; // colors.lightBlueA700
+        border-left: 5px solid #0091ea !important; // colors.lightBlueA700
         padding: 30px;
     }
 }
 
 #wiki {
-    p, blockquote, ul, ol, dl, li, table, pre {
+    p,
+    blockquote,
+    ol,
+    dl,
+    li,
+    table,
+    pre {
         margin: 15px 0;
     }
 
-    ol, ul {
-        padding-bottom: 20px;
+    li {
+        margin: 5px 0;
     }
 
     table {
@@ -127,10 +138,12 @@ code {
         margin: 0;
         padding: 6px 13px;
     }
-    table tr th :first-child, table tr td :first-child {
+    table tr th :first-child,
+    table tr td :first-child {
         margin-top: 0;
     }
-    table tr th :last-child, table tr td :last-child {
+    table tr th :last-child,
+    table tr td :last-child {
         margin-bottom: 0;
     }
 }

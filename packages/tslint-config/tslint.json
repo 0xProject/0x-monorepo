@@ -44,7 +44,6 @@
         "no-string-throw": true,
         "no-submodule-imports": false,
         "no-unnecessary-type-assertion": true,
-        "no-unused-variable": [true, { "ignore-pattern": "^_\\d*" }],
         "no-implicit-dependencies": [true, "dev"],
         "number-literal-format": true,
         "object-literal-sort-keys": false,
@@ -74,7 +73,7 @@
         ],
         "space-within-parens": false,
         "type-literal-delimiter": true,
-        "underscore-privates": true,
+        "underscore-private-and-protected": true,
         "variable-name": [true, "ban-keywords", "allow-pascal-case"],
         "whitespace": [
             true,

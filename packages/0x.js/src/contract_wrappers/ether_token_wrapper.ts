@@ -1,24 +1,15 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
+import { LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import {
-    BlockRange,
-    EtherTokenContractEventArgs,
-    EtherTokenEvents,
-    EventCallback,
-    IndexedFilterValues,
-    LogWithDecodedArgs,
-    TransactionOpts,
-    ZeroExError,
-} from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
+import { BlockRange, EventCallback, IndexedFilterValues, TransactionOpts, ZeroExError } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
-import { EtherTokenContract } from './generated/ether_token';
+import { EtherTokenContract, EtherTokenContractEventArgs, EtherTokenEvents } from './generated/ether_token';
 import { TokenWrapper } from './token_wrapper';
 
 /**
@@ -160,11 +151,24 @@ export class EtherTokenWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public unsubscribeAll(): void {
-        super.unsubscribeAll();
+    public _unsubscribeAll(): void {
+        super._unsubscribeAll();
+    }
+    /**
+     * Retrieves the Ethereum address of the EtherToken contract deployed on the network
+     * that the user-passed web3 provider is connected to. If it's not Kovan, Ropsten, Rinkeby, Mainnet or TestRPC
+     * (networkId: 50), it will return undefined (e.g a private network).
+     * @returns The Ethereum address of the EtherToken contract or undefined.
+     */
+    public getContractAddressIfExists(): string | undefined {
+        const networkSpecificArtifact = artifacts.EtherTokenArtifact.networks[this._networkId];
+        const contractAddressIfExists = _.isUndefined(networkSpecificArtifact)
+            ? undefined
+            : networkSpecificArtifact.address;
+        return contractAddressIfExists;
     }
     private _invalidateContractInstance(): void {
-        this.unsubscribeAll();
+        this._unsubscribeAll();
         this._etherTokenContractsByAddress = {};
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<EtherTokenContract> {

@@ -1,23 +1,18 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
+import { BlockParamLiteral, DecodedLogArgs, LogWithDecodedArgs } from '@0xproject/types';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { artifacts } from '../artifacts';
 import {
-    BlockParamLiteral,
     BlockRange,
-    DecodedLogArgs,
     ECSignature,
     EventCallback,
     ExchangeContractErrCodes,
     ExchangeContractErrs,
-    ExchangeContractEventArgs,
-    ExchangeEvents,
     IndexedFilterValues,
-    LogErrorContractEventArgs,
-    LogWithDecodedArgs,
     MethodOpts,
     Order,
     OrderAddresses,
@@ -28,7 +23,6 @@ import {
     SignedOrder,
     ValidateOrderFillableOpts,
 } from '../types';
-import { AbiDecoder } from '../utils/abi_decoder';
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 import { ExchangeTransferSimulator } from '../utils/exchange_transfer_simulator';
@@ -36,7 +30,12 @@ import { OrderValidationUtils } from '../utils/order_validation_utils';
 import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
-import { ExchangeContract } from './generated/exchange';
+import {
+    ExchangeContract,
+    ExchangeContractEventArgs,
+    ExchangeEvents,
+    LogErrorContractEventArgs,
+} from './generated/exchange';
 import { TokenWrapper } from './token_wrapper';
 
 const SHOULD_VALIDATE_BY_DEFAULT = true;
@@ -680,8 +679,8 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public unsubscribeAll(): void {
-        super.unsubscribeAll();
+    public _unsubscribeAll(): void {
+        super._unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -846,9 +845,9 @@ export class ExchangeWrapper extends ContractWrapper {
     public throwLogErrorsAsErrors(logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>): void {
         const errLog = _.find(logs, {
             event: ExchangeEvents.LogError,
-        }) as LogWithDecodedArgs<LogErrorContractEventArgs> | undefined;
+        });
         if (!_.isUndefined(errLog)) {
-            const logArgs = errLog.args;
+            const logArgs = (errLog as LogWithDecodedArgs<LogErrorContractEventArgs>).args;
             const errCode = logArgs.errorId.toNumber();
             const errMessage = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
@@ -863,7 +862,7 @@ export class ExchangeWrapper extends ContractWrapper {
         return contractAddress;
     }
     private _invalidateContractInstances(): void {
-        this.unsubscribeAll();
+        this._unsubscribeAll();
         delete this._exchangeContractIfExists;
     }
     private async _isValidSignatureUsingContractCallAsync(

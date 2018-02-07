@@ -81,6 +81,12 @@ Build all packages
 yarn lerna:run build
 ```
 
+Continuously rebuild on exchange
+
+```bash
+yarn dev
+```
+
 ### Lint
 
 Lint all packages

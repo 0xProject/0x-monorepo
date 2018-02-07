@@ -151,7 +151,7 @@ export const utils = {
         if (_.isUndefined(networkName)) {
             return undefined;
         }
-        const etherScanPrefix = networkName === Networks.mainnet ? '' : `${networkName.toLowerCase()}.`;
+        const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
         return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
     },
     setUrlHash(anchorId: string) {
@@ -183,7 +183,7 @@ export const utils = {
     // after a user was prompted to sign a message or send a transaction and decided to
     // reject the request.
     didUserDenyWeb3Request(errMsg: string) {
-        const metamaskDenialErrMsg = 'User denied message';
+        const metamaskDenialErrMsg = 'User denied';
         const paritySignerDenialErrMsg = 'Request has been rejected';
         const ledgerDenialErrMsg = 'Invalid status 6985';
         const isUserDeniedErrMsg =
@@ -275,5 +275,22 @@ export const utils = {
         const humanReadableErrorMsg =
             exchangeContractErrorToHumanReadableError[error] || ZeroExErrorToHumanReadableError[error];
         return humanReadableErrorMsg;
+    },
+    isParityNode(nodeVersion: string): boolean {
+        return _.includes(nodeVersion, 'Parity');
+    },
+    isTestRpc(nodeVersion: string): boolean {
+        return _.includes(nodeVersion, 'TestRPC');
+    },
+    isTestNetwork(networkId: number): boolean {
+        const isTestNetwork = _.includes(
+            [
+                constants.NETWORK_ID_BY_NAME[Networks.Kovan],
+                constants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
+                constants.NETWORK_ID_BY_NAME[Networks.Ropsten],
+            ],
+            networkId,
+        );
+        return isTestNetwork;
     },
 };

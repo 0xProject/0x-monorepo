@@ -1,5 +1,6 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
-import { BigNumber, intervalUtils } from '@0xproject/utils';
+import { TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { AbiDecoder, BigNumber, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -12,16 +13,7 @@ import { TokenTransferProxyWrapper } from './contract_wrappers/token_transfer_pr
 import { TokenWrapper } from './contract_wrappers/token_wrapper';
 import { OrderStateWatcher } from './order_watcher/order_state_watcher';
 import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
-import {
-    ECSignature,
-    Order,
-    SignedOrder,
-    TransactionReceiptWithDecodedLogs,
-    Web3Provider,
-    ZeroExConfig,
-    ZeroExError,
-} from './types';
-import { AbiDecoder } from './utils/abi_decoder';
+import { ECSignature, Order, SignedOrder, Web3Provider, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
@@ -334,8 +326,8 @@ export class ZeroEx {
                 );
             },
         );
-
-        return txReceiptPromise;
+        const txReceipt = await txReceiptPromise;
+        return txReceipt;
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from

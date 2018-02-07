@@ -2,7 +2,6 @@ export { ZeroEx } from './0x';
 
 export {
     Order,
-    BlockParamLiteral,
     SignedOrder,
     ECSignature,
     ZeroExError,
@@ -10,30 +9,13 @@ export {
     ExchangeContractErrs,
     ContractEvent,
     Token,
-    ExchangeEvents,
-    TokenEvents,
     IndexedFilterValues,
     BlockRange,
-    BlockParam,
     OrderCancellationRequest,
     OrderFillRequest,
-    LogErrorContractEventArgs,
-    LogCancelContractEventArgs,
-    LogFillContractEventArgs,
-    ExchangeContractEventArgs,
-    TransferContractEventArgs,
-    ApprovalContractEventArgs,
-    TokenContractEventArgs,
-    EtherTokenContractEventArgs,
-    WithdrawalContractEventArgs,
-    DepositContractEventArgs,
     ContractEventArgs,
-    ContractEventArg,
     Web3Provider,
     ZeroExConfig,
-    EtherTokenEvents,
-    TransactionReceiptWithDecodedLogs,
-    LogWithDecodedArgs,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
@@ -46,5 +28,35 @@ export {
     OrderStateInvalid,
     OrderState,
 } from './types';
+
+export {
+    BlockParamLiteral,
+    BlockParam,
+    ContractEventArg,
+    LogWithDecodedArgs,
+    TransactionReceiptWithDecodedLogs,
+} from '@0xproject/types';
+
+export {
+    EtherTokenContractEventArgs,
+    WithdrawalContractEventArgs,
+    DepositContractEventArgs,
+    EtherTokenEvents,
+} from './contract_wrappers/generated/ether_token';
+
+export {
+    TransferContractEventArgs,
+    ApprovalContractEventArgs,
+    TokenContractEventArgs,
+    TokenEvents,
+} from './contract_wrappers/generated/token';
+
+export {
+    LogErrorContractEventArgs,
+    LogCancelContractEventArgs,
+    LogFillContractEventArgs,
+    ExchangeContractEventArgs,
+    ExchangeEvents,
+} from './contract_wrappers/generated/exchange';
 
 export { TransactionReceipt } from '@0xproject/types';

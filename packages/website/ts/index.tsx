@@ -2,6 +2,7 @@
 import { MuiThemeProvider } from 'material-ui/styles';
 import * as React from 'react';
 import { render } from 'react-dom';
+import * as ReactGA from 'react-ga';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
@@ -44,6 +45,7 @@ const LazyConnectDocumentation = createLazyComponent('Documentation', async () =
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
 
+ReactGA.initialize('UA-98720122-1');
 const store: ReduxStore<State> = createStore(reducer);
 render(
     <Router>

@@ -1,4 +1,4 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -13,15 +13,13 @@ import { constants } from '../src/utils/constants';
 import { utils } from '../src/utils/utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { constants as testConstants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { reportNoErrorCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
-import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(testConstants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('ExpirationWatcher', () => {
     let web3: Web3;

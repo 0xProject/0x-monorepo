@@ -3,7 +3,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { scroller } from 'react-scroll';
-import { TopBar } from 'ts/components/top_bar';
+import { TopBar } from 'ts/components/top_bar/top_bar';
 import { MarkdownSection } from 'ts/pages/shared/markdown_section';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { SectionHeader } from 'ts/pages/shared/section_header';
@@ -45,8 +45,10 @@ const styles: Styles = {
 
 export class Wiki extends React.Component<WikiProps, WikiState> {
     private _wikiBackoffTimeoutId: number;
+    private _isUnmounted: boolean;
     constructor(props: WikiProps) {
         super(props);
+        this._isUnmounted = false;
         this.state = {
             articlesBySection: undefined,
         };
@@ -56,6 +58,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         this._fetchArticlesBySectionAsync();
     }
     public componentWillUnmount() {
+        this._isUnmounted = true;
         clearTimeout(this._wikiBackoffTimeoutId);
     }
     public render() {
@@ -179,14 +182,16 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             return;
         }
         const articlesBySection = await response.json();
-        this.setState(
-            {
-                articlesBySection,
-            },
-            () => {
-                this._scrollToHash();
-            },
-        );
+        if (!this._isUnmounted) {
+            this.setState(
+                {
+                    articlesBySection,
+                },
+                () => {
+                    this._scrollToHash();
+                },
+            );
+        }
     }
     private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection) {
         const sectionNames = _.keys(articlesBySection);

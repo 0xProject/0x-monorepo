@@ -1,18 +1,18 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
 import { ExchangeContractErrs, Token, ZeroEx } from '../src';
-import { BlockParamLiteral, TradeSide, TransferType } from '../src/types';
+import { TradeSide, TransferType } from '../src/types';
 import { ExchangeTransferSimulator } from '../src/utils/exchange_transfer_simulator';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { web3Factory } from './utils/web3_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(constants.RPC_URL);
+const blockchainLifecycle = new BlockchainLifecycle();
 
 describe('ExchangeTransferSimulator', () => {
     const web3 = web3Factory.create();
