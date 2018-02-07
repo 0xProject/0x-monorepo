@@ -362,8 +362,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             EtherscanLinkSuffixes.Address,
         );
         const isMintable =
-            _.includes(configs.SYMBOLS_OF_MINTABLE_TOKENS, token.symbol) &&
-            this.props.networkId !== constants.NETWORK_ID_MAINNET;
+            (_.includes(configs.SYMBOLS_OF_MINTABLE_KOVAN_TOKENS, token.symbol) &&
+                this.props.networkId === constants.NETWORK_ID_BY_NAME[Networks.Kovan]) ||
+            (_.includes(configs.SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS, token.symbol) &&
+                _.includes(
+                    [constants.NETWORK_ID_BY_NAME[Networks.Rinkeby], constants.NETWORK_ID_BY_NAME[Networks.Ropsten]],
+                    this.props.networkId,
+                ));
+        console.log('token', token);
         return (
             <TableRow key={token.address} style={{ height: TOKEN_TABLE_ROW_HEIGHT }}>
                 <TableRowColumn colSpan={tokenColSpan}>
