@@ -418,8 +418,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             const takerAmount = new BigNumber(parsedOrder.taker.amount);
             const expiration = new BigNumber(parsedOrder.expirationUnixTimestampSec);
             const salt = new BigNumber(parsedOrder.salt);
-            const parsedMakerFee = new BigNumber(parsedOrder.maker.feeAmount);
-            const parsedTakerFee = new BigNumber(parsedOrder.taker.feeAmount);
+            const parsedMakerFee = new BigNumber(parsedOrder.makerFee);
+            const parsedTakerFee = new BigNumber(parsedOrder.takerFee);
 
             const zeroExOrder: ZeroExOrder = {
                 exchangeContractAddress: parsedOrder.exchangeContractAddress,
@@ -536,8 +536,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             parsedOrder.taker.token.address,
             new BigNumber(parsedOrder.maker.amount),
             new BigNumber(parsedOrder.taker.amount),
-            new BigNumber(parsedOrder.maker.feeAmount),
-            new BigNumber(parsedOrder.taker.feeAmount),
+            new BigNumber(parsedOrder.makerFee),
+            new BigNumber(parsedOrder.takerFee),
             new BigNumber(this.state.parsedOrder.expirationUnixTimestampSec),
             parsedOrder.feeRecipient,
             parsedOrder.ecSignature,
@@ -639,8 +639,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             parsedOrder.taker.token.address,
             new BigNumber(parsedOrder.maker.amount),
             takerTokenAmount,
-            new BigNumber(parsedOrder.maker.feeAmount),
-            new BigNumber(parsedOrder.taker.feeAmount),
+            new BigNumber(parsedOrder.makerFee),
+            new BigNumber(parsedOrder.takerFee),
             new BigNumber(this.state.parsedOrder.expirationUnixTimestampSec),
             parsedOrder.feeRecipient,
             parsedOrder.ecSignature,
