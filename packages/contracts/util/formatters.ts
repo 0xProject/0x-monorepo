@@ -5,10 +5,7 @@ import { Order } from './order';
 import { BatchCancelOrders, BatchFillOrders, MarketFillOrders } from './types';
 
 export const formatters = {
-    createBatchFill(
-        orders: Order[],
-        takerTokenFillAmounts: BigNumber[] = [],
-    ) {
+    createBatchFill(orders: Order[], takerTokenFillAmounts: BigNumber[] = []) {
         const batchFill: BatchFillOrders = {
             orderAddresses: [],
             orderValues: [],
@@ -42,10 +39,7 @@ export const formatters = {
         });
         return batchFill;
     },
-    createMarketFillOrders(
-        orders: Order[],
-        takerTokenFillAmount: BigNumber,
-    ) {
+    createMarketFillOrders(orders: Order[], takerTokenFillAmount: BigNumber) {
         const marketFillOrders: MarketFillOrders = {
             orderAddresses: [],
             orderValues: [],
