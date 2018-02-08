@@ -9,21 +9,19 @@ import { crypto } from './crypto';
 export const signedOrderUtils = {
     createFill: (
         signedOrder: SignedOrder,
-        shouldThrowOnInsufficientBalanceOrAllowance?: boolean,
-        fillTakerTokenAmount?: BigNumber,
+        takerTokenFillAmount?: BigNumber,
     ) => {
         const fill = {
             ...signedOrderUtils.getOrderAddressesAndValues(signedOrder),
-            fillTakerTokenAmount: fillTakerTokenAmount || signedOrder.takerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance: !!shouldThrowOnInsufficientBalanceOrAllowance,
+            takerTokenFillAmount: takerTokenFillAmount || signedOrder.takerTokenAmount,
             ...signedOrder.ecSignature,
         };
         return fill;
     },
-    createCancel(signedOrder: SignedOrder, cancelTakerTokenAmount?: BigNumber) {
+    createCancel(signedOrder: SignedOrder, takerTokenCancelAmount?: BigNumber) {
         const cancel = {
             ...signedOrderUtils.getOrderAddressesAndValues(signedOrder),
-            cancelTakerTokenAmount: cancelTakerTokenAmount || signedOrder.takerTokenAmount,
+            takerTokenCancelAmount: takerTokenCancelAmount || signedOrder.takerTokenAmount,
         };
         return cancel;
     },
