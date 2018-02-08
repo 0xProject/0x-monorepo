@@ -29,8 +29,6 @@ contract MixinSettlementProxy is
     LibPartialAmount
 {
 
-    uint16 constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
-
     address public TOKEN_TRANSFER_PROXY_CONTRACT;
     
     address public ZRX_TOKEN_CONTRACT;
@@ -38,54 +36,55 @@ contract MixinSettlementProxy is
     function MixinSettlementProxy(address proxyContract, address zrxToken)
         public
     {
-      ZRX_TOKEN_CONTRACT = zrxToken;
-      TOKEN_TRANSFER_PROXY_CONTRACT = proxyContract;
+        ZRX_TOKEN_CONTRACT = zrxToken;
+        TOKEN_TRANSFER_PROXY_CONTRACT = proxyContract;
     }
     
     function settleOrder(
         Order order,
         address taker,
-        uint filledTakerTokenAmount)
+        uint256 takerTokenFilledAmount)
         internal
         returns (
-            uint filledMakerTokenAmount,
-            uint paidMakerFee,
-            uint paidTakerFee
+            uint256 makerTokenFilledAmount,
+            uint256 makerFeePaid,
+            uint256 takerFeePaid
         )
     {
-        filledMakerTokenAmount = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount);
+        makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
         require(transferViaTokenTransferProxy(
             order.makerToken,
             order.maker,
             taker,
-            filledMakerTokenAmount
+            makerTokenFilledAmount
         ));
         require(transferViaTokenTransferProxy(
             order.takerToken,
             taker,
             order.maker,
-            filledTakerTokenAmount
+            takerTokenFilledAmount
         ));
         if (order.feeRecipient != address(0)) {
             if (order.makerFee > 0) {
-                paidMakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerFee);
+                makerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
                 require(transferViaTokenTransferProxy(
                     ZRX_TOKEN_CONTRACT,
                     order.maker,
                     order.feeRecipient,
-                    paidMakerFee
+                    makerFeePaid
                 ));
             }
             if (order.takerFee > 0) {
-                paidTakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.takerFee);
+                takerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
                 require(transferViaTokenTransferProxy(
                     ZRX_TOKEN_CONTRACT,
                     taker,
                     order.feeRecipient,
-                    paidTakerFee
+                    takerFeePaid
                 ));
             }
         }
+        return (makerTokenFilledAmount, makerFeePaid, takerFeePaid);
     }
 
     /// @dev Transfers a token using TokenTransferProxy transferFrom function.
@@ -98,75 +97,12 @@ contract MixinSettlementProxy is
         address token,
         address from,
         address to,
-        uint value)
+        uint256 value)
         internal
-        returns (bool)
+        returns (bool success)
     {
-        return ITokenTransferProxy(TOKEN_TRANSFER_PROXY_CONTRACT).transferFrom(token, from, to, value);
+        success = ITokenTransferProxy(TOKEN_TRANSFER_PROXY_CONTRACT).transferFrom(token, from, to, value);
+        return success;
     }
 
-    /// @dev Checks if any order transfers will fail.
-    /// @param order Order struct of params that will be checked.
-    /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
-    /// @return Predicted result of transfers.
-    function isTransferable(Order order, uint fillTakerTokenAmount)
-        internal
-        constant  // The called token contracts may attempt to change state, but will not be able to due to gas limits on getBalance and getAllowance.
-        returns (bool)
-    {
-        address taker = msg.sender;
-        uint fillMakerTokenAmount = getPartialAmount(fillTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount);
-
-        if (order.feeRecipient != address(0)) {
-            bool isMakerTokenZRX = order.makerToken == ZRX_TOKEN_CONTRACT;
-            bool isTakerTokenZRX = order.takerToken == ZRX_TOKEN_CONTRACT;
-            uint paidMakerFee = getPartialAmount(fillTakerTokenAmount, order.takerTokenAmount, order.makerFee);
-            uint paidTakerFee = getPartialAmount(fillTakerTokenAmount, order.takerTokenAmount, order.takerFee);
-            uint requiredMakerZRX = isMakerTokenZRX ? safeAdd(fillMakerTokenAmount, paidMakerFee) : paidMakerFee;
-            uint requiredTakerZRX = isTakerTokenZRX ? safeAdd(fillTakerTokenAmount, paidTakerFee) : paidTakerFee;
-
-            if (   getBalance(ZRX_TOKEN_CONTRACT, order.maker) < requiredMakerZRX
-                || getAllowance(ZRX_TOKEN_CONTRACT, order.maker) < requiredMakerZRX
-                || getBalance(ZRX_TOKEN_CONTRACT, taker) < requiredTakerZRX
-                || getAllowance(ZRX_TOKEN_CONTRACT, taker) < requiredTakerZRX
-            ) return false;
-
-            if (!isMakerTokenZRX && (   getBalance(order.makerToken, order.maker) < fillMakerTokenAmount // Don't double check makerToken if ZRX
-                                     || getAllowance(order.makerToken, order.maker) < fillMakerTokenAmount)
-            ) return false;
-            if (!isTakerTokenZRX && (   getBalance(order.takerToken, taker) < fillTakerTokenAmount // Don't double check takerToken if ZRX
-                                     || getAllowance(order.takerToken, taker) < fillTakerTokenAmount)
-            ) return false;
-        } else if (   getBalance(order.makerToken, order.maker) < fillMakerTokenAmount
-                   || getAllowance(order.makerToken, order.maker) < fillMakerTokenAmount
-                   || getBalance(order.takerToken, taker) < fillTakerTokenAmount
-                   || getAllowance(order.takerToken, taker) < fillTakerTokenAmount
-        ) return false;
-
-        return true;
-    }
-
-    /// @dev Get token balance of an address.
-    /// @param token Address of token.
-    /// @param owner Address of owner.
-    /// @return Token balance of owner.
-    function getBalance(address token, address owner)
-        internal
-        constant  // The called token contract may attempt to change state, but will not be able to due to an added gas limit.
-        returns (uint)
-    {
-        return IToken(token).balanceOf.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner); // Limit gas to prevent reentrancy
-    }
-
-    /// @dev Get allowance of token given to TokenTransferProxy by an address.
-    /// @param token Address of token.
-    /// @param owner Address of owner.
-    /// @return Allowance of token given to TokenTransferProxy by owner.
-    function getAllowance(address token, address owner)
-        internal
-        constant  // The called token contract may attempt to change state, but will not be able to due to an added gas limit.
-        returns (uint)
-    {
-        return IToken(token).allowance.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner, TOKEN_TRANSFER_PROXY_CONTRACT); // Limit gas to prevent reentrancy
-    }
 }

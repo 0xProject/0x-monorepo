@@ -26,11 +26,11 @@ contract LibOrder {
         address makerToken;
         address takerToken;
         address feeRecipient;
-        uint makerTokenAmount;
-        uint takerTokenAmount;
-        uint makerFee;
-        uint takerFee;
-        uint expirationTimestampInSec;
+        uint256 makerTokenAmount;
+        uint256 takerTokenAmount;
+        uint256 makerFee;
+        uint256 takerFee;
+        uint256 expirationTimestampInSec;
         bytes32 orderHash;
     }
 
@@ -38,11 +38,11 @@ contract LibOrder {
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @return Keccak-256 hash of order.
-    function getOrderHash(address[5] orderAddresses, uint[6] orderValues)
+    function getOrderHash(address[5] orderAddresses, uint256[6] orderValues)
         public view
-        returns (bytes32)
+        returns (bytes32 orderHash)
     {
-        return keccak256(
+        orderHash = keccak256(
             address(this),
             orderAddresses[0], // maker
             orderAddresses[1], // taker
@@ -56,5 +56,6 @@ contract LibOrder {
             orderValues[4],    // expirationTimestampInSec
             orderValues[5]     // salt
         );
+        return orderHash;
     }
 }

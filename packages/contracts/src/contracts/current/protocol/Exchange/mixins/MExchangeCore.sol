@@ -21,21 +21,20 @@ pragma solidity ^0.4.19;
 contract MExchangeCore {
     
     function fillOrder(
-        address[5] orderAddresses,
-        uint[6] orderValues,
-        uint fillTakerTokenAmount,
-        bool shouldThrowOnInsufficientBalanceOrAllowance,
-        uint8 v,
-        bytes32 r,
-        bytes32 s)
-        public
-        returns (uint filledTakerTokenAmount);
+          address[5] orderAddresses,
+          uint256[6] orderValues,
+          uint256 takerTokenFillAmount,
+          uint8 v,
+          bytes32 r,
+          bytes32 s)
+          public
+          returns (uint256 takerTokenFilledAmount);
 
     function cancelOrder(
         address[5] orderAddresses,
-        uint[6] orderValues,
-        uint cancelTakerTokenAmount)
+        uint256[6] orderValues,
+        uint256 takerTokenCancelAmount)
         public
-        returns (uint);
+        returns (uint256 takerTokenCancelledAmount);
 
 }
