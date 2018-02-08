@@ -49,39 +49,6 @@ export interface DefaultOrderParams {
     takerFee: BigNumber;
 }
 
-export interface OptionalOrderParams {
-    exchangeContractAddress?: string;
-    maker?: string;
-    taker?: string;
-    feeRecipient?: string;
-    makerToken?: string;
-    takerToken?: string;
-    makerTokenAmount?: BigNumber;
-    takerTokenAmount?: BigNumber;
-    makerFee?: BigNumber;
-    takerFee?: BigNumber;
-    expirationTimestampInSec?: BigNumber;
-}
-
-export interface OrderParams {
-    exchangeContractAddress: string;
-    maker: string;
-    taker: string;
-    feeRecipient: string;
-    makerToken: string;
-    takerToken: string;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-    expirationTimestampInSec: BigNumber;
-    salt: BigNumber;
-    orderHashHex?: string;
-    v?: number;
-    r?: string;
-    s?: string;
-}
-
 export interface TransactionDataParams {
     name: string;
     abi: Web3.AbiDefinition[];
