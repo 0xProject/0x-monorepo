@@ -1,4 +1,5 @@
 {
+    "contract_name": "IExchange",
     "networks": {
         "50": {
             "solc_version": "0.4.19",
@@ -693,7 +694,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518116199838
+            "updated_at": 1518118286204
         }
     }
 }
