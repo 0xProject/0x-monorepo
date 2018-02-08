@@ -1,0 +1,42 @@
+{
+    "contract_name": "LibPartialAmount",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.19",
+            "keccak256": "0x508e3f81ed2c9194e4bf452a7a28eec0e3fb4f1e9c00dc94b4a28c63009a45d5",
+            "optimizer_enabled": 0,
+            "abi": [
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "numerator",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "denominator",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "target",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "getPartialAmount",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "pure",
+                    "type": "function"
+                }
+            ],
+            "unlinked_binary":
+                "0x6060604052341561000f57600080fd5b61011a8061001e6000396000f300606060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806398024a8b146044575b600080fd5b3415604e57600080fd5b60746004808035906020019091908035906020019091908035906020019091905050608a565b6040518082815260200191505060405180910390f35b6000609b6096858460a4565b8460d4565b90509392505050565b6000808284029050600084148060c3575082848281151560c057fe5b04145b151560ca57fe5b8091505092915050565b600080828481151560e157fe5b04905080915050929150505600a165627a7a72305820596ea95994de2295d498686ce6c681ac0b186c639a58de735897729d22d714ed0029",
+            "updated_at": 1518051461480
+        }
+    }
+}

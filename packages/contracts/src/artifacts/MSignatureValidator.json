@@ -1,0 +1,49 @@
+{
+    "contract_name": "MSignatureValidator",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.19",
+            "keccak256": "0xa4fe0acab7bc2980d7db8e8be297ebd9ff26199d773244d3d62d2348ef9a2b52",
+            "optimizer_enabled": 0,
+            "abi": [
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "signer",
+                            "type": "address"
+                        },
+                        {
+                            "name": "hash",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "v",
+                            "type": "uint8"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32"
+                        }
+                    ],
+                    "name": "isValidSignature",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ],
+            "unlinked_binary": "0x",
+            "updated_at": 1518051462685
+        }
+    }
+}
