@@ -1,0 +1,84 @@
+{
+    "contract_name": "MExchangeCore",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.19",
+            "keccak256": "0x52ef222c98e5232ca884974148a031b888f493ce0967271678882fe54cd6dd73",
+            "optimizer_enabled": 0,
+            "abi": [
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6]"
+                        },
+                        {
+                            "name": "cancelTakerTokenAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "cancelOrder",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6]"
+                        },
+                        {
+                            "name": "fillTakerTokenAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "shouldThrowOnInsufficientBalanceOrAllowance",
+                            "type": "bool"
+                        },
+                        {
+                            "name": "v",
+                            "type": "uint8"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32"
+                        }
+                    ],
+                    "name": "fillOrder",
+                    "outputs": [
+                        {
+                            "name": "filledTakerTokenAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ],
+            "unlinked_binary": "0x",
+            "updated_at": 1518051462613
+        }
+    }
+}
