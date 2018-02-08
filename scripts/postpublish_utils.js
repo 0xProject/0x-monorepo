@@ -50,12 +50,12 @@ module.exports = {
         return releaseName;
     },
     standardPostPublishAsync: function(subPackageName) {
-        return getLatestTagAndVersionAsync(subPackageName)
+        return this.getLatestTagAndVersionAsync(subPackageName)
             .then(function(result) {
-                const releaseName = getReleaseName(subPackageName, result.version);
+                const releaseName = this.getReleaseName(subPackageName, result.version);
                 const assets = [];
-                return publishReleaseNotesAsync(result.tag, releaseName, assets);
-            })
+                return this.publishReleaseNotesAsync(result.tag, releaseName, assets);
+            }.bind(this))
             .catch(function(err) {
                 throw err;
             });
