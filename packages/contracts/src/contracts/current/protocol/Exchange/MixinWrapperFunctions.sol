@@ -78,7 +78,7 @@ contract MixinWrapperFunctions is
             let x := mload(0x40)  // free memory pointer
             mstore(x, FILL_ORDER_FUNCTION_SIGNATURE)
 
-            // first 32 bytes of an array contains length
+            // first 32 bytes of a dynamic in-memory array contains length
             mstore(add(x, 4), add(orderAddresses, 32))     // maker
             mstore(add(x, 36), add(orderAddresses, 64))    // taker
             mstore(add(x, 68), add(orderAddresses, 96))    // makerToken
@@ -99,7 +99,7 @@ contract MixinWrapperFunctions is
                 gas,      // TODO: don't send all gas, save some for returning is case of throw
                 address,  // call this contract
                 x,        // inputs start at x
-                484,      // inputs are 484 bytes long (4 + 15*32)
+                484,      // inputs are 484 bytes long (4 + 15 * 32)
                 x,        // store output over input
                 32        // output is 32 bytes
             )
