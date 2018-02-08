@@ -21,7 +21,7 @@ import { FlashMessage } from 'ts/components/ui/flash_message';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { orderSchema } from 'ts/schemas/order_schema';
+import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
@@ -368,7 +368,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         }
 
         const order = JSON.parse(decodeURIComponent(orderPair[1]));
-        const validationResult = validator.validate(order, orderSchema);
+        const validationResult = validator.validate(order, portalOrderSchema);
         if (validationResult.errors.length > 0) {
             utils.consoleLog(`Invalid shared order: ${validationResult.errors}`);
             return undefined;

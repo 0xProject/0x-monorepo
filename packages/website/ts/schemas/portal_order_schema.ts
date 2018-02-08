@@ -1,4 +1,4 @@
-export const orderSchema = {
+export const portalOrderSchema = {
     id: '/PortalOrder',
     properties: {
         signedOrder: { $ref: '/SignedOrder' },

@@ -1,4 +1,4 @@
-export const tokenSchema = {
+export const portalTokenMetadataSchema = {
     id: '/PortalTokenMetadata',
     properties: {
         name: { type: 'string' },
