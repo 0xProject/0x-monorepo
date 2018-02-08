@@ -3,7 +3,7 @@
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0x03a3910306c66863cf2ba063059447d0b3676fc631c313825709e11689a128d9",
+            "keccak256": "0x722ca636cc9ab1f85b3f6bb822ab2b4fea8c8d07e4dee4d29b3303da7d4a97f7",
             "optimizer_enabled": 0,
             "abi": [
                 {
@@ -18,12 +18,8 @@
                             "type": "uint256[6][]"
                         },
                         {
-                            "name": "fillTakerTokenAmount",
-                            "type": "uint256"
-                        },
-                        {
-                            "name": "shouldThrowOnInsufficientBalanceOrAllowance",
-                            "type": "bool"
+                            "name": "takerTokenFillAmounts",
+                            "type": "uint256[]"
                         },
                         {
                             "name": "v",
@@ -38,10 +34,44 @@
                             "type": "bytes32[]"
                         }
                     ],
-                    "name": "fillOrdersUpTo",
+                    "name": "batchFillOrdersNoThrow",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6]"
+                        },
+                        {
+                            "name": "takerTokenFillAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "v",
+                            "type": "uint8"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32"
+                        }
+                    ],
+                    "name": "fillOrder",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "takerTokenFilledAmount",
                             "type": "uint256"
                         }
                     ],
@@ -61,14 +91,14 @@
                             "type": "uint256[6]"
                         },
                         {
-                            "name": "cancelTakerTokenAmount",
+                            "name": "takerTokenCancelAmount",
                             "type": "uint256"
                         }
                     ],
                     "name": "cancelOrder",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "takerTokenCancelledAmount",
                             "type": "uint256"
                         }
                     ],
@@ -88,7 +118,7 @@
                             "type": "uint256[6][]"
                         },
                         {
-                            "name": "fillTakerTokenAmounts",
+                            "name": "takerTokenFillAmounts",
                             "type": "uint256[]"
                         },
                         {
@@ -115,6 +145,45 @@
                     "inputs": [
                         {
                             "name": "orderAddresses",
+                            "type": "address[5][]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6][]"
+                        },
+                        {
+                            "name": "takerTokenFillAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "v",
+                            "type": "uint8[]"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32[]"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32[]"
+                        }
+                    ],
+                    "name": "marketFillOrdersNoThrow",
+                    "outputs": [
+                        {
+                            "name": "totalTakerTokenFilledAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
                             "type": "address[5]"
                         },
                         {
@@ -122,7 +191,7 @@
                             "type": "uint256[6]"
                         },
                         {
-                            "name": "fillTakerTokenAmount",
+                            "name": "takerTokenFillAmount",
                             "type": "uint256"
                         },
                         {
@@ -156,12 +225,69 @@
                             "type": "uint256[6][]"
                         },
                         {
-                            "name": "fillTakerTokenAmounts",
-                            "type": "uint256[]"
+                            "name": "takerTokenFillAmount",
+                            "type": "uint256"
                         },
                         {
-                            "name": "shouldThrowOnInsufficientBalanceOrAllowance",
-                            "type": "bool"
+                            "name": "v",
+                            "type": "uint8[]"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32[]"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32[]"
+                        }
+                    ],
+                    "name": "marketFillOrders",
+                    "outputs": [
+                        {
+                            "name": "totalTakerTokenFilledAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5][]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6][]"
+                        },
+                        {
+                            "name": "takerTokenCancelAmounts",
+                            "type": "uint256[]"
+                        }
+                    ],
+                    "name": "batchCancelOrders",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5][]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6][]"
+                        },
+                        {
+                            "name": "takerTokenFillAmounts",
+                            "type": "uint256[]"
                         },
                         {
                             "name": "v",
@@ -187,28 +313,6 @@
                     "inputs": [
                         {
                             "name": "orderAddresses",
-                            "type": "address[5][]"
-                        },
-                        {
-                            "name": "orderValues",
-                            "type": "uint256[6][]"
-                        },
-                        {
-                            "name": "cancelTakerTokenAmounts",
-                            "type": "uint256[]"
-                        }
-                    ],
-                    "name": "batchCancelOrders",
-                    "outputs": [],
-                    "payable": false,
-                    "stateMutability": "nonpayable",
-                    "type": "function"
-                },
-                {
-                    "constant": false,
-                    "inputs": [
-                        {
-                            "name": "orderAddresses",
                             "type": "address[5]"
                         },
                         {
@@ -216,12 +320,8 @@
                             "type": "uint256[6]"
                         },
                         {
-                            "name": "fillTakerTokenAmount",
+                            "name": "takerTokenFillAmount",
                             "type": "uint256"
-                        },
-                        {
-                            "name": "shouldThrowOnInsufficientBalanceOrAllowance",
-                            "type": "bool"
                         },
                         {
                             "name": "v",
@@ -236,10 +336,14 @@
                             "type": "bytes32"
                         }
                     ],
-                    "name": "fillOrder",
+                    "name": "fillOrderNoThrow",
                     "outputs": [
                         {
-                            "name": "filledTakerTokenAmount",
+                            "name": "success",
+                            "type": "bool"
+                        },
+                        {
+                            "name": "takerTokenFilledAmount",
                             "type": "uint256"
                         }
                     ],
@@ -249,7 +353,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518051462601
+            "updated_at": 1518116205054
         }
     }
 }

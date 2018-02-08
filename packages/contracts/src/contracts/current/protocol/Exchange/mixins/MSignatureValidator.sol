@@ -34,5 +34,5 @@ contract MSignatureValidator {
         bytes32 r,
         bytes32 s)
         public view
-        returns (bool);
+        returns (bool isValid);
 }
