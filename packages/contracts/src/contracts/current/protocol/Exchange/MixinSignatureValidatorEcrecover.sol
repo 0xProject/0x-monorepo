@@ -32,13 +32,14 @@ contract MixinSignatureValidatorEcrecover is
         bytes32 s)
         public
         constant
-        returns (bool)
+        returns (bool isValid)
     {
-        return signer == ecrecover(
+        isValid = signer == ecrecover(
             keccak256("\x19Ethereum Signed Message:\n32", hash),
             v,
             r,
             s
         );
+        return isValid;
     }
 }
