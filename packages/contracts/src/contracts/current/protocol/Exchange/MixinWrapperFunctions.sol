@@ -27,17 +27,17 @@ contract MixinWrapperFunctions is
     SafeMath
 {
   
-    /// @dev Fills an order with specified parameters and ECDSA signature, throws if specified amount not filled entirely.
+    /// @dev Fills an order with specified parameters and ECDSA signature. Throws if specified amount not filled entirely.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
+    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
     /// @param v ECDSA signature parameter v.
     /// @param r ECDSA signature parameters r.
     /// @param s ECDSA signature parameters s.
     function fillOrKillOrder(
         address[5] orderAddresses,
-        uint[6] orderValues,
-        uint fillTakerTokenAmount,
+        uint256[6] orderValues,
+        uint256 takerTokenFillAmount,
         uint8 v,
         bytes32 r,
         bytes32 s)
@@ -46,30 +46,90 @@ contract MixinWrapperFunctions is
         require(fillOrder(
             orderAddresses,
             orderValues,
-            fillTakerTokenAmount,
-            false,
+            takerTokenFillAmount,
             v,
             r,
             s
-        ) == fillTakerTokenAmount);
+        ) == takerTokenFillAmount);
     }
 
+    /// @dev Fills an order with specified parameters and ECDSA signature. Returns false if the transaction would otherwise revert.
+    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
+    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param v ECDSA signature parameter v.
+    /// @param r ECDSA signature parameters r.
+    /// @param s ECDSA signature parameters s.
+    /// @return Success if the transaction did not revert.
+    /// @return Total amount of takerToken filled in trade.
+    function fillOrderNoThrow(
+        address[5] orderAddresses,
+        uint256[6] orderValues,
+        uint256 takerTokenFillAmount,
+        uint8 v,
+        bytes32 r,
+        bytes32 s)
+        public
+        returns (bool success, uint256 takerTokenFilledAmount)
+    {
+        bytes4 FILL_ORDER_FUNCTION_SIGNATURE = bytes4(keccak256("fillOrder(address[5],uint256[6],uint256,uint8,bytes32,bytes32)"));
+        
+        assembly {
+            let x := mload(0x40)  // free memory pointer
+            mstore(x, FILL_ORDER_FUNCTION_SIGNATURE)
+
+            // first 32 bytes of an array contains length
+            mstore(add(x, 4), add(orderAddresses, 32))     // maker
+            mstore(add(x, 36), add(orderAddresses, 64))    // taker
+            mstore(add(x, 68), add(orderAddresses, 96))    // makerToken
+            mstore(add(x, 100), add(orderAddresses, 128))  // takerToken
+            mstore(add(x, 132), add(orderAddresses, 160))  // feeRecipient
+            mstore(add(x, 164), add(orderValues, 32))      // makerTokenAmount
+            mstore(add(x, 196), add(orderValues, 64))      // takerTokenAmount
+            mstore(add(x, 228), add(orderValues, 96))      // makerFee
+            mstore(add(x, 260), add(orderValues, 128))     // takerFee
+            mstore(add(x, 292), add(orderValues, 160))     // expirationTimestampInSec
+            mstore(add(x, 324), add(orderValues, 192))     // salt
+            mstore(add(x, 356), takerTokenFillAmount)
+            mstore(add(x, 388), v)
+            mstore(add(x, 420), r)
+            mstore(add(x, 452), s)
+
+            success := delegatecall(
+                gas,      // TODO: don't send all gas, save some for returning is case of throw
+                address,  // call this contract
+                x,        // inputs start at x
+                484,      // inputs are 484 bytes long (4 + 15*32)
+                x,        // store output over input
+                32        // output is 32 bytes
+            )
+
+            takerTokenFilledAmount := mload(x)
+        }
+        return (success, takerTokenFilledAmount);
+    }
+
+    /// @dev Synchronously executes multiple calls of fillOrder in a single transaction.
+    /// @param orderAddresses Array of address arrays containing individual order addresses.
+    /// @param orderValues Array of uint256 arrays containing individual order values.
+    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param v Array ECDSA signature v parameters.
+    /// @param r Array of ECDSA signature r parameters.
+    /// @param s Array of ECDSA signature s parameters.
     function batchFillOrders(
         address[5][] orderAddresses,
-        uint[6][] orderValues,
-        uint[] fillTakerTokenAmounts,
-        bool shouldThrowOnInsufficientBalanceOrAllowance,
+        uint256[6][] orderValues,
+        uint256[] takerTokenFillAmounts,
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
         external
     {
-        for (uint i = 0; i < orderAddresses.length; i++) {
+        for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrder(
                 orderAddresses[i],
                 orderValues[i],
-                fillTakerTokenAmounts[i],
-                shouldThrowOnInsufficientBalanceOrAllowance,
+                takerTokenFillAmounts[i],
                 v[i],
                 r[i],
                 s[i]
@@ -77,20 +137,27 @@ contract MixinWrapperFunctions is
         }
     }
 
+    /// @dev Synchronously executes multiple calls of fillOrKill in a single transaction.
+    /// @param orderAddresses Array of address arrays containing individual order addresses.
+    /// @param orderValues Array of uint256 arrays containing individual order values.
+    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param v Array ECDSA signature v parameters.
+    /// @param r Array of ECDSA signature r parameters.
+    /// @param s Array of ECDSA signature s parameters.
     function batchFillOrKillOrders(
         address[5][] orderAddresses,
-        uint[6][] orderValues,
-        uint[] fillTakerTokenAmounts,
+        uint256[6][] orderValues,
+        uint256[] takerTokenFillAmounts,
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
         external
     {
-        for (uint i = 0; i < orderAddresses.length; i++) {
+        for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrKillOrder(
                 orderAddresses[i],
                 orderValues[i],
-                fillTakerTokenAmounts[i],
+                takerTokenFillAmounts[i],
                 v[i],
                 r[i],
                 s[i]
@@ -98,45 +165,116 @@ contract MixinWrapperFunctions is
         }
     }
 
-    function fillOrdersUpTo(
+    /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction.
+    /// @param orderAddresses Array of address arrays containing individual order addresses.
+    /// @param orderValues Array of uint256 arrays containing individual order values.
+    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param v Array ECDSA signature v parameters.
+    /// @param r Array of ECDSA signature r parameters.
+    /// @param s Array of ECDSA signature s parameters.
+    function batchFillOrdersNoThrow(
         address[5][] orderAddresses,
-        uint[6][] orderValues,
-        uint fillTakerTokenAmount,
-        bool shouldThrowOnInsufficientBalanceOrAllowance,
+        uint256[6][] orderValues,
+        uint256[] takerTokenFillAmounts,
         uint8[] v,
         bytes32[] r,
         bytes32[] s)
-        public /// Stack to deep when set to external
-        returns (uint)
+        external
     {
-        uint filledTakerTokenAmount = 0;
-        for (uint i = 0; i < orderAddresses.length; i++) {
-            require(orderAddresses[i][3] == orderAddresses[0][3]); // takerToken must be the same for each order
-            filledTakerTokenAmount = safeAdd(filledTakerTokenAmount, fillOrder(
+        for (uint256 i = 0; i < orderAddresses.length; i++) {
+            fillOrderNoThrow(
                 orderAddresses[i],
                 orderValues[i],
-                safeSub(fillTakerTokenAmount, filledTakerTokenAmount),
-                shouldThrowOnInsufficientBalanceOrAllowance,
+                takerTokenFillAmounts[i],
+                v[i],
+                r[i],
+                s[i]
+            );
+        }
+    }
+
+    /// @dev Synchronously executes multiple fill orders in a single transaction until total takerTokenFillAmount filled.
+    /// @param orderAddresses Array of address arrays containing individual order addresses.
+    /// @param orderValues Array of uint256 arrays containing individual order values.
+    /// @param takerTokenFillAmount Desired total amount of takerToken to fill in orders.
+    /// @param v Array ECDSA signature v parameters.
+    /// @param r Array of ECDSA signature r parameters.
+    /// @param s Array of ECDSA signature s parameters.
+    /// @return Total amount of takerTokenFillAmount filled in orders.
+    function marketFillOrders(
+        address[5][] orderAddresses,
+        uint256[6][] orderValues,
+        uint256 takerTokenFillAmount,
+        uint8[] v,
+        bytes32[] r,
+        bytes32[] s)
+        external
+        returns (uint256 totalTakerTokenFilledAmount)
+    {
+        for (uint256 i = 0; i < orderAddresses.length; i++) {
+            require(orderAddresses[i][3] == orderAddresses[0][3]); // takerToken must be the same for each order
+            totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, fillOrder(
+                orderAddresses[i],
+                orderValues[i],
+                safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
                 v[i],
                 r[i],
                 s[i]
             ));
-            if (filledTakerTokenAmount == fillTakerTokenAmount) break;
+            if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
         }
-        return filledTakerTokenAmount;
+        return totalTakerTokenFilledAmount;
     }
 
+    /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total takerTokenFillAmount filled.
+    /// @param orderAddresses Array of address arrays containing individual order addresses.
+    /// @param orderValues Array of uint256 arrays containing individual order values.
+    /// @param takerTokenFillAmount Desired total amount of takerToken to fill in orders.
+    /// @param v Array ECDSA signature v parameters.
+    /// @param r Array of ECDSA signature r parameters.
+    /// @param s Array of ECDSA signature s parameters.
+    /// @return Total amount of takerTokenFillAmount filled in orders.
+    function marketFillOrdersNoThrow(
+        address[5][] orderAddresses,
+        uint256[6][] orderValues,
+        uint256 takerTokenFillAmount,
+        uint8[] v,
+        bytes32[] r,
+        bytes32[] s)
+        external
+        returns (uint256 totalTakerTokenFilledAmount)
+    {
+        for (uint256 i = 0; i < orderAddresses.length; i++) {
+            require(orderAddresses[i][3] == orderAddresses[0][3]); // takerToken must be the same for each order
+            var (, takerTokenFilledAmount) = fillOrderNoThrow(
+                orderAddresses[i],
+                orderValues[i],
+                safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
+                v[i],
+                r[i],
+                s[i]
+            );
+            totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, takerTokenFilledAmount);
+            if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
+        }
+        return totalTakerTokenFilledAmount;
+    }
+
+    /// @dev Synchronously cancels multiple orders in a single transaction.
+    /// @param orderAddresses Array of address arrays containing individual order addresses.
+    /// @param orderValues Array of uint256 arrays containing individual order values.
+    /// @param takerTokenCancelAmounts Array of desired amounts of takerToken to cancel in orders.
     function batchCancelOrders(
         address[5][] orderAddresses,
-        uint[6][] orderValues,
-        uint[] cancelTakerTokenAmounts)
+        uint256[6][] orderValues,
+        uint256[] takerTokenCancelAmounts)
         external
     {
-        for (uint i = 0; i < orderAddresses.length; i++) {
+        for (uint256 i = 0; i < orderAddresses.length; i++) {
             cancelOrder(
                 orderAddresses[i],
                 orderValues[i],
-                cancelTakerTokenAmounts[i]
+                takerTokenCancelAmounts[i]
             );
         }
     }
