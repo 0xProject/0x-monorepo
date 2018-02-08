@@ -18,7 +18,7 @@ import { EthereumAddress } from 'ts/components/ui/ethereum_address';
 import { Identicon } from 'ts/components/ui/identicon';
 import { VisualOrder } from 'ts/components/visual_order';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { orderSchema } from 'ts/schemas/order_schema';
+import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
@@ -400,7 +400,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         let orderHash: string;
         try {
             const order = JSON.parse(orderJSON);
-            const validationResult = validator.validate(order, orderSchema);
+            const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 orderJSONErrMsg = 'Submitted order JSON is not a valid order';
                 utils.consoleLog(`Unexpected order JSON validation error: ${validationResult.errors.join(', ')}`);

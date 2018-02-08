@@ -17,7 +17,7 @@ import { HelpTooltip } from 'ts/components/ui/help_tooltip';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { SwapIcon } from 'ts/components/ui/swap_icon';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { orderSchema } from 'ts/schemas/order_schema';
+import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { colors } from 'ts/utils/colors';
@@ -331,7 +331,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 this.props.tokenByAddress,
                 hashData.orderSalt,
             );
-            const validationResult = validator.validate(order, orderSchema);
+            const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';
                 utils.consoleLog(`Unexpected error occured: Order validation failed:
