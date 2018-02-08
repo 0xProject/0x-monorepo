@@ -1,8 +1,8 @@
 export const orderMetadataSchema = {
     id: '/OrderMetadata',
     properties: {
-        makerToken: { $ref: '/Token' },
-        takerToken: { $ref: '/Token' },
+        makerToken: { $ref: '/PortalTokenMetadata' },
+        takerToken: { $ref: '/PortalTokenMetadata' },
     },
     required: ['makerToken', 'takerToken'],
     type: 'object',

@@ -18,7 +18,7 @@ import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button'
 import { SwapIcon } from 'ts/components/ui/swap_icon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
-import { SchemaValidator } from 'ts/schemas/validator';
+import { validator } from 'ts/schemas/validator';
 import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
@@ -55,7 +55,6 @@ interface GenerateOrderFormState {
 }
 
 export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, GenerateOrderFormState> {
-    private _validator: SchemaValidator;
     constructor(props: GenerateOrderFormProps) {
         super(props);
         this.state = {
@@ -63,7 +62,6 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             shouldShowIncompleteErrs: false,
             signingState: SigningState.UNSIGNED,
         };
-        this._validator = new SchemaValidator();
     }
     public componentDidMount() {
         window.scrollTo(0, 0);
@@ -79,6 +77,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                   allowed to fill this order. If no taker is<br> \
                                   specified, anyone is able to fill it.';
         const exchangeContractIfExists = this.props.blockchain.getExchangeContractAddressIfExists();
+        const initialTakerAddress =
+            this.props.orderTakerAddress === ZeroEx.NULL_ADDRESS ? '' : this.props.orderTakerAddress;
         return (
             <div className="clearfix mb2 lg-px4 md-px4 sm-px2">
                 <h3>Generate an order</h3>
@@ -159,7 +159,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     <div className="pt1 flex mx-auto">
                         <IdenticonAddressInput
                             label="Taker"
-                            initialAddress={this.props.orderTakerAddress}
+                            initialAddress={initialTakerAddress}
                             updateOrderAddress={this._updateOrderAddress.bind(this)}
                         />
                         <div className="pt3">
@@ -317,7 +317,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
 
         let globalErrMsg = '';
         try {
-            const signatureData = await this.props.blockchain.signOrderHashAsync(orderHash);
+            const ecSignature = await this.props.blockchain.signOrderHashAsync(orderHash);
             const order = utils.generateOrder(
                 exchangeContractAddr,
                 this.props.sideToAssetToken,
@@ -327,11 +327,11 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 hashData.makerFee,
                 hashData.takerFee,
                 hashData.feeRecipientAddress,
-                signatureData,
+                ecSignature,
                 this.props.tokenByAddress,
                 hashData.orderSalt,
             );
-            const validationResult = this._validator.validate(order, orderSchema);
+            const validationResult = validator.validate(order, orderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';
                 utils.consoleLog(`Unexpected error occured: Order validation failed:
@@ -356,7 +356,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
     }
     private _updateOrderAddress(address?: string): void {
         if (!_.isUndefined(address)) {
-            this.props.dispatcher.updateOrderTakerAddress(address);
+            const normalizedAddress = _.isEmpty(address) ? ZeroEx.NULL_ADDRESS : address;
+            this.props.dispatcher.updateOrderTakerAddress(normalizedAddress);
         }
     }
 }

@@ -39,7 +39,6 @@ import {
     ProviderType,
     Side,
     SideToAssetToken,
-    SignatureData,
     Token,
     TokenByAddress,
 } from 'ts/types';
@@ -288,39 +287,6 @@ export class Blockchain {
                 amountInBaseUnits,
             }),
         );
-    }
-    public portalOrderToSignedOrder(
-        maker: string,
-        taker: string,
-        makerTokenAddress: string,
-        takerTokenAddress: string,
-        makerTokenAmount: BigNumber,
-        takerTokenAmount: BigNumber,
-        makerFee: BigNumber,
-        takerFee: BigNumber,
-        expirationUnixTimestampSec: BigNumber,
-        feeRecipient: string,
-        ecSignature: ECSignature,
-        salt: BigNumber,
-    ): SignedOrder {
-        const exchangeContractAddress = this.getExchangeContractAddressIfExists();
-        const takerOrNullAddress = _.isEmpty(taker) ? constants.NULL_ADDRESS : taker;
-        const signedOrder = {
-            ecSignature,
-            exchangeContractAddress,
-            expirationUnixTimestampSec,
-            feeRecipient,
-            maker,
-            makerFee,
-            makerTokenAddress,
-            makerTokenAmount,
-            salt,
-            taker: takerOrNullAddress,
-            takerFee,
-            takerTokenAddress,
-            takerTokenAmount,
-        };
-        return signedOrder;
     }
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber): Promise<BigNumber> {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
