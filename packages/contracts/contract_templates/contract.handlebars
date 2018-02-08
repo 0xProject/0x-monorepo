@@ -1,6 +1,6 @@
 /**
  * This file is auto-generated using abi-gen. Don't edit directly.
- * Templates can be found at https://github.com/0xProject/0x.js/tree/development/packages/abi-gen-templates.
+ * Templates can be found at https://github.com/0xProject/0x.js/tree/development/packages/contracts/contract_templates.
  */
 // tslint:disable:async-suffix member-ordering no-consecutive-blank-lines
 // tslint:disable-next-line:no-unused-variable
@@ -9,6 +9,24 @@ import { BigNumber, classUtils, promisify } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 import {BaseContract} from './base_contract';
+
+{{#if events}}
+export type {{contractName}}ContractEventArgs =
+{{#each events}}
+    | {{name}}ContractEventArgs{{#if @last}};{{/if}}
+{{/each}}
+
+export enum {{contractName}}Events {
+    {{#each events}}
+    {{name}} = '{{name}}',
+    {{/each}}
+}
+
+{{#each events}}
+{{> event}}
+
+{{/each}}
+{{/if}}
 
 export class {{contractName}}Contract extends BaseContract {
 {{#each methods}}
