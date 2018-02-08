@@ -118,7 +118,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (nextProps.userEtherBalance !== this.props.userEtherBalance) {
             if (this.state.isBalanceSpinnerVisible) {
                 const receivedAmount = nextProps.userEtherBalance.minus(this.props.userEtherBalance);
-                this.props.dispatcher.showFlashMessage(`Received ${receivedAmount.toString(10)} Kovan Ether`);
+                const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+                this.props.dispatcher.showFlashMessage(`Received ${receivedAmount.toString(10)} ${networkName} Ether`);
             }
             this.setState({
                 isBalanceSpinnerVisible: false,
