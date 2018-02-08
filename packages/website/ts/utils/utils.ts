@@ -1,4 +1,4 @@
-import { ECSignature, ExchangeContractErrs, ZeroExError } from '0x.js';
+import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import isMobile = require('is-mobile');
@@ -11,7 +11,6 @@ import {
     ScreenWidths,
     Side,
     SideToAssetToken,
-    SignatureData,
     Token,
     TokenByAddress,
 } from 'ts/types';

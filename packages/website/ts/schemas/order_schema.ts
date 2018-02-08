@@ -1,5 +1,5 @@
 export const orderSchema = {
-    id: '/Order',
+    id: '/PortalOrder',
     properties: {
         signedOrder: { $ref: '/SignedOrder' },
         metadata: { $ref: '/OrderMetadata' },

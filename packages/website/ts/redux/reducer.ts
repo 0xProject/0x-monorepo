@@ -11,7 +11,6 @@ import {
     ScreenWidths,
     Side,
     SideToAssetToken,
-    SignatureData,
     TokenByAddress,
 } from 'ts/types';
 import { utils } from 'ts/utils/utils';
@@ -64,7 +63,7 @@ const INITIAL_STATE: State = {
         s: '',
         v: 27,
     },
-    orderTakerAddress: '',
+    orderTakerAddress: ZeroEx.NULL_ADDRESS,
     orderSalt: ZeroEx.generatePseudoRandomSalt(),
     nodeVersion: undefined,
     screenWidth: utils.getScreenWidth(),

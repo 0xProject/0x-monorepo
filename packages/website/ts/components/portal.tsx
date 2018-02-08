@@ -22,7 +22,7 @@ import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { orderSchema } from 'ts/schemas/order_schema';
-import { SchemaValidator } from 'ts/schemas/validator';
+import { validator } from 'ts/schemas/validator';
 import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
@@ -367,7 +367,6 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             return undefined;
         }
 
-        const validator = new SchemaValidator();
         const order = JSON.parse(decodeURIComponent(orderPair[1]));
         const validationResult = validator.validate(order, orderSchema);
         if (validationResult.errors.length > 0) {

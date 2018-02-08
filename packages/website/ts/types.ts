@@ -35,10 +35,6 @@ export interface SideToAssetToken {
     [side: string]: AssetToken;
 }
 
-export interface SignatureData extends ECSignature {
-    hash: string;
-}
-
 export interface HashData {
     depositAmount: BigNumber;
     depositTokenContractAddr: string;

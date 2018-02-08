@@ -8,8 +8,6 @@ import { utils } from 'ts/utils/utils';
 const PRECISION = 5;
 
 interface VisualOrderProps {
-    orderTakerAddress: string;
-    orderMakerAddress: string;
     makerAssetToken: AssetToken;
     takerAssetToken: AssetToken;
     makerToken: Token;

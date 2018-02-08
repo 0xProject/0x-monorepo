@@ -1,5 +1,5 @@
 export const tokenSchema = {
-    id: '/Token',
+    id: '/PortalTokenMetadata',
     properties: {
         name: { type: 'string' },
         symbol: { type: 'string' },

@@ -7,7 +7,7 @@ import { Blockchain } from 'ts/blockchain';
 import { GenerateOrderForm as GenerateOrderFormComponent } from 'ts/components/generate_order/generate_order_form';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { BlockchainErrs, HashData, SideToAssetToken, SignatureData, TokenByAddress } from 'ts/types';
+import { BlockchainErrs, HashData, SideToAssetToken, TokenByAddress } from 'ts/types';
 
 interface GenerateOrderFormProps {
     blockchain: Blockchain;
