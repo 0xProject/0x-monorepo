@@ -18,7 +18,7 @@ import {
     LogCancelContractEventArgs,
     LogErrorContractEventArgs,
     LogFillContractEventArgs,
- } from '../../src/contract_wrappers/generated/exchange';
+} from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
@@ -395,7 +395,7 @@ describe('Exchange', () => {
                 takerTokenFillAmount: signedOrder.takerTokenAmount,
             });
             const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
-            expect(log.args.filledTakerTokenAmount).to.be.bignumber.equal(
+            expect(log.args.takerTokenFilledAmount).to.be.bignumber.equal(
                 signedOrder.takerTokenAmount.minus(takerTokenFillAmount),
             );
             const newBalances = await dmyBalances.getAsync();
@@ -545,11 +545,7 @@ describe('Exchange', () => {
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
-            return expect(
-                exWrapper.fillOrderAsync(signedOrder, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: true,
-                }),
-            ).to.be.rejectedWith(constants.REVERT);
+            return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if taker balances are too low to fill order and \
@@ -569,9 +565,7 @@ describe('Exchange', () => {
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
-            return expect(
-                exWrapper.fillOrderAsync(signedOrder, taker),
-            ).to.be.rejectedWith(constants.REVERT);
+            return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if maker allowances are too low to fill order and \
@@ -589,9 +583,7 @@ describe('Exchange', () => {
         it('should throw if maker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
             await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
-            expect(
-                exWrapper.fillOrderAsync(signedOrder, taker),
-            ).to.be.rejectedWith(constants.REVERT);
+            expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
             await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: maker,
             });
@@ -612,9 +604,7 @@ describe('Exchange', () => {
         it('should throw if taker allowances are too low to fill order and \
                 shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
             await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
-            expect(
-                exWrapper.fillOrderAsync(signedOrder, taker),
-            ).to.be.rejectedWith(constants.REVERT);
+            expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
             await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
                 from: taker,
             });
@@ -683,11 +673,7 @@ describe('Exchange', () => {
                 takerTokenAddress: maliciousToken.address,
             });
 
-            return expect(
-                exWrapper.fillOrderAsync(signedOrder, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: false,
-                }),
-            ).to.be.rejectedWith(constants.REVERT);
+            return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if an order is expired', async () => {

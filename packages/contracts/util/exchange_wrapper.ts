@@ -86,10 +86,7 @@ export class ExchangeWrapper {
             shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
         } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createBatchFill(
-            orders,
-            opts.takerTokenFillAmounts,
-        );
+        const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
         const txHash = await this._exchange.batchFillOrders.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
@@ -109,10 +106,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenFillAmounts?: BigNumber[] } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createBatchFill(
-            orders,
-            opts.takerTokenFillAmounts,
-        );
+        const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
         const txHash = await this._exchange.batchFillOrKillOrders.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
@@ -132,10 +126,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenFillAmount: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createMarketFillOrders(
-            orders,
-            opts.takerTokenFillAmount,
-        );
+        const params = formatters.createMarketFillOrders(orders, opts.takerTokenFillAmount);
         const txHash = await this._exchange.marketFillOrders.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
