@@ -394,7 +394,7 @@ describe('Exchange', () => {
                 takerTokenFillAmount: signedOrder.takerTokenAmount,
             });
             const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
-            expect(log.args.filledTakerTokenAmount).to.be.bignumber.equal(
+            expect(log.args.takerTokenFilledAmount).to.be.bignumber.equal(
                 signedOrder.takerTokenAmount.minus(takerTokenFillAmount),
             );
             const newBalances = await dmyBalances.getAsync();
@@ -544,11 +544,7 @@ describe('Exchange', () => {
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
-            return expect(
-                exWrapper.fillOrderAsync(signedOrder, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: true,
-                }),
-            ).to.be.rejectedWith(constants.REVERT);
+            return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if taker balances are too low to fill order and \
@@ -676,11 +672,7 @@ describe('Exchange', () => {
                 takerTokenAddress: maliciousToken.address,
             });
 
-            return expect(
-                exWrapper.fillOrderAsync(signedOrder, taker, {
-                    shouldThrowOnInsufficientBalanceOrAllowance: false,
-                }),
-            ).to.be.rejectedWith(constants.REVERT);
+            return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should not change balances if an order is expired', async () => {
