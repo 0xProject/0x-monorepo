@@ -518,21 +518,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             globalErrMsg = 'You must specify a fill amount';
         }
 
-        const signedOrder = {
-            exchangeContractAddress: this.props.blockchain.getExchangeContractAddressIfExists(),
-            maker: parsedOrder.signedOrder.maker,
-            taker: _.isEmpty(parsedOrder.signedOrder.taker) ? constants.NULL_ADDRESS : parsedOrder.signedOrder.taker,
-            makerTokenAddress: parsedOrder.signedOrder.makerTokenAddress,
-            takerTokenAddress: parsedOrder.signedOrder.takerTokenAddress,
-            makerTokenAmount: new BigNumber(parsedOrder.signedOrder.makerTokenAmount),
-            takerTokenAmount: new BigNumber(parsedOrder.signedOrder.takerTokenAmount),
-            makerFee: new BigNumber(parsedOrder.signedOrder.makerFee),
-            takerFee: new BigNumber(parsedOrder.signedOrder.takerFee),
-            expirationUnixTimestampSec: new BigNumber(this.state.parsedOrder.signedOrder.expirationUnixTimestampSec),
-            feeRecipient: parsedOrder.signedOrder.feeRecipient,
-            ecSignature: parsedOrder.signedOrder.ecSignature,
-            salt: new BigNumber(parsedOrder.signedOrder.salt),
-        };
+        const signedOrder = this.props.blockchain.portalOrderToZeroExOrder(parsedOrder);
         if (_.isEmpty(globalErrMsg)) {
             try {
                 await this.props.blockchain.validateFillOrderThrowIfInvalidAsync(
@@ -621,21 +607,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
 
         const takerTokenAmount = new BigNumber(parsedOrder.signedOrder.takerTokenAmount);
 
-        const signedOrder = {
-            exchangeContractAddress: this.props.blockchain.getExchangeContractAddressIfExists(),
-            maker: parsedOrder.signedOrder.maker,
-            taker: parsedOrder.signedOrder.taker,
-            makerTokenAddress: parsedOrder.signedOrder.makerTokenAddress,
-            takerTokenAddress: parsedOrder.signedOrder.takerTokenAddress,
-            makerTokenAmount: new BigNumber(parsedOrder.signedOrder.makerTokenAmount),
-            takerTokenAmount: new BigNumber(parsedOrder.signedOrder.takerTokenAmount),
-            makerFee: new BigNumber(parsedOrder.signedOrder.makerFee),
-            takerFee: new BigNumber(parsedOrder.signedOrder.takerFee),
-            expirationUnixTimestampSec: new BigNumber(this.state.parsedOrder.signedOrder.expirationUnixTimestampSec),
-            feeRecipient: parsedOrder.signedOrder.feeRecipient,
-            ecSignature: parsedOrder.signedOrder.ecSignature,
-            salt: new BigNumber(parsedOrder.signedOrder.salt),
-        };
+        const signedOrder = this.props.blockchain.portalOrderToZeroExOrder(parsedOrder);
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
         const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
         const availableTakerTokenAmount = takerTokenAmount.minus(unavailableTakerAmount);
