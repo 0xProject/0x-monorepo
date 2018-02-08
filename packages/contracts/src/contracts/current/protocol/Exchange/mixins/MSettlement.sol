@@ -25,20 +25,12 @@ contract MSettlement is LibOrder {
     function settleOrder(
         Order order,
         address taker,
-        uint filledTakerTokenAmount)
+        uint256 takerTokenFilledAmount)
         internal
         returns (
-            uint filledMakerTokenAmount,
-            uint paidMakerFee,
-            uint paidTakerFee
+            uint256 makerTokenFilledAmount,
+            uint256 makerFeePaid,
+            uint256 takerFeePaid
         );
 
-    /// @dev Checks if any order transfers will fail.
-    /// @param order Order struct of params that will be checked.
-    /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
-    /// @return Predicted result of transfers.
-    function isTransferable(Order order, uint fillTakerTokenAmount)
-        internal
-        constant  // The called token contracts may attempt to change state, but will not be able to due to gas limits on getBalance and getAllowance.
-        returns (bool);
 }

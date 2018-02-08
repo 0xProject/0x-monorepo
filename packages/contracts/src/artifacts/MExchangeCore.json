@@ -3,7 +3,7 @@
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0x52ef222c98e5232ca884974148a031b888f493ce0967271678882fe54cd6dd73",
+            "keccak256": "0xb3f7e7eebb0b5ddae555a67cd7cd902e058ed2cb191db99f1f20de3fcdfcb0c8",
             "optimizer_enabled": 0,
             "abi": [
                 {
@@ -18,14 +18,26 @@
                             "type": "uint256[6]"
                         },
                         {
-                            "name": "cancelTakerTokenAmount",
+                            "name": "takerTokenFillAmount",
                             "type": "uint256"
+                        },
+                        {
+                            "name": "v",
+                            "type": "uint8"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32"
                         }
                     ],
-                    "name": "cancelOrder",
+                    "name": "fillOrder",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "takerTokenFilledAmount",
                             "type": "uint256"
                         }
                     ],
@@ -45,30 +57,14 @@
                             "type": "uint256[6]"
                         },
                         {
-                            "name": "fillTakerTokenAmount",
+                            "name": "takerTokenCancelAmount",
                             "type": "uint256"
-                        },
-                        {
-                            "name": "shouldThrowOnInsufficientBalanceOrAllowance",
-                            "type": "bool"
-                        },
-                        {
-                            "name": "v",
-                            "type": "uint8"
-                        },
-                        {
-                            "name": "r",
-                            "type": "bytes32"
-                        },
-                        {
-                            "name": "s",
-                            "type": "bytes32"
                         }
                     ],
-                    "name": "fillOrder",
+                    "name": "cancelOrder",
                     "outputs": [
                         {
-                            "name": "filledTakerTokenAmount",
+                            "name": "takerTokenCancelledAmount",
                             "type": "uint256"
                         }
                     ],
@@ -78,7 +74,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518051462613
+            "updated_at": 1518116205079
         }
     }
 }

@@ -1,9 +1,8 @@
 {
-    "contract_name": "MixinExchangeCore",
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0x1a532e35c3c1bebdf178378462fda3b09037c9dd68bc48d628e6b6d2e400d113",
+            "keccak256": "0xe4a9da7bc8ec0ca4921996afc8390f9cf9de9b5da29ea3d12e175e2dd7f8c8d8",
             "optimizer_enabled": 0,
             "abi": [
                 {
@@ -25,7 +24,7 @@
                     "name": "isRoundingError",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "isError",
                             "type": "bool"
                         }
                     ],
@@ -83,14 +82,53 @@
                             "type": "uint256[6]"
                         },
                         {
-                            "name": "cancelTakerTokenAmount",
+                            "name": "takerTokenFillAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "v",
+                            "type": "uint8"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32"
+                        }
+                    ],
+                    "name": "fillOrder",
+                    "outputs": [
+                        {
+                            "name": "takerTokenFilledAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6]"
+                        },
+                        {
+                            "name": "takerTokenCancelAmount",
                             "type": "uint256"
                         }
                     ],
                     "name": "cancelOrder",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "takerTokenCancelledAmount",
                             "type": "uint256"
                         }
                     ],
@@ -109,7 +147,7 @@
                     "name": "getUnavailableTakerTokenAmount",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "unavailableTakerTokenAmount",
                             "type": "uint256"
                         }
                     ],
@@ -144,7 +182,7 @@
                     "name": "isValidSignature",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "isValid",
                             "type": "bool"
                         }
                     ],
@@ -171,55 +209,12 @@
                     "name": "getPartialAmount",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "partialAmount",
                             "type": "uint256"
                         }
                     ],
                     "payable": false,
                     "stateMutability": "pure",
-                    "type": "function"
-                },
-                {
-                    "constant": false,
-                    "inputs": [
-                        {
-                            "name": "orderAddresses",
-                            "type": "address[5]"
-                        },
-                        {
-                            "name": "orderValues",
-                            "type": "uint256[6]"
-                        },
-                        {
-                            "name": "fillTakerTokenAmount",
-                            "type": "uint256"
-                        },
-                        {
-                            "name": "shouldThrowOnInsufficientBalanceOrAllowance",
-                            "type": "bool"
-                        },
-                        {
-                            "name": "v",
-                            "type": "uint8"
-                        },
-                        {
-                            "name": "r",
-                            "type": "bytes32"
-                        },
-                        {
-                            "name": "s",
-                            "type": "bytes32"
-                        }
-                    ],
-                    "name": "fillOrder",
-                    "outputs": [
-                        {
-                            "name": "filledTakerTokenAmount",
-                            "type": "uint256"
-                        }
-                    ],
-                    "payable": false,
-                    "stateMutability": "nonpayable",
                     "type": "function"
                 },
                 {
@@ -237,7 +232,7 @@
                     "name": "getOrderHash",
                     "outputs": [
                         {
-                            "name": "",
+                            "name": "orderHash",
                             "type": "bytes32"
                         }
                     ],
@@ -275,31 +270,26 @@
                         },
                         {
                             "indexed": false,
-                            "name": "filledMakerTokenAmount",
+                            "name": "makerTokenFilledAmount",
                             "type": "uint256"
                         },
                         {
                             "indexed": false,
-                            "name": "filledTakerTokenAmount",
+                            "name": "takerTokenFilledAmount",
                             "type": "uint256"
                         },
                         {
                             "indexed": false,
-                            "name": "paidMakerFee",
+                            "name": "makerFeePaid",
                             "type": "uint256"
                         },
                         {
                             "indexed": false,
-                            "name": "paidTakerFee",
+                            "name": "takerFeePaid",
                             "type": "uint256"
                         },
                         {
                             "indexed": true,
-                            "name": "tokens",
-                            "type": "bytes32"
-                        },
-                        {
-                            "indexed": false,
                             "name": "orderHash",
                             "type": "bytes32"
                         }
@@ -332,21 +322,16 @@
                         },
                         {
                             "indexed": false,
-                            "name": "cancelledMakerTokenAmount",
+                            "name": "makerTokenCancelledAmount",
                             "type": "uint256"
                         },
                         {
                             "indexed": false,
-                            "name": "cancelledTakerTokenAmount",
+                            "name": "takerTokenCancelledAmount",
                             "type": "uint256"
                         },
                         {
                             "indexed": true,
-                            "name": "tokens",
-                            "type": "bytes32"
-                        },
-                        {
-                            "indexed": false,
                             "name": "orderHash",
                             "type": "bytes32"
                         }
@@ -373,7 +358,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518051461934
+            "updated_at": 1518116203481
         }
     }
 }
