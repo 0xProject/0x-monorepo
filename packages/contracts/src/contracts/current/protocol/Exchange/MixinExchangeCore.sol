@@ -39,8 +39,8 @@ contract MixinExchangeCore is
     LibPartialAmount
 {
     // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
-    mapping (bytes32 => uint) public filled;
-    mapping (bytes32 => uint) public cancelled;
+    mapping (bytes32 => uint256) public filled;
+    mapping (bytes32 => uint256) public cancelled;
     
     event LogFill(
         address indexed maker,
@@ -48,12 +48,11 @@ contract MixinExchangeCore is
         address indexed feeRecipient,
         address makerToken,
         address takerToken,
-        uint filledMakerTokenAmount,
-        uint filledTakerTokenAmount,
-        uint paidMakerFee,
-        uint paidTakerFee,
-        bytes32 indexed tokens, // keccak256(makerToken, takerToken), allows subscribing to a token pair
-        bytes32 orderHash
+        uint256 makerTokenFilledAmount,
+        uint256 takerTokenFilledAmount,
+        uint256 makerFeePaid,
+        uint256 takerFeePaid,
+        bytes32 indexed orderHash
     );
 
     event LogCancel(
@@ -61,10 +60,9 @@ contract MixinExchangeCore is
         address indexed feeRecipient,
         address makerToken,
         address takerToken,
-        uint cancelledMakerTokenAmount,
-        uint cancelledTakerTokenAmount,
-        bytes32 indexed tokens,
-        bytes32 orderHash
+        uint256 makerTokenCancelledAmount,
+        uint256 takerTokenCancelledAmount,
+        bytes32 indexed orderHash
     );
 
     /*
@@ -74,22 +72,20 @@ contract MixinExchangeCore is
     /// @dev Fills the input order.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @param fillTakerTokenAmount Desired amount of takerToken to fill.
-    /// @param shouldThrowOnInsufficientBalanceOrAllowance Test if transfer will fail before attempting.
+    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
     /// @param v ECDSA signature parameter v.
     /// @param r ECDSA signature parameters r.
     /// @param s ECDSA signature parameters s.
     /// @return Total amount of takerToken filled in trade.
     function fillOrder(
           address[5] orderAddresses,
-          uint[6] orderValues,
-          uint fillTakerTokenAmount,
-          bool shouldThrowOnInsufficientBalanceOrAllowance,
+          uint256[6] orderValues,
+          uint256 takerTokenFillAmount,
           uint8 v,
           bytes32 r,
           bytes32 s)
           public
-          returns (uint filledTakerTokenAmount)
+          returns (uint256 takerTokenFilledAmount)
     {
         Order memory order = Order({
             maker: orderAddresses[0],
@@ -106,7 +102,7 @@ contract MixinExchangeCore is
         });
 
         require(order.taker == address(0) || order.taker == msg.sender);
-        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && fillTakerTokenAmount > 0);
+        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && takerTokenFillAmount > 0);
         require(isValidSignature(
             order.maker,
             order.orderHash,
@@ -120,32 +116,27 @@ contract MixinExchangeCore is
             return 0;
         }
 
-        uint remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
-        filledTakerTokenAmount = min256(fillTakerTokenAmount, remainingTakerTokenAmount);
-        if (filledTakerTokenAmount == 0) {
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
+        takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
+        if (takerTokenFilledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), order.orderHash);
             return 0;
         }
 
-        if (isRoundingError(filledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount)) {
+        if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), order.orderHash);
             return 0;
         }
 
-        if (!shouldThrowOnInsufficientBalanceOrAllowance && !isTransferable(order, filledTakerTokenAmount)) {
-            LogError(uint8(Errors.INSUFFICIENT_BALANCE_OR_ALLOWANCE), order.orderHash);
-            return 0;
-        }
-        
         // Update state
-        filled[order.orderHash] = safeAdd(filled[order.orderHash], filledTakerTokenAmount);
+        filled[order.orderHash] = safeAdd(filled[order.orderHash], takerTokenFilledAmount);
         
         // Settle order
         uint256 filledMakerTokenAmount;
-        uint256 paidMakerFee;
-        uint256 paidTakerFee;
-        (filledMakerTokenAmount, paidMakerFee, paidTakerFee) =
-            settleOrder(order, msg.sender, filledTakerTokenAmount);
+        uint256 makerFeePaid;
+        uint256 takerFeePaid;
+        (filledMakerTokenAmount, makerFeePaid, takerFeePaid) =
+            settleOrder(order, msg.sender, takerTokenFilledAmount);
         
         // Log order
         LogFill(
@@ -155,26 +146,25 @@ contract MixinExchangeCore is
             order.makerToken,
             order.takerToken,
             filledMakerTokenAmount,
-            filledTakerTokenAmount,
-            paidMakerFee,
-            paidTakerFee,
-            keccak256(order.makerToken, order.takerToken),
+            takerTokenFilledAmount,
+            makerFeePaid,
+            takerFeePaid,
             order.orderHash
         );
-        return filledTakerTokenAmount;
+        return takerTokenFilledAmount;
     }
 
     /// @dev Cancels the input order.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @param cancelTakerTokenAmount Desired amount of takerToken to cancel in order.
+    /// @param takerTokenCancelAmount Desired amount of takerToken to cancel in order.
     /// @return Amount of takerToken cancelled.
     function cancelOrder(
         address[5] orderAddresses,
-        uint[6] orderValues,
-        uint cancelTakerTokenAmount)
+        uint256[6] orderValues,
+        uint256 takerTokenCancelAmount)
         public
-        returns (uint)
+        returns (uint256 takerTokenCancelledAmount)
     {
         Order memory order = Order({
             maker: orderAddresses[0],
@@ -191,33 +181,32 @@ contract MixinExchangeCore is
         });
 
         require(order.maker == msg.sender);
-        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && cancelTakerTokenAmount > 0);
+        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && takerTokenCancelAmount > 0);
 
         if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
             return 0;
         }
 
-        uint remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
-        uint cancelledTakerTokenAmount = min256(cancelTakerTokenAmount, remainingTakerTokenAmount);
-        if (cancelledTakerTokenAmount == 0) {
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
+        takerTokenCancelledAmount = min256(takerTokenCancelAmount, remainingTakerTokenAmount);
+        if (takerTokenCancelledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), order.orderHash);
             return 0;
         }
 
-        cancelled[order.orderHash] = safeAdd(cancelled[order.orderHash], cancelledTakerTokenAmount);
+        cancelled[order.orderHash] = safeAdd(cancelled[order.orderHash], takerTokenCancelledAmount);
 
         LogCancel(
             order.maker,
             order.feeRecipient,
             order.makerToken,
             order.takerToken,
-            getPartialAmount(cancelledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount),
-            cancelledTakerTokenAmount,
-            keccak256(order.makerToken, order.takerToken),
+            getPartialAmount(takerTokenCancelledAmount, order.takerTokenAmount, order.makerTokenAmount),
+            takerTokenCancelledAmount,
             order.orderHash
         );
-        return cancelledTakerTokenAmount;
+        return takerTokenCancelledAmount;
     }
     
     /// @dev Checks if rounding error > 0.1%.
@@ -225,29 +214,29 @@ contract MixinExchangeCore is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function isRoundingError(uint numerator, uint denominator, uint target)
-        public
-        pure
-        returns (bool)
+    function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
+        public pure
+        returns (bool isError)
     {
-        uint remainder = mulmod(target, numerator, denominator);
+        uint256 remainder = mulmod(target, numerator, denominator);
         if (remainder == 0) return false; // No rounding error.
 
-        uint errPercentageTimes1000000 = safeDiv(
+        uint256 errPercentageTimes1000000 = safeDiv(
             safeMul(remainder, 1000000),
             safeMul(numerator, target)
         );
-        return errPercentageTimes1000000 > 1000;
+        isError = errPercentageTimes1000000 > 1000;
+        return isError;
     }
 
-    /// @dev Calculates the sum of values already filled and cancelled for a given order.
+   /// @dev Calculates the sum of values already filled and cancelled for a given order.
     /// @param orderHash The Keccak-256 hash of the given order.
     /// @return Sum of values already filled and cancelled.
     function getUnavailableTakerTokenAmount(bytes32 orderHash)
-        public
-        constant
-        returns (uint)
+        public view
+        returns (uint256 unavailableTakerTokenAmount)
     {
-        return safeAdd(filled[orderHash], cancelled[orderHash]);
+        unavailableTakerTokenAmount = safeAdd(filled[orderHash], cancelled[orderHash]);
+        return unavailableTakerTokenAmount;
     }
 }
