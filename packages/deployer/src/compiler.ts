@@ -136,6 +136,18 @@ export class Compiler {
         return normalizedErrMsg;
     }
     /**
+     * Checks if an error message contains a warning.
+     * @param errMsg An error message from the compiled output.
+     * @return True if the error message is a warning.
+     */
+    private static _isErrMsgWarning(errMsg: string): boolean {
+        const errWarningMatch = errMsg.match(/(?:warning\s)/);
+        if (!_.isNull(errWarningMatch)) {
+            return true;
+        }
+        return false;
+    }
+    /**
      * Instantiates a new instance of the Compiler class.
      * @param opts Options specifying directories, network, and optimization settings.
      * @return An instance of the Compiler class.
@@ -223,6 +235,9 @@ export class Compiler {
         if (!_.isUndefined(compiled.errors)) {
             _.forEach(compiled.errors, errMsg => {
                 const normalizedErrMsg = Compiler._getNormalizedErrMsg(errMsg);
+                if (!Compiler._isErrMsgWarning(normalizedErrMsg)) {
+                    utils.consoleLog(normalizedErrMsg);
+                }
                 this._solcErrors.add(normalizedErrMsg);
             });
         }
