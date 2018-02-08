@@ -18,25 +18,21 @@
 
 pragma solidity ^0.4.19;
 
-import "./MixinExchangeCore.sol";
-import "./MixinSignatureValidatorEcrecover.sol";
-import "./MixinSettlementProxy.sol";
-import "./MixinWrapperFunctions.sol";
+contract MSignatureValidator {
 
-contract Exchange is
-    MixinExchangeCore,
-    MixinSignatureValidatorEcrecover,
-    MixinSettlementProxy,
-    MixinWrapperFunctions
-{
-    string constant public VERSION = "2.0.0-alpha";
-
-    function Exchange(address _zrxToken, address _tokenTransferProxy)
-        public
-        MixinExchangeCore()
-        MixinSignatureValidatorEcrecover()
-        MixinSettlementProxy(_tokenTransferProxy, _zrxToken)
-        MixinWrapperFunctions()
-    {
-    }
+    /// @dev Verifies that an order signature is valid.
+    /// @param signer address of signer.
+    /// @param hash Signed Keccak-256 hash.
+    /// @param v ECDSA signature parameter v.
+    /// @param r ECDSA signature parameters r.
+    /// @param s ECDSA signature parameters s.
+    /// @return Validity of order signature.
+    function isValidSignature(
+        address signer,
+        bytes32 hash,
+        uint8 v,
+        bytes32 r,
+        bytes32 s)
+        public view
+        returns (bool);
 }

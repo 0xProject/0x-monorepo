@@ -18,25 +18,21 @@
 
 pragma solidity ^0.4.19;
 
-import "./MixinExchangeCore.sol";
-import "./MixinSignatureValidatorEcrecover.sol";
-import "./MixinSettlementProxy.sol";
-import "./MixinWrapperFunctions.sol";
+import { SafeMath } from "../../utils/SafeMath/SafeMath.sol";
 
-contract Exchange is
-    MixinExchangeCore,
-    MixinSignatureValidatorEcrecover,
-    MixinSettlementProxy,
-    MixinWrapperFunctions
-{
-    string constant public VERSION = "2.0.0-alpha";
-
-    function Exchange(address _zrxToken, address _tokenTransferProxy)
-        public
-        MixinExchangeCore()
-        MixinSignatureValidatorEcrecover()
-        MixinSettlementProxy(_tokenTransferProxy, _zrxToken)
-        MixinWrapperFunctions()
+contract LibPartialAmount is SafeMath {
+  
+    /// @dev Calculates partial value given a numerator and denominator.
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to calculate partial of.
+    /// @return Partial value of target.
+    function getPartialAmount(uint numerator, uint denominator, uint target)
+        public pure
+        returns (uint)
     {
+        return safeDiv(safeMul(numerator, target), denominator);
     }
 }
+
+
