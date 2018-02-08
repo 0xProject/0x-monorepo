@@ -1,0 +1,50 @@
+{
+    "contract_name": "MixinSignatureValidatorEcrecover",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.19",
+            "keccak256": "0xc508953498bce4fc609cd6e2360628ee72ac6cda44a8326d82304db70eeaae5d",
+            "optimizer_enabled": 0,
+            "abi": [
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "signer",
+                            "type": "address"
+                        },
+                        {
+                            "name": "hash",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "v",
+                            "type": "uint8"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32"
+                        }
+                    ],
+                    "name": "isValidSignature",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ],
+            "unlinked_binary":
+                "0x6060604052341561000f57600080fd5b6101fd8061001e6000396000f300606060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680638163681e14610046575b600080fd5b341561005157600080fd5b6100b0600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919080356000191690602001909190803560ff1690602001909190803560001916906020019091908035600019169060200190919050506100ca565b604051808215151515815260200191505060405180910390f35b600060018560405180807f19457468657265756d205369676e6564204d6573736167653a0a333200000000815250601c0182600019166000191681526020019150506040518091039020858585604051600081526020016040526000604051602001526040518085600019166000191681526020018460ff1660ff16815260200183600019166000191681526020018260001916600019168152602001945050505050602060405160208103908084039060008661646e5a03f1151561018f57600080fd5b50506020604051035173ffffffffffffffffffffffffffffffffffffffff168673ffffffffffffffffffffffffffffffffffffffff16149050959450505050505600a165627a7a7230582090b24d4d8ee7c5ad05b1d81fce7c12a9ee7482733c48cd8c11e7cebf097ba34f0029",
+            "updated_at": 1518051462441
+        }
+    }
+}
