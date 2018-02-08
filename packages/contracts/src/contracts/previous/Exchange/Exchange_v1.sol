@@ -16,15 +16,15 @@
 
 */
 
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.14;
 
-import { ITokenTransferProxy } from "../TokenTransferProxy/ITokenTransferProxy.sol";
-import { IToken } from "../../tokens/Token/IToken.sol";
-import { SafeMath } from "../../utils/SafeMath/SafeMath.sol";
+import { TokenTransferProxy_v1 as TokenTransferProxy } from "../TokenTransferProxy/TokenTransferProxy_v1.sol";
+import { Token_v1 as Token } from "../Token/Token_v1.sol";
+import { SafeMath_v1 as SafeMath } from "../SafeMath/SafeMath_v1.sol";
 
 /// @title Exchange - Facilitates exchange of ERC20 tokens.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
-contract Exchange is SafeMath {
+contract Exchange_v1 is SafeMath {
 
     // Error Codes
     enum Errors {
@@ -85,9 +85,7 @@ contract Exchange is SafeMath {
         bytes32 orderHash;
     }
 
-    function Exchange(address _zrxToken, address _tokenTransferProxy)
-        public
-    {
+    function Exchange(address _zrxToken, address _tokenTransferProxy) {
         ZRX_TOKEN_CONTRACT = _zrxToken;
         TOKEN_TRANSFER_PROXY_CONTRACT = _tokenTransferProxy;
     }
@@ -460,7 +458,7 @@ contract Exchange is SafeMath {
         bytes32 r,
         bytes32 s)
         public
-        pure
+        constant
         returns (bool)
     {
         return signer == ecrecover(
@@ -478,7 +476,7 @@ contract Exchange is SafeMath {
     /// @return Rounding error is present.
     function isRoundingError(uint numerator, uint denominator, uint target)
         public
-        pure
+        constant
         returns (bool)
     {
         uint remainder = mulmod(target, numerator, denominator);
@@ -498,7 +496,7 @@ contract Exchange is SafeMath {
     /// @return Partial value of target.
     function getPartialAmount(uint numerator, uint denominator, uint target)
         public
-        pure
+        constant
         returns (uint)
     {
         return safeDiv(safeMul(numerator, target), denominator);
@@ -534,7 +532,7 @@ contract Exchange is SafeMath {
         internal
         returns (bool)
     {
-        return ITokenTransferProxy(TOKEN_TRANSFER_PROXY_CONTRACT).transferFrom(token, from, to, value);
+        return TokenTransferProxy(TOKEN_TRANSFER_PROXY_CONTRACT).transferFrom(token, from, to, value);
     }
 
     /// @dev Checks if any order transfers will fail.
@@ -587,7 +585,7 @@ contract Exchange is SafeMath {
         constant  // The called token contract may attempt to change state, but will not be able to due to an added gas limit.
         returns (uint)
     {
-        return IToken(token).balanceOf.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner); // Limit gas to prevent reentrancy
+        return Token(token).balanceOf.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner); // Limit gas to prevent reentrancy
     }
 
     /// @dev Get allowance of token given to TokenTransferProxy by an address.
@@ -599,6 +597,6 @@ contract Exchange is SafeMath {
         constant  // The called token contract may attempt to change state, but will not be able to due to an added gas limit.
         returns (uint)
     {
-        return IToken(token).allowance.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner, TOKEN_TRANSFER_PROXY_CONTRACT); // Limit gas to prevent reentrancy
+        return Token(token).allowance.gas(EXTERNAL_QUERY_GAS_LIMIT)(owner, TOKEN_TRANSFER_PROXY_CONTRACT); // Limit gas to prevent reentrancy
     }
 }
