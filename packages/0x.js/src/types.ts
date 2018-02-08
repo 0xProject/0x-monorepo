@@ -9,6 +9,10 @@ import { ExchangeContractEventArgs, ExchangeEvents } from './contract_wrappers/g
 import { TokenContractEventArgs, TokenEvents } from './contract_wrappers/generated/token';
 
 export enum ZeroExError {
+    ZRXAddressRequired = 'ZRX_ADDREESS_REQUIRED',
+    ExchangeAddressRequired = 'EXCHANGE_ADDREESS_REQUIRED',
+    TokenRegistryAddressRequired = 'TOKEN_REGISTRY_ADDREESS_REQUIRED',
+    TokenTransferProxyAddressRequired = 'TOKEN_TRANSFER_PROXY_ADDREESS_REQUIRED',
     ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
     ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
     EtherTokenContractDoesNotExist = 'ETHER_TOKEN_CONTRACT_DOES_NOT_EXIST',
@@ -195,17 +199,8 @@ export interface OrderStateWatcherConfig {
     cleanupJobIntervalMs?: number;
 }
 
-/*
- * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 42-kovan, 50-testrpc)
- * gasPrice: Gas price to use with every transaction
- * exchangeContractAddress: The address of an exchange contract to use
- * zrxContractAddress: The address of the ZRX contract to use
- * tokenRegistryContractAddress: The address of a token registry contract to use
- * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
- * orderWatcherConfig: All the configs related to the orderWatcher
- */
-export interface ZeroExConfig {
-    networkId: number;
+export interface ZeroExPublicNetworkConfig {
+    networkId: 1 | 3 | 4 | 42 | 50;
     gasPrice?: BigNumber;
     exchangeContractAddress?: string;
     zrxContractAddress?: string;
@@ -213,6 +208,27 @@ export interface ZeroExConfig {
     tokenTransferProxyContractAddress?: string;
     orderWatcherConfig?: OrderStateWatcherConfig;
 }
+
+export interface ZeroExPrivateNetworkConfig {
+    networkId: number;
+    gasPrice?: BigNumber;
+    exchangeContractAddress: string;
+    zrxContractAddress: string;
+    tokenRegistryContractAddress: string;
+    tokenTransferProxyContractAddress: string;
+    orderWatcherConfig?: OrderStateWatcherConfig;
+}
+
+/*
+ * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 50-testrpc)
+ * gasPrice: Gas price to use with every transaction
+ * exchangeContractAddress: The address of an exchange contract to use
+ * zrxContractAddress: The address of the ZRX contract to use
+ * tokenRegistryContractAddress: The address of a token registry contract to use
+ * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
+ * orderWatcherConfig: All the configs related to the orderWatcher
+ */
+export type ZeroExConfig = ZeroExPublicNetworkConfig | ZeroExPrivateNetworkConfig;
 
 export type ArtifactContractName = 'ZRX' | 'TokenTransferProxy' | 'TokenRegistry' | 'Token' | 'Exchange' | 'EtherToken';
 

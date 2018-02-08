@@ -13,12 +13,17 @@ import { TokenTransferProxyWrapper } from './contract_wrappers/token_transfer_pr
 import { TokenWrapper } from './contract_wrappers/token_wrapper';
 import { OrderStateWatcher } from './order_watcher/order_state_watcher';
 import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
+import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
+import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
 import { ECSignature, Order, SignedOrder, Web3Provider, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
 import { signatureUtils } from './utils/signature_utils';
 import { utils } from './utils/utils';
+
+assert.schemaValidator.addSchema(zeroExPrivateNetworkConfigSchema);
+assert.schemaValidator.addSchema(zeroExPublicNetworkConfigSchema);
 
 /**
  * The ZeroEx class is the single entry-point into the 0x.js library. It contains all of the library's functionality
