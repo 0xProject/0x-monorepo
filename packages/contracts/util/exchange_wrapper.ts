@@ -18,22 +18,16 @@ export class ExchangeWrapper {
     public async fillOrderAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: {
-            fillTakerTokenAmount?: BigNumber;
-            shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
-        } = {},
+        opts: { takerTokenFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = signedOrderUtils.createFill(
             signedOrder,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            opts.fillTakerTokenAmount,
+            opts.takerTokenFillAmount,
         );
         const txHash = await this._exchange.fillOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
-            params.fillTakerTokenAmount,
-            params.shouldThrowOnInsufficientBalanceOrAllowance,
+            params.takerTokenFillAmount,
             params.v,
             params.r,
             params.s,
@@ -47,13 +41,13 @@ export class ExchangeWrapper {
     public async cancelOrderAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { cancelTakerTokenAmount?: BigNumber } = {},
+        opts: { takerTokenCancelAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrderUtils.createCancel(signedOrder, opts.cancelTakerTokenAmount);
+        const params = signedOrderUtils.createCancel(signedOrder, opts.takerTokenCancelAmount);
         const txHash = await this._exchange.cancelOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
-            params.cancelTakerTokenAmount,
+            params.takerTokenCancelAmount,
             { from },
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
@@ -64,18 +58,16 @@ export class ExchangeWrapper {
     public async fillOrKillOrderAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { fillTakerTokenAmount?: BigNumber } = {},
+        opts: { takerTokenFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const shouldThrowOnInsufficientBalanceOrAllowance = true;
         const params = signedOrderUtils.createFill(
             signedOrder,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            opts.fillTakerTokenAmount,
+            opts.takerTokenFillAmount,
         );
         const txHash = await this._exchange.fillOrKillOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
-            params.fillTakerTokenAmount,
+            params.takerTokenFillAmount,
             params.v,
             params.r,
             params.s,
@@ -90,21 +82,18 @@ export class ExchangeWrapper {
         orders: SignedOrder[],
         from: string,
         opts: {
-            fillTakerTokenAmounts?: BigNumber[];
+            takerTokenFillAmounts?: BigNumber[];
             shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
         } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = formatters.createBatchFill(
             orders,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            opts.fillTakerTokenAmounts,
+            opts.takerTokenFillAmounts,
         );
         const txHash = await this._exchange.batchFillOrders.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
-            params.fillTakerTokenAmounts,
-            params.shouldThrowOnInsufficientBalanceOrAllowance,
+            params.takerTokenFillAmounts,
             params.v,
             params.r,
             params.s,
@@ -118,18 +107,16 @@ export class ExchangeWrapper {
     public async batchFillOrKillOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { fillTakerTokenAmounts?: BigNumber[]; shouldThrowOnInsufficientBalanceOrAllowance?: boolean } = {},
+        opts: { takerTokenFillAmounts?: BigNumber[] } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
         const params = formatters.createBatchFill(
             orders,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            opts.fillTakerTokenAmounts,
+            opts.takerTokenFillAmounts,
         );
         const txHash = await this._exchange.batchFillOrKillOrders.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
-            params.fillTakerTokenAmounts,
+            params.takerTokenFillAmounts,
             params.v,
             params.r,
             params.s,
@@ -140,22 +127,19 @@ export class ExchangeWrapper {
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }
-    public async fillOrdersUpToAsync(
+    public async marketFillOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { fillTakerTokenAmount: BigNumber; shouldThrowOnInsufficientBalanceOrAllowance?: boolean },
+        opts: { takerTokenFillAmount: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const shouldThrowOnInsufficientBalanceOrAllowance = !!opts.shouldThrowOnInsufficientBalanceOrAllowance;
-        const params = formatters.createFillUpTo(
+        const params = formatters.createMarketFillOrders(
             orders,
-            shouldThrowOnInsufficientBalanceOrAllowance,
-            opts.fillTakerTokenAmount,
+            opts.takerTokenFillAmount,
         );
-        const txHash = await this._exchange.fillOrdersUpTo.sendTransactionAsync(
+        const txHash = await this._exchange.marketFillOrders.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
-            params.fillTakerTokenAmount,
-            params.shouldThrowOnInsufficientBalanceOrAllowance,
+            params.takerTokenFillAmount,
             params.v,
             params.r,
             params.s,
@@ -184,7 +168,6 @@ export class ExchangeWrapper {
         return tx;
     }
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
-        const shouldThrowOnInsufficientBalanceOrAllowance = false;
         const params = signedOrderUtils.getOrderAddressesAndValues(signedOrder);
         const orderHash = await this._exchange.getOrderHash.callAsync(params.orderAddresses, params.orderValues);
         return orderHash;
