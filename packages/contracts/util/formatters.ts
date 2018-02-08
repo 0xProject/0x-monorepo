@@ -2,19 +2,17 @@ import { SignedOrder } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { BatchCancelOrders, BatchFillOrders, FillOrdersUpTo } from './types';
+import { BatchCancelOrders, BatchFillOrders, MarketFillOrders } from './types';
 
 export const formatters = {
     createBatchFill(
         signedOrders: SignedOrder[],
-        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-        fillTakerTokenAmounts: BigNumber[] = [],
+        takerTokenFillAmounts: BigNumber[] = [],
     ) {
         const batchFill: BatchFillOrders = {
             orderAddresses: [],
             orderValues: [],
-            fillTakerTokenAmounts,
-            shouldThrowOnInsufficientBalanceOrAllowance,
+            takerTokenFillAmounts,
             v: [],
             r: [],
             s: [],
@@ -38,35 +36,33 @@ export const formatters = {
             batchFill.v.push(signedOrder.ecSignature.v);
             batchFill.r.push(signedOrder.ecSignature.r);
             batchFill.s.push(signedOrder.ecSignature.s);
-            if (fillTakerTokenAmounts.length < signedOrders.length) {
-                batchFill.fillTakerTokenAmounts.push(signedOrder.takerTokenAmount);
+            if (takerTokenFillAmounts.length < signedOrders.length) {
+                batchFill.takerTokenFillAmounts.push(signedOrder.takerTokenAmount);
             }
         });
         return batchFill;
     },
-    createFillUpTo(
+    createMarketFillOrders(
         signedOrders: SignedOrder[],
-        shouldThrowOnInsufficientBalanceOrAllowance: boolean,
-        fillTakerTokenAmount: BigNumber,
+        takerTokenFillAmount: BigNumber,
     ) {
-        const fillUpTo: FillOrdersUpTo = {
+        const marketFillOrders: MarketFillOrders = {
             orderAddresses: [],
             orderValues: [],
-            fillTakerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance,
+            takerTokenFillAmount,
             v: [],
             r: [],
             s: [],
         };
         signedOrders.forEach(signedOrder => {
-            fillUpTo.orderAddresses.push([
+            marketFillOrders.orderAddresses.push([
                 signedOrder.maker,
                 signedOrder.taker,
                 signedOrder.makerTokenAddress,
                 signedOrder.takerTokenAddress,
                 signedOrder.feeRecipient,
             ]);
-            fillUpTo.orderValues.push([
+            marketFillOrders.orderValues.push([
                 signedOrder.makerTokenAmount,
                 signedOrder.takerTokenAmount,
                 signedOrder.makerFee,
@@ -74,11 +70,11 @@ export const formatters = {
                 signedOrder.expirationUnixTimestampSec,
                 signedOrder.salt,
             ]);
-            fillUpTo.v.push(signedOrder.ecSignature.v);
-            fillUpTo.r.push(signedOrder.ecSignature.r);
-            fillUpTo.s.push(signedOrder.ecSignature.s);
+            marketFillOrders.v.push(signedOrder.ecSignature.v);
+            marketFillOrders.r.push(signedOrder.ecSignature.r);
+            marketFillOrders.s.push(signedOrder.ecSignature.s);
         });
-        return fillUpTo;
+        return marketFillOrders;
     },
     createBatchCancel(signedOrders: SignedOrder[], cancelTakerTokenAmounts: BigNumber[] = []) {
         const batchCancel: BatchCancelOrders = {
