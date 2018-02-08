@@ -106,7 +106,8 @@ const tableQueries: any = {
         low NUMERIC(78, 18),
         open NUMERIC(78, 18),
         volume_from NUMERIC(78, 18),
-        volume_to NUMERIC(78, 18)
+        volume_to NUMERIC(78, 18),
+        PRIMARY KEY (token, base, timestamp)
     )`,
 };
 
