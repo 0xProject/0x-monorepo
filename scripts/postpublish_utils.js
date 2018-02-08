@@ -29,7 +29,7 @@ module.exports = {
                 };
             });
     },
-    publishReleaseNotes: function(tag, releaseName, assets) {
+    publishReleaseNotesAsync: function(tag, releaseName, assets) {
         console.log('POSTPUBLISH: Releasing ', releaseName, '...');
         return publishReleaseAsync({
             token: githubPersonalAccessToken,
@@ -48,6 +48,17 @@ module.exports = {
     getReleaseName(subPackageName, version) {
         const releaseName = subPackageName + ' v' + version;
         return releaseName;
+    },
+    standardPostPublishAsync: function(subPackageName) {
+        return getLatestTagAndVersionAsync(subPackageName)
+            .then(function(result) {
+                const releaseName = getReleaseName(subPackageName, result.version);
+                const assets = [];
+                return publishReleaseNotesAsync(result.tag, releaseName, assets);
+            })
+            .catch(function(err) {
+                throw err;
+            });
     },
     generatedDocsDirectoryName,
 };
