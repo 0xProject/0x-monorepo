@@ -63,6 +63,7 @@ export const constants = {
     PROJECT_URL_AUGUR: 'https://augur.net',
     PROJECT_URL_AUCTUS: 'https://auctus.org',
     PROJECT_URL_OPEN_ANX: 'https://www.openanx.org',
+    PROJECT_URL_IDT: 'https://kinalpha.com',
     URL_ANGELLIST: 'https://angel.co/0xproject/jobs',
     URL_BIGNUMBERJS_GITHUB: 'http://mikemcl.github.io/bignumber.js',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
