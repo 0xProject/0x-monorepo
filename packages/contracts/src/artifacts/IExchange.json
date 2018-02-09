@@ -3,7 +3,7 @@
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0xf83b9e959416c0d1718e48456fcb2ff2cf30ee4b1a7d6a33cec677fe5c1b543a",
+            "keccak256": "0x55cedfe0653ad4a3f2bb4dc123f64ed5254108e435752853b899f7fd1c081980",
             "optimizer_enabled": 0,
             "abi": [
                 {
@@ -377,6 +377,20 @@
                     "constant": false,
                     "inputs": [
                         {
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "cancelOrdersBefore",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
                             "name": "orderAddresses",
                             "type": "address[5][]"
                         },
@@ -691,10 +705,27 @@
                     ],
                     "name": "LogCancel",
                     "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "name": "maker",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "LogCancelBefore",
+                    "type": "event"
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518118286204
+            "updated_at": 1518209868822
         }
     }
 }

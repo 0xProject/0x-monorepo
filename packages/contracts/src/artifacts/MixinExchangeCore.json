@@ -3,7 +3,7 @@
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0xad44a6bf618a1522cc349af46ea8e27c60b22ed83d7a1ce1fd057daa3e0cd3d8",
+            "keccak256": "0x4e0fb9185f366bda74c1ad85c6d84466e1b4e0d4097405834fcc3881d648b69c",
             "optimizer_enabled": 0,
             "abi": [
                 {
@@ -141,6 +141,25 @@
                     "constant": true,
                     "inputs": [
                         {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "makerEpoch",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
                             "name": "orderHash",
                             "type": "bytes32"
                         }
@@ -216,6 +235,20 @@
                     ],
                     "payable": false,
                     "stateMutability": "pure",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "cancelOrdersBefore",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
                     "type": "function"
                 },
                 {
@@ -345,6 +378,23 @@
                     "inputs": [
                         {
                             "indexed": true,
+                            "name": "maker",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "LogCancelBefore",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
                             "name": "errorId",
                             "type": "uint8"
                         },
@@ -359,7 +409,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518140760651
+            "updated_at": 1518209739555
         }
     }
 }

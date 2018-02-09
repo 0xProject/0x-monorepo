@@ -35,6 +35,10 @@ export interface BatchCancelOrders {
     takerTokenCancelAmounts: BigNumber[];
 }
 
+export interface CancelOrdersBefore {
+    timestamp: BigNumber;
+}
+
 export interface DefaultOrderParams {
     exchangeContractAddress: string;
     maker: string;

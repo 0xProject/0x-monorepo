@@ -31,6 +31,7 @@ contract LibOrder {
         uint256 makerFee;
         uint256 takerFee;
         uint256 expirationTimestampInSec;
+        uint256 salt;
         bytes32 orderHash;
     }
 

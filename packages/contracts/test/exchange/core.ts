@@ -846,4 +846,61 @@ describe('Exchange', () => {
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
     });
+
+    describe('cancelOrdersBefore', () => {
+        it('should fail to set timestamp less-or-equal to existing cancel timestamp', async () => {
+            const timestamp = new BigNumber(0);
+            return expect(
+                exWrapper.cancelOrdersBeforeAsync(timestamp, maker),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should cancel only orders with a timestamp less than CancelBefore timestamp', async () => {
+          // Cancel all transactions with a timestamp less than 1
+          const timestamp = new BigNumber(1);
+          await exWrapper.cancelOrdersBeforeAsync(timestamp, maker);
+
+          // Create 3 orders with timestamps 0,1,2
+          // Since we cancelled with timestamp=1, orders with timestamp<1 will not be processed
+          balances = await dmyBalances.getAsync();
+          const signedOrders = await Promise.all([
+              orderFactory.newSignedOrderAsync({
+                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(17), 18),
+                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(17), 18),
+                salt: new BigNumber(0)}),
+              orderFactory.newSignedOrderAsync({
+                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(97), 18),
+                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(97), 18),
+                salt: new BigNumber(1)}),
+              orderFactory.newSignedOrderAsync({
+                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(979), 18),
+                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(979), 18),
+                salt: new BigNumber(2)}),
+          ]);
+          await exWrapper.batchFillOrdersAsync(signedOrders, taker);
+
+          const newBalances = await dmyBalances.getAsync();
+          const fillMakerTokenAmount = signedOrders[1].makerTokenAmount.add(signedOrders[2].makerTokenAmount);
+          const fillTakerTokenAmount = signedOrders[1].takerTokenAmount.add(signedOrders[2].takerTokenAmount);
+          const makerFee = signedOrders[1].makerFee.add(signedOrders[2].makerFee);
+          const takerFee = signedOrders[1].takerFee.add(signedOrders[2].takerFee);
+          expect(newBalances[maker][signedOrders[2].makerTokenAddress]).to.be.bignumber.equal(
+              balances[maker][signedOrders[2].makerTokenAddress].minus(fillMakerTokenAmount),
+          );
+          expect(newBalances[maker][signedOrders[2].takerTokenAddress]).to.be.bignumber.equal(
+              balances[maker][signedOrders[2].takerTokenAddress].add(fillTakerTokenAmount),
+          );
+          expect(newBalances[maker][zrx.address]).to.be.bignumber.equal(balances[maker][zrx.address].minus(makerFee));
+          expect(newBalances[taker][signedOrders[2].takerTokenAddress]).to.be.bignumber.equal(
+              balances[taker][signedOrders[2].takerTokenAddress].minus(fillTakerTokenAmount),
+          );
+          expect(newBalances[taker][signedOrders[2].makerTokenAddress]).to.be.bignumber.equal(
+              balances[taker][signedOrders[2].makerTokenAddress].add(fillMakerTokenAmount),
+          );
+          expect(newBalances[taker][zrx.address]).to.be.bignumber.equal(balances[taker][zrx.address].minus(takerFee));
+          expect(newBalances[feeRecipient][zrx.address]).to.be.bignumber.equal(
+              balances[feeRecipient][zrx.address].add(makerFee.add(takerFee)),
+          );
+        });
+    });
 }); // tslint:disable-line:max-file-line-count
