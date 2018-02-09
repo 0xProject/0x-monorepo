@@ -218,10 +218,10 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     style={{ backgroundColor: colors.heroGrey, position: 'relative' }}
                 />
                 {this._renderHero()}
-                {this._renderProjects(relayersAndDappProjects, 'Projects building on 0x', colors.projectsGrey)}
+                {this._renderProjects(relayersAndDappProjects, 'Projects building on 0x', colors.projectsGrey, false)}
                 {this._renderTokenizationSection()}
                 {this._renderProtocolSection()}
-                {this._renderProjects(relayerProjects, 'Relayers building on 0x', colors.heroGrey)}
+                {this._renderProjects(relayerProjects, 'Relayers building on 0x', colors.heroGrey, true)}
                 {this._renderInfoBoxes()}
                 {this._renderBuildingBlocksSection()}
                 {this._renderUseCases()}
@@ -311,7 +311,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             </div>
         );
     }
-    private _renderProjects(projects: Project[], title: string, backgroundColor: string) {
+    private _renderProjects(projects: Project[], title: string, backgroundColor: string, isTitleCenter: boolean) {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const isMediumScreen = this.state.screenWidth === ScreenWidths.Md;
         const projectList = _.map(projects, (project: Project, i: number) => {
@@ -319,11 +319,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             let colWidth: number;
             switch (this.state.screenWidth) {
                 case ScreenWidths.Sm:
-                    colWidth = isRelayersOnly ? 4 : 4;
+                    colWidth = 4;
                     break;
 
                 case ScreenWidths.Md:
-                    colWidth = isRelayersOnly ? 3 : 3;
+                    colWidth = 3;
                     break;
 
                 case ScreenWidths.Lg:
@@ -351,9 +351,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             letterSpacing: 3,
         };
         return (
-            <div className="clearfix py4" style={{ backgroundColor }}>
+            <div className={`clearfix py4 ${isTitleCenter && 'center'}`} style={{ backgroundColor }}>
                 <div className="mx-auto max-width-4 clearfix sm-px3">
-                    <div className="h4 pb3 md-pl3 sm-pl2" style={titleStyle}>
+                    <div className="h4 pb3 lg-pl0 md-pl3 sm-pl2" style={titleStyle}>
                         {title}
                     </div>
                     <div className="clearfix">{projectList}</div>
@@ -610,7 +610,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         };
         return (
             <div className="clearfix" style={{ backgroundColor: colors.heroGrey }}>
-                <div className="h3 center pb3 pt4" style={titleStyle}>
+                <div className="center pb3 pt4" style={titleStyle}>
                     Benefits of 0x
                 </div>
                 <div className="mx-auto pb4 sm-mt2 clearfix" style={{ maxWidth: '60em' }}>
