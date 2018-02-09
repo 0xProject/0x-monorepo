@@ -144,13 +144,13 @@ export class ExchangeWrapper {
     public async batchCancelOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { cancelTakerTokenAmounts?: BigNumber[] } = {},
+        opts: { takerTokenCancelAmounts?: BigNumber[] } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = formatters.createBatchCancel(orders, opts.cancelTakerTokenAmounts);
+        const params = formatters.createBatchCancel(orders, opts.takerTokenCancelAmounts);
         const txHash = await this._exchange.batchCancelOrders.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
-            params.cancelTakerTokenAmounts,
+            params.takerTokenCancelAmounts,
             { from },
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);

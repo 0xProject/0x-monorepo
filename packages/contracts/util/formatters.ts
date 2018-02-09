@@ -76,11 +76,11 @@ export const formatters = {
         });
         return marketFillOrders;
     },
-    createBatchCancel(signedOrders: SignedOrder[], cancelTakerTokenAmounts: BigNumber[] = []) {
+    createBatchCancel(signedOrders: SignedOrder[], takerTokenCancelAmounts: BigNumber[] = []) {
         const batchCancel: BatchCancelOrders = {
             orderAddresses: [],
             orderValues: [],
-            cancelTakerTokenAmounts,
+            takerTokenCancelAmounts,
         };
         signedOrders.forEach(signedOrder => {
             batchCancel.orderAddresses.push([
@@ -98,8 +98,8 @@ export const formatters = {
                 signedOrder.expirationUnixTimestampSec,
                 signedOrder.salt,
             ]);
-            if (cancelTakerTokenAmounts.length < signedOrders.length) {
-                batchCancel.cancelTakerTokenAmounts.push(signedOrder.takerTokenAmount);
+            if (takerTokenCancelAmounts.length < signedOrders.length) {
+                batchCancel.takerTokenCancelAmounts.push(signedOrder.takerTokenAmount);
             }
         });
         return batchCancel;
