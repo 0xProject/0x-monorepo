@@ -97,14 +97,16 @@ contract MixinExchangeCore is
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
         
-        // Validate maker
-        require(order.makerTokenAmount > 0);
-        require(order.takerTokenAmount > 0);
-        require(isValidSignature(
-            order.orderHash,
-            order.maker,
-            signature
-        ));
+        // Validate order and maker only if first time seen
+        if (filled[order.orderHash] == 0 && cancelled[order.orderHash] == 0) {
+            require(order.makerTokenAmount > 0);
+            require(order.takerTokenAmount > 0);
+            require(isValidSignature(
+                order.orderHash,
+                order.maker,
+                signature
+            ));
+        }
         
         // Validate taker
         if (order.taker != address(0)) {
