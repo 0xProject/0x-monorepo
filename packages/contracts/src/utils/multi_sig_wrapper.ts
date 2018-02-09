@@ -4,7 +4,7 @@ import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import { MultiSigWalletContract } from '../src/contract_wrappers/generated/multi_sig_wallet';
+import { MultiSigWalletContract } from '../contract_wrappers/generated/multi_sig_wallet';
 
 import { TransactionDataParams } from './types';
 
