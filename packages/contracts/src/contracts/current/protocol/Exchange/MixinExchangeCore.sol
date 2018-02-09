@@ -73,7 +73,8 @@ contract MixinExchangeCore is
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
-    /// @param signature Proof of signing order by maker.
+    /// @param makerSignature Proof of signing order by maker.
+    /// @param takerSignature Proof of signing fill order by taker.
     /// @return Total amount of takerToken filled in trade.
     function fillOrder(
         address[5] orderAddresses,
