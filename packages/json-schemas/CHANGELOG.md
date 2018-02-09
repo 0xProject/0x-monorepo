@@ -2,7 +2,7 @@
 
 ## v0.7.10 - _February 9, 2017_
 
-* Fix publishing issue where .npmignore was not properly excluding undesired content
+* Fix publishing issue where .npmignore was not properly excluding undesired content (#389)
 
 ## v0.7.0 - _December 20, 2017_
 

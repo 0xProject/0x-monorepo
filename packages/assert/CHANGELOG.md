@@ -2,7 +2,7 @@
 
 ## v0.0.5 - _February 9, 2017_
 
-    * Fix publishing issue where .npmignore was not properly excluding undesired content
+    * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)
 
 ## v0.0.4 - _November 14, 2017_
 
