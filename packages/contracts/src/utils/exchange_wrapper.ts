@@ -20,10 +20,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrderUtils.createFill(
-            signedOrder,
-            opts.takerTokenFillAmount,
-        );
+        const params = signedOrderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
         const txHash = await this._exchange.fillOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
@@ -60,10 +57,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrderUtils.createFill(
-            signedOrder,
-            opts.takerTokenFillAmount,
-        );
+        const params = signedOrderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
         const txHash = await this._exchange.fillOrKillOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
