@@ -30,16 +30,20 @@ contract MixinWrapperFunctions is
   
     function fillOrKillOrder(
         address[5] orderAddresses,
-        uint[6] orderValues,
+        uint256[6] orderValues,
+        address taker,
         uint takerTokenFillAmount,
-        bytes signature)
+        bytes makerSignature,
+        bytes takerSignature)
         public
     {
         require(fillOrder(
             orderAddresses,
             orderValues,
+            taker,
             takerTokenFillAmount,
-            signature
+            makerSignature,
+            takerSignature
         ) == takerTokenFillAmount);
     }
 
@@ -52,8 +56,10 @@ contract MixinWrapperFunctions is
     function fillOrderNoThrow(
         address[5] orderAddresses,
         uint256[6] orderValues,
-        uint256 takerTokenFillAmount,
-        bytes signature)
+        address taker,
+        uint takerTokenFillAmount,
+        bytes makerSignature,
+        bytes takerSignature)
         public
         returns (bool success, uint256 takerTokenFilledAmount)
     {
@@ -77,15 +83,16 @@ contract MixinWrapperFunctions is
             mstore(add(x, 324), add(orderValues, 192))     // salt
             mstore(add(x, 356), takerTokenFillAmount)
             for {
-                let src := signature
+                let src := makerSignature
                 let dst := add(x, 388)
-                let end := add(add(src, mload(signature)), 32)
+                let end := add(add(src, mload(makerSignature)), 32)
             } lt(src, end) { 
                 src := add(src, 32)
                 dst := add(dst, 32)
             } {
                 mstore(dst, mload(src))
             }
+            // TODO: write taker and takerSignature
 
             success := delegatecall(
                 gas,      // TODO: don't send all gas, save some for returning is case of throw
@@ -108,16 +115,20 @@ contract MixinWrapperFunctions is
     function batchFillOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
+        address[] takers,
         uint256[] takerTokenFillAmounts,
-        bytes[] signatures)
-        external
+        bytes[] makerSignatures,
+        bytes[] takerSignature)
+        public
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrder(
                 orderAddresses[i],
                 orderValues[i],
+                takers[i],
                 takerTokenFillAmounts[i],
-                signatures[i]
+                makerSignatures[i],
+                takerSignature[i]
             );
         }
     }
@@ -128,17 +139,21 @@ contract MixinWrapperFunctions is
     /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
     function batchFillOrKillOrders(
         address[5][] orderAddresses,
-        uint[6][] orderValues,
-        uint[] takerTokenFillAmounts,
-        bytes[] signatures)
+        uint256[6][] orderValues,
+        address[] takers,
+        uint256[] takerTokenFillAmounts,
+        bytes[] makerSignatures,
+        bytes[] takerSignature)
         public /// Compiler crash when set to external
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrKillOrder(
                 orderAddresses[i],
                 orderValues[i],
+                takers[i],
                 takerTokenFillAmounts[i],
-                signatures[i]
+                makerSignatures[i],
+                takerSignature[i]
             );
         }
     }
@@ -146,9 +161,11 @@ contract MixinWrapperFunctions is
 
     function fillOrdersUpTo(
         address[5][] orderAddresses,
-        uint[6][] orderValues,
-        uint[] takerTokenFillAmounts,
-        bytes[] signatures)
+        uint256[6][] orderValues,
+        address[] takers,
+        uint256[] takerTokenFillAmounts,
+        bytes[] makerSignatures,
+        bytes[] takerSignature)
         public /// Stack to deep when set to external
         returns (uint)
     {
@@ -156,8 +173,10 @@ contract MixinWrapperFunctions is
             fillOrderNoThrow(
                 orderAddresses[i],
                 orderValues[i],
+                takers[i],
                 takerTokenFillAmounts[i],
-                signatures[i]
+                makerSignatures[i],
+                takerSignature[i]
             );
         }
     }
@@ -170,9 +189,11 @@ contract MixinWrapperFunctions is
     function marketFillOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
+        address taker,
         uint256 takerTokenFillAmount,
-        bytes[] signatures)
-        external
+        bytes[] makerSignatures,
+        bytes[] takerSignature)
+        public
         returns (uint256 totalTakerTokenFilledAmount)
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
@@ -180,8 +201,10 @@ contract MixinWrapperFunctions is
             totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, fillOrder(
                 orderAddresses[i],
                 orderValues[i],
+                taker,
                 safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
-                signatures[i]
+                makerSignatures[i],
+                takerSignature[i]
             ));
             if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
         }
@@ -196,9 +219,11 @@ contract MixinWrapperFunctions is
     function marketFillOrdersNoThrow(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
+        address taker,
         uint256 takerTokenFillAmount,
-        bytes[] signatures)
-        external
+        bytes[] makerSignatures,
+        bytes[] takerSignature)
+        public
         returns (uint256 totalTakerTokenFilledAmount)
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
@@ -206,8 +231,10 @@ contract MixinWrapperFunctions is
             var (, takerTokenFilledAmount) = fillOrderNoThrow(
                 orderAddresses[i],
                 orderValues[i],
+                taker,
                 safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
-                signatures[i]
+                makerSignatures[i],
+                takerSignature[i]
             );
             totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, takerTokenFilledAmount);
             if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
@@ -222,14 +249,18 @@ contract MixinWrapperFunctions is
     function batchCancelOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
-        uint256[] takerTokenCancelAmounts)
-        external
+        uint256[] takerTokenCancelAmounts,
+        address[] takers,
+        bytes[] takerSignatures)
+        public
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             cancelOrder(
                 orderAddresses[i],
                 orderValues[i],
-                takerTokenCancelAmounts[i]
+                takerTokenCancelAmounts[i],
+                takers[i],
+                takerSignatures[i]
             );
         }
     }
