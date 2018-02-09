@@ -159,7 +159,7 @@ export class Handler {
         const signature = await zeroEx.signOrderHashAsync(orderHash, configs.DISPENSER_ADDRESS, false);
         const signedOrder = {
             ...order,
-            signature,
+            ecSignature: signature,
         };
         const signedOrderHash = ZeroEx.getOrderHashHex(signedOrder);
         const payload = JSON.stringify(signedOrder);
