@@ -1,0 +1,10 @@
+tsconfig.json
+webpack.config.js
+yarn-error.log
+.nyc_output/
+test/
+/src/
+/_bundles/
+/contract_templates/
+/generated_docs/
+/scripts/
