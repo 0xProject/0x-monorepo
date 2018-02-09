@@ -11,6 +11,7 @@ interface TopBarMenuItemProps {
     title: string;
     path?: string;
     isPrimary?: boolean;
+    isExternal: boolean;
     style?: React.CSSProperties;
     className?: string;
     isNightVersion?: boolean;
@@ -43,9 +44,20 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
                 className={`center ${this.props.className}`}
                 style={{ ...this.props.style, ...primaryStyles, color: menuItemColor }}
             >
-                <Link to={this.props.path} className="text-decoration-none" style={{ color: linkColor }}>
-                    {this.props.title}
-                </Link>
+                {this.props.isExternal ? (
+                    <a
+                        className="text-decoration-none"
+                        style={{ color: linkColor }}
+                        target="_blank"
+                        href={this.props.path}
+                    >
+                        {this.props.title}
+                    </a>
+                ) : (
+                    <Link to={this.props.path} className="text-decoration-none" style={{ color: linkColor }}>
+                        {this.props.title}
+                    </Link>
+                )}
             </div>
         );
     }
