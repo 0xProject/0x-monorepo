@@ -155,27 +155,27 @@ const relayerProjects: Project[] = [
     },
     {
         logoFileName: 'amadeus.png',
-        projectUrl: constants.PROJECT_URL_DYDX,
+        projectUrl: constants.PROJECT_URL_AMADEUS,
     },
     {
         logoFileName: 'ddex.png',
-        projectUrl: constants.PROJECT_URL_DYDX,
+        projectUrl: constants.PROJECT_URL_DDEX,
     },
     {
         logoFileName: 'decent_ex.png',
-        projectUrl: constants.PROJECT_URL_DYDX,
+        projectUrl: constants.PROJECT_URL_DECENT_EX,
     },
     {
         logoFileName: 'dextroid.png',
-        projectUrl: constants.PROJECT_URL_DYDX,
+        projectUrl: constants.PROJECT_URL_DEXTROID,
     },
     {
         logoFileName: 'ercdex.png',
-        projectUrl: constants.PROJECT_URL_DYDX,
+        projectUrl: constants.PROJECT_URL_ERC_DEX,
     },
     {
         logoFileName: 'open_relay.png',
-        projectUrl: constants.PROJECT_URL_DYDX,
+        projectUrl: constants.PROJECT_URL_OPEN_RELAY,
     },
     {
         logoFileName: 'idt.png',
