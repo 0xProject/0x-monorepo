@@ -442,11 +442,10 @@ describe('Exchange', () => {
             expect(signedOrder.feeRecipient).to.be.equal(logArgs.feeRecipient);
             expect(signedOrder.makerTokenAddress).to.be.equal(logArgs.makerToken);
             expect(signedOrder.takerTokenAddress).to.be.equal(logArgs.takerToken);
-            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.filledMakerTokenAmount);
-            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.filledTakerTokenAmount);
+            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenFilledAmount);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenFilledAmount);
             expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
             expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
-            expect(expectedTokens).to.be.equal(logArgs.tokens);
             expect(ZeroEx.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 
@@ -473,11 +472,10 @@ describe('Exchange', () => {
             expect(signedOrder.feeRecipient).to.be.equal(logArgs.feeRecipient);
             expect(signedOrder.makerTokenAddress).to.be.equal(logArgs.makerToken);
             expect(signedOrder.takerTokenAddress).to.be.equal(logArgs.takerToken);
-            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.filledMakerTokenAmount);
-            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.filledTakerTokenAmount);
+            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenFilledAmount);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenFilledAmount);
             expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
             expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
-            expect(expectedTokens).to.be.equal(logArgs.tokens);
             expect(ZeroEx.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 
@@ -765,7 +763,7 @@ describe('Exchange', () => {
                 takerTokenFillAmount: signedOrder.takerTokenAmount,
             });
             const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
-            expect(log.args.filledTakerTokenAmount).to.be.bignumber.equal(
+            expect(log.args.takerTokenFilledAmount).to.be.bignumber.equal(
                 signedOrder.takerTokenAmount.minus(takerTokenCancelAmount),
             );
 
@@ -820,9 +818,8 @@ describe('Exchange', () => {
             expect(signedOrder.feeRecipient).to.be.equal(logArgs.feeRecipient);
             expect(signedOrder.makerTokenAddress).to.be.equal(logArgs.makerToken);
             expect(signedOrder.takerTokenAddress).to.be.equal(logArgs.takerToken);
-            expect(expectedCancelledMakerTokenAmount).to.be.bignumber.equal(logArgs.cancelledMakerTokenAmount);
-            expect(expectedCancelledTakerTokenAmount).to.be.bignumber.equal(logArgs.cancelledTakerTokenAmount);
-            expect(expectedTokens).to.be.equal(logArgs.tokens);
+            expect(expectedCancelledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenCancelledAmount);
+            expect(expectedCancelledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenCancelledAmount);
             expect(ZeroEx.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 
