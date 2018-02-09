@@ -1,10 +1,11 @@
+import { ECSignature } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import { CopyIcon } from 'ts/components/ui/copy_icon';
-import { SideToAssetToken, SignatureData, TokenByAddress, WebsitePaths } from 'ts/types';
+import { SideToAssetToken, TokenByAddress, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -13,14 +14,13 @@ import { utils } from 'ts/utils/utils';
 interface OrderJSONProps {
     exchangeContractIfExists: string;
     orderExpiryTimestamp: BigNumber;
-    orderSignatureData: SignatureData;
+    orderECSignature: ECSignature;
     orderTakerAddress: string;
     orderMakerAddress: string;
     orderSalt: BigNumber;
     orderMakerFee: BigNumber;
     orderTakerFee: BigNumber;
     orderFeeRecipient: string;
-    networkId: number;
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
 }
@@ -40,7 +40,6 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
     }
     public render() {
         const order = utils.generateOrder(
-            this.props.networkId,
             this.props.exchangeContractIfExists,
             this.props.sideToAssetToken,
             this.props.orderExpiryTimestamp,
@@ -49,7 +48,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
             this.props.orderMakerFee,
             this.props.orderTakerFee,
             this.props.orderFeeRecipient,
-            this.props.orderSignatureData,
+            this.props.orderECSignature,
             this.props.tokenByAddress,
             this.props.orderSalt,
         );
@@ -162,7 +161,6 @@ You can see and fill it here: ${this.state.shareLink}`);
     }
     private _getOrderUrl() {
         const order = utils.generateOrder(
-            this.props.networkId,
             this.props.exchangeContractIfExists,
             this.props.sideToAssetToken,
             this.props.orderExpiryTimestamp,
@@ -171,7 +169,7 @@ You can see and fill it here: ${this.state.shareLink}`);
             this.props.orderMakerFee,
             this.props.orderTakerFee,
             this.props.orderFeeRecipient,
-            this.props.orderSignatureData,
+            this.props.orderECSignature,
             this.props.tokenByAddress,
             this.props.orderSalt,
         );

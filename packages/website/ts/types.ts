@@ -1,3 +1,4 @@
+import { ECSignature } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
@@ -34,13 +35,6 @@ export interface SideToAssetToken {
     [side: string]: AssetToken;
 }
 
-export interface SignatureData {
-    hash: string;
-    r: string;
-    s: string;
-    v: number;
-}
-
 export interface HashData {
     depositAmount: BigNumber;
     depositTokenContractAddr: string;
@@ -59,25 +53,32 @@ export interface OrderToken {
     name: string;
     symbol: string;
     decimals: number;
-    address: string;
 }
 
-export interface OrderParty {
-    address: string;
-    token: OrderToken;
-    amount: string;
-    feeAmount: string;
+export interface SignedOrder {
+    maker: string;
+    taker: string;
+    makerTokenAddress: string;
+    takerTokenAddress: string;
+    makerFee: string;
+    takerFee: string;
+    makerTokenAmount: string;
+    takerTokenAmount: string;
+    expirationUnixTimestampSec: string;
+    feeRecipient: string;
+    salt: string;
+    ecSignature: ECSignature;
+    exchangeContractAddress: string;
+}
+
+export interface OrderMetadata {
+    makerToken: OrderToken;
+    takerToken: OrderToken;
 }
 
 export interface Order {
-    maker: OrderParty;
-    taker: OrderParty;
-    expiration: string;
-    feeRecipient: string;
-    salt: string;
-    signature: SignatureData;
-    exchangeContract: string;
-    networkId: number;
+    signedOrder: SignedOrder;
+    metadata: OrderMetadata;
 }
 
 export interface Fill {
@@ -118,7 +119,7 @@ export enum ActionTypes {
     UpdateChosenAssetTokenAddress = 'UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS',
     UpdateOrderTakerAddress = 'UPDATE_ORDER_TAKER_ADDRESS',
     UpdateOrderSalt = 'UPDATE_ORDER_SALT',
-    UpdateOrderSignatureData = 'UPDATE_ORDER_SIGNATURE_DATA',
+    UpdateOrderECSignature = 'UPDATE_ORDER_EC_SIGNATURE',
     UpdateTokenByAddress = 'UPDATE_TOKEN_BY_ADDRESS',
     RemoveTokenFromTokenByAddress = 'REMOVE_TOKEN_FROM_TOKEN_BY_ADDRESS',
     ForceTokenStateRefetch = 'FORCE_TOKEN_STATE_REFETCH',

@@ -1,4 +1,4 @@
-import { ExchangeContractErrs, ZeroExError } from '0x.js';
+import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import isMobile = require('is-mobile');
@@ -11,7 +11,6 @@ import {
     ScreenWidths,
     Side,
     SideToAssetToken,
-    SignatureData,
     Token,
     TokenByAddress,
 } from 'ts/types';
@@ -59,50 +58,48 @@ export const utils = {
         return formattedDate;
     },
     generateOrder(
-        networkId: number,
-        exchangeContract: string,
+        exchangeContractAddress: string,
         sideToAssetToken: SideToAssetToken,
-        orderExpiryTimestamp: BigNumber,
+        expirationUnixTimestampSec: BigNumber,
         orderTakerAddress: string,
         orderMakerAddress: string,
         makerFee: BigNumber,
         takerFee: BigNumber,
         feeRecipient: string,
-        signatureData: SignatureData,
+        ecSignature: ECSignature,
         tokenByAddress: TokenByAddress,
         orderSalt: BigNumber,
     ): Order {
         const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
         const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
-            maker: {
-                address: orderMakerAddress,
-                token: {
+            signedOrder: {
+                maker: orderMakerAddress,
+                taker: orderTakerAddress,
+                makerFee: makerFee.toString(),
+                takerFee: takerFee.toString(),
+                makerTokenAmount: sideToAssetToken[Side.Deposit].amount.toString(),
+                takerTokenAmount: sideToAssetToken[Side.Receive].amount.toString(),
+                makerTokenAddress: makerToken.address,
+                takerTokenAddress: takerToken.address,
+                expirationUnixTimestampSec: expirationUnixTimestampSec.toString(),
+                feeRecipient,
+                salt: orderSalt.toString(),
+                ecSignature,
+                exchangeContractAddress,
+            },
+            metadata: {
+                makerToken: {
                     name: makerToken.name,
                     symbol: makerToken.symbol,
                     decimals: makerToken.decimals,
-                    address: makerToken.address,
                 },
-                amount: sideToAssetToken[Side.Deposit].amount.toString(),
-                feeAmount: makerFee.toString(),
-            },
-            taker: {
-                address: orderTakerAddress,
-                token: {
+                takerToken: {
                     name: takerToken.name,
                     symbol: takerToken.symbol,
                     decimals: takerToken.decimals,
-                    address: takerToken.address,
                 },
-                amount: sideToAssetToken[Side.Receive].amount.toString(),
-                feeAmount: takerFee.toString(),
             },
-            expiration: orderExpiryTimestamp.toString(),
-            feeRecipient,
-            salt: orderSalt.toString(),
-            signature: signatureData,
-            exchangeContract,
-            networkId,
         };
         return order;
     },

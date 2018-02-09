@@ -2,6 +2,7 @@ import {
     BlockParam,
     BlockRange,
     DecodedLogEvent,
+    ECSignature,
     ExchangeContractEventArgs,
     ExchangeEvents,
     IndexedFilterValues,
@@ -35,10 +36,10 @@ import {
     BlockchainErrs,
     ContractInstance,
     EtherscanLinkSuffixes,
+    Order as PortalOrder,
     ProviderType,
     Side,
     SideToAssetToken,
-    SignatureData,
     Token,
     TokenByAddress,
 } from 'ts/types';
@@ -288,39 +289,24 @@ export class Blockchain {
             }),
         );
     }
-    public portalOrderToSignedOrder(
-        maker: string,
-        taker: string,
-        makerTokenAddress: string,
-        takerTokenAddress: string,
-        makerTokenAmount: BigNumber,
-        takerTokenAmount: BigNumber,
-        makerFee: BigNumber,
-        takerFee: BigNumber,
-        expirationUnixTimestampSec: BigNumber,
-        feeRecipient: string,
-        signatureData: SignatureData,
-        salt: BigNumber,
-    ): SignedOrder {
-        const ecSignature = signatureData;
+    public portalOrderToZeroExOrder(portalOrder: PortalOrder): SignedOrder {
         const exchangeContractAddress = this.getExchangeContractAddressIfExists();
-        const takerOrNullAddress = _.isEmpty(taker) ? constants.NULL_ADDRESS : taker;
-        const signedOrder = {
-            ecSignature,
+        const zeroExSignedOrder = {
             exchangeContractAddress,
-            expirationUnixTimestampSec,
-            feeRecipient,
-            maker,
-            makerFee,
-            makerTokenAddress,
-            makerTokenAmount,
-            salt,
-            taker: takerOrNullAddress,
-            takerFee,
-            takerTokenAddress,
-            takerTokenAmount,
+            maker: portalOrder.signedOrder.maker,
+            taker: portalOrder.signedOrder.taker,
+            makerTokenAddress: portalOrder.signedOrder.makerTokenAddress,
+            takerTokenAddress: portalOrder.signedOrder.takerTokenAddress,
+            makerTokenAmount: new BigNumber(portalOrder.signedOrder.makerTokenAmount),
+            takerTokenAmount: new BigNumber(portalOrder.signedOrder.takerTokenAmount),
+            makerFee: new BigNumber(portalOrder.signedOrder.makerFee),
+            takerFee: new BigNumber(portalOrder.signedOrder.takerFee),
+            expirationUnixTimestampSec: new BigNumber(portalOrder.signedOrder.expirationUnixTimestampSec),
+            feeRecipient: portalOrder.signedOrder.feeRecipient,
+            ecSignature: portalOrder.signedOrder.ecSignature,
+            salt: new BigNumber(portalOrder.signedOrder.salt),
         };
-        return signedOrder;
+        return zeroExSignedOrder;
     }
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber): Promise<BigNumber> {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
@@ -413,7 +399,7 @@ export class Blockchain {
 
         return newTokenBalancePromise;
     }
-    public async signOrderHashAsync(orderHash: string): Promise<SignatureData> {
+    public async signOrderHashAsync(orderHash: string): Promise<ECSignature> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         const makerAddress = this._userAddress;
         // If makerAddress is undefined, this means they have a web3 instance injected into their browser
@@ -436,11 +422,8 @@ export class Blockchain {
             makerAddress,
             shouldAddPersonalMessagePrefix,
         );
-        const signatureData = _.extend({}, ecSignature, {
-            hash: orderHash,
-        });
-        this._dispatcher.updateSignatureData(signatureData);
-        return signatureData;
+        this._dispatcher.updateECSignature(ecSignature);
+        return ecSignature;
     }
     public async mintTestTokensAsync(token: Token) {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);

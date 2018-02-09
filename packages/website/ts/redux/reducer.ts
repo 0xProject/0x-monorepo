@@ -1,4 +1,4 @@
-import { ZeroEx } from '0x.js';
+import { ECSignature, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -11,7 +11,6 @@ import {
     ScreenWidths,
     Side,
     SideToAssetToken,
-    SignatureData,
     TokenByAddress,
 } from 'ts/types';
 import { utils } from 'ts/utils/utils';
@@ -29,7 +28,7 @@ export interface State {
     orderExpiryTimestamp: BigNumber;
     orderFillAmount: BigNumber;
     orderTakerAddress: string;
-    orderSignatureData: SignatureData;
+    orderECSignature: ECSignature;
     orderSalt: BigNumber;
     nodeVersion: string;
     screenWidth: ScreenWidths;
@@ -59,13 +58,12 @@ const INITIAL_STATE: State = {
     networkId: undefined,
     orderExpiryTimestamp: utils.initialOrderExpiryUnixTimestampSec(),
     orderFillAmount: undefined,
-    orderSignatureData: {
-        hash: '',
+    orderECSignature: {
         r: '',
         s: '',
         v: 27,
     },
-    orderTakerAddress: '',
+    orderTakerAddress: ZeroEx.NULL_ADDRESS,
     orderSalt: ZeroEx.generatePseudoRandomSalt(),
     nodeVersion: undefined,
     screenWidth: utils.getScreenWidth(),
@@ -188,10 +186,10 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
                 lastForceTokenStateRefetch: moment().unix(),
             };
 
-        case ActionTypes.UpdateOrderSignatureData: {
+        case ActionTypes.UpdateOrderECSignature: {
             return {
                 ...state,
-                orderSignatureData: action.data,
+                orderECSignature: action.data,
             };
         }
 
