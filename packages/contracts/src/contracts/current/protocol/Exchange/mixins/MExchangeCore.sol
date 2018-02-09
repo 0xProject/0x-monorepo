@@ -19,7 +19,7 @@
 pragma solidity ^0.4.19;
 
 contract MExchangeCore {
-    
+
     function fillOrder(
           address[5] orderAddresses,
           uint256[6] orderValues,
@@ -36,5 +36,9 @@ contract MExchangeCore {
         uint256 takerTokenCancelAmount)
         public
         returns (uint256 takerTokenCancelledAmount);
+
+    function cancelOrdersBefore(
+        uint256 timestamp)
+        public;
 
 }

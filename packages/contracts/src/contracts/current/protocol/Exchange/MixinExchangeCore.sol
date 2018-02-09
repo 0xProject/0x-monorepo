@@ -41,7 +41,11 @@ contract MixinExchangeCore is
     // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
     mapping (bytes32 => uint256) public filled;
     mapping (bytes32 => uint256) public cancelled;
-    
+
+    // Mapping of makerAddress => earliest timestamp an order can have in order to be fillable
+    // Orders with a timestamp less than their maker's epoch are considered cancelled
+    mapping (address => uint256) public makerEpoch;
+
     event LogFill(
         address indexed maker,
         address taker,
@@ -63,6 +67,11 @@ contract MixinExchangeCore is
         uint256 makerTokenCancelledAmount,
         uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
+    );
+
+    event LogCancelBefore(
+        address indexed maker,
+        uint256 timestamp
     );
 
     /*
@@ -98,6 +107,7 @@ contract MixinExchangeCore is
             makerFee: orderValues[2],
             takerFee: orderValues[3],
             expirationTimestampInSec: orderValues[4],
+            salt: orderValues[5],
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
 
@@ -116,6 +126,11 @@ contract MixinExchangeCore is
             return 0;
         }
 
+        if (order.salt < makerEpoch[order.maker]) { // Note that the 'salt' field is overloaded as a timestamp
+            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), order.orderHash);
+            return 0;
+        }
+
         uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
         if (takerTokenFilledAmount == 0) {
@@ -130,14 +145,14 @@ contract MixinExchangeCore is
 
         // Update state
         filled[order.orderHash] = safeAdd(filled[order.orderHash], takerTokenFilledAmount);
-        
+
         // Settle order
         uint256 filledMakerTokenAmount;
         uint256 makerFeePaid;
         uint256 takerFeePaid;
         (filledMakerTokenAmount, makerFeePaid, takerFeePaid) =
             settleOrder(order, msg.sender, takerTokenFilledAmount);
-        
+
         // Log order
         LogFill(
             order.maker,
@@ -177,6 +192,7 @@ contract MixinExchangeCore is
             makerFee: orderValues[2],
             takerFee: orderValues[3],
             expirationTimestampInSec: orderValues[4],
+            salt: orderValues[5],
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
 
@@ -208,7 +224,24 @@ contract MixinExchangeCore is
         );
         return takerTokenCancelledAmount;
     }
-    
+
+    /// @dev Cancels all orders for a specified maker up to a certain time.
+    /// @param timestamp Orders created before this time will be cancelled.
+    function cancelOrdersBefore(
+        uint256 timestamp)
+        public
+    {
+      /// Open Question: Do we want to impose restrictions on this timestamp?
+      /// Discussion:
+      ///    Flexibility allows makers to control how their orders are grouped (seconds/milliseconds/etc).
+      ///    Restrictions prevent relayers from shooting themselves in the foot; for example,
+      ///    forcing the new epoch to be greater than the current epoch prevents un-cancelling orders.
+
+      require(timestamp > makerEpoch[msg.sender]); // Do not allow un-cancelling orders
+      makerEpoch[msg.sender] = timestamp;
+      LogCancelBefore(msg.sender, timestamp);
+    }
+
     /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.

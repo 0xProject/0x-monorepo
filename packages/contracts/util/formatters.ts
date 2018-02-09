@@ -2,7 +2,7 @@ import { SignedOrder } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { BatchCancelOrders, BatchFillOrders, MarketFillOrders } from './types';
+import { BatchCancelOrders, BatchFillOrders, CancelOrdersBefore, MarketFillOrders } from './types';
 
 export const formatters = {
     createBatchFill(
@@ -104,4 +104,11 @@ export const formatters = {
         });
         return batchCancel;
     },
+    createCancelOrdersBefore(timestamp: BigNumber) {
+      const cancelOrdersBefore: CancelOrdersBefore = {
+          timestamp,
+      };
+      cancelOrdersBefore.timestamp = timestamp;
+      return cancelOrdersBefore;
+  },
 };

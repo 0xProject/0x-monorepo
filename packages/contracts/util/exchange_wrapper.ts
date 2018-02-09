@@ -158,6 +158,20 @@ export class ExchangeWrapper {
         _.each(tx.logs, log => wrapLogBigNumbers(log));
         return tx;
     }
+    public async cancelOrdersBeforeAsync(
+    timestamp: BigNumber,
+    from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = formatters.createCancelOrdersBefore(timestamp);
+        const txHash = await this._exchange.cancelOrdersBefore.sendTransactionAsync(
+            params.timestamp,
+            { from },
+        );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
+        _.each(tx.logs, log => wrapLogBigNumbers(log));
+        return tx;
+    }
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
         const params = signedOrderUtils.getOrderAddressesAndValues(signedOrder);
         const orderHash = await this._exchange.getOrderHash(params.orderAddresses, params.orderValues);
