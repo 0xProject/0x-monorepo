@@ -15,12 +15,12 @@ import {
     LogFillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
-import { Balances } from '../../util/balances';
-import { constants } from '../../util/constants';
-import { crypto } from '../../util/crypto';
-import { ExchangeWrapper } from '../../util/exchange_wrapper';
-import { OrderFactory } from '../../util/order_factory';
-import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
+import { Balances } from '../../src/utils/balances';
+import { constants } from '../../src/utils/constants';
+import { crypto } from '../../src/utils/crypto';
+import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
+import { OrderFactory } from '../../src/utils/order_factory';
+import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 import { web3, web3Wrapper } from '../utils/web3_wrapper';

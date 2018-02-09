@@ -8,9 +8,9 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';
-import { constants } from '../util/constants';
-import { TokenRegWrapper } from '../util/token_registry_wrapper';
-import { ContractName } from '../util/types';
+import { constants } from '../src/utils/constants';
+import { TokenRegWrapper } from '../src/utils/token_registry_wrapper';
+import { ContractName } from '../src/utils/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
