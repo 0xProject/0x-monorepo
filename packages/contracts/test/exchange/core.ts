@@ -847,7 +847,7 @@ describe('Exchange', () => {
         });
     });
 
-    describe.only('cancelOrdersBefore', () => {
+    describe('cancelOrdersBefore', () => {
         it('should fail to set timestamp less-or-equal to existing cancel timestamp', async () => {
             const timestamp = new BigNumber(0);
             return expect(
