@@ -6,9 +6,9 @@ import * as Web3 from 'web3';
 
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
-import { Balances } from '../../util/balances';
-import { constants } from '../../util/constants';
-import { ContractName } from '../../util/types';
+import { Balances } from '../../src/utils/balances';
+import { constants } from '../../src/utils/constants';
+import { ContractName } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 
