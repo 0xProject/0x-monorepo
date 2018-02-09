@@ -2,7 +2,7 @@
 
 ## v0.4.8 - _February 9, 2018_
 
-    * Fix publish issue where custom TSLint rules were not being included
+    * Fix publish issue where custom TSLint rules were not being included (#389)
 
 ## v0.4.7 - _February 7, 2018_
 
