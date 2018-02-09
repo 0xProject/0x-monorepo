@@ -55,6 +55,12 @@ contract LibOrder {
         uint256 fillAmount;
     }
     
+    bytes32 constant cancelOrderSchemaHash = keccak256(
+        "bytes32 orderHash",
+        "address taker",
+        "uint256 cancelAmount",
+    );
+    
     struct CancelOrder {
         bytes32 orderHash;
         address taker;

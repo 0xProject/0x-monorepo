@@ -64,6 +64,18 @@ contract MixinExchangeCore is
         uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
     );
+    
+    struct FillOrder {
+        bytes32 orderHash;
+        address taker;
+        uint256 fillAmount;
+    }
+    
+    struct CancelOrder {
+        bytes32 orderHash;
+        address taker;
+        uint256 cancelAmount;
+    }
 
     /*
     * Core exchange functions
@@ -100,6 +112,12 @@ contract MixinExchangeCore is
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
         
+        FillOrder memory fillOrderStruct = FillOrder({
+            orderHash: order.orderHash,
+            taker: order.taker,
+            fillAmount: takerTokenFillAmount
+        });
+        
         // Validate order and maker only if first time seen
         if (filled[order.orderHash] == 0 && cancelled[order.orderHash] == 0) {
             require(order.makerTokenAmount > 0);
@@ -117,11 +135,6 @@ contract MixinExchangeCore is
         } else {
             order.taker = taker;
         }
-        FillOrder memory fillOrderStruct = FillOrder({
-            orderHash: order.orderHash,
-            taker: order.taker,
-            takerTokenFillAmount: takerTokenFillAmount
-        });
         require(isValidSignature(
             keccak256(fillOrderStruct),
             fillOrderStruct.taker,
@@ -181,7 +194,8 @@ contract MixinExchangeCore is
         address[5] orderAddresses,
         uint256[6] orderValues,
         uint256 takerTokenCancelAmount,
-        bytes signature)
+        address taker,
+        bytes takerSignature)
         public
         returns (uint256 takerTokenCancelledAmount)
     {
@@ -199,13 +213,19 @@ contract MixinExchangeCore is
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
 
+        CancelOrder memory cancelOrderStruct = CancelOrder({
+            orderHash: order.orderHash,
+            taker: taker,
+            cancelAmount: takerTokenCancelAmount
+        });
+        
         require(order.makerTokenAmount > 0);
         require(order.takerTokenAmount > 0);
         require(takerTokenCancelAmount > 0);
         require(isValidSignature(
-            keccak256(orderSchemaHash, order.orderHash),
-            order.maker,
-            signature
+            keccak256(cancelOrderSchemaHash, cancelOrderStruct),
+            cancelOrderStruct.taker,
+            takerSignature
         ));
 
         if (block.timestamp >= order.expirationTimestampInSec) {
