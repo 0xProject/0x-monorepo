@@ -32,7 +32,7 @@ export interface MarketFillOrders {
 export interface BatchCancelOrders {
     orderAddresses: string[][];
     orderValues: BigNumber[][];
-    cancelTakerTokenAmounts: BigNumber[];
+    takerTokenCancelAmounts: BigNumber[];
 }
 
 export interface DefaultOrderParams {
