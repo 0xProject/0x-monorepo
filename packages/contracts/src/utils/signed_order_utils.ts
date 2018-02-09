@@ -7,10 +7,7 @@ import * as _ from 'lodash';
 import { crypto } from './crypto';
 
 export const signedOrderUtils = {
-    createFill: (
-        signedOrder: SignedOrder,
-        takerTokenFillAmount?: BigNumber,
-    ) => {
+    createFill: (signedOrder: SignedOrder, takerTokenFillAmount?: BigNumber) => {
         const fill = {
             ...signedOrderUtils.getOrderAddressesAndValues(signedOrder),
             takerTokenFillAmount: takerTokenFillAmount || signedOrder.takerTokenAmount,
