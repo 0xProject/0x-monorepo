@@ -601,9 +601,19 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 </div>
             );
         });
+        const titleStyle: React.CSSProperties = {
+            fontFamily: 'Roboto Mono',
+            color: colors.grey,
+            textTransform: 'uppercase',
+            fontWeight: 300,
+            letterSpacing: 3,
+        };
         return (
             <div className="clearfix" style={{ backgroundColor: colors.heroGrey }}>
-                <div className="mx-auto py4 sm-mt2 clearfix" style={{ maxWidth: '60em' }}>
+                <div className="h3 center pb3 pt4" style={titleStyle}>
+                    Benefits of 0x
+                </div>
+                <div className="mx-auto pb4 sm-mt2 clearfix" style={{ maxWidth: '60em' }}>
                     {boxes}
                 </div>
             </div>
