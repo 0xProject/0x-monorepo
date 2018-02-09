@@ -1,6 +1,6 @@
-import { migrator } from './migrations/migrate';
 import { Compiler } from './compiler';
 import { Deployer } from './deployer';
+import { migrator } from './migrations/migrate';
 import { CompilerOptions, DeployerOptions } from './utils/types';
 
 export const commands = {
