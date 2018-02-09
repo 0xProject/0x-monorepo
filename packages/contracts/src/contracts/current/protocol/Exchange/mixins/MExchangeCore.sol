@@ -23,15 +23,19 @@ contract MExchangeCore {
     function fillOrder(
           address[5] orderAddresses,
           uint256[6] orderValues,
-          uint256 takerTokenFillAmount,
-          bytes signature)
+          address taker,
+          uint takerTokenFillAmount,
+          bytes makerSignature,
+          bytes takerSignature)
           public
           returns (uint256 takerTokenFilledAmount);
 
     function cancelOrder(
         address[5] orderAddresses,
         uint256[6] orderValues,
-        uint256 takerTokenCancelAmount)
+        uint256 takerTokenCancelAmount,
+        address taker,
+        bytes takerSignature)
         public
         returns (uint256 takerTokenCancelledAmount);
 
