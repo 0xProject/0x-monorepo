@@ -15,7 +15,7 @@ postpublish_utils
         version = result.version;
         const releaseName = postpublish_utils.getReleaseName(subPackageName, version);
         const assets = [__dirname + '/../_bundles/index.js', __dirname + '/../_bundles/index.min.js'];
-        return postpublish_utils.publishReleaseNotes(tag, releaseName, assets);
+        return postpublish_utils.publishReleaseNotesAsync(tag, releaseName, assets);
     })
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
