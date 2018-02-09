@@ -1,4 +1,5 @@
 .*
+yarn-error.log
 node_modules/
 /scripts/
 /rules/
