@@ -5,10 +5,7 @@ import * as _ from 'lodash';
 import { BatchCancelOrders, BatchFillOrders, MarketFillOrders } from './types';
 
 export const formatters = {
-    createBatchFill(
-        signedOrders: SignedOrder[],
-        takerTokenFillAmounts: BigNumber[] = [],
-    ) {
+    createBatchFill(signedOrders: SignedOrder[], takerTokenFillAmounts: BigNumber[] = []) {
         const batchFill: BatchFillOrders = {
             orderAddresses: [],
             orderValues: [],
@@ -42,10 +39,7 @@ export const formatters = {
         });
         return batchFill;
     },
-    createMarketFillOrders(
-        signedOrders: SignedOrder[],
-        takerTokenFillAmount: BigNumber,
-    ) {
+    createMarketFillOrders(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber) {
         const marketFillOrders: MarketFillOrders = {
             orderAddresses: [],
             orderValues: [],
