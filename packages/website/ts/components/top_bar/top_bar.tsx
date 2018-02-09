@@ -169,12 +169,21 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     path={`${WebsitePaths.Wiki}`}
                                     style={styles.menuItem}
                                     isNightVersion={isNightVersion}
+                                    isExternal={false}
+                                />
+                                <TopBarMenuItem
+                                    title="Blog"
+                                    path={constants.URL_BLOG}
+                                    style={styles.menuItem}
+                                    isNightVersion={isNightVersion}
+                                    isExternal={true}
                                 />
                                 <TopBarMenuItem
                                     title="About"
                                     path={`${WebsitePaths.About}`}
                                     style={styles.menuItem}
                                     isNightVersion={isNightVersion}
+                                    isExternal={false}
                                 />
                                 <TopBarMenuItem
                                     title="Portal DApp"
@@ -183,6 +192,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     style={styles.menuItem}
                                     className={`${isFullWidthPage && 'md-hide'}`}
                                     isNightVersion={isNightVersion}
+                                    isExternal={false}
                                 />
                             </div>
                         </div>
