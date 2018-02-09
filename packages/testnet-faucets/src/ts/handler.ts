@@ -130,13 +130,13 @@ export class Handler {
         const zeroEx = networkConfig.zeroEx;
         res.setHeader('Content-Type', 'application/json');
         const makerToken = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(requestedAssetType);
-        if (_.isUndefined(makerToken) || _.isUndefined(makerToken.address)) {
+        if (_.isUndefined(makerToken)) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
         const takerTokenSymbol =
             requestedAssetType === RequestedAssetType.WETH ? RequestedAssetType.ZRX : RequestedAssetType.WETH;
         const takerToken = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(takerTokenSymbol);
-        if (_.isUndefined(takerToken) || _.isUndefined(takerToken.address)) {
+        if (_.isUndefined(takerToken)) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
         const makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), makerToken.decimals);
