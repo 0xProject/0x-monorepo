@@ -4,8 +4,8 @@ import { BigNumber, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 
-import { constants } from '../util/constants';
-import { ContractName } from '../util/types';
+import { constants } from '../src/utils/constants';
+import { ContractName } from '../src/utils/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';

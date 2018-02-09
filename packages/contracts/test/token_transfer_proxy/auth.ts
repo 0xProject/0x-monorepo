@@ -4,8 +4,8 @@ import * as chai from 'chai';
 import * as Web3 from 'web3';
 
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
-import { constants } from '../../util/constants';
-import { ContractName } from '../../util/types';
+import { constants } from '../../src/utils/constants';
+import { ContractName } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 import { web3, web3Wrapper } from '../utils/web3_wrapper';
