@@ -5,6 +5,7 @@ import { Compiler } from '../src/compiler';
 import { Deployer } from '../src/deployer';
 import { fsWrapper } from '../src/utils/fs_wrapper';
 import { CompilerOptions, ContractArtifact, ContractData, DoneCallback } from '../src/utils/types';
+
 import { constructor_args, exchange_binary } from './fixtures/exchange_bin';
 import { constants } from './util/constants';
 

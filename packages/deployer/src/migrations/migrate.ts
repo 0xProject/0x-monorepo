@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 
 import { Deployer } from '../deployer';
 import { constants } from '../utils/constants';
+
 import { tokenInfo } from './config/token_info';
 
 export const migrator = {
