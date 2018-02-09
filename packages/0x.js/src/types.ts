@@ -9,10 +9,6 @@ import { ExchangeContractEventArgs, ExchangeEvents } from './contract_wrappers/g
 import { TokenContractEventArgs, TokenEvents } from './contract_wrappers/generated/token';
 
 export enum ZeroExError {
-    ZRXAddressRequired = 'ZRX_ADDREESS_REQUIRED',
-    ExchangeAddressRequired = 'EXCHANGE_ADDREESS_REQUIRED',
-    TokenRegistryAddressRequired = 'TOKEN_REGISTRY_ADDREESS_REQUIRED',
-    TokenTransferProxyAddressRequired = 'TOKEN_TRANSFER_PROXY_ADDREESS_REQUIRED',
     ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
     ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
     EtherTokenContractDoesNotExist = 'ETHER_TOKEN_CONTRACT_DOES_NOT_EXIST',
