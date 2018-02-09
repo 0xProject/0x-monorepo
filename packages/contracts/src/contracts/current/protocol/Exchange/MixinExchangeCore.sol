@@ -116,9 +116,14 @@ contract MixinExchangeCore is
         } else {
             order.taker = taker;
         }
+        FillOrder memory fillOrderStruct = FillOrder({
+            orderHash: order.orderHash,
+            taker: order.taker,
+            takerTokenFillAmount: takerTokenFillAmount
+        });
         require(isValidSignature(
-            order.orderHash ^ 0x1, // Domain separator maker/taker
-            order.taker,
+            keccak256(fillOrderStruct),
+            fillOrderStruct.taker,
             takerSignature
         ));
         require(takerTokenFillAmount > 0);

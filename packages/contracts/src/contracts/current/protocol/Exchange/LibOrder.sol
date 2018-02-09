@@ -48,6 +48,18 @@ contract LibOrder {
         uint256 expirationTimestampInSec;
         bytes32 orderHash;
     }
+    
+    struct FillOrder {
+        bytes32 orderHash;
+        address taker;
+        uint256 fillAmount;
+    }
+    
+    struct CancelOrder {
+        bytes32 orderHash;
+        address taker;
+        uint256 cancelAmount;
+    }
 
     /// @dev Calculates Keccak-256 hash of order with specified parameters.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
