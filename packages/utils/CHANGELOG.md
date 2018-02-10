@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.3.1 - _February 9, 2018_
+## v0.3.2 - _February 9, 2018_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)
 
