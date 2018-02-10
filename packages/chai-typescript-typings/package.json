@@ -1,6 +1,6 @@
 {
     "name": "chai-typescript-typings",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Typescript type definitions for chai",
     "main": "index.d.ts",
     "types": "index.d.ts",
