@@ -24,9 +24,7 @@ contract MExchangeCore {
           address[5] orderAddresses,
           uint256[6] orderValues,
           uint256 takerTokenFillAmount,
-          uint8 v,
-          bytes32 r,
-          bytes32 s)
+          bytes signature)
           public
           returns (uint256 takerTokenFilledAmount);
 
