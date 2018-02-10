@@ -65,17 +65,17 @@ const boxContents: BoxContent[] = [
     },
 ];
 
-const projects: Project[] = [
+const relayersAndDappProjects: Project[] = [
     {
-        logoFileName: 'ethfinex-top.png',
+        logoFileName: 'ethfinex.png',
         projectUrl: constants.PROJECT_URL_ETHFINEX,
     },
     {
-        logoFileName: 'radar_relay_top.png',
+        logoFileName: 'radar_relay.png',
         projectUrl: constants.PROJECT_URL_RADAR_RELAY,
     },
     {
-        logoFileName: 'paradex_top.png',
+        logoFileName: 'paradex.png',
         projectUrl: constants.PROJECT_URL_PARADEX,
     },
     {
@@ -132,6 +132,57 @@ const projects: Project[] = [
     },
 ];
 
+const relayerProjects: Project[] = [
+    {
+        logoFileName: 'ethfinex.png',
+        projectUrl: constants.PROJECT_URL_ETHFINEX,
+    },
+    {
+        logoFileName: 'radar_relay.png',
+        projectUrl: constants.PROJECT_URL_RADAR_RELAY,
+    },
+    {
+        logoFileName: 'paradex.png',
+        projectUrl: constants.PROJECT_URL_PARADEX,
+    },
+    {
+        logoFileName: 'the_ocean.png',
+        projectUrl: constants.PROJECT_URL_0CEAN,
+    },
+    {
+        logoFileName: 'dydx.png',
+        projectUrl: constants.PROJECT_URL_DYDX,
+    },
+    {
+        logoFileName: 'amadeus.png',
+        projectUrl: constants.PROJECT_URL_AMADEUS,
+    },
+    {
+        logoFileName: 'ddex.png',
+        projectUrl: constants.PROJECT_URL_DDEX,
+    },
+    {
+        logoFileName: 'decent_ex.png',
+        projectUrl: constants.PROJECT_URL_DECENT_EX,
+    },
+    {
+        logoFileName: 'dextroid.png',
+        projectUrl: constants.PROJECT_URL_DEXTROID,
+    },
+    {
+        logoFileName: 'ercdex.png',
+        projectUrl: constants.PROJECT_URL_ERC_DEX,
+    },
+    {
+        logoFileName: 'open_relay.png',
+        projectUrl: constants.PROJECT_URL_OPEN_RELAY,
+    },
+    {
+        logoFileName: 'idt.png',
+        projectUrl: constants.PROJECT_URL_IDT,
+    },
+];
+
 export interface LandingProps {
     location: Location;
 }
@@ -167,9 +218,10 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     style={{ backgroundColor: colors.heroGrey, position: 'relative' }}
                 />
                 {this._renderHero()}
-                {this._renderProjects()}
+                {this._renderProjects(relayersAndDappProjects, 'Projects building on 0x', colors.projectsGrey, false)}
                 {this._renderTokenizationSection()}
                 {this._renderProtocolSection()}
+                {this._renderProjects(relayerProjects, 'Relayers building on 0x', colors.heroGrey, true)}
                 {this._renderInfoBoxes()}
                 {this._renderBuildingBlocksSection()}
                 {this._renderUseCases()}
@@ -259,11 +311,25 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             </div>
         );
     }
-    private _renderProjects() {
+    private _renderProjects(projects: Project[], title: string, backgroundColor: string, isTitleCenter: boolean) {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const isMediumScreen = this.state.screenWidth === ScreenWidths.Md;
         const projectList = _.map(projects, (project: Project, i: number) => {
-            const colWidth = isSmallScreen ? 3 : isMediumScreen ? 4 : 2 - i % 2;
+            const isRelayersOnly = projects.length === 12;
+            let colWidth: number;
+            switch (this.state.screenWidth) {
+                case ScreenWidths.Sm:
+                    colWidth = 4;
+                    break;
+
+                case ScreenWidths.Md:
+                    colWidth = 3;
+                    break;
+
+                case ScreenWidths.Lg:
+                    colWidth = isRelayersOnly ? 2 : 2 - i % 2;
+                    break;
+            }
             return (
                 <div key={`project-${project.logoFileName}`} className={`col col-${colWidth} center`}>
                     <div>
@@ -285,10 +351,10 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             letterSpacing: 3,
         };
         return (
-            <div className="clearfix py4" style={{ backgroundColor: colors.projectsGrey }}>
+            <div className={`clearfix py4 ${isTitleCenter && 'center'}`} style={{ backgroundColor }}>
                 <div className="mx-auto max-width-4 clearfix sm-px3">
-                    <div className="h4 pb3 md-pl3 sm-pl2" style={titleStyle}>
-                        Projects building on 0x
+                    <div className="h4 pb3 lg-pl0 md-pl3 sm-pl2" style={titleStyle}>
+                        {title}
                     </div>
                     <div className="clearfix">{projectList}</div>
                     <div
@@ -319,7 +385,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             <div className="clearfix lg-py4 md-py4 sm-pb4 sm-pt2" style={{ backgroundColor: colors.grey100 }}>
                 <div className="mx-auto max-width-4 py4 clearfix">
                     {isSmallScreen && this._renderTokenCloud()}
-                    <div className="col lg-col-6 md-col-6 col-12">
+                    <div className="col lg-col-6 md-col-6 col-12" style={{ color: colors.darkestGrey }}>
                         <div className="mx-auto" style={{ maxWidth: 385, paddingTop: 7 }}>
                             <div className="lg-h1 md-h1 sm-h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>
                                 The world's value is becoming tokenized
@@ -358,16 +424,15 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     private _renderProtocolSection() {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         return (
-            <div className="clearfix lg-py4 md-py4 sm-pt4" style={{ backgroundColor: colors.heroGrey }}>
-                <div className="mx-auto max-width-4 lg-py4 md-py4 sm-pt4 clearfix">
+            <div className="clearfix pt4" style={{ backgroundColor: colors.heroGrey }}>
+                <div className="mx-auto max-width-4 pt4 clearfix">
                     <div className="col lg-col-6 md-col-6 col-12 sm-center">
                         <img src="/images/landing/relayer_diagram.png" height={isSmallScreen ? 326 : 426} />
                     </div>
                     <div
-                        className="col lg-col-6 md-col-6 col-12 lg-pr3 md-pr3 sm-mx-auto"
+                        className="col lg-col-6 md-col-6 col-12 lg-pr3 md-pr3 sm-mx-auto lg-pt4 md-pt4 lg-mt3 md-mt3"
                         style={{
                             color: colors.beigeWhite,
-                            paddingTop: 8,
                             maxWidth: isSmallScreen ? 'none' : 445,
                         }}
                     >
@@ -387,57 +452,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             In 0x protocol, orders are transported off-chain, massively reducing gas costs and
                             eliminating blockchain bloat. Relayers help broadcast orders and collect a fee each time
                             they facilitate a trade. Anyone can build a relayer.
-                        </div>
-                        <div
-                            className="pt3 sm-mx-auto sm-px3"
-                            style={{
-                                color: colors.landingLinkGrey,
-                                maxWidth: isSmallScreen ? 412 : 'none',
-                            }}
-                        >
-                            <div className="flex" style={{ fontSize: 18 }}>
-                                <div
-                                    className="lg-h4 md-h4 sm-h5"
-                                    style={{
-                                        letterSpacing: isSmallScreen ? 1 : 3,
-                                        fontFamily: 'Roboto Mono',
-                                    }}
-                                >
-                                    RELAYERS BUILDING ON 0X
-                                </div>
-                                <div className="h5" style={{ marginLeft: isSmallScreen ? 26 : 49 }}>
-                                    <Link
-                                        to={`${WebsitePaths.Wiki}#List-of-Projects-Using-0x-Protocol`}
-                                        className="text-decoration-none underline"
-                                        style={{
-                                            color: colors.landingLinkGrey,
-                                            fontFamily: 'Roboto Mono',
-                                        }}
-                                    >
-                                        view all
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="lg-flex md-flex sm-clearfix pt3" style={{ opacity: 0.4 }}>
-                                <div className="col col-4 sm-center">
-                                    <img
-                                        src="/images/landing/ethfinex.png"
-                                        style={{ height: isSmallScreen ? 85 : 107 }}
-                                    />
-                                </div>
-                                <div className="col col-4 center">
-                                    <img
-                                        src="/images/landing/radar_relay.png"
-                                        style={{ height: isSmallScreen ? 85 : 107 }}
-                                    />
-                                </div>
-                                <div className="col col-4 sm-center" style={{ textAlign: 'right' }}>
-                                    <img
-                                        src="/images/landing/paradex.png"
-                                        style={{ height: isSmallScreen ? 85 : 107 }}
-                                    />
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -551,7 +565,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             fontFamily: 'Roboto Mono',
                             fontSize: 13.5,
                             fontWeight: 400,
-                            opacity: 0.75,
+                            color: colors.darkestGrey,
                         }}
                     >
                         {assetType.title}
@@ -587,9 +601,19 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 </div>
             );
         });
+        const titleStyle: React.CSSProperties = {
+            fontFamily: 'Roboto Mono',
+            color: colors.grey,
+            textTransform: 'uppercase',
+            fontWeight: 300,
+            letterSpacing: 3,
+        };
         return (
             <div className="clearfix" style={{ backgroundColor: colors.heroGrey }}>
-                <div className="mx-auto py4 sm-mt2 clearfix" style={{ maxWidth: '60em' }}>
+                <div className="center pb3 pt4" style={titleStyle}>
+                    Benefits of 0x
+                </div>
+                <div className="mx-auto pb4 sm-mt2 clearfix" style={{ maxWidth: '60em' }}>
                     {boxes}
                 </div>
             </div>

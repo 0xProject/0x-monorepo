@@ -1,12 +1,12 @@
+import { SignedOrder } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { Order } from './order';
 import { BatchCancelOrders, BatchFillOrders, FillOrdersUpTo } from './types';
 
 export const formatters = {
     createBatchFill(
-        orders: Order[],
+        signedOrders: SignedOrder[],
         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
         fillTakerTokenAmounts: BigNumber[] = [],
     ) {
@@ -19,33 +19,33 @@ export const formatters = {
             r: [],
             s: [],
         };
-        _.forEach(orders, order => {
+        _.forEach(signedOrders, signedOrder => {
             batchFill.orderAddresses.push([
-                order.params.maker,
-                order.params.taker,
-                order.params.makerToken,
-                order.params.takerToken,
-                order.params.feeRecipient,
+                signedOrder.maker,
+                signedOrder.taker,
+                signedOrder.makerTokenAddress,
+                signedOrder.takerTokenAddress,
+                signedOrder.feeRecipient,
             ]);
             batchFill.orderValues.push([
-                order.params.makerTokenAmount,
-                order.params.takerTokenAmount,
-                order.params.makerFee,
-                order.params.takerFee,
-                order.params.expirationTimestampInSec,
-                order.params.salt,
+                signedOrder.makerTokenAmount,
+                signedOrder.takerTokenAmount,
+                signedOrder.makerFee,
+                signedOrder.takerFee,
+                signedOrder.expirationUnixTimestampSec,
+                signedOrder.salt,
             ]);
-            batchFill.v.push(order.params.v as number);
-            batchFill.r.push(order.params.r as string);
-            batchFill.s.push(order.params.s as string);
-            if (fillTakerTokenAmounts.length < orders.length) {
-                batchFill.fillTakerTokenAmounts.push(order.params.takerTokenAmount);
+            batchFill.v.push(signedOrder.ecSignature.v);
+            batchFill.r.push(signedOrder.ecSignature.r);
+            batchFill.s.push(signedOrder.ecSignature.s);
+            if (fillTakerTokenAmounts.length < signedOrders.length) {
+                batchFill.fillTakerTokenAmounts.push(signedOrder.takerTokenAmount);
             }
         });
         return batchFill;
     },
     createFillUpTo(
-        orders: Order[],
+        signedOrders: SignedOrder[],
         shouldThrowOnInsufficientBalanceOrAllowance: boolean,
         fillTakerTokenAmount: BigNumber,
     ) {
@@ -58,52 +58,52 @@ export const formatters = {
             r: [],
             s: [],
         };
-        orders.forEach(order => {
+        signedOrders.forEach(signedOrder => {
             fillUpTo.orderAddresses.push([
-                order.params.maker,
-                order.params.taker,
-                order.params.makerToken,
-                order.params.takerToken,
-                order.params.feeRecipient,
+                signedOrder.maker,
+                signedOrder.taker,
+                signedOrder.makerTokenAddress,
+                signedOrder.takerTokenAddress,
+                signedOrder.feeRecipient,
             ]);
             fillUpTo.orderValues.push([
-                order.params.makerTokenAmount,
-                order.params.takerTokenAmount,
-                order.params.makerFee,
-                order.params.takerFee,
-                order.params.expirationTimestampInSec,
-                order.params.salt,
+                signedOrder.makerTokenAmount,
+                signedOrder.takerTokenAmount,
+                signedOrder.makerFee,
+                signedOrder.takerFee,
+                signedOrder.expirationUnixTimestampSec,
+                signedOrder.salt,
             ]);
-            fillUpTo.v.push(order.params.v as number);
-            fillUpTo.r.push(order.params.r as string);
-            fillUpTo.s.push(order.params.s as string);
+            fillUpTo.v.push(signedOrder.ecSignature.v);
+            fillUpTo.r.push(signedOrder.ecSignature.r);
+            fillUpTo.s.push(signedOrder.ecSignature.s);
         });
         return fillUpTo;
     },
-    createBatchCancel(orders: Order[], cancelTakerTokenAmounts: BigNumber[] = []) {
+    createBatchCancel(signedOrders: SignedOrder[], cancelTakerTokenAmounts: BigNumber[] = []) {
         const batchCancel: BatchCancelOrders = {
             orderAddresses: [],
             orderValues: [],
             cancelTakerTokenAmounts,
         };
-        orders.forEach(order => {
+        signedOrders.forEach(signedOrder => {
             batchCancel.orderAddresses.push([
-                order.params.maker,
-                order.params.taker,
-                order.params.makerToken,
-                order.params.takerToken,
-                order.params.feeRecipient,
+                signedOrder.maker,
+                signedOrder.taker,
+                signedOrder.makerTokenAddress,
+                signedOrder.takerTokenAddress,
+                signedOrder.feeRecipient,
             ]);
             batchCancel.orderValues.push([
-                order.params.makerTokenAmount,
-                order.params.takerTokenAmount,
-                order.params.makerFee,
-                order.params.takerFee,
-                order.params.expirationTimestampInSec,
-                order.params.salt,
+                signedOrder.makerTokenAmount,
+                signedOrder.takerTokenAmount,
+                signedOrder.makerFee,
+                signedOrder.takerFee,
+                signedOrder.expirationUnixTimestampSec,
+                signedOrder.salt,
             ]);
-            if (cancelTakerTokenAmounts.length < orders.length) {
-                batchCancel.cancelTakerTokenAmounts.push(order.params.takerTokenAmount);
+            if (cancelTakerTokenAmounts.length < signedOrders.length) {
+                batchCancel.cancelTakerTokenAmounts.push(signedOrder.takerTokenAmount);
             }
         });
         return batchCancel;
