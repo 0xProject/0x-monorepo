@@ -100,6 +100,18 @@ contract MixinExchangeCore is
             expirationTimestampInSec: orderValues[4],
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
+        
+        // Validate order expiration
+        if (block.timestamp >= order.expirationTimestampInSec) {
+            
+            // Clear order storage state to potentially reclaim gas
+            filled[order.orderHash] = 0;
+            cancelled[order.orderHash] = 0;
+            
+            LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
+            return 0;
+        }
+
 
         require(order.taker == address(0) || order.taker == msg.sender);
         require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && takerTokenFillAmount > 0);
@@ -110,11 +122,6 @@ contract MixinExchangeCore is
             r,
             s
         ));
-
-        if (block.timestamp >= order.expirationTimestampInSec) {
-            LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
-            return 0;
-        }
 
         uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
@@ -177,13 +184,35 @@ contract MixinExchangeCore is
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
 
+<<<<<<< HEAD
         require(order.maker == msg.sender);
         require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && takerTokenCancelAmount > 0);
-
+=======
         if (block.timestamp >= order.expirationTimestampInSec) {
+            
+            // Clear order storage state to potentially reclaim gas
+            filled[order.orderHash] = 0;
+            cancelled[order.orderHash] = 0;
+            
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
             return 0;
         }
+
+        CancelOrder memory cancelOrderStruct = CancelOrder({
+            orderHash: order.orderHash,
+            taker: taker,
+            cancelAmount: takerTokenCancelAmount
+        });
+        
+        require(order.makerTokenAmount > 0);
+        require(order.takerTokenAmount > 0);
+        require(takerTokenCancelAmount > 0);
+        require(isValidSignature(
+            keccak256(cancelOrderStruct),
+            cancelOrderStruct.taker,
+            takerSignature
+        ));
+>>>>>>> 973c427e... Reclaim storage on expired orders
 
         uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
         takerTokenCancelledAmount = min256(takerTokenCancelAmount, remainingTakerTokenAmount);
