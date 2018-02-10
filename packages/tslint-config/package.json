@@ -32,12 +32,12 @@
     "devDependencies": {
         "@types/lodash": "^4.14.86",
         "shx": "^0.2.2",
-        "tslint": "5.8.0",
-        "tslint-eslint-rules": "^4.1.1",
         "typescript": "2.7.1"
     },
     "dependencies": {
         "lodash": "^4.17.4",
+        "tslint": "5.8.0",
+        "tslint-eslint-rules": "^4.1.1",
         "tslint-react": "^3.2.0"
     }
 }

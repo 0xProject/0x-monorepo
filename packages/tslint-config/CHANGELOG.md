@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.4.9 - _February 9, 2018_
+
+    * Move devDeps to deps to fix missed dependency issue in published package.
+
 ## v0.4.8 - _February 9, 2018_
 
     * Fix publish issue where custom TSLint rules were not being included (#389)
