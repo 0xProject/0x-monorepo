@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.4.19;
+pragma experimental ABIEncoderV2;
 
 import './mixins/MExchangeCore.sol';
 import "../../utils/SafeMath/SafeMath.sol";
@@ -27,29 +28,18 @@ contract MixinWrapperFunctions is
     SafeMath
 {
   
-    /// @dev Fills an order with specified parameters and ECDSA signature. Throws if specified amount not filled entirely.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
-    /// @param v ECDSA signature parameter v.
-    /// @param r ECDSA signature parameters r.
-    /// @param s ECDSA signature parameters s.
     function fillOrKillOrder(
         address[5] orderAddresses,
-        uint256[6] orderValues,
-        uint256 takerTokenFillAmount,
-        uint8 v,
-        bytes32 r,
-        bytes32 s)
+        uint[6] orderValues,
+        uint takerTokenFillAmount,
+        bytes signature)
         public
     {
         require(fillOrder(
             orderAddresses,
             orderValues,
             takerTokenFillAmount,
-            v,
-            r,
-            s
+            signature
         ) == takerTokenFillAmount);
     }
 
@@ -57,18 +47,13 @@ contract MixinWrapperFunctions is
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
-    /// @param v ECDSA signature parameter v.
-    /// @param r ECDSA signature parameters r.
-    /// @param s ECDSA signature parameters s.
     /// @return Success if the transaction did not revert.
     /// @return Total amount of takerToken filled in trade.
     function fillOrderNoThrow(
         address[5] orderAddresses,
         uint256[6] orderValues,
         uint256 takerTokenFillAmount,
-        uint8 v,
-        bytes32 r,
-        bytes32 s)
+        bytes signature)
         public
         returns (bool success, uint256 takerTokenFilledAmount)
     {
@@ -91,9 +76,16 @@ contract MixinWrapperFunctions is
             mstore(add(x, 292), add(orderValues, 160))     // expirationTimestampInSec
             mstore(add(x, 324), add(orderValues, 192))     // salt
             mstore(add(x, 356), takerTokenFillAmount)
-            mstore(add(x, 388), v)
-            mstore(add(x, 420), r)
-            mstore(add(x, 452), s)
+            for {
+                let src := signature
+                let dst := add(x, 388)
+                let end := add(add(src, mload(signature)), 32)
+            } lt(src, end) { 
+                src := add(src, 32)
+                dst := add(dst, 32)
+            } {
+                mstore(dst, mload(src))
+            }
 
             success := delegatecall(
                 gas,      // TODO: don't send all gas, save some for returning is case of throw
@@ -113,16 +105,11 @@ contract MixinWrapperFunctions is
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
     /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
-    /// @param v Array ECDSA signature v parameters.
-    /// @param r Array of ECDSA signature r parameters.
-    /// @param s Array of ECDSA signature s parameters.
     function batchFillOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
         uint256[] takerTokenFillAmounts,
-        uint8[] v,
-        bytes32[] r,
-        bytes32[] s)
+        bytes[] signatures)
         external
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
@@ -130,9 +117,7 @@ contract MixinWrapperFunctions is
                 orderAddresses[i],
                 orderValues[i],
                 takerTokenFillAmounts[i],
-                v[i],
-                r[i],
-                s[i]
+                signatures[i]
             );
         }
     }
@@ -141,54 +126,38 @@ contract MixinWrapperFunctions is
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
     /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
-    /// @param v Array ECDSA signature v parameters.
-    /// @param r Array of ECDSA signature r parameters.
-    /// @param s Array of ECDSA signature s parameters.
     function batchFillOrKillOrders(
         address[5][] orderAddresses,
-        uint256[6][] orderValues,
-        uint256[] takerTokenFillAmounts,
-        uint8[] v,
-        bytes32[] r,
-        bytes32[] s)
-        external
+        uint[6][] orderValues,
+        uint[] takerTokenFillAmounts,
+        bytes[] signatures)
+        public /// Compiler crash when set to external
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrKillOrder(
                 orderAddresses[i],
                 orderValues[i],
                 takerTokenFillAmounts[i],
-                v[i],
-                r[i],
-                s[i]
+                signatures[i]
             );
         }
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction.
-    /// @param orderAddresses Array of address arrays containing individual order addresses.
-    /// @param orderValues Array of uint256 arrays containing individual order values.
-    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
-    /// @param v Array ECDSA signature v parameters.
-    /// @param r Array of ECDSA signature r parameters.
-    /// @param s Array of ECDSA signature s parameters.
-    function batchFillOrdersNoThrow(
+
+    function fillOrdersUpTo(
         address[5][] orderAddresses,
-        uint256[6][] orderValues,
-        uint256[] takerTokenFillAmounts,
-        uint8[] v,
-        bytes32[] r,
-        bytes32[] s)
-        external
+        uint[6][] orderValues,
+        uint[] takerTokenFillAmounts,
+        bytes[] signatures)
+        public /// Stack to deep when set to external
+        returns (uint)
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrderNoThrow(
                 orderAddresses[i],
                 orderValues[i],
                 takerTokenFillAmounts[i],
-                v[i],
-                r[i],
-                s[i]
+                signatures[i]
             );
         }
     }
@@ -197,17 +166,12 @@ contract MixinWrapperFunctions is
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
     /// @param takerTokenFillAmount Desired total amount of takerToken to fill in orders.
-    /// @param v Array ECDSA signature v parameters.
-    /// @param r Array of ECDSA signature r parameters.
-    /// @param s Array of ECDSA signature s parameters.
     /// @return Total amount of takerTokenFillAmount filled in orders.
     function marketFillOrders(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
         uint256 takerTokenFillAmount,
-        uint8[] v,
-        bytes32[] r,
-        bytes32[] s)
+        bytes[] signatures)
         external
         returns (uint256 totalTakerTokenFilledAmount)
     {
@@ -217,9 +181,7 @@ contract MixinWrapperFunctions is
                 orderAddresses[i],
                 orderValues[i],
                 safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
-                v[i],
-                r[i],
-                s[i]
+                signatures[i]
             ));
             if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
         }
@@ -230,17 +192,12 @@ contract MixinWrapperFunctions is
     /// @param orderAddresses Array of address arrays containing individual order addresses.
     /// @param orderValues Array of uint256 arrays containing individual order values.
     /// @param takerTokenFillAmount Desired total amount of takerToken to fill in orders.
-    /// @param v Array ECDSA signature v parameters.
-    /// @param r Array of ECDSA signature r parameters.
-    /// @param s Array of ECDSA signature s parameters.
     /// @return Total amount of takerTokenFillAmount filled in orders.
     function marketFillOrdersNoThrow(
         address[5][] orderAddresses,
         uint256[6][] orderValues,
         uint256 takerTokenFillAmount,
-        uint8[] v,
-        bytes32[] r,
-        bytes32[] s)
+        bytes[] signatures)
         external
         returns (uint256 totalTakerTokenFilledAmount)
     {
@@ -250,9 +207,7 @@ contract MixinWrapperFunctions is
                 orderAddresses[i],
                 orderValues[i],
                 safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
-                v[i],
-                r[i],
-                s[i]
+                signatures[i]
             );
             totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, takerTokenFilledAmount);
             if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
@@ -278,4 +233,5 @@ contract MixinWrapperFunctions is
             );
         }
     }
+    
 }

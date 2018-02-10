@@ -73,19 +73,15 @@ contract MixinExchangeCore is
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
-    /// @param v ECDSA signature parameter v.
-    /// @param r ECDSA signature parameters r.
-    /// @param s ECDSA signature parameters s.
+    /// @param signature Proof of signing order by maker.
     /// @return Total amount of takerToken filled in trade.
     function fillOrder(
-          address[5] orderAddresses,
-          uint256[6] orderValues,
-          uint256 takerTokenFillAmount,
-          uint8 v,
-          bytes32 r,
-          bytes32 s)
-          public
-          returns (uint256 takerTokenFilledAmount)
+        address[5] orderAddresses,
+        uint[6] orderValues,
+        uint takerTokenFillAmount,
+        bytes signature)
+        public
+        returns (uint256 takerTokenFilledAmount)
     {
         Order memory order = Order({
             maker: orderAddresses[0],
@@ -100,29 +96,37 @@ contract MixinExchangeCore is
             expirationTimestampInSec: orderValues[4],
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
-
-        require(order.taker == address(0) || order.taker == msg.sender);
-        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && takerTokenFillAmount > 0);
+        
+        // Validate maker
+        require(order.makerTokenAmount > 0);
+        require(order.takerTokenAmount > 0);
         require(isValidSignature(
-            order.maker,
             order.orderHash,
-            v,
-            r,
-            s
+            order.maker,
+            signature
         ));
+        
+        // Validate taker
+        if (order.taker != address(0)) {
+            require(order.taker == msg.sender);
+        }
+        require(takerTokenFillAmount > 0);
 
+        // Validate order expiration
         if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
             return 0;
         }
-
+        
+        // Validate order availability
         uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
         if (takerTokenFilledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), order.orderHash);
             return 0;
         }
-
+        
+        // Validate fill order rounding
         if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), order.orderHash);
             return 0;
