@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/web3-wrapper",
-    "version": "0.1.12",
+    "version": "0.1.13",
     "description": "Wraps around web3 and gives a nicer interface",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -20,8 +20,8 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/web3-wrapper/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.8",
-        "@0xproject/types": "^0.2.1",
+        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/types": "^0.2.2",
         "@types/lodash": "^4.14.86",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
@@ -30,7 +30,7 @@
         "web3-typescript-typings": "^0.9.10"
     },
     "dependencies": {
-        "@0xproject/utils": "^0.3.2",
+        "@0xproject/utils": "^0.3.3",
         "lodash": "^4.17.4",
         "web3": "^0.20.0"
     }

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "0.5.7",
+    "version": "0.5.8",
     "description": "A javascript library for interacting with the standard relayer api",
     "keywords": [
         "connect",
@@ -37,16 +37,16 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^0.0.18",
-        "@0xproject/json-schemas": "^0.7.10",
-        "@0xproject/utils": "^0.3.2",
+        "@0xproject/assert": "^0.0.19",
+        "@0xproject/json-schemas": "^0.7.11",
+        "@0xproject/utils": "^0.3.3",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.8",
+        "@0xproject/tslint-config": "^0.4.9",
         "@types/fetch-mock": "^5.12.1",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
