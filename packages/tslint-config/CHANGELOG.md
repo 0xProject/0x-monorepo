@@ -1,6 +1,14 @@
 # CHANGELOG
 
-## v0.5.0 - _TBD, 2018_
+## v0.4.9 - _February 9, 2018_
+
+    * Move devDeps to deps to fix missed dependency issue in published package.
+
+## v0.4.8 - _February 9, 2018_
+
+    * Fix publish issue where custom TSLint rules were not being included (#389)
+
+## v0.4.7 - _February 7, 2018_
 
     * Modified custom 'underscore-privates' rule, changing it to 'underscore-private-and-protected' requiring underscores to be prepended to both private and protected variable names (#354)
 

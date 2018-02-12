@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "0.5.6",
+    "version": "0.5.8",
     "description": "A javascript library for interacting with the standard relayer api",
     "keywords": [
         "connect",
@@ -37,16 +37,16 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^0.0.17",
-        "@0xproject/json-schemas": "^0.7.9",
-        "@0xproject/utils": "^0.3.1",
+        "@0xproject/assert": "^0.0.19",
+        "@0xproject/json-schemas": "^0.7.11",
+        "@0xproject/utils": "^0.3.3",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.7",
+        "@0xproject/tslint-config": "^0.4.9",
         "@types/fetch-mock": "^5.12.1",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
@@ -54,8 +54,8 @@
         "@types/websocket": "^0.0.34",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-as-promised-typescript-typings": "^0.0.8",
-        "chai-typescript-typings": "^0.0.2",
+        "chai-as-promised-typescript-typings": "^0.0.9",
+        "chai-typescript-typings": "^0.0.3",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "fetch-mock": "^5.13.1",
@@ -65,6 +65,6 @@
         "tslint": "5.8.0",
         "typedoc": "~0.8.0",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.9"
+        "web3-typescript-typings": "^0.9.10"
     }
 }

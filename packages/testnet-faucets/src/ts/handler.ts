@@ -129,18 +129,18 @@ export class Handler {
         }
         const zeroEx = networkConfig.zeroEx;
         res.setHeader('Content-Type', 'application/json');
-        const makerTokenAddress = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(requestedAssetType);
-        if (_.isUndefined(makerTokenAddress)) {
+        const makerToken = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(requestedAssetType);
+        if (_.isUndefined(makerToken)) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
         const takerTokenSymbol =
             requestedAssetType === RequestedAssetType.WETH ? RequestedAssetType.ZRX : RequestedAssetType.WETH;
-        const takerTokenAddress = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(takerTokenSymbol);
-        if (_.isUndefined(takerTokenAddress)) {
+        const takerToken = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(takerTokenSymbol);
+        if (_.isUndefined(takerToken)) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
-        const makerTokenAmount = new BigNumber(0.1);
-        const takerTokenAmount = new BigNumber(0.1);
+        const makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), makerToken.decimals);
+        const takerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), takerToken.decimals);
         const order: Order = {
             maker: configs.DISPENSER_ADDRESS,
             taker: req.params.recipient,
@@ -148,8 +148,8 @@ export class Handler {
             takerFee: new BigNumber(0),
             makerTokenAmount,
             takerTokenAmount,
-            makerTokenAddress,
-            takerTokenAddress,
+            makerTokenAddress: makerToken.address,
+            takerTokenAddress: takerToken.address,
             salt: ZeroEx.generatePseudoRandomSalt(),
             exchangeContractAddress: zeroEx.exchange.getContractAddress(),
             feeRecipient: ZeroEx.NULL_ADDRESS,
@@ -159,7 +159,7 @@ export class Handler {
         const signature = await zeroEx.signOrderHashAsync(orderHash, configs.DISPENSER_ADDRESS, false);
         const signedOrder = {
             ...order,
-            signature,
+            ecSignature: signature,
         };
         const signedOrderHash = ZeroEx.getOrderHashHex(signedOrder);
         const payload = JSON.stringify(signedOrder);
