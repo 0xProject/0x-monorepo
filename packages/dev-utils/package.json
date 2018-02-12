@@ -7,8 +7,11 @@
     "scripts": {
         "build:watch": "tsc -w",
         "build": "tsc",
+        "test": "run-s clean build run_mocha",
+        "test:circleci": "yarn test",
+        "run_mocha": "mocha lib/test/**/*_test.js --bail --exit",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project . 'src/**/*.ts'"
+        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'"
     },
     "license": "Apache-2.0",
     "repository": {
@@ -20,9 +23,14 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/dev-utils/README.md",
     "devDependencies": {
+        "@types/mocha": "^2.2.42",
         "@0xproject/tslint-config": "^0.4.9",
         "@0xproject/types": "^0.2.2",
+        "@0xproject/web3-wrapper": "^0.1.13",
         "@types/lodash": "^4.14.86",
+        "chai": "^4.0.1",
+        "chai-typescript-typings": "^0.0.3",
+        "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
