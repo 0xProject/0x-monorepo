@@ -2,8 +2,8 @@
     "name": "@0xproject/dev-utils",
     "version": "0.0.13",
     "description": "0x dev TS utils",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
         "build": "tsc",
