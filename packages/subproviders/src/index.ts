@@ -6,6 +6,8 @@ import {
 
 import { LedgerEthereumClient } from './types';
 
+export { EmptyWalletSubprovider } from './subproviders/empty_wallet_subprovider';
+export { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_subprovider';
 export { InjectedWeb3Subprovider } from './subproviders/injected_web3';
 export { RedundantRPCSubprovider } from './subproviders/redundant_rpc';
 export { LedgerSubprovider } from './subproviders/ledger';

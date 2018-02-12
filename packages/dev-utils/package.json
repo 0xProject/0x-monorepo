@@ -32,6 +32,7 @@
     },
     "dependencies": {
         "@0xproject/utils": "^0.3.3",
+        "@0xproject/subproviders": "^0.4.2",
         "ethereumjs-util": "^5.1.2",
         "lodash": "^4.17.4",
         "request-promise-native": "^1.0.5",
