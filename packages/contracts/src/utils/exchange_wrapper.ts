@@ -36,9 +36,9 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const decodedLog = this._logDecoder.tryToDecodeLogOrNoop(log);
-            wrapLogBigNumbers(decodedLog);
-            return decodedLog;
+            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
         });
         return tx;
     }
@@ -57,9 +57,9 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const decodedLog = this._logDecoder.tryToDecodeLogOrNoop(log);
-            wrapLogBigNumbers(decodedLog);
-            return decodedLog;
+            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
         });
         return tx;
     }
@@ -81,9 +81,9 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const decodedLog = this._logDecoder.tryToDecodeLogOrNoop(log);
-            wrapLogBigNumbers(decodedLog);
-            return decodedLog;
+            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
         });
         return tx;
     }
@@ -105,9 +105,9 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const decodedLog = this._logDecoder.tryToDecodeLogOrNoop(log);
-            wrapLogBigNumbers(decodedLog);
-            return decodedLog;
+            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
         });
         return tx;
     }
@@ -129,9 +129,9 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const decodedLog = this._logDecoder.tryToDecodeLogOrNoop(log);
-            wrapLogBigNumbers(decodedLog);
-            return decodedLog;
+            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
         });
         return tx;
     }
@@ -153,9 +153,9 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const decodedLog = this._logDecoder.tryToDecodeLogOrNoop(log);
-            wrapLogBigNumbers(decodedLog);
-            return decodedLog;
+            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
         });
         return tx;
     }
@@ -174,9 +174,9 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const decodedLog = this._logDecoder.tryToDecodeLogOrNoop(log);
-            wrapLogBigNumbers(decodedLog);
-            return decodedLog;
+            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
         });
         return tx;
     }
