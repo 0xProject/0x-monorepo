@@ -1,4 +1,5 @@
 {
+    "contract_name": "MixinWrapperFunctions",
     "networks": {
         "50": {
             "solc_version": "0.4.19",
@@ -352,7 +353,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518199079819
+            "updated_at": 1518411927272
         }
     }
 }
