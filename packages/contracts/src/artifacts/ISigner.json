@@ -1,21 +1,17 @@
 {
-    "contract_name": "MSignatureValidator",
+    "contract_name": "ISigner",
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0x0afb7ab1afb1cae01e3408eecdf9343dd0e42551d40593fe21d2773c9cc5bd57",
+            "keccak256": "0x44a5168e2bbd35774f22dacda15909bdc32ba2431740af0b5b3085dfec187d3e",
             "optimizer_enabled": 0,
             "abi": [
                 {
                     "constant": true,
                     "inputs": [
                         {
-                            "name": "digest",
+                            "name": "hash",
                             "type": "bytes32"
-                        },
-                        {
-                            "name": "signer",
-                            "type": "address"
                         },
                         {
                             "name": "signature",
@@ -35,7 +31,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518561351720
+            "updated_at": 1518568156766
         }
     }
 }
