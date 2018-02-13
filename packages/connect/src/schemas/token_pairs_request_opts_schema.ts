@@ -1,5 +1,5 @@
-export const relayerTokenPairsRequestSchema = {
-    id: '/RelayerTokenPairsRequest',
+export const tokenPairsRequestOptsSchema = {
+    id: '/TokenPairsRequestOpts',
     type: 'object',
     properties: {
         tokenA: { $ref: '/Address' },

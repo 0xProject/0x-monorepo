@@ -1,9 +1,13 @@
-import { relayerOrderBookRequestSchema } from './relayer_orderbook_request_schema';
-import { relayerOrdersRequestSchema } from './relayer_orders_request_schema';
-import { relayerTokenPairsRequestSchema } from './relayer_token_pairs_request_schema';
+import { feesRequestSchema } from './fees_request_schema';
+import { orderBookRequestSchema } from './orderbook_request_schema';
+import { ordersRequestOptsSchema } from './orders_request_opts_schema';
+import { pagedRequestOptsSchema } from './paged_request_opts_schema';
+import { tokenPairsRequestOptsSchema } from './token_pairs_request_opts_schema';
 
 export const schemas = {
-    relayerOrderBookRequestSchema,
-    relayerOrdersRequestSchema,
-    relayerTokenPairsRequestSchema,
+    feesRequestSchema,
+    orderBookRequestSchema,
+    ordersRequestOptsSchema,
+    pagedRequestOptsSchema,
+    tokenPairsRequestOptsSchema,
 };
