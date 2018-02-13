@@ -169,7 +169,7 @@ export interface FeesResponse {
 
 export interface PagedRequestOpts {
     page?: number;
-    per_page?: number;
+    perPage?: number;
 }
 
 export interface HttpRequestOptions {

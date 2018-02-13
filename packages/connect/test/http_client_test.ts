@@ -51,7 +51,7 @@ describe('HttpClient', () => {
             const tokenPairsRequestOpts = {
                 tokenA: tokenAddress,
                 page: 3,
-                per_page: 50,
+                perPage: 50,
             };
             const urlWithQuery = `${url}?page=3&per_page=50&tokenA=${tokenAddress}`;
             fetchMock.get(urlWithQuery, tokenPairsResponseJSON);
@@ -76,7 +76,7 @@ describe('HttpClient', () => {
             const ordersRequest = {
                 tokenAddress,
                 page: 3,
-                per_page: 50,
+                perPage: 50,
             };
             const urlWithQuery = `${url}?page=3&per_page=50&tokenAddress=${tokenAddress}`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
@@ -122,7 +122,7 @@ describe('HttpClient', () => {
             fetchMock.get(urlWithQuery, orderbookJSON);
             const pagedRequestOptions = {
                 page: 3,
-                per_page: 50,
+                perPage: 50,
             };
             const orderbook = await relayerClient.getOrderbookAsync(request, pagedRequestOptions);
             expect(orderbook).to.be.deep.equal(orderbookResponse);

@@ -24,7 +24,13 @@ import { relayerResponseJsonParsers } from './utils/relayer_response_json_parser
 const TRAILING_SLASHES_REGEX = /\/+$/;
 const DEFAULT_PAGED_REQUEST_OPTS: PagedRequestOpts = {
     page: 0,
-    per_page: 100,
+    perPage: 100,
+};
+/**
+ * This mapping defines how an option property name gets converted into an HTTP request query field
+ */
+const OPTS_TO_QUERY_FIELD_MAP = {
+    perPage: 'per_page',
 };
 
 /**
@@ -33,6 +39,22 @@ const DEFAULT_PAGED_REQUEST_OPTS: PagedRequestOpts = {
  */
 export class HttpClient implements Client {
     private _apiEndpointUrl: string;
+    /**
+     * Format parameters to be appended to http requests into query string form
+     */
+    private static _buildQueryStringFromHttpParams(params?: object): string {
+        // if params are undefined or empty, return an empty string
+        if (_.isUndefined(params) || _.isEmpty(params)) {
+            return '';
+        }
+        // format params into a form the api expects
+        const formattedParams = _.mapKeys(params, (value: any, key: string) => {
+            return _.get(OPTS_TO_QUERY_FIELD_MAP, key, key);
+        });
+        // stringify the formatted object
+        const stringifiedParams = queryString.stringify(formattedParams);
+        return `?${stringifiedParams}`;
+    }
     /**
      * Instantiates a new HttpClient instance
      * @param   url    The relayer API base HTTP url you would like to interact with
@@ -44,8 +66,7 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve token pair info from the API
-     * @param   requestOpts     An optional (TokenPairsRequestOpts & PagedRequestOpts) instance describing token information
-     *                          to retrieve with page information, defaults to { page: 0, per_page: 100 }
+     * @param   requestOpts     Options specifying token information to retrieve and page information, defaults to { page: 0, perPage: 100 }
      * @return  The resulting TokenPairsItems that match the request
      */
     public async getTokenPairsAsync(requestOpts?: TokenPairsRequestOpts & PagedRequestOpts): Promise<TokenPairsItem[]> {
@@ -62,8 +83,7 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve orders from the API
-     * @param   requestOpts     An optional (OrdersRequestOpts & PagedRequestOpts) instance describing specific orders to retrieve
-     *                          with page information, defaults to { page: 0, per_page: 100 }
+     * @param   requestOpts     Options specifying orders to retrieve and page information, defaults to { page: 0, perPage: 100 }
      * @return  The resulting SignedOrders that match the request
      */
     public async getOrdersAsync(requestOpts?: OrdersRequestOpts & PagedRequestOpts): Promise<SignedOrder[]> {
@@ -92,7 +112,7 @@ export class HttpClient implements Client {
     /**
      * Retrieve an orderbook from the API
      * @param   request         An OrderbookRequest instance describing the specific orderbook to retrieve
-     * @param   requestOpts     An optional PagedRequestOpts instance describing page information, defaults to { page: 0, per_page: 100 }
+     * @param   requestOpts     Options specifying page information, defaults to { page: 0, perPage: 100 }
      * @return  The resulting OrderbookResponse that matches the request
      */
     public async getOrderbookAsync(
@@ -142,11 +162,7 @@ export class HttpClient implements Client {
     ): Promise<any> {
         const params = _.get(requestOptions, 'params');
         const payload = _.get(requestOptions, 'payload');
-        let query = '';
-        if (!_.isUndefined(params) && !_.isEmpty(params)) {
-            const stringifiedParams = queryString.stringify(params);
-            query = `?${stringifiedParams}`;
-        }
+        const query = HttpClient._buildQueryStringFromHttpParams(params);
         const url = `${this._apiEndpointUrl}${path}${query}`;
         const headers = new Headers({
             'content-type': 'application/json',
