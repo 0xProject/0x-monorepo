@@ -1,4 +1,5 @@
 import { ExchangeEvents } from '0x.js';
+import * as Airtable from 'airtable';
 import * as commandLineArgs from 'command-line-args';
 import * as querystring from 'querystring';
 import * as queue from 'queue';
@@ -8,14 +9,20 @@ import { typeConverters } from '../utils.js';
 import { web3, zrx} from '../zrx.js';
 import { insertDataScripts } from './create_tables.js';
 import { dataFetchingQueries } from './query_data.js';
+import { Sequelize } from 'sequelize-typescript/lib/models/Sequelize';
+import { error } from 'shelljs';
 
 const optionDefinitions = [{ name: 'from', alias: 'f', type: Number }, { name: 'to', alias: 't', type: Number }, { name: 'type', type: String}, {name:'id', type: String}, {name:'force', type: Boolean}];
 const cli = commandLineArgs(optionDefinitions);
 
 const q = queue({ concurrency: 6, autostart: true });
 
+const airtableBase = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_0X_BASE);
+
 const BLOCK_INCREMENTS = 1000;
 const PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/pricehistorical?';
+
+const AIRTABLE_RELAYER_INFO = 'Relayer Info';
 
 export const scrapeDataScripts = {
     getAllEvents(fromBlockNumber: number, toBlockNumber: number): any {
@@ -125,8 +132,6 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                         insertDataScripts.insertMultipleRows('events_raw', parsedEvents[event_type], Object.keys(parsedEvents[event_type][0])).
                         catch((error:any) => {
                             console.log(error);
-                            console.log(parsedEvents);
-                            console.log(data);
                         })
                     }
                 }
@@ -150,6 +155,33 @@ function _scrapeBlockToDB(block: number): any {
                 cb();
             })
             .catch((err: any) => {
+                console.error(err);
+                cb();
+            });
+        })
+        .catch((err: any) => {
+            cb();
+        });
+    };
+}
+
+function _scrapeAllRelayersToDB(): any {
+    return (cb: () => void) => {
+        airtableBase(AIRTABLE_RELAYER_INFO)
+        .select()
+        .eachPage((records: any, fetchNextPage: () => void) => {
+            console.log(records);
+            const parsedRelayers: any[] = [];
+            for(const record of records) {
+                parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(record));
+            }
+            insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(parsedRelayers[0]))
+            .then((result: any) => {
+                console.log("Inserted " + parsedRelayers.length + " relayers");
+                cb();
+            })
+            .catch((err: any) => {
+                console.error("Failed to insert relayers ");
                 console.error(err);
                 cb();
             });
@@ -185,19 +217,19 @@ function _scrapeTransactionToDB(transactionHash: string): any {
 
 function _scrapeTokenRegistryToDB(): any {
     return (cb: () => void) => {
-        scrapeDataScripts
-        .getTokenRegistry()
-        .then((data: any) => {
-            const parsedTokens: any = [];
-            for(const token of data) {
-                parsedTokens.push(typeConverters.convertLogTokenToTokenObject(token));
-            }
-            insertDataScripts.insertMultipleRows('tokens', parsedTokens, Object.keys(parsedTokens[0]));
-            cb();
-        })
-        .catch((err: any) => {
-            cb();
-        });
+            scrapeDataScripts
+            .getTokenRegistry()
+            .then((data: any) => {
+                const parsedTokens: any = [];
+                for(const token of data) {
+                    parsedTokens.push(typeConverters.convertLogTokenToTokenObject(token));
+                }
+                insertDataScripts.insertMultipleRows('tokens', parsedTokens, Object.keys(parsedTokens[0]));
+                cb();
+            })
+            .catch((err: any) => {
+                cb();
+            });
     };
 }
 
@@ -214,7 +246,7 @@ function _scrapePriceToDB(timestamp: number, token: any): any {
             cb();
         })
         .catch((err: any) => {
-            console.log(err);
+          console.log(err);
             cb();
         });
     };
@@ -293,12 +325,6 @@ if(cli.type === 'events') {
                 console.log(err);
             })
     }
-} else if (cli.type === 'test') {
-    scrapeDataScripts.getAllEvents(4930000, 4940000)
-    .then((data: any) => {
-        console.log(data)
-    })
-    .catch((error: any) => {
-        console.log(error)
-    })
+} else if(cli.type === 'relayers') {
+    q.push(_scrapeAllRelayersToDB());
 }

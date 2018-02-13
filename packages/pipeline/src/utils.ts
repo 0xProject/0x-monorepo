@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
-import { block, logToBlockSchemaMapping } from './models/block';
-import { event, logToEventSchemaMapping } from './models/event';
+import { logToBlockSchemaMapping } from './models/block';
+import { logToEventSchemaMapping } from './models/event';
 import { logToTransactionSchemaMapping, transaction } from './models/transaction';
 import { logToTokenSchemaMapping, token } from './models/tokens';
+import { logToRelayerSchemaMapping } from './models/relayer';
 
 export const typeConverters = {
     convertLogEventToEventObject(log: any): any {
@@ -58,6 +59,22 @@ export const typeConverters = {
             }
         }
         return newTransaction;
+    },
+    convertRelayerToRelayerObject(logRelayer: any): any {
+        const newRelayer: any = {};
+        for (const key in logToRelayerSchemaMapping) {
+            if (_.has(logRelayer, key)) {
+                newRelayer[logToRelayerSchemaMapping[key]] = _.get(logRelayer, key);
+                if (newRelayer[logToRelayerSchemaMapping[key]].constructor.name === 'BigNumber') {
+                    newRelayer[logToRelayerSchemaMapping[key]] = newRelayer[logToRelayerSchemaMapping[key]].toString();
+                }
+            } else if((logToRelayerSchemaMapping[key] === 'known_fee_addresses' || logToRelayerSchemaMapping[key] === 'known_taker_addresses')) {
+                newRelayer[logToRelayerSchemaMapping[key]] = '{}';
+            } else {
+                newRelayer[logToRelayerSchemaMapping[key]] = '';
+            }
+        }
+        return newRelayer;
     },
 };
 

@@ -2,10 +2,35 @@ import * as commandLineArgs from 'command-line-args';
 import { postgresClient } from '../postgres';
 import { formatters } from '../utils';
 
-// const optionDefinitions = [{ name: 'script', alias: 's', type: String }];
-// const cli = commandLineArgs(optionDefinitions);
-
 const tableQueries: any = {
+    events_full: `CREATE TABLE IF NOT EXISTS events_full (
+        timestamp TIMESTAMP WITH TIME ZONE,
+        event_type VARCHAR,
+        error_id VARCHAR,
+        order_hash CHAR(66),
+        maker CHAR(42),
+        maker_amount NUMERIC(78),
+        maker_fee NUMERIC(78),
+        maker_token CHAR(42),
+        taker CHAR(42),
+        taker_amount NUMERIC(78),
+        taker_fee NUMERIC(78),
+        taker_token CHAR(42),
+        txn_hash CHAR(66),
+        gas_used NUMERIC(78),
+        gas_price NUMERIC(78),
+        fee_recipient CHAR(42),
+        method_id CHAR(10),
+        salt VARCHAR,
+        block_number BIGINT,
+        log_index BIGINT,
+        taker_symbol VARCHAR,
+        taker_name VARCHAR,
+        taker_decimals BIGINT,
+        taker_usd_price NUMERIC(78),
+        txn_usd_value NUMERIC(78),
+        PRIMARY KEY (txn_hash, order_hash, log_index)
+    )`,
     events: `CREATE TABLE IF NOT EXISTS events (
         timestamp TIMESTAMP WITH TIME ZONE,
         event_type VARCHAR,
@@ -94,7 +119,20 @@ const tableQueries: any = {
         timestamp TIMESTAMP WITH TIME ZONE,
         price NUMERIC(50),
         PRIMARY KEY (address, timestamp)
-    )`
+    )`,
+    relayers: `CREATE TABLE IF NOT EXISTS relayers (
+        id VARCHAR UNIQUE,
+        name VARCHAR,
+        url VARCHAR DEFAULT '',
+        model VARCHAR DEFAULT '',
+        status VARCHAR DEFAULT '',
+        sra_status VARCHAR DEFAULT '',
+        sra_http_url VARCHAR DEFAULT '',
+        known_fee_addresses CHAR(42)[] DEFAULT '{}',
+        known_taker_addresses CHAR(42)[] DEFAULT '{}',
+        relayer_type VARCHAR DEFAULT '',
+        PRIMARY KEY(id)
+    )`,
 };
 
 function _safeQuery(query: string): any {
@@ -164,8 +202,13 @@ export const insertDataScripts = {
                                 safeArray.push('to_timestamp(' + value[key] + ')');
                             } else if (typeof value[key] === 'string' || value[key] instanceof String) {
                                 safeArray.push(formatters.escapeSQLParam(value[key]))
+                            } else if (value[key] instanceof Array) {
+                                const escapedArray = value[key].map((subValue: string, subIndex: number) => {
+                                    return formatters.escapeSQLParam(subValue);
+                                });
+                                safeArray.push('ARRAY[' + escapedArray.toString() + ']');
                             } else {
-                                safeArray.push(value[key])
+                                safeArray.push(value[key]);
                             }
 
                         } else {
@@ -175,12 +218,15 @@ export const insertDataScripts = {
                     return '(' + safeArray + ')';
                 });
                 const queryString = `INSERT INTO ${table} (${columns}) VALUES ${rowsSplit}`;
+                console.log(queryString);
                 postgresClient
                     .query(queryString)
                     .then((data: any) => {
+                        console.log(data);
                         resolve(data);
                     })
                     .catch((err: any) => {
+                        console.log(err);
                         reject(err);
                     });
             } else {
