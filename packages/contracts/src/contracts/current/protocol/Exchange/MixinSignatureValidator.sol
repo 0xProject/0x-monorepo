@@ -32,22 +32,6 @@ contract MixinSignatureValidator is
         EIP712,
         Contract
     }
-    
-    bytes32 public constant orderSchemaHash = keccak256(
-        "address exchangeContractAddress",
-        "address makerAddress",
-        "address takerAddress",
-        "address makerTokenAddress",
-        "address takerTokenAddress",
-        "address feeRecipientAddress",
-        "uint256 makerTokenAmount",
-        "uint256 takerTokenAmount",
-        "uint256 makerFeeAmount",
-        "uint256 takerFeeAmount",
-        "uint256 expirationTimestamp",
-        "uint256 salt"
-    );
-
   
     function isValidSignature(
         bytes32 hash,
@@ -95,16 +79,10 @@ contract MixinSignatureValidator is
             
         // Signature using EIP712
         } else if (stype == SignatureType.EIP712) {
-            // TODO This is breaking with the domain separator!
             v = uint8(signature[1]);
             r = get32(signature, 2);
             s = get32(signature, 35);
-            address recovered = ecrecover(
-                keccak256(orderSchemaHash, orderHash),
-                v,
-                r,
-                s
-            );
+            address recovered = ecrecover(hash, v, r, s);
             isValid = signer == recovered;
             return;
         
