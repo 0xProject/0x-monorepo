@@ -36,7 +36,7 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
             wrapLogBigNumbers(logWithDecodedArgs);
             return logWithDecodedArgs;
         });
@@ -57,7 +57,7 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
             wrapLogBigNumbers(logWithDecodedArgs);
             return logWithDecodedArgs;
         });
@@ -81,7 +81,7 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
             wrapLogBigNumbers(logWithDecodedArgs);
             return logWithDecodedArgs;
         });
@@ -105,7 +105,7 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
             wrapLogBigNumbers(logWithDecodedArgs);
             return logWithDecodedArgs;
         });
@@ -129,7 +129,7 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
             wrapLogBigNumbers(logWithDecodedArgs);
             return logWithDecodedArgs;
         });
@@ -153,7 +153,7 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
             wrapLogBigNumbers(logWithDecodedArgs);
             return logWithDecodedArgs;
         });
@@ -174,7 +174,7 @@ export class ExchangeWrapper {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
         tx.logs = _.map(tx.logs, log => {
-            const logWithDecodedArgs = this._logDecoder.tryToDecodeLogOrNoop(log);
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
             wrapLogBigNumbers(logWithDecodedArgs);
             return logWithDecodedArgs;
         });
