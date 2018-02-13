@@ -3,7 +3,7 @@
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0xad44a6bf618a1522cc349af46ea8e27c60b22ed83d7a1ce1fd057daa3e0cd3d8",
+            "keccak256": "0x105d0f9fcdfff542879bf9441f438b26ddb3f23db0b1238a7a753d7150d24681",
             "optimizer_enabled": 0,
             "abi": [
                 {
@@ -359,7 +359,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518411926574
+            "updated_at": 1518560043128
         }
     }
 }
