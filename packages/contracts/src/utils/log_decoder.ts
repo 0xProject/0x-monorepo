@@ -22,8 +22,11 @@ export class LogDecoder {
         });
         this._abiDecoder = new AbiDecoder(abiArrays);
     }
-    public tryToDecodeLogOrNoop<ArgsType>(log: Web3.LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
-        const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
-        return logWithDecodedArgs;
+    public decodeLogOrThrow<ArgsType>(log: Web3.LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
+        const logWithDecodedArgsOrLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
+        if (_.isUndefined((logWithDecodedArgsOrLog as LogWithDecodedArgs<ArgsType>).args)) {
+            throw new Error(`Unable to decode log: ${JSON.stringify(log)}`);
+        }
+        return logWithDecodedArgsOrLog;
     }
 }
