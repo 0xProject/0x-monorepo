@@ -1,4 +1,4 @@
-const histFullPrice = {
+const historicalPrices = {
     tableName: 'historical_prices',
     tableProperties: {
         token: {
@@ -32,7 +32,7 @@ const histFullPrice = {
 
 };
 
-const logToHistFullPriceSchemaMapping: any = {
+const logToHistoricalPricesSchema: {[log: string]: string} = {
     token: 'token',
     time: 'timestamp',
     close: 'close',
@@ -43,4 +43,4 @@ const logToHistFullPriceSchemaMapping: any = {
     volumeto: 'volume_to',
 };
 
-export { histFullPrice, logToHistFullPriceSchemaMapping };
+export { historicalPrices, logToHistoricalPricesSchema };

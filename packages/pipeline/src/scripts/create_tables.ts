@@ -116,11 +116,9 @@ function _safeQuery(query: string): any {
         postgresClient
             .query(query)
             .then((data: any) => {
-                console.log(data);
                 resolve(data);
             })
             .catch((err: any) => {
-                console.error(err);
                 reject(err);
             });
     });
