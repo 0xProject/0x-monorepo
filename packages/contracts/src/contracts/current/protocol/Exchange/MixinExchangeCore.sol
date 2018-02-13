@@ -102,7 +102,7 @@ contract MixinExchangeCore is
             require(order.makerTokenAmount > 0);
             require(order.takerTokenAmount > 0);
             require(isValidSignature(
-                order.orderHash,
+                keccak256(orderSchemaHash, order.orderHash),
                 order.maker,
                 signature
             ));
@@ -188,7 +188,7 @@ contract MixinExchangeCore is
         require(order.takerTokenAmount > 0);
         require(takerTokenCancelAmount > 0);
         require(isValidSignature(
-            order.orderHash,
+            keccak256(orderSchemaHash, order.orderHash),
             order.maker,
             signature
         ));
