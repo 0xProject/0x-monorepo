@@ -1,6 +1,6 @@
 import * as Web3 from 'web3';
 
-import { TokenRegistryContract } from '../src/contract_wrappers/generated/token_registry';
+import { TokenRegistryContract } from '../contract_wrappers/generated/token_registry';
 
 import { Token } from './types';
 

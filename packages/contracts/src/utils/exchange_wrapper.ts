@@ -3,13 +3,16 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-import { ExchangeContract } from '../src/contract_wrappers/generated/exchange';
+import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 
+import { constants } from './constants';
 import { formatters } from './formatters';
+import { LogDecoder } from './log_decoder';
 import { signedOrderUtils } from './signed_order_utils';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
+    private _logDecoder: LogDecoder = new LogDecoder(constants.TESTRPC_NETWORK_ID);
     private _zeroEx: ZeroEx;
     constructor(exchangeContract: ExchangeContract, zeroEx: ZeroEx) {
         this._exchange = exchangeContract;
@@ -20,10 +23,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrderUtils.createFill(
-            signedOrder,
-            opts.takerTokenFillAmount,
-        );
+        const params = signedOrderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
         const txHash = await this._exchange.fillOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
@@ -35,7 +35,11 @@ export class ExchangeWrapper {
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        _.each(tx.logs, log => wrapLogBigNumbers(log));
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
         return tx;
     }
     public async cancelOrderAsync(
@@ -52,7 +56,11 @@ export class ExchangeWrapper {
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        _.each(tx.logs, log => wrapLogBigNumbers(log));
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
         return tx;
     }
     public async fillOrKillOrderAsync(
@@ -60,10 +68,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrderUtils.createFill(
-            signedOrder,
-            opts.takerTokenFillAmount,
-        );
+        const params = signedOrderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
         const txHash = await this._exchange.fillOrKillOrder.sendTransactionAsync(
             params.orderAddresses,
             params.orderValues,
@@ -75,16 +80,17 @@ export class ExchangeWrapper {
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        _.each(tx.logs, log => wrapLogBigNumbers(log));
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
         return tx;
     }
     public async batchFillOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: {
-            takerTokenFillAmounts?: BigNumber[];
-            shouldThrowOnInsufficientBalanceOrAllowance?: boolean;
-        } = {},
+        opts: { takerTokenFillAmounts?: BigNumber[] } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
         const txHash = await this._exchange.batchFillOrders.sendTransactionAsync(
@@ -98,7 +104,11 @@ export class ExchangeWrapper {
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        _.each(tx.logs, log => wrapLogBigNumbers(log));
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
         return tx;
     }
     public async batchFillOrKillOrdersAsync(
@@ -118,7 +128,11 @@ export class ExchangeWrapper {
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        _.each(tx.logs, log => wrapLogBigNumbers(log));
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
         return tx;
     }
     public async marketFillOrdersAsync(
@@ -138,7 +152,11 @@ export class ExchangeWrapper {
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        _.each(tx.logs, log => wrapLogBigNumbers(log));
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
         return tx;
     }
     public async batchCancelOrdersAsync(
@@ -155,7 +173,11 @@ export class ExchangeWrapper {
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
         tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
-        _.each(tx.logs, log => wrapLogBigNumbers(log));
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
         return tx;
     }
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {

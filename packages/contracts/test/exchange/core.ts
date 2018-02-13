@@ -1,9 +1,4 @@
-import {
-    LogWithDecodedArgs,
-    SignedOrder,
-    TransactionReceiptWithDecodedLogs,
-    ZeroEx,
-} from '0x.js';
+import { LogWithDecodedArgs, SignedOrder, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
@@ -20,12 +15,12 @@ import {
     LogFillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
-import { Balances } from '../../util/balances';
-import { constants } from '../../util/constants';
-import { crypto } from '../../util/crypto';
-import { ExchangeWrapper } from '../../util/exchange_wrapper';
-import { OrderFactory } from '../../util/order_factory';
-import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
+import { Balances } from '../../src/utils/balances';
+import { constants } from '../../src/utils/constants';
+import { crypto } from '../../src/utils/crypto';
+import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
+import { OrderFactory } from '../../src/utils/order_factory';
+import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 
@@ -430,7 +425,8 @@ describe('Exchange', () => {
             });
             expect(res.logs).to.have.length(1);
 
-            const logArgs = (res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>).args;
+            const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
+            const logArgs = log.args;
             const expectedFilledMakerTokenAmount = signedOrder.makerTokenAmount.div(divisor);
             const expectedFilledTakerTokenAmount = signedOrder.takerTokenAmount.div(divisor);
             const expectedFeeMPaid = signedOrder.makerFee.div(divisor);
@@ -460,7 +456,8 @@ describe('Exchange', () => {
             });
             expect(res.logs).to.have.length(1);
 
-            const logArgs = (res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>).args;
+            const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
+            const logArgs = log.args;
             const expectedFilledMakerTokenAmount = signedOrder.makerTokenAmount.div(divisor);
             const expectedFilledTakerTokenAmount = signedOrder.takerTokenAmount.div(divisor);
             const expectedFeeMPaid = new BigNumber(0);
@@ -526,19 +523,18 @@ describe('Exchange', () => {
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should not change balances if maker balances are too low to fill order and \
-                shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
-            });
+        // it('should not change balances if maker balances are too low to fill order and \
+        //         shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     signedOrder = await orderFactory.newSignedOrderAsync({
+        //         makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
+        //     });
 
-            await exWrapper.fillOrderAsync(signedOrder, taker);
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances).to.be.deep.equal(balances);
-        });
+        //     await exWrapper.fillOrderAsync(signedOrder, taker);
+        //     const newBalances = await dmyBalances.getAsync();
+        //     expect(newBalances).to.be.deep.equal(balances);
+        // });
 
-        it('should throw if maker balances are too low to fill order and \
-                shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
+        it('should throw if maker balances are too low to fill order', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
             });
@@ -546,19 +542,18 @@ describe('Exchange', () => {
             return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should not change balances if taker balances are too low to fill order and \
-                shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
-            });
+        // it('should not change balances if taker balances are too low to fill order and \
+        //         shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     signedOrder = await orderFactory.newSignedOrderAsync({
+        //         takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
+        //     });
 
-            await exWrapper.fillOrderAsync(signedOrder, taker);
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances).to.be.deep.equal(balances);
-        });
+        //     await exWrapper.fillOrderAsync(signedOrder, taker);
+        //     const newBalances = await dmyBalances.getAsync();
+        //     expect(newBalances).to.be.deep.equal(balances);
+        // });
 
-        it('should throw if taker balances are too low to fill order and \
-                shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
+        it('should throw if taker balances are too low to fill order', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
             });
@@ -566,20 +561,19 @@ describe('Exchange', () => {
             return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should not change balances if maker allowances are too low to fill order and \
-                shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
-            await exWrapper.fillOrderAsync(signedOrder, taker);
-            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
-                from: maker,
-            });
+        // it('should not change balances if maker allowances are too low to fill order and \
+        //         shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
+        //     await exWrapper.fillOrderAsync(signedOrder, taker);
+        //     await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+        //         from: maker,
+        //     });
 
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances).to.be.deep.equal(balances);
-        });
+        //     const newBalances = await dmyBalances.getAsync();
+        //     expect(newBalances).to.be.deep.equal(balances);
+        // });
 
-        it('should throw if maker allowances are too low to fill order and \
-                shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
+        it('should throw if maker allowances are too low to fill order', async () => {
             await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: maker });
             expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
             await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
@@ -587,20 +581,19 @@ describe('Exchange', () => {
             });
         });
 
-        it('should not change balances if taker allowances are too low to fill order and \
-                shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
-            await exWrapper.fillOrderAsync(signedOrder, taker);
-            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
-                from: taker,
-            });
+        // it('should not change balances if taker allowances are too low to fill order and \
+        //         shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
+        //     await exWrapper.fillOrderAsync(signedOrder, taker);
+        //     await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+        //         from: taker,
+        //     });
 
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances).to.be.deep.equal(balances);
-        });
+        //     const newBalances = await dmyBalances.getAsync();
+        //     expect(newBalances).to.be.deep.equal(balances);
+        // });
 
-        it('should throw if taker allowances are too low to fill order and \
-                shouldThrowOnInsufficientBalanceOrAllowance = true', async () => {
+        it('should throw if taker allowances are too low to fill order', async () => {
             await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), { from: taker });
             expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
             await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
@@ -608,71 +601,71 @@ describe('Exchange', () => {
             });
         });
 
-        it('should not change balances if makerTokenAddress is ZRX, makerTokenAmount + makerFee > maker balance, \
-                and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const makerZRXBalance = new BigNumber(balances[maker][zrx.address]);
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                makerTokenAddress: zrx.address,
-                makerTokenAmount: makerZRXBalance,
-                makerFee: new BigNumber(1),
-            });
-            await exWrapper.fillOrderAsync(signedOrder, taker);
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances).to.be.deep.equal(balances);
-        });
+        // it('should not change balances if makerTokenAddress is ZRX, makerTokenAmount + makerFee > maker balance, \
+        //         and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     const makerZRXBalance = new BigNumber(balances[maker][zrx.address]);
+        //     signedOrder = await orderFactory.newSignedOrderAsync({
+        //         makerTokenAddress: zrx.address,
+        //         makerTokenAmount: makerZRXBalance,
+        //         makerFee: new BigNumber(1),
+        //     });
+        //     await exWrapper.fillOrderAsync(signedOrder, taker);
+        //     const newBalances = await dmyBalances.getAsync();
+        //     expect(newBalances).to.be.deep.equal(balances);
+        // });
 
-        it('should not change balances if makerTokenAddress is ZRX, makerTokenAmount + makerFee > maker allowance, \
-                and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const makerZRXAllowance = await zrx.allowance(maker, tokenTransferProxy.address);
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                makerTokenAddress: zrx.address,
-                makerTokenAmount: new BigNumber(makerZRXAllowance),
-                makerFee: new BigNumber(1),
-            });
-            await exWrapper.fillOrderAsync(signedOrder, taker);
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances).to.be.deep.equal(balances);
-        });
+        // it('should not change balances if makerTokenAddress is ZRX, makerTokenAmount + makerFee > maker allowance, \
+        //         and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     const makerZRXAllowance = await zrx.allowance(maker, tokenTransferProxy.address);
+        //     signedOrder = await orderFactory.newSignedOrderAsync({
+        //         makerTokenAddress: zrx.address,
+        //         makerTokenAmount: new BigNumber(makerZRXAllowance),
+        //         makerFee: new BigNumber(1),
+        //     });
+        //     await exWrapper.fillOrderAsync(signedOrder, taker);
+        //     const newBalances = await dmyBalances.getAsync();
+        //     expect(newBalances).to.be.deep.equal(balances);
+        // });
 
-        it('should not change balances if takerTokenAddress is ZRX, takerTokenAmount + takerFee > taker balance, \
-                and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const takerZRXBalance = new BigNumber(balances[taker][zrx.address]);
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                takerTokenAddress: zrx.address,
-                takerTokenAmount: takerZRXBalance,
-                takerFee: new BigNumber(1),
-            });
-            await exWrapper.fillOrderAsync(signedOrder, taker);
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances).to.be.deep.equal(balances);
-        });
+        // it('should not change balances if takerTokenAddress is ZRX, takerTokenAmount + takerFee > taker balance, \
+        //         and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     const takerZRXBalance = new BigNumber(balances[taker][zrx.address]);
+        //     signedOrder = await orderFactory.newSignedOrderAsync({
+        //         takerTokenAddress: zrx.address,
+        //         takerTokenAmount: takerZRXBalance,
+        //         takerFee: new BigNumber(1),
+        //     });
+        //     await exWrapper.fillOrderAsync(signedOrder, taker);
+        //     const newBalances = await dmyBalances.getAsync();
+        //     expect(newBalances).to.be.deep.equal(balances);
+        // });
 
-        it('should not change balances if takerTokenAddress is ZRX, takerTokenAmount + takerFee > taker allowance, \
-                and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const takerZRXAllowance = await zrx.allowance(taker, tokenTransferProxy.address);
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                takerTokenAddress: zrx.address,
-                takerTokenAmount: new BigNumber(takerZRXAllowance),
-                takerFee: new BigNumber(1),
-            });
-            await exWrapper.fillOrderAsync(signedOrder, taker);
-            const newBalances = await dmyBalances.getAsync();
-            expect(newBalances).to.be.deep.equal(balances);
-        });
+        // it('should not change balances if takerTokenAddress is ZRX, takerTokenAmount + takerFee > taker allowance, \
+        //         and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     const takerZRXAllowance = await zrx.allowance(taker, tokenTransferProxy.address);
+        //     signedOrder = await orderFactory.newSignedOrderAsync({
+        //         takerTokenAddress: zrx.address,
+        //         takerTokenAmount: new BigNumber(takerZRXAllowance),
+        //         takerFee: new BigNumber(1),
+        //     });
+        //     await exWrapper.fillOrderAsync(signedOrder, taker);
+        //     const newBalances = await dmyBalances.getAsync();
+        //     expect(newBalances).to.be.deep.equal(balances);
+        // });
 
-        it('should throw if getBalance or getAllowance attempts to change state and \
-                shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const maliciousToken = await deployer.deployAsync(ContractName.MaliciousToken);
-            await maliciousToken.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
-                from: taker,
-            });
+        // it('should throw if getBalance or getAllowance attempts to change state and \
+        //         shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
+        //     const maliciousToken = await deployer.deployAsync(ContractName.MaliciousToken);
+        //     await maliciousToken.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+        //         from: taker,
+        //     });
 
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                takerTokenAddress: maliciousToken.address,
-            });
+        //     signedOrder = await orderFactory.newSignedOrderAsync({
+        //         takerTokenAddress: maliciousToken.address,
+        //     });
 
-            return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
-        });
+        //     return expect(exWrapper.fillOrderAsync(signedOrder, taker)).to.be.rejectedWith(constants.REVERT);
+        // });
 
         it('should not change balances if an order is expired', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
