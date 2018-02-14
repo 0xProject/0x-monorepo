@@ -6,7 +6,8 @@ import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { Documentation as DocumentationComponent, DocumentationAllProps } from 'ts/pages/documentation/documentation';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocsInfoConfig, WebsitePaths } from 'ts/types';
+import { DocsInfoConfig, Environments, WebsitePaths } from 'ts/types';
+import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
@@ -35,12 +36,16 @@ const zeroExJsDocSections = {
     types: constants.TYPES_SECTION_NAME,
 };
 
+const s3BucketName =
+    configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons';
+const docsJsonRoot = `https://s3.amazonaws.com/${s3BucketName}`;
+
 const docsInfoConfig: DocsInfoConfig = {
     displayName: '0x.js',
     packageUrl: 'https://github.com/0xProject/0x.js',
     subPackageName: '0x.js',
     websitePath: WebsitePaths.ZeroExJs,
-    docsJsonRoot: 'https://s3.amazonaws.com/0xjs-docs-jsons',
+    docsJsonRoot,
     menu: {
         introduction: [zeroExJsDocSections.introduction],
         install: [zeroExJsDocSections.installation],
