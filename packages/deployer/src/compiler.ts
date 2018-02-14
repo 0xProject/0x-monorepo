@@ -17,6 +17,7 @@ import {
 import { utils } from './utils/utils';
 
 const SOLIDITY_FILE_EXTENSION = '.sol';
+const ALL_CONTRACTS_IDENTIFIER = '*';
 
 export class Compiler {
     private _contractsDir: string;
@@ -25,6 +26,7 @@ export class Compiler {
     private _artifactsDir: string;
     private _contractSourcesIfExists?: ContractSources;
     private _solcErrors: Set<string>;
+    private _contractsToCompile: Set<string>;
     /**
      * Recursively retrieves Solidity source code from directory.
      * @param  dirPath Directory to search.
@@ -106,6 +108,7 @@ export class Compiler {
         this._optimizerEnabled = opts.optimizerEnabled;
         this._artifactsDir = opts.artifactsDir;
         this._solcErrors = new Set();
+        this._contractsToCompile = opts.contractsToCompile;
     }
     /**
      * Compiles all Solidity files found in contractsDir and writes JSON artifacts to artifactsDir.
@@ -150,9 +153,10 @@ export class Compiler {
             oldNetworks = currentArtifact.networks;
             const oldNetwork: ContractData = oldNetworks[this._networkId];
             shouldCompile =
-                _.isUndefined(oldNetwork) ||
+                (_.isUndefined(oldNetwork) ||
                 oldNetwork.keccak256 !== sourceHash ||
-                oldNetwork.optimizer_enabled !== this._optimizerEnabled;
+                oldNetwork.optimizer_enabled !== this._optimizerEnabled) &&
+                (this._contractsToCompile.has(ALL_CONTRACTS_IDENTIFIER) || this._contractsToCompile.has(contractName));
         } catch (err) {
             shouldCompile = true;
         }
