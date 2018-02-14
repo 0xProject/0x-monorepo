@@ -100,7 +100,7 @@ async function onDeployCommand(argv: CliOptions): Promise<void> {
 function generateContractsToCompileSet(contracts: string): Set<string> {
     const contractsToCompile = new Set();
     const contractsArray = contracts.split(',');
-    _.forEach(contracts, contractName => {
+    _.forEach(contractsArray, contractName => {
         contractsToCompile.add(contractName);
     });
     return contractsToCompile;

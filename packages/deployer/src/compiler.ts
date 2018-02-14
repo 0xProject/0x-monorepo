@@ -139,6 +139,7 @@ export class Compiler {
         const contractName = path.basename(contractBaseName, SOLIDITY_FILE_EXTENSION);
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         const sourceHash = `0x${ethUtil.sha3(source).toString('hex')}`;
+        const isContractSpecified = this._contractsToCompile.has(ALL_CONTRACTS_IDENTIFIER) || this._contractsToCompile.has(contractName);
 
         let currentArtifactString: string;
         let currentArtifact: ContractArtifact;
@@ -156,9 +157,9 @@ export class Compiler {
                 (_.isUndefined(oldNetwork) ||
                 oldNetwork.keccak256 !== sourceHash ||
                 oldNetwork.optimizer_enabled !== this._optimizerEnabled) &&
-                (this._contractsToCompile.has(ALL_CONTRACTS_IDENTIFIER) || this._contractsToCompile.has(contractName));
+                isContractSpecified;
         } catch (err) {
-            shouldCompile = true;
+            shouldCompile = isContractSpecified;
         }
 
         if (!shouldCompile) {

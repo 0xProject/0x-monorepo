@@ -18,6 +18,7 @@ const compilerOpts: CompilerOptions = {
     contractsDir,
     networkId: constants.networkId,
     optimizerEnabled: constants.optimizerEnabled,
+    contractsToCompile: new Set(constants.contractsToCompile),
 };
 const compiler = new Compiler(compilerOpts);
 const deployerOpts = {
