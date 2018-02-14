@@ -131,7 +131,18 @@ const tableQueries: any = {
         known_fee_addresses CHAR(42)[] DEFAULT '{}',
         known_taker_addresses CHAR(42)[] DEFAULT '{}',
         relayer_type VARCHAR DEFAULT '',
-        PRIMARY KEY(id)
+        PRIMARY KEY(id)`,
+    historical_prices: `CREATE TABLE IF NOT EXISTS historical_prices (
+        token VARCHAR,
+        base VARCHAR,
+        timestamp TIMESTAMP WITH TIME ZONE,
+        close NUMERIC(78, 18),
+        high NUMERIC(78, 18),
+        low NUMERIC(78, 18),
+        open NUMERIC(78, 18),
+        volume_from NUMERIC(78, 18),
+        volume_to NUMERIC(78, 18),
+        PRIMARY KEY (token, base, timestamp)
     )`,
 };
 
@@ -140,11 +151,9 @@ function _safeQuery(query: string): any {
         postgresClient
             .query(query)
             .then((data: any) => {
-                console.log(data)
                 resolve(data);
             })
             .catch((err: any) => {
-                console.error(err)
                 reject(err);
             });
     });
