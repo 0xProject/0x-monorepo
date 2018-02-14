@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.5.0 - _TBD, 2018_
+
+    * Add EmptyWalletSubprovider and FakeGasEstimateSubprovider (#392)
+
 ## v0.4.1 - _February 9, 2018_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)
