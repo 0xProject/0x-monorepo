@@ -15,7 +15,6 @@ import {
     TransferContractEventArgs,
     ZeroEx,
     ZeroExError,
-    ZeroExPublicNetworkConfig,
 } from '../src';
 import { DoneCallback } from '../src/types';
 

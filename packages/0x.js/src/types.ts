@@ -195,26 +195,6 @@ export interface OrderStateWatcherConfig {
     cleanupJobIntervalMs?: number;
 }
 
-export interface ZeroExPublicNetworkConfig {
-    networkId: 1 | 3 | 4 | 42 | 50;
-    gasPrice?: BigNumber;
-    exchangeContractAddress?: string;
-    zrxContractAddress?: string;
-    tokenRegistryContractAddress?: string;
-    tokenTransferProxyContractAddress?: string;
-    orderWatcherConfig?: OrderStateWatcherConfig;
-}
-
-export interface ZeroExPrivateNetworkConfig {
-    networkId: number;
-    gasPrice?: BigNumber;
-    exchangeContractAddress: string;
-    zrxContractAddress: string;
-    tokenRegistryContractAddress: string;
-    tokenTransferProxyContractAddress: string;
-    orderWatcherConfig?: OrderStateWatcherConfig;
-}
-
 /*
  * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
@@ -224,7 +204,15 @@ export interface ZeroExPrivateNetworkConfig {
  * tokenTransferProxyContractAddress: The address of the token transfer proxy contract to use
  * orderWatcherConfig: All the configs related to the orderWatcher
  */
-export type ZeroExConfig = ZeroExPublicNetworkConfig | ZeroExPrivateNetworkConfig;
+export interface ZeroExConfig {
+    networkId: number;
+    gasPrice?: BigNumber;
+    exchangeContractAddress?: string;
+    zrxContractAddress?: string;
+    tokenRegistryContractAddress?: string;
+    tokenTransferProxyContractAddress?: string;
+    orderWatcherConfig?: OrderStateWatcherConfig;
+}
 
 export type ArtifactContractName = 'ZRX' | 'TokenTransferProxy' | 'TokenRegistry' | 'Token' | 'Exchange' | 'EtherToken';
 

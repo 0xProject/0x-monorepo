@@ -101,8 +101,6 @@ const docsInfoConfig: DocsInfoConfig = {
         'ApprovalContractEventArgs',
         'TokenContractEventArgs',
         'ZeroExConfig',
-        'ZeroExPublicNetworkConfig',
-        'ZeroExPrivateNetworkConfig',
         'TransactionReceiptWithDecodedLogs',
         'LogWithDecodedArgs',
         'EtherTokenEvents',

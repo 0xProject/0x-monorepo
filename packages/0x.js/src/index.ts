@@ -16,8 +16,6 @@ export {
     ContractEventArgs,
     Web3Provider,
     ZeroExConfig,
-    ZeroExPublicNetworkConfig,
-    ZeroExPrivateNetworkConfig,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
