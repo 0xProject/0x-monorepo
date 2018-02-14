@@ -23,7 +23,7 @@ import { relayerResponseJsonParsers } from './utils/relayer_response_json_parser
 
 const TRAILING_SLASHES_REGEX = /\/+$/;
 const DEFAULT_PAGED_REQUEST_OPTS: PagedRequestOpts = {
-    page: 0,
+    page: 1,
     perPage: 100,
 };
 /**
@@ -66,7 +66,7 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve token pair info from the API
-     * @param   requestOpts     Options specifying token information to retrieve and page information, defaults to { page: 0, perPage: 100 }
+     * @param   requestOpts     Options specifying token information to retrieve and page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting TokenPairsItems that match the request
      */
     public async getTokenPairsAsync(requestOpts?: TokenPairsRequestOpts & PagedRequestOpts): Promise<TokenPairsItem[]> {
@@ -83,7 +83,7 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve orders from the API
-     * @param   requestOpts     Options specifying orders to retrieve and page information, defaults to { page: 0, perPage: 100 }
+     * @param   requestOpts     Options specifying orders to retrieve and page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting SignedOrders that match the request
      */
     public async getOrdersAsync(requestOpts?: OrdersRequestOpts & PagedRequestOpts): Promise<SignedOrder[]> {
@@ -112,7 +112,7 @@ export class HttpClient implements Client {
     /**
      * Retrieve an orderbook from the API
      * @param   request         An OrderbookRequest instance describing the specific orderbook to retrieve
-     * @param   requestOpts     Options specifying page information, defaults to { page: 0, perPage: 100 }
+     * @param   requestOpts     Options specifying page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting OrderbookResponse that matches the request
      */
     public async getOrderbookAsync(

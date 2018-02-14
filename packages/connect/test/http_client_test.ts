@@ -41,7 +41,7 @@ describe('HttpClient', () => {
     describe('#getTokenPairsAsync', () => {
         const url = `${relayUrl}/token_pairs`;
         it('gets token pairs with default options when none are provided', async () => {
-            const urlWithQuery = `${url}?page=0&per_page=100`;
+            const urlWithQuery = `${url}?page=1&per_page=100`;
             fetchMock.get(urlWithQuery, tokenPairsResponseJSON);
             const tokenPairs = await relayerClient.getTokenPairsAsync();
             expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
@@ -66,7 +66,7 @@ describe('HttpClient', () => {
     describe('#getOrdersAsync', () => {
         const url = `${relayUrl}/orders`;
         it('gets orders with default options when none are provided', async () => {
-            const urlWithQuery = `${url}?page=0&per_page=100`;
+            const urlWithQuery = `${url}?page=1&per_page=100`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync();
             expect(orders).to.be.deep.equal(ordersResponse);
@@ -110,7 +110,7 @@ describe('HttpClient', () => {
         it('gets orderbook with default page options when none are provided', async () => {
             const urlWithQuery = `${url}?baseTokenAddress=${
                 request.baseTokenAddress
-            }&page=0&per_page=100&quoteTokenAddress=${request.quoteTokenAddress}`;
+            }&page=1&per_page=100&quoteTokenAddress=${request.quoteTokenAddress}`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const orderbook = await relayerClient.getOrderbookAsync(request);
             expect(orderbook).to.be.deep.equal(orderbookResponse);
