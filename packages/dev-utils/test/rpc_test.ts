@@ -22,11 +22,11 @@ describe('RPC tests', () => {
     describe('#increaseTimeAsync', () => {
         it('increases time when called', async () => {
             const TIME_DELTA = 1000;
-            const blockTimestamtBefore = await web3Wrapper.getBlockTimestampAsync(BlockParamLiteral.Latest);
+            const blockTimestampBefore = await web3Wrapper.getBlockTimestampAsync(BlockParamLiteral.Latest);
             await rpc.increaseTimeAsync(TIME_DELTA);
             await rpc.mineBlockAsync();
-            const blockTimestamtAfter = await web3Wrapper.getBlockTimestampAsync(BlockParamLiteral.Latest);
-            expect(blockTimestamtAfter).to.be.at.least(blockTimestamtBefore + TIME_DELTA);
+            const blockTimestampAfter = await web3Wrapper.getBlockTimestampAsync(BlockParamLiteral.Latest);
+            expect(blockTimestampAfter).to.be.at.least(blockTimestampBefore + TIME_DELTA);
         });
     });
     describe('#takeSnapshotAsync/revertSnapshotAsync', () => {
