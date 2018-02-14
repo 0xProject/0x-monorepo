@@ -9,7 +9,7 @@
         "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' src/solc/solc_bin/* ./lib && tsc",
         "test": "npm run build; mocha lib/test/*_test.js",
         "compile": "npm run build; node lib/src/cli.js compile",
-        "clean": "rm -rf ./lib",
+        "clean": "shx rm -rf ./lib",
         "migrate": "npm run build; node lib/src/cli.js migrate",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test:circleci": "yarn test"
@@ -31,6 +31,7 @@
         "@0xproject/tslint-config": "^0.4.9",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
+        "shx": "^0.2.2",
         "mocha": "^4.0.1",
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
