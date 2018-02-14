@@ -19,6 +19,7 @@
 pragma solidity ^0.4.19;
 
 import "./mixins/MSignatureValidator.sol";
+import "./ISigner.sol";
 
 /// @dev Provides MSignatureValidator
 contract MixinSignatureValidator is
@@ -27,7 +28,8 @@ contract MixinSignatureValidator is
     enum SignatureType {
         Invalid,
         Caller,
-        Ecrecover
+        Ecrecover,
+        Contract
     }
   
     function isValidSignature(
@@ -67,6 +69,11 @@ contract MixinSignatureValidator is
                 s
             );
             isValid = signer == recovered;
+            return;
+        
+        // Signature verified by signer contract
+        } else if (signatureType == SignatureType.Contract) {
+            isValid = ISigner(signer).isValidSignature(hash, signature);
             return;
         }
         
