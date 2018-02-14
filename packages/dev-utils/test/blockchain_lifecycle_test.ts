@@ -17,9 +17,11 @@ describe('BlockchainLifecycle tests', () => {
             const blockNumberBefore = await web3Wrapper.getBlockNumberAsync();
             await blockchainLifecycle.startAsync();
             await rpc.mineBlockAsync();
-            await blockchainLifecycle.revertAsync();
             const blockNumberAfter = await web3Wrapper.getBlockNumberAsync();
-            expect(blockNumberAfter).to.be.equal(blockNumberBefore);
+            expect(blockNumberAfter).to.be.equal(blockNumberBefore + 1);
+            await blockchainLifecycle.revertAsync();
+            const blockNumberAfterRevert = await web3Wrapper.getBlockNumberAsync();
+            expect(blockNumberAfterRevert).to.be.equal(blockNumberBefore);
         });
     });
 });
