@@ -2,7 +2,7 @@ const execAsync = require('async-child-process').execAsync;
 const postpublish_utils = require('../../../scripts/postpublish_utils');
 
 const cwd = __dirname + '/..';
-const S3BucketPath = 's3://staging-connect-docs-jsons/';
+const S3BucketPath = 's3://staging-0xjs-docs-jsons/';
 const jsonFilePath = __dirname + '/../' + postpublish_utils.generatedDocsDirectoryName + '/index.json';
 const version = process.env.DOCS_VERSION;
 
