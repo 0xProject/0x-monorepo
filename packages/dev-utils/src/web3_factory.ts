@@ -3,9 +3,10 @@
 // we are not running in a browser env.
 // Filed issue: https://github.com/ethereum/web3.js/issues/844
 (global as any).XMLHttpRequest = undefined;
-import { EmptyWalletSubprovider, FakeGasEstimateSubprovider } from '@0xproject/subproviders';
 import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
+
+import { EmptyWalletSubprovider, FakeGasEstimateSubprovider } from '@0xproject/subproviders';
 
 import { constants } from './constants';
 
