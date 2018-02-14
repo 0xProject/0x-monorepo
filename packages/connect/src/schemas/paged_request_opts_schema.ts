@@ -3,6 +3,6 @@ export const pagedRequestOptsSchema = {
     type: 'object',
     properties: {
         page: { type: 'number' },
-        per_page: { type: 'number' },
+        perPage: { type: 'number' },
     },
 };
