@@ -69,7 +69,7 @@ export const assert = {
         this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Web3.Provider', value));
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema): void {
-        const validationResult = assert.schemaValidator.validate(value, schema);
+        const validationResult = this.schemaValidator.validate(value, schema);
         const hasValidationErrors = validationResult.errors.length > 0;
         const msg = `Expected ${variableName} to conform to schema ${schema.id}
 Encountered: ${JSON.stringify(value, null, '\t')}
