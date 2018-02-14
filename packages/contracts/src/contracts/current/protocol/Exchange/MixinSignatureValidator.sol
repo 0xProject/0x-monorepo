@@ -68,13 +68,14 @@ contract MixinSignatureValidator is
             );
             isValid = signer == recovered;
             return;
-        
-        // Anything else is illegal
-        } else {
-            revert();
-          
         }
-        return false;
+        
+        // Anything else is illegal (We do not return false because
+        // the signature may actually be valid, just not in a format
+        // that we currently support. In this case returning false
+        // may lead the caller to incorrectly believe that the
+        // signature was invalid.)
+        revert();
     }
     
     function get32(bytes b, uint256 index)
