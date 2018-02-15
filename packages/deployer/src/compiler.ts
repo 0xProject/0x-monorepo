@@ -26,7 +26,7 @@ export class Compiler {
     private _artifactsDir: string;
     private _contractSourcesIfExists?: ContractSources;
     private _solcErrors: Set<string>;
-    private _contractsToCompile: Set<string>;
+    private _specifiedContracts: Set<string>;
     /**
      * Recursively retrieves Solidity source code from directory.
      * @param  dirPath Directory to search.
@@ -108,7 +108,7 @@ export class Compiler {
         this._optimizerEnabled = opts.optimizerEnabled;
         this._artifactsDir = opts.artifactsDir;
         this._solcErrors = new Set();
-        this._contractsToCompile = opts.contractsToCompile;
+        this._specifiedContracts = opts.specifiedContracts;
     }
     /**
      * Compiles all Solidity files found in contractsDir and writes JSON artifacts to artifactsDir.
@@ -140,7 +140,7 @@ export class Compiler {
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         const sourceHash = `0x${ethUtil.sha3(source).toString('hex')}`;
         const isContractSpecified =
-            this._contractsToCompile.has(ALL_CONTRACTS_IDENTIFIER) || this._contractsToCompile.has(contractName);
+            this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER) || this._specifiedContracts.has(contractName);
 
         let currentArtifactString: string;
         let currentArtifact: ContractArtifact;
