@@ -36,8 +36,7 @@ const zeroExJsDocSections = {
     types: constants.TYPES_SECTION_NAME,
 };
 
-const s3BucketName =
-    configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons';
+const s3BucketName = configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons';
 const docsJsonRoot = `https://s3.amazonaws.com/${s3BucketName}`;
 
 const docsInfoConfig: DocsInfoConfig = {
