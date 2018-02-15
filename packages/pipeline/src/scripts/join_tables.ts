@@ -132,7 +132,12 @@ const dataInsertionQueries: any = {
         taker_name,
         taker_decimals,
         taker_usd_price,
-        txn_usd_value
+        taker_txn_usd_value,
+        maker_symbol,
+        maker_name,
+        maker_decimals,
+        maker_usd_price,
+        maker_txn_usd_value
     )
      (SELECT
         events.timestamp,
@@ -155,11 +160,16 @@ const dataInsertionQueries: any = {
         events.gas_price,
         events.method_id,
         events.salt,
-        token_prices.symbol,
-        token_prices.name,
-        token_prices.decimals,
-        token_prices.close,
-        (events.taker_amount / (10 ^ token_prices.decimals)) * token_prices.close
+        taker_token_prices.symbol,
+        taker_token_prices.name,
+        taker_token_prices.decimals,
+        taker_token_prices.close,
+        (events.taker_amount / (10 ^ taker_token_prices.decimals)) * taker_token_prices.close,
+        maker_token_prices.symbol,
+        maker_token_prices.name,
+        maker_token_prices.decimals,
+        maker_token_prices.close,
+        (events.maker_amount / (10 ^ maker_token_prices.decimals)) * maker_token_prices.close
     FROM
         events
     LEFT JOIN
@@ -175,12 +185,30 @@ const dataInsertionQueries: any = {
         LEFT JOIN
             historical_prices
         ON
-            tokens.symbol = historical_prices.token) token_prices
+            tokens.symbol = historical_prices.token) taker_token_prices
+	    ON
+        	(events.taker_token = taker_token_prices.address
+   		AND
+        	(DATE(events.timestamp) = DATE(taker_token_prices.timestamp) OR taker_token_prices.timestamp IS NULL))
+    LEFT JOIN
+        (SELECT
+            tokens.address,
+            tokens.name,
+            tokens.symbol,
+            tokens.decimals,
+            historical_prices.timestamp,
+            historical_prices.close
+        FROM
+            tokens
+        LEFT JOIN
+            historical_prices
+        ON
+            tokens.symbol = historical_prices.token) maker_token_prices
     ON
-        events.taker_token = token_prices.address
+        (events.maker_token = maker_token_prices.address
     AND
-        (DATE(events.timestamp) = DATE(token_prices.timestamp) OR token_prices.timestamp IS NULL)
-    AND
+        (DATE(events.timestamp) = DATE(maker_token_prices.timestamp) OR maker_token_prices.timestamp IS NULL))
+    WHERE
         events.block_number >= $1
     AND
         events.block_number < $2

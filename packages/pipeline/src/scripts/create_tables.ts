@@ -28,7 +28,12 @@ const tableQueries: any = {
         taker_name VARCHAR,
         taker_decimals BIGINT,
         taker_usd_price NUMERIC(78),
-        txn_usd_value NUMERIC(78),
+        taker_txn_usd_value NUMERIC(78),
+        maker_symbol VARCHAR,
+        maker_name VARCHAR,
+        maker_decimals BIGINT,
+        maker_usd_price NUMERIC(78),
+        maker_txn_usd_value NUMERIC(78),
         PRIMARY KEY (txn_hash, order_hash, log_index)
     )`,
     events: `CREATE TABLE IF NOT EXISTS events (
@@ -131,7 +136,18 @@ const tableQueries: any = {
         known_fee_addresses CHAR(42)[] DEFAULT '{}',
         known_taker_addresses CHAR(42)[] DEFAULT '{}',
         relayer_type VARCHAR DEFAULT '',
-        PRIMARY KEY(id)
+        PRIMARY KEY(id)`,
+    historical_prices: `CREATE TABLE IF NOT EXISTS historical_prices (
+        token VARCHAR,
+        base VARCHAR,
+        timestamp TIMESTAMP WITH TIME ZONE,
+        close NUMERIC(78, 18),
+        high NUMERIC(78, 18),
+        low NUMERIC(78, 18),
+        open NUMERIC(78, 18),
+        volume_from NUMERIC(78, 18),
+        volume_to NUMERIC(78, 18),
+        PRIMARY KEY (token, base, timestamp)
     )`,
 };
 
@@ -140,11 +156,9 @@ function _safeQuery(query: string): any {
         postgresClient
             .query(query)
             .then((data: any) => {
-                console.log(data)
                 resolve(data);
             })
             .catch((err: any) => {
-                console.error(err)
                 reject(err);
             });
     });
