@@ -132,7 +132,7 @@ export const scrapeDataScripts = {
             fsym: fromSymbol,
             tsym: toSymbol,
             limit: Math.min(daysInQueryPeriod, API_HIST_LIMIT),
-            toTs: toTimestamp / 1,
+            toTs: toTimestamp,
         };
 
         var options = {
@@ -140,6 +140,8 @@ export const scrapeDataScripts = {
             qs: parsedParams,
             json: false,
         };
+
+        console.log(options);
 
         try {
             const response = await rpn(options);
@@ -314,7 +316,6 @@ function _scrapeHistoricalPricesToDB(token: any, fromTimestamp: number, toTimest
                     parsedHistoricalPrice['base'] = BASE_SYMBOL;
                     parsedHistoricalPrices.push(parsedHistoricalPrice);
                 }
-                console.log(parsedHistoricalPrices);
                 if (parsedHistoricalPrices.length > 0) {
                     insertDataScripts
                         .insertMultipleRows(
@@ -429,13 +430,4 @@ if (cli.type === 'events') {
     }
 } else if(cli.type === 'relayers') {
     q.push(_scrapeAllRelayersToDB());
-} else if (cli.type === 'test') {
-    scrapeDataScripts
-        .getAllEvents(4930000, 4940000)
-        .then((data: any) => {
-            console.log(data);
-        })
-        .catch((error: any) => {
-            console.log(error);
-        });
 }

@@ -28,7 +28,12 @@ const tableQueries: any = {
         taker_name VARCHAR,
         taker_decimals BIGINT,
         taker_usd_price NUMERIC(78),
-        txn_usd_value NUMERIC(78),
+        taker_txn_usd_value NUMERIC(78),
+        maker_symbol VARCHAR,
+        maker_name VARCHAR,
+        maker_decimals BIGINT,
+        maker_usd_price NUMERIC(78),
+        maker_txn_usd_value NUMERIC(78),
         PRIMARY KEY (txn_hash, order_hash, log_index)
     )`,
     events: `CREATE TABLE IF NOT EXISTS events (
