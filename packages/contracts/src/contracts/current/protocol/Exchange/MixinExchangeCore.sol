@@ -64,6 +64,18 @@ contract MixinExchangeCore is
         uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
     );
+    
+    struct FillOrder {
+        bytes32 orderHash;
+        address taker;
+        uint256 fillAmount;
+    }
+    
+    struct CancelOrder {
+        bytes32 orderHash;
+        address taker;
+        uint256 cancelAmount;
+    }
 
     /*
     * Core exchange functions
@@ -73,19 +85,18 @@ contract MixinExchangeCore is
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
-    /// @param v ECDSA signature parameter v.
-    /// @param r ECDSA signature parameters r.
-    /// @param s ECDSA signature parameters s.
+    /// @param makerSignature Proof of signing order by maker.
+    /// @param takerSignature Proof of signing fill order by taker.
     /// @return Total amount of takerToken filled in trade.
     function fillOrder(
-          address[5] orderAddresses,
-          uint256[6] orderValues,
-          uint256 takerTokenFillAmount,
-          uint8 v,
-          bytes32 r,
-          bytes32 s)
-          public
-          returns (uint256 takerTokenFilledAmount)
+        address[5] orderAddresses,
+        uint[6] orderValues,
+        address taker,
+        uint takerTokenFillAmount,
+        bytes makerSignature,
+        bytes takerSignature)
+        public
+        returns (uint256 takerTokenFilledAmount)
     {
         Order memory order = Order({
             maker: orderAddresses[0],
@@ -100,29 +111,52 @@ contract MixinExchangeCore is
             expirationTimestampInSec: orderValues[4],
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
-
-        require(order.taker == address(0) || order.taker == msg.sender);
-        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && takerTokenFillAmount > 0);
+        
+        FillOrder memory fillOrderStruct = FillOrder({
+            orderHash: order.orderHash,
+            taker: order.taker,
+            fillAmount: takerTokenFillAmount
+        });
+        
+        // Validate order and maker only if first time seen
+        if (filled[order.orderHash] == 0 && cancelled[order.orderHash] == 0) {
+            require(order.makerTokenAmount > 0);
+            require(order.takerTokenAmount > 0);
+            require(isValidSignature(
+                keccak256(orderSchemaHash, order.orderHash),
+                order.maker,
+                makerSignature
+            ));
+        }
+        
+        // Validate taker
+        if (order.taker != address(0)) {
+            require(taker == order.taker);
+        } else {
+            order.taker = taker;
+        }
         require(isValidSignature(
-            order.maker,
-            order.orderHash,
-            v,
-            r,
-            s
+            keccak256(fillOrderStruct),
+            fillOrderStruct.taker,
+            takerSignature
         ));
+        require(takerTokenFillAmount > 0);
 
+        // Validate order expiration
         if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
             return 0;
         }
-
+        
+        // Validate order availability
         uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(order.orderHash));
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
         if (takerTokenFilledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), order.orderHash);
             return 0;
         }
-
+        
+        // Validate fill order rounding
         if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), order.orderHash);
             return 0;
@@ -159,7 +193,9 @@ contract MixinExchangeCore is
     function cancelOrder(
         address[5] orderAddresses,
         uint256[6] orderValues,
-        uint256 takerTokenCancelAmount)
+        uint256 takerTokenCancelAmount,
+        address taker,
+        bytes takerSignature)
         public
         returns (uint256 takerTokenCancelledAmount)
     {
@@ -177,8 +213,20 @@ contract MixinExchangeCore is
             orderHash: getOrderHash(orderAddresses, orderValues)
         });
 
-        require(order.maker == msg.sender);
-        require(order.makerTokenAmount > 0 && order.takerTokenAmount > 0 && takerTokenCancelAmount > 0);
+        CancelOrder memory cancelOrderStruct = CancelOrder({
+            orderHash: order.orderHash,
+            taker: taker,
+            cancelAmount: takerTokenCancelAmount
+        });
+        
+        require(order.makerTokenAmount > 0);
+        require(order.takerTokenAmount > 0);
+        require(takerTokenCancelAmount > 0);
+        require(isValidSignature(
+            keccak256(cancelOrderSchemaHash, cancelOrderStruct),
+            cancelOrderStruct.taker,
+            takerSignature
+        ));
 
         if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);

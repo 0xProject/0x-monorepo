@@ -3,48 +3,9 @@
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0xb3f7e7eebb0b5ddae555a67cd7cd902e058ed2cb191db99f1f20de3fcdfcb0c8",
+            "keccak256": "0x7a7aa35c4d91e9f6d7c2d4a46ec274782380fbdccb746685661def30bb4601b7",
             "optimizer_enabled": 0,
             "abi": [
-                {
-                    "constant": false,
-                    "inputs": [
-                        {
-                            "name": "orderAddresses",
-                            "type": "address[5]"
-                        },
-                        {
-                            "name": "orderValues",
-                            "type": "uint256[6]"
-                        },
-                        {
-                            "name": "takerTokenFillAmount",
-                            "type": "uint256"
-                        },
-                        {
-                            "name": "v",
-                            "type": "uint8"
-                        },
-                        {
-                            "name": "r",
-                            "type": "bytes32"
-                        },
-                        {
-                            "name": "s",
-                            "type": "bytes32"
-                        }
-                    ],
-                    "name": "fillOrder",
-                    "outputs": [
-                        {
-                            "name": "takerTokenFilledAmount",
-                            "type": "uint256"
-                        }
-                    ],
-                    "payable": false,
-                    "stateMutability": "nonpayable",
-                    "type": "function"
-                },
                 {
                     "constant": false,
                     "inputs": [
@@ -71,10 +32,41 @@
                     "payable": false,
                     "stateMutability": "nonpayable",
                     "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6]"
+                        },
+                        {
+                            "name": "takerTokenFillAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "signature",
+                            "type": "bytes"
+                        }
+                    ],
+                    "name": "fillOrder",
+                    "outputs": [
+                        {
+                            "name": "takerTokenFilledAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518118288620
+            "updated_at": 1518561351709
         }
     }
 }

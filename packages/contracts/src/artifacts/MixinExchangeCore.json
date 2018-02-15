@@ -3,7 +3,7 @@
     "networks": {
         "50": {
             "solc_version": "0.4.19",
-            "keccak256": "0x105d0f9fcdfff542879bf9441f438b26ddb3f23db0b1238a7a753d7150d24681",
+            "keccak256": "0xdfe9a6645b816c2b389232f9d87ca9427132eb08e33597bc1dd294ab579de247",
             "optimizer_enabled": 0,
             "abi": [
                 {
@@ -83,26 +83,14 @@
                             "type": "uint256[6]"
                         },
                         {
-                            "name": "takerTokenFillAmount",
+                            "name": "takerTokenCancelAmount",
                             "type": "uint256"
-                        },
-                        {
-                            "name": "v",
-                            "type": "uint8"
-                        },
-                        {
-                            "name": "r",
-                            "type": "bytes32"
-                        },
-                        {
-                            "name": "s",
-                            "type": "bytes32"
                         }
                     ],
-                    "name": "fillOrder",
+                    "name": "cancelOrder",
                     "outputs": [
                         {
-                            "name": "takerTokenFilledAmount",
+                            "name": "takerTokenCancelledAmount",
                             "type": "uint256"
                         }
                     ],
@@ -124,6 +112,10 @@
                         {
                             "name": "takerTokenCancelAmount",
                             "type": "uint256"
+                        },
+                        {
+                            "name": "signature",
+                            "type": "bytes"
                         }
                     ],
                     "name": "cancelOrder",
@@ -160,24 +152,16 @@
                     "constant": true,
                     "inputs": [
                         {
+                            "name": "digest",
+                            "type": "bytes32"
+                        },
+                        {
                             "name": "signer",
                             "type": "address"
                         },
                         {
-                            "name": "hash",
-                            "type": "bytes32"
-                        },
-                        {
-                            "name": "v",
-                            "type": "uint8"
-                        },
-                        {
-                            "name": "r",
-                            "type": "bytes32"
-                        },
-                        {
-                            "name": "s",
-                            "type": "bytes32"
+                            "name": "signature",
+                            "type": "bytes"
                         }
                     ],
                     "name": "isValidSignature",
@@ -239,6 +223,37 @@
                     ],
                     "payable": false,
                     "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6]"
+                        },
+                        {
+                            "name": "takerTokenFillAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "signature",
+                            "type": "bytes"
+                        }
+                    ],
+                    "name": "fillOrder",
+                    "outputs": [
+                        {
+                            "name": "takerTokenFilledAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
                     "type": "function"
                 },
                 {
@@ -359,7 +374,7 @@
                 }
             ],
             "unlinked_binary": "0x",
-            "updated_at": 1518560043128
+            "updated_at": 1518564677515
         }
     }
 }

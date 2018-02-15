@@ -19,7 +19,22 @@
 pragma solidity ^0.4.19;
 
 contract LibOrder {
-
+    
+    bytes32 constant orderSchemaHash = keccak256(
+        "address exchangeContractAddress",
+        "address makerAddress",
+        "address takerAddress",
+        "address makerTokenAddress",
+        "address takerTokenAddress",
+        "address feeRecipientAddress",
+        "uint256 makerTokenAmount",
+        "uint256 takerTokenAmount",
+        "uint256 makerFeeAmount",
+        "uint256 takerFeeAmount",
+        "uint256 expirationTimestamp",
+        "uint256 salt"
+    );
+    
     struct Order {
         address maker;
         address taker;
@@ -32,6 +47,24 @@ contract LibOrder {
         uint256 takerFee;
         uint256 expirationTimestampInSec;
         bytes32 orderHash;
+    }
+    
+    struct FillOrder {
+        bytes32 orderHash;
+        address taker;
+        uint256 fillAmount;
+    }
+    
+    bytes32 constant cancelOrderSchemaHash = keccak256(
+        "bytes32 orderHash",
+        "address taker",
+        "uint256 cancelAmount",
+    );
+    
+    struct CancelOrder {
+        bytes32 orderHash;
+        address taker;
+        uint256 cancelAmount;
     }
 
     /// @dev Calculates Keccak-256 hash of order with specified parameters.
