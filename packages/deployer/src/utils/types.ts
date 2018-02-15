@@ -50,6 +50,7 @@ export interface CompilerOptions {
     networkId: number;
     optimizerEnabled: number;
     artifactsDir: string;
+    specifiedContracts: Set<string>;
 }
 
 export interface DeployerOptions {

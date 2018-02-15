@@ -17,6 +17,7 @@ import {
 import { utils } from './utils/utils';
 
 const SOLIDITY_FILE_EXTENSION = '.sol';
+const ALL_CONTRACTS_IDENTIFIER = '*';
 
 export class Compiler {
     private _contractsDir: string;
@@ -25,6 +26,7 @@ export class Compiler {
     private _artifactsDir: string;
     private _contractSourcesIfExists?: ContractSources;
     private _solcErrors: Set<string>;
+    private _specifiedContracts: Set<string>;
     /**
      * Recursively retrieves Solidity source code from directory.
      * @param  dirPath Directory to search.
@@ -106,6 +108,7 @@ export class Compiler {
         this._optimizerEnabled = opts.optimizerEnabled;
         this._artifactsDir = opts.artifactsDir;
         this._solcErrors = new Set();
+        this._specifiedContracts = opts.specifiedContracts;
     }
     /**
      * Compiles all Solidity files found in contractsDir and writes JSON artifacts to artifactsDir.
@@ -136,6 +139,8 @@ export class Compiler {
         const contractName = path.basename(contractBaseName, SOLIDITY_FILE_EXTENSION);
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         const sourceHash = `0x${ethUtil.sha3(source).toString('hex')}`;
+        const isContractSpecified =
+            this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER) || this._specifiedContracts.has(contractName);
 
         let currentArtifactString: string;
         let currentArtifact: ContractArtifact;
@@ -150,11 +155,12 @@ export class Compiler {
             oldNetworks = currentArtifact.networks;
             const oldNetwork: ContractData = oldNetworks[this._networkId];
             shouldCompile =
-                _.isUndefined(oldNetwork) ||
-                oldNetwork.keccak256 !== sourceHash ||
-                oldNetwork.optimizer_enabled !== this._optimizerEnabled;
+                (_.isUndefined(oldNetwork) ||
+                    oldNetwork.keccak256 !== sourceHash ||
+                    oldNetwork.optimizer_enabled !== this._optimizerEnabled) &&
+                isContractSpecified;
         } catch (err) {
-            shouldCompile = true;
+            shouldCompile = isContractSpecified;
         }
 
         if (!shouldCompile) {
