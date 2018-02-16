@@ -92,10 +92,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                         docs
                     </div>
                 </div>
-                <div
-                    className="pl1"
-                    style={{ color: 'rgb(202, 202, 202)', paddingBottom: 9, paddingLeft: 14, height: 17 }}
-                >
+                <div className="pl1" style={{ color: colors.grey350, paddingBottom: 9, paddingLeft: 14, height: 17 }}>
                     |
                 </div>
                 <div className="flex">

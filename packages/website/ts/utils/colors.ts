@@ -9,6 +9,7 @@ export const colors = {
     greyishPink: '#E6E5E5',
     grey300: '#E0E0E0',
     beigeWhite: '#E4E4E4',
+    grey350: '#cacaca',
     grey400: '#BDBDBD',
     lightGrey: '#BBBBBB',
     grey500: '#9E9E9E',
