@@ -3,6 +3,7 @@
 ## v0.6.0 - _TBD, 2018_
 
     * Add pagination options to HttpClient methods (#393)
+    * Add heartbeat configuration to WebSocketOrderbookChannel constructor (#393)
 
 ## v0.5.7 - _February 9, 2018_
 
