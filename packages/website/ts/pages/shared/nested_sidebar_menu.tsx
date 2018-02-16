@@ -36,6 +36,13 @@ const styles: Styles = {
     },
 };
 
+const titleToIcon: { [title: string]: string } = {
+    '0x.js': 'zeroExJs.png',
+    '0x Connect': 'connect.png',
+    '0x Smart Contracts': 'contracts.png',
+    Wiki: 'wiki.png',
+};
+
 export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, NestedSidebarMenuState> {
     public static defaultProps: Partial<NestedSidebarMenuProps> = {
         shouldDisplaySectionHeaders: true,
@@ -100,7 +107,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                 </div>
                 <div className="flex">
                     <div>
-                        <img src="/images/book.png" width="31" />
+                        <img src={`/images/doc_icons/${titleToIcon[this.props.title]}`} width="24" />
                     </div>
                     <div className="pl1" style={{ fontWeight: 600, fontSize: 20, lineHeight: 1 }}>
                         {this.props.title}

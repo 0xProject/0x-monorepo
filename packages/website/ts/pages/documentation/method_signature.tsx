@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { Type } from 'ts/pages/documentation/type';
 import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from 'ts/types';
@@ -22,26 +23,50 @@ const defaultProps = {
 export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSignatureProps) => {
     const sectionName = constants.TYPES_SECTION_NAME;
     const parameters = renderParameters(props.method, props.docsInfo, sectionName, props.typeDefinitionByName);
-    const paramString = _.reduce(parameters, (prev: React.ReactNode, curr: React.ReactNode) => {
-        return [prev, ', ', curr];
+    const paramStringArray: any[] = [];
+    _.each(parameters, (param: React.ReactNode, i: number) => {
+        const finalParam =
+            parameters.length > 2 ? (
+                <span className="pl2" key={`param-${i}`}>
+                    {param}
+                </span>
+            ) : (
+                param
+            );
+        paramStringArray.push(finalParam);
+        const comma =
+            parameters.length > 2 ? (
+                <span key={`param-comma-${i}`}>
+                    , <br />
+                </span>
+            ) : (
+                ', '
+            );
+        paramStringArray.push(comma);
     });
+    if (parameters.length <= 2) {
+        paramStringArray.pop();
+    }
     const methodName = props.shouldHideMethodName ? '' : props.method.name;
     const typeParameterIfExists = _.isUndefined((props.method as TypescriptMethod).typeParameter)
         ? undefined
         : renderTypeParameter(props.method, props.docsInfo, sectionName, props.typeDefinitionByName);
     return (
-        <span>
+        <span style={{ fontSize: 15 }}>
             {props.method.callPath}
             {methodName}
-            {typeParameterIfExists}({paramString})
-            {props.shouldUseArrowSyntax ? ' => ' : ': '}{' '}
+            {typeParameterIfExists}({parameters.length > 2 && <br />}
+            {paramStringArray})
             {props.method.returnType && (
-                <Type
-                    type={props.method.returnType}
-                    sectionName={sectionName}
-                    typeDefinitionByName={props.typeDefinitionByName}
-                    docsInfo={props.docsInfo}
-                />
+                <span>
+                    {props.shouldUseArrowSyntax ? ' => ' : ': '}{' '}
+                    <Type
+                        type={props.method.returnType}
+                        sectionName={sectionName}
+                        typeDefinitionByName={props.typeDefinitionByName}
+                        docsInfo={props.docsInfo}
+                    />
+                </span>
             )}
         </span>
     );

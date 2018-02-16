@@ -290,9 +290,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         const sectionTitle = `${this.props.docsInfo.displayName} Docs`;
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{ backgroundColor: colors.lightGrey }}>
-                    {sectionTitle}
-                </div>
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}

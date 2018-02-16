@@ -122,12 +122,17 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                     style={{ borderBottom: '1px solid #f0f4f7' }}
                 >
                     <div className="pl2 col lg-col-4 md-col-4 sm-col-12 col-12">
-                        <div className="bold">{parameter.name}</div>
+                        <div
+                            className="bold"
+                            style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                        >
+                            {parameter.name}
+                        </div>
                         <div className="pt1" style={{ color: colors.grey, fontSize: 14 }}>
                             {isOptional && 'optional'}
                         </div>
                     </div>
-                    <div className="col lg-col-8 md-col-8 sm-col-12 col-12">
+                    <div className="col lg-col-8 md-col-8 sm-col-12 col-12" style={{ paddingLeft: 5 }}>
                         {parameter.comment && <Comment comment={parameter.comment} />}
                     </div>
                 </div>
