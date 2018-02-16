@@ -55,16 +55,9 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                 const id = utils.getIdFromName(sectionName);
                 return (
                     <div key={`section-${sectionName}`} className="py1" style={{ color: colors.grey800 }}>
-                        <ScrollLink
-                            to={id}
-                            offset={-20}
-                            duration={constants.DOCS_SCROLL_DURATION_MS}
-                            containerId={constants.DOCS_CONTAINER_ID}
-                        >
-                            <div style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: 15 }} className="py1">
-                                {finalSectionName.toUpperCase()}
-                            </div>
-                        </ScrollLink>
+                        <div style={{ fontWeight: 'bold', fontSize: 15 }} className="py1">
+                            {finalSectionName.toUpperCase()}
+                        </div>
                         {this._renderMenuItems(menuItems)}
                     </div>
                 );
