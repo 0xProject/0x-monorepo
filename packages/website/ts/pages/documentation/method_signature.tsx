@@ -24,6 +24,9 @@ export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSi
     const sectionName = constants.TYPES_SECTION_NAME;
     const parameters = renderParameters(props.method, props.docsInfo, sectionName, props.typeDefinitionByName);
     const paramStringArray: any[] = [];
+    // HACK: For now we don't put params on newlines if there are less then 2 of them.
+    // Ideally we would check the character length of the resulting method signature and
+    // if it exceeds the available space, put params on their own lines.
     const hasMoreThenTwoParams = parameters.length > 2;
     _.each(parameters, (param: React.ReactNode, i: number) => {
         const finalParam = hasMoreThenTwoParams ? (
