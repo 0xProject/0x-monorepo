@@ -39,6 +39,12 @@ export const configs = {
                 [SmartContractDocSections.ZRXToken]: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
                 [SmartContractDocSections.TokenRegistry]: '0xf18e504561f4347bea557f3d4558f559dddbae7f',
             },
+            [Networks.Rinkeby]: {
+                [SmartContractDocSections.Exchange]: '0x1d16ef40fac01cec8adac2ac49427b9384192c05',
+                [SmartContractDocSections.TokenTransferProxy]: '0xa8e9fa8f91e5ae138c74648c9c304f1c75003a8d',
+                [SmartContractDocSections.ZRXToken]: '0x00f58d6d585f84b2d7267940cede30ce2fe6eae8',
+                [SmartContractDocSections.TokenRegistry]: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
+            },
         },
     } as ContractAddresses,
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,

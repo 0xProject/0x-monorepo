@@ -44,4 +44,5 @@ export const colors = {
     amber600: '#FFB300',
     orange: '#E69D00',
     amber800: '#FF8F00',
+    darkYellow: '#caca03',
 };

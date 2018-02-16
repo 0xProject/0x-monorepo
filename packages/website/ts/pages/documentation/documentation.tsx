@@ -44,6 +44,7 @@ const networkNameToColor: { [network: string]: string } = {
     [Networks.Kovan]: colors.purple,
     [Networks.Ropsten]: colors.red,
     [Networks.Mainnet]: colors.turquois,
+    [Networks.Rinkeby]: colors.darkYellow,
 };
 
 export interface DocumentationAllProps {
