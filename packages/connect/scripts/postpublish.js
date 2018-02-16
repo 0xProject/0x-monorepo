@@ -14,7 +14,7 @@ postpublish_utils
         tag = result.tag;
         version = result.version;
         const releaseName = postpublish_utils.getReleaseName(subPackageName, version);
-        return postpublish_utils.publishReleaseNotes(tag, releaseName);
+        return postpublish_utils.publishReleaseNotesAsync(tag, releaseName);
     })
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
