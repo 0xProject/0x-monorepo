@@ -24,27 +24,26 @@ export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSi
     const sectionName = constants.TYPES_SECTION_NAME;
     const parameters = renderParameters(props.method, props.docsInfo, sectionName, props.typeDefinitionByName);
     const paramStringArray: any[] = [];
+    const hasMoreThenTwoParams = parameters.length > 2;
     _.each(parameters, (param: React.ReactNode, i: number) => {
-        const finalParam =
-            parameters.length > 2 ? (
-                <span className="pl2" key={`param-${i}`}>
-                    {param}
-                </span>
-            ) : (
-                param
-            );
+        const finalParam = hasMoreThenTwoParams ? (
+            <span className="pl2" key={`param-${i}`}>
+                {param}
+            </span>
+        ) : (
+            param
+        );
         paramStringArray.push(finalParam);
-        const comma =
-            parameters.length > 2 ? (
-                <span key={`param-comma-${i}`}>
-                    , <br />
-                </span>
-            ) : (
-                ', '
-            );
+        const comma = hasMoreThenTwoParams ? (
+            <span key={`param-comma-${i}`}>
+                , <br />
+            </span>
+        ) : (
+            ', '
+        );
         paramStringArray.push(comma);
     });
-    if (parameters.length <= 2) {
+    if (!hasMoreThenTwoParams) {
         paramStringArray.pop();
     }
     const methodName = props.shouldHideMethodName ? '' : props.method.name;
@@ -55,7 +54,7 @@ export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSi
         <span style={{ fontSize: 15 }}>
             {props.method.callPath}
             {methodName}
-            {typeParameterIfExists}({parameters.length > 2 && <br />}
+            {typeParameterIfExists}({hasMoreThenTwoParams && <br />}
             {paramStringArray})
             {props.method.returnType && (
                 <span>
