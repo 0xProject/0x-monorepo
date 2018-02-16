@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/types",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "0x types",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -24,7 +24,7 @@
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.10"
+        "web3-typescript-typings": "^0.9.11"
     },
     "dependencies": {
         "bignumber.js": "~4.1.0",

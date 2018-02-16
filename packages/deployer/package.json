@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/deployer",
-    "version": "0.0.9",
+    "version": "0.1.0",
     "description": "Smart contract deployer of 0x protocol",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -31,18 +31,18 @@
         "@0xproject/tslint-config": "^0.4.9",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
-        "shx": "^0.2.2",
         "mocha": "^4.0.1",
+        "shx": "^0.2.2",
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.10"
+        "web3-typescript-typings": "^0.9.11"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.7.11",
-        "@0xproject/types": "^0.2.2",
-        "@0xproject/utils": "^0.3.3",
-        "@0xproject/web3-wrapper": "^0.1.13",
+        "@0xproject/json-schemas": "^0.7.12",
+        "@0xproject/types": "^0.2.3",
+        "@0xproject/utils": "^0.3.4",
+        "@0xproject/web3-wrapper": "^0.1.14",
         "ethereumjs-util": "^5.1.1",
         "lodash": "^4.17.4",
         "solc": "^0.4.18",
