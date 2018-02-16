@@ -16,6 +16,7 @@ import {
 import { orderbookChannelMessageParser } from './utils/orderbook_channel_message_parser';
 
 const DEFAULT_HEARTBEAT_INTERVAL_MS = 15000;
+const MINIMUM_HEARTBEAT_INTERVAL_MS = 10;
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
@@ -104,10 +105,19 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         } else {
             this._client.on(WebsocketClientEventType.Connect, connection => {
                 this._connectionIfExists = connection;
-                if (this._heartbeatIntervalMs !== 0) {
+                if (this._heartbeatIntervalMs >= MINIMUM_HEARTBEAT_INTERVAL_MS) {
                     this._heartbeatTimerIfExists = setInterval(() => {
                         connection.ping('');
                     }, this._heartbeatIntervalMs);
+                } else {
+                    callback(
+                        new Error(
+                            `Heartbeat interval is ${
+                                this._heartbeatIntervalMs
+                            }ms which is less than the required minimum of ${MINIMUM_HEARTBEAT_INTERVAL_MS}ms`,
+                        ),
+                        undefined,
+                    );
                 }
                 callback(undefined, this._connectionIfExists);
             });
