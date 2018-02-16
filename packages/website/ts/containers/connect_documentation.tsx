@@ -24,9 +24,8 @@ const connectDocSections = {
     types: constants.TYPES_SECTION_NAME,
 };
 
-// const s3BucketName =
-//     configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-connect-docs-jsons' : 'connect-docs-jsons';
-const s3BucketName = 'connect-docs-jsons';
+const s3BucketName =
+    configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-connect-docs-jsons' : 'connect-docs-jsons';
 const docsJsonRoot = `https://s3.amazonaws.com/${s3BucketName}`;
 
 const docsInfoConfig: DocsInfoConfig = {
