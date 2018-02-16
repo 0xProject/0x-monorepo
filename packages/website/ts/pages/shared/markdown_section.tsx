@@ -35,12 +35,12 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const id = utils.getIdFromName(sectionName);
         return (
             <div
-                className="pt2 md-px1 sm-px2 overflow-hidden"
+                className="md-px1 sm-px2 overflow-hidden"
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <ScrollElement name={id}>
-                    <div className="clearfix">
+                    <div className="clearfix pt3">
                         <div className="col lg-col-8 md-col-8 sm-col-12">
                             <span style={{ textTransform: 'capitalize', color: colors.grey700 }}>
                                 <AnchorTitle
