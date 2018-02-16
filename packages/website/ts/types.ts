@@ -324,6 +324,7 @@ export enum TypeDocTypes {
     Reflection = 'reflection',
     Union = 'union',
     TypeParameter = 'typeParameter',
+    Intersection = 'intersection',
     Unknown = 'unknown',
 }
 

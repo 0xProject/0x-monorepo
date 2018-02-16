@@ -298,7 +298,7 @@ declare module 'web3' {
 
         interface NetApi {
             listening: boolean;
-            peerCount: boolean;
+            peerCount: number;
             getListening(cd: (err: Error, listening: boolean) => void): void;
             getPeerCount(cd: (err: Error, peerCount: number) => void): void;
         }

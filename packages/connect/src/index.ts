@@ -11,9 +11,10 @@ export {
     OrderbookChannelSubscriptionOpts,
     OrderbookRequest,
     OrderbookResponse,
-    OrdersRequest,
+    OrdersRequestOpts,
+    PagedRequestOpts,
     SignedOrder,
     TokenPairsItem,
-    TokenPairsRequest,
+    TokenPairsRequestOpts,
     TokenTradeInfo,
 } from './types';

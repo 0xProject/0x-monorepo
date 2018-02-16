@@ -1,5 +1,5 @@
-export const relayerOrdersRequestSchema = {
-    id: '/RelayerOrdersRequest',
+export const ordersRequestOptsSchema = {
+    id: '/OrdersRequestOpts',
     type: 'object',
     properties: {
         exchangeContractAddress: { $ref: '/Address' },
