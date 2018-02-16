@@ -6,6 +6,7 @@ import { Element as ScrollElement } from 'react-scroll';
 import { AnchorTitle } from 'ts/pages/shared/anchor_title';
 import { MarkdownCodeBlock } from 'ts/pages/shared/markdown_code_block';
 import { HeaderSizes } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 
 interface MarkdownSectionProps {
@@ -34,14 +35,14 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const id = utils.getIdFromName(sectionName);
         return (
             <div
-                className="pt2 pr3 md-pl2 sm-pl3 overflow-hidden"
+                className="pt2 md-px1 sm-px2 overflow-hidden"
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <ScrollElement name={id}>
                     <div className="clearfix">
                         <div className="col lg-col-8 md-col-8 sm-col-12">
-                            <span style={{ textTransform: 'capitalize' }}>
+                            <span style={{ textTransform: 'capitalize', color: colors.grey700 }}>
                                 <AnchorTitle
                                     headerSize={this.props.headerSize}
                                     title={sectionName}
@@ -50,17 +51,19 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                                 />
                             </span>
                         </div>
-                        <div className="col col-4 sm-hide xs-hide py2 right-align">
+                        <div className="col col-4 sm-hide xs-hide right-align pr3" style={{ height: 28 }}>
                             {!_.isUndefined(this.props.githubLink) && (
-                                <RaisedButton
+                                <a
                                     href={this.props.githubLink}
                                     target="_blank"
-                                    label="Edit on Github"
-                                    icon={<i className="zmdi zmdi-github" style={{ fontSize: 23 }} />}
-                                />
+                                    style={{ color: colors.linkBlue, textDecoration: 'none', lineHeight: 2.1 }}
+                                >
+                                    Edit on Github
+                                </a>
                             )}
                         </div>
                     </div>
+                    <hr style={{ border: `1px solid ${colors.lightestGrey}` }} />
                     <ReactMarkdown source={this.props.markdownContent} renderers={{ CodeBlock: MarkdownCodeBlock }} />
                 </ScrollElement>
             </div>

@@ -11,12 +11,12 @@ import { utils } from 'ts/utils/utils';
 interface NestedSidebarMenuProps {
     topLevelMenu: { [topLevel: string]: string[] };
     menuSubsectionsBySection: MenuSubsectionsBySection;
+    title: string;
     shouldDisplaySectionHeaders?: boolean;
     onMenuItemClick?: () => void;
     selectedVersion?: string;
     versions?: string[];
     docPath?: string;
-    isSectionHeaderClickable?: boolean;
 }
 
 interface NestedSidebarMenuState {}
@@ -29,7 +29,10 @@ const styles: Styles = {
         minHeight: 48,
     },
     menuItemInnerDivWithHeaders: {
+        color: colors.grey800,
+        fontSize: 14,
         lineHeight: 2,
+        padding: 0,
     },
 };
 
@@ -44,14 +47,14 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             if (this.props.shouldDisplaySectionHeaders) {
                 const id = utils.getIdFromName(sectionName);
                 return (
-                    <div key={`section-${sectionName}`} className="py1">
+                    <div key={`section-${sectionName}`} className="py1" style={{ color: colors.grey800 }}>
                         <ScrollLink
                             to={id}
                             offset={-20}
                             duration={constants.DOCS_SCROLL_DURATION_MS}
                             containerId={constants.DOCS_CONTAINER_ID}
                         >
-                            <div style={{ color: colors.grey, cursor: 'pointer' }} className="pb1">
+                            <div style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: 15 }} className="py1">
                                 {finalSectionName.toUpperCase()}
                             </div>
                         </ScrollLink>
@@ -64,6 +67,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         });
         return (
             <div>
+                {this._renderEmblem()}
                 {!_.isUndefined(this.props.versions) &&
                     !_.isUndefined(this.props.selectedVersion) &&
                     !_.isUndefined(this.props.docPath) && (
@@ -73,7 +77,35 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             docPath={this.props.docPath}
                         />
                     )}
-                {navigation}
+                <div className="pl1">{navigation}</div>
+            </div>
+        );
+    }
+    private _renderEmblem() {
+        return (
+            <div className="pt2 md-px1 sm-px2" style={{ color: colors.black, paddingBottom: 18 }}>
+                <div className="flex" style={{ fontSize: 25 }}>
+                    <div className="robotoMono" style={{ fontWeight: 'bold' }}>
+                        0x
+                    </div>
+                    <div className="pl2" style={{ lineHeight: 1.4, fontWeight: 300 }}>
+                        docs
+                    </div>
+                </div>
+                <div
+                    className="pl1"
+                    style={{ color: 'rgb(202, 202, 202)', paddingBottom: 9, paddingLeft: 14, height: 17 }}
+                >
+                    |
+                </div>
+                <div className="flex">
+                    <div>
+                        <img src="/images/book.png" width="31" />
+                    </div>
+                    <div className="pl1" style={{ fontWeight: 600, fontSize: 20, lineHeight: 1 }}>
+                        {this.props.title}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -132,7 +164,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                                     onTouchTap={this._onMenuItemClick.bind(this, name)}
                                     style={{ minHeight: 35 }}
                                     innerDivStyle={{
-                                        paddingLeft: 36,
+                                        paddingLeft: 16,
                                         fontSize: 14,
                                         lineHeight: '35px',
                                     }}

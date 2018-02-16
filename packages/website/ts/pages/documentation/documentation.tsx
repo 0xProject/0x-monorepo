@@ -138,6 +138,7 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                                 <NestedSidebarMenu
                                     selectedVersion={this.props.docsVersion}
                                     versions={this.props.availableDocVersions}
+                                    title={this.props.docsInfo.displayName}
                                     topLevelMenu={this.props.docsInfo.getMenu(this.props.docsVersion)}
                                     menuSubsectionsBySection={menuSubsectionsBySection}
                                     docPath={this.props.docsInfo.websitePath}
@@ -147,11 +148,6 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                         <div className="relative col lg-col-9 md-col-9 sm-col-12 col-12">
                             <div id="documentation" style={styles.mainContainers} className="absolute">
                                 <div id={SCROLL_TOP_ID} />
-                                <h1 className="md-pl2 sm-pl3">
-                                    <a href={this.props.docsInfo.packageUrl} target="_blank">
-                                        {this.props.docsInfo.displayName}
-                                    </a>
-                                </h1>
                                 {this._renderDocumentation()}
                             </div>
                         </div>
@@ -220,7 +216,7 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
         });
         return (
             <div key={`section-${sectionName}`} className="py2 pr3 md-pl2 sm-pl3">
-                <div className="flex">
+                <div className="flex pb2">
                     <div style={{ marginRight: 7 }}>
                         <SectionHeader sectionName={sectionName} />
                     </div>

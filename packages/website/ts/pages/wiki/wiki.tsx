@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
+import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { scroller } from 'react-scroll';
@@ -13,6 +14,7 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
+const TOP_BAR_HEIGHT = 60;
 const WIKI_NOT_READY_BACKOUT_TIMEOUT_MS = 5000;
 
 export interface WikiProps {
@@ -22,6 +24,7 @@ export interface WikiProps {
 
 interface WikiState {
     articlesBySection: ArticlesBySection;
+    isHoveringSidebar: boolean;
 }
 
 const styles: Styles = {
@@ -32,14 +35,13 @@ const styles: Styles = {
         bottom: 0,
         right: 0,
         overflowZ: 'hidden',
-        overflowY: 'scroll',
-        minHeight: 'calc(100vh - 1px)',
+        height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
         WebkitOverflowScrolling: 'touch',
     },
     menuContainer: {
         borderColor: colors.grey300,
         maxWidth: 330,
-        marginLeft: 20,
+        backgroundColor: colors.gray40,
     },
 };
 
@@ -51,6 +53,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         this._isUnmounted = false;
         this.state = {
             articlesBySection: undefined,
+            isHoveringSidebar: false,
         };
     }
     public componentWillMount() {
@@ -65,6 +68,10 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         const menuSubsectionsBySection = _.isUndefined(this.state.articlesBySection)
             ? {}
             : this._getMenuSubsectionsBySection(this.state.articlesBySection);
+        const mainContainersStyle: React.CSSProperties = {
+            ...styles.mainContainers,
+            overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
+        };
         return (
             <div>
                 <DocumentTitle title="0x Protocol Wiki" />
@@ -72,10 +79,10 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                     blockchainIsLoaded={false}
                     location={this.props.location}
                     menuSubsectionsBySection={menuSubsectionsBySection}
-                    shouldFullWidth={true}
+                    shouldFullWidth={false}
                 />
                 {_.isUndefined(this.state.articlesBySection) ? (
-                    <div className="col col-12" style={styles.mainContainers}>
+                    <div className="col col-12" style={mainContainersStyle}>
                         <div
                             className="relative sm-px2 sm-pt2 sm-m1"
                             style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
@@ -89,28 +96,50 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                         </div>
                     </div>
                 ) : (
-                    <div className="mx-auto flex" style={{ color: colors.grey800, height: 43 }}>
-                        <div className="relative col md-col-3 lg-col-3 lg-pl0 md-pl1 sm-hide xs-hide">
+                    <div style={{ width: '100%', height: '100%', backgroundColor: colors.gray40 }}>
+                        <div
+                            className="mx-auto max-width-4 flex"
+                            style={{ color: colors.grey800, height: `calc(100vh - ${TOP_BAR_HEIGHT}px)` }}
+                        >
                             <div
-                                className="border-right absolute pt2"
-                                style={{ ...styles.menuContainer, ...styles.mainContainers }}
+                                className="relative lg-pl0 md-pl1 sm-hide xs-hide"
+                                style={{ height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`, width: '36%' }}
                             >
-                                <NestedSidebarMenu
-                                    topLevelMenu={menuSubsectionsBySection}
-                                    menuSubsectionsBySection={menuSubsectionsBySection}
-                                    isSectionHeaderClickable={true}
-                                />
+                                <div
+                                    className="absolute"
+                                    style={{
+                                        ...styles.menuContainer,
+                                        ...mainContainersStyle,
+                                        height: 'calc(100vh - 76px)',
+                                    }}
+                                    onMouseEnter={this._onSidebarHover.bind(this)}
+                                    onMouseLeave={this._onSidebarHoverOff.bind(this)}
+                                >
+                                    <NestedSidebarMenu
+                                        topLevelMenu={menuSubsectionsBySection}
+                                        menuSubsectionsBySection={menuSubsectionsBySection}
+                                        title="Wiki"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="relative col lg-col-9 md-col-9 sm-col-12 col-12">
-                            <div id="documentation" style={styles.mainContainers} className="absolute">
-                                <div id="0xProtocolWiki" />
-                                <h1 className="md-pl2 sm-pl3">
-                                    <a href={constants.URL_GITHUB_WIKI} target="_blank">
-                                        0x Protocol Wiki
-                                    </a>
-                                </h1>
-                                <div id="wiki">{this._renderWikiArticles()}</div>
+                            <div
+                                className="relative"
+                                style={{
+                                    width: '100%',
+                                    height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+                                    backgroundColor: 'white',
+                                }}
+                            >
+                                <div
+                                    id="documentation"
+                                    style={{ ...mainContainersStyle, overflow: 'auto' }}
+                                    className="absolute"
+                                >
+                                    <div id="0xProtocolWiki" />
+                                    <div id="wiki" style={{ paddingRight: 2 }}>
+                                        {this._renderWikiArticles()}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -135,18 +164,22 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                         headerSize={HeaderSizes.H2}
                         githubLink={githubLink}
                     />
-                    <div className="mb4 mt3 p3 center" style={{ backgroundColor: colors.lightestGrey }}>
-                        See a way to make this article better?{' '}
-                        <a href={githubLink} target="_blank">
-                            Edit here →
-                        </a>
+                    <div className="clearfix mb3 mt2 p3 mx-auto lg-flex md-flex sm-pb4" style={{ maxWidth: 390 }}>
+                        <div className="sm-col sm-col-12 sm-center" style={{ opacity: 0.4, lineHeight: 2.5 }}>
+                            See a way to improve this article?
+                        </div>
+                        <div className="sm-col sm-col-12 lg-col-7 md-col-7 sm-center sm-pt2">
+                            <RaisedButton href={githubLink} target="_blank" label="Edit on Github" />
+                        </div>
                     </div>
                 </div>
             );
         });
         return (
-            <div key={`section-${sectionName}`} className="py2 pr3 md-pl2 sm-pl3">
-                <SectionHeader sectionName={sectionName} headerSize={HeaderSizes.H1} />
+            <div key={`section-${sectionName}`} className="py2 md-px1 sm-px2">
+                {/* <div className="pl2">
+                    <SectionHeader sectionName={sectionName} headerSize={HeaderSizes.H1} />
+                </div> */}
                 {renderedArticles}
             </div>
         );
@@ -202,5 +235,15 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             menuSubsectionsBySection[sectionName] = articleNames;
         }
         return menuSubsectionsBySection;
+    }
+    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>) {
+        this.setState({
+            isHoveringSidebar: true,
+        });
+    }
+    private _onSidebarHoverOff() {
+        this.setState({
+            isHoveringSidebar: false,
+        });
     }
 }

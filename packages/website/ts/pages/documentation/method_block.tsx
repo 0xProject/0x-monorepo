@@ -28,8 +28,7 @@ const styles: Styles = {
         color: colors.white,
         height: 11,
         borderRadius: 14,
-        marginTop: 19,
-        lineHeight: 0.8,
+        lineHeight: 0.9,
     },
 };
 
@@ -55,16 +54,18 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 {!method.isConstructor && (
-                    <div className="flex">
+                    <div className="flex pb2 pt2">
                         {(method as TypescriptMethod).isStatic && this._renderChip('Static')}
                         {(method as SolidityMethod).isConstant && this._renderChip('Constant')}
                         {(method as SolidityMethod).isPayable && this._renderChip('Payable')}
-                        <AnchorTitle
-                            headerSize={HeaderSizes.H3}
-                            title={method.name}
-                            id={`${this.props.sectionName}-${method.name}`}
-                            shouldShowAnchor={this.state.shouldShowAnchor}
-                        />
+                        <div style={{ lineHeight: 1.3 }}>
+                            <AnchorTitle
+                                headerSize={HeaderSizes.H3}
+                                title={method.name}
+                                id={`${this.props.sectionName}-${method.name}`}
+                                shouldShowAnchor={this.state.shouldShowAnchor}
+                            />
+                        </div>
                     </div>
                 )}
                 <code className="hljs">
