@@ -68,7 +68,7 @@ const styles: Styles = {
         right: 0,
         overflowZ: 'hidden',
         overflowY: 'scroll',
-        minHeight: 'calc(100vh - 60px)',
+        minHeight: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
         WebkitOverflowScrolling: 'touch',
     },
     menuContainer: {
