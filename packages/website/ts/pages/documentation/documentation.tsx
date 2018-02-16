@@ -112,7 +112,6 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                     availableDocVersions={this.props.availableDocVersions}
                     menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
                     menuSubsectionsBySection={menuSubsectionsBySection}
-                    shouldFullWidth={false}
                     docsInfo={this.props.docsInfo}
                 />
                 {_.isUndefined(this.state.docAgnosticFormat) ? (

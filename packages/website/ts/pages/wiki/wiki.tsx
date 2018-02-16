@@ -79,7 +79,6 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                     blockchainIsLoaded={false}
                     location={this.props.location}
                     menuSubsectionsBySection={menuSubsectionsBySection}
-                    shouldFullWidth={false}
                 />
                 {_.isUndefined(this.state.articlesBySection) ? (
                     <div className="col col-12" style={mainContainersStyle}>
