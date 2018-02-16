@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.5.0 - _TBD, 2018_
+## v0.5.0 - _February 16, 2018_
 
     * Add EmptyWalletSubprovider and FakeGasEstimateSubprovider (#392)
 

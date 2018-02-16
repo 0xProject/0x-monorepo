@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.0.10 - _??_
+## v0.1.0 - _February 16, 2018_
 
     * Add the ability to pass in specific contracts to compile in CLI (#400)
 
