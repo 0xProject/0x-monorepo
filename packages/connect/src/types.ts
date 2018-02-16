@@ -30,10 +30,10 @@ export interface ECSignature {
 }
 
 export interface Client {
-    getTokenPairsAsync: (request?: TokenPairsRequest) => Promise<TokenPairsItem[]>;
-    getOrdersAsync: (request?: OrdersRequest) => Promise<SignedOrder[]>;
+    getTokenPairsAsync: (requestOpts?: TokenPairsRequestOpts & PagedRequestOpts) => Promise<TokenPairsItem[]>;
+    getOrdersAsync: (requestOpts?: OrdersRequestOpts & PagedRequestOpts) => Promise<SignedOrder[]>;
     getOrderAsync: (orderHash: string) => Promise<SignedOrder>;
-    getOrderbookAsync: (request: OrderbookRequest) => Promise<OrderbookResponse>;
+    getOrderbookAsync: (request: OrderbookRequest, requestOpts?: PagedRequestOpts) => Promise<OrderbookResponse>;
     getFeesAsync: (request: FeesRequest) => Promise<FeesResponse>;
     submitOrderAsync: (signedOrder: SignedOrder) => Promise<void>;
 }
@@ -41,6 +41,13 @@ export interface Client {
 export interface OrderbookChannel {
     subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts, handler: OrderbookChannelHandler) => void;
     close: () => void;
+}
+
+/*
+ * heartbeatInterval: Interval in milliseconds that the orderbook channel should ping the underlying websocket. Default: 15000
+ */
+export interface WebSocketOrderbookChannelConfig {
+    heartbeatIntervalMs?: number;
 }
 
 /*
@@ -111,7 +118,7 @@ export enum WebsocketClientEventType {
     ConnectFailed = 'connectFailed',
 }
 
-export interface TokenPairsRequest {
+export interface TokenPairsRequestOpts {
     tokenA?: string;
     tokenB?: string;
 }
@@ -128,7 +135,7 @@ export interface TokenTradeInfo {
     precision: number;
 }
 
-export interface OrdersRequest {
+export interface OrdersRequestOpts {
     exchangeContractAddress?: string;
     tokenAddress?: string;
     makerTokenAddress?: string;
@@ -165,6 +172,11 @@ export interface FeesResponse {
     feeRecipient: string;
     makerFee: BigNumber;
     takerFee: BigNumber;
+}
+
+export interface PagedRequestOpts {
+    page?: number;
+    perPage?: number;
 }
 
 export interface HttpRequestOptions {

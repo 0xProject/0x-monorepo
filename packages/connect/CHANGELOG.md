@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.6.0 - _February 16, 2018_
+
+    * Add pagination options to HttpClient methods (#393)
+    * Add heartbeat configuration to WebSocketOrderbookChannel constructor (#406)
+
 ## v0.5.7 - _February 9, 2018_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)

@@ -11,9 +11,11 @@ export {
     OrderbookChannelSubscriptionOpts,
     OrderbookRequest,
     OrderbookResponse,
-    OrdersRequest,
+    OrdersRequestOpts,
+    PagedRequestOpts,
     SignedOrder,
     TokenPairsItem,
-    TokenPairsRequest,
+    TokenPairsRequestOpts,
     TokenTradeInfo,
+    WebSocketOrderbookChannelConfig,
 } from './types';

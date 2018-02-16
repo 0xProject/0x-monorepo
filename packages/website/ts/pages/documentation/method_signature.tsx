@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { Type } from 'ts/pages/documentation/type';
 import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from 'ts/types';
@@ -22,26 +23,52 @@ const defaultProps = {
 export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSignatureProps) => {
     const sectionName = constants.TYPES_SECTION_NAME;
     const parameters = renderParameters(props.method, props.docsInfo, sectionName, props.typeDefinitionByName);
-    const paramString = _.reduce(parameters, (prev: React.ReactNode, curr: React.ReactNode) => {
-        return [prev, ', ', curr];
+    const paramStringArray: any[] = [];
+    // HACK: For now we don't put params on newlines if there are less then 2 of them.
+    // Ideally we would check the character length of the resulting method signature and
+    // if it exceeds the available space, put params on their own lines.
+    const hasMoreThenTwoParams = parameters.length > 2;
+    _.each(parameters, (param: React.ReactNode, i: number) => {
+        const finalParam = hasMoreThenTwoParams ? (
+            <span className="pl2" key={`param-${i}`}>
+                {param}
+            </span>
+        ) : (
+            param
+        );
+        paramStringArray.push(finalParam);
+        const comma = hasMoreThenTwoParams ? (
+            <span key={`param-comma-${i}`}>
+                , <br />
+            </span>
+        ) : (
+            ', '
+        );
+        paramStringArray.push(comma);
     });
+    if (!hasMoreThenTwoParams) {
+        paramStringArray.pop();
+    }
     const methodName = props.shouldHideMethodName ? '' : props.method.name;
     const typeParameterIfExists = _.isUndefined((props.method as TypescriptMethod).typeParameter)
         ? undefined
         : renderTypeParameter(props.method, props.docsInfo, sectionName, props.typeDefinitionByName);
     return (
-        <span>
+        <span style={{ fontSize: 15 }}>
             {props.method.callPath}
             {methodName}
-            {typeParameterIfExists}({paramString})
-            {props.shouldUseArrowSyntax ? ' => ' : ': '}{' '}
+            {typeParameterIfExists}({hasMoreThenTwoParams && <br />}
+            {paramStringArray})
             {props.method.returnType && (
-                <Type
-                    type={props.method.returnType}
-                    sectionName={sectionName}
-                    typeDefinitionByName={props.typeDefinitionByName}
-                    docsInfo={props.docsInfo}
-                />
+                <span>
+                    {props.shouldUseArrowSyntax ? ' => ' : ': '}{' '}
+                    <Type
+                        type={props.method.returnType}
+                        sectionName={sectionName}
+                        typeDefinitionByName={props.typeDefinitionByName}
+                        docsInfo={props.docsInfo}
+                    />
+                </span>
             )}
         </span>
     );

@@ -8,7 +8,6 @@ const styles: Styles = {
         fontSize: 11,
         height: 10,
         borderRadius: 5,
-        marginTop: 25,
         lineHeight: 0.9,
         fontFamily: 'Roboto Mono',
         marginLeft: 3,

@@ -6,8 +6,7 @@
 import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import { EmptyWalletSubprovider } from './subproviders/empty_wallet_subprovider';
-import { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_subprovider';
+import { EmptyWalletSubprovider, FakeGasEstimateSubprovider } from '@0xproject/subproviders';
 
 import { constants } from './constants';
 

@@ -2,12 +2,14 @@ import { colors as materialUiColors } from 'material-ui/styles';
 
 export const colors = {
     ...materialUiColors,
+    gray40: '#F8F8F8',
     grey50: '#FAFAFA',
     grey100: '#F5F5F5',
     lightestGrey: '#F0F0F0',
     greyishPink: '#E6E5E5',
     grey300: '#E0E0E0',
     beigeWhite: '#E4E4E4',
+    grey350: '#cacaca',
     grey400: '#BDBDBD',
     lightGrey: '#BBBBBB',
     grey500: '#9E9E9E',
@@ -15,6 +17,7 @@ export const colors = {
     darkGrey: '#818181',
     landingLinkGrey: '#919191',
     grey700: '#616161',
+    grey750: '#515151',
     grey800: '#424242',
     darkerGrey: '#393939',
     heroGrey: '#404040',
@@ -23,6 +26,7 @@ export const colors = {
     dharmaDarkGrey: '#252525',
     lightBlue: '#60A4F4',
     lightBlueA700: '#0091EA',
+    linkBlue: '#1D5CDE',
     darkBlue: '#4D5481',
     turquois: '#058789',
     lightPurple: '#A81CA6',
@@ -40,4 +44,5 @@ export const colors = {
     amber600: '#FFB300',
     orange: '#E69D00',
     amber800: '#FF8F00',
+    darkYellow: '#caca03',
 };

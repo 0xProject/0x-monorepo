@@ -40,19 +40,22 @@ describe('HttpClient', () => {
     });
     describe('#getTokenPairsAsync', () => {
         const url = `${relayUrl}/token_pairs`;
-        it('gets token pairs', async () => {
-            fetchMock.get(url, tokenPairsResponseJSON);
+        it('gets token pairs with default options when none are provided', async () => {
+            const urlWithQuery = `${url}?page=1&per_page=100`;
+            fetchMock.get(urlWithQuery, tokenPairsResponseJSON);
             const tokenPairs = await relayerClient.getTokenPairsAsync();
             expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
         });
-        it('gets specific token pairs for request', async () => {
+        it('gets token pairs with specified request options', async () => {
             const tokenAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
-            const tokenPairsRequest = {
+            const tokenPairsRequestOpts = {
                 tokenA: tokenAddress,
+                page: 3,
+                perPage: 50,
             };
-            const urlWithQuery = `${url}?tokenA=${tokenAddress}`;
+            const urlWithQuery = `${url}?page=3&per_page=50&tokenA=${tokenAddress}`;
             fetchMock.get(urlWithQuery, tokenPairsResponseJSON);
-            const tokenPairs = await relayerClient.getTokenPairsAsync(tokenPairsRequest);
+            const tokenPairs = await relayerClient.getTokenPairsAsync(tokenPairsRequestOpts);
             expect(tokenPairs).to.be.deep.equal(tokenPairsResponse);
         });
         it('throws an error for invalid JSON response', async () => {
@@ -62,17 +65,20 @@ describe('HttpClient', () => {
     });
     describe('#getOrdersAsync', () => {
         const url = `${relayUrl}/orders`;
-        it('gets orders', async () => {
-            fetchMock.get(url, ordersResponseJSON);
+        it('gets orders with default options when none are provided', async () => {
+            const urlWithQuery = `${url}?page=1&per_page=100`;
+            fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync();
             expect(orders).to.be.deep.equal(ordersResponse);
         });
-        it('gets specific orders for request', async () => {
+        it('gets orders with specified request options', async () => {
             const tokenAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
             const ordersRequest = {
                 tokenAddress,
+                page: 3,
+                perPage: 50,
             };
-            const urlWithQuery = `${url}?tokenAddress=${tokenAddress}`;
+            const urlWithQuery = `${url}?page=3&per_page=50&tokenAddress=${tokenAddress}`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync(ordersRequest);
             expect(orders).to.be.deep.equal(ordersResponse);
@@ -100,12 +106,25 @@ describe('HttpClient', () => {
             baseTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
             quoteTokenAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
         };
-        const url = `${relayUrl}/orderbook?baseTokenAddress=${request.baseTokenAddress}&quoteTokenAddress=${
-            request.quoteTokenAddress
-        }`;
-        it('gets order book', async () => {
-            fetchMock.get(url, orderbookJSON);
+        const url = `${relayUrl}/orderbook`;
+        it('gets orderbook with default page options when none are provided', async () => {
+            const urlWithQuery = `${url}?baseTokenAddress=${
+                request.baseTokenAddress
+            }&page=1&per_page=100&quoteTokenAddress=${request.quoteTokenAddress}`;
+            fetchMock.get(urlWithQuery, orderbookJSON);
             const orderbook = await relayerClient.getOrderbookAsync(request);
+            expect(orderbook).to.be.deep.equal(orderbookResponse);
+        });
+        it('gets orderbook with specified page options', async () => {
+            const urlWithQuery = `${url}?baseTokenAddress=${
+                request.baseTokenAddress
+            }&page=3&per_page=50&quoteTokenAddress=${request.quoteTokenAddress}`;
+            fetchMock.get(urlWithQuery, orderbookJSON);
+            const pagedRequestOptions = {
+                page: 3,
+                perPage: 50,
+            };
+            const orderbook = await relayerClient.getOrderbookAsync(request, pagedRequestOptions);
             expect(orderbook).to.be.deep.equal(orderbookResponse);
         });
         it('throws an error for invalid JSON response', async () => {
