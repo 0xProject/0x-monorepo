@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.6.1 - _TBD, 2018_
+## v0.6.1 - _February 16, 2018_
 
     * Fix JSON parse empty response (#407)
 
