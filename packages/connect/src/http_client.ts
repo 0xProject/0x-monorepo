@@ -172,13 +172,12 @@ export class HttpClient implements Client {
             body: JSON.stringify(payload),
             headers,
         });
-        const json = await response.json();
+        const text = await response.text();
         if (!response.ok) {
-            const errorString = `${response.status} - ${response.statusText}\n${requestType} ${url}\n${JSON.stringify(
-                json,
-            )}`;
+            const errorString = `${response.status} - ${response.statusText}\n${requestType} ${url}\n${text}`;
             throw Error(errorString);
         }
-        return json;
+        const result = !_.isEmpty(text) ? JSON.parse(text) : undefined;
+        return result;
     }
 }

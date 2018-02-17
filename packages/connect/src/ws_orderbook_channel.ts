@@ -32,7 +32,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     /**
      * Instantiates a new WebSocketOrderbookChannel instance
      * @param   url                 The relayer API base WS url you would like to interact with
-     * @param   url                 The configuration object. Look up the type for the description.
+     * @param   config              The configuration object. Look up the type for the description.
      * @return  An instance of WebSocketOrderbookChannel
      */
     constructor(url: string, config?: WebSocketOrderbookChannelConfig) {
