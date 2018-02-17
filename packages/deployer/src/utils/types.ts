@@ -15,10 +15,10 @@ export interface ContractArtifact {
 }
 
 export interface ContractNetworks {
-    [key: number]: ContractData;
+    [key: number]: ContractNetworkData;
 }
 
-export interface ContractData {
+export interface ContractNetworkData {
     solc_version: string;
     optimizer_enabled: number;
     keccak256: string;
@@ -62,6 +62,17 @@ export interface DeployerOptions {
 
 export interface ContractSources {
     [key: string]: string;
+}
+
+export interface ContractSourceData {
+    [key: string]: ContractSpecificSourceData;
+}
+
+export interface ContractSpecificSourceData {
+    dependencies: string[];
+    solc_version: string;
+    keccak256: string;
+    shouldCompile?: boolean;
 }
 
 export interface ImportContents {

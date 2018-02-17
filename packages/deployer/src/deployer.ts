@@ -6,7 +6,7 @@ import * as Web3 from 'web3';
 import { Contract } from './utils/contract';
 import { encoder } from './utils/encoder';
 import { fsWrapper } from './utils/fs_wrapper';
-import { ContractArtifact, ContractData, DeployerOptions } from './utils/types';
+import { ContractArtifact, ContractNetworkData, DeployerOptions } from './utils/types';
 import { utils } from './utils/utils';
 
 // Gas added to gas estimate to make sure there is sufficient gas for deployment.
@@ -36,7 +36,7 @@ export class Deployer {
      */
     public async deployAsync(contractName: string, args: any[] = []): Promise<Web3.ContractInstance> {
         const contractArtifact: ContractArtifact = this._loadContractArtifactIfExists(contractName);
-        const contractData: ContractData = this._getContractDataFromArtifactIfExists(contractArtifact);
+        const contractData: ContractNetworkData = this._getContractDataFromArtifactIfExists(contractArtifact);
         const data = contractData.unlinked_binary;
         const from = await this._getFromAddressAsync();
         const gas = await this._getAllowableGasEstimateAsync(data);
@@ -101,7 +101,7 @@ export class Deployer {
         args: any[],
     ): Promise<void> {
         const contractArtifact: ContractArtifact = this._loadContractArtifactIfExists(contractName);
-        const contractData: ContractData = this._getContractDataFromArtifactIfExists(contractArtifact);
+        const contractData: ContractNetworkData = this._getContractDataFromArtifactIfExists(contractArtifact);
         const abi = contractData.abi;
         const encodedConstructorArgs = encoder.encodeConstructorArgsFromAbi(args, abi);
         const newContractData = {
@@ -139,7 +139,7 @@ export class Deployer {
      * @param contractArtifact The contract artifact.
      * @return Network specific contract data.
      */
-    private _getContractDataFromArtifactIfExists(contractArtifact: ContractArtifact): ContractData {
+    private _getContractDataFromArtifactIfExists(contractArtifact: ContractArtifact): ContractNetworkData {
         const contractData = contractArtifact.networks[this._networkId];
         if (_.isUndefined(contractData)) {
             throw new Error(`Data not found in artifact for contract: ${contractArtifact.contract_name}`);

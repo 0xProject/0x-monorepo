@@ -6,6 +6,7 @@ import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
 import { commands } from './commands';
+import { constants } from './utils/constants';
 import { CliOptions, CompilerOptions, DeployerOptions } from './utils/types';
 
 const DEFAULT_OPTIMIZER_ENABLED = false;
@@ -15,7 +16,6 @@ const DEFAULT_NETWORK_ID = 50;
 const DEFAULT_JSONRPC_PORT = 8545;
 const DEFAULT_GAS_PRICE = (10 ** 9 * 2).toString();
 const DEFAULT_CONTRACTS_LIST = '*';
-
 /**
  * Compiles all contracts with options passed in through CLI.
  * @param argv Instance of process.argv provided by yargs.
@@ -101,7 +101,8 @@ function getContractsSetFromList(contracts: string): Set<string> {
     const specifiedContracts = new Set();
     const contractsArray = contracts.split(',');
     _.forEach(contractsArray, contractName => {
-        specifiedContracts.add(contractName);
+        const fileName = `${contractName}${constants.SOLIDITY_FILE_EXTENSION}`;
+        specifiedContracts.add(fileName);
     });
     return specifiedContracts;
 }
