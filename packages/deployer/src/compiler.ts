@@ -168,7 +168,6 @@ export class Compiler {
             : Array.from(this._specifiedContracts.values());
         await Promise.all(_.map(fileNames, async fileName => this._setCompileActionAsync(fileName)));
         await Promise.all(_.map(fileNames, async fileName => this._compileContractAsync(fileName)));
-
         this._solcErrors.forEach(errMsg => {
             utils.consoleLog(errMsg);
         });
@@ -185,10 +184,6 @@ export class Compiler {
         if (!contractSpecificSourceData.shouldCompile) {
             return;
         }
-        const source = this._contractSourcesIfExists[fileName];
-        const input = {
-            [fileName]: source,
-        };
 
         const fullSolcVersion = binPaths[contractSpecificSourceData.solc_version];
         const solcBinPath = `./solc/solc_bin/${fullSolcVersion}`;
@@ -196,6 +191,10 @@ export class Compiler {
         const solcInstance = solc.setupMethods(solcBin);
 
         utils.consoleLog(`Compiling ${fileName}...`);
+        const source = this._contractSourcesIfExists[fileName];
+        const input = {
+            [fileName]: source,
+        };
         const sourcesToCompile = {
             sources: input,
         };
@@ -271,10 +270,14 @@ export class Compiler {
                     contractNetworkData.solc_version !== contractSpecificSourceData.solc_version;
             }
         }
-        _.forEach(contractSpecificSourceData.dependencies, async dependency => {
-            await this._setCompileActionAsync(dependency);
+        await Promise.all(
+            _.map(contractSpecificSourceData.dependencies, async dependency => this._setCompileActionAsync(dependency)),
+        );
+        _.forEach(contractSpecificSourceData.dependencies, dependency => {
             contractSpecificSourceData.shouldCompile =
-                contractSpecificSourceData.shouldCompile || this._contractSourceData[dependency].shouldCompile;
+                contractSpecificSourceData.shouldCompile ||
+                (this._contractSourceData[dependency].shouldCompile &&
+                    (this._specifiedContracts.has('*') || this._specifiedContracts.has(dependency)));
         });
     }
     /**

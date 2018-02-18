@@ -9,10 +9,10 @@
     },
     "scripts": {
         "build:watch": "tsc -w",
-        "prebuild": "run-s clean copy_artifacts generate_contract_wrappers",
+        "prebuild": "run-s clean compile copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles './src/artifacts/**/*' ./lib",
         "build": "tsc",
-        "test": "run-s compile build run_mocha",
+        "test": "run-s build run_mocha",
         "run_mocha": "mocha 'lib/test/**/*.js' --timeout 10000 --bail --exit",
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
