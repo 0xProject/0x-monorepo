@@ -4,10 +4,8 @@ import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
-const schemaValidator = new SchemaValidator();
 
 export const assert = {
-    schemaValidator,
     isBigNumber(variableName: string, value: BigNumber): void {
         const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
         this.assert(isBigNumber, this.typeAssertionMessage(variableName, 'BigNumber', value));
@@ -68,8 +66,10 @@ export const assert = {
         const isWeb3Provider = _.isFunction(value.send) || _.isFunction(value.sendAsync);
         this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Web3.Provider', value));
     },
-    doesConformToSchema(variableName: string, value: any, schema: Schema): void {
-        const validationResult = this.schemaValidator.validate(value, schema);
+    doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
+        const schemaValidator = new SchemaValidator();
+        _.map(subSchemas, schemaValidator.addSchema.bind(schemaValidator));
+        const validationResult = schemaValidator.validate(value, schema);
         const hasValidationErrors = validationResult.errors.length > 0;
         const msg = `Expected ${variableName} to conform to schema ${schema.id}
 Encountered: ${JSON.stringify(value, null, '\t')}

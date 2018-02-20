@@ -22,9 +22,6 @@ import { decorators } from './utils/decorators';
 import { signatureUtils } from './utils/signature_utils';
 import { utils } from './utils/utils';
 
-assert.schemaValidator.addSchema(zeroExPrivateNetworkConfigSchema);
-assert.schemaValidator.addSchema(zeroExPublicNetworkConfigSchema);
-
 /**
  * The ZeroEx class is the single entry-point into the 0x.js library. It contains all of the library's functionality
  * and all calls to the library should be made through a ZeroEx instance.
@@ -168,7 +165,10 @@ export class ZeroEx {
      */
     constructor(provider: Web3Provider, config: ZeroExConfig) {
         assert.isWeb3Provider('provider', provider);
-        assert.doesConformToSchema('config', config, zeroExConfigSchema);
+        assert.doesConformToSchema('config', config, zeroExConfigSchema, [
+            zeroExPrivateNetworkConfigSchema,
+            zeroExPublicNetworkConfigSchema,
+        ]);
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
         this._abiDecoder = new AbiDecoder(abiArrays);
