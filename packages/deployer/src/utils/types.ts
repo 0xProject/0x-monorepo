@@ -22,6 +22,7 @@ export interface ContractNetworkData {
     solc_version: string;
     optimizer_enabled: number;
     keccak256: string;
+    source_tree_hash: string;
     abi: Web3.ContractAbi;
     unlinked_binary: string;
     address?: string;
@@ -71,8 +72,8 @@ export interface ContractSourceData {
 export interface ContractSpecificSourceData {
     dependencies: string[];
     solc_version: string;
-    keccak256: string;
-    shouldCompile?: boolean;
+    sourceHash: Buffer;
+    sourceTreeHash?: Buffer;
 }
 
 export interface ImportContents {
