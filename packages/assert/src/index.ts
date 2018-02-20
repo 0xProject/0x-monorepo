@@ -68,7 +68,9 @@ export const assert = {
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
         const schemaValidator = new SchemaValidator();
-        _.map(subSchemas, schemaValidator.addSchema.bind(schemaValidator));
+        if (!_.isUndefined(subSchemas)) {
+            _.map(subSchemas, schemaValidator.addSchema.bind(schemaValidator));
+        }
         const validationResult = schemaValidator.validate(value, schema);
         const hasValidationErrors = validationResult.errors.length > 0;
         const msg = `Expected ${variableName} to conform to schema ${schema.id}
