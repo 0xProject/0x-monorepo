@@ -1,9 +1,5 @@
 # CHANGELOG
 
-## v0.1.0 - _TBD, 2018_
-
-    * Add schemaValidator as a field so that one can add custom schemas (#385)
-
 ## v0.0.18 - _February 9, 2017_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)
