@@ -37,12 +37,14 @@ import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { utils } from 'ts/utils/utils';
 
+const TOP_BAR_HEIGHT = 60;
 const SCROLL_TOP_ID = 'docsScrollTop';
 
 const networkNameToColor: { [network: string]: string } = {
     [Networks.Kovan]: colors.purple,
     [Networks.Ropsten]: colors.red,
     [Networks.Mainnet]: colors.turquois,
+    [Networks.Rinkeby]: colors.darkYellow,
 };
 
 export interface DocumentationAllProps {
@@ -67,7 +69,7 @@ const styles: Styles = {
         right: 0,
         overflowZ: 'hidden',
         overflowY: 'scroll',
-        minHeight: 'calc(100vh - 1px)',
+        minHeight: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
         WebkitOverflowScrolling: 'touch',
     },
     menuContainer: {
@@ -111,7 +113,6 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                     availableDocVersions={this.props.availableDocVersions}
                     menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
                     menuSubsectionsBySection={menuSubsectionsBySection}
-                    shouldFullWidth={true}
                     docsInfo={this.props.docsInfo}
                 />
                 {_.isUndefined(this.state.docAgnosticFormat) ? (
@@ -129,30 +130,41 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                         </div>
                     </div>
                 ) : (
-                    <div className="mx-auto flex" style={{ color: colors.grey800, height: 43 }}>
-                        <div className="relative col md-col-3 lg-col-3 lg-pl0 md-pl1 sm-hide xs-hide">
+                    <div style={{ width: '100%', height: '100%', backgroundColor: colors.gray40 }}>
+                        <div
+                            className="mx-auto max-width-4 flex"
+                            style={{ color: colors.grey800, height: `calc(100vh - ${TOP_BAR_HEIGHT}px)` }}
+                        >
                             <div
-                                className="border-right absolute"
-                                style={{ ...styles.menuContainer, ...styles.mainContainers }}
+                                className="relative sm-hide xs-hide"
+                                style={{ width: '36%', height: `calc(100vh - ${TOP_BAR_HEIGHT}px)` }}
                             >
-                                <NestedSidebarMenu
-                                    selectedVersion={this.props.docsVersion}
-                                    versions={this.props.availableDocVersions}
-                                    topLevelMenu={this.props.docsInfo.getMenu(this.props.docsVersion)}
-                                    menuSubsectionsBySection={menuSubsectionsBySection}
-                                    docPath={this.props.docsInfo.websitePath}
-                                />
+                                <div
+                                    className="border-right absolute"
+                                    style={{
+                                        ...styles.menuContainer,
+                                        ...styles.mainContainers,
+                                        height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+                                    }}
+                                >
+                                    <NestedSidebarMenu
+                                        selectedVersion={this.props.docsVersion}
+                                        versions={this.props.availableDocVersions}
+                                        title={this.props.docsInfo.displayName}
+                                        topLevelMenu={this.props.docsInfo.getMenu(this.props.docsVersion)}
+                                        menuSubsectionsBySection={menuSubsectionsBySection}
+                                        docPath={this.props.docsInfo.websitePath}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="relative col lg-col-9 md-col-9 sm-col-12 col-12">
-                            <div id="documentation" style={styles.mainContainers} className="absolute">
-                                <div id={SCROLL_TOP_ID} />
-                                <h1 className="md-pl2 sm-pl3">
-                                    <a href={this.props.docsInfo.packageUrl} target="_blank">
-                                        {this.props.docsInfo.displayName}
-                                    </a>
-                                </h1>
-                                {this._renderDocumentation()}
+                            <div
+                                className="relative col lg-col-9 md-col-9 sm-col-12 col-12"
+                                style={{ backgroundColor: colors.white }}
+                            >
+                                <div id="documentation" style={styles.mainContainers} className="absolute px1">
+                                    <div id={SCROLL_TOP_ID} />
+                                    {this._renderDocumentation()}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -220,7 +232,7 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
         });
         return (
             <div key={`section-${sectionName}`} className="py2 pr3 md-pl2 sm-pl3">
-                <div className="flex">
+                <div className="flex pb2">
                     <div style={{ marginRight: 7 }}>
                         <SectionHeader sectionName={sectionName} />
                     </div>

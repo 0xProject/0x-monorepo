@@ -28,8 +28,7 @@ const styles: Styles = {
         color: colors.white,
         height: 11,
         borderRadius: 14,
-        marginTop: 19,
-        lineHeight: 0.8,
+        lineHeight: 0.9,
     },
 };
 
@@ -55,16 +54,18 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 {!method.isConstructor && (
-                    <div className="flex">
+                    <div className="flex pb2 pt2">
                         {(method as TypescriptMethod).isStatic && this._renderChip('Static')}
                         {(method as SolidityMethod).isConstant && this._renderChip('Constant')}
                         {(method as SolidityMethod).isPayable && this._renderChip('Payable')}
-                        <AnchorTitle
-                            headerSize={HeaderSizes.H3}
-                            title={method.name}
-                            id={`${this.props.sectionName}-${method.name}`}
-                            shouldShowAnchor={this.state.shouldShowAnchor}
-                        />
+                        <div style={{ lineHeight: 1.3 }}>
+                            <AnchorTitle
+                                headerSize={HeaderSizes.H3}
+                                title={method.name}
+                                id={`${this.props.sectionName}-${method.name}`}
+                                shouldShowAnchor={this.state.shouldShowAnchor}
+                            />
+                        </div>
                     </div>
                 )}
                 <code className="hljs">
@@ -121,12 +122,17 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                     style={{ borderBottom: '1px solid #f0f4f7' }}
                 >
                     <div className="pl2 col lg-col-4 md-col-4 sm-col-12 col-12">
-                        <div className="bold">{parameter.name}</div>
+                        <div
+                            className="bold"
+                            style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                        >
+                            {parameter.name}
+                        </div>
                         <div className="pt1" style={{ color: colors.grey, fontSize: 14 }}>
                             {isOptional && 'optional'}
                         </div>
                     </div>
-                    <div className="col lg-col-8 md-col-8 sm-col-12 col-12">
+                    <div className="col lg-col-8 md-col-8 sm-col-12 col-12" style={{ paddingLeft: 5 }}>
                         {parameter.comment && <Comment comment={parameter.comment} />}
                     </div>
                 </div>

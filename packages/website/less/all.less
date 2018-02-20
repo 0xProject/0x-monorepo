@@ -61,7 +61,8 @@ a {
  */
 ::-webkit-scrollbar {
     -webkit-appearance: none;
-    width: 7px;
+    width: 4px;
+    height: 2px;
 }
 ::-webkit-scrollbar-thumb {
     border-radius: 4px;
@@ -85,19 +86,28 @@ a {
 }
 
 code {
-    font-family: 'Roboto';
-    background-color: #f3f4f4;
-    color: rgb(36, 41, 46);
-    padding: 3px;
-
-    &.hljs {
-        background-color: #dde4e9 !important; // blue gray
-        border-left: 5px solid #0091ea !important; // colors.lightBlueA700
-        padding: 30px;
-    }
+    border: 1px solid #e3eefe;
+    font-family: 'Roboto Mono';
+    background-color: #f2f6ff !important; // lightBlue
 }
 
 #wiki {
+    p {
+        color: #515151; // grey750
+        fontsize: 15;
+    }
+
+    a {
+        color: #1d5cde; // linkBlue
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        padding-top: 15px;
+    }
+
     p,
     blockquote,
     ol,

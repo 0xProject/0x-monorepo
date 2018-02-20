@@ -1,5 +1,5 @@
 # CHANGELOG
 
-## v0.x.x - _TBD_
+## v0.0.1 - _February 16, 2018_
 
-    * Added new team members to the about page (#317)
+    * Re-designed wiki + doc page template (#405)

@@ -228,52 +228,54 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 openSecondary={true}
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                {this._renderPortalMenu()}
-                {this._renderDocsMenu()}
-                {this._renderWiki()}
-                <div className="pl1 py1 mt3" style={{ backgroundColor: colors.lightGrey }}>
-                    Website
+                <div className="clearfix">
+                    {this._renderPortalMenu()}
+                    {this._renderDocsMenu()}
+                    {this._renderWiki()}
+                    <div className="pl1 py1 mt3" style={{ backgroundColor: colors.lightGrey }}>
+                        Website
+                    </div>
+                    <Link to={WebsitePaths.Home} className="text-decoration-none">
+                        <MenuItem className="py2">Home</MenuItem>
+                    </Link>
+                    <Link to={`${WebsitePaths.Wiki}`} className="text-decoration-none">
+                        <MenuItem className="py2">Wiki</MenuItem>
+                    </Link>
+                    {!this._isViewing0xjsDocs() && (
+                        <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
+                            <MenuItem className="py2">0x.js Docs</MenuItem>
+                        </Link>
+                    )}
+                    {!this._isViewingConnectDocs() && (
+                        <Link to={WebsitePaths.Connect} className="text-decoration-none">
+                            <MenuItem className="py2">0x Connect Docs</MenuItem>
+                        </Link>
+                    )}
+                    {!this._isViewingSmartContractsDocs() && (
+                        <Link to={WebsitePaths.SmartContracts} className="text-decoration-none">
+                            <MenuItem className="py2">Smart Contract Docs</MenuItem>
+                        </Link>
+                    )}
+                    {!this._isViewingPortal() && (
+                        <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
+                            <MenuItem className="py2">Portal DApp</MenuItem>
+                        </Link>
+                    )}
+                    <a className="text-decoration-none" target="_blank" href={`${WebsitePaths.Whitepaper}`}>
+                        <MenuItem className="py2">Whitepaper</MenuItem>
+                    </a>
+                    <Link to={`${WebsitePaths.About}`} className="text-decoration-none">
+                        <MenuItem className="py2">About</MenuItem>
+                    </Link>
+                    <a className="text-decoration-none" target="_blank" href={constants.URL_BLOG}>
+                        <MenuItem className="py2">Blog</MenuItem>
+                    </a>
+                    <Link to={`${WebsitePaths.FAQ}`} className="text-decoration-none">
+                        <MenuItem className="py2" onTouchTap={this._onMenuButtonClick.bind(this)}>
+                            FAQ
+                        </MenuItem>
+                    </Link>
                 </div>
-                <Link to={WebsitePaths.Home} className="text-decoration-none">
-                    <MenuItem className="py2">Home</MenuItem>
-                </Link>
-                <Link to={`${WebsitePaths.Wiki}`} className="text-decoration-none">
-                    <MenuItem className="py2">Wiki</MenuItem>
-                </Link>
-                {!this._isViewing0xjsDocs() && (
-                    <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                        <MenuItem className="py2">0x.js Docs</MenuItem>
-                    </Link>
-                )}
-                {!this._isViewingConnectDocs() && (
-                    <Link to={WebsitePaths.Connect} className="text-decoration-none">
-                        <MenuItem className="py2">0x Connect Docs</MenuItem>
-                    </Link>
-                )}
-                {!this._isViewingSmartContractsDocs() && (
-                    <Link to={WebsitePaths.SmartContracts} className="text-decoration-none">
-                        <MenuItem className="py2">Smart Contract Docs</MenuItem>
-                    </Link>
-                )}
-                {!this._isViewingPortal() && (
-                    <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
-                        <MenuItem className="py2">Portal DApp</MenuItem>
-                    </Link>
-                )}
-                <a className="text-decoration-none" target="_blank" href={`${WebsitePaths.Whitepaper}`}>
-                    <MenuItem className="py2">Whitepaper</MenuItem>
-                </a>
-                <Link to={`${WebsitePaths.About}`} className="text-decoration-none">
-                    <MenuItem className="py2">About</MenuItem>
-                </Link>
-                <a className="text-decoration-none" target="_blank" href={constants.URL_BLOG}>
-                    <MenuItem className="py2">Blog</MenuItem>
-                </a>
-                <Link to={`${WebsitePaths.FAQ}`} className="text-decoration-none">
-                    <MenuItem className="py2" onTouchTap={this._onMenuButtonClick.bind(this)}>
-                        FAQ
-                    </MenuItem>
-                </Link>
             </Drawer>
         );
     }
@@ -288,12 +290,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         const sectionTitle = `${this.props.docsInfo.displayName} Docs`;
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{ backgroundColor: colors.lightGrey }}>
-                    {sectionTitle}
-                </div>
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
+                    title={this.props.docsInfo.displayName}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
@@ -310,12 +310,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
 
         return (
             <div className="lg-hide md-hide">
-                <div className="pl1 py1" style={{ backgroundColor: colors.lightGrey }}>
-                    0x Protocol Wiki
-                </div>
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menuSubsectionsBySection}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
+                    title="Wiki"
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                 />

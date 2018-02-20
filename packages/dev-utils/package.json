@@ -1,14 +1,17 @@
 {
     "name": "@0xproject/dev-utils",
-    "version": "0.0.13",
+    "version": "0.1.0",
     "description": "0x dev TS utils",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
         "build": "tsc",
+        "test": "run-s clean build run_mocha",
+        "test:circleci": "yarn test",
+        "run_mocha": "mocha lib/test/**/*_test.js --bail --exit",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project . 'src/**/*.ts'"
+        "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'"
     },
     "license": "Apache-2.0",
     "repository": {
@@ -21,8 +24,13 @@
     "homepage": "https://github.com/0xProject/0x.js/packages/dev-utils/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.9",
-        "@0xproject/types": "^0.2.2",
+        "@0xproject/types": "^0.2.3",
+        "@0xproject/web3-wrapper": "^0.1.14",
         "@types/lodash": "^4.14.86",
+        "@types/mocha": "^2.2.42",
+        "chai": "^4.0.1",
+        "chai-typescript-typings": "^0.0.3",
+        "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
@@ -31,7 +39,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/utils": "^0.3.3",
+        "@0xproject/subproviders": "^0.5.0",
+        "@0xproject/utils": "^0.3.4",
         "ethereumjs-util": "^5.1.2",
         "lodash": "^4.17.4",
         "request-promise-native": "^1.0.5",

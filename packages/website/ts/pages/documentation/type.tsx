@@ -118,6 +118,23 @@ export function Type(props: TypeProps): any {
             typeName = type.name;
             break;
 
+        case TypeDocTypes.Intersection:
+            const intersectionsTypes = _.map(type.types, t => {
+                return (
+                    <Type
+                        key={`type-${t.name}-${t.value}-${t.typeDocType}`}
+                        type={t}
+                        sectionName={props.sectionName}
+                        typeDefinitionByName={props.typeDefinitionByName}
+                        docsInfo={props.docsInfo}
+                    />
+                );
+            });
+            typeName = _.reduce(intersectionsTypes, (prev: React.ReactNode, curr: React.ReactNode) => {
+                return [prev, '&', curr];
+            });
+            break;
+
         default:
             throw utils.spawnSwitchErr('type.typeDocType', type.typeDocType);
     }

@@ -3,6 +3,7 @@ import { schemas } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 import * as WebSocket from 'websocket';
 
+import { schemas as clientSchemas } from './schemas/schemas';
 import {
     OrderbookChannel,
     OrderbookChannelHandler,
@@ -10,8 +11,12 @@ import {
     OrderbookChannelSubscriptionOpts,
     WebsocketClientEventType,
     WebsocketConnectionEventType,
+    WebSocketOrderbookChannelConfig,
 } from './types';
 import { orderbookChannelMessageParser } from './utils/orderbook_channel_message_parser';
+
+const DEFAULT_HEARTBEAT_INTERVAL_MS = 15000;
+const MINIMUM_HEARTBEAT_INTERVAL_MS = 10;
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
@@ -21,15 +26,25 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     private _apiEndpointUrl: string;
     private _client: WebSocket.client;
     private _connectionIfExists?: WebSocket.connection;
+    private _heartbeatTimerIfExists?: NodeJS.Timer;
     private _subscriptionCounter = 0;
+    private _heartbeatIntervalMs: number;
     /**
      * Instantiates a new WebSocketOrderbookChannel instance
      * @param   url                 The relayer API base WS url you would like to interact with
+     * @param   config              The configuration object. Look up the type for the description.
      * @return  An instance of WebSocketOrderbookChannel
      */
-    constructor(url: string) {
+    constructor(url: string, config?: WebSocketOrderbookChannelConfig) {
         assert.isUri('url', url);
+        if (!_.isUndefined(config)) {
+            assert.doesConformToSchema('config', config, clientSchemas.webSocketOrderbookChannelConfigSchema);
+        }
         this._apiEndpointUrl = url;
+        this._heartbeatIntervalMs =
+            _.isUndefined(config) || _.isUndefined(config.heartbeatIntervalMs)
+                ? DEFAULT_HEARTBEAT_INTERVAL_MS
+                : config.heartbeatIntervalMs;
         this._client = new WebSocket.client();
     }
     /**
@@ -63,7 +78,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
                 connection.on(WebsocketConnectionEventType.Error, wsError => {
                     handler.onError(this, subscriptionOpts, wsError);
                 });
-                connection.on(WebsocketConnectionEventType.Close, () => {
+                connection.on(WebsocketConnectionEventType.Close, (code: number, desc: string) => {
                     handler.onClose(this, subscriptionOpts);
                 });
                 connection.on(WebsocketConnectionEventType.Message, message => {
@@ -80,6 +95,9 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         if (!_.isUndefined(this._connectionIfExists)) {
             this._connectionIfExists.close();
         }
+        if (!_.isUndefined(this._heartbeatTimerIfExists)) {
+            clearInterval(this._heartbeatTimerIfExists);
+        }
     }
     private _getConnection(callback: (error?: Error, connection?: WebSocket.connection) => void) {
         if (!_.isUndefined(this._connectionIfExists) && this._connectionIfExists.connected) {
@@ -87,6 +105,20 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         } else {
             this._client.on(WebsocketClientEventType.Connect, connection => {
                 this._connectionIfExists = connection;
+                if (this._heartbeatIntervalMs >= MINIMUM_HEARTBEAT_INTERVAL_MS) {
+                    this._heartbeatTimerIfExists = setInterval(() => {
+                        connection.ping('');
+                    }, this._heartbeatIntervalMs);
+                } else {
+                    callback(
+                        new Error(
+                            `Heartbeat interval is ${
+                                this._heartbeatIntervalMs
+                            }ms which is less than the required minimum of ${MINIMUM_HEARTBEAT_INTERVAL_MS}ms`,
+                        ),
+                        undefined,
+                    );
+                }
                 callback(undefined, this._connectionIfExists);
             });
             this._client.on(WebsocketClientEventType.ConnectFailed, error => {

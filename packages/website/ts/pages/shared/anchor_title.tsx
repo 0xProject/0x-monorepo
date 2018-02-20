@@ -34,18 +34,13 @@ const styles: Styles = {
     },
     h1: {
         fontSize: '1.8em',
-        WebkitMarginBefore: '0.83em',
-        WebkitMarginAfter: '0.83em',
     },
     h2: {
         fontSize: '1.5em',
-        WebkitMarginBefore: '0.83em',
-        WebkitMarginAfter: '0.83em',
+        fontWeight: 400,
     },
     h3: {
         fontSize: '1.17em',
-        WebkitMarginBefore: '1em',
-        WebkitMarginAfter: '1em',
     },
 };
 
