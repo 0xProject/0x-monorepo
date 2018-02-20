@@ -1,7 +1,7 @@
 import { assert as sharedAssert } from '@0xproject/assert';
 // We need those two unused imports because they're actually used by sharedAssert which gets injected here
 // tslint:disable-next-line:no-unused-variable
-import { Schema, SchemaValidator } from '@0xproject/json-schemas';
+import { Schema } from '@0xproject/json-schemas';
 // tslint:disable-next-line:no-unused-variable
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
