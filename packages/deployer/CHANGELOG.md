@@ -1,8 +1,8 @@
 # CHANGELOG
 
-## v0.2.0 - _??_
+## v0.2.0 - _TBD, 2018_
 
-    * Check dependencies when determining if contracts should be recompiled.
+    * Check dependencies when determining if contracts should be recompiled (#408).
 
 ## v0.1.0 - _February 16, 2018_
 

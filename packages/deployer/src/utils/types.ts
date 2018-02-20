@@ -71,9 +71,9 @@ export interface ContractSourceData {
 
 export interface ContractSpecificSourceData {
     dependencies: string[];
-    solc_version: string;
+    solcVersion: string;
     sourceHash: Buffer;
-    sourceTreeHash?: Buffer;
+    sourceTreeHashIfExists?: Buffer;
 }
 
 export interface ImportContents {

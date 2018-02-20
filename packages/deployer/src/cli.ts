@@ -16,6 +16,7 @@ const DEFAULT_NETWORK_ID = 50;
 const DEFAULT_JSONRPC_PORT = 8545;
 const DEFAULT_GAS_PRICE = (10 ** 9 * 2).toString();
 const DEFAULT_CONTRACTS_LIST = '*';
+
 /**
  * Compiles all contracts with options passed in through CLI.
  * @param argv Instance of process.argv provided by yargs.
