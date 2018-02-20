@@ -6,7 +6,7 @@ import * as Web3 from 'web3';
 import { Contract } from './utils/contract';
 import { encoder } from './utils/encoder';
 import { fsWrapper } from './utils/fs_wrapper';
-import { ContractArtifact, ContractData, DeployerOptions } from './utils/types';
+import { ContractArtifact, ContractNetworkData, DeployerOptions } from './utils/types';
 import { utils } from './utils/utils';
 
 // Gas added to gas estimate to make sure there is sufficient gas for deployment.
@@ -35,9 +35,11 @@ export class Deployer {
      * @return Deployed contract instance.
      */
     public async deployAsync(contractName: string, args: any[] = []): Promise<Web3.ContractInstance> {
-        const contractArtifact: ContractArtifact = this._loadContractArtifactIfExists(contractName);
-        const contractData: ContractData = this._getContractDataFromArtifactIfExists(contractArtifact);
-        const data = contractData.unlinked_binary;
+        const contractArtifactIfExists: ContractArtifact = this._loadContractArtifactIfExists(contractName);
+        const contractNetworkDataIfExists: ContractNetworkData = this._getContractNetworkDataFromArtifactIfExists(
+            contractArtifactIfExists,
+        );
+        const data = contractNetworkDataIfExists.unlinked_binary;
         const from = await this._getFromAddressAsync();
         const gas = await this._getAllowableGasEstimateAsync(data);
         const txData = {
@@ -46,7 +48,7 @@ export class Deployer {
             data,
             gas,
         };
-        const abi = contractData.abi;
+        const abi = contractNetworkDataIfExists.abi;
         const web3ContractInstance = await this._deployFromAbiAsync(abi, args, txData);
         utils.consoleLog(`${contractName}.sol successfully deployed at ${web3ContractInstance.address}`);
         const contractInstance = new Contract(web3ContractInstance, this._defaults);
@@ -100,19 +102,21 @@ export class Deployer {
         contractAddress: string,
         args: any[],
     ): Promise<void> {
-        const contractArtifact: ContractArtifact = this._loadContractArtifactIfExists(contractName);
-        const contractData: ContractData = this._getContractDataFromArtifactIfExists(contractArtifact);
-        const abi = contractData.abi;
+        const contractArtifactIfExists: ContractArtifact = this._loadContractArtifactIfExists(contractName);
+        const contractNetworkDataIfExists: ContractNetworkData = this._getContractNetworkDataFromArtifactIfExists(
+            contractArtifactIfExists,
+        );
+        const abi = contractNetworkDataIfExists.abi;
         const encodedConstructorArgs = encoder.encodeConstructorArgsFromAbi(args, abi);
         const newContractData = {
-            ...contractData,
+            ...contractNetworkDataIfExists,
             address: contractAddress,
             constructor_args: encodedConstructorArgs,
         };
         const newArtifact = {
-            ...contractArtifact,
+            ...contractArtifactIfExists,
             networks: {
-                ...contractArtifact.networks,
+                ...contractArtifactIfExists.networks,
                 [this._networkId]: newContractData,
             },
         };
@@ -139,12 +143,12 @@ export class Deployer {
      * @param contractArtifact The contract artifact.
      * @return Network specific contract data.
      */
-    private _getContractDataFromArtifactIfExists(contractArtifact: ContractArtifact): ContractData {
-        const contractData = contractArtifact.networks[this._networkId];
-        if (_.isUndefined(contractData)) {
+    private _getContractNetworkDataFromArtifactIfExists(contractArtifact: ContractArtifact): ContractNetworkData {
+        const contractNetworkDataIfExists = contractArtifact.networks[this._networkId];
+        if (_.isUndefined(contractNetworkDataIfExists)) {
             throw new Error(`Data not found in artifact for contract: ${contractArtifact.contract_name}`);
         }
-        return contractData;
+        return contractNetworkDataIfExists;
     }
     /**
      * Gets the address to use for sending a transaction.

@@ -15,13 +15,14 @@ export interface ContractArtifact {
 }
 
 export interface ContractNetworks {
-    [key: number]: ContractData;
+    [key: number]: ContractNetworkData;
 }
 
-export interface ContractData {
+export interface ContractNetworkData {
     solc_version: string;
     optimizer_enabled: number;
     keccak256: string;
+    source_tree_hash: string;
     abi: Web3.ContractAbi;
     unlinked_binary: string;
     address?: string;
@@ -62,6 +63,17 @@ export interface DeployerOptions {
 
 export interface ContractSources {
     [key: string]: string;
+}
+
+export interface ContractSourceData {
+    [key: string]: ContractSpecificSourceData;
+}
+
+export interface ContractSpecificSourceData {
+    dependencies: string[];
+    solcVersion: string;
+    sourceHash: Buffer;
+    sourceTreeHashIfExists?: Buffer;
 }
 
 export interface ImportContents {
