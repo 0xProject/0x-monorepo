@@ -140,6 +140,7 @@ export enum ActionTypes {
     HideFlashMessage = 'HIDE_FLASH_MESSAGE',
     UpdateProviderType = 'UPDATE_PROVIDER_TYPE',
     UpdateInjectedProviderName = 'UPDATE_INJECTED_PROVIDER_NAME',
+    UpdateSelectedLanguage = 'UPDATE_SELECTED_LANGUAGE',
 }
 
 export interface Action {
@@ -669,6 +670,10 @@ export interface MaterialUIPosition {
 
 export enum Language {
     English = 'EN',
+    Spanish = 'ES',
+    Chinese = 'ZH',
+    Korean = 'KO',
+    Russian = 'RU',
 }
 
 export enum Key {
@@ -722,6 +727,7 @@ export enum Key {
     Connect,
     Whitepaper,
     Wiki,
+    And,
     Faq,
     SmartContracts,
     StandardRelayerApi,

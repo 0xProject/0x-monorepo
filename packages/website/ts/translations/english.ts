@@ -37,6 +37,7 @@ export const english = {
     [Key.DevToolsPrompt]: 'learn how in our',
     [Key.SmartContract]: 'smart contract',
     [Key.Docs]: 'docs',
+    [Key.And]: 'and',
     [Key.DecentralizedGovernance]: 'decentralized governance',
     [Key.DecentralizedGovernanceDescription]:
         'Decentralized organizations use tokens to represent ownership and guide their governance logic. 0x allows decentralized organizations to seamlessly and safely trade ownership for startup capital.',
@@ -71,7 +72,6 @@ export const english = {
     [Key.PortalDApp]: 'portal dApp',
     [Key.Website]: 'website',
     [Key.Home]: 'home',
-    [Key.FAQ]: 'FAQ',
     [Key.RocketChat]: 'rocket.chat',
     // TopBar
     [Key.Developers]: 'developers',

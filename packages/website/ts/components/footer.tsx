@@ -1,7 +1,9 @@
 import * as _ from 'lodash';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Deco, Key, WebsitePaths } from 'ts/types';
+import { Deco, Key, Language, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -23,24 +25,33 @@ const linkStyle = {
     cursor: 'pointer',
 };
 
-const titleToIcon: { [title: string]: string } = {
-    'Rocket.chat': 'rocketchat.png',
-    Blog: 'medium.png',
-    Twitter: 'twitter.png',
-    Reddit: 'reddit.png',
-    Forum: 'discourse.png',
+const languageToMenuTitle = {
+    [Language.English]: 'English',
+    [Language.Russian]: 'Русский',
+    [Language.Spanish]: 'Español',
+    [Language.Korean]: '한국어',
+    [Language.Chinese]: '中文',
 };
 
 export interface FooterProps {
     translate?: Translate;
+    onLanguageSelected?: (language: Language) => void;
 }
 
-interface FooterState {}
+interface FooterState {
+    selectedLanguage: Language;
+}
 
 export class Footer extends React.Component<FooterProps, FooterState> {
     public static defaultProps: Partial<FooterProps> = {
         translate: new Translate(),
     };
+    constructor(props: FooterProps) {
+        super();
+        this.state = {
+            selectedLanguage: props.translate.getLanguage(),
+        };
+    }
     public render() {
         const menuItemsBySection: MenuItemsBySection = {
             [Key.Documentation]: [
@@ -66,7 +77,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                     path: WebsitePaths.Wiki,
                 },
                 {
-                    title: this.props.translate.get(Key.FAQ, Deco.Cap),
+                    title: this.props.translate.get(Key.Faq, Deco.Cap),
                     path: WebsitePaths.FAQ,
                 },
             ],
@@ -115,6 +126,9 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 },
             ],
         };
+        const languageMenuItems = _.map(languageToMenuTitle, (menuTitle: string, language: Language) => {
+            return <MenuItem key={menuTitle} value={language} primaryText={menuTitle} />;
+        });
         return (
             <div className="relative pb4 pt2" style={{ backgroundColor: colors.darkerGrey }}>
                 <div className="mx-auto max-width-4 md-px2 lg-px0 py4 clearfix" style={{ color: colors.white }}>
@@ -132,6 +146,15 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                                 }}
                             >
                                 © ZeroEx, Intl.
+                            </div>
+                            <div className="pt4 center">
+                                <DropDownMenu
+                                    labelStyle={{ color: colors.white }}
+                                    value={this.state.selectedLanguage}
+                                    onChange={this._updateLanguage.bind(this)}
+                                >
+                                    {languageMenuItems}
+                                </DropDownMenu>
                             </div>
                         </div>
                     </div>
@@ -167,6 +190,13 @@ export class Footer extends React.Component<FooterProps, FooterState> {
         );
     }
     private _renderMenuItem(item: FooterMenuItem) {
+        const titleToIcon: { [title: string]: string } = {
+            'Rocket.chat': 'rocketchat.png',
+            [this.props.translate.get(Key.Blog, Deco.Cap)]: 'medium.png',
+            Twitter: 'twitter.png',
+            Reddit: 'reddit.png',
+            [this.props.translate.get(Key.Forum, Deco.Cap)]: 'discourse.png',
+        };
         const iconIfExists = titleToIcon[item.title];
         return (
             <div key={item.title} className="sm-center" style={{ fontSize: 13, paddingTop: 25 }}>
@@ -208,5 +238,13 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 {this.props.translate.get(key, Deco.Upper)}
             </div>
         );
+    }
+    private _updateLanguage(e: any, index: number, value: Language) {
+        this.setState({
+            selectedLanguage: value,
+        });
+        if (!_.isUndefined(this.props.onLanguageSelected)) {
+            this.props.onLanguageSelected(value);
+        }
     }
 }

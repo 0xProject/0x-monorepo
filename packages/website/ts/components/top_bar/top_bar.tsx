@@ -152,7 +152,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         };
         const hoverActiveNode = (
             <div className="flex relative" style={{ color: menuIconStyle.color }}>
-                <div style={{ paddingRight: 10 }}>Developers</div>
+                <div style={{ paddingRight: 10 }}>{this.props.translate.get(Key.Developers, Deco.Cap)}</div>
                 <div className="absolute" style={{ paddingLeft: 3, right: 3, top: -2 }}>
                     <i className="zmdi zmdi-caret-right" style={{ fontSize: 22 }} />
                 </div>
@@ -295,7 +295,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     </a>
                     <Link to={`${WebsitePaths.FAQ}`} className="text-decoration-none">
                         <MenuItem className="py2" onTouchTap={this._onMenuButtonClick.bind(this)}>
-                            {this.props.translate.get(Key.FAQ, Deco.Cap)}
+                            {this.props.translate.get(Key.Faq, Deco.Cap)}
                         </MenuItem>
                     </Link>
                 </div>
