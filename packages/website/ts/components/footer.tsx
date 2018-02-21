@@ -3,6 +3,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
@@ -35,7 +36,7 @@ const languageToMenuTitle = {
 
 export interface FooterProps {
     translate?: Translate;
-    onLanguageSelected?: (language: Language) => void;
+    dispatcher: Dispatcher;
 }
 
 interface FooterState {
@@ -243,8 +244,6 @@ export class Footer extends React.Component<FooterProps, FooterState> {
         this.setState({
             selectedLanguage: value,
         });
-        if (!_.isUndefined(this.props.onLanguageSelected)) {
-            this.props.onLanguageSelected(value);
-        }
+        this.props.dispatcher.updateSelectedLanguage(value);
     }
 }

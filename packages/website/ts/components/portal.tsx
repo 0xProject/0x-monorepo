@@ -27,6 +27,7 @@ import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAdd
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const THROTTLE_TIMEOUT = 100;
@@ -52,6 +53,7 @@ export interface PortalAllProps {
     location: Location;
     flashMessage?: string | React.ReactNode;
     lastForceTokenStateRefetch: number;
+    translate: Translate;
 }
 
 interface PortalAllState {
@@ -259,7 +261,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         />
                     )}
                 </div>
-                <Footer />;
+                <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
         );
     }

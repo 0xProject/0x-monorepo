@@ -212,7 +212,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 {this._renderBuildingBlocksSection()}
                 {this._renderUseCases()}
                 {this._renderCallToAction()}
-                <Footer translate={this.props.translate} onLanguageSelected={this._onLanguageSelected.bind(this)} />
+                <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
         );
     }

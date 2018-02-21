@@ -95,7 +95,10 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
     switch (action.type) {
         // Portal
         case ActionTypes.ResetState:
-            return INITIAL_STATE;
+            return {
+                ...INITIAL_STATE,
+                translate: state.translate,
+            };
 
         case ActionTypes.UpdateOrderSalt: {
             return {

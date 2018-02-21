@@ -4,9 +4,11 @@ import * as DocumentTitle from 'react-document-title';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Profile } from 'ts/pages/about/profile';
+import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProfileInfo, Styles } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
+import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const teamRow1: ProfileInfo[] = [
@@ -143,6 +145,8 @@ const advisors: ProfileInfo[] = [
 export interface AboutProps {
     source: string;
     location: Location;
+    translate: Translate;
+    dispatcher: Dispatcher;
 }
 
 interface AboutState {}
@@ -174,6 +178,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                     blockchainIsLoaded={false}
                     location={this.props.location}
                     style={{ backgroundColor: colors.lightestGrey }}
+                    translate={this.props.translate}
                 />
                 <div id="about" className="mx-auto max-width-4 py4" style={{ color: colors.grey800 }}>
                     <div className="mx-auto pb4 sm-px3" style={{ maxWidth: 435 }}>
@@ -230,7 +235,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         </div>
                     </div>
                 </div>
-                <Footer />
+                <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
         );
     }

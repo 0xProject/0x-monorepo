@@ -8,10 +8,12 @@ import { TopBar } from 'ts/components/top_bar/top_bar';
 import { MarkdownSection } from 'ts/pages/shared/markdown_section';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { SectionHeader } from 'ts/pages/shared/section_header';
+import { Dispatcher } from 'ts/redux/dispatcher';
 import { Article, ArticlesBySection, HeaderSizes, Styles, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const TOP_BAR_HEIGHT = 60;
@@ -20,6 +22,8 @@ const WIKI_NOT_READY_BACKOUT_TIMEOUT_MS = 5000;
 export interface WikiProps {
     source: string;
     location: Location;
+    dispatcher: Dispatcher;
+    translate: Translate;
 }
 
 interface WikiState {
@@ -79,6 +83,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                     blockchainIsLoaded={false}
                     location={this.props.location}
                     menuSubsectionsBySection={menuSubsectionsBySection}
+                    translate={this.props.translate}
                 />
                 {_.isUndefined(this.state.articlesBySection) ? (
                     <div className="col col-12" style={mainContainersStyle}>
