@@ -44,9 +44,6 @@ interface FooterState {
 }
 
 export class Footer extends React.Component<FooterProps, FooterState> {
-    public static defaultProps: Partial<FooterProps> = {
-        translate: new Translate(),
-    };
     constructor(props: FooterProps) {
         super();
         this.state = {

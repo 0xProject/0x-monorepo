@@ -81,7 +81,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         shouldFullWidth: false,
         style: {},
         isNightVersion: false,
-        translate: new Translate(),
     };
     constructor(props: TopBarProps) {
         super(props);
