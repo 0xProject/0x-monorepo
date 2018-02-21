@@ -26,7 +26,7 @@ contract MixinSignatureValidator is
     MSignatureValidator
 {
     enum SignatureType {
-        Invalid,
+        Illegal, // Default value
         Caller,
         Ecrecover,
         EIP712,
@@ -50,11 +50,9 @@ contract MixinSignatureValidator is
         bytes32 r;
         bytes32 s;
         
-        // Zero is always an invalid signature
-        if (signatureType == SignatureType.Invalid) {
-            require(signature.length == 1);
-            isValid = false;
-            return;
+        // Always illegal signature
+        if (signatureType == SignatureType.Illegal) {
+            revert();
         
         // Implicitly signed by caller
         } else if (signatureType == SignatureType.Caller) {
