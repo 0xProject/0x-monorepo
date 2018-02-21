@@ -218,6 +218,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderHero() {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
+        const isMediumScreen = this.state.screenWidth === ScreenWidths.Md;
         const buttonLabelStyle: React.CSSProperties = {
             textTransform: 'none',
             fontSize: isSmallScreen ? 12 : 14,
@@ -239,10 +240,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         </div>
                         <div className={left} style={{ color: colors.white, height: 390, lineHeight: '390px' }}>
                             <div
-                                className="inline-block"
+                                className="inline-block lg-align-middle md-align-middle sm-align-top"
                                 style={{
                                     paddingLeft: isSmallScreen ? 0 : 12,
-                                    verticalAlign: 'middle',
                                     lineHeight: '36px',
                                 }}
                             >
@@ -266,7 +266,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                 >
                                     {this.props.translate.get(Key.TopTagline)}
                                 </div>
-                                <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 346 }}>
+                                <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 389 }}>
                                     <div className="lg-pr2 md-pr2 col col-6 sm-center">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
                                             <RaisedButton
@@ -381,8 +381,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         style={{ color: colors.darkestGrey, height: 364, lineHeight: '364px' }}
                     >
                         <div
-                            className="mx-auto inline-block"
-                            style={{ maxWidth: 385, lineHeight: '44px', verticalAlign: 'middle', textAlign: 'left' }}
+                            className="mx-auto inline-block lg-align-middle md-align-middle sm-align-top"
+                            style={{ maxWidth: 385, lineHeight: '44px', textAlign: 'left' }}
                         >
                             <div className="lg-h1 md-h1 sm-h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>
                                 {this.props.translate.get(Key.TokenizedSectionHeader, Deco.Cap)}
@@ -418,7 +418,10 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             lineHeight: '430px',
                         }}
                     >
-                        <div className="inline-block" style={{ verticalAlign: 'middle', lineHeight: '43px' }}>
+                        <div
+                            className="inline-block lg-align-middle md-align-middle sm-align-top"
+                            style={{ lineHeight: '43px' }}
+                        >
                             <div
                                 className="lg-h1 md-h1 sm-h2 pb1 sm-pt3 sm-center"
                                 style={{ fontFamily: 'Roboto Mono' }}
@@ -563,7 +566,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const boxStyle: React.CSSProperties = {
             maxWidth: 253,
-            height: 392,
+            height: 402,
             backgroundColor: colors.grey50,
             borderRadius: 5,
             padding: '10px 24px 24px',
@@ -733,7 +736,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             lineHeight: '33px',
             height: 49,
         };
-        const callToActionClassNames = 'lg-pr3 md-pr3 lg-right-align md-right-align sm-center sm-px3 h4';
+        const callToActionClassNames =
+            'lg-pr3 md-pr3 lg-right-align md-right-align sm-center sm-px3 h4 lg-table-cell md-table-cell';
         return (
             <div className="clearfix pb4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto max-width-4 pb4 mb3 clearfix center">
@@ -744,12 +748,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                 fontFamily: 'Roboto Mono',
                                 color: colors.white,
                                 lineHeight: isSmallScreen ? 1.7 : 3,
-                                display: 'table-cell',
                             }}
                         >
                             {this.props.translate.get(Key.FinalCallToAction, Deco.Cap)}
                         </div>
-                        <div className="sm-center sm-pt2" style={{ display: 'table-cell' }}>
+                        <div className="sm-center sm-pt2 lg-table-cell md-table-cell">
                             <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
                                 <RaisedButton
                                     style={{ borderRadius: 6, minWidth: 150 }}
