@@ -1,0 +1,73 @@
+{
+    "TOP_HEADER": "powering decentralized exchange",
+    "TOP_TAGLINE":
+        "0x is an open, permissionless protocol allowing for ERC20 tokens to be traded on the Ethereum blockchain.",
+    "BUILD_CALL_TO_ACTION": "build on 0x",
+    "COMMUNITY_CALL_TO_ACTION": "join the community",
+    "PROJECTS_HEADER": "projects building on 0x",
+    "FULL_LIST_PROMPT": "view the",
+    "FULL_LIST_LINK": "full list",
+    "TOKENIZED_SECTION_HEADER": "the world's value is becoming tokenized",
+    "TOKENIZED_SECTION_DESCRIPTION":
+        "the Ethereum blockchain is an open, borderless financial system that represents a wide variety of assets as cryptographic tokens. In the future, most digital assets and goods will be tokenized.",
+    "CURRENCY": "currency",
+    "TRADITIONAL_ASSETS": "traditional assets",
+    "DIGITAL_GOODS": "digital goods",
+    "OFFCHAIN_ORDER_RELAY": "off-chain order relay",
+    "OONCHAIN_SETTLEMENT": "on-chain settlement",
+    "OFFCHAIN_ONCHAIN_DESCRIPTION":
+        "in 0x protocol, orders are transported off-chain, massively reducing gas costs and eliminating blockchain bloat. Relayers help broadcast orders and collect a fee each time they facilitate a trade. Anyone can build a relayer.",
+    "RELAYERS_HEADER": "relayers building on 0x",
+    "BENEFITS_HEADER": "benefits of 0x",
+    "BENEFIT_ONE_TITLE": "trustless exchange",
+    "BENEFIT_ONE_DESCRIPTION":
+        "built on Ethereum's distributed network with no centralized point of failure and no down time, each trade is settled atomically and without counterparty risk.",
+    "BENEFIT_TWO_TITLE": "shared liquidity",
+    "BENEFIT_TWO_DESCRIPTION":
+        "by sharing a standard API, relayers can easily aggregate liquidity pools, creating network effects around liquidity that compound as more relayers come online.",
+    "BENEFIT_THREE_TITLE": "open source",
+    "BENEFIT_THREE_DESCRIPTION":
+        "0x is open source, permissionless and free to use. Trade directly with a known counterparty for free or pay a relayer some ZRX tokens to access their liquidity pool.",
+    "BUILDING_BLOCK_SECTION_HEADER": "a building block for dApps",
+    "BUILDING_BLOCK_SECTION_DESCRIPTION":
+        "0x protocol is a pluggable building block for dApps that require exchange functionality. Join the many developers that are already using 0x in their web applications and smart contracts.",
+    "DEV_TOOLS_PROMPT": "learn how in our",
+    "SMART_CONTRACT": "smart contract",
+    "DOCS": "docs",
+    "AND": "and",
+    "DECENTRALIZED_GOVERNANCE": "decentralized governance",
+    "DECENTRALIZED_GOVERNANCE_DESCRIPTION":
+        "Decentralized organizations use tokens to represent ownership and guide their governance logic. 0x allows decentralized organizations to seamlessly and safely trade ownership for startup capital.",
+    "PREDICTION_MARKETS": "prediction markets",
+    "PREDICTION_MARKETS_DESCRIPTION":
+        "decentralized prediction market platforms generate sets of tokens that represent a financial stake in the outcomes of real-world events. 0x allows these tokens to be instantly tradable.",
+    "STABLE_TOKENS": "stable tokens",
+    "STABLE_TOKENS_DESCRIPTION":
+        "Novel economic constructs such as stable coins require efficient, liquid markets to succeed. 0x will facilitate the underlying economic mechanisms that allow these tokens to remain stable.",
+    "DECENTRALIZED_LOANS": "decentralized loans",
+    "DECENTRALIZED_LOANS_DESCRIPTION":
+        "Efficient lending requires liquid markets where investors can buy and re-sell loans. 0x enables an ecosystem of lenders to self-organize and efficiently determine market prices for all outstanding loans.",
+    "FUND_MANAGEMENT": "fund management",
+    "FUND_MANAGEMENT_DESCRIPTION":
+        "Decentralized fund management limits fund managers to investing in pre-agreed upon asset classes. Embedding 0x into fund management smart contracts enables them to enforce these security constraints.",
+    "FINAL_CALL_TO_ACTION": "get started on building the decentralized future",
+    "DOCUMENTATION": "documentation",
+    "COMMUNITY": "community",
+    "ORGANIZATION": "organization",
+    "ABOUT": "about",
+    "CAREERS": "careers",
+    "CONTACT": "contact",
+    "BLOG": "blog",
+    "FORUM": "forum",
+    "CONNECT": "0x Connect",
+    "WHITEPAPER": "whitepaper",
+    "WIKI": "wiki",
+    "FAQ": "FAQ",
+    "SMART_CONTRACTS": "0x smart contracts",
+    "STANDARD_RELAYER_API": "standard relayer API",
+    "PORTAL_DAPP": "portal dApp",
+    "WEBSITE": "website",
+    "DEVELOPERS": "home",
+    "HOME": "rocket.chat",
+    "ROCKETCHAT": "developers"
+}

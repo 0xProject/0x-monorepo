@@ -1,10 +1,11 @@
 import * as _ from 'lodash';
-import { chinese } from 'ts/translations/chinese';
-import { english } from 'ts/translations/english';
-import { korean } from 'ts/translations/korean';
-import { russian } from 'ts/translations/russian';
-import { spanish } from 'ts/translations/spanish';
 import { Deco, Key, Language } from 'ts/types';
+
+import * as chinese from '../../translations/chinese.json';
+import * as english from '../../translations/english.json';
+import * as korean from '../../translations/korean.json';
+import * as russian from '../../translations/russian.json';
+import * as spanish from '../../translations/spanish.json';
 
 const languageToTranslations = {
     [Language.English]: english,
