@@ -1,6 +1,8 @@
 import { ExchangeEvents } from '0x.js';
+import { Order, HttpClient} from 'connect';
 import * as Airtable from 'airtable';
 import * as commandLineArgs from 'command-line-args';
+import * as _ from 'lodash';
 import * as querystring from 'querystring';
 import * as queue from 'queue';
 import * as request from 'request';
@@ -104,11 +106,15 @@ export const scrapeDataScripts = {
     },
     getPriceData(symbol: string, timestamp: number): any {
         return new Promise((resolve, reject) => {
+            if(symbol === 'WETH') {
+                symbol = 'ETH';
+            }
             var parsedParams = querystring.stringify({
                 fsym: symbol,
                 tsyms: 'USD',
                 ts: timestamp / 1000,
             });
+            console.log(parsedParams);
             request(PRICE_API_ENDPOINT + '?' + parsedParams, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -155,7 +161,7 @@ export const scrapeDataScripts = {
 
 function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
     return (cb: () => void) => {
-        console.log('Fetching ' + fromBlock + ' : ' + toBlock);
+        console.log('Fetching events from ' + fromBlock + ' to ' + toBlock);
         scrapeDataScripts
             .getAllEvents(fromBlock, toBlock)
             .then((data: any) => {
@@ -173,12 +179,16 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
 
                 for (const event_type in parsedEvents) {
                     if (parsedEvents[event_type].length > 0) {
+                        console.log('Inserting events from ' + fromBlock + ' to ' + toBlock);
                         insertDataScripts
                             .insertMultipleRows(
                                 'events_raw',
                                 parsedEvents[event_type],
                                 Object.keys(parsedEvents[event_type][0]),
                             )
+                            .then(() => {
+                                console.log('Successfully inserted events from ' + fromBlock + ' to ' + toBlock);
+                            })
                             .catch((error: any) => {
                                 console.log(error);
                             });
@@ -187,7 +197,7 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                 cb();
             })
             .catch((err: any) => {
-                console.error(err);
+                console.log(err);
                 cb();
             });
     };
@@ -195,17 +205,20 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
 
 function _scrapeBlockToDB(block: number): any {
     return (cb: () => void) => {
+        console.log('Fetching block ' + block);
         scrapeDataScripts
             .getBlockInfo(block)
             .then((data: any) => {
                 const parsedBlock = typeConverters.convertLogBlockToBlockObject(data);
+                console.log('Inserting block ' + block);
                 insertDataScripts
                     .insertSingleRow('blocks', parsedBlock)
                     .then((result: any) => {
+                        console.log('Successfully inserted block ' + block);
                         cb();
                     })
                     .catch((err: any) => {
-                        console.error(err);
+                        console.log(err);
                         cb();
                     });
             })
@@ -244,10 +257,12 @@ function _scrapeAllRelayersToDB(): any {
 
 function _scrapeTransactionToDB(transactionHash: string): any {
     return (cb: () => void) => {
+        console.log("Fetching transaction " + transactionHash);
         scrapeDataScripts
             .getTransactionInfo(transactionHash)
             .then((data: any) => {
                 const parsedTransaction = typeConverters.convertLogTransactionToTransactionObject(data);
+                console.log("Inserting transaction " + transactionHash);
                 insertDataScripts
                     .insertSingleRow('transactions', parsedTransaction)
                     .then((result: any) => {
@@ -255,8 +270,8 @@ function _scrapeTransactionToDB(transactionHash: string): any {
                         cb();
                     })
                     .catch((err: any) => {
-                        console.error('Failed txn ' + transactionHash);
-                        console.error(err);
+                        console.log('Failed txn ' + transactionHash);
+                        console.log(err);
                         cb();
                     });
             })
@@ -289,11 +304,15 @@ function _scrapePriceToDB(timestamp: number, token: any): any {
         scrapeDataScripts
             .getPriceData(token.symbol, timestamp)
             .then((data: any) => {
+                const safeSymbol = token.symbol === 'WETH' ? 'ETH' : token.symbol;
                 const parsedPrice = {
-                    timestamp: timestamp,
-                    address: token.address,
-                    price: data[token.symbol]['USD'],
+                    'timestamp': timestamp / 1000,
+                    symbol: token.symbol,
+                    base: 'USD',
+                    price: (_.has(data[safeSymbol],'USD') ? data[safeSymbol]['USD'] : 0),
                 };
+                console.log("Inserting " + timestamp);
+                console.log(parsedPrice);
                 insertDataScripts.insertSingleRow('prices', parsedPrice);
                 cb();
             })
@@ -324,13 +343,13 @@ function _scrapeHistoricalPricesToDB(token: any, fromTimestamp: number, toTimest
                             Object.keys(parsedHistoricalPrices[0]),
                         )
                         .catch((error: any) => {
-                            console.log(error);
+                            console.error(error);
                         });
                 }
                 cb();
             })
-            .catch((err: any) => {
-                console.error(err);
+            .catch((error: any) => {
+                console.error(error);
                 cb();
             });
     };
@@ -392,16 +411,19 @@ if (cli.type === 'events') {
     q.push(_scrapeTokenRegistryToDB());
 } else if (cli.type === 'prices' && cli.from && cli.to) {
     const fromDate = new Date(cli.from);
+    console.log(fromDate);
     fromDate.setUTCHours(0);
     fromDate.setUTCMinutes(0);
     fromDate.setUTCSeconds(0);
     fromDate.setUTCMilliseconds(0);
+    console.log(fromDate);
     const toDate = new Date(cli.to);
     postgresClient
         .query(dataFetchingQueries.get_token_registry, [])
         .then((result: any) => {
             for (let curDate = fromDate; curDate < toDate; curDate.setDate(curDate.getDate() + 1)) {
                 for (const token of Object.values(result.rows)) {
+                    console.log("Scraping " + curDate + " " + token);
                     q.push(_scrapePriceToDB(curDate.getTime(), token));
                 }
             }

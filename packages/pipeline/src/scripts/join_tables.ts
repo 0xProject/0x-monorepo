@@ -1,5 +1,5 @@
 import * as commandLineArgs from 'command-line-args';
-import { postgresClient, safeQuery } from '../postgres';
+import { postgresClient } from '../postgres';
 import { formatters } from '../utils';
 
 const optionDefinitions = [{ name: 'name', alias: 'n', type: String }, { name: 'from', alias: 'f', type: Number }, { name: 'to', alias: 't', type: Number }];
@@ -50,7 +50,7 @@ const dataInsertionQueries: any = {
         AND
             b.block_number >= $1
         AND
-            b.block_number < $2
+            b.block_number <= $2
         )`,
     events: `INSERT INTO events (
         timestamp,
@@ -104,7 +104,7 @@ const dataInsertionQueries: any = {
         AND
             a.block_number >= $1
         AND
-            a.block_number < $2
+            a.block_number <= $2
         )`,
     events_full: `
     INSERT INTO events_full (
@@ -163,13 +163,13 @@ const dataInsertionQueries: any = {
         taker_token_prices.symbol,
         taker_token_prices.name,
         taker_token_prices.decimals,
-        taker_token_prices.close,
-        (events.taker_amount / (10 ^ taker_token_prices.decimals)) * taker_token_prices.close,
+        taker_token_prices.price,
+        (events.taker_amount / (10 ^ taker_token_prices.decimals)) * taker_token_prices.price,
         maker_token_prices.symbol,
         maker_token_prices.name,
         maker_token_prices.decimals,
-        maker_token_prices.close,
-        (events.maker_amount / (10 ^ maker_token_prices.decimals)) * maker_token_prices.close
+        maker_token_prices.price,
+        (events.maker_amount / (10 ^ maker_token_prices.decimals)) * maker_token_prices.price
     FROM
         events
     LEFT JOIN
@@ -178,14 +178,14 @@ const dataInsertionQueries: any = {
             tokens.name,
             tokens.symbol,
             tokens.decimals,
-            historical_prices.timestamp,
-            historical_prices.close
+            prices.timestamp,
+            prices.price
         FROM
             tokens
         LEFT JOIN
-            historical_prices
+            prices
         ON
-            tokens.symbol = historical_prices.token) taker_token_prices
+            tokens.symbol = prices.symbol) taker_token_prices
 	    ON
         	(events.taker_token = taker_token_prices.address
    		AND
@@ -196,14 +196,14 @@ const dataInsertionQueries: any = {
             tokens.name,
             tokens.symbol,
             tokens.decimals,
-            historical_prices.timestamp,
-            historical_prices.close
+            prices.timestamp,
+            prices.price
         FROM
             tokens
         LEFT JOIN
-            historical_prices
+            prices
         ON
-            tokens.symbol = historical_prices.token) maker_token_prices
+            tokens.symbol = prices.symbol) maker_token_prices
     ON
         (events.maker_token = maker_token_prices.address
     AND
@@ -211,7 +211,7 @@ const dataInsertionQueries: any = {
     WHERE
         events.block_number >= $1
     AND
-        events.block_number < $2
+        events.block_number <= $2
     )`,
 };
 

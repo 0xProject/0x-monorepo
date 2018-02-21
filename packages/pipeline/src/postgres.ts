@@ -13,17 +13,4 @@ const client: PoolConfig = {
 
 const postgresClient = new Pool(client);
 
-function safeQuery(query: string): any {
-    return new Promise((resolve, reject) => {
-        postgresClient
-            .query(query)
-            .then((data: any) => {
-                resolve(data);
-            })
-            .catch((err: any) => {
-                reject(err);
-            });
-    });
-}
-
-export { postgresClient, safeQuery };
+export { postgresClient };

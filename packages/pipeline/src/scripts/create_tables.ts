@@ -122,7 +122,7 @@ const tableQueries: any = {
     prices: `CREATE TABLE IF NOT EXISTS prices (
         address CHAR(42) UNIQUE,
         timestamp TIMESTAMP WITH TIME ZONE,
-        price NUMERIC(50),
+        price NUMERIC(78, 18),
         PRIMARY KEY (address, timestamp)
     )`,
     relayers: `CREATE TABLE IF NOT EXISTS relayers (
@@ -148,6 +148,22 @@ const tableQueries: any = {
         volume_from NUMERIC(78, 18),
         volume_to NUMERIC(78, 18),
         PRIMARY KEY (token, base, timestamp)
+    )`,
+    orders: `CREATE TABLE IF NOT EXISTS orders (
+        exchange_contract_address CHAR(42),
+        maker CHAR(42),
+        maker_amount NUMERIC(78),
+        maker_fee NUMERIC(78),
+        maker_token CHAR(42),
+        taker CHAR(42),
+        taker_amount NUMERIC(78),
+        taker_fee NUMERIC(78),
+        taker_token CHAR(42),
+        fee_recipient CHAR(42),
+        expiration_unix_timestamp_sec NUMERIC(78),
+        salt VARCHAR,
+        order_hash CHAR(66),
+        PRIMARY KEY (order_hash)
     )`,
 };
 
@@ -232,11 +248,9 @@ export const insertDataScripts = {
                     return '(' + safeArray + ')';
                 });
                 const queryString = `INSERT INTO ${table} (${columns}) VALUES ${rowsSplit}`;
-                console.log(queryString);
                 postgresClient
                     .query(queryString)
                     .then((data: any) => {
-                        console.log(data);
                         resolve(data);
                     })
                     .catch((err: any) => {

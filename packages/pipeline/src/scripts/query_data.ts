@@ -45,4 +45,10 @@ export const dataFetchingQueries: any = {
     FROM
         tokens`
     ,
+    get_max_block: `
+    SELECT
+        MAX(block_number)
+    FROM
+        blocks`
+    ,
 };
