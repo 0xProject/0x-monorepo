@@ -218,7 +218,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderHero() {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const isMediumScreen = this.state.screenWidth === ScreenWidths.Md;
         const buttonLabelStyle: React.CSSProperties = {
             textTransform: 'none',
             fontSize: isSmallScreen ? 12 : 14,
@@ -305,7 +304,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderProjects(projects: Project[], title: string, backgroundColor: string, isTitleCenter: boolean) {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const isMediumScreen = this.state.screenWidth === ScreenWidths.Md;
         const projectList = _.map(projects, (project: Project, i: number) => {
             const isRelayersOnly = projects.length === 12;
             let colWidth: number;
