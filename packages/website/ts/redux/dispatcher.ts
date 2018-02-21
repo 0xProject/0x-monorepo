@@ -6,6 +6,7 @@ import {
     ActionTypes,
     AssetToken,
     BlockchainErrs,
+    Language,
     Order,
     ProviderType,
     ScreenWidths,
@@ -209,6 +210,12 @@ export class Dispatcher {
         this._dispatch({
             type: ActionTypes.UpdateInjectedProviderName,
             data: injectedProviderName,
+        });
+    }
+    public updateSelectedLanguage(language: Language) {
+        this._dispatch({
+            type: ActionTypes.UpdateSelectedLanguage,
+            data: language,
         });
     }
 }

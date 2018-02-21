@@ -5,7 +5,8 @@ import DocumentTitle = require('react-document-title');
 import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
-import { Deco, Key, ScreenWidths, WebsitePaths } from 'ts/types';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -158,6 +159,7 @@ const relayerProjects: Project[] = [
 export interface LandingProps {
     location: Location;
     translate: Translate;
+    dispatcher: Dispatcher;
 }
 
 interface LandingState {
@@ -166,13 +168,11 @@ interface LandingState {
 
 export class Landing extends React.Component<LandingProps, LandingState> {
     private _throttledScreenWidthUpdate: () => void;
-    private _translate: Translate;
     constructor(props: LandingProps) {
         super(props);
         this.state = {
             screenWidth: utils.getScreenWidth(),
         };
-        this._translate = new Translate();
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
     }
     public componentDidMount() {
@@ -191,12 +191,12 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     location={this.props.location}
                     isNightVersion={true}
                     style={{ backgroundColor: colors.heroGrey, position: 'relative' }}
-                    translate={this._translate}
+                    translate={this.props.translate}
                 />
                 {this._renderHero()}
                 {this._renderProjects(
                     relayersAndDappProjects,
-                    this._translate.get(Key.ProjectsHeader, Deco.Upper),
+                    this.props.translate.get(Key.ProjectsHeader, Deco.Upper),
                     colors.projectsGrey,
                     false,
                 )}
@@ -204,7 +204,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 {this._renderProtocolSection()}
                 {this._renderProjects(
                     relayerProjects,
-                    this._translate.get(Key.RelayersHeader, Deco.Upper),
+                    this.props.translate.get(Key.RelayersHeader, Deco.Upper),
                     colors.heroGrey,
                     true,
                 )}
@@ -212,7 +212,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 {this._renderBuildingBlocksSection()}
                 {this._renderUseCases()}
                 {this._renderCallToAction()}
-                <Footer translate={this._translate} />
+                <Footer translate={this.props.translate} onLanguageSelected={this._onLanguageSelected.bind(this)} />
             </div>
         );
     }
@@ -229,7 +229,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             lineHeight: '33px',
             height: 38,
         };
-        const left = 'col lg-col-7 md-col-7 col-12 lg-pt4 md-pt4 sm-pt0 mt1 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
+        const left = 'col lg-col-7 md-col-7 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto max-width-4 clearfix">
@@ -237,8 +237,15 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         <div className="col lg-col-5 md-col-5 col-12 sm-center">
                             <img src="/images/landing/hero_chip_image.png" height={isSmallScreen ? 300 : 395} />
                         </div>
-                        <div className={left} style={{ color: colors.white }}>
-                            <div style={{ paddingLeft: isSmallScreen ? 0 : 12 }}>
+                        <div className={left} style={{ color: colors.white, height: 390, lineHeight: '390px' }}>
+                            <div
+                                className="inline-block"
+                                style={{
+                                    paddingLeft: isSmallScreen ? 0 : 12,
+                                    verticalAlign: 'middle',
+                                    lineHeight: '36px',
+                                }}
+                            >
                                 <div
                                     className="sm-pb2"
                                     style={{
@@ -246,7 +253,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                         fontSize: isSmallScreen ? 26 : 34,
                                     }}
                                 >
-                                    {this._translate.get(Key.TopHeader, Deco.Cap)}
+                                    {this.props.translate.get(Key.TopHeader, Deco.Cap)}
                                 </div>
                                 <div
                                     className="pt2 h5 sm-mx-auto"
@@ -257,16 +264,16 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                         fontWeight: 300,
                                     }}
                                 >
-                                    {this._translate.get(Key.TopTagline)}
+                                    {this.props.translate.get(Key.TopTagline)}
                                 </div>
-                                <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 342 }}>
+                                <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 346 }}>
                                     <div className="lg-pr2 md-pr2 col col-6 sm-center">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
                                             <RaisedButton
                                                 style={{ borderRadius: 6, minWidth: 157.36 }}
                                                 buttonStyle={{ borderRadius: 6 }}
                                                 labelStyle={buttonLabelStyle}
-                                                label={this._translate.get(Key.BuildCallToAction, Deco.Cap)}
+                                                label={this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
                                                 onClick={_.noop}
                                             />
                                         </Link>
@@ -283,7 +290,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                                 labelColor="white"
                                                 backgroundColor={colors.heroGrey}
                                                 labelStyle={buttonLabelStyle}
-                                                label={this._translate.get(Key.CommunityCallToAction, Deco.Cap)}
+                                                label={this.props.translate.get(Key.CommunityCallToAction, Deco.Cap)}
                                                 onClick={_.noop}
                                             />
                                         </a>
@@ -350,13 +357,13 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             fontSize: 14,
                         }}
                     >
-                        {this._translate.get(Key.FullListPrompt)}{' '}
+                        {this.props.translate.get(Key.FullListPrompt)}{' '}
                         <Link
                             to={`${WebsitePaths.Wiki}#List-of-Projects-Using-0x-Protocol`}
                             className="text-decoration-none underline"
                             style={{ color: colors.landingLinkGrey }}
                         >
-                            {this._translate.get(Key.FullListLink)}
+                            {this.props.translate.get(Key.FullListLink)}
                         </Link>
                     </div>
                 </div>
@@ -369,16 +376,22 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             <div className="clearfix lg-py4 md-py4 sm-pb4 sm-pt2" style={{ backgroundColor: colors.grey100 }}>
                 <div className="mx-auto max-width-4 py4 clearfix">
                     {isSmallScreen && this._renderTokenCloud()}
-                    <div className="col lg-col-6 md-col-6 col-12" style={{ color: colors.darkestGrey }}>
-                        <div className="mx-auto" style={{ maxWidth: 385, paddingTop: 7 }}>
+                    <div
+                        className="col lg-col-6 md-col-6 col-12 center"
+                        style={{ color: colors.darkestGrey, height: 364, lineHeight: '364px' }}
+                    >
+                        <div
+                            className="mx-auto inline-block"
+                            style={{ maxWidth: 385, lineHeight: '44px', verticalAlign: 'middle', textAlign: 'left' }}
+                        >
                             <div className="lg-h1 md-h1 sm-h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>
-                                {this._translate.get(Key.TokenizedSectionHeader, Deco.Cap)}
+                                {this.props.translate.get(Key.TokenizedSectionHeader, Deco.Cap)}
                             </div>
                             <div
                                 className="pb2 lg-pt2 md-pt2 sm-pt3 sm-px3 h5 sm-center"
                                 style={{ fontFamily: 'Roboto Mono', lineHeight: 1.7, maxWidth: 370 }}
                             >
-                                {this._translate.get(Key.TokenizedSectionDescription, Deco.Cap)}
+                                {this.props.translate.get(Key.TokenizedSectionDescription, Deco.Cap)}
                             </div>
                             <div className="flex pt1 sm-px3">{this._renderAssetTypes()}</div>
                         </div>
@@ -397,26 +410,33 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         <img src="/images/landing/relayer_diagram.png" height={isSmallScreen ? 326 : 426} />
                     </div>
                     <div
-                        className="col lg-col-6 md-col-6 col-12 lg-pr3 md-pr3 sm-mx-auto lg-pt4 md-pt4 lg-mt3 md-mt3"
+                        className="col lg-col-6 md-col-6 col-12 lg-pr3 md-pr3 sm-mx-auto"
                         style={{
                             color: colors.beigeWhite,
                             maxWidth: isSmallScreen ? 'none' : 445,
+                            height: 430,
+                            lineHeight: '430px',
                         }}
                     >
-                        <div className="lg-h1 md-h1 sm-h2 pb1 sm-pt3 sm-center" style={{ fontFamily: 'Roboto Mono' }}>
-                            <div>{this._translate.get(Key.OffChainOrderRelay, Deco.Cap)}</div>
-                            <div> {this._translate.get(Key.OonChainSettlement, Deco.Cap)}</div>
-                        </div>
-                        <div
-                            className="pb2 pt2 h5 sm-center sm-px3 sm-mx-auto"
-                            style={{
-                                fontFamily: 'Roboto Mono',
-                                lineHeight: 1.7,
-                                fontWeight: 300,
-                                maxWidth: 445,
-                            }}
-                        >
-                            {this._translate.get(Key.OffChainOnChainDescription, Deco.Cap)}
+                        <div className="inline-block" style={{ verticalAlign: 'middle', lineHeight: '43px' }}>
+                            <div
+                                className="lg-h1 md-h1 sm-h2 pb1 sm-pt3 sm-center"
+                                style={{ fontFamily: 'Roboto Mono' }}
+                            >
+                                <div>{this.props.translate.get(Key.OffChainOrderRelay, Deco.Cap)}</div>
+                                <div> {this.props.translate.get(Key.OonChainSettlement, Deco.Cap)}</div>
+                            </div>
+                            <div
+                                className="pb2 pt2 h5 sm-center sm-px3 sm-mx-auto"
+                                style={{
+                                    fontFamily: 'Roboto Mono',
+                                    lineHeight: 1.7,
+                                    fontWeight: 300,
+                                    maxWidth: 445,
+                                }}
+                            >
+                                {this.props.translate.get(Key.OffChainOnChainDescription, Deco.Cap)}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -450,13 +470,13 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             className="pb1 lg-pt4 md-pt4 sm-pt3 lg-h1 md-h1 sm-h2 sm-px3 sm-center"
                             style={{ fontFamily: 'Roboto Mono' }}
                         >
-                            {this._translate.get(Key.BuildingBlockSectionHeader, Deco.Cap)}
+                            {this.props.translate.get(Key.BuildingBlockSectionHeader, Deco.Cap)}
                         </div>
                         <div className="pb3 pt2 sm-mx-auto sm-center" style={descriptionStyle}>
-                            {this._translate.get(Key.BuildingBlockSectionDescription, Deco.Cap)}
+                            {this.props.translate.get(Key.BuildingBlockSectionDescription, Deco.Cap)}
                         </div>
                         <div className="sm-mx-auto sm-center" style={callToActionStyle}>
-                            {this._translate.get(Key.DevToolsPrompt, Deco.Cap)}{' '}
+                            {this.props.translate.get(Key.DevToolsPrompt, Deco.Cap)}{' '}
                             <Link
                                 to={WebsitePaths.ZeroExJs}
                                 className="text-decoration-none underline"
@@ -464,15 +484,15 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             >
                                 0x.js
                             </Link>{' '}
-                            and{' '}
+                            {this.props.translate.get(Key.And)}{' '}
                             <Link
                                 to={WebsitePaths.SmartContracts}
                                 className="text-decoration-none underline"
                                 style={{ color: colors.beigeWhite, fontFamily: 'Roboto Mono' }}
                             >
-                                {this._translate.get(Key.SmartContract)}
+                                {this.props.translate.get(Key.SmartContract)}
                             </Link>{' '}
-                            {this._translate.get(Key.Docs)}
+                            {this.props.translate.get(Key.Docs)}
                         </div>
                     </div>
                     {!isSmallScreen && this._renderBlockChipImage()}
@@ -500,11 +520,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const assetTypes: AssetType[] = [
             {
-                title: this._translate.get(Key.Currency, Deco.Cap),
+                title: this.props.translate.get(Key.Currency, Deco.Cap),
                 imageUrl: '/images/landing/currency.png',
             },
             {
-                title: this._translate.get(Key.TraditionalAssets, Deco.Cap),
+                title: this.props.translate.get(Key.TraditionalAssets, Deco.Cap),
                 imageUrl: '/images/landing/stocks.png',
                 style: {
                     paddingLeft: isSmallScreen ? 41 : 56,
@@ -512,7 +532,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 },
             },
             {
-                title: this._translate.get(Key.DigitalGoods, Deco.Cap),
+                title: this.props.translate.get(Key.DigitalGoods, Deco.Cap),
                 imageUrl: '/images/landing/digital_goods.png',
             },
         ];
@@ -529,6 +549,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             fontSize: 13.5,
                             fontWeight: 400,
                             color: colors.darkestGrey,
+                            lineHeight: 1.4,
                         }}
                     >
                         {assetType.title}
@@ -541,28 +562,28 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     private _renderInfoBoxes() {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const boxStyle: React.CSSProperties = {
-            maxWidth: 252,
-            height: 386,
+            maxWidth: 253,
+            height: 392,
             backgroundColor: colors.grey50,
             borderRadius: 5,
             padding: '10px 24px 24px',
         };
         const boxContents: BoxContent[] = [
             {
-                title: this._translate.get(Key.BenefitOneTitle, Deco.Cap),
-                description: this._translate.get(Key.BenefitOneDescription, Deco.Cap),
+                title: this.props.translate.get(Key.BenefitOneTitle, Deco.Cap),
+                description: this.props.translate.get(Key.BenefitOneDescription, Deco.Cap),
                 imageUrl: '/images/landing/distributed_network.png',
                 classNames: '',
             },
             {
-                title: this._translate.get(Key.BenefitTwoTitle, Deco.Cap),
-                description: this._translate.get(Key.BenefitTwoDescription, Deco.Cap),
+                title: this.props.translate.get(Key.BenefitTwoTitle, Deco.Cap),
+                description: this.props.translate.get(Key.BenefitTwoDescription, Deco.Cap),
                 imageUrl: '/images/landing/liquidity.png',
                 classNames: 'mx-auto',
             },
             {
-                title: this._translate.get(Key.BenefitThreeTitle, Deco.Cap),
-                description: this._translate.get(Key.BenefitThreeDescription, Deco.Cap),
+                title: this.props.translate.get(Key.BenefitThreeTitle, Deco.Cap),
+                description: this.props.translate.get(Key.BenefitThreeDescription, Deco.Cap),
                 imageUrl: '/images/landing/open_source.png',
                 classNames: 'right',
             },
@@ -593,7 +614,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div className="clearfix" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="center pb3 pt4" style={titleStyle}>
-                    {this._translate.get(Key.BenefitsHeader, Deco.Upper)}
+                    {this.props.translate.get(Key.BenefitsHeader, Deco.Upper)}
                 </div>
                 <div className="mx-auto pb4 sm-mt2 clearfix" style={{ maxWidth: '60em' }}>
                     {boxes}
@@ -607,29 +628,29 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const useCases: UseCase[] = [
             {
                 imageUrl: '/images/landing/governance_icon.png',
-                type: this._translate.get(Key.DecentralizedGovernance, Deco.Upper),
-                description: this._translate.get(Key.DecentralizedGovernanceDescription, Deco.Cap),
+                type: this.props.translate.get(Key.DecentralizedGovernance, Deco.Upper),
+                description: this.props.translate.get(Key.DecentralizedGovernanceDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/aragon.png'],
                 classNames: 'lg-px2 md-px2',
             },
             {
                 imageUrl: '/images/landing/prediction_market_icon.png',
-                type: this._translate.get(Key.PredictionMarkets, Deco.Upper),
-                description: this._translate.get(Key.PredictionMarketsDescription, Deco.Cap),
+                type: this.props.translate.get(Key.PredictionMarkets, Deco.Upper),
+                description: this.props.translate.get(Key.PredictionMarketsDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/augur.png'],
                 classNames: 'lg-px2 md-px2',
             },
             {
                 imageUrl: '/images/landing/stable_tokens_icon.png',
-                type: this._translate.get(Key.StableTokens, Deco.Upper),
-                description: this._translate.get(Key.StableTokensDescription, Deco.Cap),
+                type: this.props.translate.get(Key.StableTokens, Deco.Upper),
+                description: this.props.translate.get(Key.StableTokensDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/maker.png'],
                 classNames: 'lg-px2 md-px2',
             },
             {
                 imageUrl: '/images/landing/loans_icon.png',
-                type: this._translate.get(Key.DecentralizedLoans, Deco.Upper),
-                description: this._translate.get(Key.DecentralizedLoansDescription, Deco.Cap),
+                type: this.props.translate.get(Key.DecentralizedLoans, Deco.Upper),
+                description: this.props.translate.get(Key.DecentralizedLoansDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/dharma.png', '/images/landing/lendroid.png'],
                 classNames: 'lg-pr2 md-pr2 lg-col-6 md-col-6',
                 style: {
@@ -640,8 +661,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             },
             {
                 imageUrl: '/images/landing/fund_management_icon.png',
-                type: this._translate.get(Key.FundManagement, Deco.Upper),
-                description: this._translate.get(Key.FundManagementDescription, Deco.Cap),
+                type: this.props.translate.get(Key.FundManagement, Deco.Upper),
+                description: this.props.translate.get(Key.FundManagementDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/melonport.png'],
                 classNames: 'lg-pl2 md-pl2 lg-col-6 md-col-6',
                 style: { width: 291, marginTop: !isSmallScreen ? 38 : 0 },
@@ -712,34 +733,35 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             lineHeight: '33px',
             height: 49,
         };
-        const callToActionClassNames =
-            'col lg-col-8 md-col-8 col-12 lg-pr3 md-pr3 \
-                                        lg-right-align md-right-align sm-center sm-px3 h4';
+        const callToActionClassNames = 'lg-pr3 md-pr3 lg-right-align md-right-align sm-center sm-px3 h4';
         return (
             <div className="clearfix pb4" style={{ backgroundColor: colors.heroGrey }}>
-                <div className="mx-auto max-width-4 pb4 mb3 clearfix">
-                    <div
-                        className={callToActionClassNames}
-                        style={{
-                            fontFamily: 'Roboto Mono',
-                            color: colors.white,
-                            lineHeight: isSmallScreen ? 1.7 : 3,
-                        }}
-                    >
-                        {this._translate.get(Key.FinalCallToAction, Deco.Cap)}
-                    </div>
-                    <div className="col lg-col-4 md-col-4 col-12 sm-center sm-pt2">
-                        <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                            <RaisedButton
-                                style={{ borderRadius: 6, minWidth: 150 }}
-                                buttonStyle={lightButtonStyle}
-                                labelColor={colors.white}
-                                backgroundColor={colors.heroGrey}
-                                labelStyle={buttonLabelStyle}
-                                label={this._translate.get(Key.BuildCallToAction, Deco.Cap)}
-                                onClick={_.noop}
-                            />
-                        </Link>
+                <div className="mx-auto max-width-4 pb4 mb3 clearfix center">
+                    <div className="center inline-block" style={{ textAlign: 'left' }}>
+                        <div
+                            className={callToActionClassNames}
+                            style={{
+                                fontFamily: 'Roboto Mono',
+                                color: colors.white,
+                                lineHeight: isSmallScreen ? 1.7 : 3,
+                                display: 'table-cell',
+                            }}
+                        >
+                            {this.props.translate.get(Key.FinalCallToAction, Deco.Cap)}
+                        </div>
+                        <div className="sm-center sm-pt2" style={{ display: 'table-cell' }}>
+                            <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
+                                <RaisedButton
+                                    style={{ borderRadius: 6, minWidth: 150 }}
+                                    buttonStyle={lightButtonStyle}
+                                    labelColor={colors.white}
+                                    backgroundColor={colors.heroGrey}
+                                    labelStyle={buttonLabelStyle}
+                                    label={this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
+                                    onClick={_.noop}
+                                />
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -752,5 +774,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 screenWidth: newScreenWidth,
             });
         }
+    }
+    private _onLanguageSelected(language: Language) {
+        this.props.dispatcher.updateSelectedLanguage(language);
     }
 } // tslint:disable:max-file-line-count
