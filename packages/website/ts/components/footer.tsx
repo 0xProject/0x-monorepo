@@ -35,7 +35,7 @@ const languageToMenuTitle = {
 };
 
 export interface FooterProps {
-    translate?: Translate;
+    translate: Translate;
     dispatcher: Dispatcher;
 }
 
