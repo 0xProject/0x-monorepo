@@ -29,6 +29,7 @@ interface TopBarProps {
     dispatcher?: Dispatcher;
     blockchainIsLoaded: boolean;
     location: Location;
+    translate: Translate;
     docsVersion?: string;
     availableDocVersions?: string[];
     menu?: DocsMenu;
@@ -37,7 +38,6 @@ interface TopBarProps {
     docsInfo?: DocsInfo;
     style?: React.CSSProperties;
     isNightVersion?: boolean;
-    translate?: Translate;
 }
 
 interface TopBarState {

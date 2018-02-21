@@ -168,6 +168,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                     blockchainIsLoaded={this.props.blockchainIsLoaded}
                     location={this.props.location}
                     blockchain={this._blockchain}
+                    translate={this.props.translate}
                 />
                 <div id="portal" className="mx-auto max-width-4" style={{ width: '100%' }}>
                     <Paper className="mb3 mt2">
