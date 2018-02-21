@@ -39,7 +39,7 @@ export class Translate {
         } else if (_.includes(browserLanguage, 'ru-')) {
             language = Language.Russian;
         }
-        this.setLanguage(Language.Russian);
+        this.setLanguage(language);
     }
     public getLanguage() {
         return this._selectedLanguage;
