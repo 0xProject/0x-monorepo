@@ -35,6 +35,7 @@ import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
+import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const TOP_BAR_HEIGHT = 60;
@@ -54,6 +55,7 @@ export interface DocumentationAllProps {
     docsVersion: string;
     availableDocVersions: string[];
     docsInfo: DocsInfo;
+    translate: Translate;
 }
 
 interface DocumentationState {
@@ -114,6 +116,7 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                     menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     docsInfo={this.props.docsInfo}
+                    translate={this.props.translate}
                 />
                 {_.isUndefined(this.state.docAgnosticFormat) ? (
                     <div className="col col-12" style={styles.mainContainers}>

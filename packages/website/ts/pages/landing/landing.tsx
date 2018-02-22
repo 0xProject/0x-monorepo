@@ -5,9 +5,11 @@ import DocumentTitle = require('react-document-title');
 import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
-import { ScreenWidths, WebsitePaths } from 'ts/types';
+import { Dispatcher } from 'ts/redux/dispatcher';
+import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
+import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 interface BoxContent {
@@ -35,35 +37,6 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
-
-const boxContents: BoxContent[] = [
-    {
-        title: 'Trustless exchange',
-        description:
-            "Built on Ethereum's distributed network with no centralized \
-                      point of failure and no down time, each trade is settled atomically \
-                      and without counterparty risk.",
-        imageUrl: '/images/landing/distributed_network.png',
-        classNames: '',
-    },
-    {
-        title: 'Shared liquidity',
-        description:
-            'By sharing a standard API, relayers can easily aggregate liquidity pools, \
-                      creating network effects around liquidity that compound as more relayers come online.',
-        imageUrl: '/images/landing/liquidity.png',
-        classNames: 'mx-auto',
-    },
-    {
-        title: 'Open source',
-        description:
-            '0x is open source, permissionless and free to use. Trade directly with a known \
-                      counterparty for free or pay a relayer some ZRX tokens to access their liquidity \
-                      pool.',
-        imageUrl: '/images/landing/open_source.png',
-        classNames: 'right',
-    },
-];
 
 const relayersAndDappProjects: Project[] = [
     {
@@ -185,6 +158,8 @@ const relayerProjects: Project[] = [
 
 export interface LandingProps {
     location: Location;
+    translate: Translate;
+    dispatcher: Dispatcher;
 }
 
 interface LandingState {
@@ -216,17 +191,28 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     location={this.props.location}
                     isNightVersion={true}
                     style={{ backgroundColor: colors.heroGrey, position: 'relative' }}
+                    translate={this.props.translate}
                 />
                 {this._renderHero()}
-                {this._renderProjects(relayersAndDappProjects, 'Projects building on 0x', colors.projectsGrey, false)}
+                {this._renderProjects(
+                    relayersAndDappProjects,
+                    this.props.translate.get(Key.ProjectsHeader, Deco.Upper),
+                    colors.projectsGrey,
+                    false,
+                )}
                 {this._renderTokenizationSection()}
                 {this._renderProtocolSection()}
-                {this._renderProjects(relayerProjects, 'Relayers building on 0x', colors.heroGrey, true)}
+                {this._renderProjects(
+                    relayerProjects,
+                    this.props.translate.get(Key.RelayersHeader, Deco.Upper),
+                    colors.heroGrey,
+                    true,
+                )}
                 {this._renderInfoBoxes()}
                 {this._renderBuildingBlocksSection()}
                 {this._renderUseCases()}
                 {this._renderCallToAction()}
-                <Footer />
+                <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
         );
     }
@@ -243,7 +229,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             lineHeight: '33px',
             height: 38,
         };
-        const left = 'col lg-col-7 md-col-7 col-12 lg-pt4 md-pt4 sm-pt0 mt1 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
+        const left = 'col lg-col-7 md-col-7 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto max-width-4 clearfix">
@@ -251,8 +237,14 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         <div className="col lg-col-5 md-col-5 col-12 sm-center">
                             <img src="/images/landing/hero_chip_image.png" height={isSmallScreen ? 300 : 395} />
                         </div>
-                        <div className={left} style={{ color: colors.white }}>
-                            <div style={{ paddingLeft: isSmallScreen ? 0 : 12 }}>
+                        <div className={left} style={{ color: colors.white, height: 390, lineHeight: '390px' }}>
+                            <div
+                                className="inline-block lg-align-middle md-align-middle sm-align-top"
+                                style={{
+                                    paddingLeft: isSmallScreen ? 0 : 12,
+                                    lineHeight: '36px',
+                                }}
+                            >
                                 <div
                                     className="sm-pb2"
                                     style={{
@@ -260,7 +252,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                         fontSize: isSmallScreen ? 26 : 34,
                                     }}
                                 >
-                                    Powering decentralized exchange
+                                    {this.props.translate.get(Key.TopHeader, Deco.Cap)}
                                 </div>
                                 <div
                                     className="pt2 h5 sm-mx-auto"
@@ -271,17 +263,16 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                         fontWeight: 300,
                                     }}
                                 >
-                                    0x is an open, permissionless protocol allowing for ERC20 tokens to be traded on the
-                                    Ethereum blockchain.
+                                    {this.props.translate.get(Key.TopTagline)}
                                 </div>
-                                <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 342 }}>
+                                <div className="pt3 clearfix sm-mx-auto" style={{ maxWidth: 389 }}>
                                     <div className="lg-pr2 md-pr2 col col-6 sm-center">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
                                             <RaisedButton
                                                 style={{ borderRadius: 6, minWidth: 157.36 }}
                                                 buttonStyle={{ borderRadius: 6 }}
                                                 labelStyle={buttonLabelStyle}
-                                                label="Build on 0x"
+                                                label={this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
                                                 onClick={_.noop}
                                             />
                                         </Link>
@@ -298,7 +289,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                                 labelColor="white"
                                                 backgroundColor={colors.heroGrey}
                                                 labelStyle={buttonLabelStyle}
-                                                label="Join the community"
+                                                label={this.props.translate.get(Key.CommunityCallToAction, Deco.Cap)}
                                                 onClick={_.noop}
                                             />
                                         </a>
@@ -313,7 +304,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderProjects(projects: Project[], title: string, backgroundColor: string, isTitleCenter: boolean) {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const isMediumScreen = this.state.screenWidth === ScreenWidths.Md;
         const projectList = _.map(projects, (project: Project, i: number) => {
             const isRelayersOnly = projects.length === 12;
             let colWidth: number;
@@ -346,7 +336,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const titleStyle: React.CSSProperties = {
             fontFamily: 'Roboto Mono',
             color: colors.grey,
-            textTransform: 'uppercase',
             fontWeight: 300,
             letterSpacing: 3,
         };
@@ -366,13 +355,13 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             fontSize: 14,
                         }}
                     >
-                        view the{' '}
+                        {this.props.translate.get(Key.FullListPrompt)}{' '}
                         <Link
                             to={`${WebsitePaths.Wiki}#List-of-Projects-Using-0x-Protocol`}
                             className="text-decoration-none underline"
                             style={{ color: colors.landingLinkGrey }}
                         >
-                            full list
+                            {this.props.translate.get(Key.FullListLink)}
                         </Link>
                     </div>
                 </div>
@@ -385,33 +374,22 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             <div className="clearfix lg-py4 md-py4 sm-pb4 sm-pt2" style={{ backgroundColor: colors.grey100 }}>
                 <div className="mx-auto max-width-4 py4 clearfix">
                     {isSmallScreen && this._renderTokenCloud()}
-                    <div className="col lg-col-6 md-col-6 col-12" style={{ color: colors.darkestGrey }}>
-                        <div className="mx-auto" style={{ maxWidth: 385, paddingTop: 7 }}>
+                    <div
+                        className="col lg-col-6 md-col-6 col-12 center"
+                        style={{ color: colors.darkestGrey, height: 364, lineHeight: '364px' }}
+                    >
+                        <div
+                            className="mx-auto inline-block lg-align-middle md-align-middle sm-align-top"
+                            style={{ maxWidth: 385, lineHeight: '44px', textAlign: 'left' }}
+                        >
                             <div className="lg-h1 md-h1 sm-h2 sm-center sm-pt3" style={{ fontFamily: 'Roboto Mono' }}>
-                                The world's value is becoming tokenized
+                                {this.props.translate.get(Key.TokenizedSectionHeader, Deco.Cap)}
                             </div>
                             <div
                                 className="pb2 lg-pt2 md-pt2 sm-pt3 sm-px3 h5 sm-center"
-                                style={{ fontFamily: 'Roboto Mono', lineHeight: 1.7 }}
+                                style={{ fontFamily: 'Roboto Mono', lineHeight: 1.7, maxWidth: 370 }}
                             >
-                                {isSmallScreen ? (
-                                    <span>
-                                        The Ethereum blockchain is an open, borderless financial system that represents
-                                        a wide variety of assets as cryptographic tokens. In the future, most digital
-                                        assets and goods will be tokenized.
-                                    </span>
-                                ) : (
-                                    <div>
-                                        <div>
-                                            The Ethereum blockchain is an open, borderless financial system that
-                                            represents
-                                        </div>
-                                        <div>
-                                            a wide variety of assets as cryptographic tokens. In the future, most
-                                            digital assets and goods will be tokenized.
-                                        </div>
-                                    </div>
-                                )}
+                                {this.props.translate.get(Key.TokenizedSectionDescription, Deco.Cap)}
                             </div>
                             <div className="flex pt1 sm-px3">{this._renderAssetTypes()}</div>
                         </div>
@@ -430,28 +408,36 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         <img src="/images/landing/relayer_diagram.png" height={isSmallScreen ? 326 : 426} />
                     </div>
                     <div
-                        className="col lg-col-6 md-col-6 col-12 lg-pr3 md-pr3 sm-mx-auto lg-pt4 md-pt4 lg-mt3 md-mt3"
+                        className="col lg-col-6 md-col-6 col-12 lg-pr3 md-pr3 sm-mx-auto"
                         style={{
                             color: colors.beigeWhite,
                             maxWidth: isSmallScreen ? 'none' : 445,
+                            height: 430,
+                            lineHeight: '430px',
                         }}
                     >
-                        <div className="lg-h1 md-h1 sm-h2 pb1 sm-pt3 sm-center" style={{ fontFamily: 'Roboto Mono' }}>
-                            <div>Off-chain order relay</div>
-                            <div>On-chain settlement</div>
-                        </div>
                         <div
-                            className="pb2 pt2 h5 sm-center sm-px3 sm-mx-auto"
-                            style={{
-                                fontFamily: 'Roboto Mono',
-                                lineHeight: 1.7,
-                                fontWeight: 300,
-                                maxWidth: 445,
-                            }}
+                            className="inline-block lg-align-middle md-align-middle sm-align-top"
+                            style={{ lineHeight: '43px' }}
                         >
-                            In 0x protocol, orders are transported off-chain, massively reducing gas costs and
-                            eliminating blockchain bloat. Relayers help broadcast orders and collect a fee each time
-                            they facilitate a trade. Anyone can build a relayer.
+                            <div
+                                className="lg-h1 md-h1 sm-h2 pb1 sm-pt3 sm-center"
+                                style={{ fontFamily: 'Roboto Mono' }}
+                            >
+                                <div>{this.props.translate.get(Key.OffChainOrderRelay, Deco.Cap)}</div>
+                                <div> {this.props.translate.get(Key.OonChainSettlement, Deco.Cap)}</div>
+                            </div>
+                            <div
+                                className="pb2 pt2 h5 sm-center sm-px3 sm-mx-auto"
+                                style={{
+                                    fontFamily: 'Roboto Mono',
+                                    lineHeight: 1.7,
+                                    fontWeight: 300,
+                                    maxWidth: 445,
+                                }}
+                            >
+                                {this.props.translate.get(Key.OffChainOnChainDescription, Deco.Cap)}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -485,15 +471,13 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             className="pb1 lg-pt4 md-pt4 sm-pt3 lg-h1 md-h1 sm-h2 sm-px3 sm-center"
                             style={{ fontFamily: 'Roboto Mono' }}
                         >
-                            A building block for dApps
+                            {this.props.translate.get(Key.BuildingBlockSectionHeader, Deco.Cap)}
                         </div>
                         <div className="pb3 pt2 sm-mx-auto sm-center" style={descriptionStyle}>
-                            0x protocol is a pluggable building block for dApps that require exchange functionality.
-                            Join the many developers that are already using 0x in their web applications and smart
-                            contracts.
+                            {this.props.translate.get(Key.BuildingBlockSectionDescription, Deco.Cap)}
                         </div>
                         <div className="sm-mx-auto sm-center" style={callToActionStyle}>
-                            Learn how in our{' '}
+                            {this.props.translate.get(Key.DevToolsPrompt, Deco.Cap)}{' '}
                             <Link
                                 to={WebsitePaths.ZeroExJs}
                                 className="text-decoration-none underline"
@@ -501,15 +485,15 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             >
                                 0x.js
                             </Link>{' '}
-                            and{' '}
+                            {this.props.translate.get(Key.And)}{' '}
                             <Link
                                 to={WebsitePaths.SmartContracts}
                                 className="text-decoration-none underline"
                                 style={{ color: colors.beigeWhite, fontFamily: 'Roboto Mono' }}
                             >
-                                smart contract
+                                {this.props.translate.get(Key.SmartContract)}
                             </Link>{' '}
-                            docs
+                            {this.props.translate.get(Key.Docs)}
                         </div>
                     </div>
                     {!isSmallScreen && this._renderBlockChipImage()}
@@ -537,11 +521,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const assetTypes: AssetType[] = [
             {
-                title: 'Currency',
+                title: this.props.translate.get(Key.Currency, Deco.Cap),
                 imageUrl: '/images/landing/currency.png',
             },
             {
-                title: 'Traditional assets',
+                title: this.props.translate.get(Key.TraditionalAssets, Deco.Cap),
                 imageUrl: '/images/landing/stocks.png',
                 style: {
                     paddingLeft: isSmallScreen ? 41 : 56,
@@ -549,7 +533,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 },
             },
             {
-                title: 'Digital goods',
+                title: this.props.translate.get(Key.DigitalGoods, Deco.Cap),
                 imageUrl: '/images/landing/digital_goods.png',
             },
         ];
@@ -566,6 +550,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             fontSize: 13.5,
                             fontWeight: 400,
                             color: colors.darkestGrey,
+                            lineHeight: 1.4,
                         }}
                     >
                         {assetType.title}
@@ -578,12 +563,32 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     private _renderInfoBoxes() {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const boxStyle: React.CSSProperties = {
-            maxWidth: 252,
-            height: 386,
+            maxWidth: 253,
+            height: 402,
             backgroundColor: colors.grey50,
             borderRadius: 5,
             padding: '10px 24px 24px',
         };
+        const boxContents: BoxContent[] = [
+            {
+                title: this.props.translate.get(Key.BenefitOneTitle, Deco.Cap),
+                description: this.props.translate.get(Key.BenefitOneDescription, Deco.Cap),
+                imageUrl: '/images/landing/distributed_network.png',
+                classNames: '',
+            },
+            {
+                title: this.props.translate.get(Key.BenefitTwoTitle, Deco.Cap),
+                description: this.props.translate.get(Key.BenefitTwoDescription, Deco.Cap),
+                imageUrl: '/images/landing/liquidity.png',
+                classNames: 'mx-auto',
+            },
+            {
+                title: this.props.translate.get(Key.BenefitThreeTitle, Deco.Cap),
+                description: this.props.translate.get(Key.BenefitThreeDescription, Deco.Cap),
+                imageUrl: '/images/landing/open_source.png',
+                classNames: 'right',
+            },
+        ];
         const boxes = _.map(boxContents, (boxContent: BoxContent) => {
             return (
                 <div key={`box-${boxContent.title}`} className="col lg-col-4 md-col-4 col-12 sm-pb4">
@@ -604,14 +609,13 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const titleStyle: React.CSSProperties = {
             fontFamily: 'Roboto Mono',
             color: colors.grey,
-            textTransform: 'uppercase',
             fontWeight: 300,
             letterSpacing: 3,
         };
         return (
             <div className="clearfix" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="center pb3 pt4" style={titleStyle}>
-                    Benefits of 0x
+                    {this.props.translate.get(Key.BenefitsHeader, Deco.Upper)}
                 </div>
                 <div className="mx-auto pb4 sm-mt2 clearfix" style={{ maxWidth: '60em' }}>
                     {boxes}
@@ -625,41 +629,29 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         const useCases: UseCase[] = [
             {
                 imageUrl: '/images/landing/governance_icon.png',
-                type: 'Decentralized governance',
-                description:
-                    'Decentralized organizations use tokens to represent ownership and \
-                              guide their governance logic. 0x allows decentralized organizations \
-                              to seamlessly and safely trade ownership for startup capital.',
+                type: this.props.translate.get(Key.DecentralizedGovernance, Deco.Upper),
+                description: this.props.translate.get(Key.DecentralizedGovernanceDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/aragon.png'],
                 classNames: 'lg-px2 md-px2',
             },
             {
                 imageUrl: '/images/landing/prediction_market_icon.png',
-                type: 'Prediction markets',
-                description:
-                    'Decentralized prediction market platforms generate sets of tokens that \
-                              represent a financial stake in the outcomes of real-world events. 0x allows \
-                              these tokens to be instantly tradable.',
+                type: this.props.translate.get(Key.PredictionMarkets, Deco.Upper),
+                description: this.props.translate.get(Key.PredictionMarketsDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/augur.png'],
                 classNames: 'lg-px2 md-px2',
             },
             {
                 imageUrl: '/images/landing/stable_tokens_icon.png',
-                type: 'Stable tokens',
-                description:
-                    'Novel economic constructs such as stable coins require efficient, liquid \
-                              markets to succeed. 0x will facilitate the underlying economic mechanisms \
-                              that allow these tokens to remain stable.',
+                type: this.props.translate.get(Key.StableTokens, Deco.Upper),
+                description: this.props.translate.get(Key.StableTokensDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/maker.png'],
                 classNames: 'lg-px2 md-px2',
             },
             {
                 imageUrl: '/images/landing/loans_icon.png',
-                type: 'Decentralized loans',
-                description:
-                    'Efficient lending requires liquid markets where investors can buy and re-sell loans. \
-                              0x enables an ecosystem of lenders to self-organize and efficiently determine \
-                              market prices for all outstanding loans.',
+                type: this.props.translate.get(Key.DecentralizedLoans, Deco.Upper),
+                description: this.props.translate.get(Key.DecentralizedLoansDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/dharma.png', '/images/landing/lendroid.png'],
                 classNames: 'lg-pr2 md-pr2 lg-col-6 md-col-6',
                 style: {
@@ -670,11 +662,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             },
             {
                 imageUrl: '/images/landing/fund_management_icon.png',
-                type: 'Fund management',
-                description:
-                    'Decentralized fund management limits fund managers to investing in pre-agreed \
-                              upon asset classes. Embedding 0x into fund management smart contracts enables \
-                              them to enforce these security constraints.',
+                type: this.props.translate.get(Key.FundManagement, Deco.Upper),
+                description: this.props.translate.get(Key.FundManagementDescription, Deco.Cap),
                 projectIconUrls: ['/images/landing/melonport.png'],
                 classNames: 'lg-pl2 md-pl2 lg-col-6 md-col-6',
                 style: { width: 291, marginTop: !isSmallScreen ? 38 : 0 },
@@ -685,7 +674,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             const style = _.isUndefined(useCase.style) || isSmallScreen ? {} : useCase.style;
             const useCaseBoxStyle = {
                 color: colors.grey,
-                border: '1px solid #565656',
+                border: `1px solid ${colors.grey750}`,
                 borderRadius: 4,
                 maxWidth: isSmallScreen ? 375 : 'none',
                 ...style,
@@ -741,38 +730,39 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         };
         const lightButtonStyle: React.CSSProperties = {
             borderRadius: 6,
-            border: '1px solid #a0a0a0',
+            border: `1px solid ${colors.grey500}`,
             lineHeight: '33px',
             height: 49,
         };
         const callToActionClassNames =
-            'col lg-col-8 md-col-8 col-12 lg-pr3 md-pr3 \
-                                        lg-right-align md-right-align sm-center sm-px3 h4';
+            'lg-pr3 md-pr3 lg-right-align md-right-align sm-center sm-px3 h4 lg-table-cell md-table-cell';
         return (
             <div className="clearfix pb4" style={{ backgroundColor: colors.heroGrey }}>
-                <div className="mx-auto max-width-4 pb4 mb3 clearfix">
-                    <div
-                        className={callToActionClassNames}
-                        style={{
-                            fontFamily: 'Roboto Mono',
-                            color: colors.white,
-                            lineHeight: isSmallScreen ? 1.7 : 3,
-                        }}
-                    >
-                        Get started on building the decentralized future
-                    </div>
-                    <div className="col lg-col-4 md-col-4 col-12 sm-center sm-pt2">
-                        <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                            <RaisedButton
-                                style={{ borderRadius: 6, minWidth: 150 }}
-                                buttonStyle={lightButtonStyle}
-                                labelColor={colors.white}
-                                backgroundColor={colors.heroGrey}
-                                labelStyle={buttonLabelStyle}
-                                label="Build on 0x"
-                                onClick={_.noop}
-                            />
-                        </Link>
+                <div className="mx-auto max-width-4 pb4 mb3 clearfix center">
+                    <div className="center inline-block" style={{ textAlign: 'left' }}>
+                        <div
+                            className={callToActionClassNames}
+                            style={{
+                                fontFamily: 'Roboto Mono',
+                                color: colors.white,
+                                lineHeight: isSmallScreen ? 1.7 : 3,
+                            }}
+                        >
+                            {this.props.translate.get(Key.FinalCallToAction, Deco.Cap)}
+                        </div>
+                        <div className="sm-center sm-pt2 lg-table-cell md-table-cell">
+                            <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
+                                <RaisedButton
+                                    style={{ borderRadius: 6, minWidth: 150 }}
+                                    buttonStyle={lightButtonStyle}
+                                    labelColor={colors.white}
+                                    backgroundColor={colors.heroGrey}
+                                    labelStyle={buttonLabelStyle}
+                                    label={this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
+                                    onClick={_.noop}
+                                />
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -785,5 +775,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 screenWidth: newScreenWidth,
             });
         }
+    }
+    private _onLanguageSelected(language: Language) {
+        this.props.dispatcher.updateSelectedLanguage(language);
     }
 } // tslint:disable:max-file-line-count

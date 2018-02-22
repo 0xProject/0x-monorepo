@@ -8,6 +8,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
 import { DocsInfoConfig, SmartContractDocSections as Sections, WebsitePaths } from 'ts/types';
 import { doxityUtils } from 'ts/utils/doxity_utils';
+import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/smart_contracts/introduction');
@@ -40,6 +41,7 @@ const docsInfo = new DocsInfo(docsInfoConfig);
 interface ConnectedState {
     docsVersion: string;
     availableDocVersions: string[];
+    translate: Translate;
 }
 
 interface ConnectedDispatch {
@@ -50,6 +52,7 @@ interface ConnectedDispatch {
 const mapStateToProps = (state: State, ownProps: DocumentationAllProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
+    translate: state.translate,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

@@ -8,6 +8,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
 import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, Side, TokenByAddress } from 'ts/types';
 import { constants } from 'ts/utils/constants';
+import { Translate } from 'ts/utils/translate';
 
 interface ConnectedState {
     blockchainErr: BlockchainErrs;
@@ -26,6 +27,7 @@ interface ConnectedState {
     userAddress: string;
     userSuppliedOrderCache: Order;
     flashMessage?: string | React.ReactNode;
+    translate: Translate;
 }
 
 interface ConnectedDispatch {
@@ -73,6 +75,7 @@ const mapStateToProps = (state: State, ownProps: PortalComponentAllProps): Conne
         userEtherBalance: state.userEtherBalance,
         userSuppliedOrderCache: state.userSuppliedOrderCache,
         flashMessage: state.flashMessage,
+        translate: state.translate,
     };
 };
 
