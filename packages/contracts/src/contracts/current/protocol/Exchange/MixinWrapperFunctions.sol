@@ -149,7 +149,7 @@ contract MixinWrapperFunctions is
     }
 
 
-    function fillOrdersUpTo(
+    function batchFillOrdersNoThrow(
         address[5][] orderAddresses,
         uint[6][] orderValues,
         uint[] takerTokenFillAmounts,
