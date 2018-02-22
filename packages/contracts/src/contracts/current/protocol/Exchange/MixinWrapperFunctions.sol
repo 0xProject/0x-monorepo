@@ -59,6 +59,10 @@ contract MixinWrapperFunctions is
     {
         bytes4 FILL_ORDER_FUNCTION_SIGNATURE = bytes4(keccak256("fillOrder(address[5],uint256[6],uint256,uint8,bytes32,bytes32)"));
         
+        // Input size is padded to a 4 + n * 32 byte boundary
+        uint256 mask = 0x1F;
+        uint256 inputSize = 388 + (signature.length + mask) & ~mask;
+        
         assembly {
             let x := mload(0x40)  // free memory pointer
             mstore(x, FILL_ORDER_FUNCTION_SIGNATURE)
@@ -85,15 +89,16 @@ contract MixinWrapperFunctions is
                 dst := add(dst, 32)
             } {
                 mstore(dst, mload(src))
+                // TODO: zero the padding
             }
 
             success := delegatecall(
-                gas,      // TODO: don't send all gas, save some for returning is case of throw
-                address,  // call this contract
-                x,        // inputs start at x
-                484,      // inputs are 484 bytes long (4 + 15 * 32)
-                x,        // store output over input
-                32        // output is 32 bytes
+                gas,       // TODO: don't send all gas, save some for returning in case of throw
+                address,   // call this contract
+                x,         // inputs start at x
+                inputSize, // input are size
+                x,         // store output over input
+                32         // output is 32 bytes
             )
 
             takerTokenFilledAmount := mload(x)
