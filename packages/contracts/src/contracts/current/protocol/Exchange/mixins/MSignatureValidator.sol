@@ -21,12 +21,12 @@ pragma solidity ^0.4.19;
 contract MSignatureValidator {
 
     /// @dev Verifies that a signature is valid.
-    /// @param digest Message digest that is signed.
+    /// @param hash Message hash that is signed.
     /// @param signer Address of signer.
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
     function isValidSignature(
-        bytes32 digest,
+        bytes32 hash,
         address signer,
         bytes signature)
         public view
