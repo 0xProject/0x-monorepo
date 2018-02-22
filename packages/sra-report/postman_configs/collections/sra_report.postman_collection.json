@@ -1,0 +1,384 @@
+{
+    "info": {
+        "name": "0x Standard Relayer API",
+        "_postman_id": "d5828163-ddb9-46a9-ec39-c2b81417b6c0",
+        "description":
+            "[Standard Relayer Api](\nhttps://github.com/0xProject/standard-relayer-api)\n\n\n0x Protocol is an open standard. Because of this, we expect many independent applications to be built that will want to use the protocol. In order to make it easier for anyone to source liquidity that conforms to the 0x order format, relayers can opt-in to implementing a set of standard relayer API endpoints. In doing so, they allow clients of the standard relayer API to access the orders on their orderbook.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "GET /token_pairs",
+            "description": "",
+            "item": [
+                {
+                    "name": "Default",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "e25cd907-44f8-4d1e-823a-429d6244e6b4",
+                                "type": "text/javascript",
+                                "exec": [""]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw": "{{url}}/v0/token_pairs",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "token_pairs"]
+                        },
+                        "description":
+                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DAI pairs",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "cb6e73f9-f5a7-4d75-807a-c9db94dda4f3",
+                                "type": "text/javascript",
+                                "exec": [""]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw": "{{url}}/v0/token_pairs?tokenA={{DAI_address}}",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "token_pairs"],
+                            "query": [
+                                {
+                                    "key": "tokenA",
+                                    "value": "{{DAI_address}}",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description":
+                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "WETH pairs",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "cb6e73f9-f5a7-4d75-807a-c9db94dda4f3",
+                                "type": "text/javascript",
+                                "exec": [""]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw": "{{url}}/v0/token_pairs?tokenA={{WETH_address}}",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "token_pairs"],
+                            "query": [
+                                {
+                                    "key": "tokenA",
+                                    "value": "{{WETH_address}}",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description":
+                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "GET /orders",
+            "description": "",
+            "item": [
+                {
+                    "name": "Default",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "742679e1-5c16-4fe3-8056-dc7d34257564",
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const orders = JSON.parse(responseBody);",
+                                    "const firstOrder = orders[0];",
+                                    "const firstOrderHash = _.get(firstOrder, \"orderHash\");",
+                                    "pm.globals.set(\"_orderHash\", firstOrderHash);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw": "{{url}}/v0/orders",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "orders"]
+                        },
+                        "description":
+                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DAI orders",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "a1eabd96-fee3-4328-ae50-4a992f0401ba",
+                                "type": "text/javascript",
+                                "exec": [""]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw": "{{url}}/v0/orders?tokenAddress={{DAI_address}}",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "orders"],
+                            "query": [
+                                {
+                                    "key": "tokenAddress",
+                                    "value": "{{DAI_address}}",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description":
+                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "WETH orders",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "1a0acd0e-5e4a-4e08-b4e9-291a4e9c433a",
+                                "type": "text/javascript",
+                                "exec": [""]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw": "{{url}}/v0/orders?tokenAddress={{WETH_address}}",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "orders"],
+                            "query": [
+                                {
+                                    "key": "tokenAddress",
+                                    "value": "{{WETH_address}}",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description":
+                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
+                    },
+                    "response": []
+                }
+            ],
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "4eafcc26-fb01-4182-b963-67a0b418fcbc",
+                        "type": "text/javascript",
+                        "exec": [""]
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "d28effd1-4a73-4ee8-82cc-21b1ab06928d",
+                        "type": "text/javascript",
+                        "exec": [""]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "GET /orderbook",
+            "description": "",
+            "item": [
+                {
+                    "name": "ZRX/WETH orderbook",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "1a0acd0e-5e4a-4e08-b4e9-291a4e9c433a",
+                                "type": "text/javascript",
+                                "exec": [""]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw":
+                                "{{url}}/v0/orderbook?baseTokenAddress={{ZRX_address}}&quoteTokenAddress={{WETH_address}}",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "orderbook"],
+                            "query": [
+                                {
+                                    "key": "baseTokenAddress",
+                                    "value": "{{ZRX_address}}",
+                                    "equals": true
+                                },
+                                {
+                                    "key": "quoteTokenAddress",
+                                    "value": "{{WETH_address}}",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description":
+                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "ZRX/DAI orderbook",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "1a0acd0e-5e4a-4e08-b4e9-291a4e9c433a",
+                                "type": "text/javascript",
+                                "exec": [""]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw":
+                                "{{url}}/v0/orderbook?baseTokenAddress={{ZRX_address}}&quoteTokenAddress={{DAI_address}}",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "orderbook"],
+                            "query": [
+                                {
+                                    "key": "baseTokenAddress",
+                                    "value": "{{ZRX_address}}",
+                                    "equals": true
+                                },
+                                {
+                                    "key": "quoteTokenAddress",
+                                    "value": "{{DAI_address}}",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description":
+                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "GET /order",
+            "description": "",
+            "item": [
+                {
+                    "name": "order by order hash",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw": "{{url}}/v0/order/{{_orderHash}}",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "order", "{{_orderHash}}"]
+                        },
+                        "description": "Retrieves a specific order by orderHash."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "POST /fees",
+            "description": "",
+            "item": [
+                {
+                    "name": "Calculate Fees",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw":
+                                "{\n    \"exchangeContractAddress\": \"0x12459c951127e0c374ff9105dda097662a027093\",\n    \"maker\": \"0x9e56625509c2f60af937f23b7b532600390e8c8b\",\n    \"taker\": \"0x0000000000000000000000000000000000000000\",\n    \"makerTokenAddress\": \"0x323b5d4c32345ced77393b3530b1eed0f346429d\",\n    \"takerTokenAddress\": \"0xef7fff64389b814a946f3e92105513705ca6b990\",\n    \"makerTokenAmount\": \"10000000000000000\",\n    \"takerTokenAmount\": \"20000000000000000\",\n    \"expirationUnixTimestampSec\": \"42\",\n    \"salt\": \"67006738228878699843088602623665307406148487219438534730168799356281242528500\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/v0/fees",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "fees"]
+                        },
+                        "description":
+                            "Given an unsigned order without the fee-related properties, returns the required feeRecipient, makerFee, and takerFee of that order."
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "id": "da60f639-df79-4f4d-9861-79219f5fc341",
+                "type": "text/javascript",
+                "exec": [""]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "id": "b4917e72-ac87-421d-b7a5-21b64285ba5b",
+                "type": "text/javascript",
+                "exec": [""]
+            }
+        }
+    ]
+}

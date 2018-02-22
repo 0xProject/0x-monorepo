@@ -1,0 +1,42 @@
+{
+    "name": "@0xproject/sra-report",
+    "version": "0.0.1",
+    "description": "Generate reports for standard relayer API compliance",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build:watch": "tsc -w",
+        "lint": "tslint --project . 'src/**/*.ts'",
+        "clean": "shx rm -rf lib",
+        "build": "tsc"
+    },
+    "bin": {
+        "sra-report": "lib/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x.js.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x.js/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x.js/packages/abi-gen/README.md",
+    "dependencies": {
+        "@0xproject/assert": "^0.0.20",
+        "@0xproject/json-schemas": "^0.7.12",
+        "chalk": "^2.3.0",
+        "lodash": "^4.17.4",
+        "newman": "^3.9.3",
+        "yargs": "^10.0.3"
+    },
+    "devDependencies": {
+        "@0xproject/tslint-config": "^0.4.9",
+        "@types/lodash": "^4.14.104",
+        "@types/node": "^8.0.53",
+        "@types/yargs": "^10.0.0",
+        "shx": "^0.2.2",
+        "tslint": "5.8.0",
+        "typescript": "2.7.1"
+    }
+}
