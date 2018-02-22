@@ -165,8 +165,7 @@ contract MixinExchangeCore is
     function cancelOrder(
         address[5] orderAddresses,
         uint256[6] orderValues,
-        uint256 takerTokenCancelAmount,
-        bytes signature)
+        uint256 takerTokenCancelAmount)
         public
         returns (uint256 takerTokenCancelledAmount)
     {
@@ -187,11 +186,7 @@ contract MixinExchangeCore is
         require(order.makerTokenAmount > 0);
         require(order.takerTokenAmount > 0);
         require(takerTokenCancelAmount > 0);
-        require(isValidSignature(
-            keccak256(orderSchemaHash, order.orderHash),
-            order.maker,
-            signature
-        ));
+        require(order.maker == msg.sender);
 
         if (block.timestamp >= order.expirationTimestampInSec) {
             LogError(uint8(Errors.ORDER_EXPIRED), order.orderHash);
