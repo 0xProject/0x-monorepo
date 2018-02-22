@@ -27,6 +27,7 @@ contract MixinSignatureValidator is
 {
     enum SignatureType {
         Illegal, // Default value
+        Invalid,
         Caller,
         Ecrecover,
         EIP712,
@@ -51,10 +52,30 @@ contract MixinSignatureValidator is
         bytes32 s;
         
         // Always illegal signature
+        // This is always an implicit option, since a signer can create a
+        // signature array with invalid type or length. We may as well make
+        // it an explicit option. This aids testing and analysis. It is
+        // also the initialization value for the enum type.
         if (signatureType == SignatureType.Illegal) {
             revert();
         
+        // Always invalid signature
+        // Like Illegal, this is always implicitely available and therefore
+        // offered dxplicitely. It can be implicitely creates by providing
+        // a validly formatted but incorrect signature.
+        } else if (signatureType == SignatureType.Invalid) {
+            require(signature.length == 1);
+            isValid = false;
+            return;
+        
         // Implicitly signed by caller
+        // The signer has initiated the call. In the case of non-contract
+        // accounts it means the transaction itself was signed.
+        // Example: lets say for a particular operation three signatures
+        // A, B  are required. To submit the transaction, A and B can give
+        // a signatue to C, who can then submit the transaction using
+        // `Caller` for his own signature. Or A and C can sign and B can
+        // submit using `Caller`. Having `Caller` allows this flexibility.
         } else if (signatureType == SignatureType.Caller) {
             require(signature.length == 1);
             isValid = signer == msg.sender;
