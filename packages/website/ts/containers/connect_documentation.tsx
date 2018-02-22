@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { Documentation as DocumentationComponent, DocumentationAllProps } from 'ts/pages/documentation/documentation';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
 import { DocsInfoConfig, Environments, WebsitePaths } from 'ts/types';
@@ -91,7 +91,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocumentationAllProps): ConnectedState => ({
+const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
@@ -102,6 +102,6 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Documentation: React.ComponentClass<DocumentationAllProps> = connect(mapStateToProps, mapDispatchToProps)(
-    DocumentationComponent,
+export const Documentation: React.ComponentClass<DocPageProps> = connect(mapStateToProps, mapDispatchToProps)(
+    DocPageComponent,
 );
