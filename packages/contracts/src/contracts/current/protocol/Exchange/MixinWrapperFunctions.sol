@@ -136,7 +136,7 @@ contract MixinWrapperFunctions is
         uint[6][] orderValues,
         uint[] takerTokenFillAmounts,
         bytes[] signatures)
-        public /// Compiler crash when set to external
+        external
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrKillOrder(
@@ -154,7 +154,7 @@ contract MixinWrapperFunctions is
         uint[6][] orderValues,
         uint[] takerTokenFillAmounts,
         bytes[] signatures)
-        public /// Stack to deep when set to external
+        external
         returns (uint)
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
