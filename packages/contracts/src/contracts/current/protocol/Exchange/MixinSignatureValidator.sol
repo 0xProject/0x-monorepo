@@ -66,7 +66,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Invalid) {
             require(signature.length == 1);
             isValid = false;
-            return;
+            return isValid;
         
         // Implicitly signed by caller
         // The signer has initiated the call. In the case of non-contract
@@ -79,7 +79,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Caller) {
             require(signature.length == 1);
             isValid = signer == msg.sender;
-            return;
+            return isValid;
         
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.Ecrecover) {
@@ -94,7 +94,7 @@ contract MixinSignatureValidator is
                 s
             );
             isValid = signer == recovered;
-            return;
+            return isValid;
             
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
@@ -103,12 +103,12 @@ contract MixinSignatureValidator is
             s = get32(signature, 35);
             address recovered = ecrecover(hash, v, r, s);
             isValid = signer == recovered;
-            return;
+            return isValid;
         
         // Signature verified by signer contract
         } else if (signatureType == SignatureType.Contract) {
             isValid = ISigner(signer).isValidSignature(hash, signature);
-            return;
+            return isValid;
         }
         
         // Anything else is illegal (We do not return false because
@@ -132,6 +132,7 @@ contract MixinSignatureValidator is
         assembly {
             result := mload(add(b, index))
         }
+        return result;
     }
 
 }
