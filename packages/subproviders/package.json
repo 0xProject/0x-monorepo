@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "@0xproject/assert": "^0.0.20",
+        "@0xproject/types": "^0.2.3",
         "@0xproject/utils": "^0.3.4",
         "bn.js": "^4.11.8",
         "es6-promisify": "^5.0.0",
@@ -33,7 +34,6 @@
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.9",
-        "@0xproject/types": "^0.2.3",
         "@0xproject/utils": "^0.3.4",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
