@@ -2,6 +2,7 @@ import { BigNumber } from 'bignumber.js';
 import * as Web3 from 'web3';
 
 export interface TxData {
+    data?: string;
     from?: string;
     gas?: number;
     gasPrice?: BigNumber;
