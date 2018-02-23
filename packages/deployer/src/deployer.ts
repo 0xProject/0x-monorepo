@@ -174,7 +174,7 @@ export class Deployer {
         const block = await this.web3Wrapper.getBlockAsync('latest');
         let gas: number;
         try {
-            const gasEstimate: number = await this.web3Wrapper.estimateGasAsync(data);
+            const gasEstimate: number = await this.web3Wrapper.estimateGasAsync({ data });
             gas = Math.min(gasEstimate + EXTRA_GAS, block.gasLimit);
         } catch (err) {
             gas = block.gasLimit;
