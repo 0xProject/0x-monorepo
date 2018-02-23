@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
+import { Schema, schemas } from '@0xproject/json-schemas';
 import chalk from 'chalk';
 import * as _ from 'lodash';
 import * as newman from 'newman';
@@ -11,7 +11,6 @@ import * as sraReportCollectionJSON from '../postman_configs/collections/sra_rep
 import * as kovanTokensEnvironmentJSON from '../postman_configs/environments/kovan_tokens.postman_environment.json';
 import * as mainnetTokensEnvironmentJSON from '../postman_configs/environments/mainnet_tokens.postman_environment.json';
 
-import { Schema } from './types';
 import { utils } from './utils';
 
 const DEFAULT_NETWORK_ID = 1;
@@ -74,14 +73,18 @@ function createGlobals(url: string, schemaList: Schema[]) {
         enabled: true,
         type: 'text',
     };
-    const schemaGlobalsValues = _.map(schemaList, (schema: Schema) => {
-        return {
-            key: convertSchemaIdToKey(schema.id),
-            value: JSON.stringify(schema),
-            enabled: true,
-            type: 'text',
-        };
-    });
+    const schemaGlobalsValues = _.compact(_.map(schemaList, (schema: Schema) => {
+        if (_.isUndefined(schema.id)) {
+            return undefined;
+        } else {
+            return {
+                key: convertSchemaIdToKey(schema.id),
+                value: JSON.stringify(schema),
+                enabled: true,
+                type: 'text',
+            };
+        }
+    }));
     const globalsValues = _.concat(schemaGlobalsValues, urlGlobalsValue);
     const globals = {
         values: globalsValues,
