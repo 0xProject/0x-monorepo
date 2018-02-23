@@ -64,6 +64,8 @@ contract MixinWrapperFunctions is
         bytes4 FILL_ORDER_FUNCTION_SIGNATURE = bytes4(keccak256("fillOrder(address[5],uint256[6],uint256,uint8,bytes32,bytes32)"));
         
         // Input size is padded to a 4 + n * 32 byte boundary
+        // TODO: Construct the input array using readable Solidity instead
+        //       of assembly.
         uint256 mask = 0x1F;
         uint256 inputSize = 388 + (signature.length + mask) & ~mask;
         
