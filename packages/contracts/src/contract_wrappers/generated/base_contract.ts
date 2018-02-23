@@ -1,4 +1,4 @@
-import {TxData, TxDataPayable} from '@0xproject/types';
+import { TxData, TxDataPayable } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
@@ -6,7 +6,7 @@ export class BaseContract {
     public address: string;
     protected _web3ContractInstance: Web3.ContractInstance;
     protected _defaults: Partial<TxData>;
-    protected async _applyDefaultsToTxDataAsync<T extends TxData|TxDataPayable>(
+    protected async _applyDefaultsToTxDataAsync<T extends TxData | TxDataPayable>(
         txData: T,
         estimateGasAsync?: (txData: T) => Promise<number>,
     ): Promise<TxData> {
