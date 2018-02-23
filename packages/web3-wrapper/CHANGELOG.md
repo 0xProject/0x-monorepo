@@ -1,9 +1,12 @@
 # CHANGELOG
 
-## v0.2.XX - _TBD_ 2018
+## v0.2.0 _TBD, 2018_
 
-    *  Ensure all returned user addresses are lowercase (#373)
+    * Ensure all returned user addresses are lowercase (#373)
+    * Add `web3Wrapper.callAsync` (#413)
+    * Make `web3Wrapper.estimateGas` accept whole `txData` instead of `data` (#413)
+    * Remove `web3Wrapper.getContractInstance` (#413)
 
-## v0.1.12 - _February 9, 2018_
+## v0.1.12 _February 9, 2018_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)

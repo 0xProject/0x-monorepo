@@ -128,13 +128,13 @@ export class Web3Wrapper {
         const web3Contract = this._web3.eth.contract(abi);
         return web3Contract;
     }
-    public getContractInstance(abi: Web3.ContractAbi, address: string): Web3.ContractInstance {
-        const web3ContractInstance = this.getContractFromAbi(abi).at(address);
-        return web3ContractInstance;
-    }
-    public async estimateGasAsync(data: string): Promise<number> {
-        const gas = await promisify<number>(this._web3.eth.estimateGas)({ data });
+    public async estimateGasAsync(txData: Partial<Web3.TxData>): Promise<number> {
+        const gas = await promisify<number>(this._web3.eth.estimateGas)(txData);
         return gas;
+    }
+    public async callAsync(callData: Web3.CallData): Promise<string> {
+        const rawCalllResult = await promisify<string>(this._web3.eth.call)(callData);
+        return rawCalllResult;
     }
     public async sendTransactionAsync(txData: Web3.TxData): Promise<string> {
         const txHash = await promisify<string>(this._web3.eth.sendTransaction)(txData);
