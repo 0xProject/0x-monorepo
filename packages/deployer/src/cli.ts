@@ -100,6 +100,9 @@ async function onDeployCommand(argv: CliOptions): Promise<void> {
  */
 function getContractsSetFromList(contracts: string): Set<string> {
     const specifiedContracts = new Set();
+    if (contracts === '*') {
+        return new Set(['*']);
+    }
     const contractsArray = contracts.split(',');
     _.forEach(contractsArray, contractName => {
         const fileName = `${contractName}${constants.SOLIDITY_FILE_EXTENSION}`;
