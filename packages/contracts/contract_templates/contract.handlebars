@@ -10,6 +10,24 @@ import * as Web3 from 'web3';
 
 import {BaseContract} from './base_contract';
 
+{{#if events}}
+export type {{contractName}}ContractEventArgs =
+{{#each events}}
+    | {{name}}ContractEventArgs{{#if @last}};{{/if}}
+{{/each}}
+
+export enum {{contractName}}Events {
+    {{#each events}}
+    {{name}} = '{{name}}',
+    {{/each}}
+}
+
+{{#each events}}
+{{> event}}
+
+{{/each}}
+{{/if}}
+
 export class {{contractName}}Contract extends BaseContract {
 {{#each methods}}
     {{#this.constant}}

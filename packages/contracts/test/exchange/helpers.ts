@@ -5,7 +5,12 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
-import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import {
+    ExchangeContract,
+    LogCancelContractEventArgs,
+    LogErrorContractEventArgs,
+    LogFillContractEventArgs,
+} from '../../src/contract_wrappers/generated/exchange';
 import { constants } from '../../util/constants';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { OrderFactory } from '../../util/order_factory';

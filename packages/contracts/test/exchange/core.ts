@@ -1,12 +1,4 @@
-import {
-    LogCancelContractEventArgs,
-    LogErrorContractEventArgs,
-    LogFillContractEventArgs,
-    LogWithDecodedArgs,
-    SignedOrder,
-    TransactionReceiptWithDecodedLogs,
-    ZeroEx,
-} from '0x.js';
+import { LogWithDecodedArgs, SignedOrder, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -15,7 +7,12 @@ import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
-import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import {
+    ExchangeContract,
+    LogCancelContractEventArgs,
+    LogErrorContractEventArgs,
+    LogFillContractEventArgs,
+} from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
