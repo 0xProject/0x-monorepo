@@ -98,6 +98,7 @@ contract MixinExchangeCore is
         });
         
         // Validate order and maker only if first time seen
+        // TODO: Read filled and cancelled only once
         if (filled[order.orderHash] == 0 && cancelled[order.orderHash] == 0) {
             require(order.makerTokenAmount > 0);
             require(order.takerTokenAmount > 0);
