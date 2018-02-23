@@ -43,6 +43,6 @@ export class {{contractName}}Contract extends BaseContract {
 {{/each}}
     constructor(web3Wrapper: Web3Wrapper, abi: Web3.ContractAbi, address: string) {
         super(web3Wrapper, abi, address);
-        classUtils.bindAll(this, ['_ethersInterface', '_address', '_abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_ethersInterface', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

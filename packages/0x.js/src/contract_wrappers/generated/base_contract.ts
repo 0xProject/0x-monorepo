@@ -7,8 +7,8 @@ import * as Web3 from 'web3';
 export class BaseContract {
     protected _ethersInterface: ethersContracts.Interface;
     protected _web3Wrapper: Web3Wrapper;
-    protected _abi: Web3.ContractAbi;
-    protected _address: string;
+    public abi: Web3.ContractAbi;
+    public address: string;
     protected static _transformABIData(
         abis: Web3.DataItem[],
         values: any[],
@@ -49,7 +49,7 @@ export class BaseContract {
         // 3. Gas estimate calculation + safety margin
         const removeUndefinedProperties = _.pickBy;
         const txDataWithDefaults = {
-            to: this._address,
+            to: this.address,
             ...removeUndefinedProperties(this._web3Wrapper.getContractDefaults()),
             ...removeUndefinedProperties(txData as any),
             // HACK: TS can't prove that T is spreadable.
@@ -63,8 +63,8 @@ export class BaseContract {
     }
     constructor(web3Wrapper: Web3Wrapper, abi: Web3.ContractAbi, address: string) {
         this._web3Wrapper = web3Wrapper;
-        this._abi = abi;
-        this._address = address;
+        this.abi = abi;
+        this.address = address;
         this._ethersInterface = new ethersContracts.Interface(abi);
     }
 }
