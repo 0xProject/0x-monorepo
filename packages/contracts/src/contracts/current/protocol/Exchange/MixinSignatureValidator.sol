@@ -63,7 +63,7 @@ contract MixinSignatureValidator is
         // Always invalid signature
         // Like Illegal, this is always implicitly available and therefore
         // offered explicitly. It can be implicitly created by providing
-        // a validly formatted but incorrect signature.
+        // a correctly formatted but incorrect signature.
         } else if (signatureType == SignatureType.Invalid) {
             require(signature.length == 1);
             isValid = false;
@@ -73,8 +73,8 @@ contract MixinSignatureValidator is
         // The signer has initiated the call. In the case of non-contract
         // accounts it means the transaction itself was signed.
         // Example: let's say for a particular operation three signatures
-        // A, B  are required. To submit the transaction, A and B can give
-        // a signature to C, who can then submit the transaction using
+        // A, B and C are required. To submit the transaction, A and B can
+        // give a signature to C, who can then submit the transaction using
         // `Caller` for his own signature. Or A and C can sign and B can
         // submit using `Caller`. Having `Caller` allows this flexibility.
         } else if (signatureType == SignatureType.Caller) {
