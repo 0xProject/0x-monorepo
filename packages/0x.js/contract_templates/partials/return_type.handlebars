@@ -1,6 +1,6 @@
 {{#singleReturnValue}}
-{{#returnType outputs.0.type}}{{/returnType}}
+{{#returnType outputs.0.type outputs.0.components}}{{/returnType}}
 {{/singleReturnValue}}
 {{^singleReturnValue}}
-[{{#each outputs}}{{#returnType type}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
+[{{#each outputs}}{{#returnType type components}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
 {{/singleReturnValue}}

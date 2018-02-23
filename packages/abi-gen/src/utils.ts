@@ -6,14 +6,20 @@ import * as Web3 from 'web3';
 import { AbiType, ContractsBackend, ParamKind } from './types';
 
 export const utils = {
-    solTypeToTsType(paramKind: ParamKind, backend: ContractsBackend, solType: string): string {
+    solTypeToTsType(
+        paramKind: ParamKind,
+        backend: ContractsBackend,
+        solType: string,
+        components?: Web3.DataItem[],
+    ): string {
         const trailingArrayRegex = /\[\d*\]$/;
         if (solType.match(trailingArrayRegex)) {
             const arrayItemSolType = solType.replace(trailingArrayRegex, '');
-            const arrayItemTsType = utils.solTypeToTsType(paramKind, backend, arrayItemSolType);
-            const arrayTsType = utils.isUnionType(arrayItemTsType)
-                ? `Array<${arrayItemTsType}>`
-                : `${arrayItemTsType}[]`;
+            const arrayItemTsType = utils.solTypeToTsType(paramKind, backend, arrayItemSolType, components);
+            const arrayTsType =
+                utils.isUnionType(arrayItemTsType) || utils.isObjectType(arrayItemTsType)
+                    ? `Array<${arrayItemTsType}>`
+                    : `${arrayItemTsType}[]`;
             return arrayTsType;
         } else {
             const solTypeRegexToTsType = [
@@ -45,11 +51,29 @@ export const utils = {
                     return tsType;
                 }
             }
+            const TUPLE_TYPE_REGEX = '^tuple$';
+            if (solType.match(TUPLE_TYPE_REGEX)) {
+                const componentsType = _.map(components, component => {
+                    const componentValueType = utils.solTypeToTsType(
+                        paramKind,
+                        backend,
+                        component.type,
+                        component.components,
+                    );
+                    const componentType = `${component.name}: ${componentValueType}`;
+                    return componentType;
+                });
+                const tsType = `{${componentsType}}`;
+                return tsType;
+            }
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
     },
     isUnionType(tsType: string): boolean {
         return tsType === 'number|BigNumber';
+    },
+    isObjectType(tsType: string): boolean {
+        return /^{.*}$/.test(tsType);
     },
     log(...args: any[]): void {
         console.log(...args); // tslint:disable-line:no-console

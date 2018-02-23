@@ -17,7 +17,7 @@
         "build": "run-p build:umd:prod build:commonjs; exit 0;",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template contract_templates/contract.handlebars --partials 'contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated && prettier --write 'src/contract_wrappers/generated/**.ts'",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template contract_templates/contract.handlebars --partials 'contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test:circleci": "run-s test:coverage report_test_coverage",
         "test": "run-s clean test:commonjs",
