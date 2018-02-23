@@ -50,9 +50,10 @@ contract MixinSignatureValidator is
         uint8 v;
         bytes32 r;
         bytes32 s;
+        address recovered;
         
         // Always illegal signature
-        // This is always an implicit option, since a signer can create a
+        // This is always an implicit option since a signer can create a
         // signature array with invalid type or length. We may as well make
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
@@ -60,8 +61,8 @@ contract MixinSignatureValidator is
             revert();
         
         // Always invalid signature
-        // Like Illegal, this is always implicitely available and therefore
-        // offered dxplicitely. It can be implicitely creates by providing
+        // Like Illegal, this is always implicitly available and therefore
+        // offered explicitly. It can be implicitly created by providing
         // a validly formatted but incorrect signature.
         } else if (signatureType == SignatureType.Invalid) {
             require(signature.length == 1);
@@ -71,9 +72,9 @@ contract MixinSignatureValidator is
         // Implicitly signed by caller
         // The signer has initiated the call. In the case of non-contract
         // accounts it means the transaction itself was signed.
-        // Example: lets say for a particular operation three signatures
+        // Example: let's say for a particular operation three signatures
         // A, B  are required. To submit the transaction, A and B can give
-        // a signatue to C, who can then submit the transaction using
+        // a signature to C, who can then submit the transaction using
         // `Caller` for his own signature. Or A and C can sign and B can
         // submit using `Caller`. Having `Caller` allows this flexibility.
         } else if (signatureType == SignatureType.Caller) {
@@ -100,8 +101,8 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EIP712) {
             v = uint8(signature[1]);
             r = get32(signature, 2);
-            s = get32(signature, 35);
-            address recovered = ecrecover(hash, v, r, s);
+            s = get32(signature, 34);
+            recovered = ecrecover(hash, v, r, s);
             isValid = signer == recovered;
             return isValid;
         
