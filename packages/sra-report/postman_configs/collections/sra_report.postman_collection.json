@@ -1,6 +1,6 @@
 {
     "info": {
-        "name": "0x Standard Relayer API",
+        "name": "sra_report",
         "_postman_id": "d5828163-ddb9-46a9-ec39-c2b81417b6c0",
         "description":
             "[Standard Relayer Api](\nhttps://github.com/0xProject/standard-relayer-api)\n\n\n0x Protocol is an open standard. Because of this, we expect many independent applications to be built that will want to use the protocol. In order to make it easier for anyone to source liquidity that conforms to the 0x order format, relayers can opt-in to implementing a set of standard relayer API endpoints. In doing so, they allow clients of the standard relayer API to access the orders on their orderbook.",
@@ -227,6 +227,27 @@
             ]
         },
         {
+            "name": "GET /order",
+            "description": "",
+            "item": [
+                {
+                    "name": "order by order hash",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {},
+                        "url": {
+                            "raw": "{{url}}/v0/order/{{_orderHash}}",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "order", "{{_orderHash}}"]
+                        },
+                        "description": "Retrieves a specific order by orderHash."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
             "name": "GET /orderbook",
             "description": "",
             "item": [
@@ -311,32 +332,42 @@
             ]
         },
         {
-            "name": "GET /order",
+            "name": "POST /fees",
             "description": "",
             "item": [
                 {
-                    "name": "order by order hash",
+                    "name": "Calculate Fees",
                     "request": {
-                        "method": "GET",
-                        "header": [],
-                        "body": {},
-                        "url": {
-                            "raw": "{{url}}/v0/order/{{_orderHash}}",
-                            "host": ["{{url}}"],
-                            "path": ["v0", "order", "{{_orderHash}}"]
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw":
+                                "{\n    \"exchangeContractAddress\": \"0x12459c951127e0c374ff9105dda097662a027093\",\n    \"maker\": \"0x9e56625509c2f60af937f23b7b532600390e8c8b\",\n    \"taker\": \"0x0000000000000000000000000000000000000000\",\n    \"makerTokenAddress\": \"0x323b5d4c32345ced77393b3530b1eed0f346429d\",\n    \"takerTokenAddress\": \"0xef7fff64389b814a946f3e92105513705ca6b990\",\n    \"makerTokenAmount\": \"10000000000000000\",\n    \"takerTokenAmount\": \"20000000000000000\",\n    \"expirationUnixTimestampSec\": \"42\",\n    \"salt\": \"67006738228878699843088602623665307406148487219438534730168799356281242528500\"\n}"
                         },
-                        "description": "Retrieves a specific order by orderHash."
+                        "url": {
+                            "raw": "{{url}}/v0/fees",
+                            "host": ["{{url}}"],
+                            "path": ["v0", "fees"]
+                        },
+                        "description":
+                            "Given an unsigned order without the fee-related properties, returns the required feeRecipient, makerFee, and takerFee of that order."
                     },
                     "response": []
                 }
             ]
         },
         {
-            "name": "POST /fees",
+            "name": "POST /order",
             "description": "",
             "item": [
                 {
-                    "name": "Calculate Fees",
+                    "name": "Submit order",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -369,7 +400,17 @@
             "script": {
                 "id": "da60f639-df79-4f4d-9861-79219f5fc341",
                 "type": "text/javascript",
-                "exec": [""]
+                "exec": [
+                    "const schemaKeysString = pm.globals.get('schemaKeys');",
+                    "const schemaKeys = JSON.parse(schemaKeysString);",
+                    "",
+                    "_.forEach(schemaKeys, function(schemaKey) {",
+                    "    const schemaString = pm.globals.get(schemaKey);",
+                    "    const schema = JSON.parse(schemaString);",
+                    "    tv4.addSchema(schema);",
+                    "});",
+                    ""
+                ]
             }
         },
         {
