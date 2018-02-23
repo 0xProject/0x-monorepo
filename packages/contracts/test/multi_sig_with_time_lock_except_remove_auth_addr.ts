@@ -49,7 +49,11 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         [authorizedAddress, unauthorizedAddress] = accounts;
         const initialOwner = accounts[0];
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(tokenTransferProxyInstance);
+        tokenTransferProxy = new TokenTransferProxyContract(
+            web3Wrapper,
+            tokenTransferProxyInstance.abi,
+            tokenTransferProxyInstance.address,
+        );
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(authorizedAddress, {
             from: initialOwner,
         });
@@ -57,7 +61,11 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             ContractName.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
             [owners, requiredApprovals, SECONDS_TIME_LOCKED, tokenTransferProxy.address],
         );
-        multiSig = new MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract(multiSigInstance);
+        multiSig = new MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract(
+            web3Wrapper,
+            multiSigInstance.abi,
+            multiSigInstance.address,
+        );
         await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, {
             from: initialOwner,
         });
@@ -74,12 +82,14 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
     describe('isFunctionRemoveAuthorizedAddress', () => {
         it('should throw if data is not for removeAuthorizedAddress', async () => {
             const data = MultiSigWrapper.encodeFnArgs('addAuthorizedAddress', PROXY_ABI, [owners[0]]);
-            return expect(multiSig.isFunctionRemoveAuthorizedAddress(data)).to.be.rejectedWith(constants.REVERT);
+            return expect(multiSig.isFunctionRemoveAuthorizedAddress.callAsync(data)).to.be.rejectedWith(
+                constants.REVERT,
+            );
         });
 
         it('should return true if data is for removeAuthorizedAddress', async () => {
             const data = MultiSigWrapper.encodeFnArgs('removeAuthorizedAddress', PROXY_ABI, [owners[0]]);
-            const isFunctionRemoveAuthorizedAddress = await multiSig.isFunctionRemoveAuthorizedAddress(data);
+            const isFunctionRemoveAuthorizedAddress = await multiSig.isFunctionRemoveAuthorizedAddress.callAsync(data);
             expect(isFunctionRemoveAuthorizedAddress).to.be.true();
         });
     });
@@ -114,7 +124,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const log = abiDecoder.tryToDecodeLogOrNoop(res.logs[0]) as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
             await multiSig.confirmTransaction.sendTransactionAsync(txId, { from: owners[1] });
-            const isConfirmed = await multiSig.isConfirmed(txId);
+            const isConfirmed = await multiSig.isConfirmed.callAsync(txId);
             expect(isConfirmed).to.be.true();
 
             return expect(
@@ -133,7 +143,7 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const log = abiDecoder.tryToDecodeLogOrNoop(res.logs[0]) as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
             await multiSig.confirmTransaction.sendTransactionAsync(txId, { from: owners[1] });
-            const isConfirmed = await multiSig.isConfirmed(txId);
+            const isConfirmed = await multiSig.isConfirmed.callAsync(txId);
             expect(isConfirmed).to.be.true();
 
             return expect(
@@ -152,10 +162,10 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const log = abiDecoder.tryToDecodeLogOrNoop(res.logs[0]) as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
             await multiSig.confirmTransaction.sendTransactionAsync(txId, { from: owners[1] });
-            const isConfirmed = await multiSig.isConfirmed(txId);
+            const isConfirmed = await multiSig.isConfirmed.callAsync(txId);
             expect(isConfirmed).to.be.true();
             await multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] });
-            const isAuthorized = await tokenTransferProxy.authorized(authorizedAddress);
+            const isAuthorized = await tokenTransferProxy.authorized.callAsync(authorizedAddress);
             expect(isAuthorized).to.be.false();
         });
 
@@ -170,10 +180,10 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             const log = abiDecoder.tryToDecodeLogOrNoop(res.logs[0]) as LogWithDecodedArgs<SubmissionContractEventArgs>;
             const txId = log.args.transactionId;
             await multiSig.confirmTransaction.sendTransactionAsync(txId, { from: owners[1] });
-            const isConfirmed = await multiSig.isConfirmed(txId);
+            const isConfirmed = await multiSig.isConfirmed.callAsync(txId);
             expect(isConfirmed).to.be.true();
             await multiSig.executeRemoveAuthorizedAddress.sendTransactionAsync(txId, { from: owners[1] });
-            const tx = await multiSig.transactions(txId);
+            const tx = await multiSig.transactions.callAsync(txId);
             const isExecuted = tx[3];
             expect(isExecuted).to.be.true();
             return expect(

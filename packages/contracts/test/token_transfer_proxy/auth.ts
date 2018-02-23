@@ -25,7 +25,11 @@ describe('TokenTransferProxy', () => {
         owner = address = accounts[0];
         notOwner = accounts[1];
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(tokenTransferProxyInstance);
+        tokenTransferProxy = new TokenTransferProxyContract(
+            web3Wrapper,
+            tokenTransferProxyInstance.abi,
+            tokenTransferProxyInstance.address,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -41,7 +45,7 @@ describe('TokenTransferProxy', () => {
         });
         it('should allow owner to add an authorized address', async () => {
             await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
-            const isAuthorized = await tokenTransferProxy.authorized(address);
+            const isAuthorized = await tokenTransferProxy.authorized.callAsync(address);
             expect(isAuthorized).to.be.true();
         });
         it('should throw if owner attempts to authorize a duplicate address', async () => {
@@ -67,7 +71,7 @@ describe('TokenTransferProxy', () => {
             await tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
                 from: owner,
             });
-            const isAuthorized = await tokenTransferProxy.authorized(address);
+            const isAuthorized = await tokenTransferProxy.authorized.callAsync(address);
             expect(isAuthorized).to.be.false();
         });
 
@@ -82,19 +86,19 @@ describe('TokenTransferProxy', () => {
 
     describe('getAuthorizedAddresses', () => {
         it('should return all authorized addresses', async () => {
-            const initial = await tokenTransferProxy.getAuthorizedAddresses();
+            const initial = await tokenTransferProxy.getAuthorizedAddresses.callAsync();
             expect(initial).to.have.length(0);
             await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(address, {
                 from: owner,
             });
-            const afterAdd = await tokenTransferProxy.getAuthorizedAddresses();
+            const afterAdd = await tokenTransferProxy.getAuthorizedAddresses.callAsync();
             expect(afterAdd).to.have.length(1);
             expect(afterAdd).to.include(address);
 
             await tokenTransferProxy.removeAuthorizedAddress.sendTransactionAsync(address, {
                 from: owner,
             });
-            const afterRemove = await tokenTransferProxy.getAuthorizedAddresses();
+            const afterRemove = await tokenTransferProxy.getAuthorizedAddresses.callAsync();
             expect(afterRemove).to.have.length(0);
         });
     });

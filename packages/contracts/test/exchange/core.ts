@@ -60,16 +60,20 @@ describe('Exchange', () => {
             deployer.deployAsync(ContractName.DummyToken),
             deployer.deployAsync(ContractName.DummyToken),
         ]);
-        rep = new DummyTokenContract(repInstance);
-        dgd = new DummyTokenContract(dgdInstance);
-        zrx = new DummyTokenContract(zrxInstance);
+        rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
+        dgd = new DummyTokenContract(web3Wrapper, dgdInstance.abi, dgdInstance.address);
+        zrx = new DummyTokenContract(web3Wrapper, zrxInstance.abi, zrxInstance.address);
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(tokenTransferProxyInstance);
+        tokenTransferProxy = new TokenTransferProxyContract(
+            web3Wrapper,
+            tokenTransferProxyInstance.abi,
+            tokenTransferProxyInstance.address,
+        );
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             tokenTransferProxy.address,
         ]);
-        exchange = new ExchangeContract(exchangeInstance);
+        exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         zeroEx = new ZeroEx(web3.currentProvider, {
             exchangeContractAddress: exchange.address,
@@ -647,7 +651,7 @@ describe('Exchange', () => {
 
         it('should not change balances if makerTokenAddress is ZRX, makerTokenAmount + makerFee > maker allowance, \
                 and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const makerZRXAllowance = await zrx.allowance(maker, tokenTransferProxy.address);
+            const makerZRXAllowance = await zrx.allowance.callAsync(maker, tokenTransferProxy.address);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerTokenAddress: zrx.address,
                 makerTokenAmount: new BigNumber(makerZRXAllowance),
@@ -673,7 +677,7 @@ describe('Exchange', () => {
 
         it('should not change balances if takerTokenAddress is ZRX, takerTokenAmount + takerFee > taker allowance, \
                 and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const takerZRXAllowance = await zrx.allowance(taker, tokenTransferProxy.address);
+            const takerZRXAllowance = await zrx.allowance.callAsync(taker, tokenTransferProxy.address);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 takerTokenAddress: zrx.address,
                 takerTokenAmount: new BigNumber(takerZRXAllowance),

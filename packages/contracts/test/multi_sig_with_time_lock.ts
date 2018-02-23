@@ -59,10 +59,14 @@ describe('MultiSigWalletWithTimeLock', () => {
                     SIGNATURES_REQUIRED,
                     0,
                 ]);
-                multiSig = new MultiSigWalletWithTimeLockContract(multiSigInstance);
+                multiSig = new MultiSigWalletWithTimeLockContract(
+                    web3Wrapper,
+                    multiSigInstance.abi,
+                    multiSigInstance.address,
+                );
                 multiSigWrapper = new MultiSigWrapper((multiSig as any) as MultiSigWalletContract);
 
-                const secondsTimeLocked = await multiSig.secondsTimeLocked();
+                const secondsTimeLocked = await multiSig.secondsTimeLocked.callAsync();
                 initialSecondsTimeLocked = secondsTimeLocked.toNumber();
             });
             it('should throw when not called by wallet', async () => {
@@ -113,7 +117,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const blockNum = await web3Wrapper.getBlockNumberAsync();
                 const blockInfo = await web3Wrapper.getBlockAsync(blockNum);
                 const timestamp = new BigNumber(blockInfo.timestamp);
-                const confirmationTimeBigNum = new BigNumber(await multiSig.confirmationTimes(txId));
+                const confirmationTimeBigNum = new BigNumber(await multiSig.confirmationTimes.callAsync(txId));
 
                 expect(timestamp).to.be.bignumber.equal(confirmationTimeBigNum);
             });
@@ -141,7 +145,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const res = await zeroEx.awaitTransactionMinedAsync(txHash);
                 expect(res.logs).to.have.length(2);
 
-                const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked());
+                const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.callAsync());
                 expect(secondsTimeLocked).to.be.bignumber.equal(SECONDS_TIME_LOCKED);
             });
         });
@@ -152,10 +156,14 @@ describe('MultiSigWalletWithTimeLock', () => {
                     SIGNATURES_REQUIRED,
                     SECONDS_TIME_LOCKED,
                 ]);
-                multiSig = new MultiSigWalletWithTimeLockContract(multiSigInstance);
+                multiSig = new MultiSigWalletWithTimeLockContract(
+                    web3Wrapper,
+                    multiSigInstance.abi,
+                    multiSigInstance.address,
+                );
                 multiSigWrapper = new MultiSigWrapper((multiSig as any) as MultiSigWalletContract);
 
-                const secondsTimeLocked = await multiSig.secondsTimeLocked();
+                const secondsTimeLocked = await multiSig.secondsTimeLocked.callAsync();
                 initialSecondsTimeLocked = secondsTimeLocked.toNumber();
                 const destination = multiSig.address;
                 const from = owners[0];
@@ -187,7 +195,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 await rpc.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
                 await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] });
 
-                const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked());
+                const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.callAsync());
                 expect(secondsTimeLocked).to.be.bignumber.equal(newSecondsTimeLocked);
             });
         });

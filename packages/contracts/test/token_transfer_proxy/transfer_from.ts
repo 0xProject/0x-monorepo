@@ -33,9 +33,13 @@ describe('TokenTransferProxy', () => {
         accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = notAuthorized = accounts[0];
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(tokenTransferProxyInstance);
+        tokenTransferProxy = new TokenTransferProxyContract(
+            web3Wrapper,
+            tokenTransferProxyInstance.abi,
+            tokenTransferProxyInstance.address,
+        );
         const repInstance = await deployer.deployAsync(ContractName.DummyToken);
-        rep = new DummyTokenContract(repInstance);
+        rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
 
         dmyBalances = new Balances([rep], [accounts[0], accounts[1]]);
         await Promise.all([

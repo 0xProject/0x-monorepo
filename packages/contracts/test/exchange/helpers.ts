@@ -47,7 +47,7 @@ describe('Exchange', () => {
             zrx.address,
             tokenTransferProxy.address,
         ]);
-        const exchange = new ExchangeContract(exchangeInstance);
+        const exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
         await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
         const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
