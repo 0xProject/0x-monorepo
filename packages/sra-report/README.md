@@ -9,7 +9,7 @@ This package allows you to generate reports detailing an endpoint's [standard re
 ## Usage
 
 ```
-abi-gen
+sra-report
 Options:
   --help               Show help                                       [boolean]
   --version            Show version number                             [boolean]
