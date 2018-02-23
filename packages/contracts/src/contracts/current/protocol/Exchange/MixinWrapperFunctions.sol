@@ -159,15 +159,12 @@ contract MixinWrapperFunctions is
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
     /// @param signatures Maker's signatures of the orders.
-    /// @return Success if the transaction did not revert.
-    /// @return Total amount of takerToken filled in trade. 
     function batchFillOrdersNoThrow(
         address[5][] orderAddresses,
         uint[6][] orderValues,
         uint[] takerTokenFillAmounts,
         bytes[] signatures)
         external
-        returns (uint)
     {
         for (uint256 i = 0; i < orderAddresses.length; i++) {
             fillOrderNoThrow(
