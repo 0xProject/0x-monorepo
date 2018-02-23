@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.33.x - TBD
+
+    * Validate and lowercase all addresses in public methods (#373)
+
 ## v0.32.2 - _February 9, 2018_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)

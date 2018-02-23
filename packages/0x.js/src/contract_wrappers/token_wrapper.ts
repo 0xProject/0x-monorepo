@@ -44,10 +44,10 @@ export class TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         methodOpts?: MethodOpts,
     ): Promise<BigNumber> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
-        assert.isETHAddressHex('ownerAddress', normalizedOwnerAddress);
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
 
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
@@ -74,12 +74,12 @@ export class TokenWrapper extends ContractWrapper {
         amountInBaseUnits: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('spenderAddress', spenderAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const normalizedOwnerAddress = ownerAddress.toLowerCase();
         const normalizedSpenderAddress = spenderAddress.toLowerCase();
-        await assert.isSenderAddressAsync('ownerAddress', normalizedOwnerAddress, this._web3Wrapper);
-        assert.isETHAddressHex('spenderAddress', normalizedSpenderAddress);
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
+        const normalizedOwnerAddress = ownerAddress.toLowerCase();
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
@@ -108,12 +108,12 @@ export class TokenWrapper extends ContractWrapper {
         spenderAddress: string,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isETHAddressHex('spenderAddress', spenderAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
         const normalizedSpenderAddress = spenderAddress.toLowerCase();
-        assert.isETHAddressHex('ownerAddress', normalizedOwnerAddress);
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
-        assert.isETHAddressHex('spenderAddress', normalizedSpenderAddress);
         const txHash = await this.setAllowanceAsync(
             normalizedTokenAddress,
             normalizedOwnerAddress,
@@ -137,11 +137,12 @@ export class TokenWrapper extends ContractWrapper {
         spenderAddress: string,
         methodOpts?: MethodOpts,
     ): Promise<BigNumber> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isETHAddressHex('spenderAddress', spenderAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
         const normalizedSpenderAddress = spenderAddress.toLowerCase();
-        assert.isETHAddressHex('ownerAddress', normalizedOwnerAddress);
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
 
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
@@ -165,10 +166,10 @@ export class TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         methodOpts?: MethodOpts,
     ): Promise<BigNumber> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
-        assert.isETHAddressHex('ownerAddress', normalizedOwnerAddress);
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
 
         const proxyAddress = this._tokenTransferProxyWrapper.getContractAddress();
         const allowanceInBaseUnits = await this.getAllowanceAsync(
@@ -195,10 +196,10 @@ export class TokenWrapper extends ContractWrapper {
         amountInBaseUnits: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
-        assert.isETHAddressHex('ownerAddress', normalizedOwnerAddress);
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const proxyAddress = this._tokenTransferProxyWrapper.getContractAddress();
@@ -227,10 +228,10 @@ export class TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedOwnerAddress = ownerAddress.toLowerCase();
-        assert.isETHAddressHex('ownerAddress', normalizedOwnerAddress);
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
         const txHash = await this.setProxyAllowanceAsync(
             normalizedTokenAddress,
             normalizedOwnerAddress,
@@ -255,13 +256,12 @@ export class TokenWrapper extends ContractWrapper {
         amountInBaseUnits: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isETHAddressHex('toAddress', toAddress);
+        await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedFromAddress = fromAddress.toLowerCase();
         const normalizedToAddress = toAddress.toLowerCase();
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
-        assert.isETHAddressHex('toAddress', toAddress);
-        assert.isETHAddressHex('fromAddress', normalizedFromAddress);
-        await assert.isSenderAddressAsync('fromAddress', normalizedFromAddress, this._web3Wrapper);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
@@ -300,15 +300,14 @@ export class TokenWrapper extends ContractWrapper {
         amountInBaseUnits: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('toAddress', toAddress);
+        assert.isETHAddressHex('fromAddress', fromAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
         const normalizedToAddress = toAddress.toLowerCase();
         const normalizedFromAddress = fromAddress.toLowerCase();
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedSenderAddress = senderAddress.toLowerCase();
-        assert.isETHAddressHex('toAddress', normalizedToAddress);
-        assert.isETHAddressHex('fromAddress', normalizedFromAddress);
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
-        assert.isETHAddressHex('senderAddress', normalizedSenderAddress);
-        await assert.isSenderAddressAsync('senderAddress', normalizedSenderAddress, this._web3Wrapper);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
@@ -354,8 +353,8 @@ export class TokenWrapper extends ContractWrapper {
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
     ): string {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
@@ -396,8 +395,8 @@ export class TokenWrapper extends ContractWrapper {
         blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        assert.isETHAddressHex('tokenAddress', normalizedTokenAddress);
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);

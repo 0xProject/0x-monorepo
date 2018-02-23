@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.1.XX - TBD
+
+    * Remove isETHAddressHex checksum address check and assume address will be lowercased  (#373)
+
 ## v0.0.18 - _February 9, 2017_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)

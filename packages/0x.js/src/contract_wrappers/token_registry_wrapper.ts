@@ -57,8 +57,8 @@ export class TokenRegistryWrapper extends ContractWrapper {
      * @return  An object that conforms to the Token interface or undefined if token not found.
      */
     public async getTokenIfExistsAsync(address: string): Promise<Token | undefined> {
+        assert.isETHAddressHex('address', address);
         const normalizedAddress = address.toLowerCase();
-        assert.isETHAddressHex('address', normalizedAddress);
 
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const metadata = await tokenRegistryContract.getTokenMetaData.callAsync(normalizedAddress);

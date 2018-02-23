@@ -71,10 +71,10 @@ export class ZeroEx {
      * @return  Whether the signature is valid for the supplied signerAddress and data.
      */
     public static isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {
-        const normalizedSignerAddress = signerAddress.toLowerCase();
         assert.isHexString('data', data);
         assert.doesConformToSchema('signature', signature, schemas.ecSignatureSchema);
-        assert.isETHAddressHex('signerAddress', normalizedSignerAddress);
+        assert.isETHAddressHex('signerAddress', signerAddress);
+        const normalizedSignerAddress = signerAddress.toLowerCase();
 
         const isValidSignature = signatureUtils.isValidSignature(data, signature, normalizedSignerAddress);
         return isValidSignature;
@@ -245,9 +245,8 @@ export class ZeroEx {
         shouldAddPersonalMessagePrefix: boolean,
     ): Promise<ECSignature> {
         assert.isHexString('orderHash', orderHash);
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, this._web3Wrapper);
         const normalizedSignerAddress = signerAddress.toLowerCase();
-        assert.isETHAddressHex('signerAddress', normalizedSignerAddress);
-        await assert.isSenderAddressAsync('signerAddress', normalizedSignerAddress, this._web3Wrapper);
 
         let msgHashHex = orderHash;
         if (shouldAddPersonalMessagePrefix) {

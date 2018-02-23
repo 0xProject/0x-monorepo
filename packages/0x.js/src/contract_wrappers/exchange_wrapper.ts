@@ -179,9 +179,8 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-        assert.isETHAddressHex('takerAddress', normalizedTakerAddress);
-        await assert.isSenderAddressAsync('takerAddress', normalizedTakerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
         const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
@@ -255,9 +254,8 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-        assert.isETHAddressHex('takerAddress', normalizedTakerAddress);
-        await assert.isSenderAddressAsync('takerAddress', normalizedTakerAddress, this._web3Wrapper);
 
         const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
             ? SHOULD_VALIDATE_BY_DEFAULT
@@ -348,9 +346,8 @@ export class ExchangeWrapper extends ContractWrapper {
             ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress,
         );
         assert.isBoolean('shouldThrowOnInsufficientBalanceOrAllowance', shouldThrowOnInsufficientBalanceOrAllowance);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-        assert.isETHAddressHex('takerAddress', normalizedTakerAddress);
-        await assert.isSenderAddressAsync('takerAddress', normalizedTakerAddress, this._web3Wrapper);
         const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
             ? SHOULD_VALIDATE_BY_DEFAULT
             : orderTransactionOpts.shouldValidate;
@@ -422,9 +419,8 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-        assert.isETHAddressHex('takerAddress', normalizedTakerAddress);
-        await assert.isSenderAddressAsync('takerAddress', normalizedTakerAddress, this._web3Wrapper);
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
@@ -483,9 +479,8 @@ export class ExchangeWrapper extends ContractWrapper {
             exchangeContractAddresses,
             ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress,
         );
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-        assert.isETHAddressHex('takerAddress', normalizedTakerAddress);
-        await assert.isSenderAddressAsync('takerAddress', normalizedTakerAddress, this._web3Wrapper);
         if (_.isEmpty(orderFillRequests)) {
             throw new Error(ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem);
         }
@@ -555,7 +550,6 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isValidBaseUnitAmount('takerTokenCancelAmount', cancelTakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
         const normalizedMakerAddress = order.maker.toLowerCase();
-        assert.isETHAddressHex('order.maker', normalizedMakerAddress);
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
@@ -614,9 +608,8 @@ export class ExchangeWrapper extends ContractWrapper {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed);
         const maker = makers[0];
+        await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
         const normalizedMakerAddress = maker.toLowerCase();
-        assert.isETHAddressHex('maker', normalizedMakerAddress);
-        await assert.isSenderAddressAsync('maker', normalizedMakerAddress, this._web3Wrapper);
 
         const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
             ? SHOULD_VALIDATE_BY_DEFAULT
@@ -771,9 +764,8 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-        assert.isETHAddressHex('takerAddress', normalizedTakerAddress);
-        await assert.isSenderAddressAsync('takerAddress', normalizedTakerAddress, this._web3Wrapper);
         const zrxTokenAddress = this.getZRXTokenAddress();
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
         await this._orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
@@ -819,9 +811,8 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('fillTakerTokenAmount', fillTakerTokenAmount);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         const normalizedTakerAddress = takerAddress.toLowerCase();
-        assert.isETHAddressHex('takerAddress', normalizedTakerAddress);
-        await assert.isSenderAddressAsync('takerAddress', normalizedTakerAddress, this._web3Wrapper);
         const zrxTokenAddress = this.getZRXTokenAddress();
         const exchangeTradeEmulator = new ExchangeTransferSimulator(this._tokenWrapper, BlockParamLiteral.Latest);
         await this._orderValidationUtils.validateFillOrKillOrderThrowIfInvalidAsync(
@@ -892,11 +883,12 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isHexString('dataHex', dataHex);
         assert.doesConformToSchema('ecSignature', ecSignature, schemas.ecSignatureSchema);
         assert.isETHAddressHex('signerAddressHex', signerAddressHex);
+        const normalizedSignerAddress = signerAddressHex.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
         const isValidSignature = await exchangeInstance.isValidSignature.callAsync(
-            signerAddressHex,
+            normalizedSignerAddress,
             dataHex,
             ecSignature.v,
             ecSignature.r,

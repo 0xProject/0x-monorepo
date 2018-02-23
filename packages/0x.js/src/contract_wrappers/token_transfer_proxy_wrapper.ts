@@ -23,8 +23,8 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      * @return  Whether the exchangeContractAddress is authorized.
      */
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
+        assert.isETHAddressHex('exchangeContractAddress', exchangeContractAddress);
         const normalizedExchangeContractAddress = exchangeContractAddress.toLowerCase();
-        assert.isETHAddressHex('exchangeContractAddress', normalizedExchangeContractAddress);
         const tokenTransferProxyContractInstance = await this._getTokenTransferProxyContractAsync();
         const isAuthorized = await tokenTransferProxyContractInstance.authorized.callAsync(
             normalizedExchangeContractAddress,
