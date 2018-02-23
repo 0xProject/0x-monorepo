@@ -6,6 +6,9 @@
 // tslint:disable-next-line:no-unused-variable
 import { TxData, TxDataPayable } from '@0xproject/types';
 import { BigNumber, classUtils, promisify } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as ethersContracts from 'ethers-contracts';
+import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import {BaseContract} from './base_contract';
@@ -28,6 +31,7 @@ export enum {{contractName}}Events {
 {{/each}}
 {{/if}}
 
+// tslint:disable:no-parameter-reassignment
 export class {{contractName}}Contract extends BaseContract {
 {{#each methods}}
     {{#this.constant}}
@@ -37,8 +41,8 @@ export class {{contractName}}Contract extends BaseContract {
     {{> tx contractName=../contractName}}
     {{/this.constant}}
 {{/each}}
-    constructor(web3ContractInstance: Web3.ContractInstance, defaults: Partial<TxData>) {
-        super(web3ContractInstance, defaults);
-        classUtils.bindAll(this, ['_web3ContractInstance', '_defaults']);
+    constructor(web3Wrapper: Web3Wrapper, abi: Web3.ContractAbi, address: string) {
+        super(web3Wrapper, abi, address);
+        classUtils.bindAll(this, ['_ethersInterface', '_address', '_abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

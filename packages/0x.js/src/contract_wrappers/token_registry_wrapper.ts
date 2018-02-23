@@ -23,7 +23,7 @@ export class TokenRegistryWrapper extends ContractWrapper {
             address: metadata[0],
             name: metadata[1],
             symbol: metadata[2],
-            decimals: metadata[3].toNumber(),
+            decimals: metadata[3],
         };
         return token;
     }
@@ -50,7 +50,8 @@ export class TokenRegistryWrapper extends ContractWrapper {
     public async getTokenAddressesAsync(): Promise<string[]> {
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
         const addresses = await tokenRegistryContract.getTokenAddresses.callAsync();
-        return addresses;
+        const lowerCaseAddresses = _.map(addresses, address => address.toLowerCase());
+        return lowerCaseAddresses;
     }
     /**
      * Retrieves a token by address currently listed in the Token Registry smart contract
@@ -116,14 +117,11 @@ export class TokenRegistryWrapper extends ContractWrapper {
         if (!_.isUndefined(this._tokenRegistryContractIfExists)) {
             return this._tokenRegistryContractIfExists;
         }
-        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
+        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
             artifacts.TokenRegistryArtifact,
             this._contractAddressIfExists,
         );
-        const contractInstance = new TokenRegistryContract(
-            web3ContractInstance,
-            this._web3Wrapper.getContractDefaults(),
-        );
+        const contractInstance = new TokenRegistryContract(this._web3Wrapper, abi, address);
         this._tokenRegistryContractIfExists = contractInstance;
         return this._tokenRegistryContractIfExists;
     }

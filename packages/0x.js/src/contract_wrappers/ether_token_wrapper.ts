@@ -187,11 +187,11 @@ export class EtherTokenWrapper extends ContractWrapper {
         if (!_.isUndefined(etherTokenContract)) {
             return etherTokenContract;
         }
-        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
+        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
             artifacts.EtherTokenArtifact,
             etherTokenAddress,
         );
-        const contractInstance = new EtherTokenContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
+        const contractInstance = new EtherTokenContract(this._web3Wrapper, abi, address);
         etherTokenContract = contractInstance;
         this._etherTokenContractsByAddress[etherTokenAddress] = etherTokenContract;
         return etherTokenContract;

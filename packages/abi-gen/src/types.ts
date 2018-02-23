@@ -12,6 +12,11 @@ export enum AbiType {
     Fallback = 'fallback',
 }
 
+export enum ContractsBackend {
+    Web3 = 'web3',
+    Ethers = 'ethers',
+}
+
 export interface Method extends Web3.MethodAbi {
     singleReturnValue: boolean;
 }

@@ -59,14 +59,11 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
         if (!_.isUndefined(this._tokenTransferProxyContractIfExists)) {
             return this._tokenTransferProxyContractIfExists;
         }
-        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
+        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
             artifacts.TokenTransferProxyArtifact,
             this._contractAddressIfExists,
         );
-        const contractInstance = new TokenTransferProxyContract(
-            web3ContractInstance,
-            this._web3Wrapper.getContractDefaults(),
-        );
+        const contractInstance = new TokenTransferProxyContract(this._web3Wrapper, abi, address);
         this._tokenTransferProxyContractIfExists = contractInstance;
         return this._tokenTransferProxyContractIfExists;
     }
