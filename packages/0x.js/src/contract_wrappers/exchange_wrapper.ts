@@ -554,6 +554,8 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isValidBaseUnitAmount('takerTokenCancelAmount', cancelTakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
+        const normalizedMakerAddress = order.maker.toLowerCase();
+        assert.isETHAddressHex('order.maker', normalizedMakerAddress);
 
         const exchangeInstance = await this._getExchangeContractAsync();
 
@@ -576,7 +578,7 @@ export class ExchangeWrapper extends ContractWrapper {
             orderValues,
             cancelTakerTokenAmount,
             {
-                from: order.maker,
+                from: normalizedMakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
             },
@@ -612,7 +614,10 @@ export class ExchangeWrapper extends ContractWrapper {
         const makers = _.map(orderCancellationRequests, cancellationRequest => cancellationRequest.order.maker);
         assert.hasAtMostOneUniqueValue(makers, ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed);
         const maker = makers[0];
-        await assert.isSenderAddressAsync('maker', maker, this._web3Wrapper);
+        const normalizedMakerAddress = maker.toLowerCase();
+        assert.isETHAddressHex('maker', normalizedMakerAddress);
+        await assert.isSenderAddressAsync('maker', normalizedMakerAddress, this._web3Wrapper);
+
         const shouldValidate = _.isUndefined(orderTransactionOpts.shouldValidate)
             ? SHOULD_VALIDATE_BY_DEFAULT
             : orderTransactionOpts.shouldValidate;
@@ -646,7 +651,7 @@ export class ExchangeWrapper extends ContractWrapper {
             orderValues,
             cancelTakerTokenAmounts,
             {
-                from: maker,
+                from: normalizedMakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
             },
