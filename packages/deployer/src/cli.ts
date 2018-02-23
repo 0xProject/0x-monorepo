@@ -10,8 +10,8 @@ import { constants } from './utils/constants';
 import { CliOptions, CompilerOptions, DeployerOptions } from './utils/types';
 
 const DEFAULT_OPTIMIZER_ENABLED = false;
-const DEFAULT_CONTRACTS_DIR = path.resolve('src');
-const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
+const DEFAULT_CONTRACTS_DIR = path.resolve('src/contracts');
+const DEFAULT_ARTIFACTS_DIR = path.resolve('src/artifacts');
 const DEFAULT_NETWORK_ID = 50;
 const DEFAULT_JSONRPC_PORT = 8545;
 const DEFAULT_GAS_PRICE = (10 ** 9 * 2).toString();
