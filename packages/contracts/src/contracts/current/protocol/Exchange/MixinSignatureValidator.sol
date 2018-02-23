@@ -96,9 +96,10 @@ contract MixinSignatureValidator is
             );
             isValid = signer == recovered;
             return isValid;
-            
+        
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
+            require(signature.length == 66);
             v = uint8(signature[1]);
             r = get32(signature, 2);
             s = get32(signature, 34);
