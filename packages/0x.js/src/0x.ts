@@ -13,6 +13,8 @@ import { TokenTransferProxyWrapper } from './contract_wrappers/token_transfer_pr
 import { TokenWrapper } from './contract_wrappers/token_wrapper';
 import { OrderStateWatcher } from './order_watcher/order_state_watcher';
 import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
+import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
+import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
 import { ECSignature, Order, SignedOrder, Web3Provider, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
@@ -163,7 +165,10 @@ export class ZeroEx {
      */
     constructor(provider: Web3Provider, config: ZeroExConfig) {
         assert.isWeb3Provider('provider', provider);
-        assert.doesConformToSchema('config', config, zeroExConfigSchema);
+        assert.doesConformToSchema('config', config, zeroExConfigSchema, [
+            zeroExPrivateNetworkConfigSchema,
+            zeroExPublicNetworkConfigSchema,
+        ]);
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
         this._abiDecoder = new AbiDecoder(abiArrays);
