@@ -13,6 +13,13 @@ import * as mainnetTokensEnvironmentJSON from '../postman_configs/environments/m
 
 import { utils } from './utils';
 
+interface GlobalsValue {
+    key: string;
+    value: string;
+    enabled: boolean;
+    type: string;
+}
+
 const DEFAULT_NETWORK_ID = 1;
 const SUPPORTED_NETWORK_IDS = [1, 42];
 
@@ -73,19 +80,30 @@ function createGlobals(url: string, schemaList: Schema[]) {
         enabled: true,
         type: 'text',
     };
-    const schemaGlobalsValues = _.compact(_.map(schemaList, (schema: Schema) => {
-        if (_.isUndefined(schema.id)) {
-            return undefined;
-        } else {
-            return {
-                key: convertSchemaIdToKey(schema.id),
-                value: JSON.stringify(schema),
-                enabled: true,
-                type: 'text',
-            };
-        }
-    }));
-    const globalsValues = _.concat(schemaGlobalsValues, urlGlobalsValue);
+    const schemaGlobalsValues = _.compact(
+        _.map(schemaList, (schema: Schema) => {
+            if (_.isUndefined(schema.id)) {
+                return undefined;
+            } else {
+                return {
+                    key: convertSchemaIdToKey(schema.id),
+                    value: JSON.stringify(schema),
+                    enabled: true,
+                    type: 'text',
+                };
+            }
+        }),
+    );
+    const schemaKeys = _.map(schemaGlobalsValues, (globalsValue: GlobalsValue) => {
+        return globalsValue.key;
+    });
+    const schemaKeysGlobalsValue = {
+        key: 'schemaKeys',
+        value: JSON.stringify(schemaKeys),
+        enabled: true,
+        type: 'text',
+    };
+    const globalsValues = _.concat(schemaGlobalsValues, urlGlobalsValue, schemaKeysGlobalsValue);
     const globals = {
         values: globalsValues,
     };
