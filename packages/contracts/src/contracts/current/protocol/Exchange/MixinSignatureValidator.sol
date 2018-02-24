@@ -31,6 +31,7 @@ contract MixinSignatureValidator is
         Caller,
         Ecrecover,
         EIP712,
+        Trezor,
         Contract
     }
   
@@ -104,6 +105,28 @@ contract MixinSignatureValidator is
             r = get32(signature, 2);
             s = get32(signature, 34);
             recovered = ecrecover(hash, v, r, s);
+            isValid = signer == recovered;
+            return isValid;
+        
+        // Signature from Trezor hardware wallet
+        // It differs from web3.eth_sign in the encoding of message length
+        // (Bitcoin varint encoding vs ascii-decimal, the later is not
+        // self-terminating which leads to ambiguities).
+        // See also:
+        // https://en.bitcoin.it/wiki/Protocol_documentation#Variable_length_integer
+        // https://github.com/trezor/trezor-mcu/blob/master/firmware/ethereum.c#L602
+        // https://github.com/trezor/trezor-mcu/blob/master/firmware/crypto.c#L36
+        } else if (signatureType == SignatureType.Trezor) {
+            require(signature.length == 66);
+            v = uint8(signature[1]);
+            r = get32(signature, 2);
+            s = get32(signature, 34);
+            recovered = ecrecover(
+                keccak256("\x19Ethereum Signed Message:\n\x41", hash),
+                v,
+                r,
+                s
+            );
             isValid = signer == recovered;
             return isValid;
         
