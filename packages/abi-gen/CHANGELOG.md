@@ -2,8 +2,8 @@
 
 ## v0.2.3 - _TBD, 2018_
 
-    * Add a `backend` parameter that allows you to specify your backend (web3 or ethers). Ethers auto-converts small ints to numbers (#TBD)
-    * Add support for ABIv2 (#TBD)
+    * Add a `backend` parameter that allows you to specify your backend (web3 or ethers). Ethers auto-converts small ints to numbers (#413)
+    * Add support for ABIv2 (#413)
 
 ## v0.2.1 - _February 9, 2018_
 

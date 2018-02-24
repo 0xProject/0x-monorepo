@@ -2,7 +2,7 @@
 
 ## v0.2.4 - _TBD, 2018_
 
-    * Add `data` to `TxData` (#TBD)
+    * Add `data` to `TxData` (#413)
 
 ## v0.2.1 - _February 9, 2018_
 
