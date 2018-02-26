@@ -13,7 +13,6 @@ import { TypeDefinition } from 'ts/pages/documentation/type_definition';
 import { MarkdownSection } from 'ts/pages/shared/markdown_section';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { SectionHeader } from 'ts/pages/shared/section_header';
-import { Dispatcher } from 'ts/redux/dispatcher';
 import {
     AddressByContractName,
     DocAgnosticFormat,
@@ -31,7 +30,6 @@ import {
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const TOP_BAR_HEIGHT = 60;
@@ -46,11 +44,9 @@ const networkNameToColor: { [network: string]: string } = {
 
 export interface DocumentationProps {
     location: Location;
-    dispatcher: Dispatcher;
     docsVersion: string;
     availableDocVersions: string[];
     docsInfo: DocsInfo;
-    translate: Translate;
     docAgnosticFormat?: DocAgnosticFormat;
     menuSubsectionsBySection: MenuSubsectionsBySection;
 }
