@@ -27,7 +27,7 @@ export class TokenRegWrapper {
             address: data[0],
             name: data[1],
             symbol: data[2],
-            decimals: data[3].toNumber(),
+            decimals: data[3],
             ipfsHash: data[4],
             swarmHash: data[5],
         };
@@ -39,7 +39,7 @@ export class TokenRegWrapper {
             address: data[0],
             name: data[1],
             symbol: data[2],
-            decimals: data[3].toNumber(),
+            decimals: data[3],
             ipfsHash: data[4],
             swarmHash: data[5],
         };
@@ -51,7 +51,7 @@ export class TokenRegWrapper {
             address: data[0],
             name: data[1],
             symbol: data[2],
-            decimals: data[3].toNumber(),
+            decimals: data[3],
             ipfsHash: data[4],
             swarmHash: data[5],
         };
