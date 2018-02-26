@@ -42,6 +42,7 @@ export const constants = {
     PROVIDER_NAME_GENERIC: 'Injected Web3',
     PROVIDER_NAME_PUBLIC: '0x Public',
     ROLLBAR_ACCESS_TOKEN: 'a6619002b51c4464928201e6ea94de65',
+    S3_BUCKET_ROOT: 'https://s3.amazonaws.com',
     SUCCESS_STATUS: 200,
     UNAVAILABLE_STATUS: 503,
     TAKER_FEE: new BigNumber(0),

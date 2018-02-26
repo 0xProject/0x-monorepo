@@ -37,15 +37,11 @@ const zeroExJsDocSections = {
     types: constants.TYPES_SECTION_NAME,
 };
 
-const s3BucketName = configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons';
-const docsJsonRoot = `https://s3.amazonaws.com/${s3BucketName}`;
-
 const docsInfoConfig: DocsInfoConfig = {
     displayName: '0x.js',
     packageUrl: 'https://github.com/0xProject/0x.js',
     subPackageName: '0x.js',
     websitePath: WebsitePaths.ZeroExJs,
-    docsJsonRoot,
     menu: {
         introduction: [zeroExJsDocSections.introduction],
         install: [zeroExJsDocSections.installation],

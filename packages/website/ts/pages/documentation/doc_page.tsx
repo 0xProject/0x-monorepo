@@ -7,9 +7,18 @@ import { TopBar } from 'ts/components/top_bar/top_bar';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { Documentation } from 'ts/pages/documentation/documentation';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DocAgnosticFormat, DoxityDocObj, MenuSubsectionsBySection } from 'ts/types';
+import { DocAgnosticFormat, DoxityDocObj, Environments, MenuSubsectionsBySection } from 'ts/types';
+import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
+
+const displayNameToS3BucketName: { [displayName: string]: string } = {
+    '0x.js': configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons',
+    '0x Smart Contracts': 'smart-contracts-docs-json',
+    '0x Connect':
+        configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-connect-docs-jsons' : 'connect-docs-jsons',
+};
 
 export interface DocPageProps {
     location: Location;
@@ -74,6 +83,8 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         );
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
+        const s3BucketName = displayNameToS3BucketName[this.props.docsInfo.displayName];
+        const docsJsonRoot = `${constants.S3_BUCKET_ROOT}/${s3BucketName}`;
         const versionToFileName = await docUtils.getVersionToFileNameAsync(this.props.docsInfo.docsJsonRoot);
         const versions = _.keys(versionToFileName);
         this.props.dispatcher.updateAvailableDocVersions(versions);

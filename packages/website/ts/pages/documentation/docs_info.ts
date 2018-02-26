@@ -15,7 +15,6 @@ export class DocsInfo {
     public packageUrl: string;
     public subPackageName?: string;
     public websitePath: string;
-    public docsJsonRoot: string;
     public menu: DocsMenu;
     public sections: SectionsMap;
     public sectionNameToMarkdown: { [sectionName: string]: string };
@@ -25,7 +24,6 @@ export class DocsInfo {
         this.packageUrl = config.packageUrl;
         this.subPackageName = config.subPackageName;
         this.websitePath = config.websitePath;
-        this.docsJsonRoot = config.docsJsonRoot;
         this.sections = config.sections;
         this.sectionNameToMarkdown = config.sectionNameToMarkdown;
         this._docsInfo = config;

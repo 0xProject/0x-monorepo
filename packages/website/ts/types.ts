@@ -631,7 +631,6 @@ export interface DocsInfoConfig {
     displayName: string;
     packageUrl: string;
     websitePath: string;
-    docsJsonRoot: string;
     menu: DocsMenu;
     sections: SectionsMap;
     sectionNameToMarkdown: { [sectionName: string]: string };

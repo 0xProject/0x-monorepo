@@ -18,7 +18,6 @@ const docsInfoConfig: DocsInfoConfig = {
     displayName: '0x Smart Contracts',
     packageUrl: 'https://github.com/0xProject/contracts',
     websitePath: WebsitePaths.SmartContracts,
-    docsJsonRoot: 'https://s3.amazonaws.com/smart-contracts-docs-json',
     menu: {
         introduction: [Sections.Introduction],
         contracts: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
