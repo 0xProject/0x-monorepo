@@ -61,53 +61,95 @@ contract MixinWrapperFunctions is
         public
         returns (bool success, uint256 takerTokenFilledAmount)
     {
-        bytes4 FILL_ORDER_FUNCTION_SIGNATURE = bytes4(keccak256("fillOrder(address[5],uint256[6],uint256,uint8,bytes32,bytes32)"));
+        // We need to call MExchangeCore.fillOrder using a delegatecall in
+        // assembly so that we can intercept a call that throws. For this, we
+        // need the input encoded in memory in the Ethereum ABI format [1].
+        //
+        // | Offset | Length | Contents                     |
+        // |--------|--------|------------------------------|
+        // | 0      | 4      | function selector            |
+        // | 4      | 160    | address[5] orderAddresses    |
+        // | 164    | 192    | uint256[6] orderValues       |
+        // | 356    | 32     | uint256 takerTokenFillAmount |
+        // | 388    | 32     | len(signature)               |
+        // | 420    | (1)    | signature                    |
+        // | (2)    | (3)    | padding (zero)               |
+        // | (4)    |        | end of input                 |
+        //
+        // (1): len(signature)
+        // (2): 420 + len(signature)
+        // (3): (32 - len(signature)) mod 32
+        // (4): 420 + len(signature) + (32 - len(signature)) mod 32
+        //
+        // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
         
-        // Input size is padded to a 4 + n * 32 byte boundary
-        // TODO: Construct the input array using readable Solidity instead
-        //       of assembly.
-        uint256 mask = 0x1F;
-        uint256 inputSize = 388 + (signature.length + mask) & ~mask;
+        // Allocate memory for input
+        uint256 signatureLength = signature.length;
+        uint256 paddingLength = (32 - signatureLength) % 32
+        uint256 inputSize = 420 + signatureLength + paddingLength;
+        bytes memory input = new bytes(inputSize);
         
+        // The in memory layout of `bytes memory input` starts with
+        // `uint256 length`, the content of the byte array starts at
+        // offset 32 from the pointer. We need assembly to access the
+        // raw pointer value of `input`.
+        // TODO: I can not find an official source for this.
+        uint256 start;
         assembly {
-            let x := mload(0x40)  // free memory pointer
-            mstore(x, FILL_ORDER_FUNCTION_SIGNATURE)
-
-            // first 32 bytes of a dynamic in-memory array contains length
-            mstore(add(x, 4), add(orderAddresses, 32))     // maker
-            mstore(add(x, 36), add(orderAddresses, 64))    // taker
-            mstore(add(x, 68), add(orderAddresses, 96))    // makerToken
-            mstore(add(x, 100), add(orderAddresses, 128))  // takerToken
-            mstore(add(x, 132), add(orderAddresses, 160))  // feeRecipient
-            mstore(add(x, 164), add(orderValues, 32))      // makerTokenAmount
-            mstore(add(x, 196), add(orderValues, 64))      // takerTokenAmount
-            mstore(add(x, 228), add(orderValues, 96))      // makerFee
-            mstore(add(x, 260), add(orderValues, 128))     // takerFee
-            mstore(add(x, 292), add(orderValues, 160))     // expirationTimestampInSec
-            mstore(add(x, 324), add(orderValues, 192))     // salt
-            mstore(add(x, 356), takerTokenFillAmount)
-            for {
-                let src := signature
-                let dst := add(x, 388)
-                let end := add(add(src, mload(signature)), 32)
-            } lt(src, end) { 
-                src := add(src, 32)
-                dst := add(dst, 32)
-            } {
-                mstore(dst, mload(src))
-                // TODO: zero the padding
-            }
-
+            start := add(input, 32)
+        }
+        
+        // Write function signature
+        // We use assembly to write four bytes at a time (actually 32,
+        // but we are only overwriting uninitialized data). A `bytes4`
+        // is stored by value as 256-bit and right-padded with zeros.
+        bytes4 FILL_ORDER_FUNCTION_SIGNATURE = bytes4(keccak256("fillOrder(address[5],uint256[6],uint256,uint8,bytes32,bytes32)"));
+        assembly {
+            mstore(start, FILL_ORDER_FUNCTION_SIGNATURE);
+        }
+        
+        // Write orderAddresses, orderValues, takerTokenFillAmount
+        // and len(signature)
+        // It is done in assembly so we can write 32 bytes at a time. In
+        // solidity we would have to copy one byte at a time.
+        // Fixed size arrays do not have the `uint256 length` prefix that
+        // dynamic arrays have [citation needed].
+        assembly {
+            mstore(add(start, 4), orderAddresses)              // maker
+            mstore(add(start, 36), add(orderAddresses, 32))    // taker
+            mstore(add(start, 68), add(orderAddresses, 64))    // makerToken
+            mstore(add(start, 100), add(orderAddresses, 96))   // takerToken
+            mstore(add(start, 132), add(orderAddresses, 128))  // feeRecipient
+            mstore(add(start, 164), orderValues)            // makerTokenAmount
+            mstore(add(start, 196), add(orderValues, 32))   // takerTokenAmount
+            mstore(add(start, 228), add(orderValues, 64))   // makerFee
+            mstore(add(start, 260), add(orderValues, 96))   // takerFee
+            mstore(add(start, 292), add(orderValues, 128))  // expiration
+            mstore(add(start, 356), takerTokenFillAmount)
+            mstore(add(start, 388), signatureLength)
+        }
+        
+        // Write signature contents and padding one byte at a time
+        for (uint256 i = 0; i < signatureLength; i++) {
+            input[420 + i] = signature[i];
+        }
+        for (uint256 i = 0; i < paddingLength; i++) {
+            input[420 + signatureLength + i] = 0x00;
+        }
+        
+        // Call the function
+        assembly {
             success := delegatecall(
-                gas,       // TODO: don't send all gas, save some for returning in case of throw
+                gas,       // If fillOrder `revert()`s, we recover unused gas
                 address,   // call this contract
-                x,         // inputs start at x
-                inputSize, // input are size
-                x,         // store output over input
+                start,     // pointer to start of input
+                inputSize, // length of input
+                start,     // store output over input
                 32         // output is 32 bytes
             )
-
-            takerTokenFilledAmount := mload(x)
+            
+            // Read output value (uint256 takerTokenFilledAmount)
+            takerTokenFilledAmount := mload(start)
         }
         return (success, takerTokenFilledAmount);
     }
