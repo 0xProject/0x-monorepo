@@ -85,7 +85,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
         const s3BucketName = displayNameToS3BucketName[this.props.docsInfo.displayName];
         const docsJsonRoot = `${constants.S3_BUCKET_ROOT}/${s3BucketName}`;
-        const versionToFileName = await docUtils.getVersionToFileNameAsync(this.props.docsInfo.docsJsonRoot);
+        const versionToFileName = await docUtils.getVersionToFileNameAsync(docsJsonRoot);
         const versions = _.keys(versionToFileName);
         this.props.dispatcher.updateAvailableDocVersions(versions);
         const sortedVersions = semverSort.desc(versions);
@@ -101,10 +101,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         this.props.dispatcher.updateCurrentDocsVersion(versionToFetch);
 
         const versionFileNameToFetch = versionToFileName[versionToFetch];
-        const versionDocObj = await docUtils.getJSONDocFileAsync(
-            versionFileNameToFetch,
-            this.props.docsInfo.docsJsonRoot,
-        );
+        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFileNameToFetch, docsJsonRoot);
         const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
 
         if (!this._isUnmounted) {
