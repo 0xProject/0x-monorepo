@@ -201,11 +201,9 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 {item.isExternal ? (
                     <a className="text-decoration-none" style={linkStyle} target="_blank" href={item.path}>
                         {!_.isUndefined(iconIfExists) ? (
-                            <div className="sm-mx-auto" style={{ width: 65 }}>
-                                <div className="flex">
-                                    <div className="pr1">{this._renderIcon(iconIfExists)}</div>
-                                    <div>{item.title}</div>
-                                </div>
+                            <div className="inline-block">
+                                <div className="pr1 table-cell">{this._renderIcon(iconIfExists)}</div>
+                                <div className="table-cell">{item.title}</div>
                             </div>
                         ) : (
                             item.title

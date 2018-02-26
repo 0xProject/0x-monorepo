@@ -4,7 +4,7 @@ import 'mocha';
 import { Compiler } from '../src/compiler';
 import { Deployer } from '../src/deployer';
 import { fsWrapper } from '../src/utils/fs_wrapper';
-import { CompilerOptions, ContractArtifact, ContractData, DoneCallback } from '../src/utils/types';
+import { CompilerOptions, ContractArtifact, ContractNetworkData, DoneCallback } from '../src/utils/types';
 
 import { constructor_args, exchange_binary } from './fixtures/exchange_bin';
 import { constants } from './util/constants';
@@ -51,7 +51,7 @@ describe('#Compiler', () => {
         };
         const exchangeArtifactString = await fsWrapper.readFileAsync(exchangeArtifactPath, opts);
         const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
-        const exchangeContractData: ContractData = exchangeArtifact.networks[constants.networkId];
+        const exchangeContractData: ContractNetworkData = exchangeArtifact.networks[constants.networkId];
         // The last 43 bytes of the binaries are metadata which may not be equivalent
         const unlinkedBinaryWithoutMetadata = exchangeContractData.unlinked_binary.slice(0, -86);
         const exchangeBinaryWithoutMetadata = exchange_binary.slice(0, -86);
@@ -68,7 +68,7 @@ describe('#Deployer', () => {
             };
             const exchangeArtifactString = await fsWrapper.readFileAsync(exchangeArtifactPath, opts);
             const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
-            const exchangeContractData: ContractData = exchangeArtifact.networks[constants.networkId];
+            const exchangeContractData: ContractNetworkData = exchangeArtifact.networks[constants.networkId];
             const exchangeAddress = exchangeContractInstance.address;
             expect(exchangeAddress).to.not.equal(undefined);
             expect(exchangeContractData.address).to.equal(undefined);
@@ -84,7 +84,7 @@ describe('#Deployer', () => {
             };
             const exchangeArtifactString = await fsWrapper.readFileAsync(exchangeArtifactPath, opts);
             const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
-            const exchangeContractData: ContractData = exchangeArtifact.networks[constants.networkId];
+            const exchangeContractData: ContractNetworkData = exchangeArtifact.networks[constants.networkId];
             const exchangeAddress = exchangeContractInstance.address;
             expect(exchangeAddress).to.be.equal(exchangeContractData.address);
             expect(constructor_args).to.be.equal(exchangeContractData.constructor_args);

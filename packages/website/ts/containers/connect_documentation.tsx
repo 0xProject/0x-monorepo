@@ -64,6 +64,7 @@ const docsInfoConfig: DocsInfoConfig = {
         'TokenPairsRequest',
         'TokenPairsRequestOpts',
         'TokenTradeInfo',
+        'WebSocketOrderbookChannelConfig',
         'Order',
         'SignedOrder',
         'ECSignature',

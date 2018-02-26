@@ -67,7 +67,7 @@
     "STANDARD_RELAYER_API": "standard relayer API",
     "PORTAL_DAPP": "portal dApp",
     "WEBSITE": "website",
-    "DEVELOPERS": "home",
-    "HOME": "rocket.chat",
-    "ROCKETCHAT": "developers"
+    "DEVELOPERS": "developers",
+    "HOME": "home",
+    "ROCKETCHAT": "rocket.chat"
 }

@@ -6,6 +6,7 @@ import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
 import { commands } from './commands';
+import { constants } from './utils/constants';
 import { CliOptions, CompilerOptions, DeployerOptions } from './utils/types';
 
 const DEFAULT_OPTIMIZER_ENABLED = false;
@@ -101,7 +102,8 @@ function getContractsSetFromList(contracts: string): Set<string> {
     const specifiedContracts = new Set();
     const contractsArray = contracts.split(',');
     _.forEach(contractsArray, contractName => {
-        specifiedContracts.add(contractName);
+        const fileName = `${contractName}${constants.SOLIDITY_FILE_EXTENSION}`;
+        specifiedContracts.add(fileName);
     });
     return specifiedContracts;
 }

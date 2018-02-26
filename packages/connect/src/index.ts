@@ -17,4 +17,5 @@ export {
     TokenPairsItem,
     TokenPairsRequestOpts,
     TokenTradeInfo,
+    WebSocketOrderbookChannelConfig,
 } from './types';

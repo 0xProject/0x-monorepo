@@ -1,8 +1,13 @@
 # CHANGELOG
 
-## v0.6.0 - _TBD, 2018_
+## v0.6.1 - _February 16, 2018_
+
+    * Fix JSON parse empty response (#407)
+
+## v0.6.0 - _February 16, 2018_
 
     * Add pagination options to HttpClient methods (#393)
+    * Add heartbeat configuration to WebSocketOrderbookChannel constructor (#406)
 
 ## v0.5.7 - _February 9, 2018_
 
