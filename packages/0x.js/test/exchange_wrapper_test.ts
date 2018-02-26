@@ -922,7 +922,7 @@ describe('ExchangeWrapper', () => {
             );
         });
         afterEach(async () => {
-            zeroEx.exchange._unsubscribeAll();
+            zeroEx.exchange.unsubscribeAll();
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
         // Since we need to await the receipt of the event in the `subscribe` callback,

@@ -151,7 +151,7 @@ export class EtherTokenWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public _unsubscribeAll(): void {
+    public unsubscribeAll(): void {
         super._unsubscribeAll();
     }
     /**
@@ -168,7 +168,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         return contractAddressIfExists;
     }
     private _invalidateContractInstance(): void {
-        this._unsubscribeAll();
+        this.unsubscribeAll();
         this._etherTokenContractsByAddress = {};
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<EtherTokenContract> {

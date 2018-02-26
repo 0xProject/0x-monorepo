@@ -2,6 +2,7 @@
 
 ## v0.33.0 - _TBD, 2018_
 
+    * Rename all public `_unsubscribeAll` methods to `unsubscribeAll` (#415)
     * Improve validation to force passing contract addresses on private networks (#385)
 
 ## v0.32.2 - _February 9, 2018_
