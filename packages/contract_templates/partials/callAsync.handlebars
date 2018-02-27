@@ -7,6 +7,7 @@ async callAsync(
 {{^this.payable}}
     txData: TxData = {},
 {{/this.payable}}
+    defaultBlock?: Web3.BlockParam,
 ): Promise<{{> return_type outputs=outputs}}> {
     const self = this as {{contractName}}Contract;
     const inputAbi = _.find(this.abi, {name: '{{this.name}}'}).inputs;
@@ -19,7 +20,7 @@ async callAsync(
             data: encodedData,
         }
     )
-    const rawCallResult = await self._web3Wrapper.callAsync(callData);
+    const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
     const outputAbi = _.find(this.abi, {name: '{{this.name}}'}).outputs as Web3.DataItem[];
     const outputParamsTypes = _.map(outputAbi, 'type');
     let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;

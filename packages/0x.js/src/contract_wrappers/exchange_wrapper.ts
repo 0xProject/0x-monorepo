@@ -108,8 +108,10 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeContract = await this._getExchangeContractAsync();
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+        const txData = {};
         let unavailableTakerTokenAmount = await exchangeContract.getUnavailableTakerTokenAmount.callAsync(
             orderHash,
+            txData,
             defaultBlock,
         );
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
@@ -127,7 +129,8 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeContract = await this._getExchangeContractAsync();
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
-        let fillAmountInBaseUnits = await exchangeContract.filled.callAsync(orderHash, defaultBlock);
+        const txData = {};
+        let fillAmountInBaseUnits = await exchangeContract.filled.callAsync(orderHash, txData, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         fillAmountInBaseUnits = new BigNumber(fillAmountInBaseUnits);
         return fillAmountInBaseUnits;
@@ -144,7 +147,8 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeContract = await this._getExchangeContractAsync();
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
-        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.callAsync(orderHash, defaultBlock);
+        const txData = {};
+        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.callAsync(orderHash, txData, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         cancelledAmountInBaseUnits = new BigNumber(cancelledAmountInBaseUnits);
         return cancelledAmountInBaseUnits;

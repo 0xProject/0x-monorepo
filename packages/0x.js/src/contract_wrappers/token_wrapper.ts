@@ -51,7 +51,8 @@ export class TokenWrapper extends ContractWrapper {
 
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
-        let balance = await tokenContract.balanceOf.callAsync(normalizedOwnerAddress, defaultBlock);
+        const txData = {};
+        let balance = await tokenContract.balanceOf.callAsync(normalizedOwnerAddress, txData, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         balance = new BigNumber(balance);
         return balance;
@@ -146,9 +147,11 @@ export class TokenWrapper extends ContractWrapper {
 
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+        const txData = {};
         let allowanceInBaseUnits = await tokenContract.allowance.callAsync(
             normalizedOwnerAddress,
             normalizedSpenderAddress,
+            txData,
             defaultBlock,
         );
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
