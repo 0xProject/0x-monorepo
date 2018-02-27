@@ -36,7 +36,7 @@
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
         "typescript": "2.7.1",
-        "ethers-typescript-typings": "^0.9.11",
+        "ethers-typescript-typings": "^0.0.1",
         "web3-typescript-typings": "^0.9.11"
     },
     "dependencies": {
