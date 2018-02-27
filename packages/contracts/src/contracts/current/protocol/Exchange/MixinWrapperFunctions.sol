@@ -56,35 +56,32 @@ contract MixinWrapperFunctions is
         public
         returns (bool success, uint256 takerTokenFilledAmount)
     {
-        // !!! TODO !!! Update to `Order order` parameter
-        
         // We need to call MExchangeCore.fillOrder using a delegatecall in
         // assembly so that we can intercept a call that throws. For this, we
         // need the input encoded in memory in the Ethereum ABIv2 format [1].
         //
-        // | Offset | Length | Contents                     |
-        // |--------|--------|------------------------------|
-        // | 0      | 4      | function selector            |
-        // | 4      | 160    | address[5] orderAddresses    |
-        // | 164    | 192    | uint256[6] orderValues       |
-        // | 356    | 32     | uint256 takerTokenFillAmount |
-        // | 388    | 32     | offset to signature (416)    |
-        // | 420    | 32     | len(signature)               |
-        // | 452    | (1)    | signature                    |
-        // | (2)    | (3)    | padding (zero)               |
-        // | (4)    |        | end of input                 |
+        // | Offset | Length  | Contents                     |
+        // |--------|---------|------------------------------|
+        // | 0      | 4       | function selector            |
+        // | 4      | 12 * 32 | Order order                  |
+        // | 388    | 32      | uint256 takerTokenFillAmount |
+        // | 420    | 32      | offset to signature (448)    |
+        // | 452    | 32      | len(signature)               |
+        // | 486    | (1)     | signature                    |
+        // | (2)    | (3)     | padding (zero)               |
+        // | (4)    |         | end of input                 |
         //
         // (1): len(signature)
-        // (2): 452 + len(signature)
+        // (2): 486 + len(signature)
         // (3): (32 - len(signature)) mod 32
-        // (4): 452 + len(signature) + (32 - len(signature)) mod 32
+        // (4): 486 + len(signature) + (32 - len(signature)) mod 32
         //
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
         
         // Allocate memory for input
         uint256 signatureLength = signature.length;
         uint256 paddingLength = (32 - signatureLength) % 32
-        uint256 inputSize = 452 + signatureLength + paddingLength;
+        uint256 inputSize = 486 + signatureLength + paddingLength;
         bytes memory input = new bytes(inputSize);
         
         // The in memory layout of `bytes memory input` starts with
@@ -106,34 +103,43 @@ contract MixinWrapperFunctions is
             mstore(start, FILL_ORDER_FUNCTION_SIGNATURE);
         }
         
-        // Write orderAddresses, orderValues, takerTokenFillAmount,
-        // offset to signature and len(signature)
-        // It is done in assembly so we can write 32 bytes at a time. In
-        // solidity we would have to copy one byte at a time.
-        // Fixed size arrays do not have the `uint256 length` prefix that
-        // dynamic arrays have [citation needed].
+        // Use identity function precompile to cheaply copy Order struct over
+        // We need asssembly to access the precompile
+        // Note that sizeof(Order) == 12 * 32 == 384
         assembly {
-            mstore(add(start, 4), orderAddresses)              // maker
-            mstore(add(start, 36), add(orderAddresses, 32))    // taker
-            mstore(add(start, 68), add(orderAddresses, 64))    // makerToken
-            mstore(add(start, 100), add(orderAddresses, 96))   // takerToken
-            mstore(add(start, 132), add(orderAddresses, 128))  // feeRecipient
-            mstore(add(start, 164), orderValues)            // makerTokenAmount
-            mstore(add(start, 196), add(orderValues, 32))   // takerTokenAmount
-            mstore(add(start, 228), add(orderValues, 64))   // makerFee
-            mstore(add(start, 260), add(orderValues, 96))   // takerFee
-            mstore(add(start, 292), add(orderValues, 128))  // expiration
-            mstore(add(start, 356), takerTokenFillAmount)
-            mstore(add(start, 388), 416)
-            mstore(add(start, 420), signatureLength)
+            delegatecall(
+                51,            // precompile takes 15 + 3 * numWords
+                0x4,           // precompile for identity function
+                order,         // pointer to start of input
+                384,           // length of input
+                add(start, 4), // store output at offset 4
+                384            // output is 384 bytes
+            )
         }
         
-        // Write signature contents and padding one byte at a time
-        for (uint256 i = 0; i < signatureLength; i++) {
-            input[452 + i] = signature[i];
+        // Write offset to signature and len(signature)
+        // It is done in assembly so we can write 32 bytes at a time. In
+        // solidity we would have to copy one byte at a time.
+        assembly {
+            mstore(add(start, 420), 448)
         }
+        
+        // Copy over signature length contents
+        assembly {
+            let size := add(signatureLength, 32)
+            delegatecall(
+                gas,             // precompile takes 15 + 3 * numWords
+                0x4,             // precompile for identity function
+                signature,       // pointer to start of input
+                size,            // length of input
+                add(start, 452), // store output at offset 4
+                size             // output is 384 bytes
+            )
+        }
+        
+        // Write padding
         for (uint256 i = 0; i < paddingLength; i++) {
-            input[452 + signatureLength + i] = 0x00;
+            input[486 + signatureLength + i] = 0x00;
         }
         
         // Call the function
