@@ -2,6 +2,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
+import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
 import { TokenTransferProxyContract } from './generated/token_transfer_proxy';
@@ -22,8 +23,12 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
      * @return  Whether the exchangeContractAddress is authorized.
      */
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
+        assert.isETHAddressHex('exchangeContractAddress', exchangeContractAddress);
+        const normalizedExchangeContractAddress = exchangeContractAddress.toLowerCase();
         const tokenTransferProxyContractInstance = await this._getTokenTransferProxyContractAsync();
-        const isAuthorized = await tokenTransferProxyContractInstance.authorized.callAsync(exchangeContractAddress);
+        const isAuthorized = await tokenTransferProxyContractInstance.authorized.callAsync(
+            normalizedExchangeContractAddress,
+        );
         return isAuthorized;
     }
     /**

@@ -58,9 +58,10 @@ export class TokenRegistryWrapper extends ContractWrapper {
      */
     public async getTokenIfExistsAsync(address: string): Promise<Token | undefined> {
         assert.isETHAddressHex('address', address);
+        const normalizedAddress = address.toLowerCase();
 
         const tokenRegistryContract = await this._getTokenRegistryContractAsync();
-        const metadata = await tokenRegistryContract.getTokenMetaData.callAsync(address);
+        const metadata = await tokenRegistryContract.getTokenMetaData.callAsync(normalizedAddress);
         const token = TokenRegistryWrapper._createTokenFromMetadata(metadata);
         return token;
     }

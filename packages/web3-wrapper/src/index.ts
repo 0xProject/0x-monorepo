@@ -41,7 +41,8 @@ export class Web3Wrapper {
     }
     public async isSenderAddressAvailableAsync(senderAddress: string): Promise<boolean> {
         const addresses = await this.getAvailableAddressesAsync();
-        return _.includes(addresses, senderAddress);
+        const normalizedAddress = senderAddress.toLowerCase();
+        return _.includes(addresses, normalizedAddress);
     }
     public async getNodeVersionAsync(): Promise<string> {
         const nodeVersion = await promisify<string>(this._web3.version.getNode)();
@@ -96,7 +97,8 @@ export class Web3Wrapper {
     }
     public async getAvailableAddressesAsync(): Promise<string[]> {
         const addresses = await promisify<string[]>(this._web3.eth.getAccounts)();
-        return addresses;
+        const normalizedAddresses = _.map(addresses, address => address.toLowerCase());
+        return normalizedAddresses;
     }
     public async getLogsAsync(filter: Web3.FilterObject): Promise<Web3.LogEntry[]> {
         let fromBlock = filter.fromBlock;
