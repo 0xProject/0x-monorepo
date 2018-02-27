@@ -36,14 +36,12 @@ export const utils = {
                     tsType: 'number|BigNumber',
                 });
             }
-            if (backend === ContractsBackend.Ethers) {
-                if (paramKind === ParamKind.Output) {
-                    // ethers-contracts automatically converts small BigNumbers to numbers
-                    solTypeRegexToTsType.unshift({
-                        regex: '^u?int(8|16|32|48)?$',
-                        tsType: 'number',
-                    });
-                }
+            if (backend === ContractsBackend.Ethers && paramKind === ParamKind.Output) {
+                // ethers-contracts automatically converts small BigNumbers to numbers
+                solTypeRegexToTsType.unshift({
+                    regex: '^u?int(8|16|32|48)?$',
+                    tsType: 'number',
+                });
             }
             for (const regexAndTxType of solTypeRegexToTsType) {
                 const { regex, tsType } = regexAndTxType;
