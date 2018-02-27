@@ -128,7 +128,7 @@ describe('Exchange', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('internal functions', () => {
-        it.only('should include transferViaTokenTransferProxy', () => {
+        it('should include transferViaTokenTransferProxy', () => {
             expect((exchange as any).transferViaTokenTransferProxy).to.be.undefined();
         });
 
