@@ -17,20 +17,19 @@
 */
 
 pragma solidity ^0.4.19;
+pragma experimental ABIEncoderV2;
 
 contract MExchangeCore {
     
     function fillOrder(
-          address[5] orderAddresses,
-          uint256[6] orderValues,
-          uint256 takerTokenFillAmount,
-          bytes signature)
-          public
-          returns (uint256 takerTokenFilledAmount);
+        Order order,
+        uint256 takerTokenFillAmount,
+        bytes signature)
+        public
+        returns (uint256 takerTokenFilledAmount);
 
     function cancelOrder(
-        address[5] orderAddresses,
-        uint256[6] orderValues,
+        Order order,
         uint256 takerTokenCancelAmount)
         public
         returns (uint256 takerTokenCancelledAmount);
