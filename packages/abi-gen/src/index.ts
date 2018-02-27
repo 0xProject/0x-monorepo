@@ -45,7 +45,7 @@ const args = yargs
         normalize: true,
     })
     .option('backend', {
-        describe: 'Which backend do you plan to use. Either web3 or ethers',
+        describe: `The backing Ethereum library your app uses. Either 'web3' or 'ethers'. Ethers auto-converts small ints to numbers whereas Web3 doesn't.`,
         type: 'string',
         choices: [ContractsBackend.Web3, ContractsBackend.Ethers],
         default: DEFAULT_BACKEND,
