@@ -39,7 +39,7 @@ export enum AbiType {
     Fallback = 'fallback',
 }
 
-export type ContractEventArg = string | BigNumber;
+export type ContractEventArg = string | BigNumber | number;
 
 export interface DecodedLogArgs {
     [argName: string]: ContractEventArg;
