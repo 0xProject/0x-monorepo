@@ -56,9 +56,9 @@ describe('Exchange', () => {
         maker = accounts[0];
         [tokenOwner, taker, feeRecipient] = accounts;
         const [repInstance, dgdInstance, zrxInstance] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken),
-            deployer.deployAsync(ContractName.DummyToken),
-            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken, []),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
         rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
         dgd = new DummyTokenContract(web3Wrapper, dgdInstance.abi, dgdInstance.address);
@@ -128,7 +128,7 @@ describe('Exchange', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('internal functions', () => {
-        it('should include transferViaTokenTransferProxy', () => {
+        it.only('should include transferViaTokenTransferProxy', () => {
             expect((exchange as any).transferViaTokenTransferProxy).to.be.undefined();
         });
 
