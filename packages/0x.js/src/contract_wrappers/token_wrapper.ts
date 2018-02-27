@@ -377,7 +377,7 @@ export class TokenWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public _unsubscribeAll(): void {
+    public unsubscribeAll(): void {
         super._unsubscribeAll();
     }
     /**
@@ -410,7 +410,7 @@ export class TokenWrapper extends ContractWrapper {
         return logs;
     }
     private _invalidateContractInstances(): void {
-        this._unsubscribeAll();
+        this.unsubscribeAll();
         this._tokenContractsByAddress = {};
     }
     private async _getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {

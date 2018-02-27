@@ -687,7 +687,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public _unsubscribeAll(): void {
+    public unsubscribeAll(): void {
         super._unsubscribeAll();
     }
     /**
@@ -872,7 +872,7 @@ export class ExchangeWrapper extends ContractWrapper {
         return contractAddress;
     }
     private _invalidateContractInstances(): void {
-        this._unsubscribeAll();
+        this.unsubscribeAll();
         delete this._exchangeContractIfExists;
     }
     private async _isValidSignatureUsingContractCallAsync(
