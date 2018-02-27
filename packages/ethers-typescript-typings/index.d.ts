@@ -19,7 +19,6 @@ declare module 'ethers-contracts' {
         signature: string;
         topic: string;
     }
-    // tslint:disable-next-line:max-classes-per-file
     export class Interface {
         public functions: { [functionName: string]: FunctionDescription };
         public events: { [eventName: string]: EventDescription };
