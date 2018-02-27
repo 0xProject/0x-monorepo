@@ -16,7 +16,6 @@ interface NestedSidebarMenuProps {
     onMenuItemClick?: () => void;
     selectedVersion?: string;
     versions?: string[];
-    docPath?: string;
 }
 
 interface NestedSidebarMenuState {}
@@ -69,13 +68,8 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             <div>
                 {this._renderEmblem()}
                 {!_.isUndefined(this.props.versions) &&
-                    !_.isUndefined(this.props.selectedVersion) &&
-                    !_.isUndefined(this.props.docPath) && (
-                        <VersionDropDown
-                            selectedVersion={this.props.selectedVersion}
-                            versions={this.props.versions}
-                            docPath={this.props.docPath}
-                        />
+                    !_.isUndefined(this.props.selectedVersion) && (
+                        <VersionDropDown selectedVersion={this.props.selectedVersion} versions={this.props.versions} />
                     )}
                 <div className="pl1">{navigation}</div>
             </div>
