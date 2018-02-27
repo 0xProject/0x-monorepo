@@ -32,7 +32,7 @@ export class BaseContract {
         const trailingArrayRegex = /\[\d*\]$/;
         if (type.match(trailingArrayRegex)) {
             const arrayItemType = type.replace(trailingArrayRegex, '');
-            return _.map(values, (value: any, i: number) =>
+            return _.map(values, value =>
                 this._transformTypedData(arrayItemType, value, transformation),
             );
         } else {
