@@ -1,20 +1,26 @@
 import { Schema, SchemaValidator } from '@0xproject/json-schemas';
-import { addressUtils, BigNumber } from '@0xproject/utils';
+import { addressUtils } from '@0xproject/utils';
+import { BigNumber } from 'bignumber.js';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
 
 const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
+function _isBigNumber(value: any) {
+    return BigNumber.isBigNumber(value) || (_.isObject(value) && value.isBigNumber);
+}
+
 export const assert = {
     isBigNumber(variableName: string, value: BigNumber): void {
-        const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
+        const isBigNumber = _isBigNumber(value);
         this.assert(isBigNumber, this.typeAssertionMessage(variableName, 'BigNumber', value));
     },
     isValidBaseUnitAmount(variableName: string, value: BigNumber) {
         assert.isBigNumber(variableName, value);
-        const isNegative = value.lessThan(0);
+        const isNegative = !_.isUndefined(value.isLessThan) ? value.isLessThan(0) : (value as any).lessThan(0);
         this.assert(!isNegative, `${variableName} cannot be a negative number, found value: ${value.toNumber()}`);
-        const hasDecimals = value.decimalPlaces() !== 0;
+        const decimalPlaces = value.decimalPlaces();
+        const hasDecimals = _isBigNumber(decimalPlaces) ? !decimalPlaces.eq(0) : (decimalPlaces as any) !== 0;
         this.assert(
             !hasDecimals,
             `${variableName} should be in baseUnits (no decimals), found value: ${value.toNumber()}`,
