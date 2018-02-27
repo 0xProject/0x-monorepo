@@ -1,8 +1,9 @@
 import { TxData, TxDataPayable } from '@0xproject/types';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethersContracts from 'ethers-contracts';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
+
+import { Web3Wrapper } from './web3_wrapper';
 
 export class BaseContract {
     protected _ethersInterface: ethersContracts.Interface;
@@ -32,9 +33,7 @@ export class BaseContract {
         const trailingArrayRegex = /\[\d*\]$/;
         if (type.match(trailingArrayRegex)) {
             const arrayItemType = type.replace(trailingArrayRegex, '');
-            return _.map(values, value =>
-                this._transformTypedData(arrayItemType, value, transformation),
-            );
+            return _.map(values, value => this._transformTypedData(arrayItemType, value, transformation));
         } else {
             return transformation(type, values);
         }
