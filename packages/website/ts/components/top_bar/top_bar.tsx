@@ -319,7 +319,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
-                    docPath={this.props.docsInfo.websitePath}
                     versions={this.props.availableDocVersions}
                 />
             </div>

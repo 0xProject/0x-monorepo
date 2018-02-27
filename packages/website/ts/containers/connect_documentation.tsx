@@ -6,11 +6,10 @@ import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentatio
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocsInfoConfig, Environments, WebsitePaths } from 'ts/types';
+import { DocPackages, DocsInfoConfig, Environments, SupportedDocJson, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
-import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/connect/introduction');
@@ -26,10 +25,10 @@ const connectDocSections = {
 };
 
 const docsInfoConfig: DocsInfoConfig = {
+    id: DocPackages.Connect,
+    type: SupportedDocJson.TypeDoc,
     displayName: '0x Connect',
-    subPackageName: 'connect',
     packageUrl: 'https://github.com/0xProject/0x.js',
-    websitePath: WebsitePaths.Connect,
     menu: {
         introduction: [connectDocSections.introduction],
         install: [connectDocSections.installation],
@@ -72,7 +71,6 @@ const docsInfoConfig: DocsInfoConfig = {
     menuSubsectionToVersionWhenIntroduced: {},
     sections: connectDocSections,
     visibleConstructors: [connectDocSections.httpClient, connectDocSections.webSocketOrderbookChannel],
-    convertToDocAgnosticFormatFn: typeDocUtils.convertToDocAgnosticFormat.bind(typeDocUtils),
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

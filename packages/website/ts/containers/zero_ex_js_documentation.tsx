@@ -6,11 +6,10 @@ import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentatio
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocsInfoConfig, Environments, WebsitePaths } from 'ts/types';
+import { DocPackages, DocsInfoConfig, Environments, SupportedDocJson, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
-import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/0xjs/introduction');
@@ -38,10 +37,10 @@ const zeroExJsDocSections = {
 };
 
 const docsInfoConfig: DocsInfoConfig = {
+    id: DocPackages.ZeroExJs,
+    type: SupportedDocJson.TypeDoc,
     displayName: '0x.js',
     packageUrl: 'https://github.com/0xProject/0x.js',
-    subPackageName: '0x.js',
-    websitePath: WebsitePaths.ZeroExJs,
     menu: {
         introduction: [zeroExJsDocSections.introduction],
         install: [zeroExJsDocSections.installation],
@@ -65,7 +64,8 @@ const docsInfoConfig: DocsInfoConfig = {
         [zeroExJsDocSections.versioning]: versioningMarkdown,
     },
     // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-    // currently no way to extract the re-exported types from index.ts via TypeDoc :(
+    // currently no way to extract the re-exported types from index.ts via TypeDoc :( Make sure to only
+    // ADD types here, DO NOT REMOVE types since they might still be needed for older supported versions
     publicTypes: [
         'Order',
         'SignedOrder',
@@ -143,7 +143,6 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sections: zeroExJsDocSections,
     visibleConstructors: [zeroExJsDocSections.zeroEx],
-    convertToDocAgnosticFormatFn: typeDocUtils.convertToDocAgnosticFormat.bind(typeDocUtils),
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

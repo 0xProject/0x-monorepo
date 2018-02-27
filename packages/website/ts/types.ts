@@ -627,19 +627,39 @@ export interface SectionsMap {
     [sectionName: string]: string;
 }
 
+export enum DocPackages {
+    Connect = 'CONNECT',
+    ZeroExJs = 'ZERO_EX_JS',
+    SmartContracts = 'SMART_CONTRACTS',
+}
+
+export enum SupportedDocJson {
+    Doxity = 'DOXITY',
+    TypeDoc = 'TYPEDOC',
+}
+
+export interface ContractsByVersionByNetworkId {
+    [version: string]: {
+        [networkName: string]: {
+            [contractName: string]: string;
+        };
+    };
+}
+
 export interface DocsInfoConfig {
+    id: string;
+    type: SupportedDocJson;
     displayName: string;
     packageUrl: string;
-    websitePath: string;
     menu: DocsMenu;
     sections: SectionsMap;
     sectionNameToMarkdown: { [sectionName: string]: string };
     visibleConstructors: string[];
-    convertToDocAgnosticFormatFn: (docObj: DoxityDocObj | TypeDocNode, docsInfo?: any) => DocAgnosticFormat;
     subPackageName?: string;
     publicTypes?: string[];
     sectionNameToModulePath?: { [sectionName: string]: string[] };
     menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };
+    contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
 }
 
 export interface TimestampMsRange {

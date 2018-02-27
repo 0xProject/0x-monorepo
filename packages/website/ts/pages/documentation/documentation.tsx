@@ -24,6 +24,7 @@ import {
     Property,
     SolidityMethod,
     Styles,
+    SupportedDocJson,
     TypeDefinitionByName,
     TypescriptMethod,
 } from 'ts/types';
@@ -49,6 +50,7 @@ export interface DocumentationProps {
     docsInfo: DocsInfo;
     docAgnosticFormat?: DocAgnosticFormat;
     menuSubsectionsBySection: MenuSubsectionsBySection;
+    sourceUrl: string;
 }
 
 interface DocumentationState {}
@@ -107,7 +109,6 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                         title={this.props.docsInfo.displayName}
                                         topLevelMenu={this.props.docsInfo.getMenu(this.props.docsVersion)}
                                         menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                                        docPath={this.props.docsInfo.websitePath}
                                     />
                                 </div>
                             </div>
@@ -246,7 +247,13 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         );
     }
     private _renderNetworkBadgesIfExists(sectionName: string) {
-        const networkToAddressByContractName = configs.CONTRACT_ADDRESS[this.props.docsVersion];
+        if (this.props.docsInfo.type !== SupportedDocJson.Doxity) {
+            return null;
+        }
+
+        const networkToAddressByContractName = this.props.docsInfo.contractsByVersionByNetworkId[
+            this.props.docsVersion
+        ];
         const badges = _.map(
             networkToAddressByContractName,
             (addressByContractName: AddressByContractName, networkName: string) => {
@@ -294,8 +301,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     <SourceLink
                         version={this.props.docsVersion}
                         source={property.source}
-                        baseUrl={this.props.docsInfo.packageUrl}
-                        subPackageName={this.props.docsInfo.subPackageName}
+                        sourceUrl={this.props.sourceUrl}
                     />
                 )}
                 {property.comment && <Comment comment={property.comment} className="py2" />}
@@ -316,6 +322,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 typeDefinitionByName={typeDefinitionByName}
                 libraryVersion={this.props.docsVersion}
                 docsInfo={this.props.docsInfo}
+                sourceUrl={this.props.sourceUrl}
             />
         );
     }

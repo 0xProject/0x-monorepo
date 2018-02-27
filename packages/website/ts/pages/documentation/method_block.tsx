@@ -15,6 +15,7 @@ interface MethodBlockProps {
     libraryVersion: string;
     typeDefinitionByName: TypeDefinitionByName;
     docsInfo: DocsInfo;
+    sourceUrl: string;
 }
 
 interface MethodBlockState {
@@ -80,8 +81,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                     <SourceLink
                         version={this.props.libraryVersion}
                         source={(method as TypescriptMethod).source}
-                        baseUrl={this.props.docsInfo.packageUrl}
-                        subPackageName={this.props.docsInfo.subPackageName}
+                        sourceUrl={this.props.sourceUrl}
                     />
                 )}
                 {method.comment && <Comment comment={method.comment} className="py2" />}

@@ -1,31 +1,37 @@
 import compareVersions = require('compare-versions');
 import * as _ from 'lodash';
 import {
+    ContractsByVersionByNetworkId,
     DocAgnosticFormat,
     DocsInfoConfig,
     DocsMenu,
     DoxityDocObj,
     MenuSubsectionsBySection,
     SectionsMap,
+    SupportedDocJson,
     TypeDocNode,
 } from 'ts/types';
+import { doxityUtils } from 'ts/utils/doxity_utils';
+import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
 export class DocsInfo {
+    public id: string;
+    public type: SupportedDocJson;
     public displayName: string;
     public packageUrl: string;
-    public subPackageName?: string;
-    public websitePath: string;
     public menu: DocsMenu;
     public sections: SectionsMap;
     public sectionNameToMarkdown: { [sectionName: string]: string };
+    public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
     private _docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
+        this.id = config.id;
+        this.type = config.type;
         this.displayName = config.displayName;
         this.packageUrl = config.packageUrl;
-        this.subPackageName = config.subPackageName;
-        this.websitePath = config.websitePath;
         this.sections = config.sections;
         this.sectionNameToMarkdown = config.sectionNameToMarkdown;
+        this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
         this._docsInfo = config;
     }
     public isPublicType(typeName: string): boolean {
@@ -104,6 +110,10 @@ export class DocsInfo {
         return _.includes(this._docsInfo.visibleConstructors, sectionName);
     }
     public convertToDocAgnosticFormat(docObj: DoxityDocObj | TypeDocNode): DocAgnosticFormat {
-        return this._docsInfo.convertToDocAgnosticFormatFn(docObj, this);
+        if (this.type === SupportedDocJson.Doxity) {
+            return doxityUtils.convertToDocAgnosticFormat(docObj as DoxityDocObj);
+        } else {
+            return typeDocUtils.convertToDocAgnosticFormat(docObj as TypeDocNode, this);
+        }
     }
 }

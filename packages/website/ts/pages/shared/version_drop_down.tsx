@@ -6,7 +6,6 @@ import * as React from 'react';
 interface VersionDropDownProps {
     selectedVersion: string;
     versions: string[];
-    docPath: string;
 }
 
 interface VersionDropDownState {}
@@ -31,7 +30,17 @@ export class VersionDropDown extends React.Component<VersionDropDownProps, Versi
         });
         return items;
     }
-    private _updateSelectedVersion(e: any, index: number, value: string) {
-        window.location.href = `${this.props.docPath}/${value}${window.location.hash}`;
+    private _updateSelectedVersion(e: any, index: number, semver: string) {
+        const port = window.location.port;
+        const hasPort = !_.isUndefined(port);
+        let path = window.location.pathname;
+        const lastChar = path[path.length - 1];
+        if (_.isFinite(_.parseInt(lastChar))) {
+            const pathSections = path.split('/');
+            pathSections.pop();
+            path = pathSections.join('/');
+        }
+        const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}${path}`;
+        window.location.href = `${baseUrl}/${semver}${window.location.hash}`;
     }
 }
