@@ -23,8 +23,11 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/abi-gen/README.md",
     "dependencies": {
+        "0x.js": "^0.32.4",
         "@0xproject/assert": "^0.0.20",
+        "@0xproject/connect": "^0.6.1",
         "@0xproject/json-schemas": "^0.7.12",
+        "@0xproject/utils": "^0.3.4",
         "chalk": "^2.3.0",
         "lodash": "^4.17.4",
         "newman": "^3.9.3",
