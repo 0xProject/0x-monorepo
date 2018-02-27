@@ -136,6 +136,7 @@ for (const abiFileName of abiFileNames) {
         const methodData = {
             ...methodAbi,
             singleReturnValue: methodAbi.outputs.length === 1,
+            hasReturnValue: methodAbi.outputs.length !== 0,
         };
         return methodData;
     });

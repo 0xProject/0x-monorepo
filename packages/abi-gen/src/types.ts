@@ -19,6 +19,7 @@ export enum ContractsBackend {
 
 export interface Method extends Web3.MethodAbi {
     singleReturnValue: boolean;
+    hasReturnValue: boolean;
 }
 
 export interface ContextData {
