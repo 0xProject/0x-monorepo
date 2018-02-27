@@ -110,7 +110,7 @@ contract MixinSignatureValidator is
         
         // Signature from Trezor hardware wallet
         // It differs from web3.eth_sign in the encoding of message length
-        // (Bitcoin varint encoding vs ascii-decimal, the later is not
+        // (Bitcoin varint encoding vs ascii-decimal, the latter is not
         // self-terminating which leads to ambiguities).
         // See also:
         // https://en.bitcoin.it/wiki/Protocol_documentation#Variable_length_integer
