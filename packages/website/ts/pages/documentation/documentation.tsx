@@ -29,7 +29,6 @@ import {
     TypescriptMethod,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
