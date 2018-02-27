@@ -41,8 +41,8 @@ export interface DefaultOrderParams {
     exchangeContractAddress: string;
     maker: string;
     feeRecipient: string;
-    makerToken: string;
-    takerToken: string;
+    makerTokenAddress: string;
+    takerTokenAddress: string;
     makerTokenAmount: BigNumber;
     takerTokenAmount: BigNumber;
     makerFee: BigNumber;

@@ -127,7 +127,7 @@ export interface SignedOrder extends Order {
 }
 
 //                          [address, name, symbol, decimals, ipfsHash, swarmHash]
-export type TokenMetadata = [string, string, string, BigNumber, string, string];
+export type TokenMetadata = [string, string, string, number, string, string];
 
 export interface Token {
     name: string;

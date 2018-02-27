@@ -17,7 +17,7 @@
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
         "clean": "shx rm -rf ./lib",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken).json' --template contract_templates/contract.handlebars --partials 'contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "migrate": "node ../deployer/lib/src/cli.js migrate",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
         "test:circleci": "yarn test"
@@ -58,6 +58,7 @@
         "types-bn": "^0.0.1",
         "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
         "typescript": "2.7.1",
+        "ethers-typescript-typings": "^0.0.1",
         "web3-typescript-typings": "^0.9.11",
         "yargs": "^10.0.3"
     },
@@ -72,6 +73,7 @@
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-util": "^5.1.1",
+        "ethers-contracts": "^2.2.1",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "request": "^2.81.0",

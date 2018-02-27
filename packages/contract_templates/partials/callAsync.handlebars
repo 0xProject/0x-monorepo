@@ -1,0 +1,30 @@
+{{#hasReturnValue}}
+async callAsync(
+{{> typed_params inputs=inputs}}
+{{#this.payable}}
+    txData: TxDataPayable = {},
+{{/this.payable}}
+{{^this.payable}}
+    txData: TxData = {},
+{{/this.payable}}
+    defaultBlock?: Web3.BlockParam,
+): Promise<{{> return_type outputs=outputs}}> {
+    const self = this as {{contractName}}Contract;
+    const inputAbi = _.find(this.abi, {name: '{{this.name}}'}).inputs;
+    [{{> params inputs=inputs}}] = BaseContract._transformABIData(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(this));
+    const encodedData = self._ethersInterface.functions.{{this.name}}(
+        {{> params inputs=inputs}}
+    ).data;
+    const callData = await self._applyDefaultsToTxDataAsync(
+        {
+            data: encodedData,
+        }
+    )
+    const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
+    const outputAbi = _.find(this.abi, {name: '{{this.name}}'}).outputs as Web3.DataItem[];
+    const outputParamsTypes = _.map(outputAbi, 'type');
+    let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
+    resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+    return resultArray{{#singleReturnValue}}[0]{{/singleReturnValue}};
+},
+{{/hasReturnValue}}

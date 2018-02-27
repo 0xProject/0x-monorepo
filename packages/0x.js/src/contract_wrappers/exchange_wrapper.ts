@@ -108,8 +108,10 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeContract = await this._getExchangeContractAsync();
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
+        const txData = {};
         let unavailableTakerTokenAmount = await exchangeContract.getUnavailableTakerTokenAmount.callAsync(
             orderHash,
+            txData,
             defaultBlock,
         );
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
@@ -127,7 +129,8 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeContract = await this._getExchangeContractAsync();
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
-        let fillAmountInBaseUnits = await exchangeContract.filled.callAsync(orderHash, defaultBlock);
+        const txData = {};
+        let fillAmountInBaseUnits = await exchangeContract.filled.callAsync(orderHash, txData, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         fillAmountInBaseUnits = new BigNumber(fillAmountInBaseUnits);
         return fillAmountInBaseUnits;
@@ -144,7 +147,8 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const exchangeContract = await this._getExchangeContractAsync();
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
-        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.callAsync(orderHash, defaultBlock);
+        const txData = {};
+        let cancelledAmountInBaseUnits = await exchangeContract.cancelled.callAsync(orderHash, txData, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         cancelledAmountInBaseUnits = new BigNumber(cancelledAmountInBaseUnits);
         return cancelledAmountInBaseUnits;
@@ -858,7 +862,7 @@ export class ExchangeWrapper extends ContractWrapper {
         });
         if (!_.isUndefined(errLog)) {
             const logArgs = (errLog as LogWithDecodedArgs<LogErrorContractEventArgs>).args;
-            const errCode = logArgs.errorId.toNumber();
+            const errCode = logArgs.errorId;
             const errMessage = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
         }
@@ -906,11 +910,11 @@ export class ExchangeWrapper extends ContractWrapper {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
         }
-        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
+        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
             artifacts.ExchangeArtifact,
             this._contractAddressIfExists,
         );
-        const contractInstance = new ExchangeContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
+        const contractInstance = new ExchangeContract(this._web3Wrapper, abi, address);
         this._exchangeContractIfExists = contractInstance;
         return this._exchangeContractIfExists;
     }

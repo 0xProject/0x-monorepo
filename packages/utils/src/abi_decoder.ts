@@ -1,7 +1,7 @@
 import { AbiType, DecodedLogArgs, LogWithDecodedArgs, RawLog, SolidityTypes } from '@0xproject/types';
+import * as ethersContracts from 'ethers-contracts';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-import * as SolidityCoder from 'web3/lib/solidity/coder';
 
 import { BigNumber } from './configured_bignumber';
 
@@ -27,31 +27,29 @@ export class AbiDecoder {
         if (_.isUndefined(event)) {
             return log;
         }
+        const ethersInterface = new ethersContracts.Interface([event]);
         const logData = log.data;
         const decodedParams: DecodedLogArgs = {};
-        let dataIndex = 0;
         let topicsIndex = 1;
 
         const nonIndexedInputs = _.filter(event.inputs, input => !input.indexed);
         const dataTypes = _.map(nonIndexedInputs, input => input.type);
-        const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice('0x'.length));
+        const decodedData = ethersInterface.events[event.name].parse(log.data);
 
         let failedToDecode = false;
-        _.forEach(event.inputs, (param: Web3.EventParameter) => {
+        _.forEach(event.inputs, (param: Web3.EventParameter, i: number) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
-            let value: BigNumber | string = param.indexed ? log.topics[topicsIndex++] : decodedData[dataIndex++];
+            let value: BigNumber | string | number = param.indexed ? log.topics[topicsIndex++] : decodedData[i];
             if (_.isUndefined(value)) {
                 failedToDecode = true;
                 return;
             }
             if (param.type === SolidityTypes.Address) {
                 value = AbiDecoder._padZeros(new BigNumber(value).toString(16));
-            } else if (
-                param.type === SolidityTypes.Uint256 ||
-                param.type === SolidityTypes.Uint8 ||
-                param.type === SolidityTypes.Uint
-            ) {
+            } else if (param.type === SolidityTypes.Uint256 || param.type === SolidityTypes.Uint) {
                 value = new BigNumber(value);
+            } else if (param.type === SolidityTypes.Uint8) {
+                value = new BigNumber(value).toNumber();
             }
             decodedParams[param.name] = value;
         });
@@ -67,11 +65,14 @@ export class AbiDecoder {
         }
     }
     private _addABI(abiArray: Web3.AbiDefinition[]): void {
+        if (_.isUndefined(abiArray)) {
+            return;
+        }
+        const ethersInterface = new ethersContracts.Interface(abiArray);
         _.map(abiArray, (abi: Web3.AbiDefinition) => {
             if (abi.type === AbiType.Event) {
-                const signature = `${abi.name}(${_.map(abi.inputs, input => input.type).join(',')})`;
-                const signatureHash = new Web3().sha3(signature);
-                this._methodIds[signatureHash] = abi;
+                const topic = ethersInterface.events[abi.name].topic;
+                this._methodIds[topic] = abi;
             }
         });
         this._savedABIs = this._savedABIs.concat(abiArray);

@@ -5,7 +5,12 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 
-import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import {
+    ExchangeContract,
+    LogCancelContractEventArgs,
+    LogErrorContractEventArgs,
+    LogFillContractEventArgs,
+} from '../../src/contract_wrappers/generated/exchange';
 import { constants } from '../../util/constants';
 import { ExchangeWrapper } from '../../util/exchange_wrapper';
 import { OrderFactory } from '../../util/order_factory';
@@ -42,7 +47,7 @@ describe('Exchange', () => {
             zrx.address,
             tokenTransferProxy.address,
         ]);
-        const exchange = new ExchangeContract(exchangeInstance);
+        const exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
         await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
         const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
@@ -50,8 +55,8 @@ describe('Exchange', () => {
             exchangeContractAddress: exchange.address,
             maker,
             feeRecipient,
-            makerToken: rep.address,
-            takerToken: dgd.address,
+            makerTokenAddress: rep.address,
+            takerTokenAddress: dgd.address,
             makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
