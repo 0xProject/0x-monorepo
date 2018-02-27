@@ -37,9 +37,9 @@ export class AbiDecoder {
         const decodedData = ethersInterface.events[event.name].parse(log.data);
 
         let failedToDecode = false;
-        _.forEach(event.inputs, (param: Web3.EventParameter, idx: number) => {
+        _.forEach(event.inputs, (param: Web3.EventParameter, i: number) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
-            let value: BigNumber | string | number = param.indexed ? log.topics[topicsIndex++] : decodedData[idx];
+            let value: BigNumber | string | number = param.indexed ? log.topics[topicsIndex++] : decodedData[i];
             if (_.isUndefined(value)) {
                 failedToDecode = true;
                 return;
