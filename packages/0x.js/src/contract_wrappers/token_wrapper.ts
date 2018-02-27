@@ -46,10 +46,12 @@ export class TokenWrapper extends ContractWrapper {
     ): Promise<BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedOwnerAddress = ownerAddress.toLowerCase();
 
-        const tokenContract = await this._getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
-        let balance = await tokenContract.balanceOf.callAsync(ownerAddress, defaultBlock);
+        let balance = await tokenContract.balanceOf.callAsync(normalizedOwnerAddress, defaultBlock);
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         balance = new BigNumber(balance);
         return balance;
@@ -72,14 +74,17 @@ export class TokenWrapper extends ContractWrapper {
         amountInBaseUnits: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedSpenderAddress = spenderAddress.toLowerCase();
+        const normalizedOwnerAddress = ownerAddress.toLowerCase();
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
-        const tokenContract = await this._getTokenContractAsync(tokenAddress);
-        const txHash = await tokenContract.approve.sendTransactionAsync(spenderAddress, amountInBaseUnits, {
-            from: ownerAddress,
+        const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
+        const txHash = await tokenContract.approve.sendTransactionAsync(normalizedSpenderAddress, amountInBaseUnits, {
+            from: normalizedOwnerAddress,
             gas: txOpts.gasLimit,
             gasPrice: txOpts.gasPrice,
         });
@@ -103,10 +108,16 @@ export class TokenWrapper extends ContractWrapper {
         spenderAddress: string,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isETHAddressHex('spenderAddress', spenderAddress);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedOwnerAddress = ownerAddress.toLowerCase();
+        const normalizedSpenderAddress = spenderAddress.toLowerCase();
         const txHash = await this.setAllowanceAsync(
-            tokenAddress,
-            ownerAddress,
-            spenderAddress,
+            normalizedTokenAddress,
+            normalizedOwnerAddress,
+            normalizedSpenderAddress,
             this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
             txOpts,
         );
@@ -128,10 +139,18 @@ export class TokenWrapper extends ContractWrapper {
     ): Promise<BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isETHAddressHex('spenderAddress', spenderAddress);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedOwnerAddress = ownerAddress.toLowerCase();
+        const normalizedSpenderAddress = spenderAddress.toLowerCase();
 
-        const tokenContract = await this._getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
         const defaultBlock = _.isUndefined(methodOpts) ? undefined : methodOpts.defaultBlock;
-        let allowanceInBaseUnits = await tokenContract.allowance.callAsync(ownerAddress, spenderAddress, defaultBlock);
+        let allowanceInBaseUnits = await tokenContract.allowance.callAsync(
+            normalizedOwnerAddress,
+            normalizedSpenderAddress,
+            defaultBlock,
+        );
         // Wrap BigNumbers returned from web3 with our own (later) version of BigNumber
         allowanceInBaseUnits = new BigNumber(allowanceInBaseUnits);
         return allowanceInBaseUnits;
@@ -149,9 +168,16 @@ export class TokenWrapper extends ContractWrapper {
     ): Promise<BigNumber> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedOwnerAddress = ownerAddress.toLowerCase();
 
         const proxyAddress = this._tokenTransferProxyWrapper.getContractAddress();
-        const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, methodOpts);
+        const allowanceInBaseUnits = await this.getAllowanceAsync(
+            normalizedTokenAddress,
+            normalizedOwnerAddress,
+            proxyAddress,
+            methodOpts,
+        );
         return allowanceInBaseUnits;
     }
     /**
@@ -172,12 +198,14 @@ export class TokenWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.isETHAddressHex('ownerAddress', ownerAddress);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedOwnerAddress = ownerAddress.toLowerCase();
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
         const proxyAddress = this._tokenTransferProxyWrapper.getContractAddress();
         const txHash = await this.setAllowanceAsync(
-            tokenAddress,
-            ownerAddress,
+            normalizedTokenAddress,
+            normalizedOwnerAddress,
             proxyAddress,
             amountInBaseUnits,
             txOpts,
@@ -200,9 +228,13 @@ export class TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('ownerAddress', ownerAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedOwnerAddress = ownerAddress.toLowerCase();
         const txHash = await this.setProxyAllowanceAsync(
-            tokenAddress,
-            ownerAddress,
+            normalizedTokenAddress,
+            normalizedOwnerAddress,
             this.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
             txOpts,
         );
@@ -225,19 +257,22 @@ export class TokenWrapper extends ContractWrapper {
         txOpts: TransactionOpts = {},
     ): Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
         assert.isETHAddressHex('toAddress', toAddress);
+        await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedFromAddress = fromAddress.toLowerCase();
+        const normalizedToAddress = toAddress.toLowerCase();
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
-        const tokenContract = await this._getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
 
-        const fromAddressBalance = await this.getBalanceAsync(tokenAddress, fromAddress);
+        const fromAddressBalance = await this.getBalanceAsync(normalizedTokenAddress, normalizedFromAddress);
         if (fromAddressBalance.lessThan(amountInBaseUnits)) {
             throw new Error(ZeroExError.InsufficientBalanceForTransfer);
         }
 
-        const txHash = await tokenContract.transfer.sendTransactionAsync(toAddress, amountInBaseUnits, {
-            from: fromAddress,
+        const txHash = await tokenContract.transfer.sendTransactionAsync(normalizedToAddress, amountInBaseUnits, {
+            from: normalizedFromAddress,
             gas: txOpts.gasLimit,
             gasPrice: txOpts.gasPrice,
         });
@@ -265,30 +300,38 @@ export class TokenWrapper extends ContractWrapper {
         amountInBaseUnits: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        assert.isETHAddressHex('tokenAddress', tokenAddress);
-        assert.isETHAddressHex('fromAddress', fromAddress);
         assert.isETHAddressHex('toAddress', toAddress);
+        assert.isETHAddressHex('fromAddress', fromAddress);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
         await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        const normalizedToAddress = toAddress.toLowerCase();
+        const normalizedFromAddress = fromAddress.toLowerCase();
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        const normalizedSenderAddress = senderAddress.toLowerCase();
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
 
-        const tokenContract = await this._getTokenContractAsync(tokenAddress);
+        const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
 
-        const fromAddressAllowance = await this.getAllowanceAsync(tokenAddress, fromAddress, senderAddress);
+        const fromAddressAllowance = await this.getAllowanceAsync(
+            normalizedTokenAddress,
+            normalizedFromAddress,
+            normalizedSenderAddress,
+        );
         if (fromAddressAllowance.lessThan(amountInBaseUnits)) {
             throw new Error(ZeroExError.InsufficientAllowanceForTransfer);
         }
 
-        const fromAddressBalance = await this.getBalanceAsync(tokenAddress, fromAddress);
+        const fromAddressBalance = await this.getBalanceAsync(normalizedTokenAddress, normalizedFromAddress);
         if (fromAddressBalance.lessThan(amountInBaseUnits)) {
             throw new Error(ZeroExError.InsufficientBalanceForTransfer);
         }
 
         const txHash = await tokenContract.transferFrom.sendTransactionAsync(
-            fromAddress,
-            toAddress,
+            normalizedFromAddress,
+            normalizedToAddress,
             amountInBaseUnits,
             {
-                from: senderAddress,
+                from: normalizedSenderAddress,
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
             },
@@ -311,11 +354,12 @@ export class TokenWrapper extends ContractWrapper {
         callback: EventCallback<ArgsType>,
     ): string {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe<ArgsType>(
-            tokenAddress,
+            normalizedTokenAddress,
             eventName,
             indexFilterValues,
             artifacts.TokenArtifact.abi,
@@ -352,11 +396,12 @@ export class TokenWrapper extends ContractWrapper {
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
         assert.doesBelongToStringEnum('eventName', eventName, TokenEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(
-            tokenAddress,
+            normalizedTokenAddress,
             eventName,
             blockRange,
             indexFilterValues,
@@ -369,17 +414,18 @@ export class TokenWrapper extends ContractWrapper {
         this._tokenContractsByAddress = {};
     }
     private async _getTokenContractAsync(tokenAddress: string): Promise<TokenContract> {
-        let tokenContract = this._tokenContractsByAddress[tokenAddress];
+        const normalizedTokenAddress = tokenAddress.toLowerCase();
+        let tokenContract = this._tokenContractsByAddress[normalizedTokenAddress];
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
         const web3ContractInstance = await this._instantiateContractIfExistsAsync(
             artifacts.TokenArtifact,
-            tokenAddress,
+            normalizedTokenAddress,
         );
         const contractInstance = new TokenContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
         tokenContract = contractInstance;
-        this._tokenContractsByAddress[tokenAddress] = tokenContract;
+        this._tokenContractsByAddress[normalizedTokenAddress] = tokenContract;
         return tokenContract;
     }
 }

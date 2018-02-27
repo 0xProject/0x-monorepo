@@ -33,11 +33,8 @@ export const assert = {
         );
     },
     isETHAddressHex(variableName: string, value: string): void {
+        this.assert(_.isString(value), this.typeAssertionMessage(variableName, 'string', value));
         this.assert(addressUtils.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
-        this.assert(
-            addressUtils.isAddress(value) && value.toLowerCase() === value,
-            `Checksummed addresses are not supported. Convert ${variableName} to lower case before passing`,
-        );
     },
     doesBelongToStringEnum(
         variableName: string,
