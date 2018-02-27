@@ -23,6 +23,7 @@ declare module 'ethers-contracts' {
     export class Interface {
         public functions: { [functionName: string]: FunctionDescription };
         public events: { [eventName: string]: EventDescription };
+        public static decodeParams(types: string[], data: string): any[];
         constructor(abi: any);
     }
 }

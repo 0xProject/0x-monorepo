@@ -1,0 +1,28 @@
+{
+    "name": "ethers-typescript-typings",
+    "version": "0.0.1",
+    "description": "Typescript type definitions for ethers.js",
+    "main": "index.d.ts",
+    "types": "index.d.ts",
+    "scripts": {
+        "lint": "tslint index.d.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/0xProject/0x.js.git"
+    },
+    "author": "Fabio Berger",
+    "contributors": [
+        "Leonid Logvinov <logvinov.leon@gmail.com>"
+    ],
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x.js/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x.js/packages/ethers-typescript-typings#readme",
+    "devDependencies": {
+        "tslint": "5.8.0",
+        "tslint-config-0xproject": "^0.0.2",
+        "typescript": "2.7.1"
+    }
+}
