@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
+import { ZeroEx } from '0x.js';
 import { assert } from '@0xproject/assert';
+import { HttpClient } from '@0xproject/connect';
 import { Schema, schemas } from '@0xproject/json-schemas';
 import { promisify } from '@0xproject/utils';
 import chalk from 'chalk';
@@ -14,7 +16,6 @@ import { postmanEnvironmentFactory } from './postman_environment_factory';
 import { utils } from './utils';
 
 const newmanRunAsync = promisify<void>(newman.run);
-
 const DEFAULT_NETWORK_ID = 1;
 const SUPPORTED_NETWORK_IDS = [1, 42];
 
@@ -55,14 +56,20 @@ if (!_.includes(SUPPORTED_NETWORK_IDS, args.networkId)) {
 }
 
 const mainAsync = async () => {
+    const httpClient = new HttpClient(args.url);
+    const orders = await httpClient.getOrdersAsync();
+    const firstOrder = _.head(orders);
+    if (_.isUndefined(firstOrder)) {
+        throw new Error('Could not get any orders from /orders endpoint');
+    }
+    const orderHash = ZeroEx.getOrderHashHex(firstOrder);
     const newmanRunOptions = {
         collection: sraReportCollectionJSON,
         reporters: 'cli',
-        globals: postmanEnvironmentFactory.createGlobalEnvironment(args.url),
+        globals: postmanEnvironmentFactory.createGlobalEnvironment(args.url, orderHash),
         environment: postmanEnvironmentFactory.createNetworkEnvironment(args.networkId),
     };
     await newmanRunAsync(newmanRunOptions);
 };
 
-mainAsync()
-    .catch(err => utils.log);
+mainAsync().catch(utils.log);

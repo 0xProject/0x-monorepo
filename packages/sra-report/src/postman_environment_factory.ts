@@ -12,38 +12,32 @@ interface EnvironmentValue {
 }
 
 export const postmanEnvironmentFactory = {
-    createGlobalEnvironment(url: string) {
-        const urlEnvironmentValue = {
-            key: 'url',
-            value: url,
-            enabled: true,
-            type: 'text',
-        };
+    createGlobalEnvironment(url: string, orderHash: string) {
+        const urlEnvironmentValue = createEnvironmentValue('url', url);
+        const orderHashEnvironmentValue = createEnvironmentValue('orderHash', orderHash);
         const schemas: Schema[] = _.values(schemasByName);
         const schemaEnvironmentValues = _.compact(
             _.map(schemas, (schema: Schema) => {
                 if (_.isUndefined(schema.id)) {
                     return undefined;
                 } else {
-                    return {
-                        key: convertSchemaIdToKey(schema.id),
-                        value: JSON.stringify(schema),
-                        enabled: true,
-                        type: 'text',
-                    };
+                    const schemaKey = convertSchemaIdToKey(schema.id);
+                    const stringifiedSchema = JSON.stringify(schema);
+                    const schemaEnvironmentValue = createEnvironmentValue(schemaKey, stringifiedSchema);
+                    return schemaEnvironmentValue;
                 }
             }),
         );
         const schemaKeys = _.map(schemaEnvironmentValues, (environmentValue: EnvironmentValue) => {
             return environmentValue.key;
         });
-        const schemaKeysEnvironmentValue = {
-            key: 'schemaKeys',
-            value: JSON.stringify(schemaKeys),
-            enabled: true,
-            type: 'text',
-        };
-        const environmentValues = _.concat(schemaEnvironmentValues, urlEnvironmentValue, schemaKeysEnvironmentValue);
+        const schemaKeysEnvironmentValue = createEnvironmentValue('schemaKeys', JSON.stringify(schemaKeys));
+        const environmentValues = _.concat(
+            schemaEnvironmentValues,
+            urlEnvironmentValue,
+            schemaKeysEnvironmentValue,
+            orderHashEnvironmentValue,
+        );
         const environment = {
             values: environmentValues,
         };
@@ -60,7 +54,6 @@ export const postmanEnvironmentFactory = {
         }
     },
 };
-
 function convertSchemaIdToKey(schemaId: string) {
     let result = schemaId;
     if (_.startsWith(result, '/')) {
@@ -68,4 +61,12 @@ function convertSchemaIdToKey(schemaId: string) {
     }
     result = `${result}Schema`;
     return result;
+}
+function createEnvironmentValue(key: string, value: string) {
+    return {
+        key,
+        value,
+        enabled: true,
+        type: 'text',
+    };
 }
