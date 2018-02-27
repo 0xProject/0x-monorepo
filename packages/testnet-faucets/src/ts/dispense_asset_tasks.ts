@@ -9,11 +9,21 @@ import { utils } from './utils';
 
 const DISPENSE_AMOUNT_ETHER = 0.1;
 const DISPENSE_AMOUNT_TOKEN = 0.1;
+const DISPENSE_MAX_AMOUNT_TOKEN = 5;
+const DISPENSE_MAX_AMOUNT_ETHER = 5;
 
 export const dispenseAssetTasks = {
     dispenseEtherTask(recipientAddress: string, web3: Web3) {
         return async () => {
             utils.consoleLog(`Processing ETH ${recipientAddress}`);
+            const userBalance = await promisify<BigNumber>(web3.eth.getBalance)(recipientAddress);
+            const maxAmountInWei = new BigNumber(web3.toWei(DISPENSE_MAX_AMOUNT_ETHER, 'ether'));
+            if (userBalance.greaterThan(maxAmountInWei)) {
+                utils.consoleLog(
+                    `User exceeded ETH balance maximum (${maxAmountInWei}) ${recipientAddress} ${userBalance} `,
+                );
+                return;
+            }
             const sendTransactionAsync = promisify(web3.eth.sendTransaction);
             const txHash = await sendTransactionAsync({
                 from: configs.DISPENSER_ADDRESS,
@@ -32,6 +42,17 @@ export const dispenseAssetTasks = {
                 throw new Error(`Unsupported asset type: ${tokenSymbol}`);
             }
             const baseUnitAmount = ZeroEx.toBaseUnitAmount(amountToDispense, token.decimals);
+            const userBalanceBaseUnits = await zeroEx.token.getBalanceAsync(token.address, recipientAddress);
+            const maxAmountBaseUnits = ZeroEx.toBaseUnitAmount(
+                new BigNumber(DISPENSE_MAX_AMOUNT_TOKEN),
+                token.decimals,
+            );
+            if (userBalanceBaseUnits.greaterThan(maxAmountBaseUnits)) {
+                utils.consoleLog(
+                    `User exceeded token balance maximum (${maxAmountBaseUnits}) ${recipientAddress} ${userBalanceBaseUnits} `,
+                );
+                return;
+            }
             const txHash = await zeroEx.token.transferAsync(
                 token.address,
                 configs.DISPENSER_ADDRESS,
