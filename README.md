@@ -48,10 +48,10 @@ This repository contains all the 0x developer tools written in TypeScript. Our h
 
 Dedicated documentation pages:
 
-* [0x.js Library](https://0xproject.com/docs/0xjs)
-* [0x Connect](https://0xproject.com/docs/connect)
-* [Smart contracts](https://0xproject.com/docs/contracts)
-* [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/blob/master/README.md)
+*   [0x.js Library](https://0xproject.com/docs/0xjs)
+*   [0x Connect](https://0xproject.com/docs/connect)
+*   [Smart contracts](https://0xproject.com/docs/contracts)
+*   [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/blob/master/README.md)
 
 ## Contributing
 

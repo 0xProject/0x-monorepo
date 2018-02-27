@@ -24,9 +24,9 @@
 
 <!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
 
-* [ ] Bug fix (non-breaking change which fixes an issue)
-* [ ] New feature (non-breaking change which adds functionality)
-* [ ] Breaking change (fix or feature that would cause existing functionality to change)
+*   [ ] Bug fix (non-breaking change which fixes an issue)
+*   [ ] New feature (non-breaking change which adds functionality)
+*   [ ] Breaking change (fix or feature that would cause existing functionality to change)
 
 ## Checklist:
 
@@ -34,9 +34,9 @@
 
 <!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 
-* [ ] Change requires a change to the documentation.
-* [ ] Added tests to cover my changes.
-* [ ] Added new entries to the relevant CHANGELOGs.
-* [ ] Updated the new versions of the changed packages in the relevant CHANGELOGs.
-* [ ] Labeled this PR with the 'WIP' label if it is a work in progress.
-* [ ] Labeled this PR with the labels corresponding to the changed package.
+*   [ ] Change requires a change to the documentation.
+*   [ ] Added tests to cover my changes.
+*   [ ] Added new entries to the relevant CHANGELOGs.
+*   [ ] Updated the new versions of the changed packages in the relevant CHANGELOGs.
+*   [ ] Labeled this PR with the 'WIP' label if it is a work in progress.
+*   [ ] Labeled this PR with the labels corresponding to the changed package.

@@ -10,8 +10,8 @@ yarn add @0xproject/connect
 
 ## Usage
 
-* [Docs](https://0xproject.com/docs/connect)
-* [Tutorials](https://0xproject.com/wiki#connect)
+*   [Docs](https://0xproject.com/docs/connect)
+*   [Tutorials](https://0xproject.com/wiki#connect)
 
 ## Contributing
 
