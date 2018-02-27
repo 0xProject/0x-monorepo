@@ -56,7 +56,7 @@ describe('Exchange', () => {
         maker = accounts[0];
         [tokenOwner, taker, feeRecipient] = accounts;
         const [repInstance, dgdInstance, zrxInstance] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken, []),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
