@@ -13,6 +13,7 @@ import {
     SideToAssetToken,
     TokenByAddress,
 } from 'ts/types';
+import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 // Instead of defaulting the docs version to an empty string, we pre-populate it with
@@ -49,6 +50,7 @@ export interface State {
     flashMessage: string | React.ReactNode;
     providerType: ProviderType;
     injectedProviderName: string;
+    translate: Translate;
 }
 
 const INITIAL_STATE: State = {
@@ -86,18 +88,29 @@ const INITIAL_STATE: State = {
     flashMessage: undefined,
     providerType: ProviderType.Injected,
     injectedProviderName: '',
+    translate: new Translate(),
 };
 
 export function reducer(state: State = INITIAL_STATE, action: Action) {
     switch (action.type) {
         // Portal
         case ActionTypes.ResetState:
-            return INITIAL_STATE;
+            return {
+                ...INITIAL_STATE,
+                translate: state.translate,
+            };
 
         case ActionTypes.UpdateOrderSalt: {
             return {
                 ...state,
                 orderSalt: action.data,
+            };
+        }
+
+        case ActionTypes.UpdateSelectedLanguage: {
+            return {
+                ...state,
+                translate: new Translate(action.data),
             };
         }
 

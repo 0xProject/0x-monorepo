@@ -4,14 +4,18 @@ import * as DocumentTitle from 'react-document-title';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Question } from 'ts/pages/faq/question';
+import { Dispatcher } from 'ts/redux/dispatcher';
 import { FAQQuestion, FAQSection, Styles, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { Translate } from 'ts/utils/translate';
 
 export interface FAQProps {
     source: string;
     location: Location;
+    translate: Translate;
+    dispatcher: Dispatcher;
 }
 
 interface FAQState {}
@@ -407,14 +411,14 @@ export class FAQ extends React.Component<FAQProps, FAQState> {
         return (
             <div>
                 <DocumentTitle title="0x FAQ" />
-                <TopBar blockchainIsLoaded={false} location={this.props.location} />
+                <TopBar blockchainIsLoaded={false} location={this.props.location} translate={this.props.translate} />
                 <div id="faq" className="mx-auto max-width-4 pt4" style={{ color: colors.grey800 }}>
                     <h1 className="center" style={{ ...styles.thin }}>
                         0x FAQ
                     </h1>
                     <div className="sm-px2 md-px2 lg-px0 pb4">{this._renderSections()}</div>
                 </div>
-                <Footer />
+                <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
         );
     }

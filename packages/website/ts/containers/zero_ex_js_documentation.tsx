@@ -9,6 +9,7 @@ import { State } from 'ts/redux/reducer';
 import { DocsInfoConfig, Environments, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { Translate } from 'ts/utils/translate';
 import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
 /* tslint:disable:no-var-requires */
@@ -154,6 +155,7 @@ interface ConnectedState {
     docsVersion: string;
     availableDocVersions: string[];
     docsInfo: DocsInfo;
+    translate: Translate;
 }
 
 interface ConnectedDispatch {
@@ -164,6 +166,7 @@ const mapStateToProps = (state: State, ownProps: DocumentationAllProps): Connect
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     docsInfo,
+    translate: state.translate,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

@@ -34,7 +34,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
                   marginTop: 15,
                   paddingLeft: 9,
                   paddingRight: 9,
-                  width: 77,
+                  minWidth: 77,
               }
             : {};
         const menuItemColor = this.props.isNightVersion ? 'white' : this.props.style.color;
