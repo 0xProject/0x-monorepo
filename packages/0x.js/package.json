@@ -89,6 +89,7 @@
         "@0xproject/web3-wrapper": "^0.1.14",
         "bintrees": "^1.0.2",
         "bn.js": "^4.11.8",
+        "ethers-contracts": "^2.2.1",
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-blockstream": "^2.0.6",
         "ethereumjs-util": "^5.1.1",
