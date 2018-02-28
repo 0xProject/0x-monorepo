@@ -63,13 +63,27 @@ const mainAsync = async () => {
         throw new Error('Could not get any orders from /orders endpoint');
     }
     const orderHash = ZeroEx.getOrderHashHex(firstOrder);
-    const newmanRunOptions = {
+    const newmanEnvironmentOptions = {
         collection: sraReportCollectionJSON,
-        reporters: 'cli',
         globals: postmanEnvironmentFactory.createGlobalEnvironment(args.url, orderHash),
         environment: postmanEnvironmentFactory.createNetworkEnvironment(args.networkId),
     };
+    const newmanReporterOptions = !_.isUndefined(args.output)
+        ? {
+              reporters: 'json',
+              reporter: {
+                  json: {
+                      export: args.output,
+                  },
+              },
+          }
+        : {
+              reporters: 'cli',
+          };
+    const newmanRunOptions = {
+        ...newmanEnvironmentOptions,
+        ...newmanReporterOptions,
+    };
     await newmanRunAsync(newmanRunOptions);
 };
-
 mainAsync().catch(utils.log);
