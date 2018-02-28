@@ -1,7 +1,7 @@
 {
-    "name": "@0xproject/web3-wrapper",
-    "version": "0.1.14",
-    "description": "Wraps around web3 and gives a nicer interface",
+    "name": "@0xproject/base-contract",
+    "version": "0.0.1",
+    "description": "0x Base TS contract",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
@@ -18,7 +18,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x.js/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/web3-wrapper/README.md",
+    "homepage": "https://github.com/0xProject/0x.js/packages/base-contract/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.9",
         "@types/lodash": "^4.14.86",
@@ -26,13 +26,13 @@
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "2.7.1",
+        "ethers-typescript-typings": "^0.0.1",
         "web3-typescript-typings": "^0.9.11"
     },
     "dependencies": {
         "@0xproject/types": "^0.2.3",
-        "@0xproject/utils": "^0.3.4",
+        "@0xproject/web3-wrapper": "^0.1.14",
         "ethers-contracts": "^2.2.1",
-        "ethers-typescript-typings": "^0.0.1",
         "lodash": "^4.17.4",
         "web3": "^0.20.0"
     }

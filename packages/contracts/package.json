@@ -64,6 +64,7 @@
     },
     "dependencies": {
         "0x.js": "^0.32.4",
+        "@0xproject/web3-wrapper": "^0.1.14",
         "@0xproject/deployer": "^0.1.0",
         "@0xproject/json-schemas": "^0.7.12",
         "@0xproject/types": "^0.2.3",

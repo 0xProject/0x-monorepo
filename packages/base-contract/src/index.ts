@@ -1,9 +1,8 @@
 import { TxData, TxDataPayable } from '@0xproject/types';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethersContracts from 'ethers-contracts';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-
-import { Web3Wrapper } from './web3_wrapper';
 
 export class BaseContract {
     protected _ethersInterface: ethersContracts.Interface;
