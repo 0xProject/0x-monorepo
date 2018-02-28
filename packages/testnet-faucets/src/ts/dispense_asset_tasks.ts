@@ -9,8 +9,8 @@ import { utils } from './utils';
 
 const DISPENSE_AMOUNT_ETHER = 0.1;
 const DISPENSE_AMOUNT_TOKEN = 0.1;
-const DISPENSE_MAX_AMOUNT_TOKEN = 5;
-const DISPENSE_MAX_AMOUNT_ETHER = 5;
+const DISPENSE_MAX_AMOUNT_TOKEN = 2;
+const DISPENSE_MAX_AMOUNT_ETHER = 2;
 
 export const dispenseAssetTasks = {
     dispenseEtherTask(recipientAddress: string, web3: Web3) {
@@ -18,7 +18,7 @@ export const dispenseAssetTasks = {
             utils.consoleLog(`Processing ETH ${recipientAddress}`);
             const userBalance = await promisify<BigNumber>(web3.eth.getBalance)(recipientAddress);
             const maxAmountInWei = new BigNumber(web3.toWei(DISPENSE_MAX_AMOUNT_ETHER, 'ether'));
-            if (userBalance.greaterThan(maxAmountInWei)) {
+            if (userBalance.greaterThanOrEqualTo(maxAmountInWei)) {
                 utils.consoleLog(
                     `User exceeded ETH balance maximum (${maxAmountInWei}) ${recipientAddress} ${userBalance} `,
                 );
@@ -47,7 +47,7 @@ export const dispenseAssetTasks = {
                 new BigNumber(DISPENSE_MAX_AMOUNT_TOKEN),
                 token.decimals,
             );
-            if (userBalanceBaseUnits.greaterThan(maxAmountBaseUnits)) {
+            if (userBalanceBaseUnits.greaterThanOrEqualTo(maxAmountBaseUnits)) {
                 utils.consoleLog(
                     `User exceeded token balance maximum (${maxAmountBaseUnits}) ${recipientAddress} ${userBalanceBaseUnits} `,
                 );
