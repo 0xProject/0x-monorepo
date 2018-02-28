@@ -51,7 +51,7 @@ const dataInsertionQueries: any = {
             b.block_number >= $1
         AND
             b.block_number <= $2
-        )`,
+        ) ON CONFLICT (order_hash, txn_hash, log_index) DO NOTHING`,
     events: `INSERT INTO events (
         timestamp,
         event_type,
@@ -105,7 +105,7 @@ const dataInsertionQueries: any = {
             a.block_number >= $1
         AND
             a.block_number <= $2
-        )`,
+        ) ON CONFLICT (order_hash, txn_hash, log_index) DO NOTHING`,
     events_full: `
     INSERT INTO events_full (
         timestamp,
@@ -212,7 +212,7 @@ const dataInsertionQueries: any = {
         events.block_number >= $1
     AND
         events.block_number <= $2
-    )`,
+    ) ON CONFLICT (order_hash, txn_hash, log_index) DO NOTHING`,
 };
 
 if(cli.name) {

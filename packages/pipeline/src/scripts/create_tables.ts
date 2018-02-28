@@ -150,6 +150,7 @@ const tableQueries: any = {
         PRIMARY KEY (token, base, timestamp)
     )`,
     orders: `CREATE TABLE IF NOT EXISTS orders (
+        relayer_id VARCHAR,
         exchange_contract_address CHAR(42),
         maker CHAR(42),
         maker_amount NUMERIC(78),
@@ -163,7 +164,7 @@ const tableQueries: any = {
         expiration_unix_timestamp_sec NUMERIC(78),
         salt VARCHAR,
         order_hash CHAR(66),
-        PRIMARY KEY (order_hash)
+        PRIMARY KEY (relayer_id, order_hash)
     )`,
 };
 
@@ -211,6 +212,7 @@ export const insertDataScripts = {
                 }
             }
             const queryString = `INSERT INTO ${table} (${columns}) VALUES (${safeArray})`;
+            console.log(queryString);
             postgresClient
                 .query(queryString)
                 .then((data: any) => {

@@ -1,5 +1,5 @@
-import { ExchangeEvents } from '0x.js';
-import { Order, HttpClient} from 'connect';
+import { ExchangeEvents, ZeroEx } from '0x.js';
+import { Order, HttpClient, OrderbookResponse, TokenPairsItem, OrderbookRequest} from '@0xproject/connect';
 import * as Airtable from 'airtable';
 import * as commandLineArgs from 'command-line-args';
 import * as _ from 'lodash';
@@ -15,6 +15,9 @@ import { error } from 'shelljs';
 import { historicalPrices } from '../models/historical_prices.js';
 import { HistoricalPriceResponse } from '../types';
 import * as rpn from 'request-promise-native';
+import { relayer } from '../models/relayer.js';
+import { parseDate } from 'tough-cookie';
+import { HttpRequestOptions } from '../../../connect/lib/src/types.js';
 
 const optionDefinitions = [
     { name: 'from', alias: 'f', type: Number },
@@ -123,6 +126,20 @@ export const scrapeDataScripts = {
                 }
             });
         });
+    },
+    async getOrderBook(sraEndpoint: string): Promise<Object> {
+        const relayerClient = new HttpClient(sraEndpoint);
+        const tokenResponse: TokenPairsItem[] = await relayerClient.getTokenPairsAsync();
+        const fullOrderBook: OrderbookResponse[] = [];
+        for(const tokenPair of tokenResponse) {
+            const orderBookRequest: OrderbookRequest = {
+                baseTokenAddress: tokenPair.tokenA.address,
+                quoteTokenAddress: tokenPair.tokenB.address,
+            };
+            const orderBook: OrderbookResponse = await relayerClient.getOrderbookAsync(orderBookRequest);
+            fullOrderBook.push(orderBook);
+        }
+        return fullOrderBook;
     },
     async getHistoricalPrices(
         fromSymbol: string,
@@ -355,6 +372,42 @@ function _scrapeHistoricalPricesToDB(token: any, fromTimestamp: number, toTimest
     };
 }
 
+function _scrapeOrderBookToDB(id: string, sraEndpoint: string): any {
+    return (cb: () => void) => {
+        scrapeDataScripts
+            .getOrderBook(sraEndpoint)
+            .then((data: any) => {
+                for(const book of data) {
+                    for(const order of book.bids) {
+                        console.log(order)
+                        const parsedOrder = typeConverters.convertLogOrderToOrderObject(order);
+                        parsedOrder.relayer_id = id;
+                        parsedOrder.order_hash = ZeroEx.getOrderHashHex(order);
+                        insertDataScripts.insertSingleRow('orders', parsedOrder)
+                        .catch((error: any) => {
+                            console.error(error);
+                        });
+                    }
+                    for(const order of book.asks) {
+                        console.log(order)
+                        const parsedOrder = typeConverters.convertLogOrderToOrderObject(order);
+                        parsedOrder.relayer_id = id;
+                        parsedOrder.order_hash = ZeroEx.getOrderHashHex(order);
+                        insertDataScripts.insertSingleRow('orders', parsedOrder)
+                        .catch((error: any) => {
+                            console.error(error);
+                        });
+                    }
+                }
+                cb();
+            })
+            .catch((error: any) => {
+                console.error(error);
+                cb();
+            });
+    };
+}
+
 if (cli.type === 'events') {
     if (cli.from && cli.to) {
         const destToBlock = cli.to ? cli.to : cli.from;
@@ -452,4 +505,14 @@ if (cli.type === 'events') {
     }
 } else if(cli.type === 'relayers') {
     q.push(_scrapeAllRelayersToDB());
+} else if(cli.type === 'orders') {
+    postgresClient
+        .query(dataFetchingQueries.get_relayers, [])
+        .then((result: any) => {
+            for(const relayer of result.rows) {
+                if(relayer.sra_http_url) {
+                    q.push(_scrapeOrderBookToDB(relayer.id, relayer.sra_http_url));
+                }
+            }
+        });
 }

@@ -40,15 +40,27 @@ export const dataFetchingQueries: any = {
             a.block_number < $2`
     ,
     get_token_registry: `
-    SELECT
-        *
-    FROM
-        tokens`
+        SELECT
+            *
+        FROM
+            tokens`
     ,
     get_max_block: `
-    SELECT
-        MAX(block_number)
-    FROM
-        blocks`
+        SELECT
+            MAX(block_number)
+        FROM
+            blocks`
     ,
+    get_relayers: `
+        SELECT
+            *
+        FROM
+            relayers`
+    ,
+    get_most_recent_pricing_date: `
+        SELECT
+            MAX(DATE(timestamp))
+        FROM
+            prices
+    `
 };

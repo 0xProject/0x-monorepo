@@ -4,6 +4,7 @@ import { block, logToBlockSchemaMapping } from './models/block';
 import { event, logToEventSchemaMapping } from './models/event';
 import { transaction, logToTransactionSchemaMapping } from './models/transaction';
 import { historicalPrices, logToHistoricalPricesSchema } from './models/historical_prices';
+import { order, logToOrderSchemaMapping } from './models/order';
 import { token, logToTokenSchemaMapping } from './models/tokens';
 
 export const typeConverters = {
@@ -82,9 +83,25 @@ export const typeConverters = {
         for (const key in logToHistoricalPricesSchema) {
             if (_.has(logHistoricalPrice, key)) {
                 newHistoricalPrices[logToHistoricalPricesSchema[key]] = _.get(logHistoricalPrice, key);
+                
             }
         }
         return newHistoricalPrices;
+    },
+    convertLogOrderToOrderObject(logOrder: any): any {
+        const newOrder: any = {};
+        for (const key in logToOrderSchemaMapping) {
+            if (_.has(logOrder, key)) {
+                console.log(key)
+                console.log(logOrder[key])
+                newOrder[logToOrderSchemaMapping[key]] = _.get(logOrder, key);
+                if (newOrder[logToOrderSchemaMapping[key]].constructor.name === 'BigNumber') {
+                    newOrder[logToOrderSchemaMapping[key]] = newOrder[logToOrderSchemaMapping[key]].toString();
+                }
+            }
+        }
+        console.log(newOrder);
+        return newOrder;
     },
 };
 
