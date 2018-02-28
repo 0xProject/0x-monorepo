@@ -1,17 +1,17 @@
-## @0xproject/utils
+## @0xproject/base-contract
 
-Utils to be shared across 0x projects and packages
+BaseContract to derive all auto-generated wrappers from
 
 ## Installation
 
 ```bash
-yarn add @0xproject/utils
+yarn add @0xproject/base-contract
 ```
 
 ## Usage
 
 ```javascript
-import { addressUtils, bigNumberConfigs, classUtils, intervalUtils, promisify } from '@0xproject/utils';
+import { BaseContract } from '@0xproject/base-contract';
 ```
 
 ## Contributing
