@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-
-import { ZeroEx } from '0x.js';
 import { assert } from '@0xproject/assert';
 import { HttpClient } from '@0xproject/connect';
 import { Schema, schemas } from '@0xproject/json-schemas';
@@ -62,10 +60,9 @@ const mainAsync = async () => {
     if (_.isUndefined(firstOrder)) {
         throw new Error('Could not get any orders from /orders endpoint');
     }
-    const orderHash = ZeroEx.getOrderHashHex(firstOrder);
     const newmanEnvironmentOptions = {
         collection: sraReportCollectionJSON,
-        globals: postmanEnvironmentFactory.createGlobalEnvironment(args.url, orderHash),
+        globals: postmanEnvironmentFactory.createGlobalEnvironment(args.url, firstOrder),
         environment: postmanEnvironmentFactory.createNetworkEnvironment(args.networkId),
     };
     const newmanReporterOptions = !_.isUndefined(args.output)

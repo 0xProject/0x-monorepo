@@ -1,3 +1,7 @@
+import {
+    SignedOrder,
+    ZeroEx,
+ } from '0x.js';
 import { Schema, schemas as schemasByName } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
@@ -12,9 +16,11 @@ interface EnvironmentValue {
 }
 
 export const postmanEnvironmentFactory = {
-    createGlobalEnvironment(url: string, orderHash: string) {
-        const urlEnvironmentValue = createEnvironmentValue('url', url);
+    createGlobalEnvironment(url: string, order: SignedOrder) {
+        const orderHash = ZeroEx.getOrderHashHex(order);
+        const orderEnvironmentValue = createEnvironmentValue('order', JSON.stringify(order));
         const orderHashEnvironmentValue = createEnvironmentValue('orderHash', orderHash);
+        const urlEnvironmentValue = createEnvironmentValue('url', url);
         const schemas: Schema[] = _.values(schemasByName);
         const schemaEnvironmentValues = _.compact(
             _.map(schemas, (schema: Schema) => {
@@ -36,6 +42,7 @@ export const postmanEnvironmentFactory = {
             schemaEnvironmentValues,
             urlEnvironmentValue,
             schemaKeysEnvironmentValue,
+            orderEnvironmentValue,
             orderHashEnvironmentValue,
         );
         const environment = {
