@@ -83,6 +83,7 @@
     },
     "dependencies": {
         "@0xproject/assert": "^0.0.20",
+        "@0xproject/base-contract": "^0.0.1",
         "@0xproject/json-schemas": "^0.7.12",
         "@0xproject/types": "^0.2.3",
         "@0xproject/utils": "^0.3.4",
