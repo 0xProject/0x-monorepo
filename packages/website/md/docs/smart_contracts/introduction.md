@@ -2,7 +2,7 @@ Welcome to the [0x smart contracts](https://github.com/0xProject/contracts) docu
 
 ### Helpful wiki articles:
 
-* [Overview of 0x protocol architecture](https://0xproject.com/wiki#Architecture)
-* [0x smart contract interactions](https://0xproject.com/wiki#Contract-Interactions)
-* [Deployed smart contract addresses](https://0xproject.com/wiki#Deployed-Addresses)
-* [0x protocol message format](https://0xproject.com/wiki#Message-Format)
+*   [Overview of 0x protocol architecture](https://0xproject.com/wiki#Architecture)
+*   [0x smart contract interactions](https://0xproject.com/wiki#Contract-Interactions)
+*   [Deployed smart contract addresses](https://0xproject.com/wiki#Deployed-Addresses)
+*   [0x protocol message format](https://0xproject.com/wiki#Message-Format)
