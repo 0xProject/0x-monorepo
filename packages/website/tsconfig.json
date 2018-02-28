@@ -13,5 +13,9 @@
             "*": ["node_modules/@types/*", "*"]
         }
     },
-    "include": ["./ts/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
+    "include": [
+        "./ts/**/*",
+        "../../node_modules/web3-typescript-typings/index.d.ts",
+        "../../node_modules/ethers-typescript-typings/index.d.ts"
+    ]
 }
