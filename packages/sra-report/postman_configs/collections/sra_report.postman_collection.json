@@ -42,7 +42,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "53ad6be0-4196-47a1-bbf5-fa96e3c5d47e",
+                                "id": "1b61aabb-ef9f-4269-9a0c-cb7559afcbd8",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const filterTokenEnvKey = 'WETH_address';",
@@ -50,14 +50,12 @@
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Token pairs are properly filtered', function() {",
                                     "    _.forEach(responseJsonData, function(tokenPair) {",
-                                    "        const tokenAIsFilterToken = _.get(tokenPair, 'tokenA') === filterTokenAddress;",
-                                    "        const tokenBIsFilterToken = _.get(tokenPair, 'tokenB') === filterTokenAddress;",
+                                    "        const tokenAIsFilterToken = _.get(tokenPair, 'tokenA.address') === filterTokenAddress;",
+                                    "        const tokenBIsFilterToken = _.get(tokenPair, 'tokenB.address') === filterTokenAddress;",
                                     "        const condition = tokenAIsFilterToken || tokenBIsFilterToken",
                                     "        pm.expect(condition).to.be.true;",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -89,7 +87,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "7224b56e-0000-4d77-b355-f9bfd7d6320f",
+                                "id": "a5f946b1-fc97-4bcf-ae01-e0f97864a6c1",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const filterTokenEnvKey = 'WETH_address';",
@@ -97,17 +95,12 @@
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Token pairs are properly filtered', function() {",
                                     "    _.forEach(responseJsonData, function(tokenPair) {",
-                                    "        const tokenAIsFilterToken = _.get(tokenPair, 'tokenA') === filterTokenAddress;",
-                                    "        const tokenBIsFilterToken = _.get(tokenPair, 'tokenB') === filterTokenAddress;",
+                                    "        const tokenAIsFilterToken = _.get(tokenPair, 'tokenA.address') === filterTokenAddress;",
+                                    "        const tokenBIsFilterToken = _.get(tokenPair, 'tokenB.address') === filterTokenAddress;",
                                     "        const condition = tokenAIsFilterToken || tokenBIsFilterToken",
                                     "        pm.expect(condition).to.be.true;",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -139,7 +132,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "32a19952-90c7-4f11-b95c-815b0746ef8b",
+                                "id": "bcd06e4f-aa3a-42f8-9f8c-bc902eb7a075",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const filterTokenAEnvKey = 'WETH_address';",
@@ -149,10 +142,10 @@
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Token pairs are properly filtered', function() {",
                                     "    _.forEach(responseJsonData, function(tokenPair) {",
-                                    "        const tokenAIsFilterTokenA = _.get(tokenPair, 'tokenA') === filterTokenAAddress;",
-                                    "        const tokenAIsFilterTokenB = _.get(tokenPair, 'tokenA') === filterTokenBAddress;",
-                                    "        const tokenBIsFilterTokenA = _.get(tokenPair, 'tokenB') === filterTokenAAddress;",
-                                    "        const tokenBIsFilterTokenB = _.get(tokenPair, 'tokenB') === filterTokenBAddress;",
+                                    "        const tokenAIsFilterTokenA = _.get(tokenPair, 'tokenA.address') === filterTokenAAddress;",
+                                    "        const tokenAIsFilterTokenB = _.get(tokenPair, 'tokenA.address') === filterTokenBAddress;",
+                                    "        const tokenBIsFilterTokenA = _.get(tokenPair, 'tokenB.address') === filterTokenAAddress;",
+                                    "        const tokenBIsFilterTokenB = _.get(tokenPair, 'tokenB.address') === filterTokenBAddress;",
                                     "        const condition = (tokenAIsFilterTokenA && tokenBIsFilterTokenB) || (tokenBIsFilterTokenA && tokenAIsFilterTokenB)",
                                     "        pm.expect(condition).to.be.true;",
                                     "    });",
@@ -251,7 +244,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "f10e0a91-3401-4023-afef-5bff93a25232",
+                                "id": "e782ae77-66bf-4096-9190-ef9e7501b316",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const exchangeContractEnvKey = 'EXCHANGE_CONTRACT_address';",
@@ -263,8 +256,6 @@
                                     "        pm.expect(requestedExchangeContractAddress).to.equal(returnedExchangeContractAddress);",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -297,7 +288,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "d915624e-9d71-4499-a133-cc8268199895",
+                                "id": "1144a2d6-6175-40a6-8568-d0d3884492a1",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const filterTokenEnvKey = 'ZRX_address';",
@@ -313,8 +304,6 @@
                                     "        pm.expect(condition).to.be.true;",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -347,7 +336,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "5599a829-b127-4b21-8690-12cc764972a9",
+                                "id": "01eb5865-edec-4216-8a90-c36d790366fc",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const filterTokenEnvKey = 'ZRX_address';",
@@ -359,8 +348,6 @@
                                     "        pm.expect(makerTokenAddress).to.be.equal(filterTokenAddress);",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -393,7 +380,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "d5ac5604-b13b-40c2-ba31-3033f52136a2",
+                                "id": "bbbb6e15-60c7-4666-96be-a0ad56b6058b",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const filterTokenEnvKey = 'ZRX_address';",
@@ -405,8 +392,6 @@
                                     "        pm.expect(takerTokenAddress).to.be.equal(filterTokenAddress);",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -483,7 +468,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "a299a290-58b9-434c-b5e8-98ef9e5f70da",
+                                "id": "c9c18715-c7cc-4064-8241-68a362a233fe",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const orderTakerEnvKey = 'orderTaker';",
@@ -495,8 +480,6 @@
                                     "        pm.expect(referenceOrderTakerAddress).to.be.equal(returnedTakerAddress);",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -529,7 +512,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "e80aa474-3352-45dd-87ef-2980bab961fb",
+                                "id": "2c9cdb6a-267c-48b3-9ad7-df7abb75ddf4",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const orderTraderEnvKey = 'orderMaker';",
@@ -543,9 +526,6 @@
                                     "        pm.expect(condition).to.be.true;",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -578,7 +558,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "fb34198e-221b-406d-8da4-4e7eed400cbe",
+                                "id": "06ea36eb-6a35-4fc7-8017-59876b1a1cb4",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const orderFeeRecipientEnvKey = 'orderFeeRecipient';",
@@ -590,9 +570,6 @@
                                     "        pm.expect(referenceOrderFeeRecipientAddress).to.be.equal(returnedFeeRecipientAddress);",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -657,7 +634,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "e847f317-6346-4ee5-bd94-7554eb3073b3",
+                                "id": "3beca3a2-e0ad-45ff-b4d1-eace859af0bf",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const orderEnvKey = 'order';",
@@ -697,8 +674,6 @@
                                     "        pm.expect(returnedSignatureProperty).to.be.equal(referenceSignatureProperty);",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
@@ -755,7 +730,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "67d95152-3561-4db2-aaba-d26ceb44b4fd",
+                                "id": "0198622e-9705-4ae1-b1f2-0c40b87de856",
                                 "type": "text/javascript",
                                 "exec": [
                                     "const baseTokenEnvKey = 'ZRX_address';",
@@ -772,16 +747,13 @@
                                     "        pm.expect(makerTokenAddress).to.be.equal(quoteTokenAddress);",
                                     "        pm.expect(takerTokenAddress).to.be.equal(baseTokenAddress);",
                                     "    });",
-                                    "      _.forEach(asks, function(order) {",
+                                    "    _.forEach(asks, function(order) {",
                                     "        const makerTokenAddress = _.get(order, 'makerTokenAddress');",
                                     "        const takerTokenAddress = _.get(order, 'takerTokenAddress');",
                                     "        pm.expect(makerTokenAddress).to.be.equal(baseTokenAddress);",
                                     "        pm.expect(takerTokenAddress).to.be.equal(quoteTokenAddress);",
                                     "    });",
                                     "});",
-                                    "",
-                                    "",
-                                    "",
                                     ""
                                 ]
                             }
