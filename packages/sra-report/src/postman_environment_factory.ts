@@ -1,7 +1,4 @@
-import {
-    SignedOrder,
-    ZeroEx,
- } from '0x.js';
+import { SignedOrder, ZeroEx } from '0x.js';
 import { Schema, schemas as schemasByName } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
@@ -17,10 +14,6 @@ interface EnvironmentValue {
 
 export const postmanEnvironmentFactory = {
     createGlobalEnvironment(url: string, order: SignedOrder) {
-        const orderHash = ZeroEx.getOrderHashHex(order);
-        const orderEnvironmentValue = createEnvironmentValue('order', JSON.stringify(order));
-        const orderHashEnvironmentValue = createEnvironmentValue('orderHash', orderHash);
-        const urlEnvironmentValue = createEnvironmentValue('url', url);
         const schemas: Schema[] = _.values(schemasByName);
         const schemaEnvironmentValues = _.compact(
             _.map(schemas, (schema: Schema) => {
@@ -37,16 +30,18 @@ export const postmanEnvironmentFactory = {
         const schemaKeys = _.map(schemaEnvironmentValues, (environmentValue: EnvironmentValue) => {
             return environmentValue.key;
         });
-        const schemaKeysEnvironmentValue = createEnvironmentValue('schemaKeys', JSON.stringify(schemaKeys));
-        const environmentValues = _.concat(
+        const allEnvironmentValues = _.concat(
             schemaEnvironmentValues,
-            urlEnvironmentValue,
-            schemaKeysEnvironmentValue,
-            orderEnvironmentValue,
-            orderHashEnvironmentValue,
+            createEnvironmentValue('schemaKeys', JSON.stringify(schemaKeys)),
+            createEnvironmentValue('url', url),
+            createEnvironmentValue('order', JSON.stringify(order)),
+            createEnvironmentValue('orderMaker', order.maker),
+            createEnvironmentValue('orderTaker', order.taker),
+            createEnvironmentValue('orderFeeRecipient', order.feeRecipient),
+            createEnvironmentValue('orderHash', ZeroEx.getOrderHashHex(order)),
         );
         const environment = {
-            values: environmentValues,
+            values: allEnvironmentValues,
         };
         return environment;
     },
