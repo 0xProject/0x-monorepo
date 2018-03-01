@@ -36,7 +36,7 @@ describe('ZRXToken', () => {
             networkId: constants.TESTRPC_NETWORK_ID,
         });
         const zrxInstance = await deployer.deployAsync(ContractName.ZRXToken);
-        zrx = new ZRXTokenContract(zrxInstance);
+        zrx = new ZRXTokenContract(web3Wrapper, zrxInstance.abi, zrxInstance.address);
         zrxAddress = zrx.address;
         MAX_UINT = zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });
@@ -48,25 +48,25 @@ describe('ZRXToken', () => {
     });
     describe('constants', () => {
         it('should have 18 decimals', async () => {
-            const decimals = new BigNumber(await zrx.decimals());
+            const decimals = new BigNumber(await zrx.decimals.callAsync());
             const expectedDecimals = 18;
             expect(decimals).to.be.bignumber.equal(expectedDecimals);
         });
 
         it('should have a total supply of 1 billion tokens', async () => {
-            const totalSupply = new BigNumber(await zrx.totalSupply());
+            const totalSupply = new BigNumber(await zrx.totalSupply.callAsync());
             const expectedTotalSupply = 1000000000;
             expect(ZeroEx.toUnitAmount(totalSupply, 18)).to.be.bignumber.equal(expectedTotalSupply);
         });
 
         it('should be named 0x Protocol Token', async () => {
-            const name = await zrx.name();
+            const name = await zrx.name.callAsync();
             const expectedName = '0x Protocol Token';
             expect(name).to.be.equal(expectedName);
         });
 
         it('should have the symbol ZRX', async () => {
-            const symbol = await zrx.symbol();
+            const symbol = await zrx.symbol.callAsync();
             const expectedSymbol = 'ZRX';
             expect(symbol).to.be.equal(expectedSymbol);
         });
@@ -75,7 +75,7 @@ describe('ZRXToken', () => {
     describe('constructor', () => {
         it('should initialize owner balance to totalSupply', async () => {
             const ownerBalance = await zeroEx.token.getBalanceAsync(zrxAddress, owner);
-            const totalSupply = new BigNumber(await zrx.totalSupply());
+            const totalSupply = new BigNumber(await zrx.totalSupply.callAsync());
             expect(totalSupply).to.be.bignumber.equal(ownerBalance);
         });
     });

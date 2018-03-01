@@ -75,11 +75,14 @@ describe('EtherTokenWrapper', () => {
             const contractAddressIfExists = zeroEx.etherToken.getContractAddressIfExists();
             expect(contractAddressIfExists).to.not.be.undefined();
         });
-        it('should return undefined if connected to an unknown network', () => {
+        it('should throw if connected to a private network and contract addresses are not specified', () => {
             const UNKNOWN_NETWORK_NETWORK_ID = 10;
-            const unknownNetworkZeroEx = new ZeroEx(web3.currentProvider, { networkId: UNKNOWN_NETWORK_NETWORK_ID });
-            const contractAddressIfExists = unknownNetworkZeroEx.etherToken.getContractAddressIfExists();
-            expect(contractAddressIfExists).to.be.undefined();
+            expect(
+                () =>
+                    new ZeroEx(web3.currentProvider, {
+                        networkId: UNKNOWN_NETWORK_NETWORK_ID,
+                    } as any),
+            ).to.throw();
         });
     });
     describe('#depositAsync', () => {
@@ -155,7 +158,7 @@ describe('EtherTokenWrapper', () => {
             etherTokenAddress = etherToken.address;
         });
         afterEach(() => {
-            zeroEx.etherToken._unsubscribeAll();
+            zeroEx.etherToken.unsubscribeAll();
         });
         // Hack: Mocha does not allow a test to be both async and have a `done` callback
         // Since we need to await the receipt of the event in the `subscribe` callback,

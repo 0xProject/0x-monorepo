@@ -2,6 +2,7 @@ import { BigNumber } from 'bignumber.js';
 import * as Web3 from 'web3';
 
 export interface TxData {
+    data?: string;
     from?: string;
     gas?: number;
     gasPrice?: BigNumber;
@@ -38,7 +39,7 @@ export enum AbiType {
     Fallback = 'fallback',
 }
 
-export type ContractEventArg = string | BigNumber;
+export type ContractEventArg = string | BigNumber | number;
 
 export interface DecodedLogArgs {
     [argName: string]: ContractEventArg;

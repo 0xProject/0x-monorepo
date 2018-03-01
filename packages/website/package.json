@@ -87,6 +87,7 @@
         "copy-webpack-plugin": "^4.0.1",
         "copyfiles": "^1.2.0",
         "css-loader": "0.23.x",
+        "ethers-typescript-typings": "^0.0.1",
         "exports-loader": "0.6.x",
         "imports-loader": "0.6.x",
         "json-loader": "^0.5.4",

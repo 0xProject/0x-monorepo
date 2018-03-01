@@ -9,19 +9,22 @@ public {{this.name}} = {
     {{/this.payable}}
     ): Promise<string> {
         const self = this as {{contractName}}Contract;
+        const inputAbi = _.find(this.abi, {name: '{{this.name}}'}).inputs;
+        [{{> params inputs=inputs}}] = BaseContract._transformABIData(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(this));
+        const encodedData = this._ethersInterface.functions.{{this.name}}(
+            {{> params inputs=inputs}}
+        ).data
         const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-            txData,
+            {
+                ...txData,
+                data: encodedData,
+            },
             self.{{this.name}}.estimateGasAsync.bind(
                 self,
                 {{> params inputs=inputs}}
             ),
         );
-        const txHash = await promisify<string>(
-            self._web3ContractInstance.{{this.name}}, self._web3ContractInstance,
-        )(
-            {{> params inputs=inputs}}
-            txDataWithDefaults,
-        );
+        const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         return txHash;
     },
     async estimateGasAsync(
@@ -29,15 +32,16 @@ public {{this.name}} = {
         txData: TxData = {},
     ): Promise<number> {
         const self = this as {{contractName}}Contract;
-        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-            txData,
-        );
-        const gas = await promisify<number>(
-            self._web3ContractInstance.{{this.name}}.estimateGas, self._web3ContractInstance,
-        )(
+        const encodedData = this._ethersInterface.functions.{{this.name}}(
             {{> params inputs=inputs}}
-            txDataWithDefaults,
+        ).data
+        const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+            {
+                ...txData,
+                data: encodedData,
+            }
         );
+        const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
     },
     getABIEncodedTransactionData(
@@ -45,7 +49,10 @@ public {{this.name}} = {
         txData: TxData = {},
     ): string {
         const self = this as {{contractName}}Contract;
-        const abiEncodedTransactionData = self._web3ContractInstance.{{this.name}}.getData();
+        const abiEncodedTransactionData = this._ethersInterface.functions.{{this.name}}(
+            {{> params inputs=inputs}}
+        ).data
         return abiEncodedTransactionData;
     },
+    {{> callAsync}}
 };

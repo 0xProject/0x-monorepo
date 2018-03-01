@@ -2,15 +2,14 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { Documentation as DocumentationComponent, DocumentationAllProps } from 'ts/pages/documentation/documentation';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocsInfoConfig, Environments, WebsitePaths } from 'ts/types';
+import { DocPackages, DocsInfoConfig, Environments, SupportedDocJson, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
-import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/0xjs/introduction');
@@ -37,15 +36,11 @@ const zeroExJsDocSections = {
     types: constants.TYPES_SECTION_NAME,
 };
 
-const s3BucketName = configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons';
-const docsJsonRoot = `https://s3.amazonaws.com/${s3BucketName}`;
-
 const docsInfoConfig: DocsInfoConfig = {
+    id: DocPackages.ZeroExJs,
+    type: SupportedDocJson.TypeDoc,
     displayName: '0x.js',
     packageUrl: 'https://github.com/0xProject/0x.js',
-    subPackageName: '0x.js',
-    websitePath: WebsitePaths.ZeroExJs,
-    docsJsonRoot,
     menu: {
         introduction: [zeroExJsDocSections.introduction],
         install: [zeroExJsDocSections.installation],
@@ -69,7 +64,8 @@ const docsInfoConfig: DocsInfoConfig = {
         [zeroExJsDocSections.versioning]: versioningMarkdown,
     },
     // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-    // currently no way to extract the re-exported types from index.ts via TypeDoc :(
+    // currently no way to extract the re-exported types from index.ts via TypeDoc :( Make sure to only
+    // ADD types here, DO NOT REMOVE types since they might still be needed for older supported versions
     publicTypes: [
         'Order',
         'SignedOrder',
@@ -147,7 +143,6 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sections: zeroExJsDocSections,
     visibleConstructors: [zeroExJsDocSections.zeroEx],
-    convertToDocAgnosticFormatFn: typeDocUtils.convertToDocAgnosticFormat.bind(typeDocUtils),
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -162,7 +157,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocumentationAllProps): ConnectedState => ({
+const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     docsInfo,
@@ -173,6 +168,6 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Documentation: React.ComponentClass<DocumentationAllProps> = connect(mapStateToProps, mapDispatchToProps)(
-    DocumentationComponent,
+export const Documentation: React.ComponentClass<DocPageProps> = connect(mapStateToProps, mapDispatchToProps)(
+    DocPageComponent,
 );

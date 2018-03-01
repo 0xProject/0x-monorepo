@@ -31,7 +31,7 @@ describe('TokenRegistry', () => {
         owner = accounts[0];
         notOwner = accounts[1];
         const tokenRegInstance = await deployer.deployAsync(ContractName.TokenRegistry);
-        tokenReg = new TokenRegistryContract(tokenRegInstance);
+        tokenReg = new TokenRegistryContract(web3Wrapper, tokenRegInstance.abi, tokenRegInstance.address);
         tokenRegWrapper = new TokenRegWrapper(tokenReg);
     });
     beforeEach(async () => {

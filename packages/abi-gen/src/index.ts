@@ -11,13 +11,14 @@ import * as yargs from 'yargs';
 import toSnakeCase = require('to-snake-case');
 import * as Web3 from 'web3';
 
-import { ContextData, ParamKind } from './types';
+import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
 
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
 const ABI_TYPE_METHOD = 'function';
 const ABI_TYPE_EVENT = 'event';
 const DEFAULT_NETWORK_ID = 50;
+const DEFAULT_BACKEND = 'web3';
 
 const args = yargs
     .option('abis', {
@@ -42,6 +43,12 @@ const args = yargs
         type: 'string',
         demandOption: true,
         normalize: true,
+    })
+    .option('backend', {
+        describe: `The backing Ethereum library your app uses. Either 'web3' or 'ethers'. Ethers auto-converts small ints to numbers whereas Web3 doesn't.`,
+        type: 'string',
+        choices: [ContractsBackend.Web3, ContractsBackend.Ethers],
+        default: DEFAULT_BACKEND,
     })
     .option('network-id', {
         describe: 'ID of the network where contract ABIs are nested in artifacts',
@@ -73,8 +80,8 @@ function writeOutputFile(name: string, renderedTsCode: string): void {
     utils.log(`Created: ${chalk.bold(filePath)}`);
 }
 
-Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input));
-Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output));
+Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
+Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
 
 if (args.partials) {
     registerPartials(args.partials);
@@ -129,6 +136,7 @@ for (const abiFileName of abiFileNames) {
         const methodData = {
             ...methodAbi,
             singleReturnValue: methodAbi.outputs.length === 1,
+            hasReturnValue: methodAbi.outputs.length !== 0,
         };
         return methodData;
     });
