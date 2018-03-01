@@ -17,7 +17,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "e6a00c7a-acc8-4f51-b0c9-11d005ee1dac",
+                                "id": "42cb5e3f-6013-4a7c-b341-0d10cb3f2c9c",
                                 "type": "text/javascript",
                                 "exec": [""]
                             }
@@ -28,9 +28,9 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/token_pairs",
+                            "raw": "{{url}}/token_pairs",
                             "host": ["{{url}}"],
-                            "path": ["v0", "token_pairs"]
+                            "path": ["token_pairs"]
                         },
                         "description": ""
                     },
@@ -42,9 +42,24 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "e6a00c7a-acc8-4f51-b0c9-11d005ee1dac",
+                                "id": "53ad6be0-4196-47a1-bbf5-fa96e3c5d47e",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const filterTokenEnvKey = 'WETH_address';",
+                                    "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Token pairs are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(tokenPair) {",
+                                    "        const tokenAIsFilterToken = _.get(tokenPair, 'tokenA') === filterTokenAddress;",
+                                    "        const tokenBIsFilterToken = _.get(tokenPair, 'tokenB') === filterTokenAddress;",
+                                    "        const condition = tokenAIsFilterToken || tokenBIsFilterToken",
+                                    "        pm.expect(condition).to.be.true;",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -53,9 +68,9 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/token_pairs?tokenA={{WETH_address}}",
+                            "raw": "{{url}}/token_pairs?tokenA={{WETH_address}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "token_pairs"],
+                            "path": ["token_pairs"],
                             "query": [
                                 {
                                     "key": "tokenA",
@@ -74,9 +89,27 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "e6a00c7a-acc8-4f51-b0c9-11d005ee1dac",
+                                "id": "7224b56e-0000-4d77-b355-f9bfd7d6320f",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const filterTokenEnvKey = 'WETH_address';",
+                                    "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Token pairs are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(tokenPair) {",
+                                    "        const tokenAIsFilterToken = _.get(tokenPair, 'tokenA') === filterTokenAddress;",
+                                    "        const tokenBIsFilterToken = _.get(tokenPair, 'tokenB') === filterTokenAddress;",
+                                    "        const condition = tokenAIsFilterToken || tokenBIsFilterToken",
+                                    "        pm.expect(condition).to.be.true;",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -85,9 +118,9 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/token_pairs?tokenB={{WETH_address}}",
+                            "raw": "{{url}}/token_pairs?tokenB={{WETH_address}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "token_pairs"],
+                            "path": ["token_pairs"],
                             "query": [
                                 {
                                     "key": "tokenB",
@@ -106,9 +139,26 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "e6a00c7a-acc8-4f51-b0c9-11d005ee1dac",
+                                "id": "32a19952-90c7-4f11-b95c-815b0746ef8b",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const filterTokenAEnvKey = 'WETH_address';",
+                                    "const filterTokenBEnvKey = 'ZRX_address';",
+                                    "const filterTokenAAddress = pm.environment.get(filterTokenAEnvKey);",
+                                    "const filterTokenBAddress = pm.environment.get(filterTokenBEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Token pairs are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(tokenPair) {",
+                                    "        const tokenAIsFilterTokenA = _.get(tokenPair, 'tokenA') === filterTokenAAddress;",
+                                    "        const tokenAIsFilterTokenB = _.get(tokenPair, 'tokenA') === filterTokenBAddress;",
+                                    "        const tokenBIsFilterTokenA = _.get(tokenPair, 'tokenB') === filterTokenAAddress;",
+                                    "        const tokenBIsFilterTokenB = _.get(tokenPair, 'tokenB') === filterTokenBAddress;",
+                                    "        const condition = (tokenAIsFilterTokenA && tokenBIsFilterTokenB) || (tokenBIsFilterTokenA && tokenAIsFilterTokenB)",
+                                    "        pm.expect(condition).to.be.true;",
+                                    "    });",
+                                    "});",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -117,9 +167,9 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/token_pairs?tokenA={{WETH_address}}&tokenB={{ZRX_address}}",
+                            "raw": "{{url}}/token_pairs?tokenA={{WETH_address}}&tokenB={{ZRX_address}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "token_pairs"],
+                            "path": ["token_pairs"],
                             "query": [
                                 {
                                     "key": "tokenA",
@@ -157,7 +207,7 @@
                             "const responseJsonData = pm.response.json();",
                             "",
                             "pm.test('Schema is valid', function() {",
-                            "  pm.expect(tv4.validate(responseJsonData, schema)).to.be.true;",
+                            "    pm.expect(tv4.validate(responseJsonData, schema)).to.be.true;",
                             "});",
                             ""
                         ]
@@ -175,7 +225,7 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "118f47dd-1d93-4288-841f-de88783eff3b",
                                 "type": "text/javascript",
                                 "exec": [""]
                             }
@@ -186,9 +236,9 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -201,9 +251,22 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "f10e0a91-3401-4023-afef-5bff93a25232",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const exchangeContractEnvKey = 'EXCHANGE_CONTRACT_address';",
+                                    "const requestedExchangeContractAddress = pm.environment.get(exchangeContractEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orders are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(order) {",
+                                    "        const returnedExchangeContractAddress = _.get(order, 'exchangeContractAddress');",
+                                    "        pm.expect(requestedExchangeContractAddress).to.equal(returnedExchangeContractAddress);",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -212,9 +275,16 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders?exchangeContractAddress={{EXCHANGE_CONTRACT_address}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"],
+                            "query": [
+                                {
+                                    "key": "exchangeContractAddress",
+                                    "value": "{{EXCHANGE_CONTRACT_address}}",
+                                    "equals": true
+                                }
+                            ]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -227,9 +297,26 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "d915624e-9d71-4499-a133-cc8268199895",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const filterTokenEnvKey = 'ZRX_address';",
+                                    "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orders are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(order) {",
+                                    "        const makerTokenAddress = _.get(order, 'makerTokenAddress');",
+                                    "        const takerTokenAddress = _.get(order, 'takerTokenAddress');",
+                                    "        const makerTokenAddressIsFilterToken = makerTokenAddress === filterTokenAddress;",
+                                    "        const takerTokenAddressIsFilterToken = takerTokenAddress === filterTokenAddress;",
+                                    "        const condition = makerTokenAddressIsFilterToken || takerTokenAddressIsFilterToken;",
+                                    "        pm.expect(condition).to.be.true;",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -238,9 +325,16 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders?tokenAddress={{ZRX_address}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"],
+                            "query": [
+                                {
+                                    "key": "tokenAddress",
+                                    "value": "{{ZRX_address}}",
+                                    "equals": true
+                                }
+                            ]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -253,9 +347,22 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "5599a829-b127-4b21-8690-12cc764972a9",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const filterTokenEnvKey = 'ZRX_address';",
+                                    "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orders are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(order) {",
+                                    "        const makerTokenAddress = _.get(order, 'makerTokenAddress');",
+                                    "        pm.expect(makerTokenAddress).to.be.equal(filterTokenAddress);",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -264,9 +371,16 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders?makerTokenAddress={{ZRX_address}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"],
+                            "query": [
+                                {
+                                    "key": "makerTokenAddress",
+                                    "value": "{{ZRX_address}}",
+                                    "equals": true
+                                }
+                            ]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -279,9 +393,22 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "d5ac5604-b13b-40c2-ba31-3033f52136a2",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const filterTokenEnvKey = 'ZRX_address';",
+                                    "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orders are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(order) {",
+                                    "        const takerTokenAddress = _.get(order, 'takerTokenAddress');",
+                                    "        pm.expect(takerTokenAddress).to.be.equal(filterTokenAddress);",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -290,9 +417,16 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders?takerTokenAddress={{ZRX_address}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"],
+                            "query": [
+                                {
+                                    "key": "takerTokenAddress",
+                                    "value": "{{ZRX_address}}",
+                                    "equals": true
+                                }
+                            ]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -305,9 +439,20 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "efc85eb8-7791-4b14-9dee-c5e80adec4b8",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const orderMakerEnvKey = 'orderMaker';",
+                                    "const referenceOrderMakerAddress = pm.globals.get(orderMakerEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orders are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(order) {",
+                                    "        const returnedMakerAddress = _.get(order, 'maker');",
+                                    "        pm.expect(referenceOrderMakerAddress).to.be.equal(returnedMakerAddress);",
+                                    "    });",
+                                    "});",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -316,9 +461,16 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders?maker={{orderMaker}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"],
+                            "query": [
+                                {
+                                    "key": "maker",
+                                    "value": "{{orderMaker}}",
+                                    "equals": true
+                                }
+                            ]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -331,9 +483,22 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "a299a290-58b9-434c-b5e8-98ef9e5f70da",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const orderTakerEnvKey = 'orderTaker';",
+                                    "const referenceOrderTakerAddress = pm.globals.get(orderTakerEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orders are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(order) {",
+                                    "        const returnedTakerAddress = _.get(order, 'taker');",
+                                    "        pm.expect(referenceOrderTakerAddress).to.be.equal(returnedTakerAddress);",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -342,9 +507,16 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders?taker={{orderTaker}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"],
+                            "query": [
+                                {
+                                    "key": "taker",
+                                    "value": "{{orderTaker}}",
+                                    "equals": true
+                                }
+                            ]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -357,9 +529,25 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "e80aa474-3352-45dd-87ef-2980bab961fb",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const orderTraderEnvKey = 'orderMaker';",
+                                    "const referenceOrderTraderAddress = pm.globals.get(orderTraderEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orders are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(order) {",
+                                    "        const returnedMakerAddress = _.get(order, 'maker');",
+                                    "        const returnedTakerAddress = _.get(order, 'taker');",
+                                    "        const condition = (referenceOrderTraderAddress === returnedMakerAddress) || (referenceOrderTraderAddress === returnedTakerAddress);",
+                                    "        pm.expect(condition).to.be.true;",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -368,9 +556,16 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders?trader={{orderMaker}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"],
+                            "query": [
+                                {
+                                    "key": "trader",
+                                    "value": "{{orderMaker}}",
+                                    "equals": true
+                                }
+                            ]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -383,9 +578,23 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
+                                "id": "fb34198e-221b-406d-8da4-4e7eed400cbe",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const orderFeeRecipientEnvKey = 'orderFeeRecipient';",
+                                    "const referenceOrderFeeRecipientAddress = pm.globals.get(orderFeeRecipientEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orders are properly filtered', function() {",
+                                    "    _.forEach(responseJsonData, function(order) {",
+                                    "        const returnedFeeRecipientAddress = _.get(order, 'feeRecipient');",
+                                    "        pm.expect(referenceOrderFeeRecipientAddress).to.be.equal(returnedFeeRecipientAddress);",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -394,35 +603,16 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/orders",
+                            "raw": "{{url}}/orders?feeRecipient={{orderFeeRecipient}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
-                        },
-                        "description":
-                            "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "makerTokenAddress and takerTokenAddress params",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "id": "bd42f688-23d2-4a9c-941c-d5bf34f85519",
-                                "type": "text/javascript",
-                                "exec": [""]
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "body": {},
-                        "url": {
-                            "raw": "{{url}}/v0/orders",
-                            "host": ["{{url}}"],
-                            "path": ["v0", "orders"]
+                            "path": ["orders"],
+                            "query": [
+                                {
+                                    "key": "feeRecipient",
+                                    "value": "{{orderFeeRecipient}}",
+                                    "equals": true
+                                }
+                            ]
                         },
                         "description":
                             "Retrieves a list of orders given query parameters. For querying an entire orderbook snapshot, the orderbook endpoint is recommended.\n\nParameters\n  * exchangeContractAddress [string]: returns orders created for this exchange address\n  * tokenAddress [string]: returns orders where makerTokenAddress or takerTokenAddress is token address\n  * makerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * takerTokenAddress [string]: returns orders with specified makerTokenAddress\n  * maker [string]: returns orders where maker is maker address\n  * taker [string]: returns orders where taker is taker address\n  * trader [string]: returns orders where maker or taker is trader address\n  * feeRecipient [string]: returns orders where feeRecipient is feeRecipient address\n\nAll parameters are optional."
@@ -449,7 +639,7 @@
                             "const responseJsonData = pm.response.json();",
                             "",
                             "pm.test('Schema is valid', function() {",
-                            "  pm.expect(tv4.validate(responseJsonData, schema)).to.be.true;",
+                            "    pm.expect(tv4.validate(responseJsonData, schema)).to.be.true;",
                             "});",
                             ""
                         ]
@@ -463,14 +653,65 @@
             "item": [
                 {
                     "name": "orderHash param",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "e847f317-6346-4ee5-bd94-7554eb3073b3",
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const orderEnvKey = 'order';",
+                                    "const referenceOrderString = pm.globals.get(orderEnvKey);",
+                                    "const referenceOrderJson = JSON.parse(referenceOrderString);",
+                                    "const orderPropertyNames = [",
+                                    "    'maker',",
+                                    "    'taker',",
+                                    "    'makerFee',",
+                                    "    'takerFee',",
+                                    "    'makerTokenAmount',",
+                                    "    'takerTokenAmount',",
+                                    "    'makerTokenAddress',",
+                                    "    'takerTokenAddress',",
+                                    "    'salt',",
+                                    "    'feeRecipient',",
+                                    "    'expirationUnixTimestampSec',",
+                                    "    'exchangeContractAddress'",
+                                    "];",
+                                    "const signaturePropertyNames = [",
+                                    "    'v',",
+                                    "    'r',",
+                                    "    's'",
+                                    "];",
+                                    "const returnedOrderJson = pm.response.json();",
+                                    "pm.test('Order is properly retreived', function() {",
+                                    "    _.forEach(orderPropertyNames, function(propertyName) {",
+                                    "        const returnedProperty = _.get(returnedOrderJson, propertyName);",
+                                    "        const referenceProperty = _.get(referenceOrderJson, propertyName);",
+                                    "        pm.expect(returnedProperty).to.be.equal(referenceProperty);",
+                                    "    });",
+                                    "    const returnedSignature = _.get(returnedOrderJson, 'ecSignature');",
+                                    "    const referenceSignature = _.get(returnedOrderJson, 'ecSignature');",
+                                    "    _.forEach(signaturePropertyNames, function(propertyName) {",
+                                    "        const returnedSignatureProperty = _.get(returnedSignature, propertyName);",
+                                    "        const referenceSignatureProperty = _.get(referenceSignature, propertyName);",
+                                    "        pm.expect(returnedSignatureProperty).to.be.equal(referenceSignatureProperty);",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    ""
+                                ]
+                            }
+                        }
+                    ],
                     "request": {
                         "method": "GET",
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/v0/order/{{_orderHash}}",
+                            "raw": "{{url}}/order/{{orderHash}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "order", "{{_orderHash}}"]
+                            "path": ["order", "{{orderHash}}"]
                         },
                         "description": "Retrieves a specific order by orderHash."
                     },
@@ -496,7 +737,7 @@
                             "const responseJsonData = pm.response.json();",
                             "",
                             "pm.test('Schema is valid', function() {",
-                            "  pm.expect(tv4.validate(responseJsonData, schema)).to.be.true;",
+                            "    pm.expect(tv4.validate(responseJsonData, schema)).to.be.true;",
                             "});",
                             ""
                         ]
@@ -514,9 +755,35 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "1a0acd0e-5e4a-4e08-b4e9-291a4e9c433a",
+                                "id": "67d95152-3561-4db2-aaba-d26ceb44b4fd",
                                 "type": "text/javascript",
-                                "exec": [""]
+                                "exec": [
+                                    "const baseTokenEnvKey = 'ZRX_address';",
+                                    "const quoteTokenEnvKey = 'WETH_address';",
+                                    "const baseTokenAddress = pm.environment.get(baseTokenEnvKey);",
+                                    "const quoteTokenAddress = pm.environment.get(quoteTokenEnvKey);",
+                                    "const responseJsonData = pm.response.json();",
+                                    "pm.test('Orderbook is properly filtered', function() {",
+                                    "    const bids = _.get(responseJsonData, 'bids');",
+                                    "    const asks = _.get(responseJsonData, 'asks');",
+                                    "    _.forEach(bids, function(order) {",
+                                    "        const makerTokenAddress = _.get(order, 'makerTokenAddress');",
+                                    "        const takerTokenAddress = _.get(order, 'takerTokenAddress');",
+                                    "        pm.expect(makerTokenAddress).to.be.equal(quoteTokenAddress);",
+                                    "        pm.expect(takerTokenAddress).to.be.equal(baseTokenAddress);",
+                                    "    });",
+                                    "      _.forEach(asks, function(order) {",
+                                    "        const makerTokenAddress = _.get(order, 'makerTokenAddress');",
+                                    "        const takerTokenAddress = _.get(order, 'takerTokenAddress');",
+                                    "        pm.expect(makerTokenAddress).to.be.equal(baseTokenAddress);",
+                                    "        pm.expect(takerTokenAddress).to.be.equal(quoteTokenAddress);",
+                                    "    });",
+                                    "});",
+                                    "",
+                                    "",
+                                    "",
+                                    ""
+                                ]
                             }
                         }
                     ],
@@ -526,9 +793,9 @@
                         "body": {},
                         "url": {
                             "raw":
-                                "{{url}}/v0/orderbook?baseTokenAddress={{ZRX_address}}&quoteTokenAddress={{WETH_address}}",
+                                "{{url}}/orderbook?baseTokenAddress={{ZRX_address}}&quoteTokenAddress={{WETH_address}}",
                             "host": ["{{url}}"],
-                            "path": ["v0", "orderbook"],
+                            "path": ["orderbook"],
                             "query": [
                                 {
                                     "key": "baseTokenAddress",
@@ -567,7 +834,7 @@
                             "const responseJsonData = pm.response.json();",
                             "",
                             "pm.test('Schema is valid', function() {",
-                            "  pm.expect(tv4.validate(responseJsonData, schema)).to.be.true;",
+                            "    pm.expect(tv4.validate(responseJsonData, schema)).to.be.true;",
                             "});",
                             ""
                         ]
@@ -595,9 +862,9 @@
                                 "{\n    \"exchangeContractAddress\": \"0x12459c951127e0c374ff9105dda097662a027093\",\n    \"maker\": \"0x9e56625509c2f60af937f23b7b532600390e8c8b\",\n    \"taker\": \"0x0000000000000000000000000000000000000000\",\n    \"makerTokenAddress\": \"0x323b5d4c32345ced77393b3530b1eed0f346429d\",\n    \"takerTokenAddress\": \"0xef7fff64389b814a946f3e92105513705ca6b990\",\n    \"makerTokenAmount\": \"10000000000000000\",\n    \"takerTokenAmount\": \"20000000000000000\",\n    \"expirationUnixTimestampSec\": \"42\",\n    \"salt\": \"67006738228878699843088602623665307406148487219438534730168799356281242528500\"\n}"
                         },
                         "url": {
-                            "raw": "{{url}}/v0/fees",
+                            "raw": "{{url}}/fees",
                             "host": ["{{url}}"],
-                            "path": ["v0", "fees"]
+                            "path": ["fees"]
                         },
                         "description":
                             "Given an unsigned order without the fee-related properties, returns the required feeRecipient, makerFee, and takerFee of that order."
@@ -642,7 +909,6 @@
                 "exec": [
                     "const schemaKeysString = pm.globals.get('schemaKeys');",
                     "const schemaKeys = JSON.parse(schemaKeysString);",
-                    "",
                     "_.forEach(schemaKeys, function(schemaKey) {",
                     "    const schemaString = pm.globals.get(schemaKey);",
                     "    const schema = JSON.parse(schemaString);",
@@ -657,7 +923,14 @@
             "script": {
                 "id": "b4917e72-ac87-421d-b7a5-21b64285ba5b",
                 "type": "text/javascript",
-                "exec": [""]
+                "exec": [
+                    "pm.test('Has Content-Type header with value application/json', function () {",
+                    "    pm.response.to.have.header('Content-Type');",
+                    "    const contentType = postman.getResponseHeader('Content-Type');",
+                    "    pm.expect(contentType).to.include('application/json');",
+                    "});",
+                    ""
+                ]
             }
         }
     ]
