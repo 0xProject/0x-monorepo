@@ -18,28 +18,11 @@
 
 pragma solidity ^0.4.19;
 
-import "./mixins/MSignatureValidator.sol";
-
-/// @dev Provides MSignatureValidator
-contract MixinSignatureValidatorEcrecover is
-    MSignatureValidator
-{
+contract ISigner {
+    
     function isValidSignature(
-        address signer,
         bytes32 hash,
-        uint8 v,
-        bytes32 r,
-        bytes32 s)
-        public
-        constant
-        returns (bool isValid)
-    {
-        isValid = signer == ecrecover(
-            keccak256("\x19Ethereum Signed Message:\n32", hash),
-            v,
-            r,
-            s
-        );
-        return isValid;
-    }
+        bytes signature)
+        public view
+        returns (bool isValid);
 }

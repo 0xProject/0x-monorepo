@@ -20,19 +20,15 @@ pragma solidity ^0.4.19;
 
 contract MSignatureValidator {
 
-    /// @dev Verifies that an order signature is valid.
-    /// @param signer address of signer.
-    /// @param hash Signed Keccak-256 hash.
-    /// @param v ECDSA signature parameter v.
-    /// @param r ECDSA signature parameters r.
-    /// @param s ECDSA signature parameters s.
+    /// @dev Verifies that a signature is valid.
+    /// @param hash Message hash that is signed.
+    /// @param signer Address of signer.
+    /// @param signature Proof of signing.
     /// @return Validity of order signature.
     function isValidSignature(
-        address signer,
         bytes32 hash,
-        uint8 v,
-        bytes32 r,
-        bytes32 s)
+        address signer,
+        bytes signature)
         public view
         returns (bool isValid);
 }
