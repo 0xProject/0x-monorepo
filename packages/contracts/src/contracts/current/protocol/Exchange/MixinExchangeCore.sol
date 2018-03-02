@@ -40,7 +40,7 @@ contract MixinExchangeCore is
     LibPartialAmount
 {
     struct OrderState {
-        uint256 filled;
+        uint256 unavailable; // filled + cancelled
         uint256 cancelled;
     }
     
@@ -95,7 +95,7 @@ contract MixinExchangeCore is
         
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
-        if (orderState.filled == 0 && orderState.cancelled == 0) {
+        if (orderState.unavailable == 0) {
             require(order.makerTokenAmount > 0);
             require(order.takerTokenAmount > 0);
             require(isValidSignature(orderHash, order.maker, signature));
@@ -114,7 +114,7 @@ contract MixinExchangeCore is
         }
         
         // Validate order availability
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderState));
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, orderState.unavailable);
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
         if (takerTokenFilledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
@@ -128,7 +128,7 @@ contract MixinExchangeCore is
         }
 
         // Update state
-        orderState.filled = safeAdd(orderState.filled, takerTokenFilledAmount);
+        orderState.unavailable = safeAdd(orderState.unavailable, takerTokenFilledAmount);
         
         // Settle order
         var (makerTokenFilledAmount, makerFeePaid, takerFeePaid) =
@@ -178,13 +178,14 @@ contract MixinExchangeCore is
             return 0;
         }
         
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderState));
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, orderState.unavailable);
         takerTokenCancelledAmount = min256(takerTokenCancelAmount, remainingTakerTokenAmount);
         if (takerTokenCancelledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
             return 0;
         }
         
+        orderState.unavailable = safeAdd(orderState.unavailable, takerTokenCancelledAmount);
         orderState.cancelled = safeAdd(orderState.cancelled, takerTokenCancelledAmount);
         
         LogCancel(
@@ -217,16 +218,5 @@ contract MixinExchangeCore is
         );
         isError = errPercentageTimes1000000 > 1000;
         return isError;
-    }
-
-    /// @dev Calculates the sum of values already filled and cancelled for a given order.
-    /// @param orderHash The Keccak-256 hash of the given order.
-    /// @return Sum of values already filled and cancelled.
-    function getUnavailableTakerTokenAmount(OrderState storage orderState)
-        public view
-        returns (uint256 unavailableTakerTokenAmount)
-    {
-        unavailableTakerTokenAmount = safeAdd(orderState.filled, orderState.cancelled);
-        return unavailableTakerTokenAmount;
     }
 }
