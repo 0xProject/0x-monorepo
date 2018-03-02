@@ -309,4 +309,12 @@ export const utils = {
             containerId,
         });
     },
+    async onPageLoadAsync(): Promise<void> {
+        if (document.readyState === 'complete') {
+            return; // Already loaded
+        }
+        return new Promise<void>((resolve, reject) => {
+            window.onload = () => resolve();
+        });
+    },
 };
