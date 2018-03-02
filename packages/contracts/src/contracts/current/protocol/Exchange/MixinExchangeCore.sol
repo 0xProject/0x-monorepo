@@ -114,7 +114,7 @@ contract MixinExchangeCore is
         }
         
         // Validate order availability
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderHash));
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderState));
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
         if (takerTokenFilledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
@@ -178,7 +178,7 @@ contract MixinExchangeCore is
             return 0;
         }
         
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderHash));
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderState));
         takerTokenCancelledAmount = min256(takerTokenCancelAmount, remainingTakerTokenAmount);
         if (takerTokenCancelledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
@@ -222,13 +222,10 @@ contract MixinExchangeCore is
     /// @dev Calculates the sum of values already filled and cancelled for a given order.
     /// @param orderHash The Keccak-256 hash of the given order.
     /// @return Sum of values already filled and cancelled.
-    function getUnavailableTakerTokenAmount(bytes32 orderHash)
+    function getUnavailableTakerTokenAmount(OrderState storage orderState)
         public view
         returns (uint256 unavailableTakerTokenAmount)
     {
-        // Compute a pointer to the orderState
-        OrderState storage orderState = orderStates[orderHash];
-
         unavailableTakerTokenAmount = safeAdd(orderState.filled, orderState.cancelled);
         return unavailableTakerTokenAmount;
     }
