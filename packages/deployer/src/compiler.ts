@@ -19,7 +19,7 @@ import {
 } from './utils/types';
 import { utils } from './utils/utils';
 
-const ALL_CONTRACTS_IDENTIFIER = '*';
+const ALL_CONTRACTS_IDENTIFIER = '*.sol';
 const SOLIDITY_VERSION_REGEX = /(?:solidity\s\^?)(\d+\.\d+\.\d+)/;
 const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
 const IMPORT_REGEX = /(import\s)/;
@@ -125,7 +125,7 @@ export class Compiler {
     private static _getNormalizedErrMsg(errMsg: string): string {
         const errPathMatch = errMsg.match(SOLIDITY_FILE_EXTENSION_REGEX);
         if (_.isNull(errPathMatch)) {
-            throw new Error('Could not find a path in error message');
+            throw new Error(`Could not find a path in error message: ${errMsg}`);
         }
         const errPath = errPathMatch[0];
         const baseContract = path.basename(errPath);
