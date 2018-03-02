@@ -1,9 +1,9 @@
 pragma solidity ^0.4.19;
 
-import { Exchange } from "../../protocol/Exchange/Exchange.sol";
+import { IExchange_v1 as Exchange } from "../Exchange/IExchange_v1.sol";
 import { EtherDelta } from "../EtherDelta/EtherDelta.sol";
-import { Ownable } from "../../utils/Ownable/Ownable.sol";
-import { Token } from "../../tokens/Token/Token.sol";
+import { Ownable_v1 as Ownable } from "../Ownable/Ownable_v1.sol";
+import { IToken_v1 as Token } from "../Token/IToken_v1.sol";
 
 /// @title Arbitrage - Facilitates atomic arbitrage of ERC20 tokens between EtherDelta and 0x Exchange contract.
 /// @author Leonid Logvinov - <leo@0xProject.com>
