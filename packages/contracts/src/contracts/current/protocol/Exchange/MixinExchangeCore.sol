@@ -92,10 +92,11 @@ contract MixinExchangeCore is
         
         // Compute a pointer to the orderState
         OrderState storage orderState = orderStates[orderHash];
+        uint256 unavailable = orderState.unavailable;
         
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
-        if (orderState.unavailable == 0) {
+        if (unavailable == 0) {
             require(order.makerTokenAmount > 0);
             require(order.takerTokenAmount > 0);
             require(isValidSignature(orderHash, order.maker, signature));
@@ -114,7 +115,7 @@ contract MixinExchangeCore is
         }
         
         // Validate order availability
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, orderState.unavailable);
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, unavailable);
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
         if (takerTokenFilledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
@@ -128,7 +129,7 @@ contract MixinExchangeCore is
         }
 
         // Update state
-        orderState.unavailable = safeAdd(orderState.unavailable, takerTokenFilledAmount);
+        orderState.unavailable = safeAdd(unavailable, takerTokenFilledAmount);
         
         // Settle order
         var (makerTokenFilledAmount, makerFeePaid, takerFeePaid) =
@@ -166,6 +167,7 @@ contract MixinExchangeCore is
         
         // Compute a pointer to the orderState
         OrderState storage orderState = orderStates[orderHash];
+        uint256 unavailable = orderState.unavailable;
         
         // Validate the order
         require(order.makerTokenAmount > 0);
@@ -178,14 +180,14 @@ contract MixinExchangeCore is
             return 0;
         }
         
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, orderState.unavailable);
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, unavailable);
         takerTokenCancelledAmount = min256(takerTokenCancelAmount, remainingTakerTokenAmount);
         if (takerTokenCancelledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
             return 0;
         }
         
-        orderState.unavailable = safeAdd(orderState.unavailable, takerTokenCancelledAmount);
+        orderState.unavailable = safeAdd(unavailable, takerTokenCancelledAmount);
         orderState.cancelled = safeAdd(orderState.cancelled, takerTokenCancelledAmount);
         
         LogCancel(
