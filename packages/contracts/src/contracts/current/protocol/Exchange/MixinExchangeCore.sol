@@ -39,9 +39,13 @@ contract MixinExchangeCore is
     LibErrors,
     LibPartialAmount
 {
-    // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
-    mapping (bytes32 => uint256) public filled;
-    mapping (bytes32 => uint256) public cancelled;
+    struct OrderState {
+        uint256 filled;
+        uint256 cancelled;
+    }
+    
+    // Mapping from orderHash to order state.
+    mapping (bytes32 => OrderState) public orderStates;
     
     event LogFill(
         address indexed maker,
@@ -86,9 +90,12 @@ contract MixinExchangeCore is
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
         
+        // Compute a pointer to the orderState
+        OrderState storage orderState = orderStates[orderHash];
+        
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
-        if (filled[orderHash] == 0 && cancelled[orderHash] == 0) {
+        if (orderState.filled == 0 && orderState.cancelled == 0) {
             require(order.makerTokenAmount > 0);
             require(order.takerTokenAmount > 0);
             require(isValidSignature(orderHash, order.maker, signature));
@@ -121,7 +128,7 @@ contract MixinExchangeCore is
         }
 
         // Update state
-        filled[orderHash] = safeAdd(filled[orderHash], takerTokenFilledAmount);
+        orderState.filled = safeAdd(orderState.filled, takerTokenFilledAmount);
         
         // Settle order
         var (makerTokenFilledAmount, makerFeePaid, takerFeePaid) =
@@ -157,6 +164,9 @@ contract MixinExchangeCore is
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
         
+        // Compute a pointer to the orderState
+        OrderState storage orderState = orderStates[orderHash];
+        
         // Validate the order
         require(order.makerTokenAmount > 0);
         require(order.takerTokenAmount > 0);
@@ -175,7 +185,7 @@ contract MixinExchangeCore is
             return 0;
         }
         
-        cancelled[orderHash] = safeAdd(cancelled[orderHash], takerTokenCancelledAmount);
+        orderState.cancelled = safeAdd(orderState.cancelled, takerTokenCancelledAmount);
         
         LogCancel(
             order.maker,
@@ -216,7 +226,10 @@ contract MixinExchangeCore is
         public view
         returns (uint256 unavailableTakerTokenAmount)
     {
-        unavailableTakerTokenAmount = safeAdd(filled[orderHash], cancelled[orderHash]);
+        // Compute a pointer to the orderState
+        OrderState storage orderState = orderStates[orderHash];
+
+        unavailableTakerTokenAmount = safeAdd(orderState.filled, orderState.cancelled);
         return unavailableTakerTokenAmount;
     }
 }
