@@ -17,13 +17,13 @@
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
         "clean": "shx rm -rf ./lib",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "migrate": "node ../deployer/lib/src/cli.js migrate",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
         "test:circleci": "yarn test"
     },
     "config": {
-        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry"
+        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,Arbitrage,EtherDelta,AccountLevels"
     },
     "repository": {
         "type": "git",
