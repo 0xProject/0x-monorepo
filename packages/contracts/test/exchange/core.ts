@@ -689,7 +689,7 @@ describe('Exchange', () => {
             const res = await exWrapper.fillOrderAsync(signedOrder, taker);
             expect(res.logs).to.have.length(1);
             const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
-            const errCode = log.args.errorId.toNumber();
+            const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
 
@@ -700,7 +700,7 @@ describe('Exchange', () => {
             const res = await exWrapper.fillOrderAsync(signedOrder, taker);
             expect(res.logs).to.have.length(1);
             const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
-            const errCode = log.args.errorId.toNumber();
+            const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
         });
     });
@@ -827,7 +827,7 @@ describe('Exchange', () => {
             const res = await exWrapper.cancelOrderAsync(signedOrder, maker);
             expect(res.logs).to.have.length(1);
             const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
-            const errCode = log.args.errorId.toNumber();
+            const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
         });
 
@@ -839,7 +839,7 @@ describe('Exchange', () => {
             const res = await exWrapper.cancelOrderAsync(signedOrder, maker);
             expect(res.logs).to.have.length(1);
             const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
-            const errCode = log.args.errorId.toNumber();
+            const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
     });
