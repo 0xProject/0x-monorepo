@@ -43,7 +43,7 @@
         "react-document-title": "^2.0.3",
         "react-dom": "15.6.1",
         "react-ga": "^2.4.1",
-        "react-highlight": "^0.10.0",
+        "react-highlight": "0xproject/react-highlight",
         "react-html5video": "^2.1.0",
         "react-inlinesvg": "^0.5.5",
         "react-markdown": "^2.5.0",
