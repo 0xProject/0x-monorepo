@@ -9,12 +9,12 @@ import * as Web3 from 'web3';
 import { ArbitrageContract } from '../../src/contract_wrappers/generated/arbitrage';
 import { EtherDeltaContract } from '../../src/contract_wrappers/generated/ether_delta';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
-import { Balances } from '../../util/balances';
-import { constants } from '../../util/constants';
-import { crypto } from '../../util/crypto';
-import { ExchangeWrapper } from '../../util/exchange_wrapper';
-import { OrderFactory } from '../../util/order_factory';
-import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
+import { Balances } from '../../src/utils/balances';
+import { constants } from '../../src/utils/constants';
+import { crypto } from '../../src/utils/crypto';
+import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
+import { OrderFactory } from '../../src/utils/order_factory';
+import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 
