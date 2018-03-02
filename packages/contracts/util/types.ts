@@ -96,6 +96,9 @@ export enum ContractName {
     EtherToken = 'WETH9',
     MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
     MaliciousToken = 'MaliciousToken',
+    AccountLevels = 'AccountLevels',
+    EtherDelta = 'EtherDelta',
+    Arbitrage = 'Arbitrage',
 }
 
 export interface Artifact {
