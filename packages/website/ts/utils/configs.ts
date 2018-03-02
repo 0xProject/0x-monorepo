@@ -2,10 +2,8 @@ import * as _ from 'lodash';
 import { ContractAddresses, Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
 
 const BASE_URL = window.location.origin;
-const isDevelopment = _.includes(
-    ['https://0xproject.localhost:3572', 'https://localhost:3572', 'https://127.0.0.1'],
-    BASE_URL,
-);
+const developmentUrls = ['https://0xproject.localhost:3572', 'https://localhost:3572', 'https://127.0.0.1'];
+const isDevelopment = _.includes(developmentUrls, BASE_URL);
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
@@ -15,6 +13,7 @@ export const configs = {
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,
     // WARNING: ZRX & WETH MUST always be default trackedTokens
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
+    DEVELOPMENT_URLS: developmentUrls,
     DOMAIN_STAGING: 'staging-0xproject.s3-website-us-east-1.amazonaws.com',
     DOMAIN_DEVELOPMENT: '0xproject.localhost:3572',
     DOMAIN_PRODUCTION: '0xproject.com',
@@ -94,6 +93,8 @@ export const configs = {
         [3]: [`https://ropsten.infura.io/${INFURA_API_KEY}`],
         [4]: [`https://rinkeby.infura.io/${INFURA_API_KEY}`],
     } as PublicNodeUrlsByNetworkId,
+    SCROLL_CONTAINER_ID: 'documentation',
+    SCROLL_TOP_ID: 'pageScrollTop',
     SHOULD_DEPRECATE_OLD_WETH_TOKEN: true,
     SYMBOLS_OF_MINTABLE_KOVAN_TOKENS: ['MKR', 'MLN', 'GNT', 'DGD', 'REP'],
     SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS: [

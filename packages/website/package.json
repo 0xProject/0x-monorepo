@@ -46,7 +46,7 @@
         "react-highlight": "0xproject/react-highlight",
         "react-html5video": "^2.1.0",
         "react-inlinesvg": "^0.5.5",
-        "react-markdown": "^2.5.0",
+        "react-markdown": "^3.2.2",
         "react-recaptcha": "^2.3.2",
         "react-redux": "^5.0.3",
         "react-router-dom": "^4.1.1",

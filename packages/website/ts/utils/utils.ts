@@ -4,6 +4,7 @@ import deepEqual = require('deep-equal');
 import isMobile = require('is-mobile');
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import { scroller } from 'react-scroll';
 import {
     EtherscanLinkSuffixes,
     Networks,
@@ -289,5 +290,23 @@ export const utils = {
             networkId,
         );
         return isTestNetwork;
+    },
+    getCurrentBaseUrl() {
+        const port = window.location.port;
+        const hasPort = !_.isUndefined(port);
+        const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
+        return baseUrl;
+    },
+    scrollToHash(hashWithPrefix: string, containerId: string): void {
+        let hash = hashWithPrefix.slice(1);
+        if (_.isEmpty(hash)) {
+            hash = configs.SCROLL_TOP_ID; // scroll to the top
+        }
+
+        scroller.scrollTo(hash, {
+            duration: 0,
+            offset: 0,
+            containerId,
+        });
     },
 };
