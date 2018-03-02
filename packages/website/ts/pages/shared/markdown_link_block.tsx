@@ -26,7 +26,10 @@ export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, M
             );
         } else if (_.startsWith(href, '#')) {
             return (
-                <a style={{ cursor: 'pointer' }} onClick={this._onHashUrlClick.bind(this, href)}>
+                <a
+                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={this._onHashUrlClick.bind(this, href)}
+                >
                     {this.props.children}
                 </a>
             );
