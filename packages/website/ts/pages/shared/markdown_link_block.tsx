@@ -38,7 +38,9 @@ export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, M
         }
     }
     private _onHashUrlClick(href: string) {
-        const hashWithPrefix = `#${href.split('#')[1]}`;
+        const hash = href.split('#')[1];
+        const hashWithPrefix = `#${hash}`;
         utils.scrollToHash(hashWithPrefix, configs.SCROLL_CONTAINER_ID);
+        utils.setUrlHash(hash);
     }
 }
