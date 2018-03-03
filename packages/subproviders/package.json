@@ -31,7 +31,7 @@
         "semaphore-async-await": "^1.5.1",
         "web3": "^0.20.0",
         "web3-typescript-typings": "^0.9.11",
-        "web3-provider-engine": "^13.0.1",
+        "web3-provider-engine": "^13.0.1"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.9",
