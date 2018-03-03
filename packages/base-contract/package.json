@@ -31,9 +31,9 @@
         "@0xproject/types": "^0.2.3",
         "@0xproject/web3-wrapper": "^0.1.14",
         "ethers-contracts": "^2.2.1",
+        "ethers-typescript-typings": "^0.0.1",
         "lodash": "^4.17.4",
         "web3": "^0.20.0",
-        "web3-typescript-typings": "^0.9.11",
-        "ethers-typescript-typings": "^0.0.1"
+        "web3-typescript-typings": "^0.9.11"
     }
 }
