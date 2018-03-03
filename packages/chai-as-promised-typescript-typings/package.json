@@ -6,7 +6,7 @@
     "types": "index.d.ts",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/0xProject/0x.js.git"
+        "url": "git+https://github.com/0xProject/0x-monorepo.git"
     },
     "author": "Fabio Berger",
     "contributors": [
@@ -14,9 +14,9 @@
     ],
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/chai-as-promised-typescript-typings#readme",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/chai-as-promised-typescript-typings#readme",
     "dependencies": {
         "chai-typescript-typings": "^0.0.3"
     }

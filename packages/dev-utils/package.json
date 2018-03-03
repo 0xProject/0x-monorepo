@@ -16,12 +16,12 @@
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/0xProject/0x.js.git"
+        "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/dev-utils/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/dev-utils/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.9",
         "@0xproject/web3-wrapper": "^0.1.14",
