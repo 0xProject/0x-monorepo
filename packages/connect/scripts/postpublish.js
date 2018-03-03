@@ -1,10 +1,16 @@
 const execAsync = require('async-child-process').execAsync;
 const postpublish_utils = require('../../../scripts/postpublish_utils');
 const packageJSON = require('../package.json');
+const tsConfig = require('../tsconfig.json');
 
 const cwd = __dirname + '/..';
 const subPackageName = packageJSON.name;
 const S3BucketPath = 's3://connect-docs-jsons/';
+// Include any external packages that are part of the @0xproject/connect public interface
+// to this array so that TypeDoc picks it up and adds it to the Docs JSON
+const fileIncludes = [...tsConfig.include];
+const fileIncludesAdjusted = postpublish_utils.adjustFileIncludePaths(fileIncludes, __dirname);
+const projectFiles = fileIncludesAdjusted.join(' ');
 
 let tag;
 let version;
@@ -19,7 +25,7 @@ postpublish_utils
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
         const jsonFilePath = __dirname + '/../' + postpublish_utils.generatedDocsDirectoryName + '/index.json';
-        return execAsync('JSON_FILE_PATH=' + jsonFilePath + ' yarn docs:json', {
+        return execAsync('JSON_FILE_PATH=' + jsonFilePath + ' PROJECT_FILES="' + projectFiles + '" yarn docs:json', {
             cwd,
         });
     })
