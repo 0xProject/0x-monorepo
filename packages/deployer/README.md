@@ -22,11 +22,11 @@ Commands:
 Options:
   --version          Show version number                               [boolean]
   --contracts-dir    path of contracts directory to compile
-              [string] [default: "/Users/leonidlogvinov/Dev/0x/0x.js/contracts"]
+              [string] [default: "/Users/leonidlogvinov/Dev/0x/contracts"]
   --network-id       mainnet=1, kovan=42, testrpc=50      [number] [default: 50]
   --should-optimize  enable optimizer                 [boolean] [default: false]
   --artifacts-dir    path to write contracts artifacts to
-       [string] [default: "/Users/leonidlogvinov/Dev/0x/0x.js/build/artifacts/"]
+       [string] [default: "/Users/leonidlogvinov/Dev/0x/build/artifacts/"]
   --jsonrpc-port     port connected to JSON RPC         [number] [default: 8545]
   --gas-price        gasPrice to be used for transactions
                                                 [string] [default: "2000000000"]

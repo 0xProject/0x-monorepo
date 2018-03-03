@@ -9,7 +9,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/0xProject/0x.js.git"
+        "url": "git+https://github.com/0xProject/0x-monorepo.git"
     },
     "author": "Fabio Berger",
     "contributors": [
@@ -17,9 +17,9 @@
     ],
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/ethers-typescript-typings#readme",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethers-typescript-typings#readme",
     "devDependencies": {
         "tslint": "5.8.0",
         "tslint-config-0xproject": "^0.0.2",
