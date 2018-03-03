@@ -4,6 +4,9 @@ const tsConfig = require('../tsconfig.json');
 
 const cwd = __dirname + '/..';
 const S3BucketPath = 's3://staging-0xjs-docs-jsons/';
+// Include any external packages that are part of the @0xproject/connect public interface
+// to this array so that TypeDoc picks it up and adds it to the Docs JSON
+// So far, we only have @0xproject/types as part of 0x.js's public interface.
 const fileIncludes = [...tsConfig.include, '../types/src/index.ts'];
 const fileIncludesAdjusted = postpublish_utils.adjustFileIncludePaths(fileIncludes, __dirname);
 const projectFiles = fileIncludesAdjusted.join(' ');
