@@ -6,7 +6,9 @@ const cwd = __dirname + '/..';
 const S3BucketPath = 's3://staging-connect-docs-jsons/';
 const jsonFilePath = __dirname + '/../' + postpublish_utils.generatedDocsDirectoryName + '/index.json';
 const version = process.env.DOCS_VERSION;
-const fileIncludes = [...tsConfig.include, '../types/src/index.ts'];
+// Include any external packages that are part of the @0xproject/connect public interface
+// to this array so that TypeDoc picks it up and adds it to the Docs JSON
+const fileIncludes = [...tsConfig.include];
 const fileIncludesAdjusted = postpublish_utils.adjustFileIncludePaths(fileIncludes, __dirname);
 const projectFiles = fileIncludesAdjusted.join(' ');
 
