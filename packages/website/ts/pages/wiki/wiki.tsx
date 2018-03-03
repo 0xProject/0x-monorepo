@@ -213,7 +213,8 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                 },
                 async () => {
                     await utils.onPageLoadAsync();
-                    utils.scrollToHash(this.props.location.hash, configs.SCROLL_CONTAINER_ID);
+                    const hash = this.props.location.hash.slice(1);
+                    utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
                 },
             );
         }

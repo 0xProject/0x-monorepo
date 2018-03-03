@@ -76,7 +76,8 @@ const styles: Styles = {
 export class Documentation extends React.Component<DocumentationProps, DocumentationState> {
     public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
-            utils.scrollToHash(this.props.location.hash, configs.SCROLL_CONTAINER_ID);
+            const hash = this.props.location.hash.slice(1);
+            utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
         }
     }
     public render() {

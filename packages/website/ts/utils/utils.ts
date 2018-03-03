@@ -297,13 +297,13 @@ export const utils = {
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
-    scrollToHash(hashWithPrefix: string, containerId: string): void {
-        let hash = hashWithPrefix.slice(1);
+    scrollToHash(hash: string, containerId: string): void {
+        let finalHash = hash;
         if (_.isEmpty(hash)) {
-            hash = configs.SCROLL_TOP_ID; // scroll to the top
+            finalHash = configs.SCROLL_TOP_ID; // scroll to the top
         }
 
-        scroller.scrollTo(hash, {
+        scroller.scrollTo(finalHash, {
             duration: 0,
             offset: 0,
             containerId,
