@@ -5,7 +5,7 @@ const tsConfig = require('../tsconfig.json');
 
 const cwd = __dirname + '/..';
 const subPackageName = packageJSON.name;
-// Include any external packages that are part of the @0xproject/connect public interface
+// Include any external packages that are part of the 0x.js public interface
 // to this array so that TypeDoc picks it up and adds it to the Docs JSON
 // So far, we only have @0xproject/types as part of 0x.js's public interface.
 const fileIncludes = [...tsConfig.include, '../types/src/index.ts'];
