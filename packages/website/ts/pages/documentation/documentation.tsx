@@ -1,3 +1,4 @@
+import { styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
@@ -23,7 +24,6 @@ import {
     Networks,
     Property,
     SolidityMethod,
-    Styles,
     SupportedDocJson,
     TypeDefinitionByName,
     TypescriptMethod,

@@ -1,12 +1,11 @@
+import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared/anchor_title';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Element as ScrollElement } from 'react-scroll';
-import { AnchorTitle } from 'ts/pages/shared/anchor_title';
 import { MarkdownCodeBlock } from 'ts/pages/shared/markdown_code_block';
 import { MarkdownLinkBlock } from 'ts/pages/shared/markdown_link_block';
-import { HeaderSizes } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 

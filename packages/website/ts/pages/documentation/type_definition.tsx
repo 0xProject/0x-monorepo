@@ -1,3 +1,4 @@
+import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared/anchor_title';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Comment } from 'ts/pages/documentation/comment';
@@ -7,8 +8,7 @@ import { Enum } from 'ts/pages/documentation/enum';
 import { Interface } from 'ts/pages/documentation/interface';
 import { MethodSignature } from 'ts/pages/documentation/method_signature';
 import { Type } from 'ts/pages/documentation/type';
-import { AnchorTitle } from 'ts/pages/shared/anchor_title';
-import { CustomType, CustomTypeChild, HeaderSizes, KindString, TypeDocTypes } from 'ts/types';
+import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 

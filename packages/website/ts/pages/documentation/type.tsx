@@ -1,3 +1,4 @@
+import { constants as sharedConstants, utils as sharedUtils } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
@@ -178,12 +179,12 @@ export function Type(props: TypeProps): any {
             <ScrollLink
                 to={typeDefinitionAnchorId}
                 offset={0}
-                duration={constants.DOCS_SCROLL_DURATION_MS}
-                containerId={constants.DOCS_CONTAINER_ID}
+                duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
+                containerId={sharedConstants.DOCS_CONTAINER_ID}
             >
                 {_.isUndefined(typeDefinition) || utils.isUserOnMobile() ? (
                     <span
-                        onClick={utils.setUrlHash.bind(null, typeDefinitionAnchorId)}
+                        onClick={sharedUtils.setUrlHash.bind(null, typeDefinitionAnchorId)}
                         style={{ color: colors.lightBlueA700, cursor: 'pointer' }}
                     >
                         {typeName}
@@ -192,7 +193,7 @@ export function Type(props: TypeProps): any {
                     <span
                         data-tip={true}
                         data-for={id}
-                        onClick={utils.setUrlHash.bind(null, typeDefinitionAnchorId)}
+                        onClick={sharedUtils.setUrlHash.bind(null, typeDefinitionAnchorId)}
                         style={{
                             color: colors.lightBlueA700,
                             cursor: 'pointer',

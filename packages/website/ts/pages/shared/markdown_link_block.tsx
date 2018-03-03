@@ -1,3 +1,4 @@
+import { utils as sharedUtils } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { configs } from 'ts/utils/configs';
@@ -41,6 +42,6 @@ export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, M
     private _onHashUrlClick(href: string) {
         const hash = href.split('#')[1];
         utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
-        utils.setUrlHash(hash);
+        sharedUtils.setUrlHash(hash);
     }
 }

@@ -1,4 +1,5 @@
 import { ZeroEx } from '0x.js';
+import { styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import DharmaLoanFrame from 'dharma-loan-frame';
 import * as _ from 'lodash';
@@ -29,7 +30,6 @@ import {
     EtherscanLinkSuffixes,
     Networks,
     ScreenWidths,
-    Styles,
     Token,
     TokenByAddress,
     TokenVisibility,

@@ -1,11 +1,11 @@
+import { AnchorTitle, HeaderSizes, Styles } from '@0xproject/react-shared/anchor_title';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Comment } from 'ts/pages/documentation/comment';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { MethodSignature } from 'ts/pages/documentation/method_signature';
 import { SourceLink } from 'ts/pages/documentation/source_link';
-import { AnchorTitle } from 'ts/pages/shared/anchor_title';
-import { HeaderSizes, Parameter, SolidityMethod, Styles, TypeDefinitionByName, TypescriptMethod } from 'ts/types';
+import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { typeDocUtils } from 'ts/utils/typedoc_utils';
 

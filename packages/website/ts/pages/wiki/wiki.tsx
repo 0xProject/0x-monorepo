@@ -1,3 +1,4 @@
+import { HeaderSizes, styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -9,7 +10,7 @@ import { MarkdownSection } from 'ts/pages/shared/markdown_section';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { SectionHeader } from 'ts/pages/shared/section_header';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Article, ArticlesBySection, HeaderSizes, Styles, WebsitePaths } from 'ts/types';
+import { Article, ArticlesBySection, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';

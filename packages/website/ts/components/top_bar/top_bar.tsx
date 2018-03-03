@@ -1,3 +1,4 @@
+import { styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';
@@ -14,7 +15,7 @@ import { Identicon } from 'ts/components/ui/identicon';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, DocsMenu, Key, MenuSubsectionsBySection, ProviderType, Styles, WebsitePaths } from 'ts/types';
+import { Deco, DocsMenu, Key, MenuSubsectionsBySection, ProviderType, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';

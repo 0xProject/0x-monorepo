@@ -4,8 +4,6 @@ import { Networks } from 'ts/types';
 export const constants = {
     DECIMAL_PLACES_ETH: 18,
     DECIMAL_PLACES_ZRX: 18,
-    DOCS_SCROLL_DURATION_MS: 0,
-    DOCS_CONTAINER_ID: 'documentation',
     GENESIS_ORDER_BLOCK_BY_NETWORK_ID: {
         1: 4145578,
         42: 3117574,

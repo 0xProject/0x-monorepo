@@ -1,11 +1,11 @@
+import { constants, Styles, utils as sharedUtils } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
 import { VersionDropDown } from 'ts/pages/shared/version_drop_down';
-import { MenuSubsectionsBySection, Styles } from 'ts/types';
+import { MenuSubsectionsBySection } from 'ts/types';
 import { colors } from 'ts/utils/colors';
-import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
 interface NestedSidebarMenuProps {
@@ -171,7 +171,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     }
     private _onMenuItemClick(name: string): void {
         const id = utils.getIdFromName(name);
-        utils.setUrlHash(id);
+        sharedUtils.setUrlHash(id);
         this.props.onMenuItemClick();
     }
 }

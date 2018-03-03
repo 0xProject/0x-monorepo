@@ -152,9 +152,6 @@ export const utils = {
         const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
         return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
     },
-    setUrlHash(anchorId: string) {
-        window.location.hash = anchorId;
-    },
     async isU2FSupportedAsync(): Promise<boolean> {
         const w = window as any;
         return new Promise((resolve: (isSupported: boolean) => void) => {

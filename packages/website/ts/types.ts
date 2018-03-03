@@ -156,10 +156,6 @@ export interface TrackedTokensByUserAddress {
     [userAddress: string]: TrackedTokensByNetworkId;
 }
 
-export interface Styles {
-    [name: string]: React.CSSProperties;
-}
-
 export interface ProfileInfo {
     name: string;
     title?: string;
@@ -533,12 +529,6 @@ export enum TokenVisibility {
     ALL = 'ALL',
     UNTRACKED = 'UNTRACKED',
     TRACKED = 'TRACKED',
-}
-
-export enum HeaderSizes {
-    H1 = 'h1',
-    H2 = 'h2',
-    H3 = 'h3',
 }
 
 export interface DoxityDocObj {
