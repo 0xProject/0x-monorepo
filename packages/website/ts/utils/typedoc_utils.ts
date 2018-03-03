@@ -170,8 +170,16 @@ export const typeDocUtils = {
         const methodIfExists = !_.isUndefined(entity.declaration)
             ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, docId)
             : undefined;
-        const indexSignatureIfExists = !_.isUndefined(entity.indexSignature)
-            ? typeDocUtils._convertIndexSignature(entity.indexSignature[0], sections, sectionName, docId)
+        const doesIndexSignatureExist = !_.isUndefined(entity.indexSignature);
+        const isIndexSignatureArray = _.isArray(entity.indexSignature);
+        // HACK: TypeDoc Versions <0.9.0 indexSignature is of type TypeDocNode[]
+        // Versions >0.9.0 have it as type TypeDocNode
+        const indexSignature =
+            doesIndexSignatureExist && isIndexSignatureArray
+                ? ((entity.indexSignature as TypeDocNode[])[0] as TypeDocNode)
+                : (entity.indexSignature as TypeDocNode);
+        const indexSignatureIfExists = doesIndexSignatureExist
+            ? typeDocUtils._convertIndexSignature(indexSignature, sections, sectionName, docId)
             : undefined;
         const commentIfExists =
             !_.isUndefined(entity.comment) && !_.isUndefined(entity.comment.shortText)

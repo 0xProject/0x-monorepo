@@ -308,7 +308,7 @@ export interface TypeDocNode {
     returns?: string;
     declaration: TypeDocNode;
     flags?: TypeDocFlags;
-    indexSignature?: TypeDocNode[];
+    indexSignature?: TypeDocNode | TypeDocNode[];
     signatures?: TypeDocNode[];
     parameters?: TypeDocNode[];
     typeParameter?: TypeDocNode[];
