@@ -41,18 +41,17 @@ export const typeDocUtils = {
     isPrivateOrProtectedProperty(propertyName: string): boolean {
         return _.startsWith(propertyName, '_');
     },
-    getModuleDefinitionBySectionNameIfExists(
-        versionDocObj: TypeDocNode,
-        modulePaths: string[],
-    ): TypeDocNode | undefined {
-        const modules = versionDocObj.children;
-        for (const mod of modules) {
-            if (_.includes(modulePaths, mod.name)) {
-                const moduleWithName = mod;
-                return moduleWithName;
-            }
-        }
-        return undefined;
+    getModuleDefinitionsBySectionName(versionDocObj: TypeDocNode, configModulePaths: string[]): TypeDocNode[] {
+        const moduleDefinitions: TypeDocNode[] = [];
+        const jsonModules = versionDocObj.children;
+        _.each(jsonModules, jsonMod => {
+            _.each(configModulePaths, configModulePath => {
+                if (_.includes(configModulePath, jsonMod.name)) {
+                    moduleDefinitions.push(jsonMod);
+                }
+            });
+        });
+        return moduleDefinitions;
     },
     convertToDocAgnosticFormat(typeDocJson: TypeDocNode, docsInfo: DocsInfo): DocAgnosticFormat {
         const subMenus = _.values(docsInfo.getMenu());
@@ -63,12 +62,20 @@ export const typeDocUtils = {
             if (_.isUndefined(modulePathsIfExists)) {
                 return; // no-op
             }
-            const packageDefinitionIfExists = typeDocUtils.getModuleDefinitionBySectionNameIfExists(
-                typeDocJson,
-                modulePathsIfExists,
-            );
-            if (_.isUndefined(packageDefinitionIfExists)) {
+            const packageDefinitions = typeDocUtils.getModuleDefinitionsBySectionName(typeDocJson, modulePathsIfExists);
+            let packageDefinitionWithMergedChildren;
+            if (_.isEmpty(packageDefinitions)) {
                 return; // no-op
+            } else if (packageDefinitions.length === 1) {
+                packageDefinitionWithMergedChildren = packageDefinitions[0];
+            } else {
+                packageDefinitionWithMergedChildren = packageDefinitions[0];
+                for (let i = 1; i < packageDefinitions.length; i++) {
+                    packageDefinitionWithMergedChildren.children = [
+                        ...packageDefinitionWithMergedChildren.children,
+                        ...packageDefinitions[i].children,
+                    ];
+                }
             }
 
             // Since the `types.ts` file is the only file that does not export a module/class but
@@ -77,10 +84,10 @@ export const typeDocUtils = {
             let entities;
             let packageComment = '';
             if (sectionName === docsInfo.sections.types) {
-                entities = packageDefinitionIfExists.children;
+                entities = packageDefinitionWithMergedChildren.children;
             } else {
-                entities = packageDefinitionIfExists.children[0].children;
-                const commentObj = packageDefinitionIfExists.children[0].comment;
+                entities = packageDefinitionWithMergedChildren.children[0].children;
+                const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
                 packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;
             }
 
