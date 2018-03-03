@@ -7,6 +7,7 @@
     "include": [
         "./src/**/*",
         "./test/**/*",
+        "../types/src/index.ts",
         "../../node_modules/types-bn/index.d.ts",
         "../../node_modules/types-ethereumjs-util/index.d.ts",
         "../../node_modules/ethers-typescript-typings/index.d.ts",
