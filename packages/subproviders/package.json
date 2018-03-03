@@ -30,7 +30,8 @@
         "lodash": "^4.17.4",
         "semaphore-async-await": "^1.5.1",
         "web3": "^0.20.0",
-        "web3-provider-engine": "^13.0.1"
+        "web3-typescript-typings": "^0.9.11",
+        "web3-provider-engine": "^13.0.1",
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.9",
@@ -51,7 +52,6 @@
         "types-bn": "^0.0.1",
         "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.11",
         "webpack": "^3.1.0"
     }
 }
