@@ -20,6 +20,7 @@
     "dependencies": {
         "0x.js": "^0.32.4",
         "@0xproject/subproviders": "^0.5.0",
+        "@0xproject/react-shared": "^0.0.1",
         "@0xproject/utils": "^0.3.4",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
