@@ -69,6 +69,9 @@ export const typeDocUtils = {
             } else if (packageDefinitions.length === 1) {
                 packageDefinitionWithMergedChildren = packageDefinitions[0];
             } else {
+                // HACK: For now, if there are two modules to display in a single section,
+                // we simply concat the children. This works for our limited use-case where
+                // we want to display types stored in two files under a single section
                 packageDefinitionWithMergedChildren = packageDefinitions[0];
                 for (let i = 1; i < packageDefinitions.length; i++) {
                     packageDefinitionWithMergedChildren.children = [
