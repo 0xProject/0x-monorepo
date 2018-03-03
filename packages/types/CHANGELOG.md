@@ -4,7 +4,7 @@
 
     * Add `data` to `TxData` (#413)
     * Add `number` as an option to `ContractEventArg` (#413)
-    * Move web3 types from devDep to dep since required when using this package.
+    * Move web3 types from devDep to dep since required when using this package (#429)
 
 ## v0.2.1 - _February 9, 2018_
 
