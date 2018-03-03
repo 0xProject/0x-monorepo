@@ -10,13 +10,14 @@ interface MarkdownLinkBlockProps {
 interface MarkdownLinkBlockState {}
 
 export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, MarkdownLinkBlockState> {
-    // Re-rendering a linkBlock causes any use selection to become de-selected making the link unclickable.
+    // Re-rendering a linkBlock causes it to remain unclickable.
     // We therefore noop re-renders on this component if it's props haven't changed.
     public shouldComponentUpdate(nextProps: MarkdownLinkBlockProps, nextState: MarkdownLinkBlockState) {
         return nextProps.href !== this.props.href;
     }
     public render() {
         const href = this.props.href;
+        const isLinkToSection = _.startsWith(href, '#');
         // If protocol is http or https, we can open in a new tab, otherwise don't for security reasons
         if (_.startsWith(href, 'http') || _.startsWith(href, 'https')) {
             return (
@@ -24,7 +25,7 @@ export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, M
                     {this.props.children}
                 </a>
             );
-        } else if (_.startsWith(href, '#')) {
+        } else if (isLinkToSection) {
             return (
                 <a
                     style={{ cursor: 'pointer', textDecoration: 'underline' }}
