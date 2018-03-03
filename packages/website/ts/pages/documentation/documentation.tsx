@@ -29,11 +29,11 @@ import {
     TypescriptMethod,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
+import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
 const TOP_BAR_HEIGHT = 60;
-const SCROLL_TOP_ID = 'docsScrollTop';
 
 const networkNameToColor: { [network: string]: string } = {
     [Networks.Kovan]: colors.purple,
@@ -76,7 +76,8 @@ const styles: Styles = {
 export class Documentation extends React.Component<DocumentationProps, DocumentationState> {
     public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
-            this._scrollToHash();
+            const hash = this.props.location.hash.slice(1);
+            utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
         }
     }
     public render() {
@@ -115,8 +116,12 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                 className="relative col lg-col-9 md-col-9 sm-col-12 col-12"
                                 style={{ backgroundColor: colors.white }}
                             >
-                                <div id="documentation" style={styles.mainContainers} className="absolute px1">
-                                    <div id={SCROLL_TOP_ID} />
+                                <div
+                                    id={configs.SCROLL_CONTAINER_ID}
+                                    style={styles.mainContainers}
+                                    className="absolute px1"
+                                >
+                                    <div id={configs.SCROLL_TOP_ID} />
                                     {this._renderDocumentation()}
                                 </div>
                             </div>
@@ -324,18 +329,5 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 sourceUrl={this.props.sourceUrl}
             />
         );
-    }
-    private _scrollToHash(): void {
-        const hashWithPrefix = this.props.location.hash;
-        let hash = hashWithPrefix.slice(1);
-        if (_.isEmpty(hash)) {
-            hash = SCROLL_TOP_ID; // scroll to the top
-        }
-
-        scroller.scrollTo(hash, {
-            duration: 0,
-            offset: 0,
-            containerId: 'documentation',
-        });
     }
 }

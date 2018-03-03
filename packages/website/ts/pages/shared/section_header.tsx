@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Element as ScrollElement } from 'react-scroll';
 import { AnchorTitle } from 'ts/pages/shared/anchor_title';
 import { HeaderSizes } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 
 interface SectionHeaderProps {
@@ -34,7 +35,19 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
                 <ScrollElement name={id}>
                     <AnchorTitle
                         headerSize={this.props.headerSize}
-                        title={<span style={{ textTransform: 'capitalize' }}>{sectionName}</span>}
+                        title={
+                            <span
+                                style={{
+                                    textTransform: 'uppercase',
+                                    color: colors.grey,
+                                    fontFamily: 'Roboto Mono',
+                                    fontWeight: 300,
+                                    fontSize: 27,
+                                }}
+                            >
+                                {sectionName}
+                            </span>
+                        }
                         id={id}
                         shouldShowAnchor={this.state.shouldShowAnchor}
                     />

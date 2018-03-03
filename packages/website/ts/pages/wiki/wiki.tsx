@@ -135,11 +135,11 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                                 }}
                             >
                                 <div
-                                    id="documentation"
+                                    id={configs.SCROLL_CONTAINER_ID}
                                     style={{ ...mainContainersStyle, overflow: 'auto' }}
                                     className="absolute"
                                 >
-                                    <div id="0xProtocolWiki" />
+                                    <div id={configs.SCROLL_TOP_ID} />
                                     <div id="wiki" style={{ paddingRight: 2 }}>
                                         {this._renderWikiArticles()}
                                     </div>
@@ -188,19 +188,6 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             </div>
         );
     }
-    private _scrollToHash(): void {
-        const hashWithPrefix = this.props.location.hash;
-        let hash = hashWithPrefix.slice(1);
-        if (_.isEmpty(hash)) {
-            hash = '0xProtocolWiki'; // scroll to the top
-        }
-
-        scroller.scrollTo(hash, {
-            duration: 0,
-            offset: 0,
-            containerId: 'documentation',
-        });
-    }
     private async _fetchArticlesBySectionAsync(): Promise<void> {
         const endpoint = `${configs.BACKEND_BASE_URL}${WebsitePaths.Wiki}`;
         const response = await fetch(endpoint);
@@ -224,8 +211,10 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                 {
                     articlesBySection,
                 },
-                () => {
-                    this._scrollToHash();
+                async () => {
+                    await utils.onPageLoadAsync();
+                    const hash = this.props.location.hash.slice(1);
+                    utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
                 },
             );
         }
