@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "shx rm -rf lib"
   },
   "author": "Fabio Berger",
   "license": "MIT",
