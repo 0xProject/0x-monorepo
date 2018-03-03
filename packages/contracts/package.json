@@ -27,14 +27,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/0xProject/0x.js.git"
+        "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "author": "Amir Bandeali",
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/contracts/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts/README.md",
     "devDependencies": {
         "@0xproject/dev-utils": "^0.1.0",
         "@0xproject/tslint-config": "^0.4.9",

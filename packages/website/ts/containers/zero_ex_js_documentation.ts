@@ -40,7 +40,7 @@ const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.ZeroExJs,
     type: SupportedDocJson.TypeDoc,
     displayName: '0x.js',
-    packageUrl: 'https://github.com/0xProject/0x.js',
+    packageUrl: 'https://github.com/0xProject/0x-monorepo',
     menu: {
         introduction: [zeroExJsDocSections.introduction],
         install: [zeroExJsDocSections.installation],

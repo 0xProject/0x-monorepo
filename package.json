@@ -1,6 +1,6 @@
 {
     "private": true,
-    "name": "0x.js",
+    "name": "0x-monorepo",
     "workspaces": ["packages/*"],
     "scripts": {
         "dev": "lerna run --parallel build:watch",
