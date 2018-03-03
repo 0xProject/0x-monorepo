@@ -4,7 +4,7 @@
 
 [0x][website-url] is an open protocol that facilitates trustless, low friction exchange of Ethereum-based assets. A full description of the protocol may be found in our [whitepaper][whitepaper-url].
 
-This repository contains all the 0x developer tools written in TypeScript. Our hope is that these tools make it easy to build Relayers and other DApps that use the 0x protocol.
+This repository is a monorepo including the 0x protocol smart contracts and numerous developer tools. Each public sub-package is independently published to NPM.
 
 [website-url]: https://0xproject.com/
 [whitepaper-url]: https://0xproject.com/pdfs/0x_white_paper.pdf
