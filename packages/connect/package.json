@@ -15,7 +15,7 @@
         "build:watch": "tsc -w",
         "build": "tsc",
         "clean": "shx rm -rf _bundles lib test_temp",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",

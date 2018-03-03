@@ -1,12 +1,16 @@
 const execAsync = require('async-child-process').execAsync;
 const postpublish_utils = require('../../../scripts/postpublish_utils');
+const tsConfig = require('../tsconfig.json');
 
 const cwd = __dirname + '/..';
 const S3BucketPath = 's3://staging-connect-docs-jsons/';
 const jsonFilePath = __dirname + '/../' + postpublish_utils.generatedDocsDirectoryName + '/index.json';
 const version = process.env.DOCS_VERSION;
+const fileIncludes = [...tsConfig.include, '../types/src/index.ts'];
+const fileIncludesAdjusted = postpublish_utils.adjustFileIncludePaths(fileIncludes, __dirname);
+const projectFiles = fileIncludesAdjusted.join(' ');
 
-execAsync('JSON_FILE_PATH=' + jsonFilePath + ' yarn docs:json', {
+execAsync('JSON_FILE_PATH=' + jsonFilePath + ' PROJECT_FILES="' + projectFiles + '" yarn docs:json', {
     cwd,
 })
     .then(function(result) {

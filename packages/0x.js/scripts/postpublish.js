@@ -1,9 +1,13 @@
 const execAsync = require('async-child-process').execAsync;
 const postpublish_utils = require('../../../scripts/postpublish_utils');
 const packageJSON = require('../package.json');
+const tsConfig = require('../tsconfig.json');
 
 const cwd = __dirname + '/..';
 const subPackageName = packageJSON.name;
+const fileIncludes = [...tsConfig.include, '../types/src/index.ts'];
+const fileIncludesAdjusted = postpublish_utils.adjustFileIncludePaths(fileIncludes, __dirname);
+const projectFiles = fileIncludesAdjusted.join(' ');
 const S3BucketPath = 's3://0xjs-docs-jsons/';
 
 let tag;
@@ -20,7 +24,7 @@ postpublish_utils
     .then(function(release) {
         console.log('POSTPUBLISH: Release successful, generating docs...');
         const jsonFilePath = __dirname + '/../' + postpublish_utils.generatedDocsDirectoryName + '/index.json';
-        return execAsync('JSON_FILE_PATH=' + jsonFilePath + ' yarn docs:json', {
+        return execAsync('JSON_FILE_PATH=' + jsonFilePath + ' PROJECT_FILES="' + projectFiles + '" yarn docs:json', {
             cwd,
         });
     })

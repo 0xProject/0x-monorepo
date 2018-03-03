@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const execAsync = require('async-child-process').execAsync;
 const semverSort = require('semver-sort');
 const publishRelease = require('publish-release');
@@ -60,6 +61,16 @@ module.exports = {
             .catch(function(err) {
                 throw err;
             });
+    },
+    adjustFileIncludePaths: function(fileIncludes, cwd) {
+        const fileIncludesAdjusted = _.map(fileIncludes, fileInclude => {
+            if (_.startsWith(fileInclude, '../')) {
+                return cwd + '/../' + fileInclude;
+            } else if (_.startsWith('./')) {
+                return cwd + '/../' + fileInclude;
+            }
+        });
+        return fileIncludesAdjusted;
     },
     generatedDocsDirectoryName,
 };
