@@ -26,7 +26,7 @@ describe('LedgerSubprovider', () => {
         });
     });
     describe('direct method calls', () => {
-        it('returns defaut number of accounts', async () => {
+        it('returns default number of accounts', async () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
             expect(accounts[0]).to.not.be.an('undefined');
             expect(accounts.length).to.be.equal(10);
