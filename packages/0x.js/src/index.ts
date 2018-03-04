@@ -34,6 +34,7 @@ export {
     BlockParam,
     ContractEventArg,
     LogWithDecodedArgs,
+    TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
 } from '@0xproject/types';
 
@@ -58,5 +59,3 @@ export {
     ExchangeContractEventArgs,
     ExchangeEvents,
 } from './contract_wrappers/generated/exchange';
-
-export { TransactionReceipt } from '@0xproject/types';
