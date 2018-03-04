@@ -64,11 +64,21 @@ module.exports = {
     },
     adjustFileIncludePaths: function(fileIncludes, cwd) {
         const fileIncludesAdjusted = _.map(fileIncludes, fileInclude => {
+            let path;
             if (_.startsWith(fileInclude, '../')) {
-                return cwd + '/../' + fileInclude;
-            } else if (_.startsWith('./')) {
-                return cwd + '/../' + fileInclude;
+                path = cwd + '/../' + fileInclude;
+            } else if (_.startsWith(fileInclude, './')) {
+                path = cwd + '/../' + fileInclude.substr(2);
+            } else {
+                path = cwd + '/' + fileInclude;
             }
+
+            // HACK: tsconfig.json needs wildcard directory endings as `/**/*`
+            // but TypeDoc needs it as `/**` in order to pick up files at the root
+            if (_.endsWith(path, '/**/*')) {
+                path = path.slice(0, -2);
+            }
+            return path;
         });
         return fileIncludesAdjusted;
     },
