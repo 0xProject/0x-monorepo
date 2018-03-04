@@ -186,7 +186,7 @@ export const typeDocUtils = {
         // Versions >0.9.0 have it as type TypeDocNode
         const indexSignature =
             doesIndexSignatureExist && isIndexSignatureArray
-                ? ((entity.indexSignature as TypeDocNode[])[0] as TypeDocNode)
+                ? (entity.indexSignature as TypeDocNode[])[0]
                 : (entity.indexSignature as TypeDocNode);
         const indexSignatureIfExists = doesIndexSignatureExist
             ? typeDocUtils._convertIndexSignature(indexSignature, sections, sectionName, docId)
