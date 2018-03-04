@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.3.0 - _TBD, 2018_
+## v0.3.0 - _March 4, 2018_
 
     * Add `data` to `TxData` (#413)
     * Add `number` as an option to `ContractEventArg` (#413)

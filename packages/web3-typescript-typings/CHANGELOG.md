@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.10.0 - _TBD, 2018_
+## v0.10.0 - _March 4, 2018_
 
     * Support ABIv2 (#401)
 

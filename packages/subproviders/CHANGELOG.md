@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.6.0 - _TBD_
+## v0.6.0 - _March 4, 2018_
 
     * Move web3 types from being a devDep to a dep since one cannot use this package without it (#429)
     * Add `numberOfAccounts` param to `LedgerSubprovider` method `getAccountsAsync` (#432)

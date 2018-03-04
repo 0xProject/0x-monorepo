@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.33.0 - _TBD, 2018_
+## v0.33.0 - _March 4, 2018_
 
     * Validate and lowercase all addresses in public methods (#373)
     * Improve validation to force passing contract addresses on private networks (#385)
