@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.5.1 - _TBD, 2018_
+
+    * Add `numberOfAccounts` param to `LedgerSubprovider` method `getAccountsAsync`
+
 ## v0.5.0 - _February 16, 2018_
 
     * Add EmptyWalletSubprovider and FakeGasEstimateSubprovider (#392)
