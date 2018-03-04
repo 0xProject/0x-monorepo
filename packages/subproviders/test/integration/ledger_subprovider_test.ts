@@ -26,10 +26,16 @@ describe('LedgerSubprovider', () => {
         });
     });
     describe('direct method calls', () => {
-        it('returns a list of accounts', async () => {
+        it('returns defaut number of accounts', async () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
             expect(accounts[0]).to.not.be.an('undefined');
             expect(accounts.length).to.be.equal(10);
+        });
+        it('returns requested number of accounts', async () => {
+            const numberOfAccounts = 20;
+            const accounts = await ledgerSubprovider.getAccountsAsync(numberOfAccounts);
+            expect(accounts[0]).to.not.be.an('undefined');
+            expect(accounts.length).to.be.equal(numberOfAccounts);
         });
         it('signs a personal message', async () => {
             const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
@@ -172,7 +178,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    const result = response.result.result;
+                    const result = response.result;
                     expect(result.length).to.be.equal(66);
                     expect(result.substr(0, 2)).to.be.equal('0x');
                     done();

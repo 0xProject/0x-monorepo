@@ -19,7 +19,7 @@ import {
 import { Subprovider } from './subprovider';
 
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
-const NUM_ADDRESSES_TO_FETCH = 10;
+const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
 const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = true;
 
@@ -129,7 +129,7 @@ export class LedgerSubprovider extends Subprovider {
                 return;
         }
     }
-    public async getAccountsAsync(): Promise<string[]> {
+    public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         let ledgerResponse;
@@ -148,7 +148,7 @@ export class LedgerSubprovider extends Subprovider {
         hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
 
         const accounts = [];
-        for (let i = 0; i < NUM_ADDRESSES_TO_FETCH; i++) {
+        for (let i = 0; i < numberOfAccounts; i++) {
             const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
             const derivedPublicKey = derivedHDNode.publicKey;
             const shouldSanitizePublicKey = true;

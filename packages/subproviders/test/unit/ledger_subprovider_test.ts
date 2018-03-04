@@ -62,10 +62,16 @@ describe('LedgerSubprovider', () => {
     });
     describe('direct method calls', () => {
         describe('success cases', () => {
-            it('returns a list of accounts', async () => {
+            it('returns defaut number of accounts', async () => {
                 const accounts = await ledgerSubprovider.getAccountsAsync();
                 expect(accounts[0]).to.be.equal(FAKE_ADDRESS);
                 expect(accounts.length).to.be.equal(10);
+            });
+            it('returns requested number of accounts', async () => {
+                const numberOfAccounts = 20;
+                const accounts = await ledgerSubprovider.getAccountsAsync(numberOfAccounts);
+                expect(accounts[0]).to.be.equal(FAKE_ADDRESS);
+                expect(accounts.length).to.be.equal(numberOfAccounts);
             });
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
