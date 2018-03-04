@@ -108,10 +108,10 @@ export class ContractWrapper {
         const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
-    protected async _instantiateContractIfExistsAsync(
+    protected async _getContractAbiAndAddressFromArtifactsAsync(
         artifact: Artifact,
         addressIfExists?: string,
-    ): Promise<Web3.ContractInstance> {
+    ): Promise<[Web3.ContractAbi, string]> {
         let contractAddress: string;
         if (_.isUndefined(addressIfExists)) {
             if (_.isUndefined(artifact.networks[this._networkId])) {
@@ -125,8 +125,8 @@ export class ContractWrapper {
         if (!doesContractExist) {
             throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
         }
-        const contractInstance = this._web3Wrapper.getContractInstance(artifact.abi, contractAddress);
-        return contractInstance;
+        const abiAndAddress: [Web3.ContractAbi, string] = [artifact.abi, contractAddress];
+        return abiAndAddress;
     }
     protected _getContractAddress(artifact: Artifact, addressIfExists?: string): string {
         if (_.isUndefined(addressIfExists)) {

@@ -4,11 +4,11 @@ Smart contracts that implement the 0x protocol.
 
 ## Usage
 
-* [Docs](https://0xproject.com/docs/contracts)
-* [Overview of 0x protocol architecture](https://0xproject.com/wiki#Architecture)
-* [0x smart contract interactions](https://0xproject.com/wiki#Contract-Interactions)
-* [Deployed smart contract addresses](https://0xproject.com/wiki#Deployed-Addresses)
-* [0x protocol message format](https://0xproject.com/wiki#Message-Format)
+*   [Docs](https://0xproject.com/docs/contracts)
+*   [Overview of 0x protocol architecture](https://0xproject.com/wiki#Architecture)
+*   [0x smart contract interactions](https://0xproject.com/wiki#Contract-Interactions)
+*   [Deployed smart contract addresses](https://0xproject.com/wiki#Deployed-Addresses)
+*   [0x protocol message format](https://0xproject.com/wiki#Message-Format)
 
 ## Contributing
 
@@ -60,7 +60,7 @@ yarn lint
 
 Before running the tests, you will need to spin up a [TestRPC](https://www.npmjs.com/package/ethereumjs-testrpc) instance.
 
-In a separate terminal, start TestRPC (a convenience command is provided as part of the [0x.js monorepo](https://github.com/0xProject/0x.js))
+In a separate terminal, start TestRPC (a convenience command is provided as part of the [0x.js monorepo](https://github.com/0xProject/0x-monorepo))
 
 ```bash
 cd ../..

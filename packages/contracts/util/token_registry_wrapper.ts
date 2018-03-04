@@ -22,36 +22,36 @@ export class TokenRegWrapper {
         return tx;
     }
     public async getTokenMetaDataAsync(tokenAddress: string) {
-        const data = await this._tokenReg.getTokenMetaData(tokenAddress);
+        const data = await this._tokenReg.getTokenMetaData.callAsync(tokenAddress);
         const token: Token = {
             address: data[0],
             name: data[1],
             symbol: data[2],
-            decimals: data[3].toNumber(),
+            decimals: data[3],
             ipfsHash: data[4],
             swarmHash: data[5],
         };
         return token;
     }
     public async getTokenByNameAsync(tokenName: string) {
-        const data = await this._tokenReg.getTokenByName(tokenName);
+        const data = await this._tokenReg.getTokenByName.callAsync(tokenName);
         const token: Token = {
             address: data[0],
             name: data[1],
             symbol: data[2],
-            decimals: data[3].toNumber(),
+            decimals: data[3],
             ipfsHash: data[4],
             swarmHash: data[5],
         };
         return token;
     }
     public async getTokenBySymbolAsync(tokenSymbol: string) {
-        const data = await this._tokenReg.getTokenBySymbol(tokenSymbol);
+        const data = await this._tokenReg.getTokenBySymbol.callAsync(tokenSymbol);
         const token: Token = {
             address: data[0],
             name: data[1],
             symbol: data[2],
-            decimals: data[3].toNumber(),
+            decimals: data[3],
             ipfsHash: data[4],
             swarmHash: data[5],
         };

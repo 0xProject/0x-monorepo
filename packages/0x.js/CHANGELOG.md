@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v0.33.0 - _March 4, 2018_
+
+    * Validate and lowercase all addresses in public methods (#373)
+    * Improve validation to force passing contract addresses on private networks (#385)
+    * Change `LogErrorContractEventArgs.errorId` type from `BigNumber` to `number` (#413)
+    * Rename all public `_unsubscribeAll` methods to `unsubscribeAll` (#415)
+    * Move web3 typings from devDep to dep since cannot use this package without it (#429)
+
 ## v0.32.2 - _February 9, 2018_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)

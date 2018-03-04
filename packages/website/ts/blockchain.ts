@@ -69,14 +69,6 @@ export class Blockchain {
     private _cachedProviderNetworkId: number;
     private _ledgerSubprovider: LedgerWalletSubprovider;
     private _defaultGasPrice: BigNumber;
-    private static async _onPageLoadAsync(): Promise<void> {
-        if (document.readyState === 'complete') {
-            return; // Already loaded
-        }
-        return new Promise<void>((resolve, reject) => {
-            window.onload = () => resolve();
-        });
-    }
     private static _getNameGivenProvider(provider: Web3.Provider): string {
         if (!_.isUndefined((provider as any).isMetaMask)) {
             return constants.PROVIDER_NAME_METAMASK;
@@ -672,7 +664,7 @@ export class Blockchain {
         }
     }
     private _stopWatchingExchangeLogFillEvents(): void {
-        this._zeroEx.exchange._unsubscribeAll();
+        this._zeroEx.exchange.unsubscribeAll();
     }
     private async _getTokenRegistryTokensByAddressAsync(): Promise<TokenByAddress> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
@@ -710,7 +702,7 @@ export class Blockchain {
         return tokenByAddress;
     }
     private async _onPageLoadInitFireAndForgetAsync() {
-        await Blockchain._onPageLoadAsync(); // wait for page to load
+        await utils.onPageLoadAsync(); // wait for page to load
 
         // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
         // order to properly instantiate the web3Wrapper. Since we must use the async call, we cannot

@@ -1,0 +1,47 @@
+/**
+ * This file is auto-generated using abi-gen. Don't edit directly.
+ * Templates can be found at https://github.com/0xProject/0x-monorepo/tree/development/packages/contract_templates.
+ */
+// tslint:disable:no-consecutive-blank-lines
+// tslint:disable-next-line:no-unused-variable
+import { BaseContract } from '@0xproject/base-contract';
+import { TxData, TxDataPayable } from '@0xproject/types';
+import { BigNumber, classUtils, promisify } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as ethersContracts from 'ethers-contracts';
+import * as _ from 'lodash';
+import * as Web3 from 'web3';
+
+{{#if events}}
+export type {{contractName}}ContractEventArgs =
+{{#each events}}
+    | {{name}}ContractEventArgs{{#if @last}};{{/if}}
+{{/each}}
+
+export enum {{contractName}}Events {
+    {{#each events}}
+    {{name}} = '{{name}}',
+    {{/each}}
+}
+
+{{#each events}}
+{{> event}}
+
+{{/each}}
+{{/if}}
+
+// tslint:disable:no-parameter-reassignment
+export class {{contractName}}Contract extends BaseContract {
+{{#each methods}}
+    {{#this.constant}}
+    {{> call contractName=../contractName}}
+    {{/this.constant}}
+    {{^this.constant}}
+    {{> tx contractName=../contractName}}
+    {{/this.constant}}
+{{/each}}
+    constructor(web3Wrapper: Web3Wrapper, abi: Web3.ContractAbi, address: string) {
+        super(web3Wrapper, abi, address);
+        classUtils.bindAll(this, ['_ethersInterface', 'address', 'abi', '_web3Wrapper']);
+    }
+} // tslint:disable:max-file-line-count

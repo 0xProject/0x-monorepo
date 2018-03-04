@@ -140,6 +140,7 @@ export enum ActionTypes {
     HideFlashMessage = 'HIDE_FLASH_MESSAGE',
     UpdateProviderType = 'UPDATE_PROVIDER_TYPE',
     UpdateInjectedProviderName = 'UPDATE_INJECTED_PROVIDER_NAME',
+    UpdateSelectedLanguage = 'UPDATE_SELECTED_LANGUAGE',
 }
 
 export interface Action {
@@ -307,7 +308,7 @@ export interface TypeDocNode {
     returns?: string;
     declaration: TypeDocNode;
     flags?: TypeDocFlags;
-    indexSignature?: TypeDocNode[];
+    indexSignature?: TypeDocNode | TypeDocNode[]; // TypeDocNode in TypeDoc <V0.9.0, TypeDocNode[] in >V0.9.0
     signatures?: TypeDocNode[];
     parameters?: TypeDocNode[];
     typeParameter?: TypeDocNode[];
@@ -626,20 +627,39 @@ export interface SectionsMap {
     [sectionName: string]: string;
 }
 
+export enum DocPackages {
+    Connect = 'CONNECT',
+    ZeroExJs = 'ZERO_EX_JS',
+    SmartContracts = 'SMART_CONTRACTS',
+}
+
+export enum SupportedDocJson {
+    Doxity = 'DOXITY',
+    TypeDoc = 'TYPEDOC',
+}
+
+export interface ContractsByVersionByNetworkId {
+    [version: string]: {
+        [networkName: string]: {
+            [contractName: string]: string;
+        };
+    };
+}
+
 export interface DocsInfoConfig {
+    id: string;
+    type: SupportedDocJson;
     displayName: string;
     packageUrl: string;
-    websitePath: string;
-    docsJsonRoot: string;
     menu: DocsMenu;
     sections: SectionsMap;
     sectionNameToMarkdown: { [sectionName: string]: string };
     visibleConstructors: string[];
-    convertToDocAgnosticFormatFn: (docObj: DoxityDocObj | TypeDocNode, docsInfo?: any) => DocAgnosticFormat;
     subPackageName?: string;
     publicTypes?: string[];
     sectionNameToModulePath?: { [sectionName: string]: string[] };
     menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };
+    contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
 }
 
 export interface TimestampMsRange {
@@ -667,4 +687,79 @@ export interface MaterialUIPosition {
     horizontal: 'left' | 'middle' | 'right';
 }
 
+export enum Language {
+    English = 'EN',
+    Spanish = 'ES',
+    Chinese = 'ZH',
+    Korean = 'KO',
+    Russian = 'RU',
+}
+
+export enum Key {
+    TopHeader = 'TOP_HEADER',
+    TopTagline = 'TOP_TAGLINE',
+    BuildCallToAction = 'BUILD_CALL_TO_ACTION',
+    CommunityCallToAction = 'COMMUNITY_CALL_TO_ACTION',
+    ProjectsHeader = 'PROJECTS_HEADER',
+    FullListPrompt = 'FULL_LIST_PROMPT',
+    FullListLink = 'FULL_LIST_LINK',
+    TokenizedSectionHeader = 'TOKENIZED_SECTION_HEADER',
+    TokenizedSectionDescription = 'TOKENIZED_SECTION_DESCRIPTION',
+    Currency = 'CURRENCY',
+    TraditionalAssets = 'TRADITIONAL_ASSETS',
+    DigitalGoods = 'DIGITAL_GOODS',
+    OffChainOrderRelay = 'OFFCHAIN_ORDER_RELAY',
+    OonChainSettlement = 'OONCHAIN_SETTLEMENT',
+    OffChainOnChainDescription = 'OFFCHAIN_ONCHAIN_DESCRIPTION',
+    RelayersHeader = 'RELAYERS_HEADER',
+    BenefitsHeader = 'BENEFITS_HEADER',
+    BenefitOneTitle = 'BENEFIT_ONE_TITLE',
+    BenefitOneDescription = 'BENEFIT_ONE_DESCRIPTION',
+    BenefitTwoTitle = 'BENEFIT_TWO_TITLE',
+    BenefitTwoDescription = 'BENEFIT_TWO_DESCRIPTION',
+    BenefitThreeTitle = 'BENEFIT_THREE_TITLE',
+    BenefitThreeDescription = 'BENEFIT_THREE_DESCRIPTION',
+    BuildingBlockSectionHeader = 'BUILDING_BLOCK_SECTION_HEADER',
+    BuildingBlockSectionDescription = 'BUILDING_BLOCK_SECTION_DESCRIPTION',
+    DevToolsPrompt = 'DEV_TOOLS_PROMPT',
+    SmartContract = 'SMART_CONTRACT',
+    Docs = 'DOCS',
+    DecentralizedGovernance = 'DECENTRALIZED_GOVERNANCE',
+    DecentralizedGovernanceDescription = 'DECENTRALIZED_GOVERNANCE_DESCRIPTION',
+    PredictionMarkets = 'PREDICTION_MARKETS',
+    PredictionMarketsDescription = 'PREDICTION_MARKETS_DESCRIPTION',
+    StableTokens = 'STABLE_TOKENS',
+    StableTokensDescription = 'STABLE_TOKENS_DESCRIPTION',
+    DecentralizedLoans = 'DECENTRALIZED_LOANS',
+    DecentralizedLoansDescription = 'DECENTRALIZED_LOANS_DESCRIPTION',
+    FundManagement = 'FUND_MANAGEMENT',
+    FundManagementDescription = 'FUND_MANAGEMENT_DESCRIPTION',
+    FinalCallToAction = 'FINAL_CALL_TO_ACTION',
+    Documentation = 'DOCUMENTATION',
+    Community = 'COMMUNITY',
+    Organization = 'ORGANIZATION',
+    About = 'ABOUT',
+    Careers = 'CAREERS',
+    Contact = 'CONTACT',
+    Blog = 'BLOG',
+    Forum = 'FORUM',
+    Connect = 'CONNECT',
+    Whitepaper = 'WHITEPAPER',
+    Wiki = 'WIKI',
+    And = 'AND',
+    Faq = 'FAQ',
+    SmartContracts = 'SMART_CONTRACTS',
+    StandardRelayerApi = 'STANDARD_RELAYER_API',
+    PortalDApp = 'PORTAL_DAPP',
+    Website = 'WEBSITE',
+    Developers = 'DEVELOPERS',
+    Home = 'HOME',
+    RocketChat = 'ROCKETCHAT',
+}
+
+export enum Deco {
+    Cap,
+    CapWords,
+    Upper,
+}
 // tslint:disable:max-file-line-count

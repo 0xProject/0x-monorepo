@@ -1,12 +1,4 @@
-import {
-    LogCancelContractEventArgs,
-    LogErrorContractEventArgs,
-    LogFillContractEventArgs,
-    LogWithDecodedArgs,
-    SignedOrder,
-    TransactionReceiptWithDecodedLogs,
-    ZeroEx,
-} from '0x.js';
+import { LogWithDecodedArgs, SignedOrder, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -15,7 +7,12 @@ import ethUtil = require('ethereumjs-util');
 import * as Web3 from 'web3';
 
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
-import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
+import {
+    ExchangeContract,
+    LogCancelContractEventArgs,
+    LogErrorContractEventArgs,
+    LogFillContractEventArgs,
+} from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import { Balances } from '../../util/balances';
 import { constants } from '../../util/constants';
@@ -63,16 +60,20 @@ describe('Exchange', () => {
             deployer.deployAsync(ContractName.DummyToken),
             deployer.deployAsync(ContractName.DummyToken),
         ]);
-        rep = new DummyTokenContract(repInstance);
-        dgd = new DummyTokenContract(dgdInstance);
-        zrx = new DummyTokenContract(zrxInstance);
+        rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
+        dgd = new DummyTokenContract(web3Wrapper, dgdInstance.abi, dgdInstance.address);
+        zrx = new DummyTokenContract(web3Wrapper, zrxInstance.abi, zrxInstance.address);
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
-        tokenTransferProxy = new TokenTransferProxyContract(tokenTransferProxyInstance);
+        tokenTransferProxy = new TokenTransferProxyContract(
+            web3Wrapper,
+            tokenTransferProxyInstance.abi,
+            tokenTransferProxyInstance.address,
+        );
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             tokenTransferProxy.address,
         ]);
-        exchange = new ExchangeContract(exchangeInstance);
+        exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         zeroEx = new ZeroEx(web3.currentProvider, {
             exchangeContractAddress: exchange.address,
@@ -650,7 +651,7 @@ describe('Exchange', () => {
 
         it('should not change balances if makerTokenAddress is ZRX, makerTokenAmount + makerFee > maker allowance, \
                 and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const makerZRXAllowance = await zrx.allowance(maker, tokenTransferProxy.address);
+            const makerZRXAllowance = await zrx.allowance.callAsync(maker, tokenTransferProxy.address);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerTokenAddress: zrx.address,
                 makerTokenAmount: new BigNumber(makerZRXAllowance),
@@ -676,7 +677,7 @@ describe('Exchange', () => {
 
         it('should not change balances if takerTokenAddress is ZRX, takerTokenAmount + takerFee > taker allowance, \
                 and shouldThrowOnInsufficientBalanceOrAllowance = false', async () => {
-            const takerZRXAllowance = await zrx.allowance(taker, tokenTransferProxy.address);
+            const takerZRXAllowance = await zrx.allowance.callAsync(taker, tokenTransferProxy.address);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 takerTokenAddress: zrx.address,
                 takerTokenAmount: new BigNumber(takerZRXAllowance),
@@ -723,7 +724,7 @@ describe('Exchange', () => {
             const res = await exWrapper.fillOrderAsync(signedOrder, taker);
             expect(res.logs).to.have.length(1);
             const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
-            const errCode = log.args.errorId.toNumber();
+            const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
 
@@ -734,7 +735,7 @@ describe('Exchange', () => {
             const res = await exWrapper.fillOrderAsync(signedOrder, taker);
             expect(res.logs).to.have.length(1);
             const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
-            const errCode = log.args.errorId.toNumber();
+            const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
         });
     });
@@ -862,7 +863,7 @@ describe('Exchange', () => {
             const res = await exWrapper.cancelOrderAsync(signedOrder, maker);
             expect(res.logs).to.have.length(1);
             const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
-            const errCode = log.args.errorId.toNumber();
+            const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
         });
 
@@ -874,7 +875,7 @@ describe('Exchange', () => {
             const res = await exWrapper.cancelOrderAsync(signedOrder, maker);
             expect(res.logs).to.have.length(1);
             const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
-            const errCode = log.args.errorId.toNumber();
+            const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
     });

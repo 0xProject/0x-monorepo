@@ -41,7 +41,8 @@ export class Web3Wrapper {
     }
     public async isSenderAddressAvailableAsync(senderAddress: string): Promise<boolean> {
         const addresses = await this.getAvailableAddressesAsync();
-        return _.includes(addresses, senderAddress);
+        const normalizedAddress = senderAddress.toLowerCase();
+        return _.includes(addresses, normalizedAddress);
     }
     public async getNodeVersionAsync(): Promise<string> {
         const nodeVersion = await promisify<string>(this._web3.version.getNode)();
@@ -96,7 +97,8 @@ export class Web3Wrapper {
     }
     public async getAvailableAddressesAsync(): Promise<string[]> {
         const addresses = await promisify<string[]>(this._web3.eth.getAccounts)();
-        return addresses;
+        const normalizedAddresses = _.map(addresses, address => address.toLowerCase());
+        return normalizedAddresses;
     }
     public async getLogsAsync(filter: Web3.FilterObject): Promise<Web3.LogEntry[]> {
         let fromBlock = filter.fromBlock;
@@ -126,13 +128,13 @@ export class Web3Wrapper {
         const web3Contract = this._web3.eth.contract(abi);
         return web3Contract;
     }
-    public getContractInstance(abi: Web3.ContractAbi, address: string): Web3.ContractInstance {
-        const web3ContractInstance = this.getContractFromAbi(abi).at(address);
-        return web3ContractInstance;
-    }
-    public async estimateGasAsync(data: string): Promise<number> {
-        const gas = await promisify<number>(this._web3.eth.estimateGas)({ data });
+    public async estimateGasAsync(txData: Partial<Web3.TxData>): Promise<number> {
+        const gas = await promisify<number>(this._web3.eth.estimateGas)(txData);
         return gas;
+    }
+    public async callAsync(callData: Web3.CallData, defaultBlock?: Web3.BlockParam): Promise<string> {
+        const rawCalllResult = await promisify<string>(this._web3.eth.call)(callData, defaultBlock);
+        return rawCalllResult;
     }
     public async sendTransactionAsync(txData: Web3.TxData): Promise<string> {
         const txHash = await promisify<string>(this._web3.eth.sendTransaction)(txData);
