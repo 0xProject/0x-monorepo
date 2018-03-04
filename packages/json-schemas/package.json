@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "0.7.12",
+    "version": "0.7.13",
     "description": "0x-related json schemas",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -28,13 +28,13 @@
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.9",
-        "@0xproject/utils": "^0.3.4",
+        "@0xproject/tslint-config": "^0.4.10",
+        "@0xproject/utils": "^0.4.0",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
-        "chai-typescript-typings": "^0.0.3",
+        "chai-typescript-typings": "^0.0.4",
         "dirty-chai": "^2.0.1",
         "lodash.foreach": "^4.5.0",
         "mocha": "^4.0.1",
