@@ -102,6 +102,7 @@ const docsInfoConfig: DocsInfoConfig = {
         'ApprovalContractEventArgs',
         'TokenContractEventArgs',
         'ZeroExConfig',
+        'TransactionReceipt',
         'TransactionReceiptWithDecodedLogs',
         'LogWithDecodedArgs',
         'EtherTokenEvents',
@@ -124,17 +125,33 @@ const docsInfoConfig: DocsInfoConfig = {
         'FilterObject',
     ],
     sectionNameToModulePath: {
-        [zeroExJsDocSections.zeroEx]: ['"src/0x"'],
-        [zeroExJsDocSections.exchange]: ['"src/contract_wrappers/exchange_wrapper"'],
-        [zeroExJsDocSections.tokenRegistry]: ['"src/contract_wrappers/token_registry_wrapper"'],
-        [zeroExJsDocSections.token]: ['"src/contract_wrappers/token_wrapper"'],
-        [zeroExJsDocSections.etherToken]: ['"src/contract_wrappers/ether_token_wrapper"'],
+        [zeroExJsDocSections.zeroEx]: ['"0x.js/src/0x"', '"src/0x"'],
+        [zeroExJsDocSections.exchange]: [
+            '"0x.js/src/contract_wrappers/exchange_wrapper"',
+            '"src/contract_wrappers/exchange_wrapper"',
+        ],
+        [zeroExJsDocSections.tokenRegistry]: [
+            '"0x.js/src/contract_wrappers/token_registry_wrapper"',
+            '"src/contract_wrappers/token_registry_wrapper"',
+        ],
+        [zeroExJsDocSections.token]: [
+            '"0x.js/src/contract_wrappers/token_wrapper"',
+            '"src/contract_wrappers/token_wrapper"',
+        ],
+        [zeroExJsDocSections.etherToken]: [
+            '"0x.js/src/contract_wrappers/ether_token_wrapper"',
+            '"src/contract_wrappers/ether_token_wrapper"',
+        ],
         [zeroExJsDocSections.proxy]: [
-            '"src/contract_wrappers/proxy_wrapper"',
+            '"0x.js/src/contract_wrappers/proxy_wrapper"',
+            '"0x.js/src/contract_wrappers/token_transfer_proxy_wrapper"',
             '"src/contract_wrappers/token_transfer_proxy_wrapper"',
         ],
-        [zeroExJsDocSections.orderWatcher]: ['"src/order_watcher/order_state_watcher"'],
-        [zeroExJsDocSections.types]: ['"src/types"'],
+        [zeroExJsDocSections.orderWatcher]: [
+            '"0x.js/src/order_watcher/order_state_watcher"',
+            '"src/order_watcher/order_state_watcher"',
+        ],
+        [zeroExJsDocSections.types]: ['"0x.js/src/types"', '"src/types"', '"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {
         [zeroExJsDocSections.etherToken]: '0.7.1',
