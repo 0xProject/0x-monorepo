@@ -25,9 +25,10 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
     }
     public render() {
         const event = this.props.event;
+        const id = `${this.props.sectionName}-${event.name}`;
         return (
             <div
-                id={`${this.props.sectionName}-${event.name}`}
+                id={id}
                 className="pb2"
                 style={{ overflow: 'hidden', width: '100%' }}
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
@@ -36,7 +37,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
                 <AnchorTitle
                     headerSize={HeaderSizes.H3}
                     title={`Event ${event.name}`}
-                    id={event.name}
+                    id={id}
                     shouldShowAnchor={this.state.shouldShowAnchor}
                 />
                 <div style={{ fontSize: 16 }}>

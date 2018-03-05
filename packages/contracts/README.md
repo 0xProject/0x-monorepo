@@ -60,7 +60,7 @@ yarn lint
 
 Before running the tests, you will need to spin up a [TestRPC](https://www.npmjs.com/package/ethereumjs-testrpc) instance.
 
-In a separate terminal, start TestRPC (a convenience command is provided as part of the [0x.js monorepo](https://github.com/0xProject/0x.js))
+In a separate terminal, start TestRPC (a convenience command is provided as part of the [0x.js monorepo](https://github.com/0xProject/0x-monorepo))
 
 ```bash
 cd ../..

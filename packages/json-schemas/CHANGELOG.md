@@ -1,8 +1,8 @@
 # CHANGELOG
 
-## v0.7.10 - _February 9, 2018_
+## v0.7.13 - _February 9, 2018_
 
-*   Fix publishing issue where .npmignore was not properly excluding undesired content (#389)
+    *   Fix publishing issue where .npmignore was not properly excluding undesired content (#389)
 
 ## v0.7.0 - _December 20, 2017_
 

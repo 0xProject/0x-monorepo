@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/assert",
-    "version": "0.0.20",
+    "version": "0.1.0",
     "description": "Provides a standard way of performing type and schema validation across 0x projects",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -17,19 +17,19 @@
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/0xProject/0x.js.git"
+        "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/assert/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/assert/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/tslint-config": "^0.4.10",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
         "@types/valid-url": "^1.0.2",
         "chai": "^4.0.1",
-        "chai-typescript-typings": "^0.0.3",
+        "chai-typescript-typings": "^0.0.4",
         "dirty-chai": "^2.0.1",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
@@ -38,8 +38,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.7.12",
-        "@0xproject/utils": "^0.3.4",
+        "@0xproject/json-schemas": "^0.7.13",
+        "@0xproject/utils": "^0.4.0",
         "lodash": "^4.17.4",
         "valid-url": "^1.0.9"
     }

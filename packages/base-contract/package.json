@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/base-contract",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "0x Base TS contract",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -13,27 +13,27 @@
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/0xProject/0x.js.git"
+        "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/base-contract/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/base-contract/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/tslint-config": "^0.4.10",
         "@types/lodash": "^4.14.86",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
-        "typescript": "2.7.1",
-        "ethers-typescript-typings": "^0.0.1",
-        "web3-typescript-typings": "^0.9.11"
+        "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.2.3",
-        "@0xproject/web3-wrapper": "^0.1.14",
+        "@0xproject/types": "^0.3.0",
+        "@0xproject/web3-wrapper": "^0.2.0",
         "ethers-contracts": "^2.2.1",
+        "ethers-typescript-typings": "^0.0.2",
         "lodash": "^4.17.4",
-        "web3": "^0.20.0"
+        "web3": "^0.20.0",
+        "web3-typescript-typings": "^0.10.0"
     }
 }

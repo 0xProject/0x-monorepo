@@ -86,14 +86,14 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                         docs
                     </div>
                 </div>
-                <div className="pl1" style={{ color: colors.grey350, paddingBottom: 9, paddingLeft: 14, height: 17 }}>
+                <div className="pl1" style={{ color: colors.grey350, paddingBottom: 9, paddingLeft: 10, height: 17 }}>
                     |
                 </div>
                 <div className="flex">
                     <div>
-                        <img src={`/images/doc_icons/${titleToIcon[this.props.title]}`} width="24" />
+                        <img src={`/images/doc_icons/${titleToIcon[this.props.title]}`} width="22" />
                     </div>
-                    <div className="pl1" style={{ fontWeight: 600, fontSize: 20, lineHeight: 1 }}>
+                    <div className="pl1" style={{ fontWeight: 600, fontSize: 20, lineHeight: 1.2 }}>
                         {this.props.title}
                     </div>
                 </div>

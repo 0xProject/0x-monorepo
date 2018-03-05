@@ -18,11 +18,20 @@ npm install 0x.js --save
 import { ZeroEx } from '0x.js';
 ```
 
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```
+"include": [
+    "./node_modules/web3-typescript-typings/index.d.ts",
+    "./node_modules/ethers-typescript-typings/index.d.ts"
+]
+```
+
 #### UMD:
 
 **Install**
 
-Download the UMD module from our [releases page](https://github.com/0xProject/0x.js/releases) and add it to your project.
+Download the UMD module from our [releases page](https://github.com/0xProject/0x-monorepo/releases) and add it to your project.
 
 **Import**
 

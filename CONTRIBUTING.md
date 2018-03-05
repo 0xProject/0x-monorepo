@@ -23,7 +23,7 @@ If the sub-package you are modifying has a `CHANGELOG.md` file, make sure to add
 
 ### Styleguide
 
-We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x.js/tree/development/packages/tslint-config) to keep our code style consistent.
+We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x-monorepo/tree/development/packages/tslint-config) to keep our code style consistent.
 
 To lint your code just run: `yarn lint`
 

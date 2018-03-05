@@ -13,6 +13,12 @@ export const crypto = {
    * valid Ethereum address -> address
    */
     solSHA3(args: any[]): Buffer {
+        return crypto._solHash(args, ABI.soliditySHA3);
+    },
+    solSHA256(args: any[]): Buffer {
+        return crypto._solHash(args, ABI.soliditySHA256);
+    },
+    _solHash(args: any[], hashFunction: (types: string[], values: any[]) => Buffer) {
         const argTypes: string[] = [];
         _.each(args, (arg, i) => {
             const isNumber = _.isFinite(arg);
@@ -31,7 +37,7 @@ export const crypto = {
                 throw new Error(`Unable to guess arg type: ${arg}`);
             }
         });
-        const hash = ABI.soliditySHA3(argTypes, args);
+        const hash = hashFunction(argTypes, args);
         return hash;
     },
 };

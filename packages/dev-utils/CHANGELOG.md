@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.1.0 - _February 16, 2018_
+## v0.2.0 - _February 16, 2018_
 
     * Remove subproviders (#392)
 

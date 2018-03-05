@@ -113,7 +113,9 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                         <code className="hljs">{codeSnippet}</code>
                     </pre>
                 </div>
-                {customType.comment && <Comment comment={customType.comment} className="py2" />}
+                <div style={{ maxWidth: 620 }}>
+                    {customType.comment && <Comment comment={customType.comment} className="py2" />}
+                </div>
             </div>
         );
     }

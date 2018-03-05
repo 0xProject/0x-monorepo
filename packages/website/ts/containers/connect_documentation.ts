@@ -28,7 +28,7 @@ const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.Connect,
     type: SupportedDocJson.TypeDoc,
     displayName: '0x Connect',
-    packageUrl: 'https://github.com/0xProject/0x.js',
+    packageUrl: 'https://github.com/0xProject/0x-monorepo',
     menu: {
         introduction: [connectDocSections.introduction],
         install: [connectDocSections.installation],

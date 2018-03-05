@@ -15,7 +15,7 @@ const defaultProps = {
 export const Comment: React.SFC<CommentProps> = (props: CommentProps) => {
     return (
         <div className={`${props.className} comment`}>
-            <ReactMarkdown source={props.comment} renderers={{ CodeBlock: MarkdownCodeBlock }} />
+            <ReactMarkdown source={props.comment} renderers={{ code: MarkdownCodeBlock }} />
         </div>
     );
 };
