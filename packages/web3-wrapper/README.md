@@ -8,6 +8,14 @@ Wrapped version of web3 with a nicer interface that is used across 0x projects a
 yarn add @0xproject/web3-wrapper
 ```
 
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```
+"include": [
+    "./node_modules/web3-typescript-typings/index.d.ts",
+]
+```
+
 ## Usage
 
 ```typescript
