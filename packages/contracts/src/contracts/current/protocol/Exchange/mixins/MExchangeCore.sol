@@ -19,7 +19,9 @@
 pragma solidity ^0.4.19;
 pragma experimental ABIEncoderV2;
 
-contract MExchangeCore {
+import "../LibOrder.sol";
+
+contract MExchangeCore is LibOrder {
     
     function fillOrder(
         Order order,
