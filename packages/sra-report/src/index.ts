@@ -42,7 +42,7 @@ const args = yargs
     .argv;
 // perform extra validation on command line arguments
 try {
-    assert.isHttpUrl('args', args.url);
+    assert.isWebUri('args', args.url);
 } catch (err) {
     utils.log(`${chalk.red(`Invalid url format:`)} ${args.url}`);
     process.exit(1);
