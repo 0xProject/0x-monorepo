@@ -27,7 +27,7 @@ contract MixinWrapperFunctions is
     MExchangeCore,
     SafeMath
 {
-    /// @param orders Array of orders.
+    /// @param order Order struct containing order specifications.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
     /// @param signature Maker's signature of the order.
     function fillOrKillOrder(
@@ -44,7 +44,7 @@ contract MixinWrapperFunctions is
     }
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Returns false if the transaction would otherwise revert.
-    /// @param orders Array of orders.
+    /// @param order Order struct containing order specifications.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
     /// @param signature Maker's signature of the order.
     /// @return Success if the transaction did not revert.
@@ -54,7 +54,7 @@ contract MixinWrapperFunctions is
         uint256 takerTokenFillAmount,
         bytes signature)
         public
-        returns (bool success, uint256 takerTokenFilledAmount)
+        returns (uint256 takerTokenFilledAmount)
     {
         // We need to call MExchangeCore.fillOrder using a delegatecall in
         // assembly so that we can intercept a call that throws. For this, we
@@ -73,14 +73,14 @@ contract MixinWrapperFunctions is
         //
         // (1): len(signature)
         // (2): 486 + len(signature)
-        // (3): (32 - len(signature)) mod 32
-        // (4): 486 + len(signature) + (32 - len(signature)) mod 32
+        // (3): 32 - (len(signature) mod 32)
+        // (4): 486 + len(signature) + 32 - (len(signature) mod 32)
         //
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
         
         // Allocate memory for input
         uint256 signatureLength = signature.length;
-        uint256 paddingLength = (32 - signatureLength) % 32
+        uint256 paddingLength = 32 - (signatureLength % 32);
         uint256 inputSize = 486 + signatureLength + paddingLength;
         bytes memory input = new bytes(inputSize);
         
@@ -98,16 +98,16 @@ contract MixinWrapperFunctions is
         // We use assembly to write four bytes at a time (actually 32,
         // but we are only overwriting uninitialized data). A `bytes4`
         // is stored by value as 256-bit and right-padded with zeros.
-        bytes4 FILL_ORDER_FUNCTION_SIGNATURE = bytes4(keccak256("fillOrder(address[5],uint256[6],uint256,uint8,bytes32,bytes32)"));
+        bytes4 FILL_ORDER_FUNCTION_SIGNATURE = this.fillOrder.selector;
         assembly {
             mstore(start, FILL_ORDER_FUNCTION_SIGNATURE)
         }
         
         // Use identity function precompile to cheaply copy Order struct over
-        // We need asssembly to access the precompile
+        // We need assembly to access the precompile
         // Note that sizeof(Order) == 12 * 32 == 384
         assembly {
-            delegatecall(
+            let success := delegatecall(
                 51,            // precompile takes 15 + 3 * numWords
                 0x4,           // precompile for identity function
                 order,         // pointer to start of input
@@ -115,8 +115,16 @@ contract MixinWrapperFunctions is
                 add(start, 4), // store output at offset 4
                 384            // output is 384 bytes
             )
+            if iszero(success) {
+                revert(0, 0)
+            }
         }
         
+        // Write takerTokenFillAmount
+        assembly {
+            mstore(add(start, 388), takerTokenFillAmount)
+        }
+
         // Write offset to signature and len(signature)
         // It is done in assembly so we can write 32 bytes at a time. In
         // solidity we would have to copy one byte at a time.
@@ -127,14 +135,17 @@ contract MixinWrapperFunctions is
         // Copy over signature length contents
         assembly {
             let size := add(signatureLength, 32)
-            delegatecall(
+            let success := delegatecall(
                 gas,             // precompile takes 15 + 3 * numWords
                 0x4,             // precompile for identity function
                 signature,       // pointer to start of input
-                size,            // length of input
+                size,            // input is (signatureLength + 32) bytes
                 add(start, 452), // store output at offset 4
-                size             // output is 384 bytes
+                size             // output is (signatureLength + 32) bytes
             )
+            if iszero(success) {
+                revert(0, 0)
+            }
         }
         
         // Write padding
@@ -144,7 +155,7 @@ contract MixinWrapperFunctions is
         
         // Call the function
         assembly {
-            success := delegatecall(
+            let success := delegatecall(
                 gas,       // If fillOrder `revert()`s, we recover unused gas
                 address,   // call this contract
                 start,     // pointer to start of input
@@ -152,11 +163,17 @@ contract MixinWrapperFunctions is
                 start,     // store output over input
                 32         // output is 32 bytes
             )
-            
-            // Read output value (uint256 takerTokenFilledAmount)
-            takerTokenFilledAmount := mload(start)
+            switch success
+            case 0 {
+                // No amount filled if delegatecall is unsuccessful
+                takerTokenFilledAmount := 0
+            }
+            case 1 {
+                // Read output value (uint256 takerTokenFilledAmount)
+                takerTokenFilledAmount := mload(start)
+            }
         }
-        return (success, takerTokenFilledAmount);
+        return takerTokenFilledAmount;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder in a single transaction.
@@ -199,7 +216,7 @@ contract MixinWrapperFunctions is
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Returns false if the transaction would otherwise revert.
     /// @param orders Array of orders.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
     /// @param signatures Maker's signatures of the orders.
     function batchFillOrdersNoThrow(
         Order[] orders,
@@ -218,7 +235,7 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total takerTokenFillAmount filled.
     /// @param orders Array of orders.
-    /// @param takerTokenFillAmount Desired total amount of takerToken to fill in orders.
+    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
     /// @param signatures Maker's signatures of the orders.
     /// @return Total amount of takerTokenFillAmount filled in orders.
     function marketFillOrders(
@@ -254,12 +271,11 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerToken == orders[0].takerToken);
-            var (, takerTokenFilledAmount) = fillOrderNoThrow(
+            totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, fillOrderNoThrow(
                 orders[i],
                 safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
                 signatures[i]
-            );
-            totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, takerTokenFilledAmount);
+            ));
             if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
         }
         return totalTakerTokenFilledAmount;
@@ -271,7 +287,7 @@ contract MixinWrapperFunctions is
     function batchCancelOrders(
         Order[] orders,
         uint256[] takerTokenCancelAmounts)
-        external
+        public
     {
         for (uint256 i = 0; i < orders.length; i++) {
             cancelOrder(
