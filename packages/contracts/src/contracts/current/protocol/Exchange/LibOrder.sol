@@ -36,8 +36,9 @@ contract LibOrder {
         "uint256 salt"
     );
     
+    //  TODO: Append `Address` to all address fields and `Amount` to all value fields?
     struct Order {
-        address exchange;
+        address exchange;   //  TODO: Does this need to be a part of the Order struct?
         address maker;
         address taker;
         address makerToken;
@@ -61,7 +62,20 @@ contract LibOrder {
         // TODO: EIP712 is not finalized yet
         orderHash = keccak256(
             orderSchemaHash,
-            keccak256(order)
+            keccak256(
+                order.exchange,
+                order.maker,
+                order.taker,
+                order.makerToken,
+                order.takerToken,
+                order.feeRecipient,
+                order.makerTokenAmount,
+                order.takerTokenAmount,
+                order.makerFee,
+                order.takerFee,
+                order.expirationTimestampInSec,
+                order.salt
+            )
         );
         return orderHash;
     }
