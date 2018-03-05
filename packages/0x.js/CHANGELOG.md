@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.33.1 - _March 5, 2018_
+## v0.33.1 - _TBD, 2018_
 
     * Add missing EthersJs typescript typings as dependency
 
