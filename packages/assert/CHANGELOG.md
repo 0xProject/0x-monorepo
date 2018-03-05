@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.1.0 - _TBD, 2018_
+## v0.1.0 - _March 4, 2018_
 
     * Remove isETHAddressHex checksum address check and assume address will be lowercased  (#373)
     * Add an optional parameter `subSchemas` to `doesConformToSchema` method (#385)

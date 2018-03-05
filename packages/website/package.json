@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/website",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "private": true,
     "description": "Website and 0x portal dapp",
     "scripts": {
@@ -18,10 +18,10 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.32.4",
-        "@0xproject/subproviders": "^0.5.0",
         "@0xproject/react-shared": "^0.0.1",
-        "@0xproject/utils": "^0.3.4",
+        "@0xproject/subproviders": "^0.6.0",
+        "@0xproject/utils": "^0.4.0",
+        "0x.js": "^0.33.0",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",
@@ -88,7 +88,7 @@
         "copy-webpack-plugin": "^4.0.1",
         "copyfiles": "^1.2.0",
         "css-loader": "0.23.x",
-        "ethers-typescript-typings": "^0.0.1",
+        "ethers-typescript-typings": "^0.0.2",
         "exports-loader": "0.6.x",
         "imports-loader": "0.6.x",
         "json-loader": "^0.5.4",
@@ -100,7 +100,7 @@
         "tslint": "5.8.0",
         "tslint-config-0xproject": "^0.0.2",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.11",
+        "web3-typescript-typings": "^0.10.0",
         "webpack": "^3.1.0",
         "webpack-dev-middleware": "^1.10.0",
         "webpack-dev-server": "^2.5.0"

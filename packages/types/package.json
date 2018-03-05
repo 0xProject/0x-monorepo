@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/types",
-    "version": "0.2.3",
+    "version": "0.3.0",
     "description": "0x types",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -20,14 +20,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/types/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/tslint-config": "^0.4.10",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
-        "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.11"
+        "typescript": "2.7.1"
     },
     "dependencies": {
         "bignumber.js": "~4.1.0",
-        "web3": "^0.20.0"
+        "web3": "^0.20.0",
+        "web3-typescript-typings": "^0.10.0"
     }
 }
