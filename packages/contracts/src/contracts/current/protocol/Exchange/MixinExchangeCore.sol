@@ -71,14 +71,13 @@ contract MixinExchangeCore is
     */
 
     /// @dev Fills the input order.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param order Order struct containing order specifications.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
     /// @param signature Proof of signing order by maker.
     /// @return Total amount of takerToken filled in trade.
     function fillOrder(
         Order order,
-        uint takerTokenFillAmount,
+        uint256 takerTokenFillAmount,
         bytes signature)
         public
         returns (uint256 takerTokenFilledAmount)
@@ -144,8 +143,7 @@ contract MixinExchangeCore is
     }
 
     /// @dev Cancels the input order.
-    /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
-    /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
+    /// @param order Order struct containing order specifications.
     /// @param takerTokenCancelAmount Desired amount of takerToken to cancel in order.
     /// @return Amount of takerToken cancelled.
     function cancelOrder(
