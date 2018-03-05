@@ -246,7 +246,7 @@ contract MixinWrapperFunctions is
         returns (uint256 totalTakerTokenFilledAmount)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(orders[i].takerToken == orders[0].takerToken);
+            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
             totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, fillOrder(
                 orders[i],
                 safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
@@ -270,7 +270,7 @@ contract MixinWrapperFunctions is
         returns (uint256 totalTakerTokenFilledAmount)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(orders[i].takerToken == orders[0].takerToken);
+            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
             totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, fillOrderNoThrow(
                 orders[i],
                 safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),

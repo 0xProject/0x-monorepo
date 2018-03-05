@@ -22,7 +22,7 @@ pragma experimental ABIEncoderV2;
 contract LibOrder {
     
     bytes32 constant orderSchemaHash = keccak256(
-        "address exchange",
+        "address exchangeAddress",
         "address makerAddress",
         "address takerAddress",
         "address makerTokenAddress",
@@ -32,30 +32,29 @@ contract LibOrder {
         "uint256 takerTokenAmount",
         "uint256 makerFeeAmount",
         "uint256 takerFeeAmount",
-        "uint256 expirationTimestamp",
+        "uint256 expirationTimeSeconds",
         "uint256 salt"
     );
     
     //  TODO: Append `Address` to all address fields and `Amount` to all value fields?
     struct Order {
-        address exchange;   //  TODO: Does this need to be a part of the Order struct?
-        address maker;
-        address taker;
-        address makerToken;
-        address takerToken;
-        address feeRecipient;
+        address makerAddress;
+        address takerAddress;
+        address makerTokenAddress;
+        address takerTokenAddress;
+        address feeRecipientAddress;
         uint256 makerTokenAmount;
         uint256 takerTokenAmount;
-        uint256 makerFee;
-        uint256 takerFee;
-        uint256 expirationTimestampInSec;
+        uint256 makerFeeAmount;
+        uint256 takerFeeAmount;
+        uint256 expirationTimeSeconds;
         uint256 salt;
     }
     
     /// @dev Calculates Keccak-256 hash of the order.
     /// @param order The order structure.
     /// @return Keccak-256 EIP712 hash of the order.
-    function getOrderHash(Order memory order)
+    function getOrderHash(Order order)
         public view
         returns (bytes32 orderHash)
     {
@@ -63,17 +62,17 @@ contract LibOrder {
         orderHash = keccak256(
             orderSchemaHash,
             keccak256(
-                order.exchange,
-                order.maker,
-                order.taker,
-                order.makerToken,
-                order.takerToken,
-                order.feeRecipient,
+                address(this),
+                order.makerAddress,
+                order.takerAddress,
+                order.makerTokenAddress,
+                order.takerTokenAddress,
+                order.feeRecipientAddress,
                 order.makerTokenAmount,
                 order.takerTokenAmount,
-                order.makerFee,
-                order.takerFee,
-                order.expirationTimestampInSec,
+                order.makerFeeAmount,
+                order.takerFeeAmount,
+                order.expirationTimeSeconds,
                 order.salt
             )
         );
