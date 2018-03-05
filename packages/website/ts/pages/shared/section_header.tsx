@@ -1,4 +1,4 @@
-import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared/anchor_title';
+import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared';
 import * as React from 'react';
 import { Element as ScrollElement } from 'react-scroll';
 import { colors } from 'ts/utils/colors';

@@ -1,3 +1,4 @@
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
@@ -5,7 +6,7 @@ import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Profile } from 'ts/pages/about/profile';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ProfileInfo, Styles } from 'ts/types';
+import { ProfileInfo } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';

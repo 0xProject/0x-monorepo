@@ -1,4 +1,4 @@
-import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared/anchor_title';
+import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';

@@ -10,14 +10,14 @@ const headerSizeToScrollOffset: { [headerSize: string]: number } = {
     h3: 0,
 };
 
-interface AnchorTitleProps {
+export interface AnchorTitleProps {
     title: string | React.ReactNode;
     id: string;
     headerSize: HeaderSizes;
     shouldShowAnchor: boolean;
 }
 
-interface AnchorTitleState {
+export interface AnchorTitleState {
     isHovering: boolean;
 }
 

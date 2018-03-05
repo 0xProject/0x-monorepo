@@ -1,4 +1,4 @@
-import { styles } from '@0xproject/react-shared';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';

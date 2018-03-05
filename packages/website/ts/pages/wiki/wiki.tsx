@@ -1,4 +1,4 @@
-import { HeaderSizes, styles } from '@0xproject/react-shared';
+import { HeaderSizes, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';

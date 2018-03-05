@@ -1,23 +1,14 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
-        "lib": ["es2017", "dom"],
-        "sourceMap": true,
-        "noImplicitReturns": true,
-        "allowSyntheticDefaultImports": true,
         "outDir": "./lib/",
         "jsx": "react",
         "baseUrl": "./",
-        "allowJs": true,
         "strictNullChecks": false,
         "noImplicitThis": false,
-        "declaration": false,
         "paths": {
             "*": ["node_modules/@types/*", "*"]
-        },
-        "pretty": true,
-        "strict": true
+        }
     },
     "include": ["./src/ts/**/*"]
 }

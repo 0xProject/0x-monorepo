@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "0x shared react components",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
     "build": "tsc",
