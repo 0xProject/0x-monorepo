@@ -117,7 +117,7 @@ export const scrapeDataScripts = {
                 tsyms: 'USD',
                 ts: timestamp / 1000,
             });
-            console.log(parsedParams);
+            console.debug(parsedParams);
             request(PRICE_API_ENDPOINT + '?' + parsedParams, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -164,13 +164,11 @@ export const scrapeDataScripts = {
             json: false,
         };
 
-        console.log(options);
-
         try {
             const response = await rpn(options);
             return Promise.resolve(JSON.parse(response));
         } catch (error) {
-            console.log(error);
+            console.debug(error);
             return Promise.reject(error);
         }
     },
@@ -178,7 +176,7 @@ export const scrapeDataScripts = {
 
 function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
     return (cb: () => void) => {
-        console.log('Fetching events from ' + fromBlock + ' to ' + toBlock);
+        console.debug('Fetching events from ' + fromBlock + ' to ' + toBlock);
         scrapeDataScripts
             .getAllEvents(fromBlock, toBlock)
             .then((data: any) => {
@@ -196,7 +194,7 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
 
                 for (const event_type in parsedEvents) {
                     if (parsedEvents[event_type].length > 0) {
-                        console.log('Inserting events from ' + fromBlock + ' to ' + toBlock);
+                        console.debug('Inserting events from ' + fromBlock + ' to ' + toBlock);
                         insertDataScripts
                             .insertMultipleRows(
                                 'events_raw',
@@ -204,17 +202,17 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                                 Object.keys(parsedEvents[event_type][0]),
                             )
                             .then(() => {
-                                console.log('Successfully inserted events from ' + fromBlock + ' to ' + toBlock);
+                                console.debug('Successfully inserted events from ' + fromBlock + ' to ' + toBlock);
                             })
                             .catch((error: any) => {
-                                console.log(error);
+                                //console.debug(error);
                             });
                     }
                 }
                 cb();
             })
             .catch((err: any) => {
-                console.log(err);
+                console.debug(err);
                 cb();
             });
     };
@@ -222,20 +220,20 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
 
 function _scrapeBlockToDB(block: number): any {
     return (cb: () => void) => {
-        console.log('Fetching block ' + block);
+        //console.debug('Fetching block ' + block);
         scrapeDataScripts
             .getBlockInfo(block)
             .then((data: any) => {
                 const parsedBlock = typeConverters.convertLogBlockToBlockObject(data);
-                console.log('Inserting block ' + block);
+                //console.debug('Inserting block ' + block);
                 insertDataScripts
                     .insertSingleRow('blocks', parsedBlock)
                     .then((result: any) => {
-                        console.log('Successfully inserted block ' + block);
+                        //console.debug('Successfully inserted block ' + block);
                         cb();
                     })
                     .catch((err: any) => {
-                        console.log(err);
+                        //console.debug(err);
                         cb();
                     });
             })
@@ -250,19 +248,19 @@ function _scrapeAllRelayersToDB(): any {
         airtableBase(AIRTABLE_RELAYER_INFO)
         .select()
         .eachPage((records: any, fetchNextPage: () => void) => {
-            console.log(records);
+            //console.debug(records);
             const parsedRelayers: any[] = [];
             for(const record of records) {
                 parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(record));
             }
             insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(parsedRelayers[0]))
             .then((result: any) => {
-                console.log("Inserted " + parsedRelayers.length + " relayers");
+                //console.debug("Inserted " + parsedRelayers.length + " relayers");
                 cb();
             })
             .catch((err: any) => {
-                console.error("Failed to insert relayers ");
-                console.error(err);
+                //console.error("Failed to insert relayers ");
+                //console.error(err);
                 cb();
             });
         })
@@ -274,21 +272,21 @@ function _scrapeAllRelayersToDB(): any {
 
 function _scrapeTransactionToDB(transactionHash: string): any {
     return (cb: () => void) => {
-        console.log("Fetching transaction " + transactionHash);
+        //console.debug("Fetching transaction " + transactionHash);
         scrapeDataScripts
             .getTransactionInfo(transactionHash)
             .then((data: any) => {
                 const parsedTransaction = typeConverters.convertLogTransactionToTransactionObject(data);
-                console.log("Inserting transaction " + transactionHash);
+                //console.debug("Inserting transaction " + transactionHash);
                 insertDataScripts
                     .insertSingleRow('transactions', parsedTransaction)
                     .then((result: any) => {
-                        console.log('Inserted txn ' + transactionHash);
+                        //console.debug('Inserted txn ' + transactionHash);
                         cb();
                     })
                     .catch((err: any) => {
-                        console.log('Failed txn ' + transactionHash);
-                        console.log(err);
+                        //console.debug('Failed txn ' + transactionHash);
+                        //console.debug(err);
                         cb();
                     });
             })
@@ -328,13 +326,13 @@ function _scrapePriceToDB(timestamp: number, token: any): any {
                     base: 'USD',
                     price: (_.has(data[safeSymbol],'USD') ? data[safeSymbol]['USD'] : 0),
                 };
-                console.log("Inserting " + timestamp);
-                console.log(parsedPrice);
+                console.debug("Inserting " + timestamp);
+                console.debug(parsedPrice);
                 insertDataScripts.insertSingleRow('prices', parsedPrice);
                 cb();
             })
             .catch((err: any) => {
-                console.log(err);
+                console.debug(err);
                 cb();
             });
     };
@@ -379,7 +377,7 @@ function _scrapeOrderBookToDB(id: string, sraEndpoint: string): any {
             .then((data: any) => {
                 for(const book of data) {
                     for(const order of book.bids) {
-                        console.log(order)
+                        console.debug(order)
                         const parsedOrder = typeConverters.convertLogOrderToOrderObject(order);
                         parsedOrder.relayer_id = id;
                         parsedOrder.order_hash = ZeroEx.getOrderHashHex(order);
@@ -389,7 +387,7 @@ function _scrapeOrderBookToDB(id: string, sraEndpoint: string): any {
                         });
                     }
                     for(const order of book.asks) {
-                        console.log(order)
+                        console.debug(order)
                         const parsedOrder = typeConverters.convertLogOrderToOrderObject(order);
                         parsedOrder.relayer_id = id;
                         parsedOrder.order_hash = ZeroEx.getOrderHashHex(order);
@@ -439,7 +437,7 @@ if (cli.type === 'events') {
                     }
                 })
                 .catch((err: any) => {
-                    console.log(err);
+                    console.debug(err);
                 });
         }
     }
@@ -457,32 +455,32 @@ if (cli.type === 'events') {
                 }
             })
             .catch((err: any) => {
-                console.log(err);
+                console.debug(err);
             });
     }
 } else if (cli.type === 'tokens') {
     q.push(_scrapeTokenRegistryToDB());
 } else if (cli.type === 'prices' && cli.from && cli.to) {
     const fromDate = new Date(cli.from);
-    console.log(fromDate);
+    console.debug(fromDate);
     fromDate.setUTCHours(0);
     fromDate.setUTCMinutes(0);
     fromDate.setUTCSeconds(0);
     fromDate.setUTCMilliseconds(0);
-    console.log(fromDate);
+    console.debug(fromDate);
     const toDate = new Date(cli.to);
     postgresClient
         .query(dataFetchingQueries.get_token_registry, [])
         .then((result: any) => {
             for (let curDate = fromDate; curDate < toDate; curDate.setDate(curDate.getDate() + 1)) {
                 for (const token of Object.values(result.rows)) {
-                    console.log("Scraping " + curDate + " " + token);
+                    console.debug("Scraping " + curDate + " " + token);
                     q.push(_scrapePriceToDB(curDate.getTime(), token));
                 }
             }
         })
         .catch((err: any) => {
-            console.log(err);
+            console.debug(err);
         });
 } else if (cli.type === 'historical_prices') {
     if (cli.token && cli.from && cli.to) {
@@ -495,12 +493,12 @@ if (cli.type === 'events') {
             .then((result: any) => {
                 const curTokens: any = result.rows.map((a: any): any => a.symbol);
                 for (const curToken of curTokens) {
-                    console.log('Historical data backfill: Pushing coin ' + curToken);
+                    console.debug('Historical data backfill: Pushing coin ' + curToken);
                     q.push(_scrapeHistoricalPricesToDB(curToken, cli.from, cli.to));
                 }
             })
             .catch((err: any) => {
-                console.log(err);
+                console.debug(err);
             });
     }
 } else if(cli.type === 'relayers') {
