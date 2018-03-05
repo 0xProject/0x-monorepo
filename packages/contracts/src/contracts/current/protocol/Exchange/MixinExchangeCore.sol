@@ -44,23 +44,23 @@ contract MixinExchangeCore is
     mapping (bytes32 => uint256) public cancelled;
     
     event LogFill(
-        address indexed maker,
-        address taker,
-        address indexed feeRecipient,
-        address makerToken,
-        address takerToken,
+        address indexed makerAddress,
+        address takerAddress,
+        address indexed feeRecipientAddress,
+        address makerTokenAddress,
+        address takerTokenAddress,
         uint256 makerTokenFilledAmount,
         uint256 takerTokenFilledAmount,
-        uint256 makerFeePaid,
-        uint256 takerFeePaid,
+        uint256 makerFeeAmountPaid,
+        uint256 takerFeeAmountPaid,
         bytes32 indexed orderHash
     );
 
     event LogCancel(
-        address indexed maker,
-        address indexed feeRecipient,
-        address makerToken,
-        address takerToken,
+        address indexed makerAddress,
+        address indexed feeRecipientAddress,
+        address makerTokenAddress,
+        address takerTokenAddress,
         uint256 makerTokenCancelledAmount,
         uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
@@ -90,17 +90,17 @@ contract MixinExchangeCore is
         if (filled[orderHash] == 0 && cancelled[orderHash] == 0) {
             require(order.makerTokenAmount > 0);
             require(order.takerTokenAmount > 0);
-            require(isValidSignature(orderHash, order.maker, signature));
+            require(isValidSignature(orderHash, order.makerAddress, signature));
         }
         
         // Validate taker
-        if (order.taker != address(0)) {
-            require(order.taker == msg.sender);
+        if (order.takerAddress != address(0)) {
+            require(order.takerAddress == msg.sender);
         }
         require(takerTokenFillAmount > 0);
 
         // Validate order expiration
-        if (block.timestamp >= order.expirationTimestampInSec) {
+        if (block.timestamp >= order.expirationTimeSeconds) {
             LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
             return 0;
         }
@@ -123,20 +123,20 @@ contract MixinExchangeCore is
         filled[orderHash] = safeAdd(filled[orderHash], takerTokenFilledAmount);
         
         // Settle order
-        var (makerTokenFilledAmount, makerFeePaid, takerFeePaid) =
+        var (makerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid) =
             settleOrder(order, msg.sender, takerTokenFilledAmount);
         
         // Log order
         LogFill(
-            order.maker,
+            order.makerAddress,
             msg.sender,
-            order.feeRecipient,
-            order.makerToken,
-            order.takerToken,
+            order.feeRecipientAddress,
+            order.makerTokenAddress,
+            order.takerTokenAddress,
             makerTokenFilledAmount,
             takerTokenFilledAmount,
-            makerFeePaid,
-            takerFeePaid,
+            makerFeeAmountPaid,
+            takerFeeAmountPaid,
             orderHash
         );
         return takerTokenFilledAmount;
@@ -159,9 +159,9 @@ contract MixinExchangeCore is
         require(order.makerTokenAmount > 0);
         require(order.takerTokenAmount > 0);
         require(takerTokenCancelAmount > 0);
-        require(order.maker == msg.sender);
+        require(order.makerAddress == msg.sender);
         
-        if (block.timestamp >= order.expirationTimestampInSec) {
+        if (block.timestamp >= order.expirationTimeSeconds) {
             LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
             return 0;
         }
@@ -176,10 +176,10 @@ contract MixinExchangeCore is
         cancelled[orderHash] = safeAdd(cancelled[orderHash], takerTokenCancelledAmount);
         
         LogCancel(
-            order.maker,
-            order.feeRecipient,
-            order.makerToken,
-            order.takerToken,
+            order.makerAddress,
+            order.feeRecipientAddress,
+            order.makerTokenAddress,
+            order.takerTokenAddress,
             getPartialAmount(takerTokenCancelledAmount, order.takerTokenAmount, order.makerTokenAmount),
             takerTokenCancelledAmount,
             orderHash

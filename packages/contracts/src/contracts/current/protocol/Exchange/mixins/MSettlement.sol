@@ -30,8 +30,8 @@ contract MSettlement is LibOrder {
         internal
         returns (
             uint256 makerTokenFilledAmount,
-            uint256 makerFeePaid,
-            uint256 takerFeePaid
+            uint256 makerFeeAmountPaid,
+            uint256 takerFeeAmountPaid
         );
 
 }
