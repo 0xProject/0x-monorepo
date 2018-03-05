@@ -10,6 +10,14 @@ We have written up a [Wiki](https://0xproject.com/wiki#Web3-Provider-Examples) a
 yarn add @0xproject/subproviders
 ```
 
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```
+"include": [
+    "./node_modules/web3-typescript-typings/index.d.ts",
+]
+```
+
 ## Usage
 
 Simply import the subprovider you are interested in using:

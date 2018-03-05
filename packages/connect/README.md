@@ -8,6 +8,14 @@ This repository contains a Javascript library that makes it easy to interact wit
 yarn add @0xproject/connect
 ```
 
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```
+"include": [
+    "./node_modules/web3-typescript-typings/index.d.ts",
+]
+```
+
 ## Usage
 
 *   [Docs](https://0xproject.com/docs/connect)
