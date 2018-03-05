@@ -1,4 +1,13 @@
-import { HeaderSizes, Styles } from '@0xproject/react-shared';
+import {
+    colors,
+    constants as sharedConstants,
+    HeaderSizes,
+    MarkdownSection,
+    NestedSidebarMenu,
+    SectionHeader,
+    Styles,
+    utils as sharedUtils,
+} from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -6,12 +15,8 @@ import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { scroller } from 'react-scroll';
 import { TopBar } from 'ts/components/top_bar/top_bar';
-import { MarkdownSection } from 'ts/pages/shared/markdown_section';
-import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
-import { SectionHeader } from 'ts/pages/shared/section_header';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Article, ArticlesBySection, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -136,11 +141,11 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                                 }}
                             >
                                 <div
-                                    id={configs.SCROLL_CONTAINER_ID}
+                                    id={sharedConstants.SCROLL_CONTAINER_ID}
                                     style={{ ...mainContainersStyle, overflow: 'auto' }}
                                     className="absolute"
                                 >
-                                    <div id={configs.SCROLL_TOP_ID} />
+                                    <div id={sharedConstants.SCROLL_TOP_ID} />
                                     <div id="wiki" style={{ paddingRight: 2 }}>
                                         {this._renderWikiArticles()}
                                     </div>
@@ -215,7 +220,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                 async () => {
                     await utils.onPageLoadAsync();
                     const hash = this.props.location.hash.slice(1);
-                    utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
+                    sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
                 },
             );
         }

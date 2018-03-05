@@ -1,10 +1,10 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 
 interface ProviderPickerProps {

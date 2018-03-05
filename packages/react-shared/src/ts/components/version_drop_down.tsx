@@ -2,14 +2,15 @@ import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
-import { utils } from 'ts/utils/utils';
 
-interface VersionDropDownProps {
+import { utils } from '../utils/utils';
+
+export interface VersionDropDownProps {
     selectedVersion: string;
     versions: string[];
 }
 
-interface VersionDropDownState {}
+export interface VersionDropDownState {}
 
 export class VersionDropDown extends React.Component<VersionDropDownProps, VersionDropDownState> {
     public render() {

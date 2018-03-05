@@ -2,12 +2,12 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as HighLight from 'react-highlight';
 
-interface MarkdownCodeBlockProps {
+export interface MarkdownCodeBlockProps {
     value: string;
     language: string;
 }
 
-interface MarkdownCodeBlockState {}
+export interface MarkdownCodeBlockState {}
 
 export class MarkdownCodeBlock extends React.Component<MarkdownCodeBlockProps, MarkdownCodeBlockState> {
     // Re-rendering a codeblock causes any use selection to become de-selected. This is annoying when trying

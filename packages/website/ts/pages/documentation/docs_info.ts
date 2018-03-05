@@ -1,3 +1,4 @@
+import { MenuSubsectionsBySection } from '@0xproject/react-shared';
 import compareVersions = require('compare-versions');
 import * as _ from 'lodash';
 import {
@@ -6,7 +7,6 @@ import {
     DocsInfoConfig,
     DocsMenu,
     DoxityDocObj,
-    MenuSubsectionsBySection,
     SectionsMap,
     SupportedDocJson,
     TypeDocNode,

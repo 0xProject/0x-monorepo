@@ -1,15 +1,18 @@
-import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared';
 import * as React from 'react';
 import { Element as ScrollElement } from 'react-scroll';
-import { colors } from 'ts/utils/colors';
-import { utils } from 'ts/utils/utils';
 
-interface SectionHeaderProps {
+import { HeaderSizes } from '../types';
+import { colors } from '../utils/colors';
+import { utils } from '../utils/utils';
+
+import { AnchorTitle } from './anchor_title';
+
+export interface SectionHeaderProps {
     sectionName: string;
     headerSize?: HeaderSizes;
 }
 
-interface SectionHeaderState {
+export interface SectionHeaderState {
     shouldShowAnchor: boolean;
 }
 

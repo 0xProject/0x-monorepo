@@ -1,10 +1,9 @@
-import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared';
+import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { Type } from 'ts/pages/documentation/type';
 import { Event, EventArg } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 
 interface EventDefinitionProps {
     event: Event;

@@ -1,4 +1,4 @@
-import { Styles } from '@0xproject/react-shared';
+import { colors, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
@@ -7,7 +7,6 @@ import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Question } from 'ts/pages/faq/question';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { FAQQuestion, FAQSection, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';

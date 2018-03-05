@@ -1,10 +1,10 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrs, Networks } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 

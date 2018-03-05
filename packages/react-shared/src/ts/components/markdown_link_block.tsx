@@ -1,14 +1,14 @@
-import { utils as sharedUtils } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { configs } from 'ts/utils/configs';
-import { utils } from 'ts/utils/utils';
 
-interface MarkdownLinkBlockProps {
+import { constants } from '../utils/constants';
+import { utils } from '../utils/utils';
+
+export interface MarkdownLinkBlockProps {
     href: string;
 }
 
-interface MarkdownLinkBlockState {}
+export interface MarkdownLinkBlockState {}
 
 export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, MarkdownLinkBlockState> {
     // Re-rendering a linkBlock causes it to remain unclickable.
@@ -41,7 +41,7 @@ export class MarkdownLinkBlock extends React.Component<MarkdownLinkBlockProps, M
     }
     private _onHashUrlClick(href: string) {
         const hash = href.split('#')[1];
-        utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
-        sharedUtils.setUrlHash(hash);
+        utils.scrollToHash(hash, constants.SCROLL_CONTAINER_ID);
+        utils.setUrlHash(hash);
     }
 }

@@ -1,4 +1,13 @@
-import { Styles } from '@0xproject/react-shared';
+import {
+    colors,
+    constants as sharedConstants,
+    MarkdownSection,
+    MenuSubsectionsBySection,
+    NestedSidebarMenu,
+    SectionHeader,
+    Styles,
+    utils as sharedUtils,
+} from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
@@ -11,16 +20,12 @@ import { MethodBlock } from 'ts/pages/documentation/method_block';
 import { SourceLink } from 'ts/pages/documentation/source_link';
 import { Type } from 'ts/pages/documentation/type';
 import { TypeDefinition } from 'ts/pages/documentation/type_definition';
-import { MarkdownSection } from 'ts/pages/shared/markdown_section';
-import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
-import { SectionHeader } from 'ts/pages/shared/section_header';
 import {
     AddressByContractName,
     DocAgnosticFormat,
     DoxityDocObj,
     EtherscanLinkSuffixes,
     Event,
-    MenuSubsectionsBySection,
     Networks,
     Property,
     SolidityMethod,
@@ -28,8 +33,6 @@ import {
     TypeDefinitionByName,
     TypescriptMethod,
 } from 'ts/types';
-import { colors } from 'ts/utils/colors';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
@@ -77,7 +80,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
     public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = this.props.location.hash.slice(1);
-            utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
+            sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
         }
     }
     public render() {
@@ -117,11 +120,11 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                 style={{ backgroundColor: colors.white }}
                             >
                                 <div
-                                    id={configs.SCROLL_CONTAINER_ID}
+                                    id={sharedConstants.SCROLL_CONTAINER_ID}
                                     style={styles.mainContainers}
                                     className="absolute px1"
                                 >
-                                    <div id={configs.SCROLL_TOP_ID} />
+                                    <div id={sharedConstants.SCROLL_TOP_ID} />
                                     {this._renderDocumentation()}
                                 </div>
                             </div>

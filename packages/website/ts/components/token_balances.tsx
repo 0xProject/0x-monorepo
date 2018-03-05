@@ -1,5 +1,5 @@
 import { ZeroEx } from '0x.js';
-import { Styles } from '@0xproject/react-shared';
+import { colors, Styles } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import DharmaLoanFrame from 'dharma-loan-frame';
 import * as _ from 'lodash';
@@ -34,7 +34,6 @@ import {
     TokenByAddress,
     TokenVisibility,
 } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';

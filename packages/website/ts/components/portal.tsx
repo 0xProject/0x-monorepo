@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -24,7 +25,6 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';

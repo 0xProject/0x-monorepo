@@ -447,10 +447,6 @@ export interface S3FileObject {
     };
 }
 
-export interface MenuSubsectionsBySection {
-    [section: string]: string[];
-}
-
 export enum ProviderType {
     Injected = 'INJECTED',
     Ledger = 'LEDGER',

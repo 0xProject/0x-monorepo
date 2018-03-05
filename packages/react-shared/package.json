@@ -7,6 +7,7 @@
   "scripts": {
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
     "build": "tsc",
+    "build:watch": "tsc -w",
     "clean": "shx rm -rf lib"
   },
   "author": "Fabio Berger",
@@ -29,6 +30,7 @@
     "react-dom": "15.6.1",
     "lodash": "^4.17.4",
     "react-scroll": "^1.5.2",
-    "react-tap-event-plugin": "^2.0.1"
+    "react-tap-event-plugin": "^2.0.1",
+    "react-highlight": "0xproject/react-highlight"
   }
 }

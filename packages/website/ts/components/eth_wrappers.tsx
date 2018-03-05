@@ -1,4 +1,5 @@
 import { ZeroEx } from '0x.js';
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
@@ -17,7 +18,6 @@ import {
     TokenByAddress,
     TokenState,
 } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';

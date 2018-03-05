@@ -1,14 +1,16 @@
-import { constants, Styles, utils as sharedUtils } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
-import { VersionDropDown } from 'ts/pages/shared/version_drop_down';
-import { MenuSubsectionsBySection } from 'ts/types';
-import { colors } from 'ts/utils/colors';
-import { utils } from 'ts/utils/utils';
 
-interface NestedSidebarMenuProps {
+import { MenuSubsectionsBySection, Styles } from '../types';
+import { colors } from '../utils/colors';
+import { constants } from '../utils/constants';
+import { utils } from '../utils/utils';
+
+import { VersionDropDown } from './version_drop_down';
+
+export interface NestedSidebarMenuProps {
     topLevelMenu: { [topLevel: string]: string[] };
     menuSubsectionsBySection: MenuSubsectionsBySection;
     title: string;
@@ -18,7 +20,7 @@ interface NestedSidebarMenuProps {
     versions?: string[];
 }
 
-interface NestedSidebarMenuState {}
+export interface NestedSidebarMenuState {}
 
 const styles: Styles = {
     menuItemWithHeaders: {
@@ -171,7 +173,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     }
     private _onMenuItemClick(name: string): void {
         const id = utils.getIdFromName(name);
-        sharedUtils.setUrlHash(id);
+        utils.setUrlHash(id);
         this.props.onMenuItemClick();
     }
 }

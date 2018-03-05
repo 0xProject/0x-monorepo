@@ -1,7 +1,7 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 
 const COMPLETE_STATE_SHOW_LENGTH_MS = 2000;

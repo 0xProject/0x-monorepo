@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -6,7 +7,6 @@ import { Blockchain } from 'ts/blockchain';
 import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
 import { Side, Token } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 
 interface EthWethConversionDialogProps {
     blockchain: Blockchain;

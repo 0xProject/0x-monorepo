@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -11,7 +12,6 @@ import { NetworkDropDown } from 'ts/components/dropdowns/network_drop_down';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';

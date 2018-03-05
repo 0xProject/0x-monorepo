@@ -1,8 +1,7 @@
-import { Styles } from '@0xproject/react-shared';
+import { colors, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { ProfileInfo } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 
 const IMAGE_DIMENSION = 149;
 const styles: Styles = {

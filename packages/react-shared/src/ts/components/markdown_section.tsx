@@ -1,22 +1,25 @@
-import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Element as ScrollElement } from 'react-scroll';
-import { MarkdownCodeBlock } from 'ts/pages/shared/markdown_code_block';
-import { MarkdownLinkBlock } from 'ts/pages/shared/markdown_link_block';
-import { colors } from 'ts/utils/colors';
-import { utils } from 'ts/utils/utils';
 
-interface MarkdownSectionProps {
+import { HeaderSizes } from '../types';
+import { colors } from '../utils/colors';
+import { utils } from '../utils/utils';
+
+import { AnchorTitle } from './anchor_title';
+import { MarkdownCodeBlock } from './markdown_code_block';
+import { MarkdownLinkBlock } from './markdown_link_block';
+
+export interface MarkdownSectionProps {
     sectionName: string;
     markdownContent: string;
     headerSize?: HeaderSizes;
     githubLink?: string;
 }
 
-interface MarkdownSectionState {
+export interface MarkdownSectionState {
     shouldShowAnchor: boolean;
 }
 

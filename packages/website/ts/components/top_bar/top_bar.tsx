@@ -1,4 +1,4 @@
-import { Styles } from '@0xproject/react-shared';
+import { colors, MenuSubsectionsBySection, NestedSidebarMenu, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';
@@ -13,10 +13,8 @@ import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, DocsMenu, Key, MenuSubsectionsBySection, ProviderType, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
+import { Deco, DocsMenu, Key, ProviderType, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 

@@ -1,4 +1,5 @@
 import { ZeroEx } from '0x.js';
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
@@ -8,7 +9,6 @@ import * as ReactTooltip from 'react-tooltip';
 import { EtherScanIcon } from 'ts/components/ui/etherscan_icon';
 import { Party } from 'ts/components/ui/party';
 import { EtherscanLinkSuffixes, Fill, Token, TokenByAddress } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 
 const PRECISION = 5;
 const IDENTICON_DIAMETER = 40;

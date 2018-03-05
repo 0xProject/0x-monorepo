@@ -7,3 +7,7 @@ export enum HeaderSizes {
     H2 = 'h2',
     H3 = 'h3',
 }
+
+export interface MenuSubsectionsBySection {
+    [section: string]: string[];
+}
