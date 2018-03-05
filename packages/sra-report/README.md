@@ -13,7 +13,7 @@ sra-report
 Options:
   --help               Show help                                       [boolean]
   --version            Show version number                             [boolean]
-  --url, -u            API endpoint to test for standard relayer API compliance
+  --endpoint-url, -e            API endpoint url to test for standard relayer API compliance
                                                              [string] [required]
   --output, -o, --out  Folder where to write the reports                [string]
   --network-id, -n     ID of the network that the API is serving orders from

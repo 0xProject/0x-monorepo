@@ -19,9 +19,9 @@ const SUPPORTED_NETWORK_IDS = [1, 42];
 
 // extract command line arguments
 const args = yargs
-    .option('url', {
-        alias: ['u'],
-        describe: 'API endpoint to test for standard relayer API compliance',
+    .option('endpoint-url', {
+        alias: ['e'],
+        describe: 'API endpoint url to test for standard relayer API compliance',
         type: 'string',
         demandOption: true,
     })
@@ -38,13 +38,13 @@ const args = yargs
         type: 'number',
         default: DEFAULT_NETWORK_ID,
     })
-    .example("$0 --url 'http://api.example.com' --out 'src/contracts/generated/' --network-id 42", 'Full usage example')
+    .example("$0 --endpoint-url 'http://api.example.com' --out 'src/contracts/generated/' --network-id 42", 'Full usage example')
     .argv;
 // perform extra validation on command line arguments
 try {
-    assert.isWebUri('args', args.url);
+    assert.isWebUri('args', args.endpointUrl);
 } catch (err) {
-    utils.log(`${chalk.red(`Invalid url format:`)} ${args.url}`);
+    utils.log(`${chalk.red(`Invalid url format:`)} ${args.endpointUrl}`);
     process.exit(1);
 }
 if (!_.includes(SUPPORTED_NETWORK_IDS, args.networkId)) {
@@ -54,7 +54,7 @@ if (!_.includes(SUPPORTED_NETWORK_IDS, args.networkId)) {
 }
 
 const mainAsync = async () => {
-    const httpClient = new HttpClient(args.url);
+    const httpClient = new HttpClient(args.endpointUrl);
     const orders = await httpClient.getOrdersAsync();
     const firstOrder = _.head(orders);
     if (_.isUndefined(firstOrder)) {
@@ -62,7 +62,7 @@ const mainAsync = async () => {
     }
     const newmanEnvironmentOptions = {
         collection: sraReportCollectionJSON,
-        globals: postmanEnvironmentFactory.createGlobalEnvironment(args.url, firstOrder),
+        globals: postmanEnvironmentFactory.createGlobalEnvironment(args.endpointUrl, firstOrder),
         environment: postmanEnvironmentFactory.createNetworkEnvironment(args.networkId),
     };
     const newmanReporterOptions = !_.isUndefined(args.output)
