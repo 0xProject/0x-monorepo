@@ -15,26 +15,26 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/0xProject/0x.js.git"
+        "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/abi-gen/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-report/README.md",
     "dependencies": {
-        "0x.js": "^0.32.4",
-        "@0xproject/assert": "^0.0.20",
-        "@0xproject/connect": "^0.6.1",
-        "@0xproject/json-schemas": "^0.7.12",
-        "@0xproject/utils": "^0.3.4",
+        "0x.js": "^0.33.0",
+        "@0xproject/assert": "^0.1.0",
+        "@0xproject/connect": "^0.6.2",
+        "@0xproject/json-schemas": "^0.7.13",
+        "@0xproject/utils": "^0.4.0",
         "chalk": "^2.3.0",
         "lodash": "^4.17.4",
         "newman": "^3.9.3",
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/tslint-config": "^0.4.10",
         "@types/lodash": "^4.14.86",
         "@types/node": "^8.0.53",
         "@types/yargs": "^10.0.0",
