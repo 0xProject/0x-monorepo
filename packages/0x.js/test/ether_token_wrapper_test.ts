@@ -26,7 +26,8 @@ import { TokenUtils } from './utils/token_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(web3);
 
 // Since the address depositing/withdrawing ETH/WETH also needs to pay gas costs for the transaction,
 // a small amount of ETH will be used to pay this gas cost. We therefore check that the difference between
@@ -35,7 +36,6 @@ const blockchainLifecycle = new BlockchainLifecycle();
 const MAX_REASONABLE_GAS_COST_IN_WEI = 62517;
 
 describe('EtherTokenWrapper', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let tokens: Token[];
     let userAddresses: string[];
@@ -54,7 +54,6 @@ describe('EtherTokenWrapper', () => {
     const depositAmount = new BigNumber(42);
     const withdrawalAmount = new BigNumber(42);
     before(async () => {
-        web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         userAddresses = await zeroEx.getAvailableAddressesAsync();

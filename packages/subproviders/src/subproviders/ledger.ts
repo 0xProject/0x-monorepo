@@ -5,7 +5,7 @@ import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
 import * as _ from 'lodash';
 import Semaphore from 'semaphore-async-await';
-import Web3 = require('web3');
+import * as Web3 from 'web3';
 
 import {
     LedgerEthereumClient,
@@ -147,7 +147,7 @@ export class LedgerSubprovider extends Subprovider {
         hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
         hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
 
-        const accounts = [];
+        const accounts: string[] = [];
         for (let i = 0; i < numberOfAccounts; i++) {
             const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
             const derivedPublicKey = derivedHDNode.publicKey;

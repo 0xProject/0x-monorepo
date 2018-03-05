@@ -134,3 +134,18 @@ declare module 'hdkey' {
     }
     export = HDNode;
 }
+
+// hdkey declarations
+declare module 'ganache-core' {
+    import * as Web3 from 'web3';
+    export interface GanacheOpts {
+        verbose: boolean;
+        logger: {
+            log(msg: string): void;
+        };
+        port: number;
+        networkId: number;
+        mnemonic: string;
+    }
+    export function provider(opts: GanacheOpts): Web3.Provider;
+}

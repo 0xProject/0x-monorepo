@@ -32,37 +32,6 @@ async function onCompileCommand(argv: CliOptions): Promise<void> {
     await commands.compileAsync(opts);
 }
 /**
- * Compiles all contracts and runs migration script with options passed in through CLI.
- * Uses network ID of running node.
- * @param argv Instance of process.argv provided by yargs.
- */
-async function onMigrateCommand(argv: CliOptions): Promise<void> {
-    const url = `http://localhost:${argv.jsonrpcPort}`;
-    const web3Provider = new Web3.providers.HttpProvider(url);
-    const web3Wrapper = new Web3Wrapper(web3Provider);
-    const networkId = await web3Wrapper.getNetworkIdAsync();
-    const compilerOpts: CompilerOptions = {
-        contractsDir: argv.contractsDir,
-        networkId,
-        optimizerEnabled: argv.shouldOptimize ? 1 : 0,
-        artifactsDir: argv.artifactsDir,
-        specifiedContracts: getContractsSetFromList(argv.contracts),
-    };
-    await commands.compileAsync(compilerOpts);
-
-    const defaults = {
-        gasPrice: new BigNumber(argv.gasPrice),
-        from: argv.account,
-    };
-    const deployerOpts = {
-        artifactsDir: argv.artifactsDir,
-        jsonrpcPort: argv.jsonrpcPort,
-        networkId,
-        defaults,
-    };
-    await commands.migrateAsync(deployerOpts);
-}
-/**
  * Deploys a single contract with provided name and args.
  * @param argv Instance of process.argv provided by yargs.
  */
@@ -171,12 +140,6 @@ function deployCommandBuilder(yargsInstance: any) {
             description: 'comma separated list of contracts to compile',
         })
         .command('compile', 'compile contracts', identityCommandBuilder, onCompileCommand)
-        .command(
-            'migrate',
-            'compile and deploy contracts using migration scripts',
-            identityCommandBuilder,
-            onMigrateCommand,
-        )
         .command('deploy', 'deploy a single contract with provided arguments', deployCommandBuilder, onDeployCommand)
         .help().argv;
 })();

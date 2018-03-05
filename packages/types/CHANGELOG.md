@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.4.0 - _TBD, 2018_
+
+    * Remove `JSONRPCPayload` (#426)
+
 ## v0.3.1 - _March 8, 2018_
 
     * Added `RawLogEntry` type.

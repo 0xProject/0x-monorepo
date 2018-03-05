@@ -1,9 +1,11 @@
 import * as chai from 'chai';
+import * as fs from 'fs';
 import * as _ from 'lodash';
+import * as path from 'path';
 import Web3ProviderEngine = require('web3-provider-engine');
 import FixtureSubprovider = require('web3-provider-engine/subproviders/fixture');
 
-import promisify = require('es6-promisify');
+import { promisify } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 
 import { NonceTrackerSubprovider } from '../../src';
@@ -62,9 +64,9 @@ describe('NonceTrackerSubprovider', () => {
 
         const payload = { ...getTransactionCountPayload, params: ['0x0', 'pending'] };
 
-        const response = await promisify(provider.sendAsync, provider)(payload);
+        const response = await promisify<any>(provider.sendAsync, provider)(payload);
         expect(response.result).to.be.eq('0x00');
-        const secondResponse = await promisify(provider.sendAsync, provider)(payload);
+        const secondResponse = await promisify<any>(provider.sendAsync, provider)(payload);
         expect(secondResponse.result).to.be.eq('0x00');
     });
     it('does not cache the result for latest transaction count', async () => {
@@ -76,9 +78,9 @@ describe('NonceTrackerSubprovider', () => {
 
         const payload = { ...getTransactionCountPayload, params: ['0x0', 'latest'] };
 
-        const response = await promisify(provider.sendAsync, provider)(payload);
+        const response = await promisify<any>(provider.sendAsync, provider)(payload);
         expect(response.result).to.be.eq('0x00');
-        const secondResponse = await promisify(provider.sendAsync, provider)(payload);
+        const secondResponse = await promisify<any>(provider.sendAsync, provider)(payload);
         expect(secondResponse.result).to.be.eq('0x99');
     });
     it('clears the cache on a Nonce Too Low Error', async () => {
@@ -105,14 +107,14 @@ describe('NonceTrackerSubprovider', () => {
             params: [transaction.serialize()],
         };
 
-        const response = await promisify(provider.sendAsync, provider)(noncePayload);
+        const response = await promisify<any>(provider.sendAsync, provider)(noncePayload);
         expect(response.result).to.be.eq('0x00');
-        const secondResponse = await promisify(provider.sendAsync, provider)(noncePayload);
+        const secondResponse = await promisify<any>(provider.sendAsync, provider)(noncePayload);
         expect(secondResponse.result).to.be.eq('0x00');
         try {
             await promisify(provider.sendAsync, provider)(txPayload);
         } catch (err) {
-            const thirdResponse = await promisify(provider.sendAsync, provider)(noncePayload);
+            const thirdResponse = await promisify<any>(provider.sendAsync, provider)(noncePayload);
             expect(thirdResponse.result).to.be.eq('0x99');
         }
     });
@@ -140,12 +142,12 @@ describe('NonceTrackerSubprovider', () => {
             params: [transaction.serialize()],
         };
 
-        const response = await promisify(provider.sendAsync, provider)(noncePayload);
+        const response = await promisify<any>(provider.sendAsync, provider)(noncePayload);
         expect(response.result).to.be.eq('0x00');
-        const secondResponse = await promisify(provider.sendAsync, provider)(noncePayload);
+        const secondResponse = await promisify<any>(provider.sendAsync, provider)(noncePayload);
         expect(secondResponse.result).to.be.eq('0x00');
         await promisify(provider.sendAsync, provider)(txPayload);
-        const thirdResponse = await promisify(provider.sendAsync, provider)(noncePayload);
+        const thirdResponse = await promisify<any>(provider.sendAsync, provider)(noncePayload);
         expect(thirdResponse.result).to.be.eq('0x01');
     });
 });

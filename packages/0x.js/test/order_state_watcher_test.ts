@@ -27,10 +27,10 @@ const TIMEOUT_MS = 150;
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(web3);
 
 describe('OrderStateWatcher', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let tokens: Token[];
     let tokenUtils: TokenUtils;
@@ -49,7 +49,6 @@ describe('OrderStateWatcher', () => {
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = ZeroEx.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
-        web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
         exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();

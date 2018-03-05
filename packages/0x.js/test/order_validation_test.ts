@@ -17,10 +17,10 @@ import { TokenUtils } from './utils/token_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(web3);
 
 describe('OrderValidation', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let tokens: Token[];
@@ -40,7 +40,6 @@ describe('OrderValidation', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
         exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();

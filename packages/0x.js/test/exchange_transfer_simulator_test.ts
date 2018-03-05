@@ -12,10 +12,10 @@ import { constants } from './utils/constants';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(web3);
 
 describe('ExchangeTransferSimulator', () => {
-    const web3 = web3Factory.create();
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };

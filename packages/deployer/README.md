@@ -16,7 +16,6 @@ cli.js [command]
 
 Commands:
   cli.js compile  compile contracts
-  cli.js migrate  compile and deploy contracts using migration scripts
   cli.js deploy   deploy a single contract with provided arguments
 
 Options:

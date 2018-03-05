@@ -13,10 +13,10 @@ import { constants } from './utils/constants';
 import { assertNodeCallbackError } from './utils/report_callback_errors';
 
 chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle();
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(web3);
 
 describe('SubscriptionTest', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let tokens: Token[];
@@ -26,7 +26,6 @@ describe('SubscriptionTest', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();

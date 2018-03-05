@@ -151,6 +151,25 @@ declare module 'web3' {
             jsonrpc: string;
         }
 
+        export type OpCode = string; // TODO enum of all opcodes;
+
+        export interface StructLog {
+            depth: number;
+            error: '';
+            gas: number;
+            gasCost: number;
+            memory: string[];
+            op: OpCode;
+            pc: number;
+            stack: string[];
+            storage: { [location: string]: string };
+        }
+        export interface TransactionTrace {
+            gas: number;
+            returnValue: any;
+            structLogs: StructLog[];
+        }
+
         interface Provider {
             sendAsync(
                 payload: JSONRPCRequestPayload,

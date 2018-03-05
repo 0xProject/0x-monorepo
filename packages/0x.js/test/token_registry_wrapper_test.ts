@@ -11,7 +11,8 @@ import { constants } from './utils/constants';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(web3);
 
 const TOKEN_REGISTRY_SIZE_AFTER_MIGRATION = 7;
 
@@ -30,7 +31,6 @@ describe('TokenRegistryWrapper', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        const web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         _.map(tokens, token => {

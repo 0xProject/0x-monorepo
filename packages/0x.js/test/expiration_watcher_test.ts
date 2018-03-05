@@ -19,10 +19,10 @@ import { TokenUtils } from './utils/token_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(web3);
 
 describe('ExpirationWatcher', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let tokenUtils: TokenUtils;
     let tokens: Token[];
@@ -41,7 +41,6 @@ describe('ExpirationWatcher', () => {
     let timer: Sinon.SinonFakeTimers;
     let expirationWatcher: ExpirationWatcher;
     before(async () => {
-        web3 = web3Factory.create();
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
         };

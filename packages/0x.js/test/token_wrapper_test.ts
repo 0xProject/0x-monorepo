@@ -25,10 +25,10 @@ import { TokenUtils } from './utils/token_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const web3 = web3Factory.create();
+const blockchainLifecycle = new BlockchainLifecycle(web3);
 
 describe('TokenWrapper', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let userAddresses: string[];
     let tokens: Token[];
@@ -40,7 +40,6 @@ describe('TokenWrapper', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
         web3Wrapper = new Web3Wrapper(web3.currentProvider);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
@@ -194,7 +193,7 @@ describe('TokenWrapper', () => {
             let zeroExWithoutAccounts: ZeroEx;
             before(async () => {
                 const hasAddresses = false;
-                const web3WithoutAccounts = web3Factory.create(hasAddresses);
+                const web3WithoutAccounts = web3Factory.create({ hasAddresses });
                 zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should return balance even when called with Web3 provider instance without addresses', async () => {
@@ -306,7 +305,7 @@ describe('TokenWrapper', () => {
             let zeroExWithoutAccounts: ZeroEx;
             before(async () => {
                 const hasAddresses = false;
-                const web3WithoutAccounts = web3Factory.create(hasAddresses);
+                const web3WithoutAccounts = web3Factory.create({ hasAddresses });
                 zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should get the proxy allowance', async () => {
