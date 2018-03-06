@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Event, EventArg } from '../types';
 
-import { DocsInfo } from './docs_info';
+import { DocsInfo } from '../docs_info';
 import { Type } from './type';
 
 export interface EventDefinitionProps {

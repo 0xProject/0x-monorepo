@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { DocsInfo } from '../components/docs_info';
+import { DocsInfo } from '../docs_info';
 import {
     CustomType,
     CustomTypeChild,

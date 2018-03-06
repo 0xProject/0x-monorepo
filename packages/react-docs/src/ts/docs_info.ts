@@ -11,9 +11,9 @@ import {
     SectionsMap,
     SupportedDocJson,
     TypeDocNode,
-} from '../types';
-import { doxityUtils } from '../utils/doxity_utils';
-import { typeDocUtils } from '../utils/typedoc_utils';
+} from './types';
+import { doxityUtils } from './utils/doxity_utils';
+import { typeDocUtils } from './utils/typedoc_utils';
 
 export class DocsInfo {
     public id: string;

@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { CustomType, TypeDocTypes } from '../types';
 
-import { DocsInfo } from './docs_info';
+import { DocsInfo } from '../docs_info';
 import { MethodSignature } from './method_signature';
 import { Type } from './type';
 

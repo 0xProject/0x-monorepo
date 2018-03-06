@@ -7,7 +7,7 @@ import { utils } from '../utils/utils';
 
 import { Comment } from './comment';
 import { CustomEnum } from './custom_enum';
-import { DocsInfo } from './docs_info';
+import { DocsInfo } from '../docs_info';
 import { Enum } from './enum';
 import { Interface } from './interface';
 import { MethodSignature } from './method_signature';

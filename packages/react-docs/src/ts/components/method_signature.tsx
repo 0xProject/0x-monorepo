@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from '../types';
 import { constants } from '../utils/constants';
 
-import { DocsInfo } from './docs_info';
+import { DocsInfo } from '../docs_info';
 import { Type } from './type';
 
 export interface MethodSignatureProps {

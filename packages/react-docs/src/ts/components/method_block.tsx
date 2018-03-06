@@ -6,7 +6,7 @@ import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } fro
 import { typeDocUtils } from '../utils/typedoc_utils';
 
 import { Comment } from './comment';
-import { DocsInfo } from './docs_info';
+import { DocsInfo } from '../docs_info';
 import { MethodSignature } from './method_signature';
 import { SourceLink } from './source_link';
 

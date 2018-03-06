@@ -15,6 +15,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import { scroller } from 'react-scroll';
 
+import { DocsInfo } from '../docs_info';
 import {
     AddressByContractName,
     DocAgnosticFormat,
@@ -30,7 +31,6 @@ import { utils } from '../utils/utils';
 
 import { Badge } from './badge';
 import { Comment } from './comment';
-import { DocsInfo } from './docs_info';
 import { EventDefinition } from './event_definition';
 import { MethodBlock } from './method_block';
 import { SourceLink } from './source_link';

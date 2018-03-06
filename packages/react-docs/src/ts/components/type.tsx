@@ -8,7 +8,7 @@ import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
-import { DocsInfo } from './docs_info';
+import { DocsInfo } from '../docs_info';
 import { TypeDefinition } from './type_definition';
 
 // Some types reference other libraries. For these types, we want to link the user to the relevant documentation.

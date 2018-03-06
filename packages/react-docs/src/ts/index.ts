@@ -1,5 +1,5 @@
 export { Documentation } from './components/documentation';
-export { DocsInfo } from './components/docs_info';
+export { DocsInfo } from './docs_info';
 
 // Exported to give users of this library added flexibility if they want to build
 // a docs page from scratch using the individual components.
