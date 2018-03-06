@@ -54,35 +54,6 @@ declare module '@ledgerhq/hw-transport-u2f' {
     }
 }
 
-declare module 'ledgerco' {
-    interface comm {
-        close_async(): Promise<void>;
-    }
-    export class comm_node implements comm {
-        public static create_async(timeoutMilliseconds?: number): Promise<comm_node>;
-        public close_async(): Promise<void>;
-    }
-    export class comm_u2f implements comm {
-        public static create_async(): Promise<comm_u2f>;
-        public close_async(): Promise<void>;
-    }
-    export class eth {
-        public comm: comm;
-        constructor(comm: comm);
-        public getAddress_async(
-            path: string,
-            display?: boolean,
-            chaincode?: boolean,
-        ): Promise<{ publicKey: string; address: string; chainCode: string }>;
-        public signTransaction_async(path: string, rawTxHex: string): Promise<ECSignatureString>;
-        public getAppConfiguration_async(): Promise<{
-            arbitraryDataEnabled: number;
-            version: string;
-        }>;
-        public signPersonalMessage_async(path: string, messageHex: string): Promise<ECSignature>;
-    }
-}
-
 // Semaphore-async-await declarations
 declare module 'semaphore-async-await' {
     class Semaphore {

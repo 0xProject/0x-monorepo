@@ -25,13 +25,3 @@ export async function ledgerEthereumBrowserClientFactoryAsync(): Promise<LedgerE
     const ledgerEthClient = new LedgerEthereumClientFn(ledgerConnection);
     return ledgerEthClient;
 }
-
-// /**
-//  * A factory for creating a LedgerEthereumClient usable in a Node.js context.
-//  * @return LedgerEthereumClient A Node.js client
-//  */
-// export async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumClient> {
-//     const ledgerConnection = await LedgerNodeCommunication.create_async();
-//     const ledgerEthClient = new LedgerEthereumClientFn(ledgerConnection);
-//     return ledgerEthClient;
-// }
