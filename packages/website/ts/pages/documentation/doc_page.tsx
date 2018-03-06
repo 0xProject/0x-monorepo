@@ -15,11 +15,11 @@ import { Translate } from 'ts/utils/translate';
 
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
+const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
 const docIdToS3BucketName: { [id: string]: string } = {
-    [DocPackages.ZeroExJs]: '0xjs-docs-jsons',
+    [DocPackages.ZeroExJs]: isDevelopment ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons',
     [DocPackages.SmartContracts]: 'smart-contracts-docs-json',
-    [DocPackages.Connect]:
-        configs.ENVIRONMENT === Environments.DEVELOPMENT ? 'staging-connect-docs-jsons' : 'connect-docs-jsons',
+    [DocPackages.Connect]: isDevelopment ? 'staging-connect-docs-jsons' : 'connect-docs-jsons',
 };
 
 const docIdToSubpackageName: { [id: string]: string } = {
