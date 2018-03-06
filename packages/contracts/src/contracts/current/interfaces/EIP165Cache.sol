@@ -133,7 +133,7 @@ contract EIP165Cache is Ownable, IEIP165Cache {
             )
             
             // Load the output returndata
-            result := mload(x)
+            result := mload(free)
         }
     }
 }
