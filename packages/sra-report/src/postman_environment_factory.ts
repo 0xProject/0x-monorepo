@@ -86,7 +86,6 @@ async function createOrderEnvironmentValuesAsync(url: string) {
         ];
     }
 }
-
 function getContractAddresses(networkId: number) {
     switch (networkId) {
         case 1:
