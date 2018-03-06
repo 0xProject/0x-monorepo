@@ -42,10 +42,10 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "1b61aabb-ef9f-4269-9a0c-cb7559afcbd8",
+                                "id": "0b0712ff-7846-40a3-9253-4bca2551350c",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "const filterTokenEnvKey = 'WETH_address';",
+                                    "const filterTokenEnvKey = 'tokenContractAddress1';",
                                     "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Token pairs are properly filtered', function() {",
@@ -66,13 +66,13 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/token_pairs?tokenA={{WETH_address}}",
+                            "raw": "{{url}}/token_pairs?tokenA={{tokenContractAddress1}}",
                             "host": ["{{url}}"],
                             "path": ["token_pairs"],
                             "query": [
                                 {
                                     "key": "tokenA",
-                                    "value": "{{WETH_address}}",
+                                    "value": "{{tokenContractAddress1}}",
                                     "equals": true
                                 }
                             ]
@@ -87,10 +87,10 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "a5f946b1-fc97-4bcf-ae01-e0f97864a6c1",
+                                "id": "ef0e6be8-06d8-4975-a1c4-2199bc8b5aa6",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "const filterTokenEnvKey = 'WETH_address';",
+                                    "const filterTokenEnvKey = 'tokenContractAddress1';",
                                     "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Token pairs are properly filtered', function() {",
@@ -111,13 +111,13 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/token_pairs?tokenB={{WETH_address}}",
+                            "raw": "{{url}}/token_pairs?tokenB={{tokenContractAddress1}}",
                             "host": ["{{url}}"],
                             "path": ["token_pairs"],
                             "query": [
                                 {
                                     "key": "tokenB",
-                                    "value": "{{WETH_address}}",
+                                    "value": "{{tokenContractAddress1}}",
                                     "equals": true
                                 }
                             ]
@@ -132,11 +132,11 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bcd06e4f-aa3a-42f8-9f8c-bc902eb7a075",
+                                "id": "9ca4bed3-b8e0-4a90-96ba-42f0da3a7d68",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "const filterTokenAEnvKey = 'WETH_address';",
-                                    "const filterTokenBEnvKey = 'ZRX_address';",
+                                    "const filterTokenAEnvKey = 'tokenContractAddress1';",
+                                    "const filterTokenBEnvKey = 'tokenContractAddress2';",
                                     "const filterTokenAAddress = pm.environment.get(filterTokenAEnvKey);",
                                     "const filterTokenBAddress = pm.environment.get(filterTokenBEnvKey);",
                                     "const responseJsonData = pm.response.json();",
@@ -160,18 +160,19 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/token_pairs?tokenA={{WETH_address}}&tokenB={{ZRX_address}}",
+                            "raw":
+                                "{{url}}/token_pairs?tokenA={{tokenContractAddress1}}&tokenB={{tokenContractAddress2}}",
                             "host": ["{{url}}"],
                             "path": ["token_pairs"],
                             "query": [
                                 {
                                     "key": "tokenA",
-                                    "value": "{{WETH_address}}",
+                                    "value": "{{tokenContractAddress1}}",
                                     "equals": true
                                 },
                                 {
                                     "key": "tokenB",
-                                    "value": "{{ZRX_address}}",
+                                    "value": "{{tokenContractAddress2}}",
                                     "equals": true
                                 }
                             ]
@@ -244,10 +245,10 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "e782ae77-66bf-4096-9190-ef9e7501b316",
+                                "id": "374c4b28-5672-400c-8c23-9cb1a3e63117",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "const exchangeContractEnvKey = 'EXCHANGE_CONTRACT_address';",
+                                    "const exchangeContractEnvKey = 'exchangeContractAddress';",
                                     "const requestedExchangeContractAddress = pm.environment.get(exchangeContractEnvKey);",
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Orders are properly filtered', function() {",
@@ -266,13 +267,13 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/orders?exchangeContractAddress={{EXCHANGE_CONTRACT_address}}",
+                            "raw": "{{url}}/orders?exchangeContractAddress={{exchangeContractAddress}}",
                             "host": ["{{url}}"],
                             "path": ["orders"],
                             "query": [
                                 {
                                     "key": "exchangeContractAddress",
-                                    "value": "{{EXCHANGE_CONTRACT_address}}",
+                                    "value": "{{exchangeContractAddress}}",
                                     "equals": true
                                 }
                             ]
@@ -288,10 +289,10 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "1144a2d6-6175-40a6-8568-d0d3884492a1",
+                                "id": "e74a9069-18b9-42d3-b2d0-e18580ad73f2",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "const filterTokenEnvKey = 'ZRX_address';",
+                                    "const filterTokenEnvKey = 'tokenContractAddress2';",
                                     "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Orders are properly filtered', function() {",
@@ -314,13 +315,13 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/orders?tokenAddress={{ZRX_address}}",
+                            "raw": "{{url}}/orders?tokenAddress={{tokenContractAddress2}}",
                             "host": ["{{url}}"],
                             "path": ["orders"],
                             "query": [
                                 {
                                     "key": "tokenAddress",
-                                    "value": "{{ZRX_address}}",
+                                    "value": "{{tokenContractAddress2}}",
                                     "equals": true
                                 }
                             ]
@@ -336,10 +337,10 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "01eb5865-edec-4216-8a90-c36d790366fc",
+                                "id": "c539f306-aa03-495d-a90a-0179e1b751aa",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "const filterTokenEnvKey = 'ZRX_address';",
+                                    "const filterTokenEnvKey = 'tokenContractAddress2';",
                                     "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Orders are properly filtered', function() {",
@@ -358,13 +359,13 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/orders?makerTokenAddress={{ZRX_address}}",
+                            "raw": "{{url}}/orders?makerTokenAddress={{tokenContractAddress2}}",
                             "host": ["{{url}}"],
                             "path": ["orders"],
                             "query": [
                                 {
                                     "key": "makerTokenAddress",
-                                    "value": "{{ZRX_address}}",
+                                    "value": "{{tokenContractAddress2}}",
                                     "equals": true
                                 }
                             ]
@@ -380,10 +381,10 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "bbbb6e15-60c7-4666-96be-a0ad56b6058b",
+                                "id": "49b2fcaf-5fe2-471f-ae10-e48a440d4c6d",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "const filterTokenEnvKey = 'ZRX_address';",
+                                    "const filterTokenEnvKey = 'tokenContractAddress2';",
                                     "const filterTokenAddress = pm.environment.get(filterTokenEnvKey);",
                                     "const responseJsonData = pm.response.json();",
                                     "pm.test('Orders are properly filtered', function() {",
@@ -402,13 +403,13 @@
                         "header": [],
                         "body": {},
                         "url": {
-                            "raw": "{{url}}/orders?takerTokenAddress={{ZRX_address}}",
+                            "raw": "{{url}}/orders?takerTokenAddress={{tokenContractAddress2}}",
                             "host": ["{{url}}"],
                             "path": ["orders"],
                             "query": [
                                 {
                                     "key": "takerTokenAddress",
-                                    "value": "{{ZRX_address}}",
+                                    "value": "{{tokenContractAddress2}}",
                                     "equals": true
                                 }
                             ]
@@ -730,11 +731,11 @@
                         {
                             "listen": "test",
                             "script": {
-                                "id": "0198622e-9705-4ae1-b1f2-0c40b87de856",
+                                "id": "9ed05327-1a2f-4e50-b4aa-e21f961dbe78",
                                 "type": "text/javascript",
                                 "exec": [
-                                    "const baseTokenEnvKey = 'ZRX_address';",
-                                    "const quoteTokenEnvKey = 'WETH_address';",
+                                    "const baseTokenEnvKey = 'tokenContractAddress2';",
+                                    "const quoteTokenEnvKey = 'tokenContractAddress1';",
                                     "const baseTokenAddress = pm.environment.get(baseTokenEnvKey);",
                                     "const quoteTokenAddress = pm.environment.get(quoteTokenEnvKey);",
                                     "const responseJsonData = pm.response.json();",
@@ -765,18 +766,18 @@
                         "body": {},
                         "url": {
                             "raw":
-                                "{{url}}/orderbook?baseTokenAddress={{ZRX_address}}&quoteTokenAddress={{WETH_address}}",
+                                "{{url}}/orderbook?baseTokenAddress={{tokenContractAddress2}}&quoteTokenAddress={{tokenContractAddress1}}",
                             "host": ["{{url}}"],
                             "path": ["orderbook"],
                             "query": [
                                 {
                                     "key": "baseTokenAddress",
-                                    "value": "{{ZRX_address}}",
+                                    "value": "{{tokenContractAddress2}}",
                                     "equals": true
                                 },
                                 {
                                     "key": "quoteTokenAddress",
-                                    "value": "{{WETH_address}}",
+                                    "value": "{{tokenContractAddress1}}",
                                     "equals": true
                                 }
                             ]

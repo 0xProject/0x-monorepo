@@ -20,43 +20,12 @@ export const postmanEnvironmentFactory = {
      *  - Order properties for making specific queries (ex. maker=orderMaker)
      */
     async createPostmanEnvironmentAsync(url: string, networkId: number) {
-        const schemas: Schema[] = _.values(schemasByName);
-        const schemaEnvironmentValues = _.compact(
-            _.map(schemas, (schema: Schema) => {
-                if (_.isUndefined(schema.id)) {
-                    return undefined;
-                } else {
-                    const schemaKey = convertSchemaIdToKey(schema.id);
-                    const stringifiedSchema = JSON.stringify(schema);
-                    const schemaEnvironmentValue = createEnvironmentValue(schemaKey, stringifiedSchema);
-                    return schemaEnvironmentValue;
-                }
-            }),
-        );
-        const schemaKeys = _.map(schemaEnvironmentValues, (environmentValue: EnvironmentValue) => {
-            return environmentValue.key;
-        });
-        const contractAddresses = getContractAddresses(networkId);
-        const contractAddressEnvironmentValues = _.map(_.keys(contractAddresses), (key: string) => {
-            const contractAddress = _.get(contractAddresses, key);
-            return createEnvironmentValue(key, contractAddress);
-        });
-        const httpClient = new HttpClient(url);
-        const orders = await httpClient.getOrdersAsync();
-        const firstOrder = _.head(orders);
-        if (_.isUndefined(firstOrder)) {
-            throw new Error('Could not get any orders from /orders endpoint');
-        }
+        const orderEnvironmentValues = await createOrderEnvironmentValuesAsync(url);
         const allEnvironmentValues = _.concat(
-            schemaEnvironmentValues,
-            contractAddressEnvironmentValues,
-            createEnvironmentValue('schemaKeys', JSON.stringify(schemaKeys)),
+            createSchemaEnvironmentValues(),
+            createContractAddressEnvironmentValues(networkId),
+            orderEnvironmentValues,
             createEnvironmentValue('url', url),
-            createEnvironmentValue('order', JSON.stringify(firstOrder)),
-            createEnvironmentValue('orderMaker', firstOrder.maker),
-            createEnvironmentValue('orderTaker', firstOrder.taker),
-            createEnvironmentValue('orderFeeRecipient', firstOrder.feeRecipient),
-            createEnvironmentValue('orderHash', ZeroEx.getOrderHashHex(firstOrder)),
         );
         const environment = {
             values: allEnvironmentValues,
@@ -64,6 +33,58 @@ export const postmanEnvironmentFactory = {
         return environment;
     },
 };
+function createSchemaEnvironmentValues() {
+    const schemas: Schema[] = _.values(schemasByName);
+    const schemaEnvironmentValues = _.compact(
+        _.map(schemas, (schema: Schema) => {
+            if (_.isUndefined(schema.id)) {
+                return undefined;
+            } else {
+                const schemaKey = convertSchemaIdToKey(schema.id);
+                const stringifiedSchema = JSON.stringify(schema);
+                const schemaEnvironmentValue = createEnvironmentValue(schemaKey, stringifiedSchema);
+                return schemaEnvironmentValue;
+            }
+        }),
+    );
+    const schemaKeys = _.map(schemaEnvironmentValues, (environmentValue: EnvironmentValue) => {
+        return environmentValue.key;
+    });
+    const result = _.concat(schemaEnvironmentValues, createEnvironmentValue('schemaKeys', JSON.stringify(schemaKeys)));
+    return result;
+}
+function createContractAddressEnvironmentValues(networkId: number) {
+    const contractAddresses = getContractAddresses(networkId);
+    return [
+        createEnvironmentValue('tokenContractAddress1', contractAddresses.WETH),
+        createEnvironmentValue('tokenContractAddress2', contractAddresses.ZRX),
+        createEnvironmentValue('exchangeContractAddress', contractAddresses.EXCHANGE),
+    ];
+}
+
+async function createOrderEnvironmentValuesAsync(url: string) {
+    const httpClient = new HttpClient(url);
+    const orders = await httpClient.getOrdersAsync();
+    const orderIfExists = _.head(orders);
+    if (!_.isUndefined(orderIfExists)) {
+        return [
+            createEnvironmentValue('order', JSON.stringify(orderIfExists)),
+            createEnvironmentValue('orderMaker', orderIfExists.maker),
+            createEnvironmentValue('orderTaker', orderIfExists.taker),
+            createEnvironmentValue('orderFeeRecipient', orderIfExists.feeRecipient),
+            createEnvironmentValue('orderHash', ZeroEx.getOrderHashHex(orderIfExists)),
+        ];
+    } else {
+        return [
+            createEnvironmentValue('order', ''),
+            createEnvironmentValue('orderMaker', ''),
+            createEnvironmentValue('orderTaker', ''),
+            createEnvironmentValue('orderFeeRecipient', ''),
+            createEnvironmentValue('orderHash', ''),
+        ];
+    }
+}
+
 function getContractAddresses(networkId: number) {
     switch (networkId) {
         case 1:
