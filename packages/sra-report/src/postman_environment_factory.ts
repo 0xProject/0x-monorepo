@@ -2,8 +2,8 @@ import { SignedOrder, ZeroEx } from '0x.js';
 import { Schema, schemas as schemasByName } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
-import { addresses as kovanAddresses} from './contract_addresses/kovan_addresses';
-import { addresses as mainnetAddresses} from './contract_addresses/mainnet_addresses';
+import { addresses as kovanAddresses } from './contract_addresses/kovan_addresses';
+import { addresses as mainnetAddresses } from './contract_addresses/mainnet_addresses';
 
 interface EnvironmentValue {
     key: string;

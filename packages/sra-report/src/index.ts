@@ -52,8 +52,10 @@ const args = yargs
         normalize: true,
         demandOption: false,
     })
-    .example("$0 --endpoint-url 'http://api.example.com' --out 'path/to/report.json' --network-id 42 --export-environment 'path/to/environment.json' --export-collection 'path/to/collection.json'", 'Full usage example')
-    .argv;
+    .example(
+        "$0 --endpoint-url 'http://api.example.com' --out 'path/to/report.json' --network-id 42 --export-environment 'path/to/environment.json' --export-collection 'path/to/collection.json'",
+        'Full usage example',
+    ).argv;
 // perform extra validation on command line arguments
 try {
     assert.isWebUri('args', args.endpointUrl);
