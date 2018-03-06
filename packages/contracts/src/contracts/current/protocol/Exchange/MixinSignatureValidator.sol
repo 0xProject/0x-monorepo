@@ -32,9 +32,22 @@ contract MixinSignatureValidator is
         Ecrecover,
         EIP712,
         Trezor,
-        Contract
+        Contract,
+        PreSigned
     }
-  
+    
+    mapping(bytes32 => mapping(address => bool)) preSigned;
+    
+    function preSign(
+        bytes32 hash,
+        address signer,
+        bytes signature)
+        public
+    {
+        require(isValidSignature(hash, signer, signature));
+        preSigned[hash][signer] = true;
+    }
+    
     function isValidSignature(
         bytes32 hash,
         address signer,
@@ -133,6 +146,12 @@ contract MixinSignatureValidator is
         // Signature verified by signer contract
         } else if (signatureType == SignatureType.Contract) {
             isValid = ISigner(signer).isValidSignature(hash, signature);
+            return isValid;
+        }
+        
+        // Signer signed hash previously using the preSign function
+        } else if (signatureType == SignatureType.PreSigned) {
+            isValid = preSigned[hash][signer];
             return isValid;
         }
         
