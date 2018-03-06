@@ -13,7 +13,7 @@ import { VersionDropDown } from './version_drop_down';
 export interface NestedSidebarMenuProps {
     topLevelMenu: { [topLevel: string]: string[] };
     menuSubsectionsBySection: MenuSubsectionsBySection;
-    title: string;
+    sidebarHeader?: React.ReactNode;
     shouldDisplaySectionHeaders?: boolean;
     onMenuItemClick?: () => void;
     selectedVersion?: string;
@@ -35,13 +35,6 @@ const styles: Styles = {
         lineHeight: 2,
         padding: 0,
     },
-};
-
-const titleToIcon: { [title: string]: string } = {
-    '0x.js': 'zeroExJs.png',
-    '0x Connect': 'connect.png',
-    '0x Smart Contracts': 'contracts.png',
-    Wiki: 'wiki.png',
 };
 
 export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, NestedSidebarMenuState> {
@@ -68,37 +61,12 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         });
         return (
             <div>
-                {this._renderEmblem()}
+                {this.props.sidebarHeader}
                 {!_.isUndefined(this.props.versions) &&
                     !_.isUndefined(this.props.selectedVersion) && (
                         <VersionDropDown selectedVersion={this.props.selectedVersion} versions={this.props.versions} />
                     )}
                 <div className="pl1">{navigation}</div>
-            </div>
-        );
-    }
-    private _renderEmblem() {
-        return (
-            <div className="pt2 md-px1 sm-px2" style={{ color: colors.black, paddingBottom: 18 }}>
-                <div className="flex" style={{ fontSize: 25 }}>
-                    <div className="robotoMono" style={{ fontWeight: 'bold' }}>
-                        0x
-                    </div>
-                    <div className="pl2" style={{ lineHeight: 1.4, fontWeight: 300 }}>
-                        docs
-                    </div>
-                </div>
-                <div className="pl1" style={{ color: colors.grey350, paddingBottom: 9, paddingLeft: 10, height: 17 }}>
-                    |
-                </div>
-                <div className="flex">
-                    <div>
-                        <img src={`/images/doc_icons/${titleToIcon[this.props.title]}`} width="22" />
-                    </div>
-                    <div className="pl1" style={{ fontWeight: 600, fontSize: 20, lineHeight: 1.2 }}>
-                        {this.props.title}
-                    </div>
-                </div>
             </div>
         );
     }

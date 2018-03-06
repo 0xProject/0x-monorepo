@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import semverSort = require('semver-sort');
+import { SidebarHeader } from 'ts/components/sidebar_header';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { DocPackages, Environments } from 'ts/types';
@@ -85,6 +86,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     availableVersions={this.props.availableDocVersions}
                     docsInfo={this.props.docsInfo}
                     docAgnosticFormat={this.state.docAgnosticFormat}
+                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
                     sourceUrl={sourceUrl}
                 />
             </div>

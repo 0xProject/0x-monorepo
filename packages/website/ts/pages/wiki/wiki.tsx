@@ -14,6 +14,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import { scroller } from 'react-scroll';
+import { SidebarHeader } from 'ts/components/sidebar_header';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Article, ArticlesBySection, WebsitePaths } from 'ts/types';
@@ -128,7 +129,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                                     <NestedSidebarMenu
                                         topLevelMenu={menuSubsectionsBySection}
                                         menuSubsectionsBySection={menuSubsectionsBySection}
-                                        title="Wiki"
+                                        sidebarHeader={<SidebarHeader title="Wiki" />}
                                     />
                                 </div>
                             </div>

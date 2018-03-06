@@ -51,6 +51,7 @@ export interface DocumentationProps {
     availableVersions: string[];
     docsInfo: DocsInfo;
     docAgnosticFormat?: DocAgnosticFormat;
+    sidebarHeader?: React.ReactNode;
     sourceUrl: string;
 }
 
@@ -109,7 +110,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                     <NestedSidebarMenu
                                         selectedVersion={this.props.selectedVersion}
                                         versions={this.props.availableVersions}
-                                        title={this.props.docsInfo.displayName}
+                                        sidebarHeader={this.props.sidebarHeader}
                                         topLevelMenu={this.props.docsInfo.getMenu(this.props.selectedVersion)}
                                         menuSubsectionsBySection={menuSubsectionsBySection}
                                     />

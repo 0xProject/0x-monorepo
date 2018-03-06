@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { PortalMenu } from 'ts/components/portal_menu';
+import { SidebarHeader } from 'ts/components/sidebar_header';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { DropDown } from 'ts/components/ui/drop_down';
@@ -314,7 +315,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                    title={this.props.docsInfo.displayName}
+                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
@@ -333,7 +334,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menuSubsectionsBySection}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                    title={this.props.translate.get(Key.Wiki, Deco.Cap)}
+                    sidebarHeader={<SidebarHeader title="Wiki" />}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                 />
