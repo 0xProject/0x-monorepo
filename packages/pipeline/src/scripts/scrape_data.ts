@@ -16,7 +16,6 @@ import { historicalPrices } from '../models/historical_prices.js';
 import { HistoricalPriceResponse } from '../types';
 import * as rpn from 'request-promise-native';
 import { relayer } from '../models/relayer.js';
-import { parseDate } from 'tough-cookie';
 import { HttpRequestOptions } from '../../../connect/lib/src/types.js';
 
 const optionDefinitions = [
@@ -176,7 +175,6 @@ export const scrapeDataScripts = {
 
 function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
     return (cb: () => void) => {
-        console.debug('Fetching events from ' + fromBlock + ' to ' + toBlock);
         scrapeDataScripts
             .getAllEvents(fromBlock, toBlock)
             .then((data: any) => {
@@ -194,7 +192,6 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
 
                 for (const event_type in parsedEvents) {
                     if (parsedEvents[event_type].length > 0) {
-                        console.debug('Inserting events from ' + fromBlock + ' to ' + toBlock);
                         insertDataScripts
                             .insertMultipleRows(
                                 'events_raw',
@@ -202,17 +199,14 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                                 Object.keys(parsedEvents[event_type][0]),
                             )
                             .then(() => {
-                                console.debug('Successfully inserted events from ' + fromBlock + ' to ' + toBlock);
                             })
                             .catch((error: any) => {
-                                //console.debug(error);
                             });
                     }
                 }
                 cb();
             })
             .catch((err: any) => {
-                console.debug(err);
                 cb();
             });
     };
@@ -220,20 +214,16 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
 
 function _scrapeBlockToDB(block: number): any {
     return (cb: () => void) => {
-        //console.debug('Fetching block ' + block);
         scrapeDataScripts
             .getBlockInfo(block)
             .then((data: any) => {
                 const parsedBlock = typeConverters.convertLogBlockToBlockObject(data);
-                //console.debug('Inserting block ' + block);
                 insertDataScripts
                     .insertSingleRow('blocks', parsedBlock)
                     .then((result: any) => {
-                        //console.debug('Successfully inserted block ' + block);
                         cb();
                     })
                     .catch((err: any) => {
-                        //console.debug(err);
                         cb();
                     });
             })
@@ -248,19 +238,15 @@ function _scrapeAllRelayersToDB(): any {
         airtableBase(AIRTABLE_RELAYER_INFO)
         .select()
         .eachPage((records: any, fetchNextPage: () => void) => {
-            //console.debug(records);
             const parsedRelayers: any[] = [];
             for(const record of records) {
                 parsedRelayers.push(typeConverters.convertRelayerToRelayerObject(record));
             }
             insertDataScripts.insertMultipleRows('relayers', parsedRelayers, Object.keys(parsedRelayers[0]))
             .then((result: any) => {
-                //console.debug("Inserted " + parsedRelayers.length + " relayers");
                 cb();
             })
             .catch((err: any) => {
-                //console.error("Failed to insert relayers ");
-                //console.error(err);
                 cb();
             });
         })
@@ -272,21 +258,16 @@ function _scrapeAllRelayersToDB(): any {
 
 function _scrapeTransactionToDB(transactionHash: string): any {
     return (cb: () => void) => {
-        //console.debug("Fetching transaction " + transactionHash);
         scrapeDataScripts
             .getTransactionInfo(transactionHash)
             .then((data: any) => {
                 const parsedTransaction = typeConverters.convertLogTransactionToTransactionObject(data);
-                //console.debug("Inserting transaction " + transactionHash);
                 insertDataScripts
                     .insertSingleRow('transactions', parsedTransaction)
                     .then((result: any) => {
-                        //console.debug('Inserted txn ' + transactionHash);
                         cb();
                     })
                     .catch((err: any) => {
-                        //console.debug('Failed txn ' + transactionHash);
-                        //console.debug(err);
                         cb();
                     });
             })
@@ -437,7 +418,7 @@ if (cli.type === 'events') {
                     }
                 })
                 .catch((err: any) => {
-                    console.debug(err);
+                    //console.debug(err);
                 });
         }
     }
@@ -455,7 +436,7 @@ if (cli.type === 'events') {
                 }
             })
             .catch((err: any) => {
-                console.debug(err);
+                //console.debug(err);
             });
     }
 } else if (cli.type === 'tokens') {
