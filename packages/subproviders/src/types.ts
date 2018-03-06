@@ -1,7 +1,25 @@
 import * as _ from 'lodash';
 
+declare class LedgerTransport {
+    // tslint:disable-next-line:async-suffix
+    public static create(): Promise<LedgerTransport>;
+    // tslint:disable-next-line:async-suffix
+    public static close(): Promise<void>;
+}
+
 export interface LedgerCommunicationClient {
-    close_async: () => Promise<void>;
+    close: () => Promise<void>;
+}
+
+export interface LedgerEthereumClient {
+    getAddress: (
+        derivationPath: string,
+        askForDeviceConfirmation?: boolean,
+        shouldGetChainCode?: boolean,
+    ) => Promise<{ publicKey: string; address: string; chainCode: string }>;
+    signTransaction: (derivationPath: string, rawTxHex: string) => Promise<ECSignatureString>;
+    signPersonalMessage: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
+    transport: LedgerCommunicationClient;
 }
 
 /*
@@ -9,18 +27,18 @@ export interface LedgerCommunicationClient {
  * It uses an internal LedgerCommunicationClient to relay these requests. Currently
  * NodeJs and Browser communication are supported.
  */
-export interface LedgerEthereumClient {
-    // shouldGetChainCode is defined as `true` instead of `boolean` because other types rely on the assumption
-    // that we get back the chain code and we don't have dependent types to express it properly
-    getAddress_async: (
-        derivationPath: string,
-        askForDeviceConfirmation: boolean,
-        shouldGetChainCode: true,
-    ) => Promise<LedgerGetAddressResult>;
-    signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
-    signTransaction_async: (derivationPath: string, txHex: string) => Promise<ECSignatureString>;
-    comm: LedgerCommunicationClient;
-}
+// export interface LedgerEthereumClient {
+//     // shouldGetChainCode is defined as `true` instead of `boolean` because other types rely on the assumption
+//     // that we get back the chain code and we don't have dependent types to express it properly
+//     getAddress_async: (
+//         derivationPath: string,
+//         askForDeviceConfirmation: boolean,
+//         shouldGetChainCode: true,
+//     ) => Promise<LedgerGetAddressResult>;
+//     signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
+//     signTransaction_async: (derivationPath: string, txHex: string) => Promise<ECSignatureString>;
+//     comm: LedgerCommunicationClient;
+// }
 
 export interface ECSignatureString {
     v: string;
