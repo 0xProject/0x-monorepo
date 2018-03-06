@@ -1,10 +1,12 @@
 import { SignedOrder, ZeroEx } from '0x.js';
 import { HttpClient } from '@0xproject/connect';
 import { Schema, schemas as schemasByName } from '@0xproject/json-schemas';
+import chalk from 'chalk';
 import * as _ from 'lodash';
 
 import { addresses as kovanAddresses } from './contract_addresses/kovan_addresses';
 import { addresses as mainnetAddresses } from './contract_addresses/mainnet_addresses';
+import { utils } from './utils';
 
 interface EnvironmentValue {
     key: string;
@@ -61,7 +63,6 @@ function createContractAddressEnvironmentValues(networkId: number) {
         createEnvironmentValue('exchangeContractAddress', contractAddresses.EXCHANGE),
     ];
 }
-
 async function createOrderEnvironmentValuesAsync(url: string) {
     const httpClient = new HttpClient(url);
     const orders = await httpClient.getOrdersAsync();
@@ -75,6 +76,7 @@ async function createOrderEnvironmentValuesAsync(url: string) {
             createEnvironmentValue('orderHash', ZeroEx.getOrderHashHex(orderIfExists)),
         ];
     } else {
+        utils.log(`${chalk.red(`No orders from /orders found`)}`);
         return [
             createEnvironmentValue('order', ''),
             createEnvironmentValue('orderMaker', ''),
