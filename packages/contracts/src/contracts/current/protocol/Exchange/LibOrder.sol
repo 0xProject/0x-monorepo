@@ -36,7 +36,6 @@ contract LibOrder {
         "uint256 salt"
     );
     
-    //  TODO: Append `Address` to all address fields and `Amount` to all value fields?
     struct Order {
         address makerAddress;
         address takerAddress;

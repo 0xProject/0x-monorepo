@@ -1,4 +1,4 @@
-import { SignedOrder, TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
+import { TransactionReceiptWithDecodedLogs, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -9,6 +9,7 @@ import { constants } from './constants';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
 import { signedOrderUtils } from './signed_order_utils';
+import { SignedOrder } from './types';
 
 export class ExchangeWrapper {
     private _exchange: ExchangeContract;
@@ -25,12 +26,9 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = signedOrderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
         const txHash = await this._exchange.fillOrder.sendTransactionAsync(
-            params.orderAddresses,
-            params.orderValues,
+            params.order,
             params.takerTokenFillAmount,
-            params.v,
-            params.r,
-            params.s,
+            params.signature,
             { from },
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
@@ -49,8 +47,7 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = signedOrderUtils.createCancel(signedOrder, opts.takerTokenCancelAmount);
         const txHash = await this._exchange.cancelOrder.sendTransactionAsync(
-            params.orderAddresses,
-            params.orderValues,
+            params.order,
             params.takerTokenCancelAmount,
             { from },
         );
@@ -70,12 +67,9 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = signedOrderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
         const txHash = await this._exchange.fillOrKillOrder.sendTransactionAsync(
-            params.orderAddresses,
-            params.orderValues,
+            params.order,
             params.takerTokenFillAmount,
-            params.v,
-            params.r,
-            params.s,
+            params.signature,
             { from },
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
@@ -94,12 +88,9 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
         const txHash = await this._exchange.batchFillOrders.sendTransactionAsync(
-            params.orderAddresses,
-            params.orderValues,
+            params.orders,
             params.takerTokenFillAmounts,
-            params.v,
-            params.r,
-            params.s,
+            params.signatures,
             { from },
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
@@ -118,12 +109,9 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
         const txHash = await this._exchange.batchFillOrKillOrders.sendTransactionAsync(
-            params.orderAddresses,
-            params.orderValues,
+            params.orders,
             params.takerTokenFillAmounts,
-            params.v,
-            params.r,
-            params.s,
+            params.signatures,
             { from },
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
@@ -142,12 +130,9 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createMarketFillOrders(orders, opts.takerTokenFillAmount);
         const txHash = await this._exchange.marketFillOrders.sendTransactionAsync(
-            params.orderAddresses,
-            params.orderValues,
+            params.orders,
             params.takerTokenFillAmount,
-            params.v,
-            params.r,
-            params.s,
+            params.signatures,
             { from },
         );
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
@@ -166,8 +151,7 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchCancel(orders, opts.takerTokenCancelAmounts);
         const txHash = await this._exchange.batchCancelOrders.sendTransactionAsync(
-            params.orderAddresses,
-            params.orderValues,
+            params.orders,
             params.takerTokenCancelAmounts,
             { from },
         );
@@ -181,17 +165,15 @@ export class ExchangeWrapper {
         return tx;
     }
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
-        const params = signedOrderUtils.getOrderAddressesAndValues(signedOrder);
-        const orderHash = await this._exchange.getOrderHash.callAsync(params.orderAddresses, params.orderValues);
+        const order = signedOrderUtils.getOrderStruct(signedOrder);
+        const orderHash = await this._exchange.getOrderHash.callAsync(order);
         return orderHash;
     }
     public async isValidSignatureAsync(signedOrder: SignedOrder): Promise<boolean> {
         const isValidSignature = await this._exchange.isValidSignature.callAsync(
-            signedOrder.maker,
-            ZeroEx.getOrderHashHex(signedOrder),
-            signedOrder.ecSignature.v,
-            signedOrder.ecSignature.r,
-            signedOrder.ecSignature.s,
+            signedOrder.makerAddress,
+            signedOrderUtils.getOrderHashHex(signedOrder),
+            signedOrder.signature,
         );
         return isValidSignature;
     }
