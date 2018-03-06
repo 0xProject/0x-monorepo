@@ -47,8 +47,8 @@ const networkNameToColor: { [network: string]: string } = {
 };
 
 export interface DocumentationProps {
-    docsVersion: string;
-    availableDocVersions: string[];
+    selectedVersion: string;
+    availableVersions: string[];
     docsInfo: DocsInfo;
     docAgnosticFormat?: DocAgnosticFormat;
     menuSubsectionsBySection: MenuSubsectionsBySection;
@@ -107,10 +107,10 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                     }}
                                 >
                                     <NestedSidebarMenu
-                                        selectedVersion={this.props.docsVersion}
-                                        versions={this.props.availableDocVersions}
+                                        selectedVersion={this.props.selectedVersion}
+                                        versions={this.props.availableVersions}
                                         title={this.props.docsInfo.displayName}
-                                        topLevelMenu={this.props.docsInfo.getMenu(this.props.docsVersion)}
+                                        topLevelMenu={this.props.docsInfo.getMenu(this.props.selectedVersion)}
                                         menuSubsectionsBySection={this.props.menuSubsectionsBySection}
                                     />
                                 </div>
@@ -259,7 +259,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         }
 
         const networkToAddressByContractName = this.props.docsInfo.contractsByVersionByNetworkId[
-            this.props.docsVersion
+            this.props.selectedVersion
         ];
         const badges = _.map(
             networkToAddressByContractName,
@@ -306,7 +306,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 </code>
                 {property.source && (
                     <SourceLink
-                        version={this.props.docsVersion}
+                        version={this.props.selectedVersion}
                         source={property.source}
                         sourceUrl={this.props.sourceUrl}
                     />
@@ -327,7 +327,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 sectionName={sectionName}
                 method={method}
                 typeDefinitionByName={typeDefinitionByName}
-                libraryVersion={this.props.docsVersion}
+                libraryVersion={this.props.selectedVersion}
                 docsInfo={this.props.docsInfo}
                 sourceUrl={this.props.sourceUrl}
             />
