@@ -60,11 +60,6 @@ const mainAsync = async () => {
     if (_.isUndefined(firstOrder)) {
         throw new Error('Could not get any orders from /orders endpoint');
     }
-    const newmanEnvironmentOptions = {
-        collection: sraReportCollectionJSON,
-        globals: postmanEnvironmentFactory.createGlobalEnvironment(args.endpointUrl, firstOrder),
-        environment: postmanEnvironmentFactory.createNetworkEnvironment(args.networkId),
-    };
     const newmanReporterOptions = !_.isUndefined(args.output)
         ? {
               reporters: 'json',
@@ -78,7 +73,8 @@ const mainAsync = async () => {
               reporters: 'cli',
           };
     const newmanRunOptions = {
-        ...newmanEnvironmentOptions,
+        collection: sraReportCollectionJSON,
+        environment: postmanEnvironmentFactory.createPostmanEnvironment(args.endpointUrl, args.networkId, firstOrder),
         ...newmanReporterOptions,
     };
     await newmanRunAsync(newmanRunOptions);

@@ -2,8 +2,8 @@ import { SignedOrder, ZeroEx } from '0x.js';
 import { Schema, schemas as schemasByName } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
-import * as kovanTokensEnvironmentJSON from '../postman_configs/environments/kovan_tokens.postman_environment.json';
-import * as mainnetTokensEnvironmentJSON from '../postman_configs/environments/mainnet_tokens.postman_environment.json';
+import { addresses as kovanAddresses} from './contract_addresses/kovan_addresses';
+import { addresses as mainnetAddresses} from './contract_addresses/mainnet_addresses';
 
 interface EnvironmentValue {
     key: string;
@@ -13,7 +13,7 @@ interface EnvironmentValue {
 }
 
 export const postmanEnvironmentFactory = {
-    createGlobalEnvironment(url: string, order: SignedOrder) {
+    createPostmanEnvironment(url: string, networkId: number, order: SignedOrder) {
         const schemas: Schema[] = _.values(schemasByName);
         const schemaEnvironmentValues = _.compact(
             _.map(schemas, (schema: Schema) => {
@@ -30,8 +30,14 @@ export const postmanEnvironmentFactory = {
         const schemaKeys = _.map(schemaEnvironmentValues, (environmentValue: EnvironmentValue) => {
             return environmentValue.key;
         });
+        const contractAddresses = getContractAddresses(networkId);
+        const contractAddressEnvironmentValues = _.map(_.keys(contractAddresses), (key: string) => {
+            const contractAddress = _.get(contractAddresses, key);
+            return createEnvironmentValue(key, contractAddress);
+        });
         const allEnvironmentValues = _.concat(
             schemaEnvironmentValues,
+            contractAddressEnvironmentValues,
             createEnvironmentValue('schemaKeys', JSON.stringify(schemaKeys)),
             createEnvironmentValue('url', url),
             createEnvironmentValue('order', JSON.stringify(order)),
@@ -45,17 +51,17 @@ export const postmanEnvironmentFactory = {
         };
         return environment;
     },
-    createNetworkEnvironment(networkId: number) {
-        switch (networkId) {
-            case 1:
-                return mainnetTokensEnvironmentJSON;
-            case 42:
-                return kovanTokensEnvironmentJSON;
-            default:
-                return {};
-        }
-    },
 };
+function getContractAddresses(networkId: number) {
+    switch (networkId) {
+        case 1:
+            return mainnetAddresses;
+        case 42:
+            return kovanAddresses;
+        default:
+            throw new Error('Unsupported network id');
+    }
+}
 function convertSchemaIdToKey(schemaId: string) {
     let result = schemaId;
     if (_.startsWith(result, '/')) {
