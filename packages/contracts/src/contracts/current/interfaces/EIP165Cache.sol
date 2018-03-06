@@ -108,7 +108,7 @@ contract EIP165Cache is Ownable, IEIP165Cache {
     }
 
     function noThrowCall(address addr, bytes4 interfaceId)
-        internal
+        internal view
         returns (bool success, bool result)
     {
         // Function signature
