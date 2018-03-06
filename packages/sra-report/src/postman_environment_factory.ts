@@ -1,4 +1,5 @@
 import { SignedOrder, ZeroEx } from '0x.js';
+import { HttpClient } from '@0xproject/connect';
 import { Schema, schemas as schemasByName } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
@@ -18,7 +19,7 @@ export const postmanEnvironmentFactory = {
      *  - Contract addresses based on the network id for making specific queries (ex. baseTokenAddress=ZRX_address)
      *  - Order properties for making specific queries (ex. maker=orderMaker)
      */
-    createPostmanEnvironment(url: string, networkId: number, order: SignedOrder) {
+    async createPostmanEnvironmentAsync(url: string, networkId: number) {
         const schemas: Schema[] = _.values(schemasByName);
         const schemaEnvironmentValues = _.compact(
             _.map(schemas, (schema: Schema) => {
@@ -40,16 +41,22 @@ export const postmanEnvironmentFactory = {
             const contractAddress = _.get(contractAddresses, key);
             return createEnvironmentValue(key, contractAddress);
         });
+        const httpClient = new HttpClient(url);
+        const orders = await httpClient.getOrdersAsync();
+        const firstOrder = _.head(orders);
+        if (_.isUndefined(firstOrder)) {
+            throw new Error('Could not get any orders from /orders endpoint');
+        }
         const allEnvironmentValues = _.concat(
             schemaEnvironmentValues,
             contractAddressEnvironmentValues,
             createEnvironmentValue('schemaKeys', JSON.stringify(schemaKeys)),
             createEnvironmentValue('url', url),
-            createEnvironmentValue('order', JSON.stringify(order)),
-            createEnvironmentValue('orderMaker', order.maker),
-            createEnvironmentValue('orderTaker', order.taker),
-            createEnvironmentValue('orderFeeRecipient', order.feeRecipient),
-            createEnvironmentValue('orderHash', ZeroEx.getOrderHashHex(order)),
+            createEnvironmentValue('order', JSON.stringify(firstOrder)),
+            createEnvironmentValue('orderMaker', firstOrder.maker),
+            createEnvironmentValue('orderTaker', firstOrder.taker),
+            createEnvironmentValue('orderFeeRecipient', firstOrder.feeRecipient),
+            createEnvironmentValue('orderHash', ZeroEx.getOrderHashHex(firstOrder)),
         );
         const environment = {
             values: allEnvironmentValues,

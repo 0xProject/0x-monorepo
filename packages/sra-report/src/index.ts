@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { assert } from '@0xproject/assert';
-import { HttpClient } from '@0xproject/connect';
 import { Schema, schemas } from '@0xproject/json-schemas';
 import { promisify } from '@0xproject/utils';
 import chalk from 'chalk';
@@ -38,6 +37,13 @@ const args = yargs
         type: 'number',
         default: DEFAULT_NETWORK_ID,
     })
+    .option('environment', {
+        alias: ['env'],
+        describe: 'File path to an environment file for the collection run',
+        type: 'string',
+        normalize: true,
+        demandOption: false,
+    })
     .option('export-collection', {
         alias: ['ec'],
         describe: 'The relative path to write the postman collection file used by the collection run',
@@ -53,7 +59,7 @@ const args = yargs
         demandOption: false,
     })
     .example(
-        "$0 --endpoint-url 'http://api.example.com' --out 'path/to/report.json' --network-id 42 --export-environment 'path/to/environment.json' --export-collection 'path/to/collection.json'",
+        "$0 --endpoint-url 'http://api.example.com' --out 'path/to/report.json' --network-id 42 --environment 'path/to/custom/environment.json' --export-collection 'path/to/collection.json' --export-environment 'path/to/environment.json'",
         'Full usage example',
     ).argv;
 // perform extra validation on command line arguments
@@ -69,12 +75,6 @@ if (!_.includes(SUPPORTED_NETWORK_IDS, args.networkId)) {
     process.exit(1);
 }
 const mainAsync = async () => {
-    const httpClient = new HttpClient(args.endpointUrl);
-    const orders = await httpClient.getOrdersAsync();
-    const firstOrder = _.head(orders);
-    if (_.isUndefined(firstOrder)) {
-        throw new Error('Could not get any orders from /orders endpoint');
-    }
     const newmanReporterOptions = !_.isUndefined(args.output)
         ? {
               reporters: 'json',
@@ -87,9 +87,12 @@ const mainAsync = async () => {
         : {
               reporters: 'cli',
           };
+    const environment = !_.isUndefined(args.environment)
+        ? args.environment
+        : await postmanEnvironmentFactory.createPostmanEnvironmentAsync(args.endpointUrl, args.networkId);
     const newmanRunOptions = {
         collection: sraReportCollectionJSON,
-        environment: postmanEnvironmentFactory.createPostmanEnvironment(args.endpointUrl, args.networkId, firstOrder),
+        environment,
         exportCollection: args.exportCollection,
         exportEnvironment: args.exportEnvironment,
         ...newmanReporterOptions,
