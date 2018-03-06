@@ -12,39 +12,32 @@ export interface SubmissionContractEventArgs {
 }
 
 export interface BatchFillOrders {
-    orderAddresses: string[][];
-    orderValues: BigNumber[][];
+    orders: OrderStruct[];
+    signatures: string[];
     takerTokenFillAmounts: BigNumber[];
-    v: number[];
-    r: string[];
-    s: string[];
 }
 
 export interface MarketFillOrders {
-    orderAddresses: string[][];
-    orderValues: BigNumber[][];
+    orders: OrderStruct[];
+    signatures: string[];
     takerTokenFillAmount: BigNumber;
-    v: number[];
-    r: string[];
-    s: string[];
 }
 
 export interface BatchCancelOrders {
-    orderAddresses: string[][];
-    orderValues: BigNumber[][];
+    orders: OrderStruct[];
     takerTokenCancelAmounts: BigNumber[];
 }
 
 export interface DefaultOrderParams {
-    exchangeContractAddress: string;
-    maker: string;
-    feeRecipient: string;
+    exchangeAddress: string;
+    makerAddress: string;
+    feeRecipientAddress: string;
     makerTokenAddress: string;
     takerTokenAddress: string;
     makerTokenAmount: BigNumber;
     takerTokenAmount: BigNumber;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
+    makerFeeAmount: BigNumber;
+    takerFeeAmount: BigNumber;
 }
 
 export interface TransactionDataParams {
@@ -113,4 +106,44 @@ export interface Artifact {
             constructor_args: string;
         };
     };
+}
+
+export interface SignedOrder {
+    exchangeAddress: string;
+    makerAddress: string;
+    takerAddress: string;
+    makerTokenAddress: string;
+    takerTokenAddress: string;
+    feeRecipientAddress: string;
+    makerTokenAmount: BigNumber;
+    takerTokenAmount: BigNumber;
+    makerFeeAmount: BigNumber;
+    takerFeeAmount: BigNumber;
+    expirationTimeSeconds: BigNumber;
+    salt: BigNumber;
+    signature: string;
+}
+
+export interface OrderStruct {
+    makerAddress: string;
+    takerAddress: string;
+    makerTokenAddress: string;
+    takerTokenAddress: string;
+    feeRecipientAddress: string;
+    makerTokenAmount: BigNumber;
+    takerTokenAmount: BigNumber;
+    makerFeeAmount: BigNumber;
+    takerFeeAmount: BigNumber;
+    expirationTimeSeconds: BigNumber;
+    salt: BigNumber;
+}
+
+export enum SignatureType {
+    Illegal,
+    Invalid,
+    Caller,
+    Ecrecover,
+    EIP712,
+    Trezor,
+    Contract,
 }
