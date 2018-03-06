@@ -7,12 +7,17 @@ import { addresses as mainnetAddresses} from './contract_addresses/mainnet_addre
 
 interface EnvironmentValue {
     key: string;
-    value: string;
-    enabled: boolean;
-    type: string;
 }
 
 export const postmanEnvironmentFactory = {
+    /**
+     * Dynamically generates a postman environment (https://www.getpostman.com/docs/v6/postman/environments_and_globals/manage_environments)
+     * When running the postman collection via newman, we provide it a set of environment variables
+     * These variables include:
+     *  - 0x JSON schemas for response body validation
+     *  - Contract addresses based on the network id for making specific queries (ex. baseTokenAddress=ZRX_address)
+     *  - Order properties for making specific queries (ex. maker=orderMaker)
+     */
     createPostmanEnvironment(url: string, networkId: number, order: SignedOrder) {
         const schemas: Schema[] = _.values(schemasByName);
         const schemaEnvironmentValues = _.compact(
