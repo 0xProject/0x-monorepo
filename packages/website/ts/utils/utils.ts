@@ -309,6 +309,25 @@ export const utils = {
             containerId,
         });
     },
+    web3ProviderNameToString(web3ProviderName: string): string {
+        let parsedProviderName = "UNKNOWN";
+        if(web3ProviderName === "MetamaskInpageProvider") {
+            parsedProviderName = "METAMASK";
+        }
+        else if(web3ProviderName === "EthereumProvider") {
+            parsedProviderName = "MIST";
+        }
+        else if(web3ProviderName === "o") {
+            parsedProviderName = "PARITY";
+        }
+        else if(web3ProviderName.indexOf("infura") !== -1) {
+            parsedProviderName = "INFURA";
+        }
+        else if(web3ProviderName.indexOf("localhost") !== -1) {
+            parsedProviderName ="LOCALHOST";
+        }
+        return parsedProviderName;
+    },
     async onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
             return; // Already loaded
@@ -316,5 +335,5 @@ export const utils = {
         return new Promise<void>((resolve, reject) => {
             window.onload = () => resolve();
         });
-    },
+    }
 };
