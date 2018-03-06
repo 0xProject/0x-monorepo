@@ -20,11 +20,11 @@ contract IEIP165Cache is IEIP165 {
         Supported
     }
     
-    function query(address addr, bytes4 iface)
+    function query(address addr, bytes4 interfaceId)
         public
         returns (Status);
     
-    function query(address addr, bytes4[] ifaces)
+    function query(address addr, bytes4[] interfaceIds)
         public
         returns (uint256 r);
 }

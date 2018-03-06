@@ -17,19 +17,19 @@ contract EIP165Cache is Ownable, IEIP165Cache {
     
     mapping (address => mapping (bytes4 => Status)) overrides;
     
-    function query(address addr, bytes4 iface)
+    function query(address addr, bytes4 interfaceId)
         public
         returns (Status)
     {
-        Status status = cache[addr][iface];
+        Status status = cache[addr][interfaceId];
         if (status != Status.Unknown) {
             return status;
         }
         
         // Apply optional override
-        status = overrides[addr][iface];
+        status = overrides[addr][interfaceId];
         if (status != Status.Unknown) {
-            cache[addr][iface] = status;
+            cache[addr][interfaceId] = status;
             return status;
         }
         
@@ -38,7 +38,7 @@ contract EIP165Cache is Ownable, IEIP165Cache {
         eip165Status = cache[addr][IEIP165.INTERFACE_ID];
         if (eip165Status == Status.Unsupported) {
             // TODO: Do we want to cache this? (three lookups vs one?)
-            // Note: The edge case where iface == IEIP165.INTERFACE_ID is
+            // Note: The edge case where interfaceId == IEIP165.INTERFACE_ID is
             // covered by the first conditional.
             return Status.Unknown;
         }
@@ -59,9 +59,9 @@ contract EIP165Cache is Ownable, IEIP165Cache {
         // Test for interface support
         if (eip165Status == Status.Supported) {
             IEIP165 ieip165 = IEIP165(addr);
-            bool supported = ieip165.supportsInterface(iface);
+            bool supported = ieip165.supportsInterface(interfaceId);
             status = supported ? Status.Supported : Status.Unsupported;
-            cache[addr][iface] = status;
+            cache[addr][interfaceId] = status;
             return status;
         } else {
             // assert(eip165Status == Unsupported);
@@ -69,19 +69,19 @@ contract EIP165Cache is Ownable, IEIP165Cache {
         }
     }
     
-    function query(address addr, bytes4[] interfaces)
+    function query(address addr, bytes4[] interfaceIds)
         public
         returns (uint256 bitvector)
     {
-        require(interfaces.length <= 256);
+        require(interfaceIds.length <= 256);
         bitvector = 0;
-        for (int256 i = int256(interfaces.length) - 1; i >= 0; --i) {
+        for (int256 i = int256(interfaceIds.length) - 1; i >= 0; --i) {
             
             // Bit shift bitvector left one.
             bitvector += bitvector;
             
             // TODO Could cache contract IEIP165 support
-            Status status = query(addr, interfaces[uint256(i)]);
+            Status status = query(addr, interfaceIds[uint256(i)]);
             if (status == Status.Supported) {
                 bitvector |= 1;
             }
@@ -89,25 +89,25 @@ contract EIP165Cache is Ownable, IEIP165Cache {
         return bitvector;
     }
     
-    function refresh(address addr, bytes4 iface)
+    function refresh(address addr, bytes4 interfaceId)
         public
     {
         // Clear cache
-        cache[addr][iface] = Status.Unknown;
+        cache[addr][interfaceId] = Status.Unknown;
         
         // Force reload cache
-        query(addr, iface);
+        query(addr, interfaceId);
     }
     
-    function override(address addr, bytes4 iface, Status status)
+    function override(address addr, bytes4 interfaceId, Status status)
         public
         onlyOwner()
     {
-        overrides[addr][iface] = status;
-        refresh(addr, iface);
+        overrides[addr][interfaceId] = status;
+        refresh(addr, interfaceId);
     }
 
-    function noThrowCall(address addr, bytes4 iface)
+    function noThrowCall(address addr, bytes4 interfaceId)
         internal
         returns (bool success, bool result)
     {
@@ -120,7 +120,7 @@ contract EIP165Cache is Ownable, IEIP165Cache {
             // Store input calldata at free storage
             let free := mload(0x40)
             mstore(free, sig)
-            mstore(add(free, 0x04), iface)
+            mstore(add(free, 0x04), interfaceId)
 
             // Static call, storing `success` instead of reverting
             success := staticcall(
