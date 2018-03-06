@@ -13,6 +13,8 @@ import '../utils/Ownable/Ownable.sol';
 
 contract EIP165Cache is Ownable, IEIP165Cache {
     
+    uint256 constant QUERY_GAS = 30000;
+    
     mapping (address => mapping (bytes4 => Status)) cache;
     
     mapping (address => mapping (bytes4 => Status)) overrides;
@@ -124,12 +126,12 @@ contract EIP165Cache is Ownable, IEIP165Cache {
 
             // Static call, storing `success` instead of reverting
             success := staticcall(
-                30000, // Gas
-                addr,  // To addr
-                free,  // Inputs are stored at location x
-                0x8,   // Inputs are 8 bytes long
-                free,  // Store output over input (saves space)
-                0x20   // Outputs are 32 bytes long
+                QUERY_GAS, // Gas
+                addr,      // To addr
+                free,      // Inputs are stored at location x
+                8,         // Inputs are 8 bytes long
+                free,      // Store output over input (saves space)
+                32         // Outputs are 32 bytes long
             )
             
             // Load the output returndata
