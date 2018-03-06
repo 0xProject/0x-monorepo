@@ -13,6 +13,8 @@ import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
 
+const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
+
 const docIdToS3BucketName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0xjs-docs-jsons',
     [DocPackages.SmartContracts]: 'smart-contracts-docs-json',
@@ -120,13 +122,22 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     }
     private _getSourceUrl() {
         const url = this.props.docsInfo.packageUrl;
-        const pkg = docIdToSubpackageName[this.props.docsInfo.id];
+        let pkg = docIdToSubpackageName[this.props.docsInfo.id];
         let tagPrefix = pkg;
         const packagesWithNamespace = ['connect'];
         if (_.includes(packagesWithNamespace, pkg)) {
             tagPrefix = `@0xproject/${pkg}`;
         }
-        const sourceUrl = `${url}/blob/${tagPrefix}%40${this.props.docsVersion}/packages/${pkg}`;
+        // HACK: The following three lines exist for backward compatibility reasons
+        // Before exporting types from other packages as part of the 0x.js interface,
+        // all TypeDoc generated paths omitted the topLevel `0x.js` segment. Now it
+        // adds it, and for that reason, we need to make sure we don't add it twice in
+        // the source links we generate.
+        const semvers = semverSort.desc([this.props.docsVersion, ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH]);
+        const isVersionAfterTopLevelPathChange = semvers[0] !== ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH;
+        pkg = this.props.docsInfo.id === DocPackages.ZeroExJs && isVersionAfterTopLevelPathChange ? '' : `/${pkg}`;
+
+        const sourceUrl = `${url}/blob/${tagPrefix}%40${this.props.docsVersion}/packages${pkg}`;
         return sourceUrl;
     }
 }
