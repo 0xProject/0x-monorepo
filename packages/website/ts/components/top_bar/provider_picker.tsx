@@ -1,5 +1,4 @@
-import { constants as sharedConstants } from '@0xproject/react-shared';
-import { colors } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import * as React from 'react';

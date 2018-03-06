@@ -4,11 +4,11 @@ import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
 
+import { DocsInfo } from '../docs_info';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
-import { DocsInfo } from '../docs_info';
 import { TypeDefinition } from './type_definition';
 
 // Some types reference other libraries. For these types, we want to link the user to the relevant documentation.

@@ -1,6 +1,5 @@
-import { constants as sharedConstants } from '@0xproject/react-shared';
 import { ECSignature, Order, ZeroEx } from '0x.js';
-import { colors } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';

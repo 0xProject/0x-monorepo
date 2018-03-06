@@ -2,10 +2,10 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import { DocsInfo } from '../docs_info';
 import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from '../types';
 import { constants } from '../utils/constants';
 
-import { DocsInfo } from '../docs_info';
 import { Type } from './type';
 
 export interface MethodSignatureProps {

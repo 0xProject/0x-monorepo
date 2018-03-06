@@ -2,12 +2,12 @@ import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { DocsInfo } from '../docs_info';
 import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from '../types';
 import { utils } from '../utils/utils';
 
 import { Comment } from './comment';
 import { CustomEnum } from './custom_enum';
-import { DocsInfo } from '../docs_info';
 import { Enum } from './enum';
 import { Interface } from './interface';
 import { MethodSignature } from './method_signature';

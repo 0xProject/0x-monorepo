@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { DocsInfo } from '../docs_info';
 import { CustomType, TypeDocTypes } from '../types';
 
-import { DocsInfo } from '../docs_info';
 import { MethodSignature } from './method_signature';
 import { Type } from './type';
 

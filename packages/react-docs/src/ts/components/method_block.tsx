@@ -2,11 +2,11 @@ import { AnchorTitle, colors, HeaderSizes, Styles } from '@0xproject/react-share
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { DocsInfo } from '../docs_info';
 import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from '../types';
 import { typeDocUtils } from '../utils/typedoc_utils';
 
 import { Comment } from './comment';
-import { DocsInfo } from '../docs_info';
 import { MethodSignature } from './method_signature';
 import { SourceLink } from './source_link';
 
