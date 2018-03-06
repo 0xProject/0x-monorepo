@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ContractAddresses, Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
+import { Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
 
 const BASE_URL = window.location.origin;
 const isDevelopment = _.includes(

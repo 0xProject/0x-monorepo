@@ -1,17 +1,19 @@
 import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { Type } from 'ts/pages/documentation/type';
-import { Event, EventArg } from 'ts/types';
 
-interface EventDefinitionProps {
+import { Event, EventArg } from '../types';
+
+import { DocsInfo } from './docs_info';
+import { Type } from './type';
+
+export interface EventDefinitionProps {
     event: Event;
     sectionName: string;
     docsInfo: DocsInfo;
 }
 
-interface EventDefinitionState {
+export interface EventDefinitionState {
     shouldShowAnchor: boolean;
 }
 

@@ -1,9 +1,11 @@
 import {
     colors,
     constants as sharedConstants,
+    EtherscanLinkSuffixes,
     MarkdownSection,
     MenuSubsectionsBySection,
     NestedSidebarMenu,
+    Networks,
     SectionHeader,
     Styles,
     utils as sharedUtils,
@@ -12,29 +14,28 @@ import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import { scroller } from 'react-scroll';
-import { Badge } from 'ts/components/ui/badge';
-import { Comment } from 'ts/pages/documentation/comment';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { EventDefinition } from 'ts/pages/documentation/event_definition';
-import { MethodBlock } from 'ts/pages/documentation/method_block';
-import { SourceLink } from 'ts/pages/documentation/source_link';
-import { Type } from 'ts/pages/documentation/type';
-import { TypeDefinition } from 'ts/pages/documentation/type_definition';
+
 import {
     AddressByContractName,
     DocAgnosticFormat,
     DoxityDocObj,
-    EtherscanLinkSuffixes,
     Event,
-    Networks,
     Property,
     SolidityMethod,
     SupportedDocJson,
     TypeDefinitionByName,
     TypescriptMethod,
-} from 'ts/types';
-import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
+} from '../types';
+import { utils } from '../utils/utils';
+
+import { Badge } from './badge';
+import { Comment } from './comment';
+import { DocsInfo } from './docs_info';
+import { EventDefinition } from './event_definition';
+import { MethodBlock } from './method_block';
+import { SourceLink } from './source_link';
+import { Type } from './type';
+import { TypeDefinition } from './type_definition';
 
 const TOP_BAR_HEIGHT = 60;
 
@@ -55,7 +56,7 @@ export interface DocumentationProps {
     sourceUrl: string;
 }
 
-interface DocumentationState {}
+export interface DocumentationState {}
 
 const styles: Styles = {
     mainContainers: {
@@ -268,9 +269,9 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 if (_.isUndefined(contractAddress)) {
                     return null;
                 }
-                const linkIfExists = utils.getEtherScanLinkIfExists(
+                const linkIfExists = sharedUtils.getEtherScanLinkIfExists(
                     contractAddress,
-                    constants.NETWORK_ID_BY_NAME[networkName],
+                    sharedConstants.NETWORK_ID_BY_NAME[networkName],
                     EtherscanLinkSuffixes.Address,
                 );
                 return (

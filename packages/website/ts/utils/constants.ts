@@ -1,5 +1,5 @@
+import { Networks } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
-import { Networks } from 'ts/types';
 
 export const constants = {
     DECIMAL_PLACES_ETH: 18,
@@ -21,18 +21,6 @@ export const constants = {
     NETWORK_ID_MAINNET: 1,
     NETWORK_ID_KOVAN: 42,
     NETWORK_ID_TESTRPC: 50,
-    NETWORK_NAME_BY_ID: {
-        1: Networks.Mainnet,
-        3: Networks.Ropsten,
-        4: Networks.Rinkeby,
-        42: Networks.Kovan,
-    } as { [symbol: number]: string },
-    NETWORK_ID_BY_NAME: {
-        [Networks.Mainnet]: 1,
-        [Networks.Ropsten]: 3,
-        [Networks.Rinkeby]: 4,
-        [Networks.Kovan]: 42,
-    } as { [networkName: string]: number },
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     PROVIDER_NAME_LEDGER: 'Ledger',
     PROVIDER_NAME_METAMASK: 'Metamask',
@@ -45,7 +33,6 @@ export const constants = {
     UNAVAILABLE_STATUS: 503,
     TAKER_FEE: new BigNumber(0),
     TESTNET_NAME: 'Kovan',
-    TYPES_SECTION_NAME: 'types',
     PROJECT_URL_ETHFINEX: 'https://www.bitfinex.com/ethfinex',
     PROJECT_URL_AMADEUS: 'http://amadeusrelay.org',
     PROJECT_URL_DDEX: 'https://ddex.io',
@@ -70,7 +57,6 @@ export const constants = {
     PROJECT_URL_OPEN_ANX: 'https://www.openanx.org',
     PROJECT_URL_IDT: 'https://kinalpha.com',
     URL_ANGELLIST: 'https://angel.co/0xproject/jobs',
-    URL_BIGNUMBERJS_GITHUB: 'http://mikemcl.github.io/bignumber.js',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
     URL_BLOG: 'https://blog.0xproject.com/latest',
     URL_DISCOURSE_FORUM: 'https://forum.0xproject.com',
@@ -85,11 +71,6 @@ export const constants = {
     URL_REDDIT: 'https://reddit.com/r/0xproject',
     URL_STANDARD_RELAYER_API_GITHUB: 'https://github.com/0xProject/standard-relayer-api/blob/master/README.md',
     URL_TWITTER: 'https://twitter.com/0xproject',
-    URL_WEB3_DOCS: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
-    URL_WEB3_DECODED_LOG_ENTRY_EVENT:
-        'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
-    URL_WEB3_LOG_ENTRY_EVENT: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
-    URL_WEB3_PROVIDER_DOCS: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
     URL_WETH_IO: 'https://weth.io/',
     URL_ZEROEX_CHAT: 'https://chat.0xproject.com',
 };

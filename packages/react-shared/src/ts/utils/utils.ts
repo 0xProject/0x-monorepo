@@ -1,5 +1,8 @@
+import isMobile = require('is-mobile');
 import * as _ from 'lodash';
 import { scroller } from 'react-scroll';
+
+import { EtherscanLinkSuffixes, Networks } from '../types';
 
 import { constants } from './constants';
 
@@ -19,6 +22,10 @@ export const utils = {
             containerId,
         });
     },
+    isUserOnMobile(): boolean {
+        const isUserOnMobile = isMobile();
+        return isUserOnMobile;
+    },
     getIdFromName(name: string) {
         const id = name.replace(/ /g, '-');
         return id;
@@ -28,5 +35,13 @@ export const utils = {
         const hasPort = !_.isUndefined(port);
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
+    },
+    getEtherScanLinkIfExists(addressOrTxHash: string, networkId: number, suffix: EtherscanLinkSuffixes): string {
+        const networkName = constants.NETWORK_NAME_BY_ID[networkId];
+        if (_.isUndefined(networkName)) {
+            return undefined;
+        }
+        const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
+        return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
     },
 };

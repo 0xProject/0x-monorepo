@@ -1,7 +1,7 @@
 {
-  "name": "@0xproject/react-shared",
+  "name": "@0xproject/react-docs",
   "version": "0.0.1",
-  "description": "0x shared react components",
+  "description": "React documentation component for rendering TypeDoc & Doxity generated JSON",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -24,14 +24,14 @@
     "typescript": "2.7.1"
   },
   "dependencies": {
+    "@0xproject/react-shared": "^0.0.1",
     "basscss": "^8.0.3",
-    "is-mobile": "^0.2.2",
+    "compare-versions": "^3.0.1",
+    "react-tooltip": "^3.2.7",
     "material-ui": "^0.17.1",
     "react": "15.6.1",
     "react-dom": "15.6.1",
     "lodash": "^4.17.4",
-    "react-scroll": "^1.5.2",
-    "react-tap-event-plugin": "^2.0.1",
-    "react-highlight": "0xproject/react-highlight"
+    "react-tap-event-plugin": "^2.0.1"
   }
 }

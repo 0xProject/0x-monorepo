@@ -1,14 +1,16 @@
 import { AnchorTitle, colors, HeaderSizes, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Comment } from 'ts/pages/documentation/comment';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { MethodSignature } from 'ts/pages/documentation/method_signature';
-import { SourceLink } from 'ts/pages/documentation/source_link';
-import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from 'ts/types';
-import { typeDocUtils } from 'ts/utils/typedoc_utils';
 
-interface MethodBlockProps {
+import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from '../types';
+import { typeDocUtils } from '../utils/typedoc_utils';
+
+import { Comment } from './comment';
+import { DocsInfo } from './docs_info';
+import { MethodSignature } from './method_signature';
+import { SourceLink } from './source_link';
+
+export interface MethodBlockProps {
     method: SolidityMethod | TypescriptMethod;
     sectionName: string;
     libraryVersion: string;
@@ -17,7 +19,7 @@ interface MethodBlockProps {
     sourceUrl: string;
 }
 
-interface MethodBlockState {
+export interface MethodBlockState {
     shouldShowAnchor: boolean;
 }
 

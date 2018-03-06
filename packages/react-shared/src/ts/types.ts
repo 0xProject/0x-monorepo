@@ -11,3 +11,15 @@ export enum HeaderSizes {
 export interface MenuSubsectionsBySection {
     [section: string]: string[];
 }
+
+export enum EtherscanLinkSuffixes {
+    Address = 'address',
+    Tx = 'tx',
+}
+
+export enum Networks {
+    Mainnet = 'Mainnet',
+    Kovan = 'Kovan',
+    Ropsten = 'Ropsten',
+    Rinkeby = 'Rinkeby',
+}

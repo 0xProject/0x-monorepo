@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+
 import {
     AbiTypes,
     DocAgnosticFormat,
@@ -13,7 +14,7 @@ import {
     SolidityMethod,
     Type,
     TypeDocTypes,
-} from 'ts/types';
+} from '../types';
 
 export const doxityUtils = {
     convertToDocAgnosticFormat(doxityDocObj: DoxityDocObj): DocAgnosticFormat {

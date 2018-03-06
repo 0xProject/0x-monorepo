@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -82,7 +82,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         );
     }
     private _renderConnectStep() {
-        const networkIds = _.values(constants.NETWORK_ID_BY_NAME);
+        const networkIds = _.values(sharedConstants.NETWORK_ID_BY_NAME);
         return (
             <div>
                 <div className="h4 pt3">Follow these instructions before proceeding:</div>
@@ -163,7 +163,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             const balance = this.state.addressBalances[i];
             const addressTooltipId = `address-${userAddress}`;
             const balanceTooltipId = `balance-${userAddress}`;
-            const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+            const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
             // We specifically prefix kovan ETH.
             // TODO: We should probably add prefixes for all networks
             const isKovanNetwork = networkName === 'Kovan';

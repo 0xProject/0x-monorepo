@@ -1,24 +1,26 @@
 import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Comment } from 'ts/pages/documentation/comment';
-import { CustomEnum } from 'ts/pages/documentation/custom_enum';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { Enum } from 'ts/pages/documentation/enum';
-import { Interface } from 'ts/pages/documentation/interface';
-import { MethodSignature } from 'ts/pages/documentation/method_signature';
-import { Type } from 'ts/pages/documentation/type';
-import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from 'ts/types';
-import { utils } from 'ts/utils/utils';
 
-interface TypeDefinitionProps {
+import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from '../types';
+import { utils } from '../utils/utils';
+
+import { Comment } from './comment';
+import { CustomEnum } from './custom_enum';
+import { DocsInfo } from './docs_info';
+import { Enum } from './enum';
+import { Interface } from './interface';
+import { MethodSignature } from './method_signature';
+import { Type } from './type';
+
+export interface TypeDefinitionProps {
     sectionName: string;
     customType: CustomType;
     shouldAddId?: boolean;
     docsInfo: DocsInfo;
 }
 
-interface TypeDefinitionState {
+export interface TypeDefinitionState {
     shouldShowAnchor: boolean;
 }
 

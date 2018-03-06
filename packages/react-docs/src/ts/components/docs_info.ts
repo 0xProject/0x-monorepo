@@ -1,6 +1,7 @@
 import { MenuSubsectionsBySection } from '@0xproject/react-shared';
 import compareVersions = require('compare-versions');
 import * as _ from 'lodash';
+
 import {
     ContractsByVersionByNetworkId,
     DocAgnosticFormat,
@@ -10,9 +11,9 @@ import {
     SectionsMap,
     SupportedDocJson,
     TypeDocNode,
-} from 'ts/types';
-import { doxityUtils } from 'ts/utils/doxity_utils';
-import { typeDocUtils } from 'ts/utils/typedoc_utils';
+} from '../types';
+import { doxityUtils } from '../utils/doxity_utils';
+import { typeDocUtils } from '../utils/typedoc_utils';
 
 export class DocsInfo {
     public id: string;

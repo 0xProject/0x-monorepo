@@ -1,11 +1,13 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { MethodSignature } from 'ts/pages/documentation/method_signature';
-import { Type } from 'ts/pages/documentation/type';
-import { CustomType, TypeDocTypes } from 'ts/types';
 
-interface InterfaceProps {
+import { CustomType, TypeDocTypes } from '../types';
+
+import { DocsInfo } from './docs_info';
+import { MethodSignature } from './method_signature';
+import { Type } from './type';
+
+export interface InterfaceProps {
     type: CustomType;
     sectionName: string;
     docsInfo: DocsInfo;

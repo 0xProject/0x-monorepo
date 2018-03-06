@@ -1,11 +1,12 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import { CustomType } from 'ts/types';
-import { utils } from 'ts/utils/utils';
+
+import { CustomType } from '../types';
+import { utils } from '../utils/utils';
 
 const STRING_ENUM_CODE_PREFIX = ' strEnum(';
 
-interface CustomEnumProps {
+export interface CustomEnumProps {
     type: CustomType;
 }
 

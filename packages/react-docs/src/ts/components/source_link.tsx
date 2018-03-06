@@ -1,9 +1,10 @@
 import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Source } from 'ts/types';
 
-interface SourceLinkProps {
+import { Source } from '../types';
+
+export interface SourceLinkProps {
     source: Source;
     sourceUrl: string;
     version: string;

@@ -1,19 +1,10 @@
 import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
+import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
-import isMobile = require('is-mobile');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import {
-    EtherscanLinkSuffixes,
-    Networks,
-    Order,
-    ScreenWidths,
-    Side,
-    SideToAssetToken,
-    Token,
-    TokenByAddress,
-} from 'ts/types';
+import { Order, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
@@ -139,18 +130,6 @@ export const utils = {
             return ScreenWidths.Sm;
         }
     },
-    isUserOnMobile(): boolean {
-        const isUserOnMobile = isMobile();
-        return isUserOnMobile;
-    },
-    getEtherScanLinkIfExists(addressOrTxHash: string, networkId: number, suffix: EtherscanLinkSuffixes): string {
-        const networkName = constants.NETWORK_NAME_BY_ID[networkId];
-        if (_.isUndefined(networkName)) {
-            return undefined;
-        }
-        const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
-        return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
-    },
     async isU2FSupportedAsync(): Promise<boolean> {
         const w = window as any;
         return new Promise((resolve: (isSupported: boolean) => void) => {
@@ -275,9 +254,9 @@ export const utils = {
     isTestNetwork(networkId: number): boolean {
         const isTestNetwork = _.includes(
             [
-                constants.NETWORK_ID_BY_NAME[Networks.Kovan],
-                constants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
-                constants.NETWORK_ID_BY_NAME[Networks.Ropsten],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Kovan],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten],
             ],
             networkId,
         );

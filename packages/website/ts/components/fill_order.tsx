@@ -1,5 +1,5 @@
 import { Order as ZeroExOrder, ZeroEx } from '0x.js';
-import { colors } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as accounting from 'accounting';
 import * as _ from 'lodash';
@@ -537,7 +537,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
-        const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const eventLabel = `${parsedOrder.metadata.takerToken.symbol}-${networkName}`;
         try {
             const orderFilledAmount: BigNumber = await this.props.blockchain.fillOrderAsync(
@@ -623,7 +623,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
-        const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const eventLabel = `${parsedOrder.metadata.makerToken.symbol}-${networkName}`;
         try {
             await this.props.blockchain.cancelOrderAsync(signedOrder, availableTakerTokenAmount);

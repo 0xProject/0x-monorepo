@@ -1,10 +1,9 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import { EthereumAddress } from 'ts/components/ui/ethereum_address';
 import { Identicon } from 'ts/components/ui/identicon';
-import { EtherscanLinkSuffixes } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 const IMAGE_DIMENSION = 100;
@@ -43,7 +42,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
             width: IMAGE_DIMENSION,
             height: IMAGE_DIMENSION,
         };
-        const etherscanLinkIfExists = utils.getEtherScanLinkIfExists(
+        const etherscanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
             this.props.address,
             this.props.networkId,
             EtherscanLinkSuffixes.Address,

@@ -1,5 +1,12 @@
 import { ZeroEx } from '0x.js';
-import { colors, Styles } from '@0xproject/react-shared';
+import {
+    colors,
+    constants as sharedConstants,
+    EtherscanLinkSuffixes,
+    Networks,
+    Styles,
+    utils as sharedUtils,
+} from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import DharmaLoanFrame from 'dharma-loan-frame';
 import * as _ from 'lodash';
@@ -27,8 +34,6 @@ import {
     BalanceErrs,
     BlockchainCallErrs,
     BlockchainErrs,
-    EtherscanLinkSuffixes,
-    Networks,
     ScreenWidths,
     Token,
     TokenByAddress,
@@ -117,7 +122,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (nextProps.userEtherBalance !== this.props.userEtherBalance) {
             if (this.state.isBalanceSpinnerVisible) {
                 const receivedAmount = nextProps.userEtherBalance.minus(this.props.userEtherBalance);
-                const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+                const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
                 this.props.dispatcher.showFlashMessage(`Received ${receivedAmount.toString(10)} ${networkName} Ether`);
             }
             this.setState({
@@ -357,17 +362,20 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
         const tokenState = this.state.trackedTokenStateByAddress[token.address];
-        const tokenLink = utils.getEtherScanLinkIfExists(
+        const tokenLink = sharedUtils.getEtherScanLinkIfExists(
             token.address,
             this.props.networkId,
             EtherscanLinkSuffixes.Address,
         );
         const isMintable =
             (_.includes(configs.SYMBOLS_OF_MINTABLE_KOVAN_TOKENS, token.symbol) &&
-                this.props.networkId === constants.NETWORK_ID_BY_NAME[Networks.Kovan]) ||
+                this.props.networkId === sharedConstants.NETWORK_ID_BY_NAME[Networks.Kovan]) ||
             (_.includes(configs.SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS, token.symbol) &&
                 _.includes(
-                    [constants.NETWORK_ID_BY_NAME[Networks.Rinkeby], constants.NETWORK_ID_BY_NAME[Networks.Ropsten]],
+                    [
+                        sharedConstants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
+                        sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten],
+                    ],
                     this.props.networkId,
                 ));
         return (
@@ -539,7 +547,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         }
     }
     private _renderDharmaLoanFrame() {
-        if (utils.isUserOnMobile()) {
+        if (sharedUtils.isUserOnMobile()) {
             return (
                 <h4 style={{ textAlign: 'center' }}>
                     We apologize -- Dharma loan requests are not available on mobile yet. Please try again through your

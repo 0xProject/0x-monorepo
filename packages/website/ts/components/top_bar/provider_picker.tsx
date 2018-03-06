@@ -1,3 +1,4 @@
+import { constants as sharedConstants } from '@0xproject/react-shared';
 import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
@@ -56,7 +57,7 @@ export class ProviderPicker extends React.Component<ProviderPickerProps, Provide
         return label;
     }
     private _renderNetwork() {
-        const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         return (
             <div className="flex" style={{ marginTop: 1 }}>
                 <div className="relative" style={{ width: 14, paddingLeft: 14 }}>

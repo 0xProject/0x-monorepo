@@ -1,3 +1,4 @@
+import { DocAgnosticFormat, DocsInfo, Documentation, DoxityDocObj } from '@0xproject/react-docs';
 import { MenuSubsectionsBySection } from '@0xproject/react-shared';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
@@ -5,10 +6,8 @@ import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import semverSort = require('semver-sort');
 import { TopBar } from 'ts/components/top_bar/top_bar';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { Documentation } from 'ts/pages/documentation/documentation';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DocAgnosticFormat, DocPackages, DoxityDocObj, Environments } from 'ts/types';
+import { DocPackages, Environments } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';

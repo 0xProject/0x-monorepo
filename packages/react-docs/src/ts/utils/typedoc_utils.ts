@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
+
+import { DocsInfo } from '../components/docs_info';
 import {
     CustomType,
     CustomTypeChild,
     DocAgnosticFormat,
-    DocPackages,
     DocSection,
     IndexSignature,
     KindString,
@@ -16,8 +16,8 @@ import {
     TypeDocType,
     TypeParameter,
     TypescriptMethod,
-} from 'ts/types';
-import { utils } from 'ts/utils/utils';
+} from '../types';
+import { utils } from '../utils/utils';
 
 export const typeDocUtils = {
     isType(entity: TypeDocNode): boolean {
@@ -267,7 +267,8 @@ export const typeDocUtils = {
         let callPath;
         if (isConstructor || entity.name === '__type') {
             callPath = '';
-        } else if (docId === DocPackages.ZeroExJs) {
+            // TODO: Get rid of this 0x-specific logic
+        } else if (docId === 'ZERO_EX_JS') {
             const topLevelInterface = isStatic ? 'ZeroEx.' : 'zeroEx.';
             callPath =
                 !_.isUndefined(sections.zeroEx) && sectionName !== sections.zeroEx

@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 
-interface CommentProps {
+export interface CommentProps {
     comment: string;
     className?: string;
 }

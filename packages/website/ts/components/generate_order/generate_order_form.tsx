@@ -1,3 +1,4 @@
+import { constants as sharedConstants } from '@0xproject/react-shared';
 import { ECSignature, Order, ZeroEx } from '0x.js';
 import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
@@ -253,7 +254,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         ) {
             const didSignSuccessfully = await this._signTransactionAsync();
             if (didSignSuccessfully) {
-                const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+                const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
                 const eventLabel = `${this.props.tokenByAddress[debitToken.address].symbol}-${networkName}`;
                 ReactGA.event({
                     category: 'Portal',

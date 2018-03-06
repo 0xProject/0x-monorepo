@@ -1,3 +1,4 @@
+import { constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
@@ -76,7 +77,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         if (!this._isAllowanceSet()) {
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
-        const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const eventLabel = `${this.props.token.symbol}-${networkName}`;
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);

@@ -15,12 +15,12 @@ const styles: Styles = {
     },
 };
 
-interface BadgeProps {
+export interface BadgeProps {
     title: string;
     backgroundColor: string;
 }
 
-interface BadgeState {
+export interface BadgeState {
     isHovering: boolean;
 }
 

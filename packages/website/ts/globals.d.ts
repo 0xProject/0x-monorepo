@@ -27,12 +27,6 @@ declare module 'find-versions' {
     export = findVersions;
 }
 
-// compare-version declarations
-declare function compareVersions(firstVersion: string, secondVersion: string): number;
-declare module 'compare-versions' {
-    export = compareVersions;
-}
-
 // semver-sort declarations
 declare module 'semver-sort' {
     const desc: (versions: string[]) => string[];
@@ -113,12 +107,6 @@ declare interface BlockiesConfig {
 declare function blockies(config: BlockiesConfig): BlockiesIcon;
 declare module 'blockies' {
     export = blockies;
-}
-
-// is-mobile declarations
-declare function isMobile(): boolean;
-declare module 'is-mobile' {
-    export = isMobile;
 }
 
 // web3-provider-engine declarations

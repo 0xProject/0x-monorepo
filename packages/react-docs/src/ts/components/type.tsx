@@ -3,11 +3,13 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { TypeDefinition } from 'ts/pages/documentation/type_definition';
-import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from 'ts/types';
-import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
+
+import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
+import { constants } from '../utils/constants';
+import { utils } from '../utils/utils';
+
+import { DocsInfo } from './docs_info';
+import { TypeDefinition } from './type_definition';
 
 // Some types reference other libraries. For these types, we want to link the user to the relevant documentation.
 const typeToUrl: { [typeName: string]: string } = {
@@ -34,7 +36,7 @@ const typeToSection: { [typeName: string]: string } = {
     OrderStateWatcher: 'orderWatcher',
 };
 
-interface TypeProps {
+export interface TypeProps {
     type: TypeDef;
     docsInfo: DocsInfo;
     sectionName: string;
@@ -181,7 +183,7 @@ export function Type(props: TypeProps): any {
                 duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
                 containerId={sharedConstants.DOCS_CONTAINER_ID}
             >
-                {_.isUndefined(typeDefinition) || utils.isUserOnMobile() ? (
+                {_.isUndefined(typeDefinition) || sharedUtils.isUserOnMobile() ? (
                     <span
                         onClick={sharedUtils.setUrlHash.bind(null, typeDefinitionAnchorId)}
                         style={{ color: colors.lightBlueA700, cursor: 'pointer' }}
