@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-import 'IEIP20.sol';
+import './IEIP20.sol';
 
 contract IEIP827 is IEIP20 {
     

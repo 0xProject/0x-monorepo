@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
-import 'interfaces/IEIP165Cache.sol';
-import 'utils/Ownable.sol';
+import './IEIP165Cache.sol';
+import '../utils/Ownable/Ownable.sol';
 
 // Based on EIP165Cache from @jbaylina
 // https://github.com/jbaylina/EIP165Cache/blob/master/contracts/EIP165Cache.sol

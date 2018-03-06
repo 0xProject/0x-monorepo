@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
-import 'IEIP20Basic.sol';
-import 'IEIP20Optional.sol';
+import './IEIP20Basic.sol';
+import './IEIP20Optional.sol';
 
 contract IEIP223 is IEIP20Basic, IEIP20Optional {
     

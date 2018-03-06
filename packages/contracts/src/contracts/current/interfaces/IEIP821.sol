@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-import 'IEIP20Optional.sol';
+import './IEIP20Optional.sol';
 
 // https://github.com/ethereum/EIPs/issues/821
 contract IEIP821 is IEIP20Optional {
