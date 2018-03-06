@@ -85,7 +85,6 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     availableVersions={this.props.availableDocVersions}
                     docsInfo={this.props.docsInfo}
                     docAgnosticFormat={this.state.docAgnosticFormat}
-                    menuSubsectionsBySection={menuSubsectionsBySection}
                     sourceUrl={sourceUrl}
                 />
             </div>

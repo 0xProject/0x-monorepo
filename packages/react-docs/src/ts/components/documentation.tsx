@@ -51,7 +51,6 @@ export interface DocumentationProps {
     availableVersions: string[];
     docsInfo: DocsInfo;
     docAgnosticFormat?: DocAgnosticFormat;
-    menuSubsectionsBySection: MenuSubsectionsBySection;
     sourceUrl: string;
 }
 
@@ -84,6 +83,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         }
     }
     public render() {
+        const menuSubsectionsBySection = this.props.docsInfo.getMenuSubsectionsBySection(this.props.docAgnosticFormat);
         return (
             <div>
                 {_.isUndefined(this.props.docAgnosticFormat) ? (
@@ -111,7 +111,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                         versions={this.props.availableVersions}
                                         title={this.props.docsInfo.displayName}
                                         topLevelMenu={this.props.docsInfo.getMenu(this.props.selectedVersion)}
-                                        menuSubsectionsBySection={this.props.menuSubsectionsBySection}
+                                        menuSubsectionsBySection={menuSubsectionsBySection}
                                     />
                                 </div>
                             </div>
