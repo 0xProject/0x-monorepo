@@ -47,7 +47,6 @@ const networkNameToColor: { [network: string]: string } = {
 };
 
 export interface DocumentationProps {
-    location: Location;
     docsVersion: string;
     availableDocVersions: string[];
     docsInfo: DocsInfo;
@@ -80,7 +79,7 @@ const styles: Styles = {
 export class Documentation extends React.Component<DocumentationProps, DocumentationState> {
     public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
-            const hash = this.props.location.hash.slice(1);
+            const hash = window.location.hash.slice(1);
             sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
         }
     }

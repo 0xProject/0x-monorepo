@@ -81,7 +81,6 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     translate={this.props.translate}
                 />
                 <Documentation
-                    location={this.props.location}
                     docsVersion={this.props.docsVersion}
                     availableDocVersions={this.props.availableDocVersions}
                     docsInfo={this.props.docsInfo}
