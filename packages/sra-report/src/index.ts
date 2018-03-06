@@ -39,7 +39,7 @@ const args = yargs
     })
     .option('environment', {
         alias: ['env'],
-        describe: 'File path to an environment file for the collection run',
+        describe: 'The relative path to a postman environment file for the collection run',
         type: 'string',
         normalize: true,
         demandOption: false,
