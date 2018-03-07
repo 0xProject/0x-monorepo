@@ -23,6 +23,7 @@ async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumC
     return ledgerEthClient;
 }
 
+const DEFAULT_DERIVATION_PATH = `m/44'/60'/0'/0`;
 const TEST_RPC_ACCOUNT_0 = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
 
 describe('LedgerSubprovider', () => {
@@ -32,6 +33,7 @@ describe('LedgerSubprovider', () => {
         ledgerSubprovider = new LedgerSubprovider({
             networkId,
             ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
+            derivationPath: DEFAULT_DERIVATION_PATH,
         });
     });
     describe('direct method calls', () => {
@@ -62,7 +64,7 @@ describe('LedgerSubprovider', () => {
             };
             const txHex = await ledgerSubprovider.signTransactionAsync(tx);
             expect(txHex).to.be.equal(
-                '0xf85f8080822710940000000000000000000000000000000000000000808077a088a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98ba0019f4a4b9a107d1e6752bf7f701e275f28c13791d6e76af895b07373462cefaa',
+                '0xf85f8080822710940000000000000000000000000000000000000000808078a0712854c73c69445cc1b22a7c3d7312ff9a97fe4ffba35fd636e8236b211b6e7ca0647cee031615e52d916c7c707025bc64ad525d8f1b9876c3435a863b42743178',
             );
         });
     });
