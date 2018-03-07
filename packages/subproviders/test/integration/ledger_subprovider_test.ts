@@ -1,4 +1,5 @@
 import Eth from '@ledgerhq/hw-app-eth';
+// HACK: This depdency is optional and tslint skips optional depdencies
 // tslint:disable-next-line:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
@@ -23,7 +24,7 @@ async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumC
     return ledgerEthClient;
 }
 
-const DEFAULT_DERIVATION_PATH = `m/44'/60'/0'/0`;
+const TESTRPC_DERIVATION_PATH = `m/44'/60'/0'/0`;
 const TEST_RPC_ACCOUNT_0 = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
 
 describe('LedgerSubprovider', () => {
@@ -33,7 +34,7 @@ describe('LedgerSubprovider', () => {
         ledgerSubprovider = new LedgerSubprovider({
             networkId,
             ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
-            derivationPath: DEFAULT_DERIVATION_PATH,
+            derivationPath: TESTRPC_DERIVATION_PATH,
         });
     });
     describe('direct method calls', () => {
@@ -42,7 +43,7 @@ describe('LedgerSubprovider', () => {
             expect(accounts[0]).to.not.be.an('undefined');
             expect(accounts.length).to.be.equal(10);
         });
-        it('returns the expected account', async () => {
+        it('returns the expected first account from a ledger set up with the test mnemonic', async () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
             expect(accounts[0]).to.be.equal(TEST_RPC_ACCOUNT_0);
         });

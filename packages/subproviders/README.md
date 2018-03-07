@@ -67,8 +67,8 @@ ledgerSubprovider = new LedgerSubprovider({
 ##### Testing Subprovider + Ledger integration
 
 To run our integration tests you need a ledger configured with our development mnemonic seed.
-This is available in the top level package.json under `mnemonic`.
-Configure your ledger and run the integration tests. We assume a derivation path of `m/44'/60'/0'/0` and this is configured in the tests. To this setup and derivation path, your first account should be `0x5409ed021d9299bf6814279a6a1411a7e866a631`, exactly like TestRPC.
+Our development mnemonic is `concert load couple harbor equip island argue ramp clarify fence smart topic`.
+Configure your ledger and run the integration tests. We assume a derivation path of `m/44'/60'/0'/0` and this is configured in the tests. With this setup and derivation path, your first account should be `0x5409ed021d9299bf6814279a6a1411a7e866a631`, exactly like TestRPC.
 
 #### Redundant RPC subprovider
 

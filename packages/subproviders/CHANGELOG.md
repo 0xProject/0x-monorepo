@@ -1,8 +1,8 @@
 # CHANGELOG
 
-## v0.7.0 - _March 6, 2018_
+## v0.7.0 - _TBD_
 
-    * Updated legerco packages. Removed node-hid packages as a dependency. (#437)
+    * Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros. (#437)
 
 ## v0.6.0 - _March 4, 2018_
 

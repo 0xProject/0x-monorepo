@@ -54,14 +54,14 @@ declare module '@ledgerhq/hw-app-eth' {
 }
 
 declare module '@ledgerhq/hw-transport-u2f' {
-    export default class TransportU2F {
+    export default class TransportU2F implements LedgerTransport {
         public static create(): Promise<LedgerTransport>;
         public close(): Promise<void>;
     }
 }
 
 declare module '@ledgerhq/hw-transport-node-hid' {
-    export default class TransportNodeHid {
+    export default class TransportNodeHid implements LedgerTransport {
         public static create(): Promise<LedgerTransport>;
         public close(): Promise<void>;
     }
