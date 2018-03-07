@@ -8,7 +8,8 @@
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
     "build": "tsc",
     "build:watch": "tsc -w",
-    "clean": "shx rm -rf lib"
+    "clean": "shx rm -rf lib",
+    "dev": "webpack-dev-server --open"
   },
   "author": "Fabio Berger",
   "license": "MIT",
@@ -21,7 +22,15 @@
     "@types/react-dom": "^0.14.23",
     "shx": "^0.2.2",
     "tslint": "^5.9.1",
-    "typescript": "2.7.1"
+    "typescript": "2.7.1",
+    "webpack": "^3.11.0",
+    "webpack-dev-server": "^2.11.1",
+    "css-loader": "^0.28.9",
+    "source-map-loader": "^0.2.3",
+    "style-loader": "^0.20.2",
+    "json-loader": "^0.5.4",
+    "raw-loader": "^0.5.1",
+    "less-loader": "^2.2.3"
   },
   "dependencies": {
     "@0xproject/react-shared": "^0.0.1",

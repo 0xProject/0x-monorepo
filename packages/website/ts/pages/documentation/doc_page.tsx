@@ -88,6 +88,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     docAgnosticFormat={this.state.docAgnosticFormat}
                     sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
                     sourceUrl={sourceUrl}
+                    topBarHeight={60}
                 />
             </div>
         );
@@ -112,7 +113,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
 
         const versionFileNameToFetch = versionToFileName[versionToFetch];
         const versionDocObj = await docUtils.getJSONDocFileAsync(versionFileNameToFetch, docsJsonRoot);
-        const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
+        const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj);
 
         if (!this._isUnmounted) {
             this.setState({

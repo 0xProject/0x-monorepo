@@ -37,8 +37,6 @@ import { SourceLink } from './source_link';
 import { Type } from './type';
 import { TypeDefinition } from './type_definition';
 
-const TOP_BAR_HEIGHT = 60;
-
 const networkNameToColor: { [network: string]: string } = {
     [Networks.Kovan]: colors.purple,
     [Networks.Ropsten]: colors.red,
@@ -53,30 +51,15 @@ export interface DocumentationProps {
     docAgnosticFormat?: DocAgnosticFormat;
     sidebarHeader?: React.ReactNode;
     sourceUrl: string;
+    topBarHeight?: number;
 }
 
 export interface DocumentationState {}
 
-const styles: Styles = {
-    mainContainers: {
-        position: 'absolute',
-        top: 1,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        overflowZ: 'hidden',
-        overflowY: 'scroll',
-        minHeight: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
-        WebkitOverflowScrolling: 'touch',
-    },
-    menuContainer: {
-        borderColor: colors.grey300,
-        maxWidth: 330,
-        marginLeft: 20,
-    },
-};
-
 export class Documentation extends React.Component<DocumentationProps, DocumentationState> {
+    public static defaultProps: Partial<DocumentationProps> = {
+        topBarHeight: 0,
+    };
     public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
@@ -84,27 +67,45 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         }
     }
     public render() {
+        const styles: Styles = {
+            mainContainers: {
+                position: 'absolute',
+                top: 1,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                overflowZ: 'hidden',
+                overflowY: 'scroll',
+                minHeight: `calc(100vh - ${this.props.topBarHeight}px)`,
+                WebkitOverflowScrolling: 'touch',
+            },
+            menuContainer: {
+                borderColor: colors.grey300,
+                maxWidth: 330,
+                marginLeft: 20,
+            },
+        };
         const menuSubsectionsBySection = this.props.docsInfo.getMenuSubsectionsBySection(this.props.docAgnosticFormat);
         return (
             <div>
                 {_.isUndefined(this.props.docAgnosticFormat) ? (
-                    this._renderLoading()
+                    this._renderLoading(styles.mainContainers)
                 ) : (
                     <div style={{ width: '100%', height: '100%', backgroundColor: colors.gray40 }}>
                         <div
                             className="mx-auto max-width-4 flex"
-                            style={{ color: colors.grey800, height: `calc(100vh - ${TOP_BAR_HEIGHT}px)` }}
+                            style={{ color: colors.grey800, height: `calc(100vh - ${this.props.topBarHeight}px)` }}
                         >
                             <div
                                 className="relative sm-hide xs-hide"
-                                style={{ width: '36%', height: `calc(100vh - ${TOP_BAR_HEIGHT}px)` }}
+                                style={{ width: '36%', height: `calc(100vh - ${this.props.topBarHeight}px)` }}
                             >
                                 <div
                                     className="border-right absolute"
                                     style={{
                                         ...styles.menuContainer,
                                         ...styles.mainContainers,
-                                        height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+                                        height: `calc(100vh - ${this.props.topBarHeight}px)`,
                                     }}
                                 >
                                     <NestedSidebarMenu
@@ -135,9 +136,9 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             </div>
         );
     }
-    private _renderLoading() {
+    private _renderLoading(mainContainersStyles: React.CSSProperties) {
         return (
-            <div className="col col-12" style={styles.mainContainers}>
+            <div className="col col-12" style={mainContainersStyles}>
                 <div
                     className="relative sm-px2 sm-pt2 sm-m1"
                     style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
@@ -210,6 +211,9 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 />
             );
         });
+        const headerStyle: React.CSSProperties = {
+            fontWeight: 100,
+        };
         return (
             <div key={`section-${sectionName}`} className="py2 pr3 md-pl2 sm-pl3">
                 <div className="flex pb2">
@@ -222,26 +226,26 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 {docSection.constructors.length > 0 &&
                     this.props.docsInfo.isVisibleConstructor(sectionName) && (
                         <div>
-                            <h2 className="thin">Constructor</h2>
+                            <h2 style={headerStyle}>Constructor</h2>
                             {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
                         </div>
                     )}
                 {docSection.properties.length > 0 && (
                     <div>
-                        <h2 className="thin">Properties</h2>
+                        <h2 style={headerStyle}>Properties</h2>
                         <div>{propertyDefs}</div>
                     </div>
                 )}
                 {docSection.methods.length > 0 && (
                     <div>
-                        <h2 className="thin">Methods</h2>
+                        <h2 style={headerStyle}>Methods</h2>
                         <div>{methodDefs}</div>
                     </div>
                 )}
                 {!_.isUndefined(docSection.events) &&
                     docSection.events.length > 0 && (
                         <div>
-                            <h2 className="thin">Events</h2>
+                            <h2 style={headerStyle}>Events</h2>
                             <div>{eventDefs}</div>
                         </div>
                     )}

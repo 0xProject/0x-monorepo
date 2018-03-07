@@ -1,0 +1,85 @@
+/* Custom Basscss Responsive Utilities */
+
+@media (max-width: 52em) {
+    .sm-center {
+        text-align: center;
+    }
+    .sm-align-middle {
+        vertical-align: middle;
+    }
+    .sm-align-top {
+        vertical-align: top;
+    }
+    .sm-left-align {
+        text-align: left;
+    }
+    .sm-right-align {
+        text-align: right;
+    }
+    .sm-table-cell {
+        display: table-cell;
+    }
+    .sm-mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .sm-right {
+        float: right;
+    }
+}
+
+@media (min-width: 52em) {
+    .md-center {
+        text-align: center;
+    }
+    .md-align-middle {
+        vertical-align: middle;
+    }
+    .md-align-top {
+        vertical-align: top;
+    }
+    .md-left-align {
+        text-align: left;
+    }
+    .md-right-align {
+        text-align: right;
+    }
+    .md-table-cell {
+        display: table-cell;
+    }
+    .md-mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .md-right {
+        float: right;
+    }
+}
+
+@media (min-width: 64em) {
+    .lg-center {
+        text-align: center;
+    }
+    .lg-align-middle {
+        vertical-align: middle;
+    }
+    .lg-align-top {
+        vertical-align: top;
+    }
+    .lg-left-align {
+        text-align: left;
+    }
+    .lg-right-align {
+        text-align: right;
+    }
+    .lg-table-cell {
+        display: table-cell;
+    }
+    .lg-mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .lg-right {
+        float: right;
+    }
+}

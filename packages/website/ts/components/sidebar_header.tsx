@@ -22,9 +22,7 @@ export class SidebarHeader extends React.Component<SidebarHeaderProps, SidebarHe
         return (
             <div className="pt2 md-px1 sm-px2" style={{ color: colors.black, paddingBottom: 18 }}>
                 <div className="flex" style={{ fontSize: 25 }}>
-                    <div className="robotoMono" style={{ fontWeight: 'bold' }}>
-                        0x
-                    </div>
+                    <div style={{ fontWeight: 'bold', fontFamily: 'Roboto Mono' }}>0x</div>
                     <div className="pl2" style={{ lineHeight: 1.4, fontWeight: 300 }}>
                         docs
                     </div>
