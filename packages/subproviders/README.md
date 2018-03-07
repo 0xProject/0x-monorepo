@@ -64,12 +64,6 @@ ledgerSubprovider = new LedgerSubprovider({
 });
 ```
 
-##### Testing Subprovider + Ledger integration
-
-To run our integration tests you need a ledger configured with our development mnemonic seed.
-Our development mnemonic is `concert load couple harbor equip island argue ramp clarify fence smart topic`.
-Configure your ledger and run the integration tests. We assume a derivation path of `m/44'/60'/0'/0` and this is configured in the tests. With this setup and derivation path, your first account should be `0x5409ed021d9299bf6814279a6a1411a7e866a631`, exactly like TestRPC.
-
 #### Redundant RPC subprovider
 
 A subprovider which attempts to send an RPC call to a list of RPC endpoints sequentially, until one of them returns a successful response.
@@ -132,16 +126,20 @@ yarn run test:unit
 
 In order to run the integration tests, make sure you have a Ledger Nano S available.
 
+*   Setup your Ledger with the development mnemonic seed: `concert load couple harbor equip island argue ramp clarify fence smart topic`
 *   Plug it into your computer
 *   Unlock the device
 *   Open the on-device Ethereum app
-*   Make sure "browser support" is disabled
+*   Make sure "browser support" and "contract data" are disabled
+*   Start [TestRPC](https://github.com/trufflesuite/ganache-cli) locally at port `8545`
 
 Then run:
 
 ```
 yarn test:integration
 ```
+
+**Note:** We assume a derivation path of `m/44'/60'/0'/0` which is already configured in the tests. With this setup and derivation path, your first account should be `0x5409ed021d9299bf6814279a6a1411a7e866a631`, exactly like TestRPC.
 
 #### All tests
 
