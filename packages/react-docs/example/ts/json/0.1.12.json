@@ -5,7 +5,7 @@
 	"flags": {},
 	"children": [
 		{
-			"id": 66,
+			"id": 75,
 			"name": "\"types/src/index\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -15,7 +15,7 @@
 			"originalName": "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/packages/types/src/index.ts",
 			"children": [
 				{
-					"id": 93,
+					"id": 102,
 					"name": "AbiType",
 					"kind": 4,
 					"kindString": "Enumeration",
@@ -24,7 +24,7 @@
 					},
 					"children": [
 						{
-							"id": 95,
+							"id": 104,
 							"name": "Constructor",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -41,7 +41,7 @@
 							"defaultValue": "\"constructor\""
 						},
 						{
-							"id": 96,
+							"id": 105,
 							"name": "Event",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -58,7 +58,7 @@
 							"defaultValue": "\"event\""
 						},
 						{
-							"id": 97,
+							"id": 106,
 							"name": "Fallback",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -75,7 +75,7 @@
 							"defaultValue": "\"fallback\""
 						},
 						{
-							"id": 94,
+							"id": 103,
 							"name": "Function",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -97,10 +97,10 @@
 							"title": "Enumeration members",
 							"kind": 16,
 							"children": [
-								95,
-								96,
-								97,
-								94
+								104,
+								105,
+								106,
+								103
 							]
 						}
 					],
@@ -113,7 +113,7 @@
 					]
 				},
 				{
-					"id": 130,
+					"id": 139,
 					"name": "BlockParamLiteral",
 					"kind": 4,
 					"kindString": "Enumeration",
@@ -122,7 +122,7 @@
 					},
 					"children": [
 						{
-							"id": 131,
+							"id": 140,
 							"name": "Latest",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -139,7 +139,7 @@
 							"defaultValue": "\"latest\""
 						},
 						{
-							"id": 132,
+							"id": 141,
 							"name": "Pending",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -161,8 +161,8 @@
 							"title": "Enumeration members",
 							"kind": 16,
 							"children": [
-								131,
-								132
+								140,
+								141
 							]
 						}
 					],
@@ -175,7 +175,7 @@
 					]
 				},
 				{
-					"id": 113,
+					"id": 122,
 					"name": "SolidityTypes",
 					"kind": 4,
 					"kindString": "Enumeration",
@@ -184,7 +184,7 @@
 					},
 					"children": [
 						{
-							"id": 114,
+							"id": 123,
 							"name": "Address",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -201,7 +201,7 @@
 							"defaultValue": "\"address\""
 						},
 						{
-							"id": 117,
+							"id": 126,
 							"name": "Uint",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -218,7 +218,7 @@
 							"defaultValue": "\"uint\""
 						},
 						{
-							"id": 115,
+							"id": 124,
 							"name": "Uint256",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -235,7 +235,7 @@
 							"defaultValue": "\"uint256\""
 						},
 						{
-							"id": 116,
+							"id": 125,
 							"name": "Uint8",
 							"kind": 16,
 							"kindString": "Enumeration member",
@@ -257,10 +257,10 @@
 							"title": "Enumeration members",
 							"kind": 16,
 							"children": [
-								114,
-								117,
-								115,
-								116
+								123,
+								126,
+								124,
+								125
 							]
 						}
 					],
@@ -273,7 +273,7 @@
 					]
 				},
 				{
-					"id": 98,
+					"id": 107,
 					"name": "DecodedLogArgs",
 					"kind": 256,
 					"kindString": "Interface",
@@ -281,14 +281,14 @@
 						"isExported": true
 					},
 					"indexSignature": {
-						"id": 99,
+						"id": 108,
 						"name": "__index",
 						"kind": 8192,
 						"kindString": "Index signature",
 						"flags": {},
 						"parameters": [
 							{
-								"id": 100,
+								"id": 109,
 								"name": "argName",
 								"kind": 32768,
 								"kindString": "Parameter",
@@ -302,7 +302,7 @@
 						"type": {
 							"type": "reference",
 							"name": "ContractEventArg",
-							"id": 142
+							"id": 151
 						}
 					},
 					"sources": [
@@ -314,7 +314,7 @@
 					]
 				},
 				{
-					"id": 90,
+					"id": 99,
 					"name": "JSONRPCPayload",
 					"kind": 256,
 					"kindString": "Interface",
@@ -323,7 +323,7 @@
 					},
 					"children": [
 						{
-							"id": 92,
+							"id": 101,
 							"name": "method",
 							"kind": 1024,
 							"kindString": "Property",
@@ -343,7 +343,7 @@
 							}
 						},
 						{
-							"id": 91,
+							"id": 100,
 							"name": "params",
 							"kind": 1024,
 							"kindString": "Property",
@@ -371,8 +371,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								92,
-								91
+								101,
+								100
 							]
 						}
 					],
@@ -385,7 +385,7 @@
 					]
 				},
 				{
-					"id": 101,
+					"id": 110,
 					"name": "LogWithDecodedArgs",
 					"kind": 256,
 					"kindString": "Interface",
@@ -394,7 +394,7 @@
 					},
 					"typeParameter": [
 						{
-							"id": 102,
+							"id": 111,
 							"name": "ArgsType",
 							"kind": 131072,
 							"kindString": "Type parameter",
@@ -403,7 +403,7 @@
 					],
 					"children": [
 						{
-							"id": 110,
+							"id": 119,
 							"name": "address",
 							"kind": 1024,
 							"kindString": "Property",
@@ -427,7 +427,7 @@
 							}
 						},
 						{
-							"id": 104,
+							"id": 113,
 							"name": "args",
 							"kind": 1024,
 							"kindString": "Property",
@@ -451,7 +451,7 @@
 							}
 						},
 						{
-							"id": 108,
+							"id": 117,
 							"name": "blockHash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -484,7 +484,7 @@
 							}
 						},
 						{
-							"id": 109,
+							"id": 118,
 							"name": "blockNumber",
 							"kind": 1024,
 							"kindString": "Property",
@@ -517,7 +517,7 @@
 							}
 						},
 						{
-							"id": 111,
+							"id": 120,
 							"name": "data",
 							"kind": 1024,
 							"kindString": "Property",
@@ -541,7 +541,7 @@
 							}
 						},
 						{
-							"id": 103,
+							"id": 112,
 							"name": "event",
 							"kind": 1024,
 							"kindString": "Property",
@@ -565,7 +565,7 @@
 							}
 						},
 						{
-							"id": 105,
+							"id": 114,
 							"name": "logIndex",
 							"kind": 1024,
 							"kindString": "Property",
@@ -598,7 +598,7 @@
 							}
 						},
 						{
-							"id": 112,
+							"id": 121,
 							"name": "topics",
 							"kind": 1024,
 							"kindString": "Property",
@@ -625,7 +625,7 @@
 							}
 						},
 						{
-							"id": 107,
+							"id": 116,
 							"name": "transactionHash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -649,7 +649,7 @@
 							}
 						},
 						{
-							"id": 106,
+							"id": 115,
 							"name": "transactionIndex",
 							"kind": 1024,
 							"kindString": "Property",
@@ -687,16 +687,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								110,
-								104,
-								108,
-								109,
-								111,
-								103,
-								105,
+								119,
+								113,
+								117,
+								118,
+								120,
 								112,
-								107,
-								106
+								114,
+								121,
+								116,
+								115
 							]
 						}
 					],
@@ -721,7 +721,7 @@
 					]
 				},
 				{
-					"id": 133,
+					"id": 142,
 					"name": "RawLogEntry",
 					"kind": 256,
 					"kindString": "Interface",
@@ -730,7 +730,7 @@
 					},
 					"children": [
 						{
-							"id": 139,
+							"id": 148,
 							"name": "address",
 							"kind": 1024,
 							"kindString": "Property",
@@ -750,7 +750,7 @@
 							}
 						},
 						{
-							"id": 137,
+							"id": 146,
 							"name": "blockHash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -779,7 +779,7 @@
 							}
 						},
 						{
-							"id": 138,
+							"id": 147,
 							"name": "blockNumber",
 							"kind": 1024,
 							"kindString": "Property",
@@ -808,7 +808,7 @@
 							}
 						},
 						{
-							"id": 140,
+							"id": 149,
 							"name": "data",
 							"kind": 1024,
 							"kindString": "Property",
@@ -828,7 +828,7 @@
 							}
 						},
 						{
-							"id": 134,
+							"id": 143,
 							"name": "logIndex",
 							"kind": 1024,
 							"kindString": "Property",
@@ -857,7 +857,7 @@
 							}
 						},
 						{
-							"id": 141,
+							"id": 150,
 							"name": "topics",
 							"kind": 1024,
 							"kindString": "Property",
@@ -880,7 +880,7 @@
 							}
 						},
 						{
-							"id": 136,
+							"id": 145,
 							"name": "transactionHash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -900,7 +900,7 @@
 							}
 						},
 						{
-							"id": 135,
+							"id": 144,
 							"name": "transactionIndex",
 							"kind": 1024,
 							"kindString": "Property",
@@ -934,14 +934,14 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								139,
-								137,
-								138,
-								140,
-								134,
-								141,
-								136,
-								135
+								148,
+								146,
+								147,
+								149,
+								143,
+								150,
+								145,
+								144
 							]
 						}
 					],
@@ -954,7 +954,7 @@
 					]
 				},
 				{
-					"id": 78,
+					"id": 87,
 					"name": "TransactionReceipt",
 					"kind": 256,
 					"kindString": "Interface",
@@ -963,7 +963,7 @@
 					},
 					"children": [
 						{
-							"id": 79,
+							"id": 88,
 							"name": "blockHash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -983,7 +983,7 @@
 							}
 						},
 						{
-							"id": 80,
+							"id": 89,
 							"name": "blockNumber",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1003,7 +1003,7 @@
 							}
 						},
 						{
-							"id": 88,
+							"id": 97,
 							"name": "contractAddress",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1032,7 +1032,7 @@
 							}
 						},
 						{
-							"id": 86,
+							"id": 95,
 							"name": "cumulativeGasUsed",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1052,7 +1052,7 @@
 							}
 						},
 						{
-							"id": 83,
+							"id": 92,
 							"name": "from",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1072,7 +1072,7 @@
 							}
 						},
 						{
-							"id": 87,
+							"id": 96,
 							"name": "gasUsed",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1092,7 +1092,7 @@
 							}
 						},
 						{
-							"id": 89,
+							"id": 98,
 							"name": "logs",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1115,7 +1115,7 @@
 							}
 						},
 						{
-							"id": 85,
+							"id": 94,
 							"name": "status",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1148,7 +1148,7 @@
 							}
 						},
 						{
-							"id": 84,
+							"id": 93,
 							"name": "to",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1168,7 +1168,7 @@
 							}
 						},
 						{
-							"id": 81,
+							"id": 90,
 							"name": "transactionHash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1188,7 +1188,7 @@
 							}
 						},
 						{
-							"id": 82,
+							"id": 91,
 							"name": "transactionIndex",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1213,17 +1213,17 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								79,
-								80,
 								88,
-								86,
-								83,
-								87,
 								89,
-								85,
-								84,
-								81,
-								82
+								97,
+								95,
+								92,
+								96,
+								98,
+								94,
+								93,
+								90,
+								91
 							]
 						}
 					],
@@ -1238,12 +1238,12 @@
 						{
 							"type": "reference",
 							"name": "TransactionReceiptWithDecodedLogs",
-							"id": 118
+							"id": 127
 						}
 					]
 				},
 				{
-					"id": 118,
+					"id": 127,
 					"name": "TransactionReceiptWithDecodedLogs",
 					"kind": 256,
 					"kindString": "Interface",
@@ -1252,7 +1252,7 @@
 					},
 					"children": [
 						{
-							"id": 120,
+							"id": 129,
 							"name": "blockHash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1273,11 +1273,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.blockHash",
-								"id": 79
+								"id": 88
 							}
 						},
 						{
-							"id": 121,
+							"id": 130,
 							"name": "blockNumber",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1298,11 +1298,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.blockNumber",
-								"id": 80
+								"id": 89
 							}
 						},
 						{
-							"id": 129,
+							"id": 138,
 							"name": "contractAddress",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1332,11 +1332,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.contractAddress",
-								"id": 88
+								"id": 97
 							}
 						},
 						{
-							"id": 127,
+							"id": 136,
 							"name": "cumulativeGasUsed",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1357,11 +1357,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.cumulativeGasUsed",
-								"id": 86
+								"id": 95
 							}
 						},
 						{
-							"id": 124,
+							"id": 133,
 							"name": "from",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1382,11 +1382,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.from",
-								"id": 83
+								"id": 92
 							}
 						},
 						{
-							"id": 128,
+							"id": 137,
 							"name": "gasUsed",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1407,11 +1407,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.gasUsed",
-								"id": 87
+								"id": 96
 							}
 						},
 						{
-							"id": 119,
+							"id": 128,
 							"name": "logs",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1435,12 +1435,12 @@
 											{
 												"type": "reference",
 												"name": "LogWithDecodedArgs",
-												"id": 101,
+												"id": 110,
 												"typeArguments": [
 													{
 														"type": "reference",
 														"name": "DecodedLogArgs",
-														"id": 98
+														"id": 107
 													}
 												]
 											},
@@ -1455,11 +1455,11 @@
 							"overwrites": {
 								"type": "reference",
 								"name": "TransactionReceipt.logs",
-								"id": 89
+								"id": 98
 							}
 						},
 						{
-							"id": 126,
+							"id": 135,
 							"name": "status",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1493,11 +1493,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.status",
-								"id": 85
+								"id": 94
 							}
 						},
 						{
-							"id": 125,
+							"id": 134,
 							"name": "to",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1518,11 +1518,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.to",
-								"id": 84
+								"id": 93
 							}
 						},
 						{
-							"id": 122,
+							"id": 131,
 							"name": "transactionHash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1543,11 +1543,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.transactionHash",
-								"id": 81
+								"id": 90
 							}
 						},
 						{
-							"id": 123,
+							"id": 132,
 							"name": "transactionIndex",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1568,7 +1568,7 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TransactionReceipt.transactionIndex",
-								"id": 82
+								"id": 91
 							}
 						}
 					],
@@ -1577,17 +1577,17 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								120,
-								121,
 								129,
-								127,
-								124,
+								130,
+								138,
+								136,
+								133,
+								137,
 								128,
-								119,
-								126,
-								125,
-								122,
-								123
+								135,
+								134,
+								131,
+								132
 							]
 						}
 					],
@@ -1602,12 +1602,12 @@
 						{
 							"type": "reference",
 							"name": "TransactionReceipt",
-							"id": 78
+							"id": 87
 						}
 					]
 				},
 				{
-					"id": 67,
+					"id": 76,
 					"name": "TxData",
 					"kind": 256,
 					"kindString": "Interface",
@@ -1616,7 +1616,7 @@
 					},
 					"children": [
 						{
-							"id": 68,
+							"id": 77,
 							"name": "from",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1646,7 +1646,7 @@
 							}
 						},
 						{
-							"id": 69,
+							"id": 78,
 							"name": "gas",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1676,7 +1676,7 @@
 							}
 						},
 						{
-							"id": 70,
+							"id": 79,
 							"name": "gasPrice",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1697,7 +1697,7 @@
 							}
 						},
 						{
-							"id": 71,
+							"id": 80,
 							"name": "nonce",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1732,10 +1732,10 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								68,
-								69,
-								70,
-								71
+								77,
+								78,
+								79,
+								80
 							]
 						}
 					],
@@ -1750,12 +1750,12 @@
 						{
 							"type": "reference",
 							"name": "TxDataPayable",
-							"id": 72
+							"id": 81
 						}
 					]
 				},
 				{
-					"id": 72,
+					"id": 81,
 					"name": "TxDataPayable",
 					"kind": 256,
 					"kindString": "Interface",
@@ -1764,7 +1764,7 @@
 					},
 					"children": [
 						{
-							"id": 74,
+							"id": 83,
 							"name": "from",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1795,11 +1795,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TxData.from",
-								"id": 68
+								"id": 77
 							}
 						},
 						{
-							"id": 75,
+							"id": 84,
 							"name": "gas",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1830,11 +1830,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TxData.gas",
-								"id": 69
+								"id": 78
 							}
 						},
 						{
-							"id": 76,
+							"id": 85,
 							"name": "gasPrice",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1856,11 +1856,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TxData.gasPrice",
-								"id": 70
+								"id": 79
 							}
 						},
 						{
-							"id": 77,
+							"id": 86,
 							"name": "nonce",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1891,11 +1891,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "TxData.nonce",
-								"id": 71
+								"id": 80
 							}
 						},
 						{
-							"id": 73,
+							"id": 82,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1921,11 +1921,11 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								74,
-								75,
-								76,
-								77,
-								73
+								83,
+								84,
+								85,
+								86,
+								82
 							]
 						}
 					],
@@ -1940,12 +1940,12 @@
 						{
 							"type": "reference",
 							"name": "TxData",
-							"id": 67
+							"id": 76
 						}
 					]
 				},
 				{
-					"id": 144,
+					"id": 153,
 					"name": "BlockParam",
 					"kind": 4194304,
 					"kindString": "Type alias",
@@ -1965,7 +1965,7 @@
 							{
 								"type": "reference",
 								"name": "BlockParamLiteral",
-								"id": 130
+								"id": 139
 							},
 							{
 								"type": "intrinsic",
@@ -1975,7 +1975,7 @@
 					}
 				},
 				{
-					"id": 142,
+					"id": 151,
 					"name": "ContractEventArg",
 					"kind": 4194304,
 					"kindString": "Type alias",
@@ -2004,7 +2004,7 @@
 					}
 				},
 				{
-					"id": 143,
+					"id": 152,
 					"name": "RawLog",
 					"kind": 4194304,
 					"kindString": "Type alias",
@@ -2029,32 +2029,32 @@
 					"title": "Enumerations",
 					"kind": 4,
 					"children": [
-						93,
-						130,
-						113
+						102,
+						139,
+						122
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						98,
-						90,
-						101,
-						133,
-						78,
-						118,
-						67,
-						72
+						107,
+						99,
+						110,
+						142,
+						87,
+						127,
+						76,
+						81
 					]
 				},
 				{
 					"title": "Type aliases",
 					"kind": 4194304,
 					"children": [
-						144,
-						142,
-						143
+						153,
+						151,
+						152
 					]
 				}
 			],
@@ -2077,7 +2077,7 @@
 			"originalName": "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/packages/web3-wrapper/src/index.ts",
 			"children": [
 				{
-					"id": 2,
+					"id": 11,
 					"name": "Web3Wrapper",
 					"kind": 128,
 					"kindString": "Class",
@@ -2086,7 +2086,7 @@
 					},
 					"children": [
 						{
-							"id": 3,
+							"id": 12,
 							"name": "constructor",
 							"kind": 512,
 							"kindString": "Constructor",
@@ -2095,14 +2095,14 @@
 							},
 							"signatures": [
 								{
-									"id": 4,
+									"id": 13,
 									"name": "new Web3Wrapper",
 									"kind": 16384,
 									"kindString": "Constructor signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 5,
+											"id": 14,
 											"name": "provider",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2113,7 +2113,7 @@
 											}
 										},
 										{
-											"id": 6,
+											"id": 15,
 											"name": "defaults",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2135,20 +2135,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Web3Wrapper",
-										"id": 2
+										"id": 11
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 9,
+									"line": 20,
 									"character": 38
 								}
 							]
 						},
 						{
-							"id": 33,
+							"id": 42,
 							"name": "doesContractExistAtAddressAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2158,14 +2158,14 @@
 							},
 							"signatures": [
 								{
-									"id": 34,
+									"id": 43,
 									"name": "doesContractExistAtAddressAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 35,
+											"id": 44,
 											"name": "address",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2191,13 +2191,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 64,
+									"line": 75,
 									"character": 48
 								}
 							]
 						},
 						{
-							"id": 60,
+							"id": 69,
 							"name": "estimateGasAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2207,14 +2207,14 @@
 							},
 							"signatures": [
 								{
-									"id": 61,
+									"id": 70,
 									"name": "estimateGasAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 62,
+											"id": 71,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2240,13 +2240,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 122,
+									"line": 133,
 									"character": 33
 								}
 							]
 						},
 						{
-							"id": 48,
+							"id": 57,
 							"name": "getAvailableAddressesAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2256,7 +2256,7 @@
 							},
 							"signatures": [
 								{
-									"id": 49,
+									"id": 58,
 									"name": "getAvailableAddressesAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -2279,13 +2279,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 86,
+									"line": 97,
 									"character": 43
 								}
 							]
 						},
 						{
-							"id": 30,
+							"id": 39,
 							"name": "getBalanceInWeiAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2295,14 +2295,14 @@
 							},
 							"signatures": [
 								{
-									"id": 31,
+									"id": 40,
 									"name": "getBalanceInWeiAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 32,
+											"id": 41,
 											"name": "owner",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2328,13 +2328,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 58,
+									"line": 69,
 									"character": 37
 								}
 							]
 						},
 						{
-							"id": 42,
+							"id": 51,
 							"name": "getBlockAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2344,14 +2344,14 @@
 							},
 							"signatures": [
 								{
-									"id": 43,
+									"id": 52,
 									"name": "getBlockAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 44,
+											"id": 53,
 											"name": "blockParam",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2386,13 +2386,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 78,
+									"line": 89,
 									"character": 30
 								}
 							]
 						},
 						{
-							"id": 40,
+							"id": 49,
 							"name": "getBlockNumberAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2402,7 +2402,7 @@
 							},
 							"signatures": [
 								{
-									"id": 41,
+									"id": 50,
 									"name": "getBlockNumberAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -2422,13 +2422,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 74,
+									"line": 85,
 									"character": 36
 								}
 							]
 						},
 						{
-							"id": 45,
+							"id": 54,
 							"name": "getBlockTimestampAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2438,14 +2438,14 @@
 							},
 							"signatures": [
 								{
-									"id": 46,
+									"id": 55,
 									"name": "getBlockTimestampAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 47,
+											"id": 56,
 											"name": "blockParam",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2480,13 +2480,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 82,
+									"line": 93,
 									"character": 39
 								}
 							]
 						},
 						{
-							"id": 7,
+							"id": 16,
 							"name": "getContractDefaults",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2496,7 +2496,7 @@
 							},
 							"signatures": [
 								{
-									"id": 8,
+									"id": 17,
 									"name": "getContractDefaults",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -2516,13 +2516,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 22,
+									"line": 33,
 									"character": 30
 								}
 							]
 						},
 						{
-							"id": 53,
+							"id": 62,
 							"name": "getContractFromAbi",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2532,14 +2532,14 @@
 							},
 							"signatures": [
 								{
-									"id": 54,
+									"id": 63,
 									"name": "getContractFromAbi",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 55,
+											"id": 64,
 											"name": "abi",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2565,13 +2565,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 114,
+									"line": 125,
 									"character": 29
 								}
 							]
 						},
 						{
-							"id": 56,
+							"id": 65,
 							"name": "getContractInstance",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2581,14 +2581,14 @@
 							},
 							"signatures": [
 								{
-									"id": 57,
+									"id": 66,
 									"name": "getContractInstance",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 58,
+											"id": 67,
 											"name": "abi",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2599,7 +2599,7 @@
 											}
 										},
 										{
-											"id": 59,
+											"id": 68,
 											"name": "address",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2619,13 +2619,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 118,
+									"line": 129,
 									"character": 30
 								}
 							]
 						},
 						{
-							"id": 25,
+							"id": 34,
 							"name": "getCurrentProvider",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2635,7 +2635,7 @@
 							},
 							"signatures": [
 								{
-									"id": 26,
+									"id": 35,
 									"name": "getCurrentProvider",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -2649,13 +2649,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 51,
+									"line": 62,
 									"character": 29
 								}
 							]
 						},
 						{
-							"id": 50,
+							"id": 59,
 							"name": "getLogsAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2665,14 +2665,14 @@
 							},
 							"signatures": [
 								{
-									"id": 51,
+									"id": 60,
 									"name": "getLogsAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 52,
+											"id": 61,
 											"name": "filter",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2701,13 +2701,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 90,
+									"line": 101,
 									"character": 29
 								}
 							]
 						},
 						{
-							"id": 20,
+							"id": 29,
 							"name": "getNetworkIdAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2717,7 +2717,7 @@
 							},
 							"signatures": [
 								{
-									"id": 21,
+									"id": 30,
 									"name": "getNetworkIdAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -2737,13 +2737,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 39,
+									"line": 50,
 									"character": 34
 								}
 							]
 						},
 						{
-							"id": 18,
+							"id": 27,
 							"name": "getNodeVersionAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2753,7 +2753,7 @@
 							},
 							"signatures": [
 								{
-									"id": 19,
+									"id": 28,
 									"name": "getNodeVersionAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -2773,13 +2773,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 35,
+									"line": 46,
 									"character": 36
 								}
 							]
 						},
 						{
-							"id": 22,
+							"id": 31,
 							"name": "getTransactionReceiptAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2789,14 +2789,14 @@
 							},
 							"signatures": [
 								{
-									"id": 23,
+									"id": 32,
 									"name": "getTransactionReceiptAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 24,
+											"id": 33,
 											"name": "txHash",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2822,13 +2822,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 44,
+									"line": 55,
 									"character": 43
 								}
 							]
 						},
 						{
-							"id": 12,
+							"id": 21,
 							"name": "isAddress",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2838,14 +2838,14 @@
 							},
 							"signatures": [
 								{
-									"id": 13,
+									"id": 22,
 									"name": "isAddress",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 14,
+											"id": 23,
 											"name": "address",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2865,13 +2865,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 28,
+									"line": 39,
 									"character": 20
 								}
 							]
 						},
 						{
-							"id": 15,
+							"id": 24,
 							"name": "isSenderAddressAvailableAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2881,14 +2881,14 @@
 							},
 							"signatures": [
 								{
-									"id": 16,
+									"id": 25,
 									"name": "isSenderAddressAvailableAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 17,
+											"id": 26,
 											"name": "senderAddress",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2914,13 +2914,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 31,
+									"line": 42,
 									"character": 46
 								}
 							]
 						},
 						{
-							"id": 63,
+							"id": 72,
 							"name": "sendTransactionAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2930,14 +2930,14 @@
 							},
 							"signatures": [
 								{
-									"id": 64,
+									"id": 73,
 									"name": "sendTransactionAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 65,
+											"id": 74,
 											"name": "txData",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -2963,13 +2963,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 126,
+									"line": 137,
 									"character": 37
 								}
 							]
 						},
 						{
-							"id": 9,
+							"id": 18,
 							"name": "setProvider",
 							"kind": 2048,
 							"kindString": "Method",
@@ -2979,14 +2979,14 @@
 							},
 							"signatures": [
 								{
-									"id": 10,
+									"id": 19,
 									"name": "setProvider",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 11,
+											"id": 20,
 											"name": "provider",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3006,13 +3006,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 25,
+									"line": 36,
 									"character": 22
 								}
 							]
 						},
 						{
-							"id": 36,
+							"id": 45,
 							"name": "signTransactionAsync",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3022,14 +3022,14 @@
 							},
 							"signatures": [
 								{
-									"id": 37,
+									"id": 46,
 									"name": "signTransactionAsync",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 38,
+											"id": 47,
 											"name": "address",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3040,7 +3040,7 @@
 											}
 										},
 										{
-											"id": 39,
+											"id": 48,
 											"name": "message",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3066,13 +3066,13 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 70,
+									"line": 81,
 									"character": 37
 								}
 							]
 						},
 						{
-							"id": 27,
+							"id": 36,
 							"name": "toWei",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3082,14 +3082,14 @@
 							},
 							"signatures": [
 								{
-									"id": 28,
+									"id": 37,
 									"name": "toWei",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 29,
+											"id": 38,
 											"name": "ethAmount",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3109,7 +3109,7 @@
 							"sources": [
 								{
 									"fileName": "web3-wrapper/src/index.ts",
-									"line": 54,
+									"line": 65,
 									"character": 16
 								}
 							]
@@ -3120,34 +3120,249 @@
 							"title": "Constructors",
 							"kind": 512,
 							"children": [
-								3
+								12
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								33,
-								60,
-								48,
-								30,
 								42,
-								40,
-								45,
-								7,
-								53,
-								56,
-								25,
-								50,
-								20,
+								69,
+								57,
+								39,
+								51,
+								49,
+								54,
+								16,
+								62,
+								65,
+								34,
+								59,
+								29,
+								27,
+								31,
+								21,
+								24,
+								72,
 								18,
-								22,
-								12,
-								15,
-								63,
+								45,
+								36
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "web3-wrapper/src/index.ts",
+							"line": 17,
+							"character": 24
+						}
+					]
+				},
+				{
+					"id": 2,
+					"name": "RawLogEntry",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {},
+					"children": [
+						{
+							"id": 8,
+							"name": "address",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "web3-wrapper/src/index.ts",
+									"line": 12,
+									"character": 11
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 6,
+							"name": "blockHash",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "web3-wrapper/src/index.ts",
+									"line": 10,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
+							}
+						},
+						{
+							"id": 7,
+							"name": "blockNumber",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "web3-wrapper/src/index.ts",
+									"line": 11,
+									"character": 15
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
+							}
+						},
+						{
+							"id": 9,
+							"name": "data",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "web3-wrapper/src/index.ts",
+									"line": 13,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 3,
+							"name": "logIndex",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "web3-wrapper/src/index.ts",
+									"line": 7,
+									"character": 12
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
+							}
+						},
+						{
+							"id": 10,
+							"name": "topics",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "web3-wrapper/src/index.ts",
+									"line": 14,
+									"character": 10
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "string"
+								}
+							}
+						},
+						{
+							"id": 5,
+							"name": "transactionHash",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "web3-wrapper/src/index.ts",
+									"line": 9,
+									"character": 19
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 4,
+							"name": "transactionIndex",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "web3-wrapper/src/index.ts",
+									"line": 8,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								8,
+								6,
+								7,
 								9,
-								36,
-								27
+								3,
+								10,
+								5,
+								4
 							]
 						}
 					],
@@ -3155,7 +3370,7 @@
 						{
 							"fileName": "web3-wrapper/src/index.ts",
 							"line": 6,
-							"character": 24
+							"character": 21
 						}
 					]
 				}
@@ -3164,6 +3379,13 @@
 				{
 					"title": "Classes",
 					"kind": 128,
+					"children": [
+						11
+					]
+				},
+				{
+					"title": "Interfaces",
+					"kind": 256,
 					"children": [
 						2
 					]
@@ -3183,7 +3405,7 @@
 			"title": "External modules",
 			"kind": 1,
 			"children": [
-				66,
+				75,
 				1
 			]
 		}
