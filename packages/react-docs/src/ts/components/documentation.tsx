@@ -48,9 +48,10 @@ export interface DocumentationProps {
     selectedVersion: string;
     availableVersions: string[];
     docsInfo: DocsInfo;
+    sourceUrl: string;
+    onVersionSelected: (semver: string) => void;
     docAgnosticFormat?: DocAgnosticFormat;
     sidebarHeader?: React.ReactNode;
-    sourceUrl: string;
     topBarHeight?: number;
 }
 
@@ -125,6 +126,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                         sidebarHeader={this.props.sidebarHeader}
                                         topLevelMenu={this.props.docsInfo.getMenu(this.props.selectedVersion)}
                                         menuSubsectionsBySection={menuSubsectionsBySection}
+                                        onVersionSelected={this.props.onVersionSelected}
                                     />
                                 </div>
                             </div>

@@ -38,6 +38,7 @@ interface TopBarProps {
     docsInfo?: DocsInfo;
     style?: React.CSSProperties;
     isNightVersion?: boolean;
+    onVersionSelected?: (semver: string) => void;
 }
 
 interface TopBarState {
@@ -320,6 +321,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
                     versions={this.props.availableDocVersions}
+                    onVersionSelected={this.props.onVersionSelected}
                 />
             </div>
         );

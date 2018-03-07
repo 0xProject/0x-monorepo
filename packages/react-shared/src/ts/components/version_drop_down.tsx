@@ -8,6 +8,7 @@ import { utils } from '../utils/utils';
 export interface VersionDropDownProps {
     selectedVersion: string;
     versions: string[];
+    onVersionSelected: (semver: string) => void;
 }
 
 export interface VersionDropDownState {}
@@ -33,14 +34,6 @@ export class VersionDropDown extends React.Component<VersionDropDownProps, Versi
         return items;
     }
     private _updateSelectedVersion(e: any, index: number, semver: string) {
-        let path = window.location.pathname;
-        const lastChar = path[path.length - 1];
-        if (_.isFinite(_.parseInt(lastChar))) {
-            const pathSections = path.split('/');
-            pathSections.pop();
-            path = pathSections.join('/');
-        }
-        const baseUrl = utils.getCurrentBaseUrl();
-        window.location.href = `${baseUrl}${path}/${semver}${window.location.hash}`;
+        this.props.onVersionSelected(semver);
     }
 }

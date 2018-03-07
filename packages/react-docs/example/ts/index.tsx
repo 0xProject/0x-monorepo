@@ -50,7 +50,7 @@ const sourceUrl = `${
     docsInfoConfig.packageUrl
 }/blob/@0xproject/web3-wrapper%40${selectedVersion}/packages/web3-wrapper`;
 
-import * as typeDocJson from './json/web3_wrapper_typedoc_output.json';
+import * as typeDocJson from './json/0.2.0.json';
 const docAgnosticFormat = docsInfo.convertToDocAgnosticFormat(typeDocJson);
 
 render(
@@ -61,7 +61,12 @@ render(
             docsInfo={docsInfo}
             docAgnosticFormat={docAgnosticFormat}
             sourceUrl={sourceUrl}
+            onVersionSelected={onVersionSelected}
         />
     </MuiThemeProvider>,
     document.getElementById('app'),
 );
+
+function onVersionSelected(semver: string) {
+    // TODO
+}

@@ -270,4 +270,10 @@ export const utils = {
             window.onload = () => resolve();
         });
     },
+    getCurrentBaseUrl() {
+        const port = window.location.port;
+        const hasPort = !_.isUndefined(port);
+        const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
+        return baseUrl;
+    },
 };

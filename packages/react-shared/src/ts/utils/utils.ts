@@ -30,12 +30,6 @@ export const utils = {
         const id = name.replace(/ /g, '-');
         return id;
     },
-    getCurrentBaseUrl() {
-        const port = window.location.port;
-        const hasPort = !_.isUndefined(port);
-        const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
-        return baseUrl;
-    },
     getEtherScanLinkIfExists(addressOrTxHash: string, networkId: number, suffix: EtherscanLinkSuffixes): string {
         const networkName = constants.NETWORK_NAME_BY_ID[networkId];
         if (_.isUndefined(networkName)) {

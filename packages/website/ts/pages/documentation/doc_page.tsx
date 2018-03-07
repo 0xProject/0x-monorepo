@@ -13,6 +13,7 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
+import { utils } from 'ts/utils/utils';
 
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
@@ -80,6 +81,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     docsInfo={this.props.docsInfo}
                     translate={this.props.translate}
+                    onVersionSelected={this._onVersionSelected.bind(this)}
                 />
                 <Documentation
                     selectedVersion={this.props.docsVersion}
@@ -89,6 +91,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
                     sourceUrl={sourceUrl}
                     topBarHeight={60}
+                    onVersionSelected={this._onVersionSelected.bind(this)}
                 />
             </div>
         );
@@ -140,5 +143,16 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
 
         const sourceUrl = `${url}/blob/${tagPrefix}%40${this.props.docsVersion}/packages${pkg}`;
         return sourceUrl;
+    }
+    private _onVersionSelected(semver: string) {
+        let path = window.location.pathname;
+        const lastChar = path[path.length - 1];
+        if (_.isFinite(_.parseInt(lastChar))) {
+            const pathSections = path.split('/');
+            pathSections.pop();
+            path = pathSections.join('/');
+        }
+        const baseUrl = utils.getCurrentBaseUrl();
+        window.location.href = `${baseUrl}${path}/${semver}${window.location.hash}`;
     }
 }
