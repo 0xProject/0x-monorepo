@@ -6,6 +6,7 @@ import {
     ContractsByVersionByNetworkId,
     DocAgnosticFormat,
     DocsInfoConfig,
+    DocsInfoTypeConfigs,
     DocsMenu,
     DoxityDocObj,
     SectionsMap,
@@ -24,6 +25,7 @@ export class DocsInfo {
     public sections: SectionsMap;
     public sectionNameToMarkdown: { [sectionName: string]: string };
     public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
+    public typeConfigs: DocsInfoTypeConfigs;
     private _docsInfo: DocsInfoConfig;
     constructor(config: DocsInfoConfig) {
         this.id = config.id;
@@ -33,13 +35,14 @@ export class DocsInfo {
         this.sections = config.sections;
         this.sectionNameToMarkdown = config.sectionNameToMarkdown;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
+        this.typeConfigs = config.typeConfigs;
         this._docsInfo = config;
     }
     public isPublicType(typeName: string): boolean {
-        if (_.isUndefined(this._docsInfo.publicTypes)) {
+        if (_.isUndefined(this._docsInfo.typeConfigs.publicTypes)) {
             return false;
         }
-        const isPublic = _.includes(this._docsInfo.publicTypes, typeName);
+        const isPublic = _.includes(this._docsInfo.typeConfigs.publicTypes, typeName);
         return isPublic;
     }
     public getModulePathsIfExists(sectionName: string): string[] {

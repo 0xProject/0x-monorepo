@@ -32,9 +32,6 @@ const docsInfoConfig: DocsInfoConfig = {
     sectionNameToMarkdown: {
         [docSections.introduction]: IntroMarkdown,
     },
-    // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-    // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-    publicTypes: ['TxData', 'TransactionReceipt', 'RawLogEntry'],
     sectionNameToModulePath: {
         [docSections.web3Wrapper]: ['"web3-wrapper/src/index"'],
         [docSections.types]: ['"types/src/index"'],
@@ -42,6 +39,35 @@ const docsInfoConfig: DocsInfoConfig = {
     menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
     visibleConstructors: [docSections.web3Wrapper],
+    typeConfigs: {
+        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
+        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
+        publicTypes: ['TxData', 'TransactionReceipt', 'RawLogEntry'],
+        typeNameToExternalLink: {
+            Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
+            Provider: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
+            BigNumber: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
+            DecodedLogEntryEvent: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
+            LogEntryEvent: 'http://mikemcl.github.io/bignumber.js',
+            CallData: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L348',
+            BlockWithoutTransactionData:
+                'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L314',
+            LogEntry: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L366',
+            FilterObject: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L109',
+            ['Web3.BlockParam']: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L278',
+            ['Web3.ContractAbi']: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L47',
+        },
+        typeNameToPrefix: {
+            Provider: 'Web3',
+            CallData: 'Web3',
+            BlockWithoutTransactionData: 'Web3',
+            LogEntry: 'Web3',
+            FilterObject: 'Web3',
+        },
+        typeNameToDocSection: {
+            Web3Wrapper: docSections.web3Wrapper,
+        },
+    },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

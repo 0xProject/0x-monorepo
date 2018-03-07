@@ -7,11 +7,17 @@ export interface DocsInfoConfig {
     sections: SectionsMap;
     sectionNameToMarkdown: { [sectionName: string]: string };
     visibleConstructors: string[];
-    subPackageName?: string;
-    publicTypes?: string[];
     sectionNameToModulePath?: { [sectionName: string]: string[] };
     menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };
     contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
+    typeConfigs?: DocsInfoTypeConfigs;
+}
+
+export interface DocsInfoTypeConfigs {
+    typeNameToExternalLink?: { [typeName: string]: string };
+    publicTypes?: string[];
+    typeNameToPrefix?: { [typeName: string]: string };
+    typeNameToDocSection?: { [typeName: string]: string };
 }
 
 export interface DocsMenu {

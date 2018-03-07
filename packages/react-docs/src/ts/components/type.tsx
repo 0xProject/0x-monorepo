@@ -11,21 +11,6 @@ import { utils } from '../utils/utils';
 
 import { TypeDefinition } from './type_definition';
 
-// Some types reference other libraries. For these types, we want to link the user to the relevant documentation.
-const typeToUrl: { [typeName: string]: string } = {
-    Web3: constants.URL_WEB3_DOCS,
-    Provider: constants.URL_WEB3_PROVIDER_DOCS,
-    BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-    DecodedLogEntryEvent: constants.URL_WEB3_DECODED_LOG_ENTRY_EVENT,
-    LogEntryEvent: constants.URL_WEB3_LOG_ENTRY_EVENT,
-};
-
-const typePrefix: { [typeName: string]: string } = {
-    Provider: 'Web3',
-    DecodedLogEntryEvent: 'Web3',
-    LogEntryEvent: 'Web3',
-};
-
 const typeToSection: { [typeName: string]: string } = {
     ExchangeWrapper: 'exchange',
     TokenWrapper: 'token',
@@ -149,9 +134,20 @@ export function Type(props: TypeProps): any {
         return [prev, ', ', curr];
     });
 
-    const typeNameUrlIfExists = typeToUrl[typeName as string];
-    const typePrefixIfExists = typePrefix[typeName as string];
-    const sectionNameIfExists = typeToSection[typeName as string];
+    let typeNameUrlIfExists;
+    let typePrefixIfExists;
+    let sectionNameIfExists;
+    if (!_.isUndefined(props.docsInfo.typeConfigs)) {
+        typeNameUrlIfExists = !_.isUndefined(props.docsInfo.typeConfigs.typeNameToExternalLink)
+            ? props.docsInfo.typeConfigs.typeNameToExternalLink[typeName as string]
+            : undefined;
+        typePrefixIfExists = !_.isUndefined(props.docsInfo.typeConfigs.typeNameToPrefix)
+            ? props.docsInfo.typeConfigs.typeNameToPrefix[typeName as string]
+            : undefined;
+        sectionNameIfExists = !_.isUndefined(props.docsInfo.typeConfigs.typeNameToDocSection)
+            ? props.docsInfo.typeConfigs.typeNameToDocSection[typeName as string]
+            : undefined;
+    }
     if (!_.isUndefined(typeNameUrlIfExists)) {
         typeName = (
             <a
