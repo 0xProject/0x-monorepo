@@ -117,7 +117,7 @@ export class Docs extends React.Component<DocsProps, DocsState> {
     private _getSourceUrl() {
         const sourceUrl = `${docsInfoConfig.packageUrl}/blob/@0xproject/web3-wrapper%40${
             this.state.selectedVersion
-        }/packages/web3-wrapper`;
+        }/packages`;
         return sourceUrl;
     }
 }
