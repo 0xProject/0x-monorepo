@@ -42,6 +42,8 @@ const accounts = await ledgerSubprovider.getAccountsAsync();
 
 A subprovider that enables your dApp to send signing requests to a user's Ledger Nano S hardware wallet. These can be requests to sign transactions or messages.
 
+Ledger Nano (and this library) by default uses a derivation path of `44'/60'/0'`. This is different to TestRPC which by default uses `m/44'/60'/0'/0`. This is a configuration option in the Ledger Subprovider package.
+
 ##### Ledger Nano S + Node-hid (usb)
 
 By default, node-hid transport support is an optional dependency. This is due to the requirement of native usb developer packages on the host system. If these aren't installed the entire `npm install` fails. We also no longer export node-hid transport client factories. To re-create this see our integration tests or follow the example below:
@@ -61,6 +63,12 @@ ledgerSubprovider = new LedgerSubprovider({
     ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
 });
 ```
+
+##### Testing Subprovider + Ledger integration
+
+To run our integration tests you need a ledger configured with our development mnemonic seed.
+This is available in the top level package.json under `mnemonic`.
+Configure your ledger and run the integration tests. We assume a derivation path of `m/44'/60'/0'/0` and this is configured in the tests. To this setup and derivation path, your first account should be `0x5409ed021d9299bf6814279a6a1411a7e866a631`, exactly like TestRPC.
 
 #### Redundant RPC subprovider
 

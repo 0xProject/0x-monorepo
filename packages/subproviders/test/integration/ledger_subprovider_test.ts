@@ -42,6 +42,10 @@ describe('LedgerSubprovider', () => {
             expect(accounts[0]).to.not.be.an('undefined');
             expect(accounts.length).to.be.equal(10);
         });
+        it('returns the expected account', async () => {
+            const accounts = await ledgerSubprovider.getAccountsAsync();
+            expect(accounts[0]).to.be.equal(TEST_RPC_ACCOUNT_0);
+        });
         it('returns requested number of accounts', async () => {
             const numberOfAccounts = 20;
             const accounts = await ledgerSubprovider.getAccountsAsync(numberOfAccounts);
@@ -61,6 +65,7 @@ describe('LedgerSubprovider', () => {
                 to: '0x0000000000000000000000000000000000000000',
                 value: '0x00',
                 chainId: 3,
+                from: TEST_RPC_ACCOUNT_0,
             };
             const txHex = await ledgerSubprovider.signTransactionAsync(tx);
             expect(txHex).to.be.equal(
