@@ -1,18 +1,7 @@
-import { TransactionReceipt, TxData } from '@0xproject/types';
+import { RawLogEntry, TransactionReceipt, TxData } from '@0xproject/types';
 import { BigNumber, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
-
-interface RawLogEntry {
-    logIndex: string | null;
-    transactionIndex: string | null;
-    transactionHash: string;
-    blockHash: string | null;
-    blockNumber: string | null;
-    address: string;
-    data: string;
-    topics: string[];
-}
 
 export class Web3Wrapper {
     private _web3: Web3;

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.3.1 - _TBD_
+
+    * Added `RawLogEntry` type.
+
 ## v0.3.0 - _March 4, 2018_
 
     * Add `data` to `TxData` (#413)
