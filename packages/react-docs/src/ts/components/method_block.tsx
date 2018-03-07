@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
 import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from '../types';
+import { constants } from '../utils/constants';
 import { typeDocUtils } from '../utils/typedoc_utils';
 
 import { Comment } from './comment';
@@ -70,7 +71,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                         </div>
                     </div>
                 )}
-                <code className="hljs">
+                <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
                     <MethodSignature
                         method={method}
                         sectionName={this.props.sectionName}

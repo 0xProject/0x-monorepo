@@ -43,7 +43,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
                 />
                 <div style={{ fontSize: 16 }}>
                     <pre>
-                        <code className="hljs">{this._renderEventCode()}</code>
+                        <code className="hljs solidity">{this._renderEventCode()}</code>
                     </pre>
                 </div>
             </div>

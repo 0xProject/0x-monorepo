@@ -27,6 +27,7 @@ import {
     TypeDefinitionByName,
     TypescriptMethod,
 } from '../types';
+import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
 import { Badge } from './badge';
@@ -318,7 +319,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
     private _renderProperty(sectionName: string, property: Property): React.ReactNode {
         return (
             <div key={`property-${property.name}-${property.type.name}`} className="pb3">
-                <code className="hljs">
+                <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
                     {property.name}:
                     <Type type={property.type} sectionName={sectionName} docsInfo={this.props.docsInfo} />
                 </code>

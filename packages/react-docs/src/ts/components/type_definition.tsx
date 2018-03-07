@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
 import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from '../types';
+import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
 import { Comment } from './comment';
@@ -111,7 +112,9 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                 />
                 <div style={{ fontSize: 16 }}>
                     <pre>
-                        <code className="hljs">{codeSnippet}</code>
+                        <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
+                            {codeSnippet}
+                        </code>
                     </pre>
                 </div>
                 <div style={{ maxWidth: 620 }}>
