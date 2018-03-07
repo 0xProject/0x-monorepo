@@ -7,9 +7,11 @@
   "scripts": {
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
     "build": "tsc",
+    "build:example": "NODE_ENV=production webpack; exit 0;",
     "build:watch": "tsc -w",
     "clean": "shx rm -rf lib",
-    "dev": "webpack-dev-server --open"
+    "dev": "webpack-dev-server --open",
+    "deploy_example": "npm run build:example; aws s3 sync ./example/public/. s3://react-docs-example --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
   },
   "author": "Fabio Berger",
   "license": "MIT",
