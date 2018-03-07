@@ -59,12 +59,18 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                 return <div key={`section-${sectionName}`}>{this._renderMenuItems(menuItems)}</div>;
             }
         });
+        const maxWidthWithScrollbar = 307;
         return (
             <div>
                 {this.props.sidebarHeader}
                 {!_.isUndefined(this.props.versions) &&
                     !_.isUndefined(this.props.selectedVersion) && (
-                        <VersionDropDown selectedVersion={this.props.selectedVersion} versions={this.props.versions} />
+                        <div style={{ maxWidth: maxWidthWithScrollbar }}>
+                            <VersionDropDown
+                                selectedVersion={this.props.selectedVersion}
+                                versions={this.props.versions}
+                            />
+                        </div>
                     )}
                 <div className="pl1">{navigation}</div>
             </div>

@@ -54,12 +54,20 @@ export interface DocumentationProps {
     topBarHeight?: number;
 }
 
-export interface DocumentationState {}
+export interface DocumentationState {
+    isHoveringSidebar: boolean;
+}
 
 export class Documentation extends React.Component<DocumentationProps, DocumentationState> {
     public static defaultProps: Partial<DocumentationProps> = {
         topBarHeight: 0,
     };
+    constructor(props: DocumentationProps) {
+        super(props);
+        this.state = {
+            isHoveringSidebar: false,
+        };
+    }
     public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
@@ -106,7 +114,10 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                         ...styles.menuContainer,
                                         ...styles.mainContainers,
                                         height: `calc(100vh - ${this.props.topBarHeight}px)`,
+                                        overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
                                     }}
+                                    onMouseEnter={this._onSidebarHover.bind(this)}
+                                    onMouseLeave={this._onSidebarHoverOff.bind(this)}
                                 >
                                     <NestedSidebarMenu
                                         selectedVersion={this.props.selectedVersion}
@@ -337,5 +348,15 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 sourceUrl={this.props.sourceUrl}
             />
         );
+    }
+    private _onSidebarHover(event: React.FormEvent<HTMLInputElement>) {
+        this.setState({
+            isHoveringSidebar: true,
+        });
+    }
+    private _onSidebarHoverOff() {
+        this.setState({
+            isHoveringSidebar: false,
+        });
     }
 }
