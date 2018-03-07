@@ -54,5 +54,8 @@
         "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
         "typescript": "2.7.1",
         "webpack": "^3.1.0"
+    },
+    "optionalDependencies": {
+        "@ledgerhq/hw-transport-node-hid": "^4.3.0"
     }
 }

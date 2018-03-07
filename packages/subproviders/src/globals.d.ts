@@ -39,6 +39,7 @@ interface LedgerTransport {
 
 declare module '@ledgerhq/hw-app-eth' {
     class Eth {
+        public transport: LedgerTransport;
         constructor(transport: LedgerTransport);
         public getAddress(
             path: string,
@@ -48,12 +49,19 @@ declare module '@ledgerhq/hw-app-eth' {
         public signTransaction(path: string, rawTxHex: string): Promise<ECSignatureString>;
         public getAppConfiguration(): Promise<{ arbitraryDataEnabled: number; version: string }>;
         public signPersonalMessage(path: string, messageHex: string): Promise<ECSignature>;
-        transport: LedgerTransport;
     }
     export default Eth;
 }
+
 declare module '@ledgerhq/hw-transport-u2f' {
     export default class TransportU2F {
+        public static create(): Promise<LedgerTransport>;
+        public close(): Promise<void>;
+    }
+}
+
+declare module '@ledgerhq/hw-transport-node-hid' {
+    export default class TransportNodeHid {
         public static create(): Promise<LedgerTransport>;
         public close(): Promise<void>;
     }

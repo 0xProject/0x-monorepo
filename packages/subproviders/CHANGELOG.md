@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.7.0 - _March 6, 2018_
+
+    * Updated legerco packages. Removed node-hid packages as a dependency. (#437)
+
 ## v0.6.0 - _March 4, 2018_
 
     * Move web3 types from being a devDep to a dep since one cannot use this package without it (#429)
