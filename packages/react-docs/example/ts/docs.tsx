@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Documentation } from '../../src/ts/components/documentation';
 import { DocsInfo } from '../../src/ts/docs_info';
 import { DocAgnosticFormat, DocsInfoConfig, SupportedDocJson, TypeDocNode } from '../../src/ts/types';
+import { constants } from '../../src/ts/utils/constants';
 
 import * as v0TypeDocJson from './json/0.1.12.json';
 import * as v2TypeDocJson from './json/0.2.0.json';
@@ -15,6 +16,7 @@ const IntroMarkdown = require('md/introduction');
 const docSections = {
     introduction: 'introduction',
     web3Wrapper: 'web3Wrapper',
+    types: constants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -25,6 +27,7 @@ const docsInfoConfig: DocsInfoConfig = {
     menu: {
         introduction: [docSections.introduction],
         web3Wrapper: [docSections.web3Wrapper],
+        types: [docSections.types],
     },
     sectionNameToMarkdown: {
         [docSections.introduction]: IntroMarkdown,
@@ -33,7 +36,8 @@ const docsInfoConfig: DocsInfoConfig = {
     // currently no way to extract the re-exported types from index.ts via TypeDoc :(
     publicTypes: ['TxData', 'TransactionReceipt', 'RawLogEntry'],
     sectionNameToModulePath: {
-        [docSections.web3Wrapper]: ['"index"'],
+        [docSections.web3Wrapper]: ['"web3-wrapper/src/index"'],
+        [docSections.types]: ['"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
     sections: docSections,
@@ -59,7 +63,7 @@ export class Docs extends React.Component<DocsProps, DocsState> {
         super(props);
         this.state = {
             selectedVersion: availableVersions[1],
-            docAgnosticFormat: docsInfo.convertToDocAgnosticFormat(v0TypeDocJson),
+            docAgnosticFormat: docsInfo.convertToDocAgnosticFormat(v2TypeDocJson),
         };
     }
     public render() {
