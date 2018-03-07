@@ -2,21 +2,21 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: ['./src/ts/example/index.tsx'],
+    entry: ['./example/ts/index.tsx'],
     output: {
-        path: path.join(__dirname, '/src/public'),
+        path: path.join(__dirname, '/example/public'),
         filename: 'bundle.js',
         chunkFilename: 'bundle-[name].js',
         publicPath: '/',
     },
     devtool: 'source-map',
     resolve: {
-        modules: [path.join(__dirname, '/src/ts'), 'node_modules'],
+        modules: [path.join(__dirname, '/example/ts'), 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.md'],
         alias: {
-            ts: path.join(__dirname, '/src/ts'),
-            less: path.join(__dirname, '/src/less'),
-            md: path.join(__dirname, '/src/md'),
+            ts: path.join(__dirname, '/example/ts'),
+            less: path.join(__dirname, '/example/less'),
+            md: path.join(__dirname, '/example/md'),
         },
     },
     module: {
@@ -64,7 +64,7 @@ module.exports = {
                 },
             ],
         },
-        contentBase: path.join(__dirname, '/src/public'),
+        contentBase: path.join(__dirname, '/example/public'),
     },
     plugins:
         process.env.NODE_ENV === 'production'
