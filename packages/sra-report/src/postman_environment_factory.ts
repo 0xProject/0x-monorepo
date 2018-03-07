@@ -8,6 +8,8 @@ import { addresses as kovanAddresses } from './contract_addresses/kovan_addresse
 import { addresses as mainnetAddresses } from './contract_addresses/mainnet_addresses';
 import { utils } from './utils';
 
+const ENVIRONMENT_NAME = 'SRA Report';
+
 interface EnvironmentValue {
     key: string;
 }
@@ -30,6 +32,7 @@ export const postmanEnvironmentFactory = {
             createEnvironmentValue('url', url),
         );
         const environment = {
+            name: ENVIRONMENT_NAME,
             values: allEnvironmentValues,
         };
         return environment;
