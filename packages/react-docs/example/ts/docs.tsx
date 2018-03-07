@@ -5,7 +5,7 @@ import { Documentation } from '../../src/ts/components/documentation';
 import { DocsInfo } from '../../src/ts/docs_info';
 import { DocAgnosticFormat, DocsInfoConfig, SupportedDocJson, TypeDocNode } from '../../src/ts/types';
 
-import * as v1TypeDocJson from './json/0.1.12.json';
+import * as v0TypeDocJson from './json/0.1.12.json';
 import * as v2TypeDocJson from './json/0.2.0.json';
 
 /* tslint:disable:no-var-requires */
@@ -43,8 +43,8 @@ const docsInfo = new DocsInfo(docsInfoConfig);
 
 const availableVersions = ['0.1.12', '0.2.0'];
 const versionToDocJSON: { [semver: string]: object } = {
-    '0.1.12': v1TypeDocJson,
-    '0.2.0': v2TypeDocJson,
+    [availableVersions[0]]: v0TypeDocJson,
+    [availableVersions[1]]: v2TypeDocJson,
 };
 
 export interface DocsProps {}
@@ -58,8 +58,8 @@ export class Docs extends React.Component<DocsProps, DocsState> {
     constructor(props: DocsProps) {
         super(props);
         this.state = {
-            selectedVersion: '0.2.0',
-            docAgnosticFormat: docsInfo.convertToDocAgnosticFormat(v1TypeDocJson),
+            selectedVersion: availableVersions[1],
+            docAgnosticFormat: docsInfo.convertToDocAgnosticFormat(v0TypeDocJson),
         };
     }
     public render() {
