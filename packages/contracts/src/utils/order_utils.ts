@@ -4,12 +4,12 @@ import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 import { crypto } from './crypto';
-import { OrderStruct, SignatureType, SignedOrder } from './types';
+import { OrderStruct, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
-export const signedOrderUtils = {
+export const orderUtils = {
     createFill: (signedOrder: SignedOrder, takerTokenFillAmount?: BigNumber) => {
         const fill = {
-            order: signedOrderUtils.getOrderStruct(signedOrder),
+            order: orderUtils.getOrderStruct(signedOrder),
             takerTokenFillAmount: takerTokenFillAmount || signedOrder.takerTokenAmount,
             signature: signedOrder.signature,
         };
@@ -17,7 +17,7 @@ export const signedOrderUtils = {
     },
     createCancel(signedOrder: SignedOrder, takerTokenCancelAmount?: BigNumber) {
         const cancel = {
-            order: signedOrderUtils.getOrderStruct(signedOrder),
+            order: orderUtils.getOrderStruct(signedOrder),
             takerTokenCancelAmount: takerTokenCancelAmount || signedOrder.takerTokenAmount,
         };
         return cancel;
@@ -38,7 +38,7 @@ export const signedOrderUtils = {
         };
         return orderStruct;
     },
-    getOrderHashHex(signedOrder: SignedOrder): string {
+    getOrderHashBuff(order: SignedOrder | UnsignedOrder): Buffer {
         const orderSchemaHashBuff = crypto.solSHA3([
             'address exchangeAddress',
             'address makerAddress',
@@ -50,35 +50,31 @@ export const signedOrderUtils = {
             'uint256 takerTokenAmount',
             'uint256 makerFeeAmount',
             'uint256 takerFeeAmount',
-            'uint256 expirationTimestampSeconds',
+            'uint256 expirationTimeSeconds',
             'uint256 salt',
         ]);
         const orderSchemaHashHex = `0x${orderSchemaHashBuff.toString('hex')}`;
         const orderHashBuff = crypto.solSHA3([
-            signedOrder.exchangeAddress,
-            signedOrder.makerAddress,
-            signedOrder.takerAddress,
-            signedOrder.makerTokenAddress,
-            signedOrder.takerTokenAddress,
-            signedOrder.feeRecipientAddress,
-            signedOrder.makerTokenAmount,
-            signedOrder.takerTokenAmount,
-            signedOrder.makerFeeAmount,
-            signedOrder.takerFeeAmount,
-            signedOrder.expirationTimeSeconds,
-            signedOrder.salt,
+            order.exchangeAddress,
+            order.makerAddress,
+            order.takerAddress,
+            order.makerTokenAddress,
+            order.takerTokenAddress,
+            order.feeRecipientAddress,
+            order.makerTokenAmount,
+            order.takerTokenAmount,
+            order.makerFeeAmount,
+            order.takerFeeAmount,
+            order.expirationTimeSeconds,
+            order.salt,
         ]);
         const orderHashHex = `0x${orderHashBuff.toString('hex')}`;
         const prefixedOrderHashBuff = crypto.solSHA3([new BigNumber(orderSchemaHashHex), new BigNumber(orderHashHex)]);
-        const prefixedOrderHashHex = `0x${prefixedOrderHashBuff.toString('hex')}`;
-        return prefixedOrderHashHex;
+        return prefixedOrderHashBuff;
     },
-    getSignatureType(signature: string): SignatureType {
-        const signatureBuff = new Buffer(signature);
-        const signatureType = signatureBuff[0];
-        if (!_.has(SignatureType, signatureType)) {
-            throw new Error(`${signatureType} is not a valid signature type`);
-        }
-        return signatureType;
+    getOrderHashHex(order: SignedOrder | UnsignedOrder): string {
+        const orderHashBuff = orderUtils.getOrderHashBuff(order);
+        const orderHashHex = `0x${orderHashBuff.toString('hex')}`;
+        return orderHashHex;
     },
 };
