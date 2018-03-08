@@ -75,9 +75,9 @@ Encountered: ${JSON.stringify(value, null, '\t')}
 Validation errors: ${validationResult.errors.join(', ')}`;
         this.assert(!hasValidationErrors, msg);
     },
-    isHttpUrl(variableName: string, value: any): void {
+    isWebUri(variableName: string, value: any): void {
         const isValidUrl = !_.isUndefined(validUrl.isWebUri(value));
-        this.assert(isValidUrl, this.typeAssertionMessage(variableName, 'http url', value));
+        this.assert(isValidUrl, this.typeAssertionMessage(variableName, 'web uri', value));
     },
     isUri(variableName: string, value: any): void {
         const isValidUri = !_.isUndefined(validUrl.isUri(value));

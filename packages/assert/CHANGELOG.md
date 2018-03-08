@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.0 - _TBD, 2018_
+
+    * Rename `isHttpUrl` to `isWebUri` (#412)
+
 ## v0.1.0 - _March 4, 2018_
 
     * Remove isETHAddressHex checksum address check and assume address will be lowercased  (#373)
