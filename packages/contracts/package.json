@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "contracts",
-    "version": "2.1.14",
+    "version": "2.1.16",
     "description": "Smart contract components of 0x protocol",
     "main": "index.js",
     "directories": {
@@ -63,7 +63,7 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "0x.js": "^0.33.0",
+        "0x.js": "^0.33.1",
         "@0xproject/deployer": "^0.2.0",
         "@0xproject/json-schemas": "^0.7.13",
         "@0xproject/types": "^0.3.0",
