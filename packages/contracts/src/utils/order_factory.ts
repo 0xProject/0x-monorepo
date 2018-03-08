@@ -1,37 +1,35 @@
-import { Order, ZeroEx } from '0x.js';
+import { ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { signedOrderUtils } from './signed_order_utils';
-import { DefaultOrderParams, SignedOrder } from './types';
+import { orderUtils } from './order_utils';
+import { signingUtils } from './signing_utils';
+import { DefaultOrderParams, SignatureType, SignedOrder, UnsignedOrder } from './types';
 
 export class OrderFactory {
-    private _defaultOrderParams: Partial<Order>;
-    private _zeroEx: ZeroEx;
-    constructor(zeroEx: ZeroEx, defaultOrderParams: Partial<Order>) {
+    private _defaultOrderParams: Partial<UnsignedOrder>;
+    private _secretKey: Buffer;
+    constructor(secretKey: Buffer, defaultOrderParams: Partial<UnsignedOrder>) {
         this._defaultOrderParams = defaultOrderParams;
-        this._zeroEx = zeroEx;
+        this._secretKey = secretKey;
     }
-    public async newSignedOrderAsync(customOrderParams: Partial<Order> = {}): Promise<SignedOrder> {
+    public newSignedOrder(
+        customOrderParams: Partial<UnsignedOrder> = {},
+        signatureType: SignatureType = SignatureType.Ecrecover,
+    ): SignedOrder {
         const randomExpiration = new BigNumber(Math.floor((Date.now() + Math.random() * 100000000000) / 1000));
         const order = ({
-            expirationTimestampSeconds: randomExpiration,
+            expirationTimeSeconds: randomExpiration,
             salt: ZeroEx.generatePseudoRandomSalt(),
             takerAddress: ZeroEx.NULL_ADDRESS,
             ...this._defaultOrderParams,
             ...customOrderParams,
-        } as any) as SignedOrder;
-        const orderHashHex = signedOrderUtils.getOrderHashHex(order);
-        const shouldAddPersonalMessagePrefix = false;
-        const ecSignature = await this._zeroEx.signOrderHashAsync(
-            orderHashHex,
-            order.makerAddress,
-            shouldAddPersonalMessagePrefix,
-        );
+        } as any) as UnsignedOrder;
+        const orderHashBuff = orderUtils.getOrderHashBuff(order);
+        const signature = signingUtils.signMessage(orderHashBuff, this._secretKey, signatureType);
         const signedOrder = {
             ...order,
-            ecSignature,
+            signature: `0x${signature.toString('hex')}`,
         };
         return signedOrder;
     }

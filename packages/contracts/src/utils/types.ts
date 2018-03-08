@@ -138,6 +138,21 @@ export interface OrderStruct {
     salt: BigNumber;
 }
 
+export interface UnsignedOrder {
+    exchangeAddress: string;
+    makerAddress: string;
+    takerAddress: string;
+    makerTokenAddress: string;
+    takerTokenAddress: string;
+    feeRecipientAddress: string;
+    makerTokenAmount: BigNumber;
+    takerTokenAmount: BigNumber;
+    makerFeeAmount: BigNumber;
+    takerFeeAmount: BigNumber;
+    expirationTimeSeconds: BigNumber;
+    salt: BigNumber;
+}
+
 export enum SignatureType {
     Illegal,
     Invalid,

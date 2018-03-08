@@ -19,7 +19,7 @@
 pragma solidity ^0.4.19;
 pragma experimental ABIEncoderV2;
 
-import './mixins/MExchangeCore.sol';
+import "./mixins/MExchangeCore.sol";
 import "../../utils/SafeMath/SafeMath.sol";
 
 /// @dev Consumes MExchangeCore
