@@ -14,9 +14,23 @@ export class BaseContract {
         values: any[],
         transformation: (type: string, value: any) => any,
     ): any {
-        return _.map(values, (value: any, i: number) =>
-            BaseContract._transformTypedData(abis[i].type, value, transformation),
-        );
+        return _.map(values, (value: any, i: number) => {
+            if (abis[i].type === 'tuple') {
+                const transformedTuple = BaseContract._transformABIData(
+                    abis[i].components,
+                    _.values(value),
+                    transformation,
+                );
+                return BaseContract._transformTypedData(abis[i].type, transformedTuple, transformation);
+            }
+            if (abis[i].type === 'tuple[]') {
+                const transformedTupleArray = _.map(value, tuple =>
+                    BaseContract._transformABIData(abis[i].components, _.values(tuple), transformation),
+                );
+                return BaseContract._transformTypedData(abis[i].type, transformedTupleArray, transformation);
+            }
+            return BaseContract._transformTypedData(abis[i].type, value, transformation);
+        });
     }
     protected static _lowercaseAddress(type: string, value: string): string {
         return type === 'address' ? value.toLowerCase() : value;
