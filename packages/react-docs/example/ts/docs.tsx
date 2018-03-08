@@ -45,9 +45,8 @@ const docsInfoConfig: DocsInfoConfig = {
         publicTypes: ['TxData', 'TransactionReceipt', 'RawLogEntry'],
         typeNameToExternalLink: {
             Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
-            Provider: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
+            Provider: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
             BigNumber: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
-            DecodedLogEntryEvent: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
             LogEntryEvent: 'http://mikemcl.github.io/bignumber.js',
             CallData: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L348',
             BlockWithoutTransactionData:
