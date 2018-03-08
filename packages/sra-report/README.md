@@ -2,6 +2,19 @@
 
 This tool allows you to generate reports that detail an endpoint's [standard relayer API HTTP specification](https://github.com/0xProject/standard-relayer-api/blob/master/http/v0.md) compliance. The tool will perform a [Postman collection](https://www.getpostman.com/docs/v6/postman/collections/creating_collections) run and either print a report to the console or save it to disk as a json file. SRA report can also output a Postman collection file and [Postman environment](https://www.getpostman.com/docs/v6/postman/environments_and_globals/manage_environments) file in order to facilitate replication and debugging of collection runs using the [Postman native app](https://www.getpostman.com/docs/v6/postman/launching_postman/installation_and_updates).
 
+The tool currently performs the following checks for each endpoint:
+
+* `application/json` Content-Type header validation
+* JSON schema validation
+* Correct filtering when a query paramater is provided (ex. when querying for a specific maker address, all orders returned have the same maker address that was provided by the query)
+
+Features to come:
+
+* Correct sorting (ex. the `/orderbook` endpoint should return orders in order of price)
+* Tests for pagination
+* Tests for the `POST /order` endpoint
+* Tests for failure cases and errors
+
 ## Installation
 
 `yarn add -g @0xproject/sra-report`
