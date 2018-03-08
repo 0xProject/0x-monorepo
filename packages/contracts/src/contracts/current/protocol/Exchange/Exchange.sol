@@ -34,13 +34,11 @@ contract Exchange is
 
     function Exchange(
         IToken _zrxToken,
-        ITokenTransferProxy _tokenTransferProxy
-    )
+        ITokenTransferProxy _tokenTransferProxy)
         public
         MixinExchangeCore()
         MixinSignatureValidator()
         MixinSettlementProxy(_tokenTransferProxy, _zrxToken)
         MixinWrapperFunctions()
-    {
-    }
+    {}
 }
