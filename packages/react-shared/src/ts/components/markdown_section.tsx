@@ -20,7 +20,7 @@ export interface MarkdownSectionProps {
 }
 
 interface DefaultMarkdownSectionProps {
-  headerSize: HeaderSizes;
+    headerSize: HeaderSizes;
 }
 
 type PropsWithDefaults = MarkdownSectionProps & DefaultMarkdownSectionProps;

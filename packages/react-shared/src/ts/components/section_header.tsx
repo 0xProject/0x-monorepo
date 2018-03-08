@@ -13,7 +13,7 @@ export interface SectionHeaderProps {
 }
 
 interface DefaultSectionHeaderProps {
-  headerSize: HeaderSizes;
+    headerSize: HeaderSizes;
 }
 
 type PropsWithDefaults = SectionHeaderProps & DefaultSectionHeaderProps;

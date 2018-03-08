@@ -30,7 +30,11 @@ export const utils = {
         const id = name.replace(/ /g, '-');
         return id;
     },
-    getEtherScanLinkIfExists(addressOrTxHash: string, networkId: number, suffix: EtherscanLinkSuffixes): string|undefined {
+    getEtherScanLinkIfExists(
+        addressOrTxHash: string,
+        networkId: number,
+        suffix: EtherscanLinkSuffixes,
+    ): string | undefined {
         const networkName = constants.NETWORK_NAME_BY_ID[networkId];
         if (_.isUndefined(networkName)) {
             return undefined;
