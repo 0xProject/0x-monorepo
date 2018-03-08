@@ -42,5 +42,8 @@
         "@0xproject/utils": "^0.4.0",
         "lodash": "^4.17.4",
         "valid-url": "^1.0.9"
+    },
+    "publishConfig": {
+      "access": "public"
     }
 }

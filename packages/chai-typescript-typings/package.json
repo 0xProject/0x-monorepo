@@ -12,5 +12,8 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/chai-typescript-typings#readme"
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/chai-typescript-typings#readme",
+    "publishConfig": {
+      "access": "public"
+    }
 }
