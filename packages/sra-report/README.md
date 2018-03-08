@@ -4,16 +4,16 @@ This tool allows you to generate reports that detail an endpoint's [standard rel
 
 The tool currently performs the following checks for each endpoint:
 
-* `application/json` Content-Type header validation
-* JSON schema validation
-* Correct filtering when a query paramater is provided (ex. when querying for a specific maker address, all orders returned have the same maker address that was provided by the query)
+*   `application/json` Content-Type header validation
+*   JSON schema validation
+*   Correct filtering when a query paramater is provided (ex. when querying for a specific maker address, all orders returned have the same maker address that was provided by the query)
 
 Features to come:
 
-* Correct sorting (ex. the `/orderbook` endpoint should return orders in order of price)
-* Tests for pagination
-* Tests for the `POST /order` endpoint
-* Tests for failure cases and errors
+*   Correct sorting (ex. the `/orderbook` endpoint should return orders in order of price)
+*   Tests for pagination
+*   Tests for the `POST /order` endpoint
+*   Tests for failure cases and errors
 
 ## Installation
 
