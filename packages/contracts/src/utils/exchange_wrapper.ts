@@ -81,6 +81,27 @@ export class ExchangeWrapper {
         });
         return tx;
     }
+    public async fillOrderNoThrowAsync(
+        signedOrder: SignedOrder,
+        from: string,
+        opts: { takerTokenFillAmount?: BigNumber } = {},
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = orderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
+        const txHash = await this._exchange.fillOrderNoThrow.sendTransactionAsync(
+            params.order,
+            params.takerTokenFillAmount,
+            params.signature,
+            { from },
+        );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
+        return tx;
+    }
     public async batchFillOrdersAsync(
         orders: SignedOrder[],
         from: string,
