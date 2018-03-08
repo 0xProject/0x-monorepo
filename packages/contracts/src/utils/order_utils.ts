@@ -53,8 +53,7 @@ export const orderUtils = {
             'uint256 expirationTimeSeconds',
             'uint256 salt',
         ]);
-        const orderSchemaHashHex = `0x${orderSchemaHashBuff.toString('hex')}`;
-        const orderHashBuff = crypto.solSHA3([
+        const orderParamsHashBuff = crypto.solSHA3([
             order.exchangeAddress,
             order.makerAddress,
             order.takerAddress,
@@ -68,9 +67,10 @@ export const orderUtils = {
             order.expirationTimeSeconds,
             order.salt,
         ]);
-        const orderHashHex = `0x${orderHashBuff.toString('hex')}`;
-        const prefixedOrderHashBuff = crypto.solSHA3([new BigNumber(orderSchemaHashHex), new BigNumber(orderHashHex)]);
-        return prefixedOrderHashBuff;
+        const orderSchemaHashHex = `0x${orderSchemaHashBuff.toString('hex')}`;
+        const orderParamsHashHex = `0x${orderParamsHashBuff.toString('hex')}`;
+        const orderHashBuff = crypto.solSHA3([new BigNumber(orderSchemaHashHex), new BigNumber(orderParamsHashHex)]);
+        return orderHashBuff;
     },
     getOrderHashHex(order: SignedOrder | UnsignedOrder): string {
         const orderHashBuff = orderUtils.getOrderHashBuff(order);
