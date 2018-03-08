@@ -1,9 +1,9 @@
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Styles } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 export interface NotFoundProps {

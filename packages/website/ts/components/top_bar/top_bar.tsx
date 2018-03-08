@@ -1,3 +1,5 @@
+import { DocsInfo, DocsMenu } from '@0xproject/react-docs';
+import { colors, MenuSubsectionsBySection, NestedSidebarMenu, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';
@@ -7,15 +9,13 @@ import { Link } from 'react-router-dom';
 import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { PortalMenu } from 'ts/components/portal_menu';
+import { SidebarHeader } from 'ts/components/sidebar_header';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
-import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, DocsMenu, Key, MenuSubsectionsBySection, ProviderType, Styles, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
+import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -38,6 +38,7 @@ interface TopBarProps {
     docsInfo?: DocsInfo;
     style?: React.CSSProperties;
     isNightVersion?: boolean;
+    onVersionSelected?: (semver: string) => void;
 }
 
 interface TopBarState {
@@ -315,11 +316,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                    title={this.props.docsInfo.displayName}
+                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
                     versions={this.props.availableDocVersions}
+                    onVersionSelected={this.props.onVersionSelected}
                 />
             </div>
         );
@@ -334,7 +336,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menuSubsectionsBySection}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                    title={this.props.translate.get(Key.Wiki, Deco.Cap)}
+                    sidebarHeader={<SidebarHeader title="Wiki" />}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                 />
