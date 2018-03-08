@@ -1,4 +1,4 @@
-import { SignedOrder, ZeroEx } from '0x.js';
+import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -9,7 +9,8 @@ import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange
 import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { ContractName } from '../../src/utils/types';
+import { orderUtils } from '../../src/utils/order_utils';
+import { ContractName, SignedOrder } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 import { web3, web3Wrapper } from '../utils/web3_wrapper';
@@ -20,8 +21,8 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange', () => {
-    let maker: string;
-    let feeRecipient: string;
+    let makerAddress: string;
+    let feeRecipientAddress: string;
 
     let signedOrder: SignedOrder;
     let exchangeWrapper: ExchangeWrapper;
@@ -29,7 +30,7 @@ describe('Exchange', () => {
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        [maker, feeRecipient] = accounts;
+        [makerAddress, feeRecipientAddress] = accounts;
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const [rep, dgd, zrx] = await Promise.all([
@@ -46,18 +47,19 @@ describe('Exchange', () => {
         const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
         const defaultOrderParams = {
-            exchangeContractAddress: exchange.address,
-            maker,
-            feeRecipient,
+            exchangeAddress: exchange.address,
+            makerAddress,
+            feeRecipientAddress,
             makerTokenAddress: rep.address,
             takerTokenAddress: dgd.address,
             makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
-            makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
-        orderFactory = new OrderFactory(zeroEx, defaultOrderParams);
-        signedOrder = await orderFactory.newSignedOrderAsync();
+        const secretKey = constants.TESTRPC_ACCOUNTS[0].secretKey;
+        orderFactory = new OrderFactory(secretKey, defaultOrderParams);
+        signedOrder = orderFactory.newSignedOrder();
     });
 
     beforeEach(async () => {
@@ -69,30 +71,31 @@ describe('Exchange', () => {
     describe('getOrderHash', () => {
         it('should output the correct orderHash', async () => {
             const orderHashHex = await exchangeWrapper.getOrderHashAsync(signedOrder);
-            expect(ZeroEx.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
+            expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
         });
     });
 
     describe('isValidSignature', () => {
         beforeEach(async () => {
-            signedOrder = await orderFactory.newSignedOrderAsync();
+            signedOrder = orderFactory.newSignedOrder();
         });
 
         it('should return true with a valid signature', async () => {
             const success = await exchangeWrapper.isValidSignatureAsync(signedOrder);
-            const orderHashHex = ZeroEx.getOrderHashHex(signedOrder);
-            const isValidSignature = ZeroEx.isValidSignature(orderHashHex, signedOrder.ecSignature, signedOrder.maker);
-            expect(isValidSignature).to.be.true();
             expect(success).to.be.true();
         });
 
         it('should return false with an invalid signature', async () => {
-            signedOrder.ecSignature.r = ethUtil.bufferToHex(ethUtil.sha3('invalidR'));
-            signedOrder.ecSignature.s = ethUtil.bufferToHex(ethUtil.sha3('invalidS'));
+            const invalidR = ethUtil.sha3('invalidR');
+            const invalidS = ethUtil.sha3('invalidS');
+            const invalidSigBuff = Buffer.concat([
+                ethUtil.toBuffer(signedOrder.signature.slice(0, 6)),
+                invalidR,
+                invalidS,
+            ]);
+            const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
+            signedOrder.signature = invalidSigHex;
             const success = await exchangeWrapper.isValidSignatureAsync(signedOrder);
-            const orderHashHex = ZeroEx.getOrderHashHex(signedOrder);
-            const isValidSignature = ZeroEx.isValidSignature(orderHashHex, signedOrder.ecSignature, signedOrder.maker);
-            expect(isValidSignature).to.be.false();
             expect(success).to.be.false();
         });
     });
