@@ -1,0 +1,7 @@
+.*
+yarn-error.log
+/src/
+/scripts/
+tsconfig.json
+screenshot.png
+/example/

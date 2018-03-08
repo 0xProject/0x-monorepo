@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.33.1 - _March 8, 2018_
+
+    * Add missing EthersJs typescript typings as dependency
+
 ## v0.33.0 - _March 4, 2018_
 
     * Validate and lowercase all addresses in public methods (#373)

@@ -39,9 +39,9 @@ describe('Exchange', () => {
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const [rep, dgd, zrx] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken),
-            deployer.deployAsync(ContractName.DummyToken),
-            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,

@@ -8,6 +8,14 @@ Standard type and schema assertions to be used across all 0x projects and packag
 yarn add @0xproject/assert
 ```
 
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```
+"include": [
+    "./node_modules/web3-typescript-typings/index.d.ts",
+]
+```
+
 ## Usage
 
 ```typescript

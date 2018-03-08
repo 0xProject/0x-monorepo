@@ -68,6 +68,7 @@ generated_docs/
 TODO.md
 
 packages/website/public/bundle*
+packages/react-docs/example/public/bundle*
 
 # generated binaries
 bin/

@@ -67,3 +67,14 @@ export enum BlockParamLiteral {
 }
 
 export type BlockParam = BlockParamLiteral | number;
+
+export interface RawLogEntry {
+    logIndex: string | null;
+    transactionIndex: string | null;
+    transactionHash: string;
+    blockHash: string | null;
+    blockNumber: string | null;
+    address: string;
+    data: string;
+    topics: string[];
+}

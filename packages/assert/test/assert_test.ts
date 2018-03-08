@@ -183,7 +183,7 @@ describe('Assertions', () => {
             );
         });
     });
-    describe('#isHttpUrl', () => {
+    describe('#isWebUri', () => {
         it('should not throw for valid input', () => {
             const validInputs = [
                 'http://www.google.com',
@@ -191,7 +191,7 @@ describe('Assertions', () => {
                 'https://api.radarrelay.com/0x/v0/',
                 'https://zeroex.beta.radarrelay.com:8000/0x/v0/',
             ];
-            validInputs.forEach(input => expect(assert.isHttpUrl.bind(assert, variableName, input)).to.not.throw());
+            validInputs.forEach(input => expect(assert.isWebUri.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
             const invalidInputs = [
@@ -205,7 +205,7 @@ describe('Assertions', () => {
                 'user:password@api.example-relayer.net',
                 '//api.example-relayer.net',
             ];
-            invalidInputs.forEach(input => expect(assert.isHttpUrl.bind(assert, variableName, input)).to.throw());
+            invalidInputs.forEach(input => expect(assert.isWebUri.bind(assert, variableName, input)).to.throw());
         });
     });
     describe('#isUri', () => {

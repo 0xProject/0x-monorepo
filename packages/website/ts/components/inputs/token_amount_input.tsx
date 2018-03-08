@@ -1,4 +1,5 @@
 import { ZeroEx } from '0x.js';
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -6,7 +7,6 @@ import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { BalanceBoundedInput } from 'ts/components/inputs/balance_bounded_input';
 import { InputErrMsg, Token, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 
 interface TokenAmountInputProps {
     userAddress: string;

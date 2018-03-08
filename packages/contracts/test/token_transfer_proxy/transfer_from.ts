@@ -38,7 +38,7 @@ describe('TokenTransferProxy', () => {
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
         );
-        const repInstance = await deployer.deployAsync(ContractName.DummyToken);
+        const repInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
         rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
 
         dmyBalances = new Balances([rep], [accounts[0], accounts[1]]);

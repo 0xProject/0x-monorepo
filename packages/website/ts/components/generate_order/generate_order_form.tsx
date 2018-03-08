@@ -1,4 +1,5 @@
 import { ECSignature, Order, ZeroEx } from '0x.js';
+import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -20,7 +21,6 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -253,7 +253,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         ) {
             const didSignSuccessfully = await this._signTransactionAsync();
             if (didSignSuccessfully) {
-                const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+                const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
                 const eventLabel = `${this.props.tokenByAddress[debitToken.address].symbol}-${networkName}`;
                 ReactGA.event({
                     category: 'Portal',

@@ -21,7 +21,7 @@ describe('LedgerSubprovider', () => {
         const ledgerEthereumClientFactoryAsync = async () => {
             // tslint:disable:no-object-literal-type-assertion
             const ledgerEthClient = {
-                getAddress_async: async () => {
+                getAddress: async () => {
                     const publicKey =
                         '04f428290f4c5ed6a198f71b8205f488141dbb3f0840c923bbfa798ecbee6370986c03b5575d94d506772fb48a6a44e345e4ebd4f028a6f609c44b655d6d3e71a1';
                     const chainCode = 'ac055a5537c0c7e9e02d14a197cad6b857836da2a12043b46912a37d959b5ae8';
@@ -32,7 +32,7 @@ describe('LedgerSubprovider', () => {
                         chainCode,
                     };
                 },
-                signPersonalMessage_async: async () => {
+                signPersonalMessage: async () => {
                     const ecSignature = {
                         v: 28,
                         r: 'a6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae49148',
@@ -40,7 +40,7 @@ describe('LedgerSubprovider', () => {
                     };
                     return ecSignature;
                 },
-                signTransaction_async: async (derivationPath: string, txHex: string) => {
+                signTransaction: async (derivationPath: string, txHex: string) => {
                     const ecSignature = {
                         v: '77',
                         r: '88a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98b',
@@ -48,8 +48,8 @@ describe('LedgerSubprovider', () => {
                     };
                     return ecSignature;
                 },
-                comm: {
-                    close_async: _.noop,
+                transport: {
+                    close: _.noop,
                 } as LedgerCommunicationClient,
             };
             // tslint:enable:no-object-literal-type-assertion
