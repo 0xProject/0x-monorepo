@@ -32,32 +32,38 @@ interface ECSignature {
     r: string;
     s: string;
 }
-declare module 'ledgerco' {
-    interface comm {
-        close_async(): Promise<void>;
-    }
-    export class comm_node implements comm {
-        public static create_async(timeoutMilliseconds?: number): Promise<comm_node>;
-        public close_async(): Promise<void>;
-    }
-    export class comm_u2f implements comm {
-        public static create_async(): Promise<comm_u2f>;
-        public close_async(): Promise<void>;
-    }
-    export class eth {
-        public comm: comm;
-        constructor(comm: comm);
-        public getAddress_async(
+
+interface LedgerTransport {
+    close(): Promise<void>;
+}
+
+declare module '@ledgerhq/hw-app-eth' {
+    class Eth {
+        public transport: LedgerTransport;
+        constructor(transport: LedgerTransport);
+        public getAddress(
             path: string,
-            display?: boolean,
-            chaincode?: boolean,
+            boolDisplay?: boolean,
+            boolChaincode?: boolean,
         ): Promise<{ publicKey: string; address: string; chainCode: string }>;
-        public signTransaction_async(path: string, rawTxHex: string): Promise<ECSignatureString>;
-        public getAppConfiguration_async(): Promise<{
-            arbitraryDataEnabled: number;
-            version: string;
-        }>;
-        public signPersonalMessage_async(path: string, messageHex: string): Promise<ECSignature>;
+        public signTransaction(path: string, rawTxHex: string): Promise<ECSignatureString>;
+        public getAppConfiguration(): Promise<{ arbitraryDataEnabled: number; version: string }>;
+        public signPersonalMessage(path: string, messageHex: string): Promise<ECSignature>;
+    }
+    export default Eth;
+}
+
+declare module '@ledgerhq/hw-transport-u2f' {
+    export default class TransportU2F implements LedgerTransport {
+        public static create(): Promise<LedgerTransport>;
+        public close(): Promise<void>;
+    }
+}
+
+declare module '@ledgerhq/hw-transport-node-hid' {
+    export default class TransportNodeHid implements LedgerTransport {
+        public static create(): Promise<LedgerTransport>;
+        public close(): Promise<void>;
     }
 }
 
