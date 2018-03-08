@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.2.0 - _TBD, 2018_
+## v0.2.0 - _March 8, 2018_
 
     * Rename `isHttpUrl` to `isWebUri` (#412)
 

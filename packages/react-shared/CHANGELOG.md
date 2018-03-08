@@ -1,3 +1,3 @@
 # CHANGELOG
 
-## vX.X.X - _TBD, 2018_
+## v0.0.1 - _March 8, 2018_

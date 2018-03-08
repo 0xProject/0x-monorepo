@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.3.1 - _TBD_
+## v0.3.1 - _March 8, 2018_
 
     * Added `RawLogEntry` type.
 
