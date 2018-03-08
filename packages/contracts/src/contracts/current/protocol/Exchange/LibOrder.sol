@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 contract LibOrder {
     
-    bytes32 constant orderSchemaHash = keccak256(
+    bytes32 constant ORDER_SCHEMA_HASH = keccak256(
         "address exchangeAddress",
         "address makerAddress",
         "address takerAddress",
@@ -59,7 +59,7 @@ contract LibOrder {
     {
         // TODO: EIP712 is not finalized yet
         orderHash = keccak256(
-            orderSchemaHash,
+            ORDER_SCHEMA_HASH,
             keccak256(
                 address(this),
                 order.makerAddress,
