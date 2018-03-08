@@ -115,15 +115,12 @@ describe('Exchange', () => {
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
+        balances = await dmyBalances.getAsync();
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('fillOrKillOrder', () => {
-        beforeEach(async () => {
-            balances = await dmyBalances.getAsync();
-        });
-
         it('should transfer the correct amounts', async () => {
             const signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
@@ -191,6 +188,52 @@ describe('Exchange', () => {
         });
     });
 
+    describe('fillOrderNoThrow', () => {
+        it('should transfer the correct amounts', async () => {
+            const signedOrder = orderFactory.newSignedOrder({
+                makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+                takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+            });
+            const takerTokenFillAmount = signedOrder.takerTokenAmount.div(2);
+            await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
+                takerTokenFillAmount,
+            });
+
+            const newBalances = await dmyBalances.getAsync();
+
+            const makerTokenFillAmount = takerTokenFillAmount
+                .times(signedOrder.makerTokenAmount)
+                .dividedToIntegerBy(signedOrder.takerTokenAmount);
+            const makerFeeAmount = signedOrder.makerFeeAmount
+                .times(makerTokenFillAmount)
+                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+            const takerFeeAmount = signedOrder.takerFeeAmount
+                .times(makerTokenFillAmount)
+                .dividedToIntegerBy(signedOrder.makerTokenAmount);
+            expect(newBalances[makerAddress][signedOrder.makerTokenAddress]).to.be.bignumber.equal(
+                balances[makerAddress][signedOrder.makerTokenAddress].minus(makerTokenFillAmount),
+            );
+            expect(newBalances[makerAddress][signedOrder.takerTokenAddress]).to.be.bignumber.equal(
+                balances[makerAddress][signedOrder.takerTokenAddress].add(takerTokenFillAmount),
+            );
+            expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(
+                balances[makerAddress][zrx.address].minus(makerFeeAmount),
+            );
+            expect(newBalances[takerAddress][signedOrder.takerTokenAddress]).to.be.bignumber.equal(
+                balances[takerAddress][signedOrder.takerTokenAddress].minus(takerTokenFillAmount),
+            );
+            expect(newBalances[takerAddress][signedOrder.makerTokenAddress]).to.be.bignumber.equal(
+                balances[takerAddress][signedOrder.makerTokenAddress].add(makerTokenFillAmount),
+            );
+            expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
+                balances[takerAddress][zrx.address].minus(takerFeeAmount),
+            );
+            expect(newBalances[feeRecipientAddress][zrx.address]).to.be.bignumber.equal(
+                balances[feeRecipientAddress][zrx.address].add(makerFeeAmount.add(takerFeeAmount)),
+            );
+        });
+    });
+
     describe('batch functions', () => {
         let signedOrders: SignedOrder[];
         beforeEach(async () => {
@@ -199,7 +242,6 @@ describe('Exchange', () => {
                 orderFactory.newSignedOrder(),
                 orderFactory.newSignedOrder(),
             ];
-            balances = await dmyBalances.getAsync();
         });
 
         describe('batchFillOrders', () => {
@@ -308,7 +350,7 @@ describe('Exchange', () => {
             });
         });
 
-        describe('fillOrdersUpTo', () => {
+        describe('marketFillOrders', () => {
             it('should stop when the entire takerTokenFillAmount is filled', async () => {
                 const takerTokenFillAmount = signedOrders[0].takerTokenAmount.plus(
                     signedOrders[1].takerTokenAmount.div(2),
