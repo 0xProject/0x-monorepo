@@ -1,3 +1,7 @@
+import Eth from '@ledgerhq/hw-app-eth';
+// HACK: This depdency is optional and tslint skips optional depdencies
+// tslint:disable-next-line:no-implicit-dependencies
+import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
 import promisify = require('es6-promisify');
 import * as ethUtils from 'ethereumjs-util';
@@ -6,14 +10,21 @@ import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import { ledgerEthereumNodeJsClientFactoryAsync, LedgerSubprovider } from '../../src';
-import { DoneCallback } from '../../src/types';
+import { LedgerSubprovider } from '../../src';
+import { DoneCallback, LedgerEthereumClient } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
+async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumClient> {
+    const ledgerConnection = await TransportNodeHid.create();
+    const ledgerEthClient = new Eth(ledgerConnection);
+    return ledgerEthClient;
+}
+
+const TESTRPC_DERIVATION_PATH = `m/44'/60'/0'/0`;
 const TEST_RPC_ACCOUNT_0 = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
 
 describe('LedgerSubprovider', () => {
@@ -23,6 +34,7 @@ describe('LedgerSubprovider', () => {
         ledgerSubprovider = new LedgerSubprovider({
             networkId,
             ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
+            derivationPath: TESTRPC_DERIVATION_PATH,
         });
     });
     describe('direct method calls', () => {
@@ -30,6 +42,10 @@ describe('LedgerSubprovider', () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
             expect(accounts[0]).to.not.be.an('undefined');
             expect(accounts.length).to.be.equal(10);
+        });
+        it('returns the expected first account from a ledger set up with the test mnemonic', async () => {
+            const accounts = await ledgerSubprovider.getAccountsAsync();
+            expect(accounts[0]).to.be.equal(TEST_RPC_ACCOUNT_0);
         });
         it('returns requested number of accounts', async () => {
             const numberOfAccounts = 20;
@@ -50,10 +66,11 @@ describe('LedgerSubprovider', () => {
                 to: '0x0000000000000000000000000000000000000000',
                 value: '0x00',
                 chainId: 3,
+                from: TEST_RPC_ACCOUNT_0,
             };
             const txHex = await ledgerSubprovider.signTransactionAsync(tx);
             expect(txHex).to.be.equal(
-                '0xf85f8080822710940000000000000000000000000000000000000000808077a088a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98ba0019f4a4b9a107d1e6752bf7f701e275f28c13791d6e76af895b07373462cefaa',
+                '0xf85f8080822710940000000000000000000000000000000000000000808078a0712854c73c69445cc1b22a7c3d7312ff9a97fe4ffba35fd636e8236b211b6e7ca0647cee031615e52d916c7c707025bc64ad525d8f1b9876c3435a863b42743178',
             );
         });
     });

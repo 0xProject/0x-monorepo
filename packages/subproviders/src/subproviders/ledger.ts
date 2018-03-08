@@ -134,7 +134,7 @@ export class LedgerSubprovider extends Subprovider {
 
         let ledgerResponse;
         try {
-            ledgerResponse = await this._ledgerClientIfExists.getAddress_async(
+            ledgerResponse = await this._ledgerClientIfExists.getAddress(
                 this._derivationPath,
                 this._shouldAlwaysAskForConfirmation,
                 SHOULD_GET_CHAIN_CODE,
@@ -173,7 +173,7 @@ export class LedgerSubprovider extends Subprovider {
         const txHex = tx.serialize().toString('hex');
         try {
             const derivationPath = this._getDerivationPath();
-            const result = await this._ledgerClientIfExists.signTransaction_async(derivationPath, txHex);
+            const result = await this._ledgerClientIfExists.signTransaction(derivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
             tx.s = Buffer.from(result.s, 'hex');
@@ -199,7 +199,7 @@ export class LedgerSubprovider extends Subprovider {
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
         try {
             const derivationPath = this._getDerivationPath();
-            const result = await this._ledgerClientIfExists.signPersonalMessage_async(
+            const result = await this._ledgerClientIfExists.signPersonalMessage(
                 derivationPath,
                 ethUtil.stripHexPrefix(data),
             );
@@ -236,7 +236,7 @@ export class LedgerSubprovider extends Subprovider {
             this._connectionLock.signal();
             return;
         }
-        await this._ledgerClientIfExists.comm.close_async();
+        await this._ledgerClientIfExists.transport.close();
         this._ledgerClientIfExists = undefined;
         this._connectionLock.signal();
     }
