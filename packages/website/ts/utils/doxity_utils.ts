@@ -45,11 +45,17 @@ export const doxityUtils = {
             const methods: SolidityMethod[] = _.map<DoxityAbiDoc, SolidityMethod>(
                 doxityMethods,
                 (doxityMethod: DoxityAbiDoc) => {
-                    // We assume that none of our functions returns more then a single value
-                    const outputIfExists = !_.isUndefined(doxityMethod.outputs) ? doxityMethod.outputs[0] : undefined;
-                    const returnTypeIfExists = !_.isUndefined(outputIfExists)
-                        ? this._convertType(outputIfExists.type)
-                        : undefined;
+                    const outputs = !_.isUndefined(doxityMethod.outputs) ? doxityMethod.outputs : [];
+                    let returnTypeIfExists: Type;
+                    if (outputs.length === 0) {
+                        // no-op. It's already undefined
+                    } else if (outputs.length === 1) {
+                        const outputsType = outputs[0].type;
+                        returnTypeIfExists = this._convertType(outputsType);
+                    } else {
+                        const outputsType = `[${_.map(outputs, output => output.type).join(', ')}]`;
+                        returnTypeIfExists = this._convertType(outputsType);
+                    }
                     // For ZRXToken, we want to convert it to zrxToken, rather then simply zRXToken
                     const callPath =
                         contractName !== 'ZRXToken'

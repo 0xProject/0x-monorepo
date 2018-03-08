@@ -9,10 +9,10 @@ import * as Web3 from 'web3';
 import { ZeroEx } from '../src/0x';
 import { ExpirationWatcher } from '../src/order_watcher/expiration_watcher';
 import { DoneCallback, Token } from '../src/types';
-import { constants } from '../src/utils/constants';
 import { utils } from '../src/utils/utils';
 
 import { chaiSetup } from './utils/chai_setup';
+import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { reportNoErrorCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';

@@ -62,8 +62,8 @@ declare module 'web3' {
         interface MethodAbi {
             type: AbiType.Function;
             name: string;
-            inputs: FunctionParameter[];
-            outputs: FunctionParameter[];
+            inputs: DataItem[];
+            outputs: DataItem[];
             constant: boolean;
             stateMutability: StateMutability;
             payable: boolean;
@@ -71,7 +71,7 @@ declare module 'web3' {
 
         interface ConstructorAbi {
             type: AbiType.Constructor;
-            inputs: FunctionParameter[];
+            inputs: DataItem[];
             payable: boolean;
             stateMutability: ConstructorStateMutability;
         }
@@ -81,9 +81,7 @@ declare module 'web3' {
             payable: boolean;
         }
 
-        interface EventParameter {
-            name: string;
-            type: string;
+        interface EventParameter extends DataItem {
             indexed: boolean;
         }
 
@@ -94,9 +92,10 @@ declare module 'web3' {
             anonymous: boolean;
         }
 
-        interface FunctionParameter {
+        interface DataItem {
             name: string;
             type: string;
+            components: DataItem[];
         }
 
         interface ContractInstance {

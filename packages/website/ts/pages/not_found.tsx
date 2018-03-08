@@ -2,10 +2,14 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
+import { Dispatcher } from 'ts/redux/dispatcher';
 import { Styles } from 'ts/types';
+import { Translate } from 'ts/utils/translate';
 
 export interface NotFoundProps {
     location: Location;
+    translate: Translate;
+    dispatcher: Dispatcher;
 }
 
 interface NotFoundState {}
@@ -20,7 +24,7 @@ export class NotFound extends React.Component<NotFoundProps, NotFoundState> {
     public render() {
         return (
             <div>
-                <TopBar blockchainIsLoaded={false} location={this.props.location} />
+                <TopBar blockchainIsLoaded={false} location={this.props.location} translate={this.props.translate} />
                 <div className="mx-auto max-width-4 py4">
                     <div className="center py4">
                         <div className="py4">
@@ -35,7 +39,7 @@ export class NotFound extends React.Component<NotFoundProps, NotFoundState> {
                         </div>
                     </div>
                 </div>
-                <Footer />
+                <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
         );
     }

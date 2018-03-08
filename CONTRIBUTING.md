@@ -8,9 +8,9 @@ If you'd like to contribute to 0x protocol, please fork the repo, fix, commit an
 
 We encourage a “PR early” approach so create the PR as early as possible even without the fix/feature ready, so that devs and other contributors know you have picked up the issue. These early PRs should indicate an 'in progress' status by adding the '[WIP]' prefix to the PR title. Please make sure your contributions adhere to our coding guidelines:
 
-* Pull requests adding features or refactoring should be opened against the `development` branch
-* Pull requests fixing bugs in the latest release version should be opened again the `master` branch
-* Write [good commit messages](https://chris.beams.io/posts/git-commit/)
+*   Pull requests adding features or refactoring should be opened against the `development` branch
+*   Pull requests fixing bugs in the latest release version should be opened again the `master` branch
+*   Write [good commit messages](https://chris.beams.io/posts/git-commit/)
 
 ### Code quality
 
@@ -23,7 +23,7 @@ If the sub-package you are modifying has a `CHANGELOG.md` file, make sure to add
 
 ### Styleguide
 
-We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x.js/tree/development/packages/tslint-config) to keep our code style consistent.
+We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x-monorepo/tree/development/packages/tslint-config) to keep our code style consistent.
 
 To lint your code just run: `yarn lint`
 
@@ -31,10 +31,10 @@ We also use [Prettier](https://prettier.io/) to auto-format our code. Be sure to
 
 If using the Atom text editor, we recommend you install the following packages:
 
-* [atom-typescript](https://atom.io/packages/atom-typescript)
-* [linter-tslint](https://atom.io/packages/linter-tslint)
-* [prettier-atom](https://atom.io/packages/prettier-atom)
-* [language-ethereum](https://atom.io/packages/language-ethereum)
+*   [atom-typescript](https://atom.io/packages/atom-typescript)
+*   [linter-tslint](https://atom.io/packages/linter-tslint)
+*   [prettier-atom](https://atom.io/packages/prettier-atom)
+*   [language-ethereum](https://atom.io/packages/language-ethereum)
 
 Our CI will also run TSLint and Prettier as a part of the test run when you submit your PR. Make sure that the CI tests pass for your contribution.
 

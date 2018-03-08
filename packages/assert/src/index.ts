@@ -33,11 +33,8 @@ export const assert = {
         );
     },
     isETHAddressHex(variableName: string, value: string): void {
+        this.assert(_.isString(value), this.typeAssertionMessage(variableName, 'string', value));
         this.assert(addressUtils.isAddress(value), this.typeAssertionMessage(variableName, 'ETHAddressHex', value));
-        this.assert(
-            addressUtils.isAddress(value) && value.toLowerCase() === value,
-            `Checksummed addresses are not supported. Convert ${variableName} to lower case before passing`,
-        );
     },
     doesBelongToStringEnum(
         variableName: string,
@@ -66,8 +63,11 @@ export const assert = {
         const isWeb3Provider = _.isFunction(value.send) || _.isFunction(value.sendAsync);
         this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Web3.Provider', value));
     },
-    doesConformToSchema(variableName: string, value: any, schema: Schema): void {
+    doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
         const schemaValidator = new SchemaValidator();
+        if (!_.isUndefined(subSchemas)) {
+            _.map(subSchemas, schemaValidator.addSchema.bind(schemaValidator));
+        }
         const validationResult = schemaValidator.validate(value, schema);
         const hasValidationErrors = validationResult.errors.length > 0;
         const msg = `Expected ${variableName} to conform to schema ${schema.id}

@@ -9,7 +9,7 @@ export const encoder = {
         const constructorTypes: string[] = [];
         _.each(abi, (element: Web3.AbiDefinition) => {
             if (element.type === AbiType.Constructor) {
-                _.each(element.inputs, (input: Web3.FunctionParameter) => {
+                _.each(element.inputs, (input: Web3.DataItem) => {
                     constructorTypes.push(input.type);
                 });
             }

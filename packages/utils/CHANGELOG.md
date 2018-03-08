@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.4.0 - _March 4, 2018_
+
+    * Use `ethers-contracts` as a backend to decode event args (#413)
+    * Move web3 types from devDep to dep since required when using this package (#429)
+
 ## v0.3.2 - _February 9, 2018_
 
     * Fix publishing issue where .npmignore was not properly excluding undesired content (#389)

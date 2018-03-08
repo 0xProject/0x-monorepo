@@ -1,12 +1,5 @@
 import * as _ from 'lodash';
-import {
-    ContractAddresses,
-    Environments,
-    Networks,
-    OutdatedWrappedEtherByNetworkId,
-    PublicNodeUrlsByNetworkId,
-    SmartContractDocSections,
-} from 'ts/types';
+import { ContractAddresses, Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
 
 const BASE_URL = window.location.origin;
 const isDevelopment = _.includes(
@@ -19,34 +12,6 @@ export const configs = {
     BACKEND_BASE_URL: 'https://website-api.0xproject.com',
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
-    CONTRACT_ADDRESS: {
-        '1.0.0': {
-            [Networks.Mainnet]: {
-                [SmartContractDocSections.Exchange]: '0x12459c951127e0c374ff9105dda097662a027093',
-                [SmartContractDocSections.TokenTransferProxy]: '0x8da0d80f5007ef1e431dd2127178d224e32c2ef4',
-                [SmartContractDocSections.ZRXToken]: '0xe41d2489571d322189246dafa5ebde1f4699f498',
-                [SmartContractDocSections.TokenRegistry]: '0x926a74c5c36adf004c87399e65f75628b0f98d2c',
-            },
-            [Networks.Ropsten]: {
-                [SmartContractDocSections.Exchange]: '0x479cc461fecd078f766ecc58533d6f69580cf3ac',
-                [SmartContractDocSections.TokenTransferProxy]: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
-                [SmartContractDocSections.ZRXToken]: '0xa8e9fa8f91e5ae138c74648c9c304f1c75003a8d',
-                [SmartContractDocSections.TokenRegistry]: '0x6b1a50f0bb5a7995444bd3877b22dc89c62843ed',
-            },
-            [Networks.Kovan]: {
-                [SmartContractDocSections.Exchange]: '0x90fe2af704b34e0224bf2299c838e04d4dcf1364',
-                [SmartContractDocSections.TokenTransferProxy]: '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4',
-                [SmartContractDocSections.ZRXToken]: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
-                [SmartContractDocSections.TokenRegistry]: '0xf18e504561f4347bea557f3d4558f559dddbae7f',
-            },
-            [Networks.Rinkeby]: {
-                [SmartContractDocSections.Exchange]: '0x1d16ef40fac01cec8adac2ac49427b9384192c05',
-                [SmartContractDocSections.TokenTransferProxy]: '0xa8e9fa8f91e5ae138c74648c9c304f1c75003a8d',
-                [SmartContractDocSections.ZRXToken]: '0x00f58d6d585f84b2d7267940cede30ce2fe6eae8',
-                [SmartContractDocSections.TokenRegistry]: '0x4e9aad8184de8833365fea970cd9149372fdf1e6',
-            },
-        },
-    } as ContractAddresses,
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,
     // WARNING: ZRX & WETH MUST always be default trackedTokens
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
@@ -129,6 +94,8 @@ export const configs = {
         [3]: [`https://ropsten.infura.io/${INFURA_API_KEY}`],
         [4]: [`https://rinkeby.infura.io/${INFURA_API_KEY}`],
     } as PublicNodeUrlsByNetworkId,
+    SCROLL_CONTAINER_ID: 'documentation',
+    SCROLL_TOP_ID: 'pageScrollTop',
     SHOULD_DEPRECATE_OLD_WETH_TOKEN: true,
     SYMBOLS_OF_MINTABLE_KOVAN_TOKENS: ['MKR', 'MLN', 'GNT', 'DGD', 'REP'],
     SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS: [

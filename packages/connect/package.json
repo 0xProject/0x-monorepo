@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "description": "A javascript library for interacting with the standard relayer api",
     "keywords": [
         "connect",
@@ -15,7 +15,7 @@
         "build:watch": "tsc -w",
         "build": "tsc",
         "clean": "shx rm -rf _bundles lib test_temp",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_DIR",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
@@ -25,7 +25,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/0xProject/0x.js.git"
+        "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "author": "Brandon Millman",
     "license": "Apache-2.0",
@@ -33,20 +33,20 @@
         "node": ">=6.0.0"
     },
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/connect/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^0.0.20",
-        "@0xproject/json-schemas": "^0.7.12",
-        "@0xproject/utils": "^0.3.4",
+        "@0xproject/assert": "^0.1.0",
+        "@0xproject/json-schemas": "^0.7.13",
+        "@0xproject/utils": "^0.4.0",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/tslint-config": "^0.4.10",
         "@types/fetch-mock": "^5.12.1",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
@@ -54,8 +54,8 @@
         "@types/websocket": "^0.0.34",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-as-promised-typescript-typings": "^0.0.9",
-        "chai-typescript-typings": "^0.0.3",
+        "chai-as-promised-typescript-typings": "^0.0.10",
+        "chai-typescript-typings": "^0.0.4",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "fetch-mock": "^5.13.1",
@@ -65,6 +65,6 @@
         "tslint": "5.8.0",
         "typedoc": "~0.8.0",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.11"
+        "web3-typescript-typings": "^0.10.0"
     }
 }

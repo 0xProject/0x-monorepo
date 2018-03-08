@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.10.0 - _March 4, 2018_
+
+    * Support ABIv2 (#401)
+
 ## v0.9.11 - _February 16, 2018_
 
     * Fix `web3.net.peerCount` to be of type number instead of boolean (#397)

@@ -127,7 +127,7 @@ export interface SignedOrder extends Order {
 }
 
 //                          [address, name, symbol, decimals, ipfsHash, swarmHash]
-export type TokenMetadata = [string, string, string, BigNumber, string, string];
+export type TokenMetadata = [string, string, string, number, string, string];
 
 export interface Token {
     name: string;
@@ -196,7 +196,7 @@ export interface OrderStateWatcherConfig {
 }
 
 /*
- * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 42-kovan, 50-testrpc)
+ * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
  * exchangeContractAddress: The address of an exchange contract to use
  * zrxContractAddress: The address of the ZRX contract to use

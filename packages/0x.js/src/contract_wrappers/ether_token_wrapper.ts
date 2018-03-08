@@ -41,15 +41,18 @@ export class EtherTokenWrapper extends ContractWrapper {
         depositor: string,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
+        assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
+        const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
+        const normalizedDepositorAddress = depositor.toLowerCase();
 
-        const ethBalanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(depositor);
+        const ethBalanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(normalizedDepositorAddress);
         assert.assert(ethBalanceInWei.gte(amountInWei), ZeroExError.InsufficientEthBalanceForDeposit);
 
-        const wethContract = await this._getEtherTokenContractAsync(etherTokenAddress);
+        const wethContract = await this._getEtherTokenContractAsync(normalizedEtherTokenAddress);
         const txHash = await wethContract.deposit.sendTransactionAsync({
-            from: depositor,
+            from: normalizedDepositorAddress,
             value: amountInWei,
             gas: txOpts.gasLimit,
             gasPrice: txOpts.gasPrice,
@@ -72,14 +75,20 @@ export class EtherTokenWrapper extends ContractWrapper {
         txOpts: TransactionOpts = {},
     ): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
+        assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
+        const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
+        const normalizedWithdrawerAddress = withdrawer.toLowerCase();
 
-        const WETHBalanceInBaseUnits = await this._tokenWrapper.getBalanceAsync(etherTokenAddress, withdrawer);
+        const WETHBalanceInBaseUnits = await this._tokenWrapper.getBalanceAsync(
+            normalizedEtherTokenAddress,
+            normalizedWithdrawerAddress,
+        );
         assert.assert(WETHBalanceInBaseUnits.gte(amountInWei), ZeroExError.InsufficientWEthBalanceForWithdrawal);
 
-        const wethContract = await this._getEtherTokenContractAsync(etherTokenAddress);
+        const wethContract = await this._getEtherTokenContractAsync(normalizedEtherTokenAddress);
         const txHash = await wethContract.withdraw.sendTransactionAsync(amountInWei, {
-            from: withdrawer,
+            from: normalizedWithdrawerAddress,
             gas: txOpts.gasLimit,
             gasPrice: txOpts.gasPrice,
         });
@@ -101,11 +110,12 @@ export class EtherTokenWrapper extends ContractWrapper {
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
+        const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
         assert.doesBelongToStringEnum('eventName', eventName, EtherTokenEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(
-            etherTokenAddress,
+            normalizedEtherTokenAddress,
             eventName,
             blockRange,
             indexFilterValues,
@@ -129,11 +139,12 @@ export class EtherTokenWrapper extends ContractWrapper {
         callback: EventCallback<ArgsType>,
     ): string {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
+        const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
         assert.doesBelongToStringEnum('eventName', eventName, EtherTokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe<ArgsType>(
-            etherTokenAddress,
+            normalizedEtherTokenAddress,
             eventName,
             indexFilterValues,
             artifacts.EtherTokenArtifact.abi,
@@ -151,7 +162,7 @@ export class EtherTokenWrapper extends ContractWrapper {
     /**
      * Cancels all existing subscriptions
      */
-    public _unsubscribeAll(): void {
+    public unsubscribeAll(): void {
         super._unsubscribeAll();
     }
     /**
@@ -168,7 +179,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         return contractAddressIfExists;
     }
     private _invalidateContractInstance(): void {
-        this._unsubscribeAll();
+        this.unsubscribeAll();
         this._etherTokenContractsByAddress = {};
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<EtherTokenContract> {
@@ -176,11 +187,11 @@ export class EtherTokenWrapper extends ContractWrapper {
         if (!_.isUndefined(etherTokenContract)) {
             return etherTokenContract;
         }
-        const web3ContractInstance = await this._instantiateContractIfExistsAsync(
+        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
             artifacts.EtherTokenArtifact,
             etherTokenAddress,
         );
-        const contractInstance = new EtherTokenContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
+        const contractInstance = new EtherTokenContract(this._web3Wrapper, abi, address);
         etherTokenContract = contractInstance;
         this._etherTokenContractsByAddress[etherTokenAddress] = etherTokenContract;
         return etherTokenContract;

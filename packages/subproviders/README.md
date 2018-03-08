@@ -96,10 +96,10 @@ yarn run test:unit
 
 In order to run the integration tests, make sure you have a Ledger Nano S available.
 
-* Plug it into your computer
-* Unlock the device
-* Open the on-device Ethereum app
-* Make sure "browser support" is disabled
+*   Plug it into your computer
+*   Unlock the device
+*   Open the on-device Ethereum app
+*   Make sure "browser support" is disabled
 
 Then run:
 

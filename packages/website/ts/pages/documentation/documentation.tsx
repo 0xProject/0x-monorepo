@@ -1,11 +1,7 @@
-import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
 import { scroller } from 'react-scroll';
-import semverSort = require('semver-sort');
-import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Badge } from 'ts/components/ui/badge';
 import { Comment } from 'ts/pages/documentation/comment';
 import { DocsInfo } from 'ts/pages/documentation/docs_info';
@@ -17,28 +13,27 @@ import { TypeDefinition } from 'ts/pages/documentation/type_definition';
 import { MarkdownSection } from 'ts/pages/shared/markdown_section';
 import { NestedSidebarMenu } from 'ts/pages/shared/nested_sidebar_menu';
 import { SectionHeader } from 'ts/pages/shared/section_header';
-import { Dispatcher } from 'ts/redux/dispatcher';
 import {
     AddressByContractName,
     DocAgnosticFormat,
     DoxityDocObj,
     EtherscanLinkSuffixes,
     Event,
+    MenuSubsectionsBySection,
     Networks,
     Property,
     SolidityMethod,
     Styles,
+    SupportedDocJson,
     TypeDefinitionByName,
     TypescriptMethod,
 } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import { docUtils } from 'ts/utils/doc_utils';
 import { utils } from 'ts/utils/utils';
 
 const TOP_BAR_HEIGHT = 60;
-const SCROLL_TOP_ID = 'docsScrollTop';
 
 const networkNameToColor: { [network: string]: string } = {
     [Networks.Kovan]: colors.purple,
@@ -47,18 +42,17 @@ const networkNameToColor: { [network: string]: string } = {
     [Networks.Rinkeby]: colors.darkYellow,
 };
 
-export interface DocumentationAllProps {
-    source: string;
+export interface DocumentationProps {
     location: Location;
-    dispatcher: Dispatcher;
     docsVersion: string;
     availableDocVersions: string[];
     docsInfo: DocsInfo;
+    docAgnosticFormat?: DocAgnosticFormat;
+    menuSubsectionsBySection: MenuSubsectionsBySection;
+    sourceUrl: string;
 }
 
-interface DocumentationState {
-    docAgnosticFormat?: DocAgnosticFormat;
-}
+interface DocumentationState {}
 
 const styles: Styles = {
     mainContainers: {
@@ -79,56 +73,18 @@ const styles: Styles = {
     },
 };
 
-export class Documentation extends React.Component<DocumentationAllProps, DocumentationState> {
-    private _isUnmounted: boolean;
-    constructor(props: DocumentationAllProps) {
-        super(props);
-        this._isUnmounted = false;
-        this.state = {
-            docAgnosticFormat: undefined,
-        };
-    }
-    public componentWillMount() {
-        const pathName = this.props.location.pathname;
-        const lastSegment = pathName.substr(pathName.lastIndexOf('/') + 1);
-        const versions = findVersions(lastSegment);
-        const preferredVersionIfExists = versions.length > 0 ? versions[0] : undefined;
-        // tslint:disable-next-line:no-floating-promises
-        this._fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists);
-    }
-    public componentWillUnmount() {
-        this._isUnmounted = true;
+export class Documentation extends React.Component<DocumentationProps, DocumentationState> {
+    public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
+        if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
+            const hash = this.props.location.hash.slice(1);
+            utils.scrollToHash(hash, configs.SCROLL_CONTAINER_ID);
+        }
     }
     public render() {
-        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
-            ? {}
-            : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         return (
             <div>
-                <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`} />
-                <TopBar
-                    blockchainIsLoaded={false}
-                    location={this.props.location}
-                    docsVersion={this.props.docsVersion}
-                    availableDocVersions={this.props.availableDocVersions}
-                    menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
-                    menuSubsectionsBySection={menuSubsectionsBySection}
-                    docsInfo={this.props.docsInfo}
-                />
-                {_.isUndefined(this.state.docAgnosticFormat) ? (
-                    <div className="col col-12" style={styles.mainContainers}>
-                        <div
-                            className="relative sm-px2 sm-pt2 sm-m1"
-                            style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
-                        >
-                            <div className="center pb2">
-                                <CircularProgress size={40} thickness={5} />
-                            </div>
-                            <div className="center pt2" style={{ paddingBottom: 11 }}>
-                                Loading documentation...
-                            </div>
-                        </div>
-                    </div>
+                {_.isUndefined(this.props.docAgnosticFormat) ? (
+                    this._renderLoading()
                 ) : (
                     <div style={{ width: '100%', height: '100%', backgroundColor: colors.gray40 }}>
                         <div
@@ -152,8 +108,7 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                                         versions={this.props.availableDocVersions}
                                         title={this.props.docsInfo.displayName}
                                         topLevelMenu={this.props.docsInfo.getMenu(this.props.docsVersion)}
-                                        menuSubsectionsBySection={menuSubsectionsBySection}
-                                        docPath={this.props.docsInfo.websitePath}
+                                        menuSubsectionsBySection={this.props.menuSubsectionsBySection}
                                     />
                                 </div>
                             </div>
@@ -161,8 +116,12 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                                 className="relative col lg-col-9 md-col-9 sm-col-12 col-12"
                                 style={{ backgroundColor: colors.white }}
                             >
-                                <div id="documentation" style={styles.mainContainers} className="absolute px1">
-                                    <div id={SCROLL_TOP_ID} />
+                                <div
+                                    id={configs.SCROLL_CONTAINER_ID}
+                                    style={styles.mainContainers}
+                                    className="absolute px1"
+                                >
+                                    <div id={configs.SCROLL_TOP_ID} />
                                     {this._renderDocumentation()}
                                 </div>
                             </div>
@@ -172,11 +131,28 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
             </div>
         );
     }
+    private _renderLoading() {
+        return (
+            <div className="col col-12" style={styles.mainContainers}>
+                <div
+                    className="relative sm-px2 sm-pt2 sm-m1"
+                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
+                >
+                    <div className="center pb2">
+                        <CircularProgress size={40} thickness={5} />
+                    </div>
+                    <div className="center pt2" style={{ paddingBottom: 11 }}>
+                        Loading documentation...
+                    </div>
+                </div>
+            </div>
+        );
+    }
     private _renderDocumentation(): React.ReactNode {
         const subMenus = _.values(this.props.docsInfo.getMenu());
         const orderedSectionNames = _.flatten(subMenus);
 
-        const typeDefinitionByName = this.props.docsInfo.getTypeDefinitionsByName(this.state.docAgnosticFormat);
+        const typeDefinitionByName = this.props.docsInfo.getTypeDefinitionsByName(this.props.docAgnosticFormat);
         const renderedSections = _.map(orderedSectionNames, this._renderSection.bind(this, typeDefinitionByName));
 
         return renderedSections;
@@ -193,7 +169,7 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
             );
         }
 
-        const docSection = this.state.docAgnosticFormat[sectionName];
+        const docSection = this.props.docAgnosticFormat[sectionName];
         if (_.isUndefined(docSection)) {
             return null;
         }
@@ -275,7 +251,13 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
         );
     }
     private _renderNetworkBadgesIfExists(sectionName: string) {
-        const networkToAddressByContractName = configs.CONTRACT_ADDRESS[this.props.docsVersion];
+        if (this.props.docsInfo.type !== SupportedDocJson.Doxity) {
+            return null;
+        }
+
+        const networkToAddressByContractName = this.props.docsInfo.contractsByVersionByNetworkId[
+            this.props.docsVersion
+        ];
         const badges = _.map(
             networkToAddressByContractName,
             (addressByContractName: AddressByContractName, networkName: string) => {
@@ -323,8 +305,7 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                     <SourceLink
                         version={this.props.docsVersion}
                         source={property.source}
-                        baseUrl={this.props.docsInfo.packageUrl}
-                        subPackageName={this.props.docsInfo.subPackageName}
+                        sourceUrl={this.props.sourceUrl}
                     />
                 )}
                 {property.comment && <Comment comment={property.comment} className="py2" />}
@@ -345,54 +326,8 @@ export class Documentation extends React.Component<DocumentationAllProps, Docume
                 typeDefinitionByName={typeDefinitionByName}
                 libraryVersion={this.props.docsVersion}
                 docsInfo={this.props.docsInfo}
+                sourceUrl={this.props.sourceUrl}
             />
         );
-    }
-    private _scrollToHash(): void {
-        const hashWithPrefix = this.props.location.hash;
-        let hash = hashWithPrefix.slice(1);
-        if (_.isEmpty(hash)) {
-            hash = SCROLL_TOP_ID; // scroll to the top
-        }
-
-        scroller.scrollTo(hash, {
-            duration: 0,
-            offset: 0,
-            containerId: 'documentation',
-        });
-    }
-    private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
-        const versionToFileName = await docUtils.getVersionToFileNameAsync(this.props.docsInfo.docsJsonRoot);
-        const versions = _.keys(versionToFileName);
-        this.props.dispatcher.updateAvailableDocVersions(versions);
-        const sortedVersions = semverSort.desc(versions);
-        const latestVersion = sortedVersions[0];
-
-        let versionToFetch = latestVersion;
-        if (!_.isUndefined(preferredVersionIfExists)) {
-            const preferredVersionFileNameIfExists = versionToFileName[preferredVersionIfExists];
-            if (!_.isUndefined(preferredVersionFileNameIfExists)) {
-                versionToFetch = preferredVersionIfExists;
-            }
-        }
-        this.props.dispatcher.updateCurrentDocsVersion(versionToFetch);
-
-        const versionFileNameToFetch = versionToFileName[versionToFetch];
-        const versionDocObj = await docUtils.getJSONDocFileAsync(
-            versionFileNameToFetch,
-            this.props.docsInfo.docsJsonRoot,
-        );
-        const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj as DoxityDocObj);
-
-        if (!this._isUnmounted) {
-            this.setState(
-                {
-                    docAgnosticFormat,
-                },
-                () => {
-                    this._scrollToHash();
-                },
-            );
-        }
     }
 }

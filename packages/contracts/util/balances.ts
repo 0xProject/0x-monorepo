@@ -17,7 +17,7 @@ export class Balances {
         const balancesByOwner: BalancesByOwner = {};
         for (const tokenContractInstance of this._tokenContractInstances) {
             for (const ownerAddress of this._ownerAddresses) {
-                let balance = await tokenContractInstance.balanceOf(ownerAddress);
+                let balance = await tokenContractInstance.balanceOf.callAsync(ownerAddress);
                 balance = new BigNumber(balance);
                 if (_.isUndefined(balancesByOwner[ownerAddress])) {
                     balancesByOwner[ownerAddress] = {};

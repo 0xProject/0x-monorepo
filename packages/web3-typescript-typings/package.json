@@ -1,6 +1,6 @@
 {
     "name": "web3-typescript-typings",
-    "version": "0.9.11",
+    "version": "0.10.0",
     "description": "Typescript type definitions for web3",
     "main": "index.d.ts",
     "types": "index.d.ts",
@@ -9,7 +9,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/0xProject/0x.js.git"
+        "url": "git+https://github.com/0xProject/0x-monorepo.git"
     },
     "author": "Fabio Berger",
     "contributors": [
@@ -17,9 +17,9 @@
     ],
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x.js/packages/web3-typescript-typings#readme",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/web3-typescript-typings#readme",
     "devDependencies": {
         "@types/bignumber.js": "^4.0.2",
         "tslint": "5.8.0",

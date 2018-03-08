@@ -186,11 +186,11 @@ export class ExchangeWrapper {
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
         const shouldThrowOnInsufficientBalanceOrAllowance = false;
         const params = signedOrderUtils.getOrderAddressesAndValues(signedOrder);
-        const orderHash = await this._exchange.getOrderHash(params.orderAddresses, params.orderValues);
+        const orderHash = await this._exchange.getOrderHash.callAsync(params.orderAddresses, params.orderValues);
         return orderHash;
     }
     public async isValidSignatureAsync(signedOrder: SignedOrder): Promise<boolean> {
-        const isValidSignature = await this._exchange.isValidSignature(
+        const isValidSignature = await this._exchange.isValidSignature.callAsync(
             signedOrder.maker,
             ZeroEx.getOrderHashHex(signedOrder),
             signedOrder.ecSignature.v,
@@ -204,7 +204,7 @@ export class ExchangeWrapper {
         denominator: BigNumber,
         target: BigNumber,
     ): Promise<boolean> {
-        const isRoundingError = await this._exchange.isRoundingError(numerator, denominator, target);
+        const isRoundingError = await this._exchange.isRoundingError.callAsync(numerator, denominator, target);
         return isRoundingError;
     }
     public async getPartialAmountAsync(
@@ -212,7 +212,9 @@ export class ExchangeWrapper {
         denominator: BigNumber,
         target: BigNumber,
     ): Promise<BigNumber> {
-        const partialAmount = new BigNumber(await this._exchange.getPartialAmount(numerator, denominator, target));
+        const partialAmount = new BigNumber(
+            await this._exchange.getPartialAmount.callAsync(numerator, denominator, target),
+        );
         return partialAmount;
     }
 }

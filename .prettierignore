@@ -1,5 +1,5 @@
 lib
-generated
 .nyc_output
-/packages/contracts/build/contracts
+/packages/contracts/src/artifacts
 package.json
+scripts/postpublish_utils.js

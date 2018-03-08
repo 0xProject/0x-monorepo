@@ -18,7 +18,7 @@ import { ZeroEx } from '0x.js';
 
 **Install**
 
-Download the UMD module from our [releases page](https://github.com/0xProject/0x.js/releases) and add it to your project.
+Download the UMD module from our [releases page](https://github.com/0xProject/0x-monorepo/releases) and add it to your project.
 
 **Import**
 

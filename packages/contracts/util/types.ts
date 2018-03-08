@@ -41,8 +41,8 @@ export interface DefaultOrderParams {
     exchangeContractAddress: string;
     maker: string;
     feeRecipient: string;
-    makerToken: string;
-    takerToken: string;
+    makerTokenAddress: string;
+    takerTokenAddress: string;
     makerTokenAmount: BigNumber;
     takerTokenAmount: BigNumber;
     makerFee: BigNumber;
@@ -96,6 +96,9 @@ export enum ContractName {
     EtherToken = 'WETH9',
     MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress = 'MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress',
     MaliciousToken = 'MaliciousToken',
+    AccountLevels = 'AccountLevels',
+    EtherDelta = 'EtherDelta',
+    Arbitrage = 'Arbitrage',
 }
 
 export interface Artifact {

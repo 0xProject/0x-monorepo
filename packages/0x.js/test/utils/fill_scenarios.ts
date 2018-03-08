@@ -35,12 +35,8 @@ export class FillScenarios {
         const web3Wrapper = (this._zeroEx as any)._web3Wrapper as Web3Wrapper;
         for (const token of this._tokens) {
             if (token.symbol !== 'ZRX' && token.symbol !== 'WETH') {
-                const contractInstance = web3Wrapper.getContractInstance(
-                    artifacts.DummyTokenArtifact.abi,
-                    token.address,
-                );
                 const defaults = {};
-                const dummyToken = new DummyTokenContract(contractInstance, defaults);
+                const dummyToken = new DummyTokenContract(web3Wrapper, artifacts.DummyTokenArtifact.abi, token.address);
                 const tokenSupply = ZeroEx.toBaseUnitAmount(INITIAL_COINBASE_TOKEN_SUPPLY_IN_UNITS, token.decimals);
                 const txHash = await dummyToken.setBalance.sendTransactionAsync(this._coinbase, tokenSupply, {
                     from: this._coinbase,
