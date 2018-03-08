@@ -1,8 +1,14 @@
+/*
+NOTE: This file includes several font faces that are commented out. They are
+not currently used by this app but could be at a future point. For this reason,
+we leave them commented out rather then removing them completely.
+*/
+
 @font-face {
-  font-family: 'Roboto';
-  src: url('../fonts/Roboto-Thin.ttf') format('truetype');
-  font-weight: 100;
-  font-style: normal;
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
 }
 
 /*@font-face {
@@ -13,10 +19,10 @@
 }*/
 
 @font-face {
-  font-family: 'Roboto';
-  src: url('../fonts/Roboto-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
 }
 
 /*@font-face {
@@ -27,10 +33,10 @@
 }*/
 
 @font-face {
-  font-family: 'Roboto';
-  src: url('../fonts/Roboto-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
 }
 
 /*@font-face {

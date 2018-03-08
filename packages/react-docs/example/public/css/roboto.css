@@ -1,3 +1,9 @@
+/*
+NOTE: This file includes several font faces that are commented out. They are
+not currently used by this app but could be at a future point. For this reason,
+we leave them commented out rather then removing them completely.
+*/
+
 @font-face {
     font-family: 'Roboto';
     src: url('../fonts/Roboto-Thin.ttf') format('truetype');
