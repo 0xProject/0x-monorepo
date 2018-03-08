@@ -12,6 +12,12 @@ export interface SectionHeaderProps {
     headerSize?: HeaderSizes;
 }
 
+interface DefaultSectionHeaderProps {
+  headerSize: HeaderSizes;
+}
+
+type PropsWithDefaults = SectionHeaderProps & DefaultSectionHeaderProps;
+
 export interface SectionHeaderState {
     shouldShowAnchor: boolean;
 }
@@ -27,8 +33,10 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
         };
     }
     public render() {
-        const sectionName = this.props.sectionName.replace(/-/g, ' ');
-        const id = utils.getIdFromName(sectionName);
+        const { sectionName, headerSize } = this.props as PropsWithDefaults;
+
+        const finalSectionName = this.props.sectionName.replace(/-/g, ' ');
+        const id = utils.getIdFromName(finalSectionName);
         return (
             <div
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
@@ -36,7 +44,7 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
             >
                 <ScrollElement name={id}>
                     <AnchorTitle
-                        headerSize={this.props.headerSize}
+                        headerSize={headerSize}
                         title={
                             <span
                                 style={{
@@ -47,7 +55,7 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
                                     fontSize: 27,
                                 }}
                             >
-                                {sectionName}
+                                {finalSectionName}
                             </span>
                         }
                         id={id}

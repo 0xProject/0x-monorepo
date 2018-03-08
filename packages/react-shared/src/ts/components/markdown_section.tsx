@@ -19,6 +19,12 @@ export interface MarkdownSectionProps {
     githubLink?: string;
 }
 
+interface DefaultMarkdownSectionProps {
+  headerSize: HeaderSizes;
+}
+
+type PropsWithDefaults = MarkdownSectionProps & DefaultMarkdownSectionProps;
+
 export interface MarkdownSectionState {
     shouldShowAnchor: boolean;
 }
@@ -34,7 +40,8 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         };
     }
     public render() {
-        const sectionName = this.props.sectionName;
+        const { sectionName, markdownContent, headerSize, githubLink } = this.props as PropsWithDefaults;
+
         const id = utils.getIdFromName(sectionName);
         return (
             <div
@@ -47,7 +54,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                         <div className="col lg-col-8 md-col-8 sm-col-12">
                             <span style={{ textTransform: 'capitalize', color: colors.grey700 }}>
                                 <AnchorTitle
-                                    headerSize={this.props.headerSize}
+                                    headerSize={headerSize}
                                     title={sectionName}
                                     id={id}
                                     shouldShowAnchor={this.state.shouldShowAnchor}
@@ -55,9 +62,9 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                             </span>
                         </div>
                         <div className="col col-4 sm-hide xs-hide right-align pr3" style={{ height: 28 }}>
-                            {!_.isUndefined(this.props.githubLink) && (
+                            {!_.isUndefined(githubLink) && (
                                 <a
-                                    href={this.props.githubLink}
+                                    href={githubLink}
                                     target="_blank"
                                     style={{ color: colors.linkBlue, textDecoration: 'none', lineHeight: 2.1 }}
                                 >
@@ -68,7 +75,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                     </div>
                     <hr style={{ border: `1px solid ${colors.lightestGrey}` }} />
                     <ReactMarkdown
-                        source={this.props.markdownContent}
+                        source={markdownContent}
                         escapeHtml={false}
                         renderers={{
                             code: MarkdownCodeBlock,

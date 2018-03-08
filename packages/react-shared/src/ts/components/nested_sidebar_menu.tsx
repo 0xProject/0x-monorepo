@@ -65,7 +65,8 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             <div>
                 {this.props.sidebarHeader}
                 {!_.isUndefined(this.props.versions) &&
-                    !_.isUndefined(this.props.selectedVersion) && (
+                    !_.isUndefined(this.props.selectedVersion) &&
+                    !_.isUndefined(this.props.onVersionSelected) && (
                         <div style={{ maxWidth: maxWidthWithScrollbar }}>
                             <VersionDropDown
                                 selectedVersion={this.props.selectedVersion}
@@ -150,6 +151,8 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     private _onMenuItemClick(name: string): void {
         const id = utils.getIdFromName(name);
         utils.setUrlHash(id);
-        this.props.onMenuItemClick();
+        if (!_.isUndefined(this.props.onMenuItemClick)) {
+            this.props.onMenuItemClick();
+        }
     }
 }

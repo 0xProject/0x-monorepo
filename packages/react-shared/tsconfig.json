@@ -4,7 +4,6 @@
         "outDir": "./lib/",
         "jsx": "react",
         "baseUrl": "./",
-        "strictNullChecks": false,
         "paths": {
             "*": ["node_modules/@types/*", "*"]
         }
