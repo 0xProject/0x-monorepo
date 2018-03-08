@@ -8,7 +8,7 @@ import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 import { constants } from './constants';
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
-import { signedOrderUtils } from './signed_order_utils';
+import { orderUtils } from './order_utils';
 import { SignedOrder } from './types';
 
 export class ExchangeWrapper {
@@ -24,7 +24,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
+        const params = orderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
         const txHash = await this._exchange.fillOrder.sendTransactionAsync(
             params.order,
             params.takerTokenFillAmount,
@@ -45,7 +45,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenCancelAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrderUtils.createCancel(signedOrder, opts.takerTokenCancelAmount);
+        const params = orderUtils.createCancel(signedOrder, opts.takerTokenCancelAmount);
         const txHash = await this._exchange.cancelOrder.sendTransactionAsync(
             params.order,
             params.takerTokenCancelAmount,
@@ -65,7 +65,7 @@ export class ExchangeWrapper {
         from: string,
         opts: { takerTokenFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = signedOrderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
+        const params = orderUtils.createFill(signedOrder, opts.takerTokenFillAmount);
         const txHash = await this._exchange.fillOrKillOrder.sendTransactionAsync(
             params.order,
             params.takerTokenFillAmount,
@@ -165,14 +165,14 @@ export class ExchangeWrapper {
         return tx;
     }
     public async getOrderHashAsync(signedOrder: SignedOrder): Promise<string> {
-        const order = signedOrderUtils.getOrderStruct(signedOrder);
+        const order = orderUtils.getOrderStruct(signedOrder);
         const orderHash = await this._exchange.getOrderHash.callAsync(order);
         return orderHash;
     }
     public async isValidSignatureAsync(signedOrder: SignedOrder): Promise<boolean> {
         const isValidSignature = await this._exchange.isValidSignature.callAsync(
+            orderUtils.getOrderHashHex(signedOrder),
             signedOrder.makerAddress,
-            signedOrderUtils.getOrderHashHex(signedOrder),
             signedOrder.signature,
         );
         return isValidSignature;
@@ -194,6 +194,10 @@ export class ExchangeWrapper {
             await this._exchange.getPartialAmount.callAsync(numerator, denominator, target),
         );
         return partialAmount;
+    }
+    public async getFilledTakerTokenAmountAsync(orderHashHex: string): Promise<BigNumber> {
+        const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
+        return filledAmount;
     }
 }
 
