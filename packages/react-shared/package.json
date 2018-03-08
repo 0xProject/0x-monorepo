@@ -19,6 +19,7 @@
     "@types/material-ui": "0.18.0",
     "@types/react": "^15.0.15",
     "@types/react-dom": "^0.14.23",
+    "@types/react-scroll": "0.0.31",
     "shx": "^0.2.2",
     "tslint": "^5.9.1",
     "typescript": "2.7.1"
@@ -30,6 +31,7 @@
     "react": "15.6.1",
     "react-dom": "15.6.1",
     "lodash": "^4.17.4",
+    "react-markdown": "^3.2.2",
     "react-scroll": "^1.5.2",
     "react-tap-event-plugin": "^2.0.1",
     "react-highlight": "0xproject/react-highlight"
