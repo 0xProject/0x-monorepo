@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/web3-wrapper",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Wraps around web3 and gives a nicer interface",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -28,8 +28,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.3.0",
-        "@0xproject/utils": "^0.4.0",
+        "@0xproject/types": "^0.3.1",
+        "@0xproject/utils": "^0.4.1",
         "ethers-contracts": "^2.2.1",
         "ethers-typescript-typings": "^0.0.2",
         "lodash": "^4.17.4",

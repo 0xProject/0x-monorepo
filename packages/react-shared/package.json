@@ -15,8 +15,8 @@
   "devDependencies": {
     "@0xproject/tslint-config": "^0.4.9",
     "@types/lodash": "^4.14.86",
-    "@types/node": "^8.0.53",
     "@types/material-ui": "0.18.0",
+    "@types/node": "^8.0.53",
     "@types/react": "^15.0.15",
     "@types/react-dom": "^0.14.23",
     "@types/react-scroll": "0.0.31",
@@ -27,14 +27,14 @@
   "dependencies": {
     "basscss": "^8.0.3",
     "is-mobile": "^0.2.2",
+    "lodash": "^4.17.4",
     "material-ui": "^0.17.1",
     "react": "15.6.1",
     "react-dom": "15.6.1",
-    "lodash": "^4.17.4",
+    "react-highlight": "0xproject/react-highlight",
     "react-markdown": "^3.2.2",
     "react-scroll": "^1.5.2",
-    "react-tap-event-plugin": "^2.0.1",
-    "react-highlight": "0xproject/react-highlight"
+    "react-tap-event-plugin": "^2.0.1"
   },
   "publishConfig": {
     "access": "public"
