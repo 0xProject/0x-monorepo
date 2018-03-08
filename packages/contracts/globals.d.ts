@@ -33,3 +33,7 @@ declare module 'ethereumjs-abi' {
     const soliditySHA256: (argTypes: string[], args: any[]) => Buffer;
     const methodID: (name: string, types: string[]) => Buffer;
 }
+
+declare module 'ganache-cli' {
+    export function server(opts: any): any;
+}
