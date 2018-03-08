@@ -69,36 +69,44 @@ contract MixinSettlementProxy is
         )
     {
         makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
-        require(TRANSFER_PROXY.transferFrom(
-            order.makerTokenAddress,
-            order.makerAddress,
-            takerAddress,
-            makerTokenFilledAmount
-        ));
-        require(TRANSFER_PROXY.transferFrom(
-            order.takerTokenAddress,
-            takerAddress,
-            order.makerAddress,
-            takerTokenFilledAmount
-        ));
+        require(
+            TRANSFER_PROXY.transferFrom(
+                order.makerTokenAddress,
+                order.makerAddress,
+                takerAddress,
+                makerTokenFilledAmount
+            )
+        );
+        require(
+            TRANSFER_PROXY.transferFrom(
+                order.takerTokenAddress,
+                takerAddress,
+                order.makerAddress,
+                takerTokenFilledAmount
+            )
+        );
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFeeAmount > 0) {
                 makerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFeeAmount);
-                require(TRANSFER_PROXY.transferFrom(
-                    ZRX_TOKEN,
-                    order.makerAddress,
-                    order.feeRecipientAddress,
-                    makerFeeAmountPaid
-                ));
+                require(
+                    TRANSFER_PROXY.transferFrom(
+                        ZRX_TOKEN,
+                        order.makerAddress,
+                        order.feeRecipientAddress,
+                        makerFeeAmountPaid
+                    )
+                );
             }
             if (order.takerFeeAmount > 0) {
                 takerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFeeAmount);
-                require(TRANSFER_PROXY.transferFrom(
-                    ZRX_TOKEN,
-                    takerAddress,
-                    order.feeRecipientAddress,
-                    takerFeeAmountPaid
-                ));
+                require(
+                    TRANSFER_PROXY.transferFrom(
+                        ZRX_TOKEN,
+                        takerAddress,
+                        order.feeRecipientAddress,
+                        takerFeeAmountPaid
+                    )
+                );
             }
         }
         return (makerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);

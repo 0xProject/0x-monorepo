@@ -88,14 +88,14 @@ contract MixinExchangeCore is
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
         if (filled[orderHash] == 0 && cancelled[orderHash] == 0) {
-            require(order.makerTokenAmount > 0);
-            require(order.takerTokenAmount > 0);
-            require(isValidSignature(orderHash, order.makerAddress, signature));
+            // require(order.makerTokenAmount > 0);
+            // require(order.takerTokenAmount > 0);
+            // require(isValidSignature(orderHash, order.makerAddress, signature));
         }
         
         // Validate taker
         if (order.takerAddress != address(0)) {
-            require(order.takerAddress == msg.sender);
+            // require(order.takerAddress == msg.sender);
         }
         require(takerTokenFillAmount > 0);
 
