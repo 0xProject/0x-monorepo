@@ -45,7 +45,7 @@ interface FooterState {
 
 export class Footer extends React.Component<FooterProps, FooterState> {
     constructor(props: FooterProps) {
-        super();
+        super(props);
         this.state = {
             selectedLanguage: props.translate.getLanguage(),
         };

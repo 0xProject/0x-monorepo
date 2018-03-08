@@ -70,6 +70,7 @@ export const utils = {
         ecSignature: ECSignature,
         tokenByAddress: TokenByAddress,
         orderSalt: BigNumber,
+        message?: string,
     ): Order {
         const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
         const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
@@ -100,8 +101,10 @@ export const utils = {
                     symbol: takerToken.symbol,
                     decimals: takerToken.decimals,
                 },
+                message: message,
             },
         };
+        console.log(order);
         return order;
     },
     consoleLog(message: string) {

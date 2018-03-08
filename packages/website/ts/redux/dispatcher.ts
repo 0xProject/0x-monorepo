@@ -86,6 +86,12 @@ export class Dispatcher {
             type: ActionTypes.UpdateOrderTakerAddress,
         });
     }
+    public updateMessage(message: string) {
+        this._dispatch({
+            data: message,
+            type: ActionTypes.UpdateMessage,
+        });
+    }
     public updateUserAddress(address: string) {
         this._dispatch({
             data: address,

@@ -34,8 +34,8 @@ export class EthWethConversionDialog extends React.Component<
     EthWethConversionDialogState
 > {
     private _isUnmounted: boolean;
-    constructor() {
-        super();
+    constructor(props: EthWethConversionDialogProps) {
+        super(props);
         this._isUnmounted = false;
         this.state = {
             shouldShowIncompleteErrs: false,

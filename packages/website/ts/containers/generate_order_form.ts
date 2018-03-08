@@ -27,6 +27,7 @@ interface ConnectedState {
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
     lastForceTokenStateRefetch: number;
+    message?: string;
 }
 
 const mapStateToProps = (state: State, ownProps: GenerateOrderFormProps): ConnectedState => ({
@@ -41,6 +42,7 @@ const mapStateToProps = (state: State, ownProps: GenerateOrderFormProps): Connec
     tokenByAddress: state.tokenByAddress,
     userAddress: state.userAddress,
     lastForceTokenStateRefetch: state.lastForceTokenStateRefetch,
+    message: state.message,
 });
 
 export const GenerateOrderForm: React.ComponentClass<GenerateOrderFormProps> = connect(mapStateToProps)(

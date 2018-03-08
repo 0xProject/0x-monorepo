@@ -20,11 +20,12 @@ import { VisualOrder } from 'ts/components/visual_order';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, WebsitePaths } from 'ts/types';
+import { AlertTypes, BlockchainErrs, Order, AssetToken, Token, TokenByAddress, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
+import { Helmet } from 'react-helmet';
 
 interface FillOrderProps {
     blockchain: Blockchain;
@@ -209,6 +210,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             !_.isUndefined(this.state.parsedOrder) &&
             this.state.parsedOrder.signedOrder.maker === this.props.userAddress;
         const expiryDate = utils.convertToReadableDateTimeFromUnixTimestamp(parsedOrderExpiration);
+        const message = this.state.parsedOrder.metadata.message;
+        const ogImage = 'http://localhost:3000/api/image/' + makerAssetToken.symbol + '/' + this._formatAmount(makerAssetToken, makerToken, 2) + '/' + takerAssetToken.symbol + '/' + this._formatAmount(takerAssetToken, takerToken, 2) + '/' + message;
+        console.log(takerAssetToken, makerAssetToken);
+        console.log(this._formatAmount(takerAssetToken, takerToken, 2));
         return (
             <div className="pt3 pb1">
                 <div className="clearfix pb2" style={{ width: '100%' }}>
@@ -241,6 +246,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                             isTakerTokenAddressInRegistry={this.state.isTakerTokenAddressInRegistry}
                         />
                         <div className="center pt3 pb2">Expires: {expiryDate} UTC</div>
+                        <div className="cetner pt3 pb2">{message}</div>
+                        <Helmet>
+                          <meta property="og:image" content={ogImage} />
+                        </Helmet>
                     </div>
                 </div>
                 {!isUserMaker && (
@@ -303,6 +312,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 </div>
             </div>
         );
+    }
+    private _formatAmount(assetToken: AssetToken, token: Token, precision: number) {
+        const unitAmount = ZeroEx.toUnitAmount(assetToken.amount, token.decimals);
+        return unitAmount.toNumber().toFixed(precision);
     }
     private _renderFillSuccessMsg() {
         return (

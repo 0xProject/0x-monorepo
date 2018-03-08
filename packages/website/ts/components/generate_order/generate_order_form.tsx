@@ -11,6 +11,7 @@ import { HashInput } from 'ts/components/inputs/hash_input';
 import { IdenticonAddressInput } from 'ts/components/inputs/identicon_address_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
 import { TokenInput } from 'ts/components/inputs/token_input';
+import { MessageInput } from 'ts/components/inputs/message';
 import { OrderJSON } from 'ts/components/order_json';
 import { Alert } from 'ts/components/ui/alert';
 import { HelpTooltip } from 'ts/components/ui/help_tooltip';
@@ -46,6 +47,7 @@ interface GenerateOrderFormProps {
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
     lastForceTokenStateRefetch: number;
+    message?: string;
 }
 
 interface GenerateOrderFormState {
@@ -176,6 +178,12 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                             label="Order Hash"
                         />
                     </div>
+                    <div>
+                    <MessageInput
+                        label="Message"
+                        updateMessage={this._updateMessage.bind(this)}
+                    />
+                    </div>
                     <div className="pt2">
                         <div className="center">
                             <LifeCycleRaisedButton
@@ -209,6 +217,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                         orderFeeRecipient={this.props.hashData.feeRecipientAddress}
                         sideToAssetToken={this.props.sideToAssetToken}
                         tokenByAddress={this.props.tokenByAddress}
+                        message={this.props.message}
                     />
                 </Dialog>
             </div>
@@ -330,6 +339,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 ecSignature,
                 this.props.tokenByAddress,
                 hashData.orderSalt,
+                this.props.message,
             );
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
@@ -359,5 +369,11 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             const normalizedAddress = _.isEmpty(address) ? ZeroEx.NULL_ADDRESS : address;
             this.props.dispatcher.updateOrderTakerAddress(normalizedAddress);
         }
+    }
+    private _updateMessage(message?: string): void {
+      if (!_.isUndefined(message)) {
+        console.log(message);
+        this.props.dispatcher.updateMessage(message);
+      }
     }
 }

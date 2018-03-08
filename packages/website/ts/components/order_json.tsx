@@ -23,6 +23,7 @@ interface OrderJSONProps {
     orderFeeRecipient: string;
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
+    message?: string;
 }
 
 interface OrderJSONState {
@@ -51,6 +52,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
             this.props.orderECSignature,
             this.props.tokenByAddress,
             this.props.orderSalt,
+            this.props.message
         );
         const orderJSON = JSON.stringify(order);
         return (
@@ -172,6 +174,7 @@ You can see and fill it here: ${this.state.shareLink}`);
             this.props.orderECSignature,
             this.props.tokenByAddress,
             this.props.orderSalt,
+            this.props.message,
         );
         const orderJSONString = JSON.stringify(order);
         const orderUrl = `${configs.BASE_URL}${WebsitePaths.Portal}/fill?order=${orderJSONString}`;

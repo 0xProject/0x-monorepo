@@ -27,8 +27,8 @@ interface SendDialogState {
 }
 
 export class SendDialog extends React.Component<SendDialogProps, SendDialogState> {
-    constructor() {
-        super();
+    constructor(props: SendDialogProps) {
+        super(props);
         this.state = {
             recipient: '',
             shouldShowIncompleteErrs: false,

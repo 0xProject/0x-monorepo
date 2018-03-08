@@ -39,6 +39,7 @@ export interface State {
     lastForceTokenStateRefetch: number;
     userAddress: string;
     userEtherBalance: BigNumber;
+    message?: string;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
     userSuppliedOrderCache: Order;
 
@@ -78,6 +79,7 @@ const INITIAL_STATE: State = {
     lastForceTokenStateRefetch: moment().unix(),
     userAddress: '',
     userEtherBalance: new BigNumber(0),
+    message: '',
     userSuppliedOrderCache: undefined,
 
     // Docs
@@ -281,6 +283,13 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
                 ...state,
                 orderTakerAddress: action.data,
             };
+        }
+
+        case ActionTypes.UpdateMessage: {
+            return {
+                ...state,
+                message: action.data,
+            }
         }
 
         case ActionTypes.UpdateUserAddress: {

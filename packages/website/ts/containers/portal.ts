@@ -28,6 +28,7 @@ interface ConnectedState {
     userSuppliedOrderCache: Order;
     flashMessage?: string | React.ReactNode;
     translate: Translate;
+    message?: string;
 }
 
 interface ConnectedDispatch {
@@ -76,6 +77,7 @@ const mapStateToProps = (state: State, ownProps: PortalComponentAllProps): Conne
         userSuppliedOrderCache: state.userSuppliedOrderCache,
         flashMessage: state.flashMessage,
         translate: state.translate,
+        message: state.message,
     };
 };
 

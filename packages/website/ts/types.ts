@@ -47,6 +47,7 @@ export interface HashData {
     receiveTokenContractAddr: string;
     takerFee: BigNumber;
     orderSalt: BigNumber;
+    message?: string;
 }
 
 export interface OrderToken {
@@ -74,6 +75,7 @@ export interface SignedOrder {
 export interface OrderMetadata {
     makerToken: OrderToken;
     takerToken: OrderToken;
+    message?: string;
 }
 
 export interface Order {
@@ -118,6 +120,7 @@ export enum ActionTypes {
     UpdateChosenAssetToken = 'UPDATE_CHOSEN_ASSET_TOKEN',
     UpdateChosenAssetTokenAddress = 'UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS',
     UpdateOrderTakerAddress = 'UPDATE_ORDER_TAKER_ADDRESS',
+    UpdateMessage = 'UPDATE_MESSAGE',
     UpdateOrderSalt = 'UPDATE_ORDER_SALT',
     UpdateOrderECSignature = 'UPDATE_ORDER_EC_SIGNATURE',
     UpdateTokenByAddress = 'UPDATE_TOKEN_BY_ADDRESS',
