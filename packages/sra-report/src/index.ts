@@ -14,7 +14,7 @@ import { utils } from './utils';
 
 const newmanRunAsync = promisify<void>(newman.run);
 const DEFAULT_NETWORK_ID = 1;
-const SUPPORTED_NETWORK_IDS = [1, 42];
+const SUPPORTED_NETWORK_IDS = [1, 3, 4, 42];
 
 // extract command line arguments
 const args = yargs

@@ -6,6 +6,8 @@ import * as _ from 'lodash';
 
 import { addresses as kovanAddresses } from './contract_addresses/kovan_addresses';
 import { addresses as mainnetAddresses } from './contract_addresses/mainnet_addresses';
+import { addresses as rinkebyAddresses } from './contract_addresses/rinkeby_addresses';
+import { addresses as ropstenAddresses } from './contract_addresses/ropsten_addresses';
 import { utils } from './utils';
 
 const ENVIRONMENT_NAME = 'SRA Report';
@@ -93,6 +95,10 @@ function getContractAddresses(networkId: number) {
     switch (networkId) {
         case 1:
             return mainnetAddresses;
+        case 3:
+            return ropstenAddresses;
+        case 4:
+            return rinkebyAddresses;
         case 42:
             return kovanAddresses;
         default:
