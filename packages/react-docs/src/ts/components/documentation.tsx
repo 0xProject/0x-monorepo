@@ -70,6 +70,12 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             isHoveringSidebar: false,
         };
     }
+    public componentDidMount() {
+        window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
+    }
+    public componentWillUnmount() {
+        window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
+    }
     public componentDidUpdate(prevProps: DocumentationProps, prevState: DocumentationState) {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
@@ -361,5 +367,9 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         this.setState({
             isHoveringSidebar: false,
         });
+    }
+    private _onHashChanged(event: any) {
+        const hash = window.location.hash.slice(1);
+        sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }
 }
