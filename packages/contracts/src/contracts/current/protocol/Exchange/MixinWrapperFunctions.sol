@@ -32,22 +32,23 @@ contract MixinWrapperFunctions is
     /// @param signature Maker's signature of the order.
     function fillOrKillOrder(
         Order order,
-        uint takerTokenFillAmount,
+        uint256 takerTokenFillAmount,
         bytes signature)
         public
     {
-        require(fillOrder(
-            order,
-            takerTokenFillAmount,
-            signature
-        ) == takerTokenFillAmount);
+        require(
+            fillOrder(
+                order,
+                takerTokenFillAmount,
+                signature
+            ) == takerTokenFillAmount
+        );
     }
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
     /// @param takerTokenFillAmount Desired amount of takerToken to fill.
     /// @param signature Maker's signature of the order.
-    /// @return Success if the transaction did not revert.
     /// @return Total amount of takerToken filled in trade.
     function fillOrderNoThrow(
         Order order,
@@ -56,6 +57,21 @@ contract MixinWrapperFunctions is
         public
         returns (uint256 takerTokenFilledAmount)
     {
+        // bool success = address(this).delegatecall(
+        //     this.fillOrder.selector,
+        //     order,
+        //     takerTokenFillAmount,
+        //     signature
+        // );
+        // require(success);
+        // if (success) {
+        //     assembly {
+        //         returndatacopy(0, 0, 32)
+        //         return (0, 32)
+        //     }
+        // }
+        // return 0;
+
         // We need to call MExchangeCore.fillOrder using a delegatecall in
         // assembly so that we can intercept a call that throws. For this, we
         // need the input encoded in memory in the Ethereum ABIv2 format [1].
@@ -63,115 +79,81 @@ contract MixinWrapperFunctions is
         // | Offset | Length  | Contents                     |
         // |--------|---------|------------------------------|
         // | 0      | 4       | function selector            |
-        // | 4      | 12 * 32 | Order order                  |
-        // | 388    | 32      | uint256 takerTokenFillAmount |
-        // | 420    | 32      | offset to signature (448)    |
-        // | 452    | 32      | len(signature)               |
-        // | 486    | (1)     | signature                    |
+        // | 4      | 11 * 32 | Order order                  |
+        // | 356    | 32      | uint256 takerTokenFillAmount |
+        // | 388    | 32      | offset to signature (416)    |
+        // | 420    | 32      | len(signature)               |
+        // | 452    | (1)     | signature                    |
         // | (2)    | (3)     | padding (zero)               |
         // | (4)    |         | end of input                 |
         //
         // (1): len(signature)
-        // (2): 486 + len(signature)
+        // (2): 452 + len(signature)
         // (3): 32 - (len(signature) mod 32)
-        // (4): 486 + len(signature) + 32 - (len(signature) mod 32)
+        // (4): 452 + len(signature) + 32 - (len(signature) mod 32)
         //
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
         
-        // Allocate memory for input
-        uint256 signatureLength = signature.length;
-        uint256 paddingLength = 32 - (signatureLength % 32);
-        uint256 inputSize = 486 + signatureLength + paddingLength;
-        bytes memory input = new bytes(inputSize);
-        
-        // The in memory layout of `bytes memory input` starts with
-        // `uint256 length`, the content of the byte array starts at
-        // offset 32 from the pointer. We need assembly to access the
-        // raw pointer value of `input`.
-        // TODO: I can not find an official source for this.
-        uint256 start;
-        assembly {
-            start := add(input, 32)
-        }
-        
-        // Write function signature
-        // We use assembly to write four bytes at a time (actually 32,
-        // but we are only overwriting uninitialized data). A `bytes4`
-        // is stored by value as 256-bit and right-padded with zeros.
-        bytes4 FILL_ORDER_FUNCTION_SIGNATURE = this.fillOrder.selector;
-        assembly {
-            mstore(start, FILL_ORDER_FUNCTION_SIGNATURE)
-        }
-        
-        // Use identity function precompile to cheaply copy Order struct over
-        // We need assembly to access the precompile
-        // Note that sizeof(Order) == 12 * 32 == 384
-        assembly {
-            let success := delegatecall(
-                51,            // precompile takes 15 + 3 * numWords
-                0x4,           // precompile for identity function
-                order,         // pointer to start of input
-                384,           // length of input
-                add(start, 4), // store output at offset 4
-                384            // output is 384 bytes
-            )
-            if iszero(success) {
-                revert(0, 0)
-            }
-        }
-        
-        // Write takerTokenFillAmount
-        assembly {
-            mstore(add(start, 388), takerTokenFillAmount)
-        }
+        bytes4 fillOrderSelector = this.fillOrder.selector;
 
-        // Write offset to signature and len(signature)
-        // It is done in assembly so we can write 32 bytes at a time. In
-        // solidity we would have to copy one byte at a time.
         assembly {
-            mstore(add(start, 420), 448)
-        }
-        
-        // Copy over signature length contents
-        assembly {
-            let size := add(signatureLength, 32)
+            // Load free memory pointer
+            let start := mload(0x40)
+
+            // Write function signature
+            mstore(start, fillOrderSelector)
+
+            // Write order struct
+            mstore(add(start, 4), order)             // makerAddress
+            mstore(add(start, 36), add(order, 32))   // takerAddress
+            mstore(add(start, 68), add(order, 64))   // makerTokenAddress
+            mstore(add(start, 100), add(order, 96))  // takerTokenAddress
+            mstore(add(start, 132), add(order, 128)) // feeRecipientAddress
+            mstore(add(start, 164), add(order, 160)) // makerTokenAmount
+            mstore(add(start, 196), add(order, 192)) // takerTokenAmount
+            mstore(add(start, 228), add(order, 224)) // makerFeeAmount
+            mstore(add(start, 260), add(order, 256)) // takerFeeAmount
+            mstore(add(start, 292), add(order, 288)) // expirationTimeSeconds
+            mstore(add(start, 324), add(order, 320)) // salt
+
+            // Write takerTokenFillAmount
+            mstore(add(start, 356), takerTokenFillAmount)
+
+            // Write signature offset
+            mstore(add(start, 388), 416)
+
+            // Write signature length
+            let sigLen := mload(signature)
+            mstore(add(start, 420), sigLen)
+
+            // Calculate signature length with padding
+            let paddingLen := sub(32, mod(sigLen, 32))
+            let sigLenWithPadding := add(sigLen, paddingLen)
+
+            // Write signature
+            let sigStart := add(signature, 32)
+            for { let curr := 0 } 
+            lt(curr, sigLenWithPadding)
+            { curr := add(curr, 32) }
+            { mstore(add(start, add(452, curr)), add(sigStart, curr)) }
+
+            // Execute delegatecall
             let success := delegatecall(
-                gas,             // precompile takes 15 + 3 * numWords
-                0x4,             // precompile for identity function
-                signature,       // pointer to start of input
-                size,            // input is (signatureLength + 32) bytes
-                add(start, 452), // store output at offset 4
-                size             // output is (signatureLength + 32) bytes
-            )
-            if iszero(success) {
-                revert(0, 0)
-            }
-        }
-        
-        // Write padding
-        for (uint256 i = 0; i < paddingLength; i++) {
-            input[486 + signatureLength + i] = 0x00;
-        }
-        
-        // Call the function
-        assembly {
-            let success := delegatecall(
-                gas,       // If fillOrder `revert()`s, we recover unused gas
-                address,   // call this contract
-                start,     // pointer to start of input
-                inputSize, // length of input
-                start,     // store output over input
-                32         // output is 32 bytes
+                gas,                         // forward all gas 
+                address,                     // call address of this contract
+                start,                       // pointer to start of input
+                add(452, sigLenWithPadding), // input length is 420 + signature length + padding length
+                start,                       // write output over input
+                32                           // output size is 32 bytes
             )
             switch success
             case 0 {
-                // No amount filled if delegatecall is unsuccessful
                 takerTokenFilledAmount := 0
             }
             case 1 {
-                // Read output value (uint256 takerTokenFilledAmount)
                 takerTokenFilledAmount := mload(start)
             }
+
         }
         return takerTokenFilledAmount;
     }
@@ -201,7 +183,7 @@ contract MixinWrapperFunctions is
     /// @param signatures Maker's signatures of the orders.
     function batchFillOrKillOrders(
         Order[] orders,
-        uint[] takerTokenFillAmounts,
+        uint256[] takerTokenFillAmounts,
         bytes[] signatures)
         public
     {
@@ -220,7 +202,7 @@ contract MixinWrapperFunctions is
     /// @param signatures Maker's signatures of the orders.
     function batchFillOrdersNoThrow(
         Order[] orders,
-        uint[] takerTokenFillAmounts,
+        uint256[] takerTokenFillAmounts,
         bytes[] signatures)
         public
     {
@@ -247,12 +229,17 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, fillOrder(
-                orders[i],
-                safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
-                signatures[i]
-            ));
-            if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
+            totalTakerTokenFilledAmount = safeAdd(
+                totalTakerTokenFilledAmount,
+                fillOrder(
+                    orders[i],
+                    safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
+                    signatures[i]
+                )
+            );
+            if (totalTakerTokenFilledAmount == takerTokenFillAmount) {
+                break;
+            }
         }
         return totalTakerTokenFilledAmount;
     }
@@ -271,12 +258,17 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, fillOrderNoThrow(
-                orders[i],
-                safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
-                signatures[i]
-            ));
-            if (totalTakerTokenFilledAmount == takerTokenFillAmount) break;
+            totalTakerTokenFilledAmount = safeAdd(
+                totalTakerTokenFilledAmount,
+                fillOrderNoThrow(
+                    orders[i],
+                    safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
+                    signatures[i]
+                )
+            );
+            if (totalTakerTokenFilledAmount == takerTokenFillAmount) {
+                break;
+            }
         }
         return totalTakerTokenFilledAmount;
     }
