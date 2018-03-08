@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
     "build": "tsc",
-    "build:example": "NODE_ENV=production webpack; exit 0;",
+    "build:example": "NODE_ENV=production webpack",
     "build:watch": "tsc -w",
     "clean": "shx rm -rf lib",
     "dev": "webpack-dev-server --open",
