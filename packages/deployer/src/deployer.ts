@@ -1,4 +1,4 @@
-import { TxData } from '@0xproject/types';
+import { AbiType, TxData } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -49,6 +49,18 @@ export class Deployer {
             gas,
         };
         const abi = contractNetworkDataIfExists.abi;
+        const constructorAbi = _.find(abi, { type: AbiType.Constructor }) as Web3.ConstructorAbi;
+        const constructorArgs = _.isUndefined(constructorAbi) ? [] : constructorAbi.inputs;
+        if (constructorArgs.length !== args.length) {
+            const constructorSignature = `constructor(${_.map(constructorArgs, arg => `${arg.type} ${arg.name}`).join(
+                ', ',
+            )})`;
+            throw new Error(
+                `${contractName} expects ${constructorArgs.length} constructor params: ${constructorSignature}. Got ${
+                    args.length
+                }`,
+            );
+        }
         const web3ContractInstance = await this._deployFromAbiAsync(abi, args, txData);
         utils.consoleLog(`${contractName}.sol successfully deployed at ${web3ContractInstance.address}`);
         const contractInstance = new Contract(web3ContractInstance, this._defaults);

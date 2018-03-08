@@ -1,20 +1,10 @@
 import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
+import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
-import isMobile = require('is-mobile');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { scroller } from 'react-scroll';
-import {
-    EtherscanLinkSuffixes,
-    Networks,
-    Order,
-    ScreenWidths,
-    Side,
-    SideToAssetToken,
-    Token,
-    TokenByAddress,
-} from 'ts/types';
+import { Order, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
@@ -140,21 +130,6 @@ export const utils = {
             return ScreenWidths.Sm;
         }
     },
-    isUserOnMobile(): boolean {
-        const isUserOnMobile = isMobile();
-        return isUserOnMobile;
-    },
-    getEtherScanLinkIfExists(addressOrTxHash: string, networkId: number, suffix: EtherscanLinkSuffixes): string {
-        const networkName = constants.NETWORK_NAME_BY_ID[networkId];
-        if (_.isUndefined(networkName)) {
-            return undefined;
-        }
-        const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
-        return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
-    },
-    setUrlHash(anchorId: string) {
-        window.location.hash = anchorId;
-    },
     async isU2FSupportedAsync(): Promise<boolean> {
         const w = window as any;
         return new Promise((resolve: (isSupported: boolean) => void) => {
@@ -201,10 +176,6 @@ export const utils = {
             default:
                 return 'production';
         }
-    },
-    getIdFromName(name: string) {
-        const id = name.replace(/ /g, '-');
-        return id;
     },
     getAddressBeginAndEnd(address: string): string {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
@@ -283,31 +254,13 @@ export const utils = {
     isTestNetwork(networkId: number): boolean {
         const isTestNetwork = _.includes(
             [
-                constants.NETWORK_ID_BY_NAME[Networks.Kovan],
-                constants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
-                constants.NETWORK_ID_BY_NAME[Networks.Ropsten],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Kovan],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten],
             ],
             networkId,
         );
         return isTestNetwork;
-    },
-    getCurrentBaseUrl() {
-        const port = window.location.port;
-        const hasPort = !_.isUndefined(port);
-        const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
-        return baseUrl;
-    },
-    scrollToHash(hash: string, containerId: string): void {
-        let finalHash = hash;
-        if (_.isEmpty(hash)) {
-            finalHash = configs.SCROLL_TOP_ID; // scroll to the top
-        }
-
-        scroller.scrollTo(finalHash, {
-            duration: 0,
-            offset: 0,
-            containerId,
-        });
     },
     async onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
@@ -316,5 +269,11 @@ export const utils = {
         return new Promise<void>((resolve, reject) => {
             window.onload = () => resolve();
         });
+    },
+    getCurrentBaseUrl() {
+        const port = window.location.port;
+        const hasPort = !_.isUndefined(port);
+        const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
+        return baseUrl;
     },
 };

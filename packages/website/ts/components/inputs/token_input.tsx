@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import * as React from 'react';
@@ -7,7 +8,6 @@ import { InputLabel } from 'ts/components/ui/input_label';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { AssetToken, BlockchainErrs, Side, Token, TokenByAddress } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 
 const TOKEN_ICON_DIMENSION = 80;
 

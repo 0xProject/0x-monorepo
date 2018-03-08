@@ -42,6 +42,28 @@ const accounts = await ledgerSubprovider.getAccountsAsync();
 
 A subprovider that enables your dApp to send signing requests to a user's Ledger Nano S hardware wallet. These can be requests to sign transactions or messages.
 
+Ledger Nano (and this library) by default uses a derivation path of `44'/60'/0'`. This is different to TestRPC which by default uses `m/44'/60'/0'/0`. This is a configuration option in the Ledger Subprovider package.
+
+##### Ledger Nano S + Node-hid (usb)
+
+By default, node-hid transport support is an optional dependency. This is due to the requirement of native usb developer packages on the host system. If these aren't installed the entire `npm install` fails. We also no longer export node-hid transport client factories. To re-create this see our integration tests or follow the example below:
+
+```typescript
+import Eth from '@ledgerhq/hw-app-eth';
+import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
+async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumClient> {
+    const ledgerConnection = await TransportNodeHid.create();
+    const ledgerEthClient = new Eth(ledgerConnection);
+    return ledgerEthClient;
+}
+
+// Create a LedgerSubprovider with the node-hid transport
+ledgerSubprovider = new LedgerSubprovider({
+    networkId,
+    ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
+});
+```
+
 #### Redundant RPC subprovider
 
 A subprovider which attempts to send an RPC call to a list of RPC endpoints sequentially, until one of them returns a successful response.
@@ -104,16 +126,20 @@ yarn run test:unit
 
 In order to run the integration tests, make sure you have a Ledger Nano S available.
 
+*   Setup your Ledger with the development mnemonic seed: `concert load couple harbor equip island argue ramp clarify fence smart topic`
 *   Plug it into your computer
 *   Unlock the device
 *   Open the on-device Ethereum app
-*   Make sure "browser support" is disabled
+*   Make sure "browser support" and "contract data" are disabled
+*   Start [TestRPC](https://github.com/trufflesuite/ganache-cli) locally at port `8545`
 
 Then run:
 
 ```
 yarn test:integration
 ```
+
+**Note:** We assume a derivation path of `m/44'/60'/0'/0` which is already configured in the tests. With this setup and derivation path, your first account should be `0x5409ed021d9299bf6814279a6a1411a7e866a631`, exactly like TestRPC.
 
 #### All tests
 

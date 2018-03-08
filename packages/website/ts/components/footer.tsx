@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -5,7 +6,6 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 

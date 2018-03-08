@@ -1,10 +1,11 @@
 import { Order, ZeroEx } from '0x.js';
+import { Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import { Blockchain } from 'ts/blockchain';
 import { FakeTextField } from 'ts/components/ui/fake_text_field';
-import { HashData, Styles } from 'ts/types';
+import { HashData } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
 const styles: Styles = {
