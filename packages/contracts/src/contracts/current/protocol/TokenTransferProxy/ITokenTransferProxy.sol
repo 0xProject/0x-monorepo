@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import { IOwnable_v1 as IOwnable } from "../../../previous/Ownable/IOwnable_v1.sol";
 

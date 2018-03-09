@@ -1,7 +1,7 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
-import { Mintable } from "../Mintable/Mintable.sol";
-import { Ownable } from "../../utils/Ownable/Ownable.sol";
+import "../Mintable/Mintable.sol";
+import "../../utils/Ownable/Ownable.sol";
 
 contract DummyToken is Mintable, Ownable {
     string public name;
