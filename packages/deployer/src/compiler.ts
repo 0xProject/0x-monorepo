@@ -198,6 +198,9 @@ export class Compiler {
             utils.consoleLog(`Downloading ${fullSolcVersion}...`);
             const url = `https://ethereum.github.io/solc-bin/bin/${fullSolcVersion}`;
             const response = await fetch(url);
+            if (response.status !== 200) {
+                throw new Error(`Failed to load ${fullSolcVersion}`);
+            }
             solcjs = await response.text();
             fs.writeFileSync(compilerBinFilename, solcjs);
         }
