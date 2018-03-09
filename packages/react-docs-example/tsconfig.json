@@ -17,5 +17,5 @@
         "pretty": true,
         "strict": true
     },
-    "include": ["./example/ts/**/*"]
+    "include": ["./ts/**/*"]
 }
