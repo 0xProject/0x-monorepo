@@ -142,10 +142,8 @@ describe('TokenRegistry', () => {
                 await tokenReg.setTokenName.sendTransactionAsync(token1.address, token2.name, {
                     from: owner,
                 });
-                const [newData, oldData] = await Promise.all([
-                    tokenRegWrapper.getTokenByNameAsync(token2.name),
-                    tokenRegWrapper.getTokenByNameAsync(token1.name),
-                ]);
+                const newData = await tokenRegWrapper.getTokenByNameAsync(token2.name);
+                const oldData = await tokenRegWrapper.getTokenByNameAsync(token1.name);
 
                 const expectedNewData = _.assign({}, token1, { name: token2.name });
                 const expectedOldData = nullToken;
@@ -179,10 +177,8 @@ describe('TokenRegistry', () => {
 
             it('should change the token symbol when called by owner', async () => {
                 await tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, { from: owner });
-                const [newData, oldData] = await Promise.all([
-                    tokenRegWrapper.getTokenBySymbolAsync(token2.symbol),
-                    tokenRegWrapper.getTokenBySymbolAsync(token1.symbol),
-                ]);
+                const newData = await tokenRegWrapper.getTokenByNameAsync(token2.name);
+                const oldData = await tokenRegWrapper.getTokenByNameAsync(token1.name);
 
                 const expectedNewData = _.assign({}, token1, { symbol: token2.symbol });
                 const expectedOldData = nullToken;
