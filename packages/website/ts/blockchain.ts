@@ -24,9 +24,11 @@ import {
     RedundantRPCSubprovider,
 } from '@0xproject/subproviders';
 import { BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import contract = require('truffle-contract');
+import { BlockchainWatcher } from 'ts/blockchain_watcher';
 import { TokenSendCompleted } from 'ts/components/flash_messages/token_send_completed';
 import { TransactionSubmitted } from 'ts/components/flash_messages/transaction_submitted';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
@@ -47,7 +49,6 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
-import { Web3Wrapper } from 'ts/web3_wrapper';
 import Web3 = require('web3');
 import ProviderEngine = require('web3-provider-engine');
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
@@ -63,6 +64,7 @@ export class Blockchain {
     private _zeroEx: ZeroEx;
     private _dispatcher: Dispatcher;
     private _web3Wrapper?: Web3Wrapper;
+    private _blockchainWatcher?: BlockchainWatcher;
     private _userAddress: string;
     private _cachedProvider: Web3.Provider;
     private _cachedProviderNetworkId: number;
@@ -188,11 +190,11 @@ export class Blockchain {
 
         // Cache injected provider so that we can switch the user back to it easily
         if (_.isUndefined(this._cachedProvider)) {
-            this._cachedProvider = this._web3Wrapper.getProviderObj();
+            this._cachedProvider = this._web3Wrapper.getProvider();
             this._cachedProviderNetworkId = this.networkId;
         }
 
-        this._web3Wrapper.destroy();
+        this._blockchainWatcher.destroy();
 
         this._userAddress = '';
         this._dispatcher.updateUserAddress(''); // Clear old userAddress
@@ -210,9 +212,15 @@ export class Blockchain {
         this.networkId = networkId;
         this._dispatcher.updateNetworkId(this.networkId);
         const shouldPollUserAddress = false;
-        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
+        this._web3Wrapper = new Web3Wrapper(provider);
+        this._blockchainWatcher = new BlockchainWatcher(
+            this._dispatcher,
+            this._web3Wrapper,
+            this.networkId,
+            shouldPollUserAddress,
+        );
         this._zeroEx.setProvider(provider, this.networkId);
-        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
+        this._blockchainWatcher.startEmittingNetworkConnectionAndUserBalanceState();
         this._dispatcher.updateProviderType(ProviderType.Ledger);
     }
     public async updateProviderToInjectedAsync() {
@@ -222,20 +230,26 @@ export class Blockchain {
             return; // Going from injected to injected, so we noop
         }
 
-        this._web3Wrapper.destroy();
+        this._blockchainWatcher.destroy();
 
         const provider = this._cachedProvider;
         this.networkId = this._cachedProviderNetworkId;
 
         const shouldPollUserAddress = true;
-        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
+        this._web3Wrapper = new Web3Wrapper(provider);
+        this._blockchainWatcher = new BlockchainWatcher(
+            this._dispatcher,
+            this._web3Wrapper,
+            this.networkId,
+            shouldPollUserAddress,
+        );
 
-        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
+        this._userAddress = await this.getFirstAccountIfExistsAsync();
 
         this._zeroEx.setProvider(provider, this.networkId);
 
         await this.fetchTokenInformationAsync();
-        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
+        this._blockchainWatcher.startEmittingNetworkConnectionAndUserBalanceState();
         this._dispatcher.updateProviderType(ProviderType.Injected);
         delete this._ledgerSubprovider;
         delete this._cachedProvider;
@@ -428,9 +442,9 @@ export class Blockchain {
             gasPrice: this._defaultGasPrice,
         });
     }
-    public async getBalanceInEthAsync(owner: string): Promise<BigNumber> {
-        const balance = await this._web3Wrapper.getBalanceInEthAsync(owner);
-        return balance;
+    public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
+        const balanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(owner);
+        return balanceInWei;
     }
     public async convertEthToWrappedEthTokensAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
@@ -484,10 +498,10 @@ export class Blockchain {
     // by-passes the web3Wrapper logic for updating the prevUserAddress. We therefore need to
     // manually update it. This should only be called by the LedgerConfigDialog.
     public updateWeb3WrapperPrevUserAddress(newUserAddress: string) {
-        this._web3Wrapper.updatePrevUserAddress(newUserAddress);
+        this._blockchainWatcher.updatePrevUserAddress(newUserAddress);
     }
     public destroy() {
-        this._web3Wrapper.destroy();
+        this._blockchainWatcher.destroy();
         this._stopWatchingExchangeLogFillEvents();
     }
     public async fetchTokenInformationAsync() {
@@ -539,6 +553,13 @@ export class Blockchain {
         this._dispatcher.batchDispatch(allTokensByAddress, this.networkId, this._userAddress, sideToAssetToken);
 
         this._dispatcher.updateBlockchainIsLoaded(true);
+    }
+    public async getFirstAccountIfExistsAsync() {
+        const addresses = await this._web3Wrapper.getAvailableAddressesAsync();
+        if (_.isEmpty(addresses)) {
+            return '';
+        }
+        return addresses[0];
     }
     private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string,
@@ -736,11 +757,18 @@ export class Blockchain {
         this._zeroEx = new ZeroEx(provider, zeroExConfigs);
         this._updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
-        this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
-        this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
+        this._web3Wrapper = new Web3Wrapper(provider);
+        this._blockchainWatcher = new BlockchainWatcher(
+            this._dispatcher,
+            this._web3Wrapper,
+            this.networkId,
+            shouldPollUserAddress,
+        );
+
+        this._userAddress = await this.getFirstAccountIfExistsAsync();
         this._dispatcher.updateUserAddress(this._userAddress);
         await this.fetchTokenInformationAsync();
-        this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
+        this._blockchainWatcher.startEmittingNetworkConnectionAndUserBalanceState();
         await this._rehydrateStoreWithContractEvents();
     }
     private _updateProviderName(injectedWeb3: Web3) {
@@ -752,7 +780,7 @@ export class Blockchain {
     }
     private async _instantiateContractIfExistsAsync(artifact: any, address?: string): Promise<ContractInstance> {
         const c = await contract(artifact);
-        const providerObj = this._web3Wrapper.getProviderObj();
+        const providerObj = this._web3Wrapper.getProvider();
         c.setProvider(providerObj);
 
         const artifactNetworkConfigs = artifact.networks[this.networkId];

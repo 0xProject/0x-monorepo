@@ -1,3 +1,4 @@
+import { ZeroEx } from '0x.js';
 import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import Dialog from 'material-ui/Dialog';
@@ -7,6 +8,7 @@ import { Blockchain } from 'ts/blockchain';
 import { EthAmountInput } from 'ts/components/inputs/eth_amount_input';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
 import { Side, Token } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 interface EthWethConversionDialogProps {
     blockchain: Blockchain;
@@ -17,7 +19,7 @@ interface EthWethConversionDialogProps {
     onCancelled: () => void;
     isOpen: boolean;
     token: Token;
-    etherBalance: BigNumber;
+    etherBalanceInWei: BigNumber;
     lastForceTokenStateRefetch: number;
 }
 
@@ -75,6 +77,7 @@ export class EthWethConversionDialog extends React.Component<
                 ? 'Convert your Ether into a tokenized, tradable form.'
                 : "Convert your Wrapped Ether back into it's native form.";
         const isWrappedVersion = this.props.direction === Side.Receive;
+        const etherBalanceInEth = ZeroEx.toUnitAmount(this.props.etherBalanceInWei, constants.DECIMAL_PLACES_ETH);
         return (
             <div>
                 <div className="pb2">{explanation}</div>
@@ -103,7 +106,7 @@ export class EthWethConversionDialog extends React.Component<
                             />
                         ) : (
                             <EthAmountInput
-                                balance={this.props.etherBalance}
+                                balance={etherBalanceInEth}
                                 amount={this.state.value}
                                 onChange={this._onValueChange.bind(this)}
                                 shouldCheckBalance={true}

@@ -34,7 +34,7 @@ interface EthWrappersProps {
     dispatcher: Dispatcher;
     tokenByAddress: TokenByAddress;
     userAddress: string;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     lastForceTokenStateRefetch: number;
 }
 
@@ -98,6 +98,10 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             EtherscanLinkSuffixes.Address,
         );
         const tokenLabel = this._renderToken('Wrapped Ether', etherToken.address, configs.ICON_URL_BY_SYMBOL.WETH);
+        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
+            this.props.userEtherBalanceInWei,
+            constants.DECIMAL_PLACES_ETH,
+        );
         return (
             <div className="clearfix lg-px4 md-px4 sm-px2" style={{ minHeight: 600 }}>
                 <div className="relative">
@@ -143,9 +147,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             </div>
                                         </div>
                                     </TableRowColumn>
-                                    <TableRowColumn>
-                                        {this.props.userEtherBalance.toFixed(PRECISION)} ETH
-                                    </TableRowColumn>
+                                    <TableRowColumn>{userEtherBalanceInEth.toFixed(PRECISION)} ETH</TableRowColumn>
                                     <TableRowColumn>
                                         <EthWethConversionButton
                                             refetchEthTokenStateAsync={this._refetchEthTokenStateAsync.bind(this)}
@@ -157,7 +159,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             ethToken={etherToken}
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
-                                            userEtherBalance={this.props.userEtherBalance}
+                                            userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                                         />
                                     </TableRowColumn>
                                 </TableRow>
@@ -184,7 +186,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             ethToken={etherToken}
                                             dispatcher={this.props.dispatcher}
                                             blockchain={this.props.blockchain}
-                                            userEtherBalance={this.props.userEtherBalance}
+                                            userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                                         />
                                     </TableRowColumn>
                                 </TableRow>
@@ -304,7 +306,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                 ethToken={outdatedEtherToken}
                                 dispatcher={this.props.dispatcher}
                                 blockchain={this.props.blockchain}
-                                userEtherBalance={this.props.userEtherBalance}
+                                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                                 onConversionSuccessful={onConversionSuccessful}
                             />
                         </TableRowColumn>

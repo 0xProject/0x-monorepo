@@ -46,7 +46,7 @@ export interface PortalAllProps {
     providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
@@ -279,7 +279,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 dispatcher={this.props.dispatcher}
                 tokenByAddress={this.props.tokenByAddress}
                 userAddress={this.props.userAddress}
-                userEtherBalance={this.props.userEtherBalance}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
@@ -306,7 +306,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 tokenByAddress={this.props.tokenByAddress}
                 trackedTokens={trackedTokens}
                 userAddress={this.props.userAddress}
-                userEtherBalance={this.props.userEtherBalance}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 networkId={this.props.networkId}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />

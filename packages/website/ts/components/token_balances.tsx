@@ -79,7 +79,7 @@ interface TokenBalancesProps {
     tokenByAddress: TokenByAddress;
     trackedTokens: Token[];
     userAddress: string;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     networkId: number;
     lastForceTokenStateRefetch: number;
 }
@@ -119,11 +119,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         this._isUnmounted = true;
     }
     public componentWillReceiveProps(nextProps: TokenBalancesProps) {
-        if (nextProps.userEtherBalance !== this.props.userEtherBalance) {
+        if (nextProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
             if (this.state.isBalanceSpinnerVisible) {
-                const receivedAmount = nextProps.userEtherBalance.minus(this.props.userEtherBalance);
+                const receivedAmountInWei = nextProps.userEtherBalanceInWei.minus(this.props.userEtherBalanceInWei);
+                const receivedAmountInEth = ZeroEx.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
                 const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-                this.props.dispatcher.showFlashMessage(`Received ${receivedAmount.toString(10)} ${networkName} Ether`);
+                this.props.dispatcher.showFlashMessage(
+                    `Received ${receivedAmountInEth.toString(10)} ${networkName} Ether`,
+                );
             }
             this.setState({
                 isBalanceSpinnerVisible: false,
@@ -205,6 +208,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                   token balances in order to execute trades.<br> \
                                   Toggling sets an allowance for the<br> \
                                   smart contract so you can start trading that token.';
+        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
+            this.props.userEtherBalanceInWei,
+            constants.DECIMAL_PLACES_ETH,
+        );
         return (
             <div className="lg-px4 md-px4 sm-px1 pb2">
                 <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
@@ -241,7 +248,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />
                             </TableRowColumn>
                             <TableRowColumn>
-                                {this.props.userEtherBalance.toFixed(PRECISION)} ETH
+                                {userEtherBalanceInEth.toFixed(PRECISION)} ETH
                                 {this.state.isBalanceSpinnerVisible && (
                                     <span className="pl1">
                                         <i className="zmdi zmdi-spinner zmdi-hc-spin" />

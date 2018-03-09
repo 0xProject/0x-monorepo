@@ -18,7 +18,7 @@ interface EthWethConversionButtonProps {
     ethToken: Token;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     isOutdatedWrappedEther: boolean;
     onConversionSuccessful?: () => void;
     isDisabled?: boolean;
@@ -74,7 +74,7 @@ export class EthWethConversionButton extends React.Component<
                     isOpen={this.state.isEthConversionDialogVisible}
                     onComplete={this._onConversionAmountSelectedAsync.bind(this)}
                     onCancelled={this._toggleConversionDialog.bind(this)}
-                    etherBalance={this.props.userEtherBalance}
+                    etherBalanceInWei={this.props.userEtherBalanceInWei}
                     token={this.props.ethToken}
                     lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                 />
