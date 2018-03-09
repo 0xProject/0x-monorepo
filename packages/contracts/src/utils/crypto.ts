@@ -3,8 +3,6 @@ import ABI = require('ethereumjs-abi');
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { SignedOrder } from './types';
-
 export const crypto = {
     /*
    * We convert types from JS to Solidity as follows:
