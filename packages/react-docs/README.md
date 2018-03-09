@@ -3,7 +3,7 @@
 A full-page React component for rendering beautiful documentation for Solidity and Typescript code generated with [TypeDoc](http://typedoc.org/) or [Doxity](https://github.com/0xproject/doxity).
 
 <div style="text-align: center;">
-<img src="./screenshot.png" style="padding-bottom: 20px; padding-top: 20px;" width="80%" />
+<img src="https://s3.eu-west-2.amazonaws.com/0x-wiki-images/screenshot.png" style="padding-bottom: 20px; padding-top: 20px;" width="80%" />
 <div>react-docs generating 0x's smart contract docs</div>
 </div>
 
