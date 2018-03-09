@@ -2,21 +2,21 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: ['./example/ts/index.tsx'],
+    entry: ['./ts/index.tsx'],
     output: {
-        path: path.join(__dirname, '/example/public'),
+        path: path.join(__dirname, '/public'),
         filename: 'bundle.js',
         chunkFilename: 'bundle-[name].js',
         publicPath: '/',
     },
     devtool: 'source-map',
     resolve: {
-        modules: [path.join(__dirname, '/example/ts'), 'node_modules'],
+        modules: [path.join(__dirname, '/ts'), 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.md'],
         alias: {
-            ts: path.join(__dirname, '/example/ts'),
-            less: path.join(__dirname, '/example/less'),
-            md: path.join(__dirname, '/example/md'),
+            ts: path.join(__dirname, '/ts'),
+            less: path.join(__dirname, '/less'),
+            md: path.join(__dirname, '/md'),
         },
     },
     module: {
@@ -24,6 +24,10 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'source-map-loader',
+                exclude: [
+                    // instead of /\/node_modules\//
+                    path.join(process.cwd(), 'node_modules'),
+                ],
             },
             {
                 test: /\.tsx?$/,
@@ -64,7 +68,7 @@ module.exports = {
                 },
             ],
         },
-        contentBase: path.join(__dirname, '/example/public'),
+        contentBase: path.join(__dirname, '/public'),
     },
     plugins:
         process.env.NODE_ENV === 'production'

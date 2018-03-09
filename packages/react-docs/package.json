@@ -7,11 +7,8 @@
   "scripts": {
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
     "build": "tsc",
-    "build:example": "NODE_ENV=production webpack",
     "build:watch": "tsc -w",
-    "clean": "shx rm -rf lib",
-    "dev": "webpack-dev-server --open",
-    "deploy_example": "npm run build:example; aws s3 sync ./example/public/. s3://react-docs-example --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+    "clean": "shx rm -rf lib"
   },
   "author": "Fabio Berger",
   "license": "Apache-2.0",
@@ -31,17 +28,10 @@
     "@types/react": "^15.0.15",
     "@types/react-dom": "^0.14.23",
     "@types/react-scroll": "0.0.31",
-    "css-loader": "^0.28.9",
-    "json-loader": "^0.5.4",
-    "less-loader": "^2.2.3",
-    "raw-loader": "^0.5.1",
+    "@types/react-tap-event-plugin": "0.0.30",
     "shx": "^0.2.2",
-    "source-map-loader": "^0.2.3",
-    "style-loader": "^0.20.2",
     "tslint": "^5.9.1",
-    "typescript": "2.7.1",
-    "webpack": "^3.11.0",
-    "webpack-dev-server": "^2.11.1"
+    "typescript": "2.7.1"
   },
   "dependencies": {
     "@0xproject/react-shared": "^0.0.1",
