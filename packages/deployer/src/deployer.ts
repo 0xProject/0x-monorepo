@@ -28,9 +28,18 @@ export class Deployer {
         this._artifactsDir = opts.artifactsDir;
         this._networkId = opts.networkId;
         this._defaults = opts.defaults;
-        const web3Provider = _.isUndefined((opts as ProviderDeployerOptions).web3Provider)
-            ? new Web3.providers.HttpProvider(`http://localhost:${(opts as PortDeployerOptions).jsonrpcPort}`)
-            : (opts as ProviderDeployerOptions).web3Provider;
+        let web3Provider: Web3.Provider;
+        if (_.isUndefined((opts as ProviderDeployerOptions).web3Provider)) {
+            const jsonrpcPort = (opts as PortDeployerOptions).jsonrpcPort;
+            if (_.isUndefined(jsonrpcPort)) {
+                throw new Error(
+                    `Deployer options don't have neither web3Provider nor jsonrpcPort. Please pass one of them`,
+                );
+            }
+            web3Provider = new Web3.providers.HttpProvider(`http://localhost:${jsonrpcPort}`);
+        } else {
+            web3Provider = (opts as ProviderDeployerOptions).web3Provider;
+        }
         this.web3Wrapper = new Web3Wrapper(web3Provider, this._defaults);
     }
     /**
