@@ -25,7 +25,7 @@
         "coverage:report:html": "istanbul report html && open coverage/lcov-report/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "coverage:report:coveralls": "yarn coverage:report:lcov && cat coverage/lcov.info | coveralls",
-        "test:circleci": "yarn test"
+        "test:circleci": "yarn test:coverage && yarn coverage:report:coveralls"
     },
     "config": {
         "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,Arbitrage,EtherDelta,AccountLevels"
