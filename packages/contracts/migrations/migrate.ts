@@ -10,8 +10,8 @@ import { tokenInfo } from './config/token_info';
 
 /**
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
- * Some operations might be completed in parallel, but we don't do that on purpose.
- * That way the addresses are deterministic.
+ * Migrations could be written to run in parallel, but if you want contract addresses to be created deterministically,
+ * the migration should be written to run synchronously.
  * @param deployer Deployer instance.
  */
 export const runMigrationsAsync = async (deployer: Deployer) => {
