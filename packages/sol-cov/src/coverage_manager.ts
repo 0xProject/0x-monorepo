@@ -41,7 +41,8 @@ function getSingleFileCoverageForTrace(
     sourceRanges = _.uniqBy(sourceRanges, s => JSON.stringify(s)); // We don't care if one PC was covered multiple times within a single transaction
     sourceRanges = _.filter(sourceRanges, sourceRange => sourceRange.fileName === fileName);
     const branchCoverage: BranchCoverage = {};
-    for (const branchId of _.keys(coverageEntriesDescription.branchMap)) {
+    const branchIds = _.keys(coverageEntriesDescription.branchMap);
+    for (const branchId of branchIds) {
         const branchDescription = coverageEntriesDescription.branchMap[branchId];
         const isCovered = _.map(branchDescription.locations, location =>
             _.some(sourceRanges, range => utils.isRangeInside(range.location, location)),
@@ -49,13 +50,15 @@ function getSingleFileCoverageForTrace(
         branchCoverage[branchId] = isCovered;
     }
     const statementCoverage: StatementCoverage = {};
-    for (const statementId of _.keys(coverageEntriesDescription.statementMap)) {
+    const statementIds = _.keys(coverageEntriesDescription.statementMap);
+    for (const statementId of statementIds) {
         const statementDescription = coverageEntriesDescription.statementMap[statementId];
         const isCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, statementDescription));
         statementCoverage[statementId] = isCovered;
     }
     const functionCoverage: FunctionCoverage = {};
-    for (const fnId of _.keys(coverageEntriesDescription.fnMap)) {
+    const functionIds = _.keys(coverageEntriesDescription.fnMap);
+    for (const fnId of functionIds) {
         const functionDescription = coverageEntriesDescription.fnMap[fnId];
         const isCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, functionDescription.loc));
         functionCoverage[fnId] = isCovered;
