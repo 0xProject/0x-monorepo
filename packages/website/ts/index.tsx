@@ -18,6 +18,8 @@ import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { reducer, State } from 'ts/redux/reducer';
 import { WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
+import { utils } from 'ts/utils/utils';
+import * as Web3 from 'web3';
 import 'whatwg-fetch';
 injectTapEventPlugin();
 
@@ -46,6 +48,10 @@ const LazyConnectDocumentation = createLazyComponent('Documentation', async () =
 );
 
 ReactGA.initialize('UA-98720122-1');
+window.onload = () => {
+    const providerName = (window as any).web3 ? utils.web3ProviderToString((window as any).web3.currentProvider) : 'NONE';
+    ReactGA.ga('set', 'dimension1', providerName);
+};
 const store: ReduxStore<State> = createStore(reducer);
 render(
     <Router>

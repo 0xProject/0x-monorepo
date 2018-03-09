@@ -1,4 +1,4 @@
-import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
+import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError, Web3Provider } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import isMobile = require('is-mobile');
@@ -309,22 +309,14 @@ export const utils = {
             containerId,
         });
     },
-    web3ProviderNameToString(web3ProviderName: string): string {
-        let parsedProviderName = "UNKNOWN";
-        if(web3ProviderName === "MetamaskInpageProvider") {
-            parsedProviderName = "METAMASK";
-        }
-        else if(web3ProviderName === "EthereumProvider") {
-            parsedProviderName = "MIST";
-        }
-        else if(web3ProviderName === "o") {
-            parsedProviderName = "PARITY";
-        }
-        else if(web3ProviderName.indexOf("infura") !== -1) {
-            parsedProviderName = "INFURA";
-        }
-        else if(web3ProviderName.indexOf("localhost") !== -1) {
-            parsedProviderName ="LOCALHOST";
+    web3ProviderToString(provider: Web3Provider): string {
+        let parsedProviderName = provider.constructor.name;
+        if (provider.constructor.name === 'MetamaskInpageProvider') {
+            parsedProviderName = 'METAMASK';
+        } else if (provider.constructor.name  === 'EthereumProvider') {
+            parsedProviderName = 'MIST';
+        } else if (provider.constructor.name  === 'o') {
+            parsedProviderName = 'PARITY';
         }
         return parsedProviderName;
     },
