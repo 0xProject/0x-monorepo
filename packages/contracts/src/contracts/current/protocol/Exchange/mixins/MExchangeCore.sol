@@ -22,7 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../LibOrder.sol";
 
 contract MExchangeCore is LibOrder {
-    
+
     function fillOrder(
         Order order,
         uint256 takerTokenFillAmount,

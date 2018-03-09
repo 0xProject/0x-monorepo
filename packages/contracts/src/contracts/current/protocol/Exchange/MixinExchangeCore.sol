@@ -42,7 +42,7 @@ contract MixinExchangeCore is
     // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
     mapping (bytes32 => uint256) public filled;
     mapping (bytes32 => uint256) public cancelled;
-    
+
     event LogFill(
         address indexed makerAddress,
         address takerAddress,
@@ -84,7 +84,7 @@ contract MixinExchangeCore is
     {
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
-        
+
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
         if (filled[orderHash] == 0 && cancelled[orderHash] == 0) {
@@ -92,7 +92,7 @@ contract MixinExchangeCore is
             require(order.takerTokenAmount > 0);
             require(isValidSignature(orderHash, order.makerAddress, signature));
         }
-        
+
         // Validate taker
         if (order.takerAddress != address(0)) {
             require(order.takerAddress == msg.sender);
@@ -104,7 +104,7 @@ contract MixinExchangeCore is
             LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
             return 0;
         }
-        
+
         // Validate order availability
         uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderHash));
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
@@ -112,7 +112,7 @@ contract MixinExchangeCore is
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
             return 0;
         }
-        
+
         // Validate fill order rounding
         if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
@@ -121,11 +121,11 @@ contract MixinExchangeCore is
 
         // Update state
         filled[orderHash] = safeAdd(filled[orderHash], takerTokenFilledAmount);
-        
+
         // Settle order
         var (makerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid) =
             settleOrder(order, msg.sender, takerTokenFilledAmount);
-        
+
         // Log order
         LogFill(
             order.makerAddress,
@@ -160,21 +160,21 @@ contract MixinExchangeCore is
         require(order.takerTokenAmount > 0);
         require(takerTokenCancelAmount > 0);
         require(order.makerAddress == msg.sender);
-        
+
         if (block.timestamp >= order.expirationTimeSeconds) {
             LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
             return 0;
         }
-        
+
         uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderHash));
         takerTokenCancelledAmount = min256(takerTokenCancelAmount, remainingTakerTokenAmount);
         if (takerTokenCancelledAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
             return 0;
         }
-        
+
         cancelled[orderHash] = safeAdd(cancelled[orderHash], takerTokenCancelledAmount);
-        
+
         LogCancel(
             order.makerAddress,
             order.feeRecipientAddress,
@@ -197,7 +197,9 @@ contract MixinExchangeCore is
         returns (bool isError)
     {
         uint256 remainder = mulmod(target, numerator, denominator);
-        if (remainder == 0) return false; // No rounding error.
+        if (remainder == 0) {
+            return false; // No rounding error.
+        }
 
         uint256 errPercentageTimes1000000 = safeDiv(
             safeMul(remainder, 1000000),

@@ -3,10 +3,10 @@ import * as ethUtil from 'ethereumjs-util';
 import { SignatureType } from './types';
 
 export const signingUtils = {
-    signMessage(message: Buffer, secretKey: Buffer, signatureType: SignatureType): Buffer {
+    signMessage(message: Buffer, privateKey: Buffer, signatureType: SignatureType): Buffer {
         if (signatureType === SignatureType.Ecrecover) {
             const prefixedMessage = ethUtil.hashPersonalMessage(message);
-            const ecSignature = ethUtil.ecsign(prefixedMessage, secretKey);
+            const ecSignature = ethUtil.ecsign(prefixedMessage, privateKey);
             const signature = Buffer.concat([
                 ethUtil.toBuffer(signatureType),
                 ethUtil.toBuffer(ecSignature.v),
@@ -15,7 +15,7 @@ export const signingUtils = {
             ]);
             return signature;
         } else if (signatureType === SignatureType.EIP712) {
-            const ecSignature = ethUtil.ecsign(message, secretKey);
+            const ecSignature = ethUtil.ecsign(message, privateKey);
             const signature = Buffer.concat([
                 ethUtil.toBuffer(signatureType),
                 ethUtil.toBuffer(ecSignature.v),
