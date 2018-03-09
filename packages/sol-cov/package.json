@@ -1,7 +1,7 @@
 {
     "name": "@0xproject/sol-cov",
     "version": "0.0.1",
-    "description": "Generate coverage reports for solidity code",
+    "description": "Generate coverage reports for Solidity code",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
