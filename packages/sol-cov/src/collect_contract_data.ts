@@ -25,6 +25,9 @@ export const collectContractsData = (artifactsPath: string, sourcesPath: string,
             const includedSourceCode = fs.readFileSync(source).toString();
             return includedSourceCode;
         });
+        if (_.isUndefined(artifact.networks[networkId])) {
+            throw new Error(`No ${baseName} artifacts found for networkId ${networkId}`);
+        }
         const contractData = {
             baseName,
             sourceCodes,
