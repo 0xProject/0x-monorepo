@@ -1,9 +1,9 @@
 import { ZeroEx } from '0x.js';
+import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Token } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 
 interface TokenSendCompletedProps {

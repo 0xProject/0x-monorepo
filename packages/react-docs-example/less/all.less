@@ -1,0 +1,41 @@
+/*
+ * Adds always visible scrollbars on OSX so that user knows the content is scrollable
+ * Source: https://davidwalsh.name/osx-overflow
+ */
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 4px;
+    height: 2px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+#documentation {
+    p {
+        line-height: 1.5;
+    }
+
+    a {
+        color: #1d5cde; // linkBlue
+    }
+
+    .comment {
+        p {
+            margin: 0px;
+        }
+    }
+
+    .typeTooltip {
+        border: 1px solid lightgray;
+        opacity: 1;
+    }
+}
+
+code {
+    border: 1px solid #e3eefe;
+    font-family: 'Roboto Mono';
+    background-color: #f2f6ff !important; // lightBlue
+}

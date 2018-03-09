@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
@@ -7,7 +8,6 @@ import { DropDown } from 'ts/components/ui/drop_down';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 

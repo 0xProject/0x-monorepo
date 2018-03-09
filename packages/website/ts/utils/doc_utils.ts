@@ -1,6 +1,7 @@
+import { DoxityDocObj, TypeDocNode } from '@0xproject/react-docs';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
-import { DoxityDocObj, S3FileObject, TypeDocNode, VersionToFileName } from 'ts/types';
+import { S3FileObject, VersionToFileName } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 import convert = require('xml-js');
 

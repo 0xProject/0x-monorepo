@@ -1,3 +1,4 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
@@ -7,7 +8,6 @@ import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';

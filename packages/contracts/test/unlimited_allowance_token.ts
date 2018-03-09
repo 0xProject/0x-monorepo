@@ -34,7 +34,7 @@ describe('UnlimitedAllowanceToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        const tokenInstance = await deployer.deployAsync(ContractName.DummyToken);
+        const tokenInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
         token = new DummyTokenContract(web3Wrapper, tokenInstance.abi, tokenInstance.address);
         await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;

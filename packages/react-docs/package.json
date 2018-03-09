@@ -1,0 +1,52 @@
+{
+  "name": "@0xproject/react-docs",
+  "version": "0.0.1",
+  "description": "React documentation component for rendering TypeDoc & Doxity generated JSON",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "clean": "shx rm -rf lib"
+  },
+  "author": "Fabio Berger",
+  "license": "Apache-2.0",
+  "bugs": {
+      "url": "https://github.com/0xProject/0x-monorepo/issues"
+  },
+  "homepage": "https://github.com/0xProject/0x-monorepo/packages/react-docs/README.md",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/0xProject/0x-monorepo.git"
+  },
+  "devDependencies": {
+    "@0xproject/tslint-config": "^0.4.9",
+    "@types/lodash": "^4.14.86",
+    "@types/material-ui": "0.18.0",
+    "@types/node": "^8.0.53",
+    "@types/react": "^15.0.15",
+    "@types/react-dom": "^0.14.23",
+    "@types/react-scroll": "0.0.31",
+    "@types/react-tap-event-plugin": "0.0.30",
+    "shx": "^0.2.2",
+    "tslint": "^5.9.1",
+    "typescript": "2.7.1"
+  },
+  "dependencies": {
+    "@0xproject/react-shared": "^0.0.1",
+    "basscss": "^8.0.3",
+    "compare-versions": "^3.0.1",
+    "lodash": "^4.17.4",
+    "material-ui": "^0.17.1",
+    "react": "15.6.1",
+    "react-dom": "15.6.1",
+    "react-markdown": "^3.2.2",
+    "react-scroll": "^1.5.2",
+    "react-tap-event-plugin": "^2.0.1",
+    "react-tooltip": "^3.2.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

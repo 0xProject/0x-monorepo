@@ -1,8 +1,5 @@
-import {
-    comm_node as LedgerNodeCommunication,
-    comm_u2f as LedgerBrowserCommunication,
-    eth as LedgerEthereumClientFn,
-} from 'ledgerco';
+import Eth from '@ledgerhq/hw-app-eth';
+import TransportU2F from '@ledgerhq/hw-transport-u2f';
 
 import { LedgerEthereumClient } from './types';
 
@@ -19,17 +16,7 @@ export { ECSignature, LedgerWalletSubprovider, LedgerCommunicationClient, NonceS
  * @return LedgerEthereumClient A browser client
  */
 export async function ledgerEthereumBrowserClientFactoryAsync(): Promise<LedgerEthereumClient> {
-    const ledgerConnection = await LedgerBrowserCommunication.create_async();
-    const ledgerEthClient = new LedgerEthereumClientFn(ledgerConnection);
-    return ledgerEthClient;
-}
-
-/**
- * A factory for creating a LedgerEthereumClient usable in a Node.js context.
- * @return LedgerEthereumClient A Node.js client
- */
-export async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumClient> {
-    const ledgerConnection = await LedgerNodeCommunication.create_async();
-    const ledgerEthClient = new LedgerEthereumClientFn(ledgerConnection);
+    const ledgerConnection = await TransportU2F.create();
+    const ledgerEthClient = new Eth(ledgerConnection);
     return ledgerEthClient;
 }

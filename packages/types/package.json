@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/types",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "0x types",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
