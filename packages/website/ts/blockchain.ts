@@ -63,7 +63,6 @@ export class Blockchain {
     private _zeroEx: ZeroEx;
     private _dispatcher: Dispatcher;
     private _web3Wrapper?: Web3Wrapper;
-    private _exchangeAddress: string;
     private _userAddress: string;
     private _cachedProvider: Web3.Provider;
     private _cachedProviderNetworkId: number;
