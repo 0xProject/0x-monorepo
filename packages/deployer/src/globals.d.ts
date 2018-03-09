@@ -14,8 +14,11 @@ declare module 'solc' {
             [contractIdentifier: string]: ContractCompilationResult;
         };
         sources: {
-            [sourceName: string]: any;
+            [sourceName: string]: {
+                AST: any;
+            };
         };
+        sourceList: string[];
     }
     export interface ImportContents {
         contents: string;
