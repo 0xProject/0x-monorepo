@@ -78,7 +78,7 @@ const versionToDocJSON: { [semver: string]: object } = {
 
 export interface DocsProps {}
 
-interface DocsState {
+export interface DocsState {
     selectedVersion: string;
     docAgnosticFormat?: DocAgnosticFormat;
 }
