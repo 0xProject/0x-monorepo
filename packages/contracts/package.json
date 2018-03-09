@@ -27,7 +27,7 @@
         "test:circleci": "yarn test:coverage"
     },
     "config": {
-        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,Arbitrage,EtherDelta,AccountLevels"
+        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry"
     },
     "repository": {
         "type": "git",
@@ -55,6 +55,7 @@
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "ethers-typescript-typings": "^0.0.2",
+        "ganache-cli": "^6.1.0",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
