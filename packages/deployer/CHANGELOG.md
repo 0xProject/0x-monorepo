@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.3.0 - _TBD, 2018_
+
+    * Add support for Solidity 0.4.20 and 0.4.21
+
 ## v0.2.0 - _March 4, 2018_
 
     * Check dependencies when determining if contracts should be recompiled (#408)
