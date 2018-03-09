@@ -48,7 +48,7 @@ export const web3Factory = {
                 fs.appendFileSync('ganache.log', `${arg}\n`);
             },
         };
-        const shouldUseInProcessGanache = config.shouldUseInProcessGanache;
+        const shouldUseInProcessGanache = !!config.shouldUseInProcessGanache;
         if (shouldUseInProcessGanache) {
             provider.addProvider(
                 new GanacheSubprovider({
