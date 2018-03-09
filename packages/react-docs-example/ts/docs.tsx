@@ -14,9 +14,8 @@ import {
 import * as v0TypeDocJson from './json/0.1.12.json';
 import * as v2TypeDocJson from './json/0.2.0.json';
 
-/* tslint:disable:no-var-requires */
+// tslint:disable-next-line:no-implicit-dependencies no-var-requires
 const IntroMarkdown = require('md/introduction');
-/* tslint:enable:no-var-requires */
 
 const docSections = {
     introduction: 'introduction',
