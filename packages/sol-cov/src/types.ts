@@ -83,7 +83,19 @@ export interface ContractData {
     sources: string[];
 }
 
-export interface TraceInfo {
+export interface TraceInfoBase {
     coveredPcs: number[];
     txHash: string;
 }
+
+export interface TraceInfoNewContract extends TraceInfoBase {
+    address: 'NEW_CONTRACT';
+    bytecode: string;
+}
+
+export interface TraceInfoExistingContract extends TraceInfoBase {
+    address: string;
+    runtimeBytecode: string;
+}
+
+export type TraceInfo = TraceInfoNewContract | TraceInfoExistingContract;

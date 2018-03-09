@@ -5,6 +5,7 @@ import * as Web3 from 'web3';
 
 import { constants } from './constants';
 import { CoverageManager } from './coverage_manager';
+import { TraceInfoExistingContract, TraceInfoNewContract } from './types';
 
 /*
  * This class implements the web3-provider-engine subprovider interface and collects traces of all transactions that were sent and all calls that were executed.
@@ -84,15 +85,32 @@ export class CoverageSubprovider extends Subprovider {
         cb();
     }
     private async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
-        this._coverageManager.setTxDataByHash(txHash, data || '');
-        const payload = {
+        let payload = {
             method: 'debug_traceTransaction',
             params: [txHash, { disableMemory: true, disableStack: true, disableStorage: true }], // TODO For now testrpc just ignores those parameters https://github.com/trufflesuite/ganache-cli/issues/489
         };
         const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
         const trace: Web3.TransactionTrace = jsonRPCResponsePayload.result;
         const coveredPcs = _.map(trace.structLogs, log => log.pc);
-        this._coverageManager.appendTraceInfo(address, { coveredPcs, txHash });
+        if (address === constants.NEW_CONTRACT) {
+            const traceInfo: TraceInfoNewContract = {
+                coveredPcs,
+                txHash,
+                address,
+                bytecode: data as string,
+            };
+            this._coverageManager.appendTraceInfo(traceInfo);
+        } else {
+            payload = { method: 'eth_getCode', params: [address, 'latest'] };
+            const runtimeBytecode = (await this.emitPayloadAsync(payload)).result;
+            const traceInfo: TraceInfoExistingContract = {
+                coveredPcs,
+                txHash,
+                address,
+                runtimeBytecode,
+            };
+            this._coverageManager.appendTraceInfo(traceInfo);
+        }
     }
     private async _recordCallTraceAsync(callData: Partial<Web3.CallData>, blockNumber: Web3.BlockParam): Promise<void> {
         const snapshotId = Number((await this.emitPayloadAsync({ method: 'evm_snapshot' })).result);

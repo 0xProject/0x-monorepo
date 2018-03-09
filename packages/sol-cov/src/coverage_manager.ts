@@ -23,6 +23,8 @@ import {
     StatementDescription,
     StatementMap,
     TraceInfo,
+    TraceInfoExistingContract,
+    TraceInfoNewContract,
 } from './types';
 import { utils } from './utils';
 
@@ -72,9 +74,8 @@ function getSingleFileCoverageForTrace(
 }
 
 export class CoverageManager {
-    private _traceInfoByAddress: { [address: string]: TraceInfo[] } = {};
+    private _traceInfos: TraceInfo[] = [];
     private _contractsData: ContractData[] = [];
-    private _txDataByHash: { [txHash: string]: string } = {};
     private _getContractCodeAsync: (address: string) => Promise<string>;
     constructor(
         artifactsPath: string,
@@ -85,14 +86,8 @@ export class CoverageManager {
         this._getContractCodeAsync = getContractCodeAsync;
         this._contractsData = collectContractsData(artifactsPath, sourcesPath, networkId);
     }
-    public setTxDataByHash(txHash: string, data: string): void {
-        this._txDataByHash[txHash] = data;
-    }
-    public appendTraceInfo(address: string, traceInfo: TraceInfo): void {
-        if (_.isUndefined(this._traceInfoByAddress[address])) {
-            this._traceInfoByAddress[address] = [];
-        }
-        this._traceInfoByAddress[address].push(traceInfo);
+    public appendTraceInfo(traceInfo: TraceInfo): void {
+        this._traceInfos.push(traceInfo);
     }
     public async writeCoverageAsync(): Promise<void> {
         const finalCoverage = await this._computeCoverageAsync();
@@ -103,13 +98,13 @@ export class CoverageManager {
     }
     private async _computeCoverageAsync(): Promise<Coverage> {
         const collector = new Collector();
-        for (const address of _.keys(this._traceInfoByAddress)) {
-            if (address !== constants.NEW_CONTRACT) {
+        for (const traceInfo of this._traceInfos) {
+            if (traceInfo.address !== constants.NEW_CONTRACT) {
                 // Runtime transaction
-                const runtimeBytecode = await this._getContractCodeAsync(address);
+                const runtimeBytecode = (traceInfo as TraceInfoExistingContract).runtimeBytecode;
                 const contractData = _.find(this._contractsData, { runtimeBytecode }) as ContractData;
                 if (_.isUndefined(contractData)) {
-                    throw new Error(`Transaction to an unknown address: ${address}`);
+                    throw new Error(`Transaction to an unknown address: ${traceInfo.address}`);
                 }
                 const bytecodeHex = contractData.runtimeBytecode.slice(2);
                 const sourceMap = contractData.sourceMapRuntime;
@@ -120,44 +115,40 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    _.forEach(this._traceInfoByAddress[address], (traceInfo: TraceInfo) => {
-                        const singleFileCoverageForTrace = getSingleFileCoverageForTrace(
-                            contractData,
-                            traceInfo.coveredPcs,
-                            pcToSourceRange,
-                            fileIndex,
-                        );
-                        collector.add(singleFileCoverageForTrace);
-                    });
+                    const singleFileCoverageForTrace = getSingleFileCoverageForTrace(
+                        contractData,
+                        traceInfo.coveredPcs,
+                        pcToSourceRange,
+                        fileIndex,
+                    );
+                    collector.add(singleFileCoverageForTrace);
                 }
             } else {
                 // Contract creation transaction
-                _.forEach(this._traceInfoByAddress[address], (traceInfo: TraceInfo) => {
-                    const bytecode = this._txDataByHash[traceInfo.txHash];
-                    const contractData = _.find(this._contractsData, contractDataCandidate =>
-                        bytecode.startsWith(contractDataCandidate.bytecode),
-                    ) as ContractData;
-                    if (_.isUndefined(contractData)) {
-                        throw new Error(`Unknown contract creation transaction`);
-                    }
-                    const bytecodeHex = contractData.bytecode.slice(2);
-                    const sourceMap = contractData.sourceMap;
-                    const pcToSourceRange = parseSourceMap(
-                        contractData.sourceCodes,
-                        sourceMap,
-                        bytecodeHex,
-                        contractData.sources,
+                const bytecode = (traceInfo as TraceInfoNewContract).bytecode;
+                const contractData = _.find(this._contractsData, contractDataCandidate =>
+                    bytecode.startsWith(contractDataCandidate.bytecode),
+                ) as ContractData;
+                if (_.isUndefined(contractData)) {
+                    throw new Error(`Unknown contract creation transaction`);
+                }
+                const bytecodeHex = contractData.bytecode.slice(2);
+                const sourceMap = contractData.sourceMap;
+                const pcToSourceRange = parseSourceMap(
+                    contractData.sourceCodes,
+                    sourceMap,
+                    bytecodeHex,
+                    contractData.sources,
+                );
+                for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
+                    const singleFileCoverageForTrace = getSingleFileCoverageForTrace(
+                        contractData,
+                        traceInfo.coveredPcs,
+                        pcToSourceRange,
+                        fileIndex,
                     );
-                    for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                        const singleFileCoverageForTrace = getSingleFileCoverageForTrace(
-                            contractData,
-                            traceInfo.coveredPcs,
-                            pcToSourceRange,
-                            fileIndex,
-                        );
-                        collector.add(singleFileCoverageForTrace);
-                    }
-                });
+                    collector.add(singleFileCoverageForTrace);
+                }
             }
         }
         // TODO: Submit a PR to DT
