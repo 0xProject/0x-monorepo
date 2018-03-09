@@ -20,7 +20,7 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 contract LibOrder {
-    
+
     bytes32 constant ORDER_SCHEMA_HASH = keccak256(
         "address exchangeAddress",
         "address makerAddress",
@@ -35,7 +35,7 @@ contract LibOrder {
         "uint256 expirationTimeSeconds",
         "uint256 salt"
     );
-    
+
     struct Order {
         address makerAddress;
         address takerAddress;
@@ -49,7 +49,7 @@ contract LibOrder {
         uint256 expirationTimeSeconds;
         uint256 salt;
     }
-    
+
     /// @dev Calculates Keccak-256 hash of the order.
     /// @param order The order structure.
     /// @return Keccak-256 EIP712 hash of the order.
@@ -58,6 +58,7 @@ contract LibOrder {
         returns (bytes32 orderHash)
     {
         // TODO: EIP712 is not finalized yet
+        // Source: https://github.com/ethereum/EIPs/pull/712
         orderHash = keccak256(
             ORDER_SCHEMA_HASH,
             keccak256(

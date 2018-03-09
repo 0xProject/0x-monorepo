@@ -8,10 +8,10 @@ import { DefaultOrderParams, SignatureType, SignedOrder, UnsignedOrder } from '.
 
 export class OrderFactory {
     private _defaultOrderParams: Partial<UnsignedOrder>;
-    private _secretKey: Buffer;
-    constructor(secretKey: Buffer, defaultOrderParams: Partial<UnsignedOrder>) {
+    private _privateKey: Buffer;
+    constructor(privateKey: Buffer, defaultOrderParams: Partial<UnsignedOrder>) {
         this._defaultOrderParams = defaultOrderParams;
-        this._secretKey = secretKey;
+        this._privateKey = privateKey;
     }
     public newSignedOrder(
         customOrderParams: Partial<UnsignedOrder> = {},
@@ -26,7 +26,7 @@ export class OrderFactory {
             ...customOrderParams,
         } as any) as UnsignedOrder;
         const orderHashBuff = orderUtils.getOrderHashBuff(order);
-        const signature = signingUtils.signMessage(orderHashBuff, this._secretKey, signatureType);
+        const signature = signingUtils.signMessage(orderHashBuff, this._privateKey, signatureType);
         const signedOrder = {
             ...order,
             signature: `0x${signature.toString('hex')}`,

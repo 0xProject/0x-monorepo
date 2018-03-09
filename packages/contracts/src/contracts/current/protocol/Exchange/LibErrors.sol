@@ -20,7 +20,7 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 contract LibErrors {
-  
+
     // Error Codes
     enum Errors {
         ORDER_EXPIRED,                    // Order has already expired
@@ -28,7 +28,7 @@ contract LibErrors {
         ROUNDING_ERROR_TOO_LARGE,         // Rounding error too large
         INSUFFICIENT_BALANCE_OR_ALLOWANCE // Insufficient balance or allowance for token transfer
     }
-    
+
     event LogError(uint8 indexed errorId, bytes32 indexed orderHash);
 
 }

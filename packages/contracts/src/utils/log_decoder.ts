@@ -1,5 +1,5 @@
 import { LogWithDecodedArgs, RawLog } from '@0xproject/types';
-import { AbiDecoder } from '@0xproject/utils';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
@@ -27,6 +27,17 @@ export class LogDecoder {
         if (_.isUndefined((logWithDecodedArgsOrLog as LogWithDecodedArgs<ArgsType>).args)) {
             throw new Error(`Unable to decode log: ${JSON.stringify(log)}`);
         }
+        wrapLogBigNumbers(logWithDecodedArgsOrLog);
         return logWithDecodedArgsOrLog;
+    }
+}
+
+function wrapLogBigNumbers(log: any): any {
+    const argNames = _.keys(log.args);
+    for (const argName of argNames) {
+        const isWeb3BigNumber = _.startsWith(log.args[argName].constructor.toString(), 'function BigNumber(');
+        if (isWeb3BigNumber) {
+            log.args[argName] = new BigNumber(log.args[argName]);
+        }
     }
 }

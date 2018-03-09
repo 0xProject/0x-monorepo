@@ -108,19 +108,7 @@ export interface Artifact {
     };
 }
 
-export interface SignedOrder {
-    exchangeAddress: string;
-    makerAddress: string;
-    takerAddress: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    feeRecipientAddress: string;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    makerFeeAmount: BigNumber;
-    takerFeeAmount: BigNumber;
-    expirationTimeSeconds: BigNumber;
-    salt: BigNumber;
+export interface SignedOrder extends UnsignedOrder {
     signature: string;
 }
 
@@ -138,19 +126,8 @@ export interface OrderStruct {
     salt: BigNumber;
 }
 
-export interface UnsignedOrder {
+export interface UnsignedOrder extends OrderStruct {
     exchangeAddress: string;
-    makerAddress: string;
-    takerAddress: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    feeRecipientAddress: string;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    makerFeeAmount: BigNumber;
-    takerFeeAmount: BigNumber;
-    expirationTimeSeconds: BigNumber;
-    salt: BigNumber;
 }
 
 export enum SignatureType {

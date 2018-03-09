@@ -19,7 +19,6 @@
         "./src/**/*",
         "./util/**/*",
         "./test/**/*",
-        "./scripts/**/*",
         "./migrations/**/*"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
