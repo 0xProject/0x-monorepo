@@ -213,7 +213,6 @@ export class Blockchain {
         const shouldPollUserAddress = false;
         this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
         this._zeroEx.setProvider(provider, this.networkId);
-        await this._postInstantiationOrUpdatingProviderZeroExAsync();
         this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
         this._dispatcher.updateProviderType(ProviderType.Ledger);
     }
@@ -235,7 +234,6 @@ export class Blockchain {
         this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
 
         this._zeroEx.setProvider(provider, this.networkId);
-        await this._postInstantiationOrUpdatingProviderZeroExAsync();
 
         await this.fetchTokenInformationAsync();
         this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
@@ -347,7 +345,7 @@ export class Blockchain {
         return unavailableTakerAmount;
     }
     public getExchangeContractAddressIfExists() {
-        return this._exchangeAddress;
+        return this._zeroEx.exchange.getContractAddress();
     }
     public async validateFillOrderThrowIfInvalidAsync(
         signedOrder: SignedOrder,
@@ -740,18 +738,11 @@ export class Blockchain {
         this._updateProviderName(injectedWeb3);
         const shouldPollUserAddress = true;
         this._web3Wrapper = new Web3Wrapper(this._dispatcher, provider, this.networkId, shouldPollUserAddress);
-        await this._postInstantiationOrUpdatingProviderZeroExAsync();
         this._userAddress = await this._web3Wrapper.getFirstAccountIfExistsAsync();
         this._dispatcher.updateUserAddress(this._userAddress);
         await this.fetchTokenInformationAsync();
         this._web3Wrapper.startEmittingNetworkConnectionAndUserBalanceState();
         await this._rehydrateStoreWithContractEvents();
-    }
-    // This method should always be run after instantiating or updating the provider
-    // of the ZeroEx instance.
-    private async _postInstantiationOrUpdatingProviderZeroExAsync() {
-        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
-        this._exchangeAddress = this._zeroEx.exchange.getContractAddress();
     }
     private _updateProviderName(injectedWeb3: Web3) {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
