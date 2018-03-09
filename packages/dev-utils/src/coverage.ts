@@ -3,12 +3,17 @@ import * as _ from 'lodash';
 
 let coverageSubprovider: CoverageSubprovider;
 
-export function getCoverageSubproviderSingleton(): CoverageSubprovider {
-    if (_.isUndefined(coverageSubprovider)) {
+export const coverage = {
+    getCoverageSubproviderSingleton(): CoverageSubprovider {
+        if (_.isUndefined(coverageSubprovider)) {
+            coverageSubprovider = coverage._getCoverageSubprovider();
+        }
+        return coverageSubprovider;
+    },
+    _getCoverageSubprovider(): CoverageSubprovider {
         const artifactsPath = './src/artifacts';
         const contractsPath = './src/contracts';
         const networkId = 50;
-        coverageSubprovider = new CoverageSubprovider(artifactsPath, contractsPath, networkId);
-    }
-    return coverageSubprovider;
-}
+        return new CoverageSubprovider(artifactsPath, contractsPath, networkId);
+    },
+};

@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 import * as process from 'process';
 
 import { constants } from './constants';
-import { getCoverageSubproviderSingleton } from './coverage';
+import { coverage } from './coverage';
 
 // HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
 // because they are using the wrong XHR package.
@@ -36,7 +36,7 @@ export const web3Factory = {
     getRpcProvider(config: Web3Config = {}): Web3.Provider {
         const provider = new ProviderEngine();
         if (process.env.SOLIDITY_COVERAGE) {
-            provider.addProvider(getCoverageSubproviderSingleton());
+            provider.addProvider(coverage.getCoverageSubproviderSingleton());
         }
         const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
         if (!hasAddresses) {
