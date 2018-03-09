@@ -9,6 +9,12 @@ export interface CoverageEntriesDescription {
     statementMap: StatementMap;
 }
 
+enum BranchType {
+    If = 'if',
+    ConditionalExpression = 'cond-expr',
+    BinaryExpression = 'binary-expr',
+}
+
 export class ASTVisitor {
     private _entryId = 0;
     private _fnMap: FnMap = {};
@@ -47,7 +53,7 @@ export class ASTVisitor {
         return coverageEntriesDescription;
     }
     private _visitConditionalExpression(ast: SolidityParser.AST): void {
-        this._visitBinaryBranch(ast, ast.consequent, ast.alternate, 'cond-expr');
+        this._visitBinaryBranch(ast, ast.consequent, ast.alternate, BranchType.ConditionalExpression);
     }
     private _visitFunctionDeclaration(ast: SolidityParser.AST): void {
         const loc = this._getExpressionRange(ast);
@@ -58,11 +64,11 @@ export class ASTVisitor {
         };
     }
     private _visitBinaryExpression(ast: SolidityParser.AST): void {
-        this._visitBinaryBranch(ast, ast.left, ast.right, 'binary-expr');
+        this._visitBinaryBranch(ast, ast.left, ast.right, BranchType.BinaryExpression);
     }
     private _visitIfStatement(ast: SolidityParser.AST): void {
         this._visitStatement(ast);
-        this._visitBinaryBranch(ast, ast.consequent, ast.alternate || ast, 'if');
+        this._visitBinaryBranch(ast, ast.consequent, ast.alternate || ast, BranchType.If);
     }
     private _visitBreakStatement(ast: SolidityParser.AST): void {
         this._visitStatement(ast);
@@ -92,7 +98,7 @@ export class ASTVisitor {
         ast: SolidityParser.AST,
         left: SolidityParser.AST,
         right: SolidityParser.AST,
-        type: 'if' | 'cond-expr' | 'binary-expr',
+        type: BranchType,
     ): void {
         this._branchMap[this._entryId++] = {
             line: this._getExpressionRange(ast).start.line,
