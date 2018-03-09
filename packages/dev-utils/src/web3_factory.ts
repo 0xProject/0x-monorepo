@@ -23,7 +23,7 @@ import * as Web3 from 'web3';
 
 export interface Web3Config {
     hasAddresses?: boolean; // default: true
-    useInProcessGanache?: boolean; // default: false
+    shouldUseInProcessGanache?: boolean; // default: false
 }
 
 export const web3Factory = {
@@ -48,8 +48,8 @@ export const web3Factory = {
                 fs.appendFileSync('ganache.log', `${arg}\n`);
             },
         };
-        const useInProcessGanache = config.useInProcessGanache;
-        if (useInProcessGanache) {
+        const shouldUseInProcessGanache = config.shouldUseInProcessGanache;
+        if (shouldUseInProcessGanache) {
             provider.addProvider(
                 new GanacheSubprovider({
                     logger,
