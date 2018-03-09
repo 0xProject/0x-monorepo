@@ -1,8 +1,8 @@
-import { getCoverageSubprovider } from '@0xproject/dev-utils';
+import { getCoverageSubproviderSingleton } from '@0xproject/dev-utils';
 
 after('generate coverage report', async () => {
     if (process.env.COVERAGE) {
-        const coverageSubprovider = getCoverageSubprovider();
+        const coverageSubprovider = getCoverageSubproviderSingleton();
         await coverageSubprovider.writeCoverageAsync();
     }
 });

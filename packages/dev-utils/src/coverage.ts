@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 let coverageSubprovider: CoverageSubprovider;
 
-export function getCoverageSubprovider(): CoverageSubprovider {
+export function getCoverageSubproviderSingleton(): CoverageSubprovider {
     if (_.isUndefined(coverageSubprovider)) {
         const artifactsPath = './src/artifacts';
         const contractsPath = './src/contracts';
