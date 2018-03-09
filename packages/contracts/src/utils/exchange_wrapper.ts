@@ -144,6 +144,27 @@ export class ExchangeWrapper {
         });
         return tx;
     }
+    public async batchFillOrdersNoThrowAsync(
+        orders: SignedOrder[],
+        from: string,
+        opts: { takerTokenFillAmounts?: BigNumber[] } = {},
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = formatters.createBatchFill(orders, opts.takerTokenFillAmounts);
+        const txHash = await this._exchange.batchFillOrdersNoThrow.sendTransactionAsync(
+            params.orders,
+            params.takerTokenFillAmounts,
+            params.signatures,
+            { from },
+        );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
+        return tx;
+    }
     public async marketFillOrdersAsync(
         orders: SignedOrder[],
         from: string,
@@ -151,6 +172,27 @@ export class ExchangeWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createMarketFillOrders(orders, opts.takerTokenFillAmount);
         const txHash = await this._exchange.marketFillOrders.sendTransactionAsync(
+            params.orders,
+            params.takerTokenFillAmount,
+            params.signatures,
+            { from },
+        );
+        const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+        tx.logs = _.filter(tx.logs, log => log.address === this._exchange.address);
+        tx.logs = _.map(tx.logs, log => {
+            const logWithDecodedArgs = this._logDecoder.decodeLogOrThrow(log);
+            wrapLogBigNumbers(logWithDecodedArgs);
+            return logWithDecodedArgs;
+        });
+        return tx;
+    }
+    public async marketFillOrdersNoThrowAsync(
+        orders: SignedOrder[],
+        from: string,
+        opts: { takerTokenFillAmount: BigNumber },
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = formatters.createMarketFillOrders(orders, opts.takerTokenFillAmount);
+        const txHash = await this._exchange.marketFillOrdersNoThrow.sendTransactionAsync(
             params.orders,
             params.takerTokenFillAmount,
             params.signatures,
