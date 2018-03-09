@@ -12,6 +12,14 @@
   },
   "author": "Fabio Berger",
   "license": "Apache-2.0",
+  "bugs": {
+      "url": "https://github.com/0xProject/0x-monorepo/issues"
+  },
+  "homepage": "https://github.com/0xProject/0x-monorepo/packages/react-shared/README.md",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/0xProject/0x-monorepo.git"
+  },
   "devDependencies": {
     "@0xproject/tslint-config": "^0.4.9",
     "@types/lodash": "^4.14.86",
