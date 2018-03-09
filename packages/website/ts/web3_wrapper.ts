@@ -1,10 +1,11 @@
 import { BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+import { Web3Wrapper as Web3WrapperBase } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { utils } from 'ts/utils/utils';
 import * as Web3 from 'web3';
 
-export class Web3Wrapper {
+export class Web3Wrapper extends Web3WrapperBase {
     private _dispatcher: Dispatcher;
     private _web3: Web3;
     private _prevNetworkId: number;
@@ -18,6 +19,7 @@ export class Web3Wrapper {
         networkIdIfExists: number,
         shouldPollUserAddress: boolean,
     ) {
+        super(provider);
         this._dispatcher = dispatcher;
         this._prevNetworkId = networkIdIfExists;
         this._shouldPollUserAddress = shouldPollUserAddress;
@@ -25,55 +27,29 @@ export class Web3Wrapper {
         this._web3 = new Web3();
         this._web3.setProvider(provider);
     }
-    public isAddress(address: string) {
-        return this._web3.isAddress(address);
-    }
-    public async getAccountsAsync(): Promise<string[]> {
-        const addresses = await promisify<string[]>(this._web3.eth.getAccounts)();
-        return addresses;
-    }
     public async getFirstAccountIfExistsAsync() {
-        const addresses = await this.getAccountsAsync();
+        const addresses = await this.getAvailableAddressesAsync();
         if (_.isEmpty(addresses)) {
             return '';
         }
         return addresses[0];
     }
-    public async getNodeVersionAsync(): Promise<string> {
-        const nodeVersion = await promisify<string>(this._web3.version.getNode)();
-        return nodeVersion;
-    }
     public getProviderObj() {
         return this._web3.currentProvider;
     }
-    public async getNetworkIdIfExists() {
+    public async getNetworkIdIfExistsAsync(): Promise<number | undefined> {
         try {
-            const networkId = await this._getNetworkAsync();
+            const networkId = await this.getNetworkIdAsync();
             return Number(networkId);
         } catch (err) {
             return undefined;
         }
     }
     public async getBalanceInEthAsync(owner: string): Promise<BigNumber> {
-        const balanceInWei: BigNumber = await promisify<BigNumber>(this._web3.eth.getBalance)(owner);
+        const balanceInWei = await this.getBalanceInWeiAsync(owner);
         const balanceEthOldBigNumber = this._web3.fromWei(balanceInWei, 'ether');
         const balanceEth = new BigNumber(balanceEthOldBigNumber);
         return balanceEth;
-    }
-    public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
-        const code = await promisify<string>(this._web3.eth.getCode)(address);
-        // Regex matches 0x0, 0x00, 0x in order to accomodate poorly implemented clients
-        const zeroHexAddressRegex = /^0[xX][0]*$/;
-        const didFindCode = _.isNull(code.match(zeroHexAddressRegex));
-        return didFindCode;
-    }
-    public async signTransactionAsync(address: string, message: string): Promise<string> {
-        const signData = await promisify<string>(this._web3.eth.sign)(address, message);
-        return signData;
-    }
-    public async getBlockTimestampAsync(blockHash: string): Promise<number> {
-        const { timestamp } = await promisify<Web3.BlockWithoutTransactionData>(this._web3.eth.getBlock)(blockHash);
-        return timestamp;
     }
     public destroy() {
         this._stopEmittingNetworkConnectionAndUserBalanceStateAsync();
@@ -98,7 +74,7 @@ export class Web3Wrapper {
         this._watchNetworkAndBalanceIntervalId = intervalUtils.setAsyncExcludingInterval(
             async () => {
                 // Check for network state changes
-                const currentNetworkId = await this.getNetworkIdIfExists();
+                const currentNetworkId = await this.getNetworkIdIfExistsAsync();
                 if (currentNetworkId !== this._prevNetworkId) {
                     this._prevNetworkId = currentNetworkId;
                     this._dispatcher.updateNetworkId(currentNetworkId);
@@ -137,10 +113,6 @@ export class Web3Wrapper {
                 this._stopEmittingNetworkConnectionAndUserBalanceStateAsync();
             },
         );
-    }
-    private async _getNetworkAsync() {
-        const networkId = await promisify(this._web3.version.getNetwork)();
-        return networkId;
     }
     private async _updateUserEtherBalanceAsync(userAddress: string) {
         const balance = await this.getBalanceInEthAsync(userAddress);

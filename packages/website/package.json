@@ -22,6 +22,7 @@
         "@0xproject/react-docs": "^0.0.1",
         "@0xproject/react-shared": "^0.0.1",
         "@0xproject/subproviders": "^0.7.0",
+        "@0xproject/web3-wrapper": "^0.2.1",
         "@0xproject/utils": "^0.4.1",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
