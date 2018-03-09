@@ -35,7 +35,7 @@ export const web3Factory = {
     },
     getRpcProvider(config: Web3Config = {}): Web3.Provider {
         const provider = new ProviderEngine();
-        if (process.env.COVERAGE) {
+        if (process.env.SOLIDITY_COVERAGE) {
             provider.addProvider(getCoverageSubproviderSingleton());
         }
         const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
