@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MExchangeCore.sol";
@@ -63,7 +63,6 @@ contract MixinWrapperFunctions is
         //     takerTokenFillAmount,
         //     signature
         // );
-        // require(success);
         // if (success) {
         //     assembly {
         //         returndatacopy(0, 0, 32)

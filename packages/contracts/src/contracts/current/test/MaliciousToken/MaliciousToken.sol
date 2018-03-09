@@ -1,6 +1,6 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
-import { ERC20Token } from "../../tokens/ERC20Token/ERC20Token.sol";
+import "../../tokens/ERC20Token/ERC20Token.sol";
 
 contract MaliciousToken is ERC20Token {
     uint8 stateToUpdate = 1;  // Not null so that change only requires 5000 gas
