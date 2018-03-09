@@ -12,7 +12,8 @@ export const collectContractsData = (artifactsPath: string, sourcesPath: string,
         const baseName = path.basename(sourceFileName, '.sol');
         const artifactFileName = path.join(artifactsPath, `${baseName}.json`);
         if (!fs.existsSync(artifactFileName)) {
-            // If the contract isn't directly compiled, but is imported as the part of the other contract - we don't have an artifact for it and therefore can't do anything usefull with it
+            // If the contract isn't directly compiled, but is imported as the part of the other contract - we don't
+            // have an artifact for it and therefore can't do anything useful with it
             return {};
         }
         const artifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
