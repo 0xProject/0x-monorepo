@@ -6,6 +6,7 @@ import { utils } from '../src/utils/utils';
 
 const opts = {
     accounts: constants.TESTRPC_ACCOUNTS,
+    logger: console,
 };
 
 const server = testrpc.server(opts);
