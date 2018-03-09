@@ -315,7 +315,7 @@ export const utils = {
             parsedProviderName = 'METAMASK';
         } else if (provider.constructor.name === 'EthereumProvider') {
             parsedProviderName = 'MIST';
-        } else if (provider.constructor.name === 'o') {
+        } else if ((provider as any).isParity) {
             parsedProviderName = 'PARITY';
         }
         return parsedProviderName;
