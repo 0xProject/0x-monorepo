@@ -1,7 +1,7 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
-import { UnlimitedAllowanceToken } from "../../tokens/UnlimitedAllowanceToken/UnlimitedAllowanceToken.sol";
-import { SafeMath } from "../../utils/SafeMath/SafeMath.sol";
+import "../../tokens/UnlimitedAllowanceToken/UnlimitedAllowanceToken.sol";
+import "../../utils/SafeMath/SafeMath.sol";
 
 /*
  * Mintable
