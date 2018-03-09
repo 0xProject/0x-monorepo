@@ -191,7 +191,8 @@ export class Compiler {
         const fullSolcVersion = binPaths[contractSpecificSourceData.solcVersion];
         const compilerBinFilename = path.join(__dirname, '../../solc_bin', fullSolcVersion);
         let solcjs: string;
-        if (fs.existsSync(compilerBinFilename)) {
+        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
+        if (isCompilerAvailableLocally) {
             solcjs = fs.readFileSync(compilerBinFilename).toString();
         } else {
             utils.consoleLog(`Downloading ${fullSolcVersion}...`);
