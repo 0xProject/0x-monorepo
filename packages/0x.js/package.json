@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "0.33.0",
+    "version": "0.33.1",
     "description": "A javascript library for interacting with the 0x protocol",
     "keywords": [
         "0x.js",
@@ -42,8 +42,8 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.2.4",
-        "@0xproject/dev-utils": "^0.2.0",
+        "@0xproject/abi-gen": "^0.2.5",
+        "@0xproject/dev-utils": "^0.2.1",
         "@0xproject/tslint-config": "^0.4.10",
         "@types/bintrees": "^1.0.2",
         "@types/jsonschema": "^1.1.1",
@@ -80,12 +80,12 @@
         "webpack": "^3.1.0"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.1.0",
-        "@0xproject/base-contract": "^0.0.2",
-        "@0xproject/json-schemas": "^0.7.13",
-        "@0xproject/types": "^0.3.0",
-        "@0xproject/utils": "^0.4.0",
-        "@0xproject/web3-wrapper": "^0.2.0",
+        "@0xproject/assert": "^0.2.0",
+        "@0xproject/base-contract": "^0.0.3",
+        "@0xproject/json-schemas": "^0.7.14",
+        "@0xproject/types": "^0.3.1",
+        "@0xproject/utils": "^0.4.1",
+        "@0xproject/web3-wrapper": "^0.2.1",
         "bintrees": "^1.0.2",
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",

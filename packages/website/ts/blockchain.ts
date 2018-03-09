@@ -15,6 +15,7 @@ import {
     TransactionReceiptWithDecodedLogs,
     ZeroEx,
 } from '0x.js';
+import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import {
     InjectedWeb3Subprovider,
     ledgerEthereumBrowserClientFactoryAsync,
@@ -35,7 +36,6 @@ import {
     BlockchainCallErrs,
     BlockchainErrs,
     ContractInstance,
-    EtherscanLinkSuffixes,
     Order as PortalOrder,
     ProviderType,
     Side,
@@ -271,7 +271,11 @@ export class Blockchain {
             },
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
-        const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
+        const etherScanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
+            txHash,
+            this.networkId,
+            EtherscanLinkSuffixes.Tx,
+        );
         this._dispatcher.showFlashMessage(
             React.createElement(TokenSendCompleted, {
                 etherScanLinkIfExists,
@@ -542,7 +546,11 @@ export class Blockchain {
     private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
+        const etherScanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
+            txHash,
+            this.networkId,
+            EtherscanLinkSuffixes.Tx,
+        );
         this._dispatcher.showFlashMessage(
             React.createElement(TransactionSubmitted, {
                 etherScanLinkIfExists,

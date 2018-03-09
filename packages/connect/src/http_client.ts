@@ -61,7 +61,7 @@ export class HttpClient implements Client {
      * @return  An instance of HttpClient
      */
     constructor(url: string) {
-        assert.isHttpUrl('url', url);
+        assert.isWebUri('url', url);
         this._apiEndpointUrl = url.replace(TRAILING_SLASHES_REGEX, ''); // remove trailing slashes
     }
     /**

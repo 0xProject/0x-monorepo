@@ -1,12 +1,12 @@
+import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
-import { DocsInfo } from 'ts/pages/documentation/docs_info';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, DocsInfoConfig, Environments, SupportedDocJson, WebsitePaths } from 'ts/types';
+import { DocPackages, Environments, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -33,7 +33,7 @@ const zeroExJsDocSections = {
     etherToken: 'etherToken',
     proxy: 'proxy',
     orderWatcher: 'orderWatcher',
-    types: constants.TYPES_SECTION_NAME,
+    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -63,67 +63,6 @@ const docsInfoConfig: DocsInfoConfig = {
         [zeroExJsDocSections.errors]: ErrorsMarkdown,
         [zeroExJsDocSections.versioning]: versioningMarkdown,
     },
-    // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-    // currently no way to extract the re-exported types from index.ts via TypeDoc :( Make sure to only
-    // ADD types here, DO NOT REMOVE types since they might still be needed for older supported versions
-    publicTypes: [
-        'Order',
-        'SignedOrder',
-        'ECSignature',
-        'ZeroExError',
-        'EventCallback',
-        'EventCallbackAsync',
-        'EventCallbackSync',
-        'ExchangeContractErrs',
-        'ContractEvent',
-        'Token',
-        'ExchangeEvents',
-        'IndexedFilterValues',
-        'SubscriptionOpts',
-        'BlockRange',
-        'BlockParam',
-        'OrderFillOrKillRequest',
-        'OrderCancellationRequest',
-        'OrderFillRequest',
-        'ContractEventEmitter',
-        'Web3Provider',
-        'ContractEventArgs',
-        'LogCancelArgs',
-        'LogFillArgs',
-        'LogErrorContractEventArgs',
-        'LogFillContractEventArgs',
-        'LogCancelContractEventArgs',
-        'EtherTokenContractEventArgs',
-        'WithdrawalContractEventArgs',
-        'DepositContractEventArgs',
-        'TokenEvents',
-        'ExchangeContractEventArgs',
-        'TransferContractEventArgs',
-        'ApprovalContractEventArgs',
-        'TokenContractEventArgs',
-        'ZeroExConfig',
-        'TransactionReceipt',
-        'TransactionReceiptWithDecodedLogs',
-        'LogWithDecodedArgs',
-        'EtherTokenEvents',
-        'BlockParamLiteral',
-        'DecodedLogArgs',
-        'MethodOpts',
-        'ValidateOrderFillableOpts',
-        'OrderTransactionOpts',
-        'TransactionOpts',
-        'ContractEventArg',
-        'LogEvent',
-        'LogEntry',
-        'DecodedLogEvent',
-        'EventWatcherCallback',
-        'OnOrderStateChangeCallback',
-        'OrderStateValid',
-        'OrderStateInvalid',
-        'OrderState',
-        'OrderStateWatcherConfig',
-        'FilterObject',
-    ],
     sectionNameToModulePath: {
         [zeroExJsDocSections.zeroEx]: ['"0x.js/src/0x"', '"src/0x"'],
         [zeroExJsDocSections.exchange]: [
@@ -160,6 +99,91 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sections: zeroExJsDocSections,
     visibleConstructors: [zeroExJsDocSections.zeroEx],
+    typeConfigs: {
+        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
+        // currently no way to extract the re-exported types from index.ts via TypeDoc :( Make sure to only
+        // ADD types here, DO NOT REMOVE types since they might still be needed for older supported versions
+        publicTypes: [
+            'Order',
+            'SignedOrder',
+            'ECSignature',
+            'ZeroExError',
+            'EventCallback',
+            'EventCallbackAsync',
+            'EventCallbackSync',
+            'ExchangeContractErrs',
+            'ContractEvent',
+            'Token',
+            'ExchangeEvents',
+            'IndexedFilterValues',
+            'SubscriptionOpts',
+            'BlockRange',
+            'BlockParam',
+            'OrderFillOrKillRequest',
+            'OrderCancellationRequest',
+            'OrderFillRequest',
+            'ContractEventEmitter',
+            'Web3Provider',
+            'ContractEventArgs',
+            'LogCancelArgs',
+            'LogFillArgs',
+            'LogErrorContractEventArgs',
+            'LogFillContractEventArgs',
+            'LogCancelContractEventArgs',
+            'EtherTokenContractEventArgs',
+            'WithdrawalContractEventArgs',
+            'DepositContractEventArgs',
+            'TokenEvents',
+            'ExchangeContractEventArgs',
+            'TransferContractEventArgs',
+            'ApprovalContractEventArgs',
+            'TokenContractEventArgs',
+            'ZeroExConfig',
+            'TransactionReceipt',
+            'TransactionReceiptWithDecodedLogs',
+            'LogWithDecodedArgs',
+            'EtherTokenEvents',
+            'BlockParamLiteral',
+            'DecodedLogArgs',
+            'MethodOpts',
+            'ValidateOrderFillableOpts',
+            'OrderTransactionOpts',
+            'TransactionOpts',
+            'ContractEventArg',
+            'LogEvent',
+            'LogEntry',
+            'DecodedLogEvent',
+            'EventWatcherCallback',
+            'OnOrderStateChangeCallback',
+            'OrderStateValid',
+            'OrderStateInvalid',
+            'OrderState',
+            'OrderStateWatcherConfig',
+            'FilterObject',
+        ],
+        typeNameToPrefix: {
+            Provider: 'Web3',
+            DecodedLogEntryEvent: 'Web3',
+            LogEntryEvent: 'Web3',
+            CallData: 'Web3',
+        },
+        typeNameToExternalLink: {
+            Web3: constants.URL_WEB3_DOCS,
+            Provider: constants.URL_WEB3_PROVIDER_DOCS,
+            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
+            DecodedLogEntryEvent: constants.URL_WEB3_DECODED_LOG_ENTRY_EVENT,
+            LogEntryEvent: constants.URL_WEB3_LOG_ENTRY_EVENT,
+        },
+        typeNameToDocSection: {
+            ExchangeWrapper: 'exchange',
+            TokenWrapper: 'token',
+            TokenRegistryWrapper: 'tokenRegistry',
+            EtherTokenWrapper: 'etherToken',
+            ProxyWrapper: 'proxy',
+            TokenTransferProxyWrapper: 'proxy',
+            OrderStateWatcher: 'orderWatcher',
+        },
+    },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

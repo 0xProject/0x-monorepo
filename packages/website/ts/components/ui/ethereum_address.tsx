@@ -1,7 +1,7 @@
+import { EtherscanLinkSuffixes } from '@0xproject/react-shared';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
 import { EtherScanIcon } from 'ts/components/ui/etherscan_icon';
-import { EtherscanLinkSuffixes } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 interface EthereumAddressProps {

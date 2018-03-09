@@ -1,7 +1,7 @@
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { colors } from 'ts/utils/colors';
 
 const DEFAULT_STYLE = {
     color: colors.darkestGrey,

@@ -7,7 +7,6 @@ declare module 'whatwg-fetch';
 declare module 'react-html5video';
 declare module 'web3-provider-engine/subproviders/filters';
 declare module 'thenby';
-declare module 'react-highlight';
 declare module 'react-recaptcha';
 declare module 'react-document-title';
 declare module 'ethereumjs-tx';
@@ -26,12 +25,6 @@ declare module '*.json' {
 declare function findVersions(version: string): string[];
 declare module 'find-versions' {
     export = findVersions;
-}
-
-// compare-version declarations
-declare function compareVersions(firstVersion: string, secondVersion: string): number;
-declare module 'compare-versions' {
-    export = compareVersions;
 }
 
 // semver-sort declarations
@@ -114,12 +107,6 @@ declare interface BlockiesConfig {
 declare function blockies(config: BlockiesConfig): BlockiesIcon;
 declare module 'blockies' {
     export = blockies;
-}
-
-// is-mobile declarations
-declare function isMobile(): boolean;
-declare module 'is-mobile' {
-    export = isMobile;
 }
 
 // web3-provider-engine declarations
