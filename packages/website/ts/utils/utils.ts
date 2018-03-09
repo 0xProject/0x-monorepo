@@ -1,4 +1,4 @@
-import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
+import { ECSignature, ExchangeContractErrs, Web3Provider, ZeroEx, ZeroExError } from '0x.js';
 import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
@@ -261,6 +261,35 @@ export const utils = {
             networkId,
         );
         return isTestNetwork;
+    },
+    getCurrentBaseUrl() {
+        const port = window.location.port;
+        const hasPort = !_.isUndefined(port);
+        const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
+        return baseUrl;
+    },
+    scrollToHash(hash: string, containerId: string): void {
+        let finalHash = hash;
+        if (_.isEmpty(hash)) {
+            finalHash = configs.SCROLL_TOP_ID; // scroll to the top
+        }
+
+        scroller.scrollTo(finalHash, {
+            duration: 0,
+            offset: 0,
+            containerId,
+        });
+    },
+    web3ProviderToString(provider: Web3Provider): string {
+        let parsedProviderName = provider.constructor.name;
+        if (provider.constructor.name === 'MetamaskInpageProvider') {
+            parsedProviderName = 'METAMASK';
+        } else if (provider.constructor.name === 'EthereumProvider') {
+            parsedProviderName = 'MIST';
+        } else if ((provider as any).isParity) {
+            parsedProviderName = 'PARITY';
+        }
+        return parsedProviderName;
     },
     async onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
