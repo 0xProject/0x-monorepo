@@ -28,58 +28,59 @@ import {
 } from './types';
 import { utils } from './utils';
 
-function getSingleFileCoverageForTrace(
-    contractData: ContractData,
-    coveredPcs: number[],
-    pcToSourceRange: { [programCounter: number]: SourceRange },
-    fileIndex: number,
-): Coverage {
-    const fileName = contractData.sources[fileIndex];
-    const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex], fileName);
-    let sourceRanges = _.map(coveredPcs, coveredPc => pcToSourceRange[coveredPc]);
-    sourceRanges = _.compact(sourceRanges); // Some PC's don't map to a source range and we just ignore them.
-    sourceRanges = _.uniqBy(sourceRanges, s => JSON.stringify(s)); // We don't care if one PC was covered multiple times within a single transaction
-    sourceRanges = _.filter(sourceRanges, sourceRange => sourceRange.fileName === fileName);
-    const branchCoverage: BranchCoverage = {};
-    const branchIds = _.keys(coverageEntriesDescription.branchMap);
-    for (const branchId of branchIds) {
-        const branchDescription = coverageEntriesDescription.branchMap[branchId];
-        const isCoveredByBranchIndex = _.map(branchDescription.locations, location =>
-            _.some(sourceRanges, range => utils.isRangeInside(range.location, location)),
-        );
-        branchCoverage[branchId] = isCoveredByBranchIndex;
-    }
-    const statementCoverage: StatementCoverage = {};
-    const statementIds = _.keys(coverageEntriesDescription.statementMap);
-    for (const statementId of statementIds) {
-        const statementDescription = coverageEntriesDescription.statementMap[statementId];
-        const isCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, statementDescription));
-        statementCoverage[statementId] = isCovered;
-    }
-    const functionCoverage: FunctionCoverage = {};
-    const functionIds = _.keys(coverageEntriesDescription.fnMap);
-    for (const fnId of functionIds) {
-        const functionDescription = coverageEntriesDescription.fnMap[fnId];
-        const isCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, functionDescription.loc));
-        functionCoverage[fnId] = isCovered;
-    }
-    const partialCoverage = {
-        [contractData.sources[fileIndex]]: {
-            ...coverageEntriesDescription,
-            l: {}, // It's able to derive it from statement coverage
-            path: fileName,
-            f: functionCoverage,
-            s: statementCoverage,
-            b: branchCoverage,
-        },
-    };
-    return partialCoverage;
-}
-
 export class CoverageManager {
     private _traceInfos: TraceInfo[] = [];
     private _contractsData: ContractData[] = [];
     private _getContractCodeAsync: (address: string) => Promise<string>;
+    private static _getSingleFileCoverageForTrace(
+        contractData: ContractData,
+        coveredPcs: number[],
+        pcToSourceRange: { [programCounter: number]: SourceRange },
+        fileIndex: number,
+    ): Coverage {
+        const fileName = contractData.sources[fileIndex];
+        const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex], fileName);
+        let sourceRanges = _.map(coveredPcs, coveredPc => pcToSourceRange[coveredPc]);
+        sourceRanges = _.compact(sourceRanges); // Some PC's don't map to a source range and we just ignore them.
+        sourceRanges = _.uniqBy(sourceRanges, s => JSON.stringify(s)); // We don't care if one PC was covered multiple times within a single transaction
+        sourceRanges = _.filter(sourceRanges, sourceRange => sourceRange.fileName === fileName);
+        const branchCoverage: BranchCoverage = {};
+        const branchIds = _.keys(coverageEntriesDescription.branchMap);
+        for (const branchId of branchIds) {
+            const branchDescription = coverageEntriesDescription.branchMap[branchId];
+            const isCoveredByBranchIndex = _.map(branchDescription.locations, location =>
+                _.some(sourceRanges, range => utils.isRangeInside(range.location, location)),
+            );
+            branchCoverage[branchId] = isCoveredByBranchIndex;
+        }
+        const statementCoverage: StatementCoverage = {};
+        const statementIds = _.keys(coverageEntriesDescription.statementMap);
+        for (const statementId of statementIds) {
+            const statementDescription = coverageEntriesDescription.statementMap[statementId];
+            const isCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, statementDescription));
+            statementCoverage[statementId] = isCovered;
+        }
+        const functionCoverage: FunctionCoverage = {};
+        const functionIds = _.keys(coverageEntriesDescription.fnMap);
+        for (const fnId of functionIds) {
+            const functionDescription = coverageEntriesDescription.fnMap[fnId];
+            const isCovered = _.some(sourceRanges, range =>
+                utils.isRangeInside(range.location, functionDescription.loc),
+            );
+            functionCoverage[fnId] = isCovered;
+        }
+        const partialCoverage = {
+            [contractData.sources[fileIndex]]: {
+                ...coverageEntriesDescription,
+                l: {}, // It's able to derive it from statement coverage
+                path: fileName,
+                f: functionCoverage,
+                s: statementCoverage,
+                b: branchCoverage,
+            },
+        };
+        return partialCoverage;
+    }
     constructor(
         artifactsPath: string,
         sourcesPath: string,
@@ -118,7 +119,7 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = getSingleFileCoverageForTrace(
+                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
                         contractData,
                         traceInfo.coveredPcs,
                         pcToSourceRange,
@@ -144,7 +145,7 @@ export class CoverageManager {
                     contractData.sources,
                 );
                 for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
-                    const singleFileCoverageForTrace = getSingleFileCoverageForTrace(
+                    const singleFileCoverageForTrace = CoverageManager._getSingleFileCoverageForTrace(
                         contractData,
                         traceInfo.coveredPcs,
                         pcToSourceRange,
