@@ -1,10 +1,15 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { Documentation } from '../../src/ts/components/documentation';
-import { DocsInfo } from '../../src/ts/docs_info';
-import { DocAgnosticFormat, DocsInfoConfig, SupportedDocJson, TypeDocNode } from '../../src/ts/types';
-import { constants } from '../../src/ts/utils/constants';
+import {
+    constants,
+    DocAgnosticFormat,
+    DocsInfo,
+    DocsInfoConfig,
+    Documentation,
+    SupportedDocJson,
+    TypeDocNode,
+} from '@0xproject/react-docs';
 
 import * as v0TypeDocJson from './json/0.1.12.json';
 import * as v2TypeDocJson from './json/0.2.0.json';

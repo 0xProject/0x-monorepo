@@ -7,7 +7,7 @@ module.exports = {
         path: path.join(__dirname, '/example/public'),
         filename: 'bundle.js',
         chunkFilename: 'bundle-[name].js',
-        publicPath: '/',
+        publicPath: '/'
     },
     devtool: 'source-map',
     resolve: {
@@ -16,8 +16,8 @@ module.exports = {
         alias: {
             ts: path.join(__dirname, '/example/ts'),
             less: path.join(__dirname, '/example/less'),
-            md: path.join(__dirname, '/example/md'),
-        },
+            md: path.join(__dirname, '/example/md')
+        }
     },
     module: {
         rules: [
@@ -26,31 +26,31 @@ module.exports = {
                 loader: 'source-map-loader',
                 exclude: [
                     // instead of /\/node_modules\//
-                    path.join(process.cwd(), 'node_modules'),
-                ],
+                    path.join(process.cwd(), 'node_modules')
+                ]
             },
             {
                 test: /\.tsx?$/,
-                loader: 'awesome-typescript-loader',
+                loader: 'awesome-typescript-loader'
             },
             {
                 test: /\.css$/,
-                loaders: ['style-loader', 'css-loader'],
+                loaders: ['style-loader', 'css-loader']
             },
             {
                 test: /\.less$/,
                 loader: 'style-loader!css-loader!less-loader',
-                exclude: /node_modules/,
+                exclude: /node_modules/
             },
             {
                 test: /\.json$/,
-                loader: 'json-loader',
+                loader: 'json-loader'
             },
             {
                 test: /\.md$/,
-                use: 'raw-loader',
-            },
-        ],
+                use: 'raw-loader'
+            }
+        ]
     },
     devServer: {
         port: 3000,
@@ -64,20 +64,20 @@ module.exports = {
                     from: /.*$/,
                     to: function() {
                         return 'index.html';
-                    },
-                },
-            ],
+                    }
+                }
+            ]
         },
-        contentBase: path.join(__dirname, '/example/public'),
+        contentBase: path.join(__dirname, '/example/public')
     },
     plugins:
         process.env.NODE_ENV === 'production'
             ? [
                   new webpack.DefinePlugin({
                       'process.env': {
-                          NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-                      },
-                  }),
+                          NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+                      }
+                  })
               ]
-            : [],
+            : []
 };

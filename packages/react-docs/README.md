@@ -27,11 +27,11 @@ yarn add @0xproject/react-docs
 
 ## Usage
 
-View the [live example](http://react-docs-example.s3-website-us-east-1.amazonaws.com/) that renders the [@0xproject/web3-wrapper](https://github.com/0xProject/0x-monorepo/tree/development/packages/web3-wrapper) Typescript package. It's source code is in the [example directory](./example).
+View the [live example](http://react-docs-example.s3-website-us-east-1.amazonaws.com/) that renders the [@0xproject/web3-wrapper](https://github.com/0xProject/0x-monorepo/tree/development/packages/web3-wrapper) Typescript package. It's source code is in the [react-docs-example](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs-example) 0x monorepo subpackage.
 
 This package exposes both a single `Documentation` react component that will render a docs page, as well as all of it's sub-components in case someone wants to build their own layout.
 
-Currently this package still has some external dependencies outside of the `Documentation` component, so please start your project off by copying the `example` directory and modifying from there.
+Currently this package still has some external dependencies outside of the `Documentation` component, so please start your project off by copying the [react-docs-example](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs-example) directory and modifying it there. If you need changes in the [react-docs](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs) package, fork the 0x monorepo, make the required changes and submit a PR. Until we merge it, you can have your project depend on your own custom fork.
 
 ## Future improvements
 
@@ -71,20 +71,4 @@ yarn build
 
 ```bash
 yarn lint
-```
-
-### Run Example
-
-```bash
-yarn dev
-```
-
-### Deploy Example to S3 bucket
-
-You will need to adapt the `deploy_example` command in the `package.json` to point to an S3 bucket you've created. Make sure the bucket is publicly accessible to everyone.
-
-You will also need to install the [aws-cli](https://github.com/aws/aws-cli) and configure it with your AWS credentials.
-
-```bash
-yarn deploy_example
 ```

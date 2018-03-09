@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "outDir": "./lib/",
+        "jsx": "react",
+        "baseUrl": "./",
+        "strictNullChecks": false,
+        "paths": {
+            "*": ["node_modules/@types/*", "*"]
+        },
+        "module": "commonjs",
+        "target": "es5",
+        "lib": ["es2017", "dom"],
+        "sourceMap": true,
+        "declaration": true,
+        "experimentalDecorators": true,
+        "noImplicitReturns": true,
+        "pretty": true,
+        "strict": true
+    },
+    "include": ["./example/ts/**/*"]
+}
