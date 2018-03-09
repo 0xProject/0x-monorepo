@@ -57,24 +57,10 @@ contract MixinWrapperFunctions is
         public
         returns (uint256 takerTokenFilledAmount)
     {
-        // bool success = address(this).delegatecall(
-        //     this.fillOrder.selector,
-        //     order,
-        //     takerTokenFillAmount,
-        //     signature
-        // );
-        // if (success) {
-        //     assembly {
-        //         returndatacopy(0, 0, 32)
-        //         return (0, 32)
-        //     }
-        // }
-        // return 0;
-
         // We need to call MExchangeCore.fillOrder using a delegatecall in
         // assembly so that we can intercept a call that throws. For this, we
         // need the input encoded in memory in the Ethereum ABIv2 format [1].
-        //
+        
         // | Offset | Length  | Contents                     |
         // |--------|---------|------------------------------|
         // | 0      | 4       | function selector            |
@@ -85,12 +71,12 @@ contract MixinWrapperFunctions is
         // | 452    | (1)     | signature                    |
         // | (2)    | (3)     | padding (zero)               |
         // | (4)    |         | end of input                 |
-        //
+        
         // (1): len(signature)
         // (2): 452 + len(signature)
         // (3): 32 - (len(signature) mod 32)
         // (4): 452 + len(signature) + 32 - (len(signature) mod 32)
-        //
+        
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
         
         bytes4 fillOrderSelector = this.fillOrder.selector;
@@ -103,17 +89,17 @@ contract MixinWrapperFunctions is
             mstore(start, fillOrderSelector)
 
             // Write order struct
-            mstore(add(start, 4), order)             // makerAddress
-            mstore(add(start, 36), add(order, 32))   // takerAddress
-            mstore(add(start, 68), add(order, 64))   // makerTokenAddress
-            mstore(add(start, 100), add(order, 96))  // takerTokenAddress
-            mstore(add(start, 132), add(order, 128)) // feeRecipientAddress
-            mstore(add(start, 164), add(order, 160)) // makerTokenAmount
-            mstore(add(start, 196), add(order, 192)) // takerTokenAmount
-            mstore(add(start, 228), add(order, 224)) // makerFeeAmount
-            mstore(add(start, 260), add(order, 256)) // takerFeeAmount
-            mstore(add(start, 292), add(order, 288)) // expirationTimeSeconds
-            mstore(add(start, 324), add(order, 320)) // salt
+            mstore(add(start, 4), mload(order))             // makerAddress
+            mstore(add(start, 36), mload(add(order, 32)))   // takerAddress
+            mstore(add(start, 68), mload(add(order, 64)))   // makerTokenAddress
+            mstore(add(start, 100), mload(add(order, 96)))  // takerTokenAddress
+            mstore(add(start, 132), mload(add(order, 128))) // feeRecipientAddress
+            mstore(add(start, 164), mload(add(order, 160))) // makerTokenAmount
+            mstore(add(start, 196), mload(add(order, 192))) // takerTokenAmount
+            mstore(add(start, 228), mload(add(order, 224))) // makerFeeAmount
+            mstore(add(start, 260), mload(add(order, 256))) // takerFeeAmount
+            mstore(add(start, 292), mload(add(order, 288))) // expirationTimeSeconds
+            mstore(add(start, 324), mload(add(order, 320))) // salt
 
             // Write takerTokenFillAmount
             mstore(add(start, 356), takerTokenFillAmount)
@@ -134,7 +120,7 @@ contract MixinWrapperFunctions is
             for { let curr := 0 } 
             lt(curr, sigLenWithPadding)
             { curr := add(curr, 32) }
-            { mstore(add(start, add(452, curr)), add(sigStart, curr)) }
+            { mstore(add(start, add(452, curr)), mload(add(sigStart, curr))) }
 
             // Execute delegatecall
             let success := delegatecall(
