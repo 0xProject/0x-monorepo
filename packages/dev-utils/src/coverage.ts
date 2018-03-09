@@ -14,6 +14,7 @@ export const coverage = {
         const artifactsPath = './src/artifacts';
         const contractsPath = './src/contracts';
         const networkId = 50;
-        return new CoverageSubprovider(artifactsPath, contractsPath, networkId);
+        const defaultFromAddress = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
+        return new CoverageSubprovider(artifactsPath, contractsPath, networkId, defaultFromAddress);
     },
 };

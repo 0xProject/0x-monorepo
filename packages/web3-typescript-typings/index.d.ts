@@ -151,11 +151,11 @@ declare module 'web3' {
             jsonrpc: string;
         }
 
-        export type OpCode = string; // TODO enum of all opcodes;
+        export type OpCode = string;
 
         export interface StructLog {
             depth: number;
-            error: '';
+            error: string;
             gas: number;
             gasCost: number;
             memory: string[];

@@ -13,8 +13,10 @@ import { TraceInfoExistingContract, TraceInfoNewContract } from './types';
  */
 export class CoverageSubprovider extends Subprovider {
     private _coverageManager: CoverageManager;
-    constructor(artifactsPath: string, sourcesPath: string, networkId: number) {
+    private _defaultFromAddress: string;
+    constructor(artifactsPath: string, sourcesPath: string, networkId: number, defaultFromAddress: string) {
         super();
+        this._defaultFromAddress = defaultFromAddress;
         this._coverageManager = new CoverageManager(
             artifactsPath,
             sourcesPath,
@@ -96,7 +98,7 @@ export class CoverageSubprovider extends Subprovider {
             const traceInfo: TraceInfoNewContract = {
                 coveredPcs,
                 txHash,
-                address,
+                address: address as 'NEW_CONTRACT',
                 bytecode: data as string,
             };
             this._coverageManager.appendTraceInfo(traceInfo);
@@ -116,9 +118,9 @@ export class CoverageSubprovider extends Subprovider {
         const snapshotId = Number((await this.emitPayloadAsync({ method: 'evm_snapshot' })).result);
         const txData = callData;
         if (_.isUndefined(txData.from)) {
-            txData.from = '0x5409ed021d9299bf6814279a6a1411a7e866a631'; // TODO
+            txData.from = this._defaultFromAddress;
         }
-        const txDataWithFromAddress = txData as Web3.TxData & { from: string };
+        const txDataWithFromAddress = txData as Web3.TxData;
         try {
             const txHash = (await this.emitPayloadAsync({
                 method: 'eth_sendTransaction',
@@ -128,7 +130,11 @@ export class CoverageSubprovider extends Subprovider {
         } catch (err) {
             await this._onTransactionSentAsync(txDataWithFromAddress, err, undefined);
         }
-        const didRevert = (await this.emitPayloadAsync({ method: 'evm_revert', params: [snapshotId] })).result;
+        const jsonRPCResponse = await this.emitPayloadAsync({ method: 'evm_revert', params: [snapshotId] });
+        const didRevert = jsonRPCResponse.result;
+        if (!didRevert) {
+            throw new Error('Failed to revert the snapshot');
+        }
     }
     private async _getContractCodeAsync(address: string): Promise<string> {
         const payload = {
