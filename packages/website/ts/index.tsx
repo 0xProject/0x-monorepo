@@ -49,7 +49,9 @@ const LazyConnectDocumentation = createLazyComponent('Documentation', async () =
 
 ReactGA.initialize('UA-98720122-1');
 window.onload = () => {
-    const providerName = (window as any).web3 ? utils.web3ProviderToString((window as any).web3.currentProvider) : 'NONE';
+    const providerName = (window as any).web3
+        ? utils.web3ProviderToString((window as any).web3.currentProvider)
+        : 'NONE';
     ReactGA.ga('set', 'dimension1', providerName);
 };
 const store: ReduxStore<State> = createStore(reducer);
