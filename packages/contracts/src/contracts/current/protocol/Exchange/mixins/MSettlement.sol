@@ -22,7 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../LibOrder.sol";
 
 contract MSettlement is LibOrder {
-  
+
     function settleOrder(
         Order order,
         address taker,

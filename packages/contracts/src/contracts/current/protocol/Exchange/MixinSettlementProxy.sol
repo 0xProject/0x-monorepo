@@ -32,31 +32,30 @@ contract MixinSettlementProxy is
 
     ITokenTransferProxy TRANSFER_PROXY;
     IToken ZRX_TOKEN;
-    
+
     function transferProxy()
         external view
         returns (ITokenTransferProxy)
     {
         return TRANSFER_PROXY;
     }
-    
+
     function zrxToken()
         external view
         returns (IToken)
     {
         return ZRX_TOKEN;
     }
-    
+
     function MixinSettlementProxy(
         ITokenTransferProxy proxyContract,
-        IToken zrxToken
-    )
+        IToken zrxToken)
         public
     {
         ZRX_TOKEN = zrxToken;
         TRANSFER_PROXY = proxyContract;
     }
-    
+
     function settleOrder(
         Order order,
         address takerAddress,

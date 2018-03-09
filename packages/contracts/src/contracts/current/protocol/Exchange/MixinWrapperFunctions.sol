@@ -74,11 +74,11 @@ contract MixinWrapperFunctions is
         
         // (1): len(signature)
         // (2): 452 + len(signature)
-        // (3): 32 - (len(signature) mod 32)
-        // (4): 452 + len(signature) + 32 - (len(signature) mod 32)
+        // (3): (32 - len(signature)) mod 32
+        // (4): 452 + len(signature) + (32 - len(signature)) mod 32
         
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
-        
+
         bytes4 fillOrderSelector = this.fillOrder.selector;
 
         assembly {
@@ -112,7 +112,7 @@ contract MixinWrapperFunctions is
             mstore(add(start, 420), sigLen)
 
             // Calculate signature length with padding
-            let paddingLen := sub(32, mod(sigLen, 32))
+            let paddingLen := mod(sub(0, sigLen), 32)
             let sigLenWithPadding := add(sigLen, paddingLen)
 
             // Write signature
@@ -120,11 +120,11 @@ contract MixinWrapperFunctions is
             for { let curr := 0 } 
             lt(curr, sigLenWithPadding)
             { curr := add(curr, 32) }
-            { mstore(add(start, add(452, curr)), mload(add(sigStart, curr))) }
+            { mstore(add(start, add(452, curr)), mload(add(sigStart, curr))) } // Note: we assume that padding consists of only 0's
 
             // Execute delegatecall
             let success := delegatecall(
-                gas,                         // forward all gas 
+                gas,                         // forward all gas, TODO: look into gas consumption of assert/throw 
                 address,                     // call address of this contract
                 start,                       // pointer to start of input
                 add(452, sigLenWithPadding), // input length is 420 + signature length + padding length
@@ -214,11 +214,12 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount);
             totalTakerTokenFilledAmount = safeAdd(
                 totalTakerTokenFilledAmount,
                 fillOrder(
                     orders[i],
-                    safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
+                    remainingTakerTokenFillAmount,
                     signatures[i]
                 )
             );
@@ -243,11 +244,12 @@ contract MixinWrapperFunctions is
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount);
             totalTakerTokenFilledAmount = safeAdd(
                 totalTakerTokenFilledAmount,
                 fillOrderNoThrow(
                     orders[i],
-                    safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount),
+                    remainingTakerTokenFillAmount,
                     signatures[i]
                 )
             );

@@ -23,6 +23,8 @@ export class BaseContract {
                 );
                 return BaseContract._transformTypedData(abis[i].type, transformedTuple, transformation);
             }
+            // HACK: We transform tuple values that are nested one level deep.
+            // TODO: Support arbitrary levels of nesting.
             if (abis[i].type === 'tuple[]') {
                 const transformedTupleArray = _.map(value, tuple =>
                     BaseContract._transformABIData(abis[i].components, _.values(tuple), transformation),

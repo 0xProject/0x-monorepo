@@ -22,7 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../../utils/SafeMath/SafeMath.sol";
 
 contract LibPartialAmount is SafeMath {
-  
+
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.
     /// @param denominator Denominator.

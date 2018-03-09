@@ -502,11 +502,8 @@ describe('Exchange', () => {
 
             const invalidR = ethUtil.sha3('invalidR');
             const invalidS = ethUtil.sha3('invalidS');
-            const invalidSigBuff = Buffer.concat([
-                ethUtil.toBuffer(signedOrder.signature.slice(0, 6)),
-                invalidR,
-                invalidS,
-            ]);
+            const signatureTypeAndV = signedOrder.signature.slice(0, 6);
+            const invalidSigBuff = Buffer.concat([ethUtil.toBuffer(signatureTypeAndV), invalidR, invalidS]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
