@@ -493,7 +493,6 @@ describe('Exchange', () => {
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             });
-
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
