@@ -4,7 +4,7 @@ An [example documentation page](http://react-docs-example.s3-website-us-east-1.a
 
 ## Usage
 
-This package is intended as a boilerplate for creating and hosting your own documentation page. Clone/fork it's contents into a new directory to get started.
+This package is intended as a boilerplate for creating and hosting your own documentation page. Easiest way to get started is to fork the `0x-monorepo` and start modifying `react-docs-example`.
 
 #### Install Dependencies
 
