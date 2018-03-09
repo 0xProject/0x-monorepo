@@ -189,18 +189,18 @@ export class Compiler {
         }
 
         const fullSolcVersion = binPaths[contractSpecificSourceData.solcVersion];
-        const compiler_bin_filename = path.join(__dirname, '../../solc_bin', fullSolcVersion);
+        const compilerBinFilename = path.join(__dirname, '../../solc_bin', fullSolcVersion);
         let solcjs: string;
-        if (fs.existsSync(compiler_bin_filename)) {
-            solcjs = fs.readFileSync(compiler_bin_filename).toString();
+        if (fs.existsSync(compilerBinFilename)) {
+            solcjs = fs.readFileSync(compilerBinFilename).toString();
         } else {
             utils.consoleLog(`Downloading ${fullSolcVersion}...`);
             const url = `https://ethereum.github.io/solc-bin/bin/${fullSolcVersion}`;
             const response = await fetch(url);
             solcjs = await response.text();
-            fs.writeFileSync(compiler_bin_filename, solcjs);
+            fs.writeFileSync(compilerBinFilename, solcjs);
         }
-        const solcInstance = solc.setupMethods(requireFromString(solcjs, compiler_bin_filename));
+        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
         utils.consoleLog(`Compiling ${fileName}...`);
         const source = this._contractSources[fileName];
