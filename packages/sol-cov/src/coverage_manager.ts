@@ -44,10 +44,10 @@ function getSingleFileCoverageForTrace(
     const branchIds = _.keys(coverageEntriesDescription.branchMap);
     for (const branchId of branchIds) {
         const branchDescription = coverageEntriesDescription.branchMap[branchId];
-        const isCovered = _.map(branchDescription.locations, location =>
+        const isCoveredByBranchIndex = _.map(branchDescription.locations, location =>
             _.some(sourceRanges, range => utils.isRangeInside(range.location, location)),
         );
-        branchCoverage[branchId] = isCovered;
+        branchCoverage[branchId] = isCoveredByBranchIndex;
     }
     const statementCoverage: StatementCoverage = {};
     const statementIds = _.keys(coverageEntriesDescription.statementMap);
