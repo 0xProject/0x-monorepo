@@ -23,6 +23,7 @@
         "@0xproject/subproviders": "^0.7.0",
         "@0xproject/utils": "^0.3.4",
         "glob": "^7.1.2",
+        "ethereumjs-util": "^5.1.1",
         "istanbul": "^0.4.5",
         "lodash": "^4.17.4",
         "solidity-coverage": "^0.4.10",
