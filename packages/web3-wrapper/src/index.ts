@@ -22,6 +22,9 @@ export class Web3Wrapper {
     public getContractDefaults(): Partial<TxData> {
         return this._defaults;
     }
+    public getProvider(): Web3.Provider {
+        return this._web3.currentProvider;
+    }
     public setProvider(provider: Web3.Provider) {
         this._web3.setProvider(provider);
     }

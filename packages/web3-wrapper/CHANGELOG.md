@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.1 _TBD_
+
+    * Add a `getProvider` method
+
 ## v0.2.0 _March 4, 2018_
 
     * Ensure all returned user addresses are lowercase (#373)
