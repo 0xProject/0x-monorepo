@@ -20,7 +20,7 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 contract ISigner {
-    
+
     function isValidSignature(
         bytes32 hash,
         bytes signature)
