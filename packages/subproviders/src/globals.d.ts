@@ -67,16 +67,6 @@ declare module '@ledgerhq/hw-transport-node-hid' {
     }
 }
 
-// Semaphore-async-await declarations
-declare module 'semaphore-async-await' {
-    class Semaphore {
-        constructor(permits: number);
-        public wait(): Promise<void>;
-        public signal(): void;
-    }
-    export default Semaphore;
-}
-
 // web3-provider-engine declarations
 declare module 'web3-provider-engine/subproviders/subprovider' {
     class Subprovider {}
