@@ -1,21 +1,32 @@
 import { Callback, NextCallback, Subprovider } from '@0xproject/subproviders';
 import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
+import { Lock } from 'semaphore-async-await';
 import * as Web3 from 'web3';
 
 import { constants } from './constants';
 import { CoverageManager } from './coverage_manager';
 import { TraceInfoExistingContract, TraceInfoNewContract } from './types';
 
+interface MaybeFakeTxData extends Web3.TxData {
+    isFakeTransaction?: boolean;
+}
+
 /*
  * This class implements the web3-provider-engine subprovider interface and collects traces of all transactions that were sent and all calls that were executed.
+ * Because there is no notion of call trace in the rpc - we collect them in rather non-obvious/hacky way.
+ * On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
+ * That allows us to not influence the test behaviour.
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class CoverageSubprovider extends Subprovider {
+    // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
+    private _lock: Lock;
     private _coverageManager: CoverageManager;
     private _defaultFromAddress: string;
     constructor(artifactsPath: string, sourcesPath: string, networkId: number, defaultFromAddress: string) {
         super();
+        this._lock = new Lock();
         this._defaultFromAddress = defaultFromAddress;
         this._coverageManager = new CoverageManager(
             artifactsPath,
@@ -50,11 +61,16 @@ export class CoverageSubprovider extends Subprovider {
         await this._coverageManager.writeCoverageAsync();
     }
     private async _onTransactionSentAsync(
-        txData: Web3.TxData,
+        txData: MaybeFakeTxData,
         err: Error | null,
-        txHash?: string,
-        cb?: Callback,
+        txHash: string | undefined,
+        cb: Callback,
     ): Promise<void> {
+        if (!txData.isFakeTransaction) {
+            // This transaction is a usual ttransaction. Not a call executed as one.
+            // And we don't want it to be executed within a snapshotting period
+            await this._lock.acquire();
+        }
         if (_.isNull(err)) {
             await this._recordTxTraceAsync(txData.to || constants.NEW_CONTRACT, txData.data, txHash as string);
         } else {
@@ -72,9 +88,12 @@ export class CoverageSubprovider extends Subprovider {
                 );
             }
         }
-        if (!_.isUndefined(cb)) {
-            cb();
+        if (!txData.isFakeTransaction) {
+            // This transaction is a usual ttransaction. Not a call executed as one.
+            // And we don't want it to be executed within a snapshotting period
+            await this._lock.release();
         }
+        cb();
     }
     private async _onCallExecutedAsync(
         callData: Partial<Web3.CallData>,
@@ -115,22 +134,25 @@ export class CoverageSubprovider extends Subprovider {
         }
     }
     private async _recordCallTraceAsync(callData: Partial<Web3.CallData>, blockNumber: Web3.BlockParam): Promise<void> {
+        // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
+        // transaction execution for all transactions except our fake ones.
+        await this._lock.acquire();
         const snapshotId = Number((await this.emitPayloadAsync({ method: 'evm_snapshot' })).result);
-        const txData = callData;
-        if (_.isUndefined(txData.from)) {
-            txData.from = this._defaultFromAddress;
-        }
-        const txDataWithFromAddress = txData as Web3.TxData;
+        const fakeTxData: MaybeFakeTxData = {
+            from: this._defaultFromAddress,
+            isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
+            ...callData,
+        };
         try {
-            const txHash = (await this.emitPayloadAsync({
+            await this.emitPayloadAsync({
                 method: 'eth_sendTransaction',
-                params: [txDataWithFromAddress],
-            })).result;
-            await this._onTransactionSentAsync(txDataWithFromAddress, null, txHash);
+                params: [fakeTxData],
+            });
         } catch (err) {
-            await this._onTransactionSentAsync(txDataWithFromAddress, err, undefined);
+            // Even if this transaction failed - we've already recorded it's trace.
         }
         const jsonRPCResponse = await this.emitPayloadAsync({ method: 'evm_revert', params: [snapshotId] });
+        await this._lock.release();
         const didRevert = jsonRPCResponse.result;
         if (!didRevert) {
             throw new Error('Failed to revert the snapshot');
