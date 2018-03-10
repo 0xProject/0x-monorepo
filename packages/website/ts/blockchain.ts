@@ -243,7 +243,8 @@ export class Blockchain {
             shouldPollUserAddress,
         );
 
-        this._userAddressIfExists = await this.getFirstAccountIfExistsAsync();
+        const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
+        this._userAddressIfExists = userAddresses[0];
 
         this._zeroEx.setProvider(provider, this.networkId);
 
@@ -579,13 +580,6 @@ export class Blockchain {
 
         this._dispatcher.updateBlockchainIsLoaded(true);
     }
-    public async getFirstAccountIfExistsAsync() {
-        const addresses = await this._web3Wrapper.getAvailableAddressesAsync();
-        if (_.isEmpty(addresses)) {
-            return undefined;
-        }
-        return addresses[0];
-    }
     private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
@@ -794,7 +788,8 @@ export class Blockchain {
             shouldPollUserAddress,
         );
 
-        this._userAddressIfExists = await this.getFirstAccountIfExistsAsync();
+        const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
+        this._userAddressIfExists = userAddresses[0];
         this._dispatcher.updateUserAddress(this._userAddressIfExists);
         await this.fetchTokenInformationAsync();
         this._blockchainWatcher.startEmittingNetworkConnectionAndUserBalanceState();
