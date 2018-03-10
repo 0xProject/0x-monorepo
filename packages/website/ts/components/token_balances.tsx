@@ -48,7 +48,6 @@ const ETHER_ICON_PATH = '/images/ether.png';
 const ETHER_TOKEN_SYMBOL = 'WETH';
 const ZRX_TOKEN_SYMBOL = 'ZRX';
 
-const PRECISION = 5;
 const ICON_DIMENSION = 40;
 const ARTIFICIAL_FAUCET_REQUEST_DELAY = 1000;
 const TOKEN_TABLE_ROW_HEIGHT = 60;
@@ -248,7 +247,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />
                             </TableRowColumn>
                             <TableRowColumn>
-                                {userEtherBalanceInEth.toFixed(PRECISION)} ETH
+                                {userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH
                                 {this.state.isBalanceSpinnerVisible && (
                                     <span className="pl1">
                                         <i className="zmdi zmdi-spinner zmdi-hc-spin" />
@@ -500,7 +499,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private _renderAmount(amount: BigNumber, decimals: number) {
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
-        return unitAmount.toNumber().toFixed(PRECISION);
+        return unitAmount.toNumber().toFixed(configs.AMOUNT_DISPLAY_PRECSION);
     }
     private _renderTokenName(token: Token) {
         const tooltipId = `tooltip-${token.address}`;

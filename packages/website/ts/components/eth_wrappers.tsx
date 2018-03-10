@@ -15,7 +15,6 @@ import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
-const PRECISION = 5;
 const DATE_FORMAT = 'D/M/YY';
 const ICON_DIMENSION = 40;
 const ETHER_ICON_PATH = '/images/ether.png';
@@ -147,7 +146,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                             </div>
                                         </div>
                                     </TableRowColumn>
-                                    <TableRowColumn>{userEtherBalanceInEth.toFixed(PRECISION)} ETH</TableRowColumn>
+                                    <TableRowColumn>
+                                        {userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH
+                                    </TableRowColumn>
                                     <TableRowColumn>
                                         <EthWethConversionButton
                                             refetchEthTokenStateAsync={this._refetchEthTokenStateAsync.bind(this)}
@@ -169,7 +170,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                                     </TableRowColumn>
                                     <TableRowColumn>
                                         {this.state.isWethStateLoaded ? (
-                                            `${wethBalance.toFixed(PRECISION)} WETH`
+                                            `${wethBalance.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} WETH`
                                         ) : (
                                             <i className="zmdi zmdi-spinner zmdi-hc-spin" />
                                         )}
@@ -269,7 +270,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 const outdatedEtherTokenState = this.state.outdatedWETHStateByAddress[outdatedWETHIfExists.address];
                 const balanceInEthIfExists = isStateLoaded
                     ? ZeroEx.toUnitAmount(outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH).toFixed(
-                          PRECISION,
+                          configs.AMOUNT_DISPLAY_PRECSION,
                       )
                     : undefined;
                 const onConversionSuccessful = this._onOutdatedConversionSuccessfulAsync.bind(

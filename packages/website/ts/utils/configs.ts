@@ -9,6 +9,7 @@ const isDevelopment = _.includes(
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
+    AMOUNT_DISPLAY_PRECSION: 5,
     BACKEND_BASE_URL: 'https://website-api.0xproject.com',
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
