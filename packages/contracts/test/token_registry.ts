@@ -177,8 +177,8 @@ describe('TokenRegistry', () => {
 
             it('should change the token symbol when called by owner', async () => {
                 await tokenReg.setTokenSymbol.sendTransactionAsync(token1.address, token2.symbol, { from: owner });
-                const newData = await tokenRegWrapper.getTokenByNameAsync(token2.name);
-                const oldData = await tokenRegWrapper.getTokenByNameAsync(token1.name);
+                const newData = await tokenRegWrapper.getTokenBySymbolAsync(token2.symbol);
+                const oldData = await tokenRegWrapper.getTokenBySymbolAsync(token1.symbol);
 
                 const expectedNewData = _.assign({}, token1, { symbol: token2.symbol });
                 const expectedOldData = nullToken;
