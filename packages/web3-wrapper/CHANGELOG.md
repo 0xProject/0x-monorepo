@@ -2,7 +2,7 @@
 
 ## v0.2.1 _TBD_
 
-    * Add a `getProvider` method
+    * Add a `getProvider` method (#444)
 
 ## v0.2.0 _March 4, 2018_
 
