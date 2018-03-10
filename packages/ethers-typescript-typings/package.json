@@ -24,5 +24,8 @@
         "tslint": "5.8.0",
         "tslint-config-0xproject": "^0.0.2",
         "typescript": "2.7.1"
+    },
+    "publishConfig": {
+      "access": "public"
     }
 }

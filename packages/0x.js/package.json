@@ -98,5 +98,8 @@
         "uuid": "^3.1.0",
         "web3": "^0.20.0",
         "web3-typescript-typings": "^0.10.0"
+    },
+    "publishConfig": {
+      "access": "public"
     }
 }

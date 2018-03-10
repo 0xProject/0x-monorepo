@@ -45,5 +45,8 @@
         "tslint": "5.8.0",
         "typescript": "2.7.1",
         "web3-typescript-typings": "^0.10.0"
+    },
+    "publishConfig": {
+      "access": "public"
     }
 }

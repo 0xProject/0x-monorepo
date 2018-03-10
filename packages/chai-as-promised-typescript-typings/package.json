@@ -19,5 +19,8 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/chai-as-promised-typescript-typings#readme",
     "dependencies": {
         "chai-typescript-typings": "^0.0.4"
+    },
+    "publishConfig": {
+      "access": "public"
     }
 }

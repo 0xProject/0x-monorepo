@@ -56,5 +56,8 @@
     },
     "optionalDependencies": {
         "@ledgerhq/hw-transport-node-hid": "^4.3.0"
+    },
+    "publishConfig": {
+      "access": "public"
     }
 }

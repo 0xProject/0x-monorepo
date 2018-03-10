@@ -46,5 +46,8 @@
         "request-promise-native": "^1.0.5",
         "web3": "^0.20.0",
         "web3-provider-engine": "^13.0.1"
+    },
+    "publishConfig": {
+      "access": "public"
     }
 }
