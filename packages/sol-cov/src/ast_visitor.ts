@@ -89,7 +89,7 @@ export class ASTVisitor {
         this._visitStatement(ast);
     }
     private _visitModifierArgument(ast: SolidityParser.AST): void {
-        const BUILTIN_MODIFIERS = ['public', 'view', 'payable', 'external', 'internal', 'pure'];
+        const BUILTIN_MODIFIERS = ['public', 'view', 'payable', 'external', 'internal', 'pure', 'constant'];
         if (!_.includes(BUILTIN_MODIFIERS, ast.name)) {
             this._visitStatement(ast);
         }
