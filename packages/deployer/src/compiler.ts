@@ -233,7 +233,7 @@ export class Compiler {
         const runtimeBytecode = `0x${compiled.contracts[contractIdentifier].runtimeBytecode}`;
         const sourceMap = compiled.contracts[contractIdentifier].srcmap;
         const sourceMapRuntime = compiled.contracts[contractIdentifier].srcmapRuntime;
-        const sources = compiled.sourceList;
+        const sources = _.keys(compiled.sources);
         const updated_at = Date.now();
         const contractNetworkData: ContractNetworkData = {
             solc_version: contractSpecificSourceData.solcVersion,
