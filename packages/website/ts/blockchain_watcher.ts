@@ -11,7 +11,7 @@ export class BlockchainWatcher {
     private _shouldPollUserAddress: boolean;
     private _watchNetworkAndBalanceIntervalId: NodeJS.Timer;
     private _prevUserEtherBalanceInWei: BigNumber;
-    private _prevUserAddress: string;
+    private _prevUserAddressIfExists: string;
     constructor(
         dispatcher: Dispatcher,
         web3Wrapper: Web3Wrapper,
@@ -33,7 +33,7 @@ export class BlockchainWatcher {
     }
     // This should only be called from the LedgerConfigDialog
     public updatePrevUserAddress(userAddress: string) {
-        this._prevUserAddress = userAddress;
+        this._prevUserAddressIfExists = userAddress;
     }
     public startEmittingNetworkConnectionAndUserBalanceState() {
         if (!_.isUndefined(this._watchNetworkAndBalanceIntervalId)) {
@@ -66,22 +66,22 @@ export class BlockchainWatcher {
 
                 if (this._shouldPollUserAddress) {
                     const addresses = await this._web3Wrapper.getAvailableAddressesAsync();
-                    const userAddressIfExists = addresses[0] || '';
+                    const userAddressIfExists = addresses[0];
                     // Update makerAddress on network change
-                    if (this._prevUserAddress !== userAddressIfExists) {
-                        this._prevUserAddress = userAddressIfExists;
+                    if (this._prevUserAddressIfExists !== userAddressIfExists) {
+                        this._prevUserAddressIfExists = userAddressIfExists;
                         this._dispatcher.updateUserAddress(userAddressIfExists);
                     }
 
                     // Check for user ether balance changes
-                    if (!_.isEmpty(userAddressIfExists)) {
+                    if (!_.isUndefined(userAddressIfExists)) {
                         await this._updateUserWeiBalanceAsync(userAddressIfExists);
                     }
                 } else {
                     // This logic is primarily for the Ledger, since we don't regularly poll for the address
                     // we simply update the balance for the last fetched address.
-                    if (!_.isEmpty(this._prevUserAddress)) {
-                        await this._updateUserWeiBalanceAsync(this._prevUserAddress);
+                    if (!_.isUndefined(this._prevUserAddressIfExists)) {
+                        await this._updateUserWeiBalanceAsync(this._prevUserAddressIfExists);
                     }
                 }
             },
