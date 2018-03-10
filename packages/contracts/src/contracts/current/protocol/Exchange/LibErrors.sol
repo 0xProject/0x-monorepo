@@ -29,6 +29,6 @@ contract LibErrors {
         INSUFFICIENT_BALANCE_OR_ALLOWANCE // Insufficient balance or allowance for token transfer
     }
 
-    event LogError(uint8 indexed errorId, bytes32 indexed orderHash);
+    event ExchangeError(uint8 indexed errorId, bytes32 indexed orderHash);
 
 }

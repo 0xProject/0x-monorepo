@@ -30,30 +30,17 @@ contract MixinSettlementProxy is
     LibPartialAmount
 {
 
-    ITokenTransferProxy TRANSFER_PROXY;
-    IToken ZRX_TOKEN;
-
-    function transferProxy()
-        external view
-        returns (ITokenTransferProxy)
-    {
-        return TRANSFER_PROXY;
-    }
-
-    function zrxToken()
-        external view
-        returns (IToken)
-    {
-        return ZRX_TOKEN;
-    }
-
+    ITokenTransferProxy transferProxy;
+    IToken zrxToken;
+    
     function MixinSettlementProxy(
-        ITokenTransferProxy proxyContract,
-        IToken zrxToken)
+        ITokenTransferProxy _proxyContract,
+        IToken _zrxToken
+    )
         public
     {
-        ZRX_TOKEN = zrxToken;
-        TRANSFER_PROXY = proxyContract;
+        zrxToken = _zrxToken;
+        transferProxy = _proxyContract;
     }
 
     function settleOrder(
@@ -69,7 +56,7 @@ contract MixinSettlementProxy is
     {
         makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
         require(
-            TRANSFER_PROXY.transferFrom(
+            transferProxy.transferFrom(
                 order.makerTokenAddress,
                 order.makerAddress,
                 takerAddress,
@@ -77,7 +64,7 @@ contract MixinSettlementProxy is
             )
         );
         require(
-            TRANSFER_PROXY.transferFrom(
+            transferProxy.transferFrom(
                 order.takerTokenAddress,
                 takerAddress,
                 order.makerAddress,
@@ -88,8 +75,8 @@ contract MixinSettlementProxy is
             if (order.makerFeeAmount > 0) {
                 makerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFeeAmount);
                 require(
-                    TRANSFER_PROXY.transferFrom(
-                        ZRX_TOKEN,
+                    transferProxy.transferFrom(
+                        zrxToken,
                         order.makerAddress,
                         order.feeRecipientAddress,
                         makerFeeAmountPaid
@@ -99,8 +86,8 @@ contract MixinSettlementProxy is
             if (order.takerFeeAmount > 0) {
                 takerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFeeAmount);
                 require(
-                    TRANSFER_PROXY.transferFrom(
-                        ZRX_TOKEN,
+                    transferProxy.transferFrom(
+                        zrxToken,
                         takerAddress,
                         order.feeRecipientAddress,
                         takerFeeAmountPaid
