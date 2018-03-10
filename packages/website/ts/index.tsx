@@ -47,6 +47,7 @@ const LazyConnectDocumentation = createLazyComponent('Documentation', async () =
 );
 
 analytics.init();
+// tslint:disable-next-line:no-floating-promises
 analytics.logProviderAsync((window as any).web3);
 const store: ReduxStore<State> = createStore(reducer);
 render(
