@@ -91,7 +91,7 @@ export class CoverageSubprovider extends Subprovider {
         if (!txData.isFakeTransaction) {
             // This transaction is a usual ttransaction. Not a call executed as one.
             // And we don't want it to be executed within a snapshotting period
-            await this._lock.release();
+            this._lock.release();
         }
         cb();
     }
@@ -152,7 +152,7 @@ export class CoverageSubprovider extends Subprovider {
             // Even if this transaction failed - we've already recorded it's trace.
         }
         const jsonRPCResponse = await this.emitPayloadAsync({ method: 'evm_revert', params: [snapshotId] });
-        await this._lock.release();
+        this._lock.release();
         const didRevert = jsonRPCResponse.result;
         if (!didRevert) {
             throw new Error('Failed to revert the snapshot');
