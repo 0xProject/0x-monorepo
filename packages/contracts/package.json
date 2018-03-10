@@ -22,7 +22,7 @@
         "migrate": "yarn build && yarn compile && node ./lib/migrations/index.js",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
         "coverage:report:text": "istanbul report text",
-        "coverage:report:html": "istanbul report html && open coverage/lcov-report/index.html",
+        "coverage:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "coverage:report:coveralls": "yarn coverage:report:lcov && cat coverage/lcov.info | coveralls",
         "test:circleci": "yarn test:coverage && yarn coverage:report:coveralls"
