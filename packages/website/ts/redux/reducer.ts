@@ -187,7 +187,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
             return {
                 ...state,
                 networkId: action.data.networkId,
-                userAddress: action.data.userAddress,
+                userAddress: _.isUndefined(action.data.userAddress) ? '' : action.data.userAddress,
                 sideToAssetToken: action.data.sideToAssetToken,
                 tokenByAddress: action.data.tokenByAddress,
             };
@@ -286,7 +286,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         case ActionTypes.UpdateUserAddress: {
             return {
                 ...state,
-                userAddress: action.data,
+                userAddress: _.isUndefined(action.data) ? '' : action.data,
             };
         }
 

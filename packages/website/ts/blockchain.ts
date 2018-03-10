@@ -65,7 +65,7 @@ export class Blockchain {
     private _dispatcher: Dispatcher;
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
-    private _userAddress: string;
+    private _userAddressIfExists: string;
     private _cachedProvider: Web3.Provider;
     private _cachedProviderNetworkId: number;
     private _ledgerSubprovider: LedgerWalletSubprovider;
@@ -116,7 +116,6 @@ export class Blockchain {
     }
     constructor(dispatcher: Dispatcher, isSalePage: boolean = false) {
         this._dispatcher = dispatcher;
-        this._userAddress = '';
         const defaultGasPrice = GWEI_IN_WEI * 30;
         this._defaultGasPrice = new BigNumber(defaultGasPrice);
         // tslint:disable-next-line:no-floating-promises
@@ -138,8 +137,8 @@ export class Blockchain {
         }
     }
     public async userAddressUpdatedFireAndForgetAsync(newUserAddress: string) {
-        if (this._userAddress !== newUserAddress) {
-            this._userAddress = newUserAddress;
+        if (this._userAddressIfExists !== newUserAddress) {
+            this._userAddressIfExists = newUserAddress;
             await this.fetchTokenInformationAsync();
             await this._rehydrateStoreWithContractEvents();
         }
@@ -196,8 +195,8 @@ export class Blockchain {
 
         this._blockchainWatcher.destroy();
 
-        this._userAddress = '';
-        this._dispatcher.updateUserAddress(''); // Clear old userAddress
+        delete this._userAddressIfExists;
+        this._dispatcher.updateUserAddress(undefined); // Clear old userAddress
 
         const provider = new ProviderEngine();
         const ledgerWalletConfigs = {
@@ -244,7 +243,7 @@ export class Blockchain {
             shouldPollUserAddress,
         );
 
-        this._userAddress = await this.getFirstAccountIfExistsAsync();
+        this._userAddressIfExists = await this.getFirstAccountIfExistsAsync();
 
         this._zeroEx.setProvider(provider, this.networkId);
 
@@ -262,7 +261,7 @@ export class Blockchain {
         this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.token.setProxyAllowanceAsync(
             token.address,
-            this._userAddress,
+            this._userAddressIfExists,
             amountInBaseUnits,
             {
                 gasPrice: this._defaultGasPrice,
@@ -271,10 +270,13 @@ export class Blockchain {
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async transferAsync(token: Token, toAddress: string, amountInBaseUnits: BigNumber): Promise<void> {
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+
         this._showFlashMessageIfLedger();
         const txHash = await this._zeroEx.token.transferAsync(
             token.address,
-            this._userAddress,
+            this._userAddressIfExists,
             toAddress,
             amountInBaseUnits,
             {
@@ -316,6 +318,7 @@ export class Blockchain {
         return zeroExSignedOrder;
     }
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber): Promise<BigNumber> {
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
@@ -325,7 +328,7 @@ export class Blockchain {
             signedOrder,
             fillTakerTokenAmount,
             shouldThrowOnInsufficientBalanceOrAllowance,
-            this._userAddress,
+            this._userAddressIfExists,
             {
                 gasPrice: this._defaultGasPrice,
             },
@@ -384,12 +387,15 @@ export class Blockchain {
     public async pollTokenBalanceAsync(token: Token) {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
-        const [currBalance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
+        const [currBalance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddressIfExists, token.address);
 
         const newTokenBalancePromise = new Promise((resolve: (balance: BigNumber) => void, reject) => {
             const tokenPollInterval = intervalUtils.setAsyncExcludingInterval(
                 async () => {
-                    const [balance] = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, token.address);
+                    const [balance] = await this.getTokenBalanceAndAllowanceAsync(
+                        this._userAddressIfExists,
+                        token.address,
+                    );
                     if (!balance.eq(currBalance)) {
                         intervalUtils.clearAsyncExcludingInterval(tokenPollInterval);
                         resolve(balance);
@@ -408,7 +414,7 @@ export class Blockchain {
     }
     public async signOrderHashAsync(orderHash: string): Promise<ECSignature> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
-        const makerAddress = this._userAddress;
+        const makerAddress = this._userAddressIfExists;
         // If makerAddress is undefined, this means they have a web3 instance injected into their browser
         // but no account addresses associated with it.
         if (_.isUndefined(makerAddress)) {
@@ -438,7 +444,7 @@ export class Blockchain {
         const mintableContract = await this._instantiateContractIfExistsAsync(MintableArtifacts, token.address);
         this._showFlashMessageIfLedger();
         await mintableContract.mint(constants.MINT_AMOUNT, {
-            from: this._userAddress,
+            from: this._userAddressIfExists,
             gasPrice: this._defaultGasPrice,
         });
     }
@@ -451,9 +457,14 @@ export class Blockchain {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         this._showFlashMessageIfLedger();
-        const txHash = await this._zeroEx.etherToken.depositAsync(etherTokenAddress, amount, this._userAddress, {
-            gasPrice: this._defaultGasPrice,
-        });
+        const txHash = await this._zeroEx.etherToken.depositAsync(
+            etherTokenAddress,
+            amount,
+            this._userAddressIfExists,
+            {
+                gasPrice: this._defaultGasPrice,
+            },
+        );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async convertWrappedEthTokensToEthAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
@@ -461,9 +472,14 @@ export class Blockchain {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         this._showFlashMessageIfLedger();
-        const txHash = await this._zeroEx.etherToken.withdrawAsync(etherTokenAddress, amount, this._userAddress, {
-            gasPrice: this._defaultGasPrice,
-        });
+        const txHash = await this._zeroEx.etherToken.withdrawAsync(
+            etherTokenAddress,
+            amount,
+            this._userAddressIfExists,
+            {
+                gasPrice: this._defaultGasPrice,
+            },
+        );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async doesContractExistAtAddressAsync(address: string) {
@@ -471,7 +487,12 @@ export class Blockchain {
         return doesContractExist;
     }
     public async getCurrentUserTokenBalanceAndAllowanceAsync(tokenAddress: string): Promise<BigNumber[]> {
-        const tokenBalanceAndAllowance = await this.getTokenBalanceAndAllowanceAsync(this._userAddress, tokenAddress);
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+
+        const tokenBalanceAndAllowance = await this.getTokenBalanceAndAllowanceAsync(
+            this._userAddressIfExists,
+            tokenAddress,
+        );
         return tokenBalanceAndAllowance;
     }
     public async getTokenBalanceAndAllowanceAsync(ownerAddress: string, tokenAddress: string): Promise<BigNumber[]> {
@@ -509,12 +530,16 @@ export class Blockchain {
             !_.isUndefined(this.networkId),
             'Cannot call fetchTokenInformationAsync if disconnected from Ethereum node',
         );
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         this._dispatcher.updateBlockchainIsLoaded(false);
 
         const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
 
-        const trackedTokensByAddress = trackedTokenStorage.getTrackedTokensByAddress(this._userAddress, this.networkId);
+        const trackedTokensByAddress = trackedTokenStorage.getTrackedTokensByAddress(
+            this._userAddressIfExists,
+            this.networkId,
+        );
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
         if (_.isEmpty(trackedTokensByAddress)) {
             _.each(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
@@ -523,7 +548,7 @@ export class Blockchain {
                 trackedTokensByAddress[token.address] = token;
             });
             _.each(trackedTokensByAddress, (token: Token, address: string) => {
-                trackedTokenStorage.addTrackedTokenToUser(this._userAddress, this.networkId, token);
+                trackedTokenStorage.addTrackedTokenToUser(this._userAddressIfExists, this.networkId, token);
             });
         } else {
             // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
@@ -550,14 +575,14 @@ export class Blockchain {
                 address: mostPopularTradingPairTokens[1].address,
             },
         };
-        this._dispatcher.batchDispatch(allTokensByAddress, this.networkId, this._userAddress, sideToAssetToken);
+        this._dispatcher.batchDispatch(allTokensByAddress, this.networkId, this._userAddressIfExists, sideToAssetToken);
 
         this._dispatcher.updateBlockchainIsLoaded(true);
     }
     public async getFirstAccountIfExistsAsync() {
         const addresses = await this._web3Wrapper.getAvailableAddressesAsync();
         if (_.isEmpty(addresses)) {
-            return '';
+            return undefined;
         }
         return addresses[0];
     }
@@ -578,7 +603,7 @@ export class Blockchain {
         return receipt;
     }
     private _doesUserAddressExist(): boolean {
-        return this._userAddress !== '';
+        return !_.isUndefined(this._userAddressIfExists);
     }
     private async _rehydrateStoreWithContractEvents() {
         // Ensure we are only ever listening to one set of events
@@ -623,16 +648,18 @@ export class Blockchain {
                     this._updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
                     const fill = await this._convertDecodedLogToFillAsync(decodedLog);
                     if (decodedLogEvent.isRemoved) {
-                        tradeHistoryStorage.removeFillFromUser(this._userAddress, this.networkId, fill);
+                        tradeHistoryStorage.removeFillFromUser(this._userAddressIfExists, this.networkId, fill);
                     } else {
-                        tradeHistoryStorage.addFillToUser(this._userAddress, this.networkId, fill);
+                        tradeHistoryStorage.addFillToUser(this._userAddressIfExists, this.networkId, fill);
                     }
                 }
             },
         );
     }
     private async _fetchHistoricalExchangeLogFillEventsAsync(indexFilterValues: IndexedFilterValues) {
-        const fromBlock = tradeHistoryStorage.getFillsLatestBlock(this._userAddress, this.networkId);
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+
+        const fromBlock = tradeHistoryStorage.getFillsLatestBlock(this._userAddressIfExists, this.networkId);
         const blockRange: BlockRange = {
             fromBlock,
             toBlock: 'latest' as BlockParam,
@@ -648,7 +675,7 @@ export class Blockchain {
             }
             this._updateLatestFillsBlockIfNeeded(decodedLog.blockNumber);
             const fill = await this._convertDecodedLogToFillAsync(decodedLog);
-            tradeHistoryStorage.addFillToUser(this._userAddress, this.networkId, fill);
+            tradeHistoryStorage.addFillToUser(this._userAddressIfExists, this.networkId, fill);
         }
     }
     private async _convertDecodedLogToFillAsync(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
@@ -672,10 +699,12 @@ export class Blockchain {
     }
     private _doesLogEventInvolveUser(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>) {
         const args = decodedLog.args;
-        const isUserMakerOrTaker = args.maker === this._userAddress || args.taker === this._userAddress;
+        const isUserMakerOrTaker = args.maker === this._userAddressIfExists || args.taker === this._userAddressIfExists;
         return isUserMakerOrTaker;
     }
     private _updateLatestFillsBlockIfNeeded(blockNumber: number) {
+        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
+
         const isBlockPending = _.isNull(blockNumber);
         if (!isBlockPending) {
             // Hack: I've observed the behavior where a client won't register certain fill events
@@ -686,7 +715,7 @@ export class Blockchain {
             // TODO: Debug if this is a race condition, and apply a more precise fix
             const blockNumberToSet =
                 blockNumber - BLOCK_NUMBER_BACK_TRACK < 0 ? 0 : blockNumber - BLOCK_NUMBER_BACK_TRACK;
-            tradeHistoryStorage.setFillsLatestBlock(this._userAddress, this.networkId, blockNumberToSet);
+            tradeHistoryStorage.setFillsLatestBlock(this._userAddressIfExists, this.networkId, blockNumberToSet);
         }
     }
     private _stopWatchingExchangeLogFillEvents(): void {
@@ -765,8 +794,8 @@ export class Blockchain {
             shouldPollUserAddress,
         );
 
-        this._userAddress = await this.getFirstAccountIfExistsAsync();
-        this._dispatcher.updateUserAddress(this._userAddress);
+        this._userAddressIfExists = await this.getFirstAccountIfExistsAsync();
+        this._dispatcher.updateUserAddress(this._userAddressIfExists);
         await this.fetchTokenInformationAsync();
         this._blockchainWatcher.startEmittingNetworkConnectionAndUserBalanceState();
         await this._rehydrateStoreWithContractEvents();
