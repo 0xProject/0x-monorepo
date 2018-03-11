@@ -184,10 +184,11 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.BatchDispatch: {
+            const userAddress = _.isUndefined(action.data.userAddressIfExists) ? '' : action.data.userAddressIfExists;
             return {
                 ...state,
                 networkId: action.data.networkId,
-                userAddress: _.isUndefined(action.data.userAddress) ? '' : action.data.userAddress,
+                userAddress,
                 sideToAssetToken: action.data.sideToAssetToken,
                 tokenByAddress: action.data.tokenByAddress,
             };
@@ -284,9 +285,10 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
         }
 
         case ActionTypes.UpdateUserAddress: {
+            const userAddress = _.isUndefined(action.data) ? '' : action.data;
             return {
                 ...state,
-                userAddress: _.isUndefined(action.data) ? '' : action.data,
+                userAddress,
             };
         }
 

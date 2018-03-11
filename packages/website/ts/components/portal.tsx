@@ -121,8 +121,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             });
         }
         if (nextProps.userAddress !== this.state.prevUserAddress) {
+            const newUserAddress = _.isEmpty(nextProps.userAddress) ? undefined : nextProps.userAddress;
             // tslint:disable-next-line:no-floating-promises
-            this._blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
+            this._blockchain.userAddressUpdatedFireAndForgetAsync(newUserAddress);
             this.setState({
                 prevUserAddress: nextProps.userAddress,
             });

@@ -67,6 +67,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
     private async _onToggleAllowanceAsync(): Promise<void> {
         if (this.props.userAddress === '') {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
+            return;
         }
 
         this.setState({

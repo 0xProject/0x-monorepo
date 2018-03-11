@@ -531,16 +531,14 @@ export class Blockchain {
             !_.isUndefined(this.networkId),
             'Cannot call fetchTokenInformationAsync if disconnected from Ethereum node',
         );
-        utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         this._dispatcher.updateBlockchainIsLoaded(false);
 
         const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
 
-        const trackedTokensByAddress = trackedTokenStorage.getTrackedTokensByAddress(
-            this._userAddressIfExists,
-            this.networkId,
-        );
+        const trackedTokensByAddress = _.isUndefined(this._userAddressIfExists)
+            ? {}
+            : trackedTokenStorage.getTrackedTokensByAddress(this._userAddressIfExists, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
         if (_.isEmpty(trackedTokensByAddress)) {
             _.each(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
@@ -548,9 +546,11 @@ export class Blockchain {
                 token.isTracked = true;
                 trackedTokensByAddress[token.address] = token;
             });
-            _.each(trackedTokensByAddress, (token: Token, address: string) => {
-                trackedTokenStorage.addTrackedTokenToUser(this._userAddressIfExists, this.networkId, token);
-            });
+            if (!_.isUndefined(this._userAddressIfExists)) {
+                _.each(trackedTokensByAddress, (token: Token, address: string) => {
+                    trackedTokenStorage.addTrackedTokenToUser(this._userAddressIfExists, this.networkId, token);
+                });
+            }
         } else {
             // Properly set all tokenRegistry tokens `isTracked` to true if they are in the existing trackedTokens array
             _.each(trackedTokensByAddress, (trackedToken: Token, address: string) => {
