@@ -23,11 +23,11 @@ This repository is a monorepo including the 0x protocol smart contracts and nume
 | [`0x.js`](/packages/0x.js)                                                             | [![npm](https://img.shields.io/npm/v/0x.js.svg)](https://www.npmjs.com/package/0x.js)                                                             | A Javascript library for interacting with the 0x protocol                   |
 | [`@0xproject/abi-gen`](/packages/abi-gen)                                              | [![npm](https://img.shields.io/npm/v/@0xproject/abi-gen.svg)](https://www.npmjs.com/package/@0xproject/abi-gen)                                   | Tool to generate TS wrappers from smart contract ABIs                       |
 | [`@0xproject/assert`](/packages/assert)                                                | [![npm](https://img.shields.io/npm/v/@0xproject/assert.svg)](https://www.npmjs.com/package/@0xproject/assert)                                     | Type and schema assertions used by our packages                             |
-| [`@0xproject/base-contract`](/packages/base-contract)                                  | [![npm](https://img.shields.io/npm/v/@0xproject/base-contract.svg)](https://www.npmjs.com/package/@0xproject/base-contract)                       | BaseContract to derive all auto-generated wrappers from                     |
+| [`@0xproject/base-contract`](/packages/base-contract)                                  | [![npm](https://img.shields.io/npm/v/@0xproject/base-contract.svg)](https://www.npmjs.com/package/@0xproject/base-contract)                       | BaseContract used by auto-generated `abi-gen` wrapper contracts             |
 | [`chai-as-promised-typescript-typings`](/packages/chai-as-promised-typescript-typings) | [![npm](https://img.shields.io/npm/v/chai-as-promised-typescript-typings.svg)](https://www.npmjs.com/package/chai-as-promised-typescript-typings) | Chai as promised typescript typings                                         |
 | [`chai-typescript-typings`](/packages/chai-typescript-typings)                         | [![npm](https://img.shields.io/npm/v/chai-typescript-typings.svg)](https://www.npmjs.com/package/chai-typescript-typings)                         | Chai typescript typings                                                     |
-| [`@0xproject/connect`](/packages/connect)                                              | [![npm](https://img.shields.io/npm/v/@0xproject/connect.svg)](https://www.npmjs.com/package/@0xproject/connect)                                   | A Javascript library for interacting with the standard relayer api          |
-| [`@0xproject/deployer`](/packages/deployer)                                            | [![npm](https://img.shields.io/npm/v/@0xproject/deployer.svg)](https://www.npmjs.com/package/@0xproject/deployer)                                 | Smart contract deployer                                                     |
+| [`@0xproject/connect`](/packages/connect)                                              | [![npm](https://img.shields.io/npm/v/@0xproject/connect.svg)](https://www.npmjs.com/package/@0xproject/connect)                                   | A Javascript library for interacting with the Standard Relayer API          |
+| [`@0xproject/deployer`](/packages/deployer)                                            | [![npm](https://img.shields.io/npm/v/@0xproject/deployer.svg)](https://www.npmjs.com/package/@0xproject/deployer)                                 | Solidity project compiler and deployer framework                            |
 | [`@0xproject/dev-utils`](/packages/dev-utils)                                          | [![npm](https://img.shields.io/npm/v/@0xproject/dev-utils.svg)](https://www.npmjs.com/package/@0xproject/dev-utils)                               | Dev utils to be shared across 0x projects and packages                      |
 | [`ethers-typescript-typings`](/packages/ethers-typescript-typings)                     | [![npm](https://img.shields.io/npm/v/@0xproject/deployer.svg)](https://www.npmjs.com/package/ethers-typescript-typings)                           | [Ethers.js](https://github.com/ethers-io/ethers.js/) typescript typings     |
 | [`@0xproject/json-schemas`](/packages/json-schemas)                                    | [![npm](https://img.shields.io/npm/v/@0xproject/json-schemas.svg)](https://www.npmjs.com/package/@0xproject/json-schemas)                         | 0x-related json schemas                                                     |
@@ -43,12 +43,13 @@ This repository is a monorepo including the 0x protocol smart contracts and nume
 
 ### Private Packages
 
-| Package                                                     | Description                                                      |
-| ----------------------------------------------------------- | ---------------------------------------------------------------- |
-| [`@0xproject/contracts`](/packages/contracts)               | 0x solidity smart contracts & tests                              |
-| [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts) | Shared monorepo scripts                                          |
-| [`@0xproject/testnet-faucets`](/packages/testnet-faucets)   | A faucet micro-service that dispenses test ERC20 tokens or Ether |
-| [`@0xproject/website`](/packages/website)                   | 0x website & Portal DApp                                         |
+| Package                                                         | Description                                                      |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [`@0xproject/contracts`](/packages/contracts)                   | 0x solidity smart contracts & tests                              |
+| [`@0xproject/react-docs-example`](/packages/react-docs-example) | Example documentation site created with `@0xproject/react-docs`  |
+| [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts)     | Shared monorepo scripts                                          |
+| [`@0xproject/testnet-faucets`](/packages/testnet-faucets)       | A faucet micro-service that dispenses test ERC20 tokens or Ether |
+| [`@0xproject/website`](/packages/website)                       | 0x website & Portal DApp                                         |
 
 ## Usage
 
