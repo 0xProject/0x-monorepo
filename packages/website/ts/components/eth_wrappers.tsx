@@ -351,8 +351,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 [outdatedWETHAddress]: false,
             },
         });
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             outdatedWETHAddress,
         );
         this.setState({
@@ -372,8 +373,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
     private async _fetchWETHStateAsync() {
         const tokens = _.values(this.props.tokenByAddress);
         const wethToken = _.find(tokens, token => token.symbol === 'WETH');
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [wethBalance, wethAllowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             wethToken.address,
         );
 
@@ -382,7 +384,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         const outdatedWETHStateByAddress: OutdatedWETHStateByAddress = {};
         for (const address of outdatedWETHAddresses) {
             const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-                this.props.userAddress,
+                userAddressIfExists,
                 address,
             );
             outdatedWETHStateByAddress[address] = {
@@ -423,8 +425,9 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
     }
     private async _refetchEthTokenStateAsync() {
         const etherToken = this._getEthToken();
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             etherToken.address,
         );
         this.setState({

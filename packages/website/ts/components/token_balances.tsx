@@ -687,9 +687,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]) {
         const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         for (const tokenAddress of tokenAddresses) {
             const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-                this.props.userAddress,
+                userAddressIfExists,
                 tokenAddress,
             );
             trackedTokenStateByAddress[tokenAddress] = {
@@ -716,8 +717,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         return trackedTokenStateByAddress;
     }
     private async _refetchTokenStateAsync(tokenAddress: string) {
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             tokenAddress,
         );
         this.setState({

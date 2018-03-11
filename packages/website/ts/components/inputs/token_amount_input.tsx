@@ -109,8 +109,9 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
         this.setState({
             isBalanceAndAllowanceLoaded: false,
         });
+        const userAddressIfExists = _.isEmpty(userAddress) ? undefined : userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            userAddress,
+            userAddressIfExists,
             tokenAddress,
         );
         if (!this._isUnmounted) {

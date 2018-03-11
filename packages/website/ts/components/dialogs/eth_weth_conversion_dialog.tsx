@@ -1,6 +1,7 @@
 import { ZeroEx } from '0x.js';
 import { colors } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
+import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
@@ -185,8 +186,9 @@ export class EthWethConversionDialog extends React.Component<
         this.props.onCancelled();
     }
     private async _fetchEthTokenBalanceAsync() {
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             this.props.token.address,
         );
         if (!this._isUnmounted) {

@@ -496,18 +496,21 @@ export class Blockchain {
         );
         return tokenBalanceAndAllowance;
     }
-    public async getTokenBalanceAndAllowanceAsync(ownerAddress: string, tokenAddress: string): Promise<BigNumber[]> {
+    public async getTokenBalanceAndAllowanceAsync(
+        ownerAddressIfExists: string,
+        tokenAddress: string,
+    ): Promise<BigNumber[]> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
 
-        if (_.isEmpty(ownerAddress)) {
+        if (_.isUndefined(ownerAddressIfExists)) {
             const zero = new BigNumber(0);
             return [zero, zero];
         }
         let balance = new BigNumber(0);
         let allowance = new BigNumber(0);
         if (this._doesUserAddressExist()) {
-            balance = await this._zeroEx.token.getBalanceAsync(tokenAddress, ownerAddress);
-            allowance = await this._zeroEx.token.getProxyAllowanceAsync(tokenAddress, ownerAddress);
+            balance = await this._zeroEx.token.getBalanceAsync(tokenAddress, ownerAddressIfExists);
+            allowance = await this._zeroEx.token.getProxyAllowanceAsync(tokenAddress, ownerAddressIfExists);
         }
         return [balance, allowance];
     }
