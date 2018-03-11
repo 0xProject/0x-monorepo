@@ -237,8 +237,9 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
 
         // Check if all required inputs were supplied
         const debitToken = this.props.sideToAssetToken[Side.Deposit];
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [debitBalance, debitAllowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             debitToken.address,
         );
         const receiveAmount = this.props.sideToAssetToken[Side.Receive].amount;

@@ -48,7 +48,6 @@ const ETHER_ICON_PATH = '/images/ether.png';
 const ETHER_TOKEN_SYMBOL = 'WETH';
 const ZRX_TOKEN_SYMBOL = 'ZRX';
 
-const PRECISION = 5;
 const ICON_DIMENSION = 40;
 const ARTIFICIAL_FAUCET_REQUEST_DELAY = 1000;
 const TOKEN_TABLE_ROW_HEIGHT = 60;
@@ -79,7 +78,7 @@ interface TokenBalancesProps {
     tokenByAddress: TokenByAddress;
     trackedTokens: Token[];
     userAddress: string;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     networkId: number;
     lastForceTokenStateRefetch: number;
 }
@@ -119,11 +118,14 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         this._isUnmounted = true;
     }
     public componentWillReceiveProps(nextProps: TokenBalancesProps) {
-        if (nextProps.userEtherBalance !== this.props.userEtherBalance) {
+        if (nextProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
             if (this.state.isBalanceSpinnerVisible) {
-                const receivedAmount = nextProps.userEtherBalance.minus(this.props.userEtherBalance);
+                const receivedAmountInWei = nextProps.userEtherBalanceInWei.minus(this.props.userEtherBalanceInWei);
+                const receivedAmountInEth = ZeroEx.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
                 const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-                this.props.dispatcher.showFlashMessage(`Received ${receivedAmount.toString(10)} ${networkName} Ether`);
+                this.props.dispatcher.showFlashMessage(
+                    `Received ${receivedAmountInEth.toString(10)} ${networkName} Ether`,
+                );
             }
             this.setState({
                 isBalanceSpinnerVisible: false,
@@ -205,6 +207,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                   token balances in order to execute trades.<br> \
                                   Toggling sets an allowance for the<br> \
                                   smart contract so you can start trading that token.';
+        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
+            this.props.userEtherBalanceInWei,
+            constants.DECIMAL_PLACES_ETH,
+        );
         return (
             <div className="lg-px4 md-px4 sm-px1 pb2">
                 <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
@@ -241,7 +247,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 <img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />
                             </TableRowColumn>
                             <TableRowColumn>
-                                {this.props.userEtherBalance.toFixed(PRECISION)} ETH
+                                {userEtherBalanceInEth.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ETH
                                 {this.state.isBalanceSpinnerVisible && (
                                     <span className="pl1">
                                         <i className="zmdi zmdi-spinner zmdi-hc-spin" />
@@ -493,7 +499,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private _renderAmount(amount: BigNumber, decimals: number) {
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
-        return unitAmount.toNumber().toFixed(PRECISION);
+        return unitAmount.toNumber().toFixed(configs.AMOUNT_DISPLAY_PRECSION);
     }
     private _renderTokenName(token: Token) {
         const tooltipId = `tooltip-${token.address}`;
@@ -681,9 +687,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]) {
         const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         for (const tokenAddress of tokenAddresses) {
             const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-                this.props.userAddress,
+                userAddressIfExists,
                 tokenAddress,
             );
             trackedTokenStateByAddress[tokenAddress] = {
@@ -710,8 +717,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         return trackedTokenStateByAddress;
     }
     private async _refetchTokenStateAsync(tokenAddress: string) {
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             tokenAddress,
         );
         this.setState({
