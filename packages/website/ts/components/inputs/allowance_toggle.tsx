@@ -3,10 +3,10 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
-import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -82,20 +82,10 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         const eventLabel = `${this.props.token.symbol}-${networkName}`;
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Set Allowance Success',
-                label: eventLabel,
-                value: newAllowanceAmountInBaseUnits.toNumber(),
-            });
+            analytics.logEvent('Portal', 'Set Allowance Success', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
             await this.props.refetchTokenStateAsync();
         } catch (err) {
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Set Allowance Failure',
-                label: eventLabel,
-                value: newAllowanceAmountInBaseUnits.toNumber(),
-            });
+            analytics.logEvent('Portal', 'Set Allowance Failure', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
             this.setState({
                 isSpinnerVisible: false,
             });

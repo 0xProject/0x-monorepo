@@ -39,6 +39,7 @@ import {
     BlockchainErrs,
     ContractInstance,
     Order as PortalOrder,
+    Providers,
     ProviderType,
     Side,
     SideToAssetToken,
@@ -58,6 +59,12 @@ import * as MintableArtifacts from '../contracts/Mintable.json';
 const BLOCK_NUMBER_BACK_TRACK = 50;
 const GWEI_IN_WEI = 1000000000;
 
+const providerToName: { [provider: string]: string } = {
+    [Providers.Metamask]: constants.PROVIDER_NAME_METAMASK,
+    [Providers.Parity]: constants.PROVIDER_NAME_PARITY_SIGNER,
+    [Providers.Mist]: constants.PROVIDER_NAME_MIST,
+};
+
 export class Blockchain {
     public networkId: number;
     public nodeVersion: string;
@@ -71,18 +78,12 @@ export class Blockchain {
     private _ledgerSubprovider: LedgerWalletSubprovider;
     private _defaultGasPrice: BigNumber;
     private static _getNameGivenProvider(provider: Web3.Provider): string {
-        if (!_.isUndefined((provider as any).isMetaMask)) {
-            return constants.PROVIDER_NAME_METAMASK;
+        const providerType = utils.getProviderType(provider);
+        const providerNameIfExists = providerToName[providerType];
+        if (_.isUndefined(providerNameIfExists)) {
+            return constants.PROVIDER_NAME_GENERIC;
         }
-
-        // HACK: We use the fact that Parity Signer's provider is an instance of their
-        // internal `Web3FrameProvider` class.
-        const isParitySigner = _.startsWith(provider.constructor.toString(), 'function Web3FrameProvider');
-        if (isParitySigner) {
-            return constants.PROVIDER_NAME_PARITY_SIGNER;
-        }
-
-        return constants.PROVIDER_NAME_GENERIC;
+        return providerNameIfExists;
     }
     private static async _getProviderAsync(injectedWeb3: Web3, networkIdIfExists: number) {
         const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);

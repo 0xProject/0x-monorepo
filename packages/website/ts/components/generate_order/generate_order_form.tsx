@@ -5,7 +5,6 @@ import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import * as React from 'react';
-import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { ExpirationInput } from 'ts/components/inputs/expiration_input';
 import { HashInput } from 'ts/components/inputs/hash_input';
@@ -21,6 +20,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -256,12 +256,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             if (didSignSuccessfully) {
                 const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
                 const eventLabel = `${this.props.tokenByAddress[debitToken.address].symbol}-${networkName}`;
-                ReactGA.event({
-                    category: 'Portal',
-                    action: 'Sign Order Success',
-                    label: eventLabel,
-                    value: debitToken.amount.toNumber(),
-                });
+                analytics.logEvent('Portal', 'Sign Order Success', eventLabel, debitToken.amount.toNumber());
                 this.setState({
                     globalErrMsg: '',
                     shouldShowIncompleteErrs: false,
@@ -274,11 +269,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'You must enable wallet communication';
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             }
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Sign Order Failure',
-                label: globalErrMsg,
-            });
+            analytics.logEvent('Portal', 'Sign Order Failure', globalErrMsg);
             this.setState({
                 globalErrMsg,
                 shouldShowIncompleteErrs: true,

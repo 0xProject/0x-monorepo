@@ -25,6 +25,7 @@ export const constants = {
     PROVIDER_NAME_LEDGER: 'Ledger',
     PROVIDER_NAME_METAMASK: 'Metamask',
     PROVIDER_NAME_PARITY_SIGNER: 'Parity Signer',
+    PROVIDER_NAME_MIST: 'Mist',
     PROVIDER_NAME_GENERIC: 'Injected Web3',
     PROVIDER_NAME_PUBLIC: '0x Public',
     ROLLBAR_ACCESS_TOKEN: 'a6619002b51c4464928201e6ea94de65',

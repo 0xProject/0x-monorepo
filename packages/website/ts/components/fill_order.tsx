@@ -7,7 +7,6 @@ import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import * as ReactGA from 'react-ga';
 import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { TrackTokenConfirmationDialog } from 'ts/components/dialogs/track_token_confirmation_dialog';
@@ -22,6 +21,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, WebsitePaths } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -544,12 +544,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 signedOrder,
                 this.props.orderFillAmount,
             );
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Fill Order Success',
-                label: eventLabel,
-                value: parsedOrder.signedOrder.takerTokenAmount,
-            });
+            analytics.logEvent('Portal', 'Fill Order Success', eventLabel, parsedOrder.signedOrder.takerTokenAmount);
             // After fill completes, let's force fetch the token balances
             this.props.dispatcher.forceTokenStateRefetch();
             this.setState({
@@ -563,12 +558,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.setState({
                 isFilling: false,
             });
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Fill Order Failure',
-                label: eventLabel,
-                value: parsedOrder.signedOrder.takerTokenAmount,
-            });
+            analytics.logEvent('Portal', 'Fill Order Failure', eventLabel, parsedOrder.signedOrder.takerTokenAmount);
             const errMsg = `${err}`;
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
@@ -633,12 +623,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 globalErrMsg: '',
                 unavailableTakerAmount: takerTokenAmount,
             });
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Cancel Order Success',
-                label: eventLabel,
-                value: parsedOrder.signedOrder.makerTokenAmount,
-            });
+            analytics.logEvent('Portal', 'Cancel Order Success', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
             return;
         } catch (err) {
             this.setState({
@@ -648,12 +633,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Cancel Order Failure',
-                label: eventLabel,
-                value: parsedOrder.signedOrder.makerTokenAmount,
-            });
+            analytics.logEvent('Portal', 'Cancel Order Failure', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
             globalErrMsg = 'Failed to cancel order, please refresh and try again';
             utils.consoleLog(`${err}`);
             this.setState({

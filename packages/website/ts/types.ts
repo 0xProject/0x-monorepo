@@ -463,4 +463,10 @@ export enum Deco {
     CapWords,
     Upper,
 }
+
+export enum Providers {
+    Parity = 'PARITY',
+    Metamask = 'METAMASK',
+    Mist = 'MIST',
+}
 // tslint:disable:max-file-line-count

@@ -4,10 +4,11 @@ import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Order, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import { Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
+import Web3 = require('web3');
 
 const LG_MIN_EM = 64;
 const MD_MIN_EM = 52;
@@ -268,17 +269,6 @@ export const utils = {
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
-    web3ProviderToString(provider: Web3Provider): string {
-        let parsedProviderName = provider.constructor.name;
-        if (provider.constructor.name === 'MetamaskInpageProvider') {
-            parsedProviderName = 'METAMASK';
-        } else if (provider.constructor.name === 'EthereumProvider') {
-            parsedProviderName = 'MIST';
-        } else if ((provider as any).isParity) {
-            parsedProviderName = 'PARITY';
-        }
-        return parsedProviderName;
-    },
     async onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
             return; // Already loaded
@@ -286,5 +276,26 @@ export const utils = {
         return new Promise<void>((resolve, reject) => {
             window.onload = () => resolve();
         });
+    },
+    getProviderType(provider: Web3.Provider): Providers | string {
+        const constructorName = provider.constructor.name;
+        let parsedProviderName = constructorName;
+        switch (constructorName) {
+            case 'MetamaskInpageProvider':
+                parsedProviderName = Providers.Metamask;
+                break;
+
+            case 'EthereumProvider':
+                parsedProviderName = Providers.Mist;
+                break;
+
+            default:
+                parsedProviderName = constructorName;
+                break;
+        }
+        if ((provider as any).isParity) {
+            parsedProviderName = Providers.Parity;
+        }
+        return parsedProviderName;
     },
 };
