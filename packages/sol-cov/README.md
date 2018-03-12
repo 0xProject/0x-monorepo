@@ -1,5 +1,7 @@
 ## @0xproject/sol-cov
 
+A Solidity code coverage tool.
+
 ## Installation
 
 ```bash
@@ -7,6 +9,8 @@ yarn add -D @0xproject/sol-cov
 ```
 
 ## Usage
+
+Sol-cov uses transaction traces in order to figure out which lines of Solidity source code have been covered by your tests. In order for it to gather these traces, you must add the `CoverageSubprovider` to the [ProviderEngine](https://github.com/MetaMask/provider-engine) instance you use when running your Solidity tests. If you're unfamiliar with ProviderEngine, please read the [Web3 Provider explained](https://0xproject.com/wiki#Web3-Provider-Explained) wiki article.
 
 ```
 import { CoverageSubprovider } from '@0xproject/sol-cov'
@@ -27,19 +31,19 @@ const coverageSubprovider = new CoverageSubprovider(
 provider.addProvider(coverageSubprovider);
 ```
 
-Sol-cov is a subprovider that you add to your [provider engine](https://github.com/MetaMask/provider-engine). If you're unfamilliar with ProviderEngine - read `More complex providers` section [here](https://0xproject.com/wiki#Web3-Provider-Explained). It eavesdrops `eth_sendTransaction` and `eth_call` and collects traces after each one of them using `debug_traceTransaction`. `eth_call` doesn't generate the trace - so we first do a snapshot, then submit it as a transaction, then get a trace and then revert a snapshot.
+The CoverageSubprovider eavesdrops on the `eth_sendTransaction` and `eth_call` RPC calls and collects traces after each call using `debug_traceTransaction`. `eth_call`'s' don't generate traces - so we take a snapshot, re-submit it as a transaction, get the trace and then revert the snapshot.
 
-After all tests you'll need to call:
+After all your tests are run, you'll need to call:
 
 ```
 await coverageSubprovider.writeCoverageAsync()
 ```
 
-This will create `coverage.json` file in your `coverage` directory. This file has an [istanbul format](https://github.com/gotwarlost/istanbul/blob/master/coverage.json.md) - so you can use any of the instanbul reporters.
+This will create a `coverage.json` file in the `coverage` directory. This file has an [Istanbul format](https://github.com/gotwarlost/istanbul/blob/master/coverage.json.md) - so you can use any of the existing Instanbul reporters.
 
 ## Contributing
 
-We strongly encourage that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
+We strongly encourage the community to help us make improvements. To report bugs within this package, please create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
