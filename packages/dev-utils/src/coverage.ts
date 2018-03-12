@@ -1,6 +1,8 @@
 import { CoverageSubprovider } from '@0xproject/sol-cov';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
+
 let coverageSubprovider: CoverageSubprovider;
 
 export const coverage = {
@@ -14,7 +16,7 @@ export const coverage = {
         const artifactsPath = './src/artifacts';
         const contractsPath = './src/contracts';
         const networkId = 50;
-        const defaultFromAddress = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
+        const defaultFromAddress = constants.TESTRPC_FIRST_ADDRESS;
         return new CoverageSubprovider(artifactsPath, contractsPath, networkId, defaultFromAddress);
     },
 };
