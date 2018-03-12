@@ -4,8 +4,8 @@ import * as _ from 'lodash';
 import * as path from 'path';
 
 import { collectContractsData } from './collect_contract_data';
+import { collectCoverageEntries } from './collect_coverage_entries';
 import { constants } from './constants';
-import { collectCoverageEntries } from './instrument_solidity';
 import { parseSourceMap } from './source_maps';
 import {
     BranchCoverage,

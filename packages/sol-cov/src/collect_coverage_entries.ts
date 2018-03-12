@@ -11,7 +11,6 @@ import { getLocationByOffset } from './source_maps';
 const coverageEntriesBySourceHash: { [sourceHash: string]: CoverageEntriesDescription } = {};
 
 export const collectCoverageEntries = (contractSource: string, fileName: string) => {
-    const time = Date.now();
     const sourceHash = ethUtil.sha3(contractSource).toString('hex');
     if (_.isUndefined(coverageEntriesBySourceHash[sourceHash])) {
         const ast = SolidityParser.parse(contractSource);
