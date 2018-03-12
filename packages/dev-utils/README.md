@@ -11,6 +11,8 @@ VERBOSE_GANACHE: boolean. Enables verbose Ganache logging. Every request/respons
 SOLIDITY_COVERAGE: boolean. If set - adds coverage subprovider which intercepts all calls/transactions and can be later used to compute code coverage.
 ```
 
+Boolean env variables should be either `true` or `false`. Defaults to `false` if not set.
+
 ## Install
 
 ```bash

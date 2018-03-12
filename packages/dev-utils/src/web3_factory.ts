@@ -13,6 +13,7 @@ import * as process from 'process';
 
 import { constants } from './constants';
 import { coverage } from './coverage';
+import { env } from './env';
 
 // HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
 // because they are using the wrong XHR package.
@@ -26,6 +27,11 @@ export interface Web3Config {
     shouldUseInProcessGanache?: boolean; // default: false
 }
 
+enum EnvVars {
+    SolidityCoverage = 'SOLIDITY_COVERAGE',
+    VerboseGanache = 'VERBOSE_GANACHE',
+}
+
 export const web3Factory = {
     create(config: Web3Config = {}): Web3 {
         const provider = this.getRpcProvider(config);
@@ -35,7 +41,8 @@ export const web3Factory = {
     },
     getRpcProvider(config: Web3Config = {}): Web3.Provider {
         const provider = new ProviderEngine();
-        if (process.env.SOLIDITY_COVERAGE) {
+        const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
+        if (isCoverageEnabled) {
             provider.addProvider(coverage.getCoverageSubproviderSingleton());
         }
         const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
@@ -53,7 +60,7 @@ export const web3Factory = {
             provider.addProvider(
                 new GanacheSubprovider({
                     logger,
-                    verbose: process.env.VERBOSE_GANACHE,
+                    verbose: env.parseBoolean(EnvVars.SolidityCoverage),
                     port: 8545,
                     networkId: 50,
                     mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
