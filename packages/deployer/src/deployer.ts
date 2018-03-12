@@ -32,9 +32,7 @@ export class Deployer {
         if (_.isUndefined((opts as ProviderDeployerOptions).web3Provider)) {
             const jsonrpcUrl = (opts as UrlDeployerOptions).jsonrpcUrl;
             if (_.isUndefined(jsonrpcUrl)) {
-                throw new Error(
-                    `Deployer options don't have neither web3Provider nor jsonrpcUrl. Please pass one of them`,
-                );
+                throw new Error(`Deployer options don't contain web3Provider nor jsonrpcUrl. Please pass one of them`);
             }
             web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
         } else {
