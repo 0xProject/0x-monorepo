@@ -180,7 +180,7 @@ export class CoverageManager {
                 }
             }
         }
-        // TODO: Submit a PR to DT
+        // TODO: Remove any cast as soon as https://github.com/DefinitelyTyped/DefinitelyTyped/pull/24233 gets merged
         return (collector as any).getFinalCoverage();
     }
 }
