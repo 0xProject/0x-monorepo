@@ -1,0 +1,9 @@
+{
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "outDir": "scripts",
+        "noImplicitThis": false,
+        "rootDir": "./monorepo_scripts"
+    },
+    "include": ["./monorepo_scripts/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
+}

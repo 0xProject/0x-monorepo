@@ -43,7 +43,9 @@
         "@0xproject/utils": "^0.4.1",
         "ethereumjs-util": "^5.1.2",
         "lodash": "^4.17.4",
+        "publish-release": "0xproject/publish-release",
         "request-promise-native": "^1.0.5",
+        "semver-sort": "^0.0.4",
         "web3": "^0.20.0",
         "web3-provider-engine": "^13.0.1"
     },
