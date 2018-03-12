@@ -1,11 +1,14 @@
 # CHANGELOG
 
-## v0.7.0 - _March 8, 2018_
+## v0.8.0 - _TBD, 2018_
 
-    * Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros. (#437)
     * Export `GanacheSubprovider` and `Subprovider` (#426)
     * Make all subproviders to derive from `Subprovider` (#426)
     * Add types for `NextCallback`, `OnNextCompleted` (#426)
+
+## v0.7.0 - _March 8, 2018_
+
+    * Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros. (#437)
 
 ## v0.6.0 - _March 4, 2018_
 
