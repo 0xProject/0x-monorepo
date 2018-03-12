@@ -1,10 +1,22 @@
 import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 
 const DUMMY_TOKEN_NAME = '';
 const DUMMY_TOKEN_SYMBOL = '';
 const DUMMY_TOKEN_DECIMALS = 18;
 const DUMMY_TOKEN_TOTAL_SUPPLY = 0;
-const TESTRPC_INITIAL_BALANCE_HEX = parseInt('100000000000000000000', 16);
+const TESTRPC_PRIVATE_KEYS_STRINGS = [
+    '0xf2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d',
+    '0x5d862464fe9303452126c8bc94274b8c5f9874cbd219789b3eb2128075a76f72',
+    '0xdf02719c4df8b9b8ac7f551fcb5d9ef48fa27eef7a66453879f4d8fdc6e78fb1',
+    '0xff12e391b79415e941a94de3bf3a9aee577aed0731e297d5cfa0b8a1e02fa1d0',
+    '0x752dd9cf65e68cfaba7d60225cbdbc1f4729dd5e5507def72815ed0d8abc6249',
+    '0xefb595a0178eb79a8df953f87c5148402a224cdf725e88c0146727c6aceadccd',
+    '0x83c6d2cc5ddcf9711a6d59b417dc20eb48afd58d45290099e5987e3d768f328f',
+    '0xbb2d3f7c9583780a7d3904a2f55d792707c345f21de1bacb2d389934d82796b2',
+    '0xb2fd4d29c1390b71b8795ae81196bfd60293adf99f9d32a0aff06288fcdac55f',
+    '0x23cb7121166b9a2f93ae0b7c05bde02eae50d64449b2cbb42bc84e9d38d6cc89',
+];
 
 export const constants = {
     NULL_BYTES: '0x',
@@ -15,23 +27,5 @@ export const constants = {
     MAX_TOKEN_TRANSFERFROM_GAS: 80000,
     MAX_TOKEN_APPROVE_GAS: 60000,
     DUMMY_TOKEN_ARGS: [DUMMY_TOKEN_NAME, DUMMY_TOKEN_SYMBOL, DUMMY_TOKEN_DECIMALS, DUMMY_TOKEN_TOTAL_SUPPLY],
-    TESTRPC_PORT: 8545,
-    TESTRPC_ACCOUNTS: [
-        {
-            balance: TESTRPC_INITIAL_BALANCE_HEX,
-            secretKey: ethUtil.sha3('secret0'),
-        },
-        {
-            balance: TESTRPC_INITIAL_BALANCE_HEX,
-            secretKey: ethUtil.sha3('secret1'),
-        },
-        {
-            balance: TESTRPC_INITIAL_BALANCE_HEX,
-            secretKey: ethUtil.sha3('secret2'),
-        },
-        {
-            balance: TESTRPC_INITIAL_BALANCE_HEX,
-            secretKey: ethUtil.sha3('secret3'),
-        },
-    ],
+    TESTRPC_PRIVATE_KEYS: _.map(TESTRPC_PRIVATE_KEYS_STRINGS, privateKeyString => ethUtil.toBuffer(privateKeyString)),
 };

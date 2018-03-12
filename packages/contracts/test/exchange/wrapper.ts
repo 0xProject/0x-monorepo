@@ -96,8 +96,8 @@ describe('Exchange', () => {
             takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
 
-        const secretKey = constants.TESTRPC_ACCOUNTS[0].secretKey;
-        orderFactory = new OrderFactory(secretKey, defaultOrderParams);
+        const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
+        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
         dmyBalances = new Balances([rep, dgd, zrx], [makerAddress, takerAddress, feeRecipientAddress]);
         await Promise.all([
             rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: makerAddress }),

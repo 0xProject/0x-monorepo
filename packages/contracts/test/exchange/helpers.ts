@@ -58,8 +58,8 @@ describe('Exchange', () => {
             makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
-        const secretKey = constants.TESTRPC_ACCOUNTS[0].secretKey;
-        orderFactory = new OrderFactory(secretKey, defaultOrderParams);
+        const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
+        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
         signedOrder = orderFactory.newSignedOrder();
     });
 
