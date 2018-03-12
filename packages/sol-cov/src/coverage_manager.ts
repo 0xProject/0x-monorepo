@@ -69,6 +69,30 @@ export class CoverageManager {
             );
             functionCoverage[fnId] = isCovered;
         }
+        // HACK: Solidity doesn't emit any opcodes that map back to modifiers with no args, that's why we map back to the
+        // function range and check if there is any covered statement within that range.
+        for (const modifierStatementId of coverageEntriesDescription.modifiersStatementIds) {
+            if (statementCoverage[modifierStatementId]) {
+                // Already detected as covered
+                continue;
+            }
+            const modifierDescription = coverageEntriesDescription.statementMap[modifierStatementId];
+            const enclosingFunction = _.find(coverageEntriesDescription.fnMap, functionDescription =>
+                utils.isRangeInside(modifierDescription, functionDescription.loc),
+            ) as FunctionDescription;
+            const isModifierCovered = _.some(
+                coverageEntriesDescription.statementMap,
+                (statementDescription: StatementDescription, statementId: number) => {
+                    const isInsideTheModifierEnclosingFunction = utils.isRangeInside(
+                        statementDescription,
+                        enclosingFunction.loc,
+                    );
+                    const isCovered = statementCoverage[statementId];
+                    return isInsideTheModifierEnclosingFunction && isCovered;
+                },
+            );
+            statementCoverage[modifierStatementId] = isModifierCovered;
+        }
         const partialCoverage = {
             [contractData.sources[fileIndex]]: {
                 ...coverageEntriesDescription,
