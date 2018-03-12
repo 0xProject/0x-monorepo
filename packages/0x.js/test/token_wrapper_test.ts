@@ -22,11 +22,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const blockchainLifecycle = new BlockchainLifecycle(web3);
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('TokenWrapper', () => {
     let zeroEx: ZeroEx;
@@ -35,13 +35,11 @@ describe('TokenWrapper', () => {
     let tokenUtils: TokenUtils;
     let coinbase: string;
     let addressWithoutFunds: string;
-    let web3Wrapper: Web3Wrapper;
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
         zeroEx = new ZeroEx(web3.currentProvider, config);
-        web3Wrapper = new Web3Wrapper(web3.currentProvider);
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         tokenUtils = new TokenUtils(tokens);

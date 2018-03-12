@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { BlockParamLiteral } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -14,11 +14,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { TokenUtils } from './utils/token_utils';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const blockchainLifecycle = new BlockchainLifecycle(web3);
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('OrderValidation', () => {
     let zeroEx: ZeroEx;

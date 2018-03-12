@@ -10,9 +10,9 @@ import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, Zero
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { TokenUtils } from './utils/token_utils';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
-const web3 = web3Factory.create();
-const blockchainLifecycle = new BlockchainLifecycle(web3);
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
 const expect = chai.expect;
 

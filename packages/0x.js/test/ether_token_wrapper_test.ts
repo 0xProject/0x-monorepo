@@ -23,11 +23,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const blockchainLifecycle = new BlockchainLifecycle(web3);
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // Since the address depositing/withdrawing ETH/WETH also needs to pay gas costs for the transaction,
 // a small amount of ETH will be used to pay this gas cost. We therefore check that the difference between
