@@ -160,6 +160,7 @@ const docsInfoConfig: DocsInfoConfig = {
             'OrderState',
             'OrderStateWatcherConfig',
             'FilterObject',
+            'OrderRelevantState',
         ],
         typeNameToPrefix: {
             Provider: 'Web3',
