@@ -72,7 +72,8 @@ export class CoverageSubprovider extends Subprovider {
             await this._lock.acquire();
         }
         if (_.isNull(err)) {
-            await this._recordTxTraceAsync(txData.to || constants.NEW_CONTRACT, txData.data, txHash as string);
+            const toAddress = _.isUndefined(txData.to) || txData.to === '0x0' ? constants.NEW_CONTRACT : txData.to;
+            await this._recordTxTraceAsync(toAddress, txData.data, txHash as string);
         } else {
             const payload = {
                 method: 'eth_getBlockByNumber',
@@ -81,11 +82,8 @@ export class CoverageSubprovider extends Subprovider {
             const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
             const transactions = jsonRPCResponsePayload.result.transactions;
             for (const transaction of transactions) {
-                await this._recordTxTraceAsync(
-                    transaction.to || constants.NEW_CONTRACT,
-                    transaction.data,
-                    transaction.hash,
-                );
+                const toAddress = _.isUndefined(txData.to) || txData.to === '0x0' ? constants.NEW_CONTRACT : txData.to;
+                await this._recordTxTraceAsync(toAddress, transaction.data, transaction.hash);
             }
         }
         if (!txData.isFakeTransaction) {
