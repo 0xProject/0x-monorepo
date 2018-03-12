@@ -41,7 +41,7 @@ export interface SolcErrors {
 export interface CliOptions extends yargs.Arguments {
     artifactsDir: string;
     contractsDir: string;
-    jsonrpcPort: number;
+    jsonrpcUrl: string;
     networkId: number;
     shouldOptimize: boolean;
     gasPrice: string;
@@ -68,11 +68,11 @@ export interface ProviderDeployerOptions extends BaseDeployerOptions {
     web3Provider: Web3.Provider;
 }
 
-export interface PortDeployerOptions extends BaseDeployerOptions {
-    jsonrpcPort: number;
+export interface UrlDeployerOptions extends BaseDeployerOptions {
+    jsonrpcUrl: string;
 }
 
-export type DeployerOptions = PortDeployerOptions | ProviderDeployerOptions;
+export type DeployerOptions = UrlDeployerOptions | ProviderDeployerOptions;
 
 export interface ContractSources {
     [key: string]: string;

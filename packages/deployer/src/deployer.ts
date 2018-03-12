@@ -10,7 +10,7 @@ import {
     ContractArtifact,
     ContractNetworkData,
     DeployerOptions,
-    PortDeployerOptions,
+    UrlDeployerOptions,
     ProviderDeployerOptions,
 } from './utils/types';
 import { utils } from './utils/utils';
@@ -30,13 +30,13 @@ export class Deployer {
         this._defaults = opts.defaults;
         let web3Provider: Web3.Provider;
         if (_.isUndefined((opts as ProviderDeployerOptions).web3Provider)) {
-            const jsonrpcPort = (opts as PortDeployerOptions).jsonrpcPort;
-            if (_.isUndefined(jsonrpcPort)) {
+            const jsonrpcUrl = (opts as UrlDeployerOptions).jsonrpcUrl;
+            if (_.isUndefined(jsonrpcUrl)) {
                 throw new Error(
-                    `Deployer options don't have neither web3Provider nor jsonrpcPort. Please pass one of them`,
+                    `Deployer options don't have neither web3Provider nor jsonrpcUrl. Please pass one of them`,
                 );
             }
-            web3Provider = new Web3.providers.HttpProvider(`http://localhost:${jsonrpcPort}`);
+            web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
         } else {
             web3Provider = (opts as ProviderDeployerOptions).web3Provider;
         }

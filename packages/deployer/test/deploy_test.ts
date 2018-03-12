@@ -24,7 +24,7 @@ const compiler = new Compiler(compilerOpts);
 const deployerOpts = {
     artifactsDir,
     networkId: constants.networkId,
-    jsonrpcPort: constants.jsonrpcPort,
+    jsonrpcUrl: constants.jsonrpcUrl,
     defaults: {
         gasPrice: constants.gasPrice,
     },

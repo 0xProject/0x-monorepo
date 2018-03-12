@@ -13,7 +13,7 @@ const DEFAULT_OPTIMIZER_ENABLED = false;
 const DEFAULT_CONTRACTS_DIR = path.resolve('src/contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('src/artifacts');
 const DEFAULT_NETWORK_ID = 50;
-const DEFAULT_JSONRPC_PORT = 8545;
+const DEFAULT_JSONRPC_URL = 'http://localhost:8545';
 const DEFAULT_GAS_PRICE = (10 ** 9 * 2).toString();
 const DEFAULT_CONTRACTS_LIST = '*';
 
@@ -36,7 +36,7 @@ async function onCompileCommand(argv: CliOptions): Promise<void> {
  * @param argv Instance of process.argv provided by yargs.
  */
 async function onDeployCommand(argv: CliOptions): Promise<void> {
-    const url = `http://localhost:${argv.jsonrpcPort}`;
+    const url = argv.jsonrpcUrl;
     const web3Provider = new Web3.providers.HttpProvider(url);
     const web3Wrapper = new Web3Wrapper(web3Provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
@@ -55,7 +55,7 @@ async function onDeployCommand(argv: CliOptions): Promise<void> {
     };
     const deployerOpts: DeployerOptions = {
         artifactsDir: argv.artifactsDir,
-        jsonrpcPort: argv.jsonrpcPort,
+        jsonrpcUrl: argv.jsonrpcUrl,
         networkId,
         defaults,
     };
@@ -120,10 +120,10 @@ function deployCommandBuilder(yargsInstance: any) {
             default: DEFAULT_ARTIFACTS_DIR,
             description: 'path to write contracts artifacts to',
         })
-        .option('jsonrpc-port', {
-            type: 'number',
-            default: DEFAULT_JSONRPC_PORT,
-            description: 'port connected to JSON RPC',
+        .option('jsonrpc-url', {
+            type: 'string',
+            default: DEFAULT_JSONRPC_URL,
+            description: 'url of JSON RPC',
         })
         .option('gas-price', {
             type: 'string',

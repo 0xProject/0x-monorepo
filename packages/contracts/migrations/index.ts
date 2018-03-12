@@ -8,7 +8,7 @@ import { runMigrationsAsync } from './migrate';
 
 const deployerOpts = {
     artifactsDir: path.resolve('src', 'artifacts'),
-    jsonrpcPort: devConstants.RPC_PORT,
+    jsonrpcUrl: devConstants.RPC_URL,
     networkId: constants.TESTRPC_NETWORK_ID,
     defaults: {
         gas: devConstants.GAS_ESTIMATE,
