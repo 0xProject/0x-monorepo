@@ -4,10 +4,10 @@ import * as process from 'process';
 export const env = {
     parseBoolean(key: string): boolean {
         let isTrue: boolean;
-        const envVarvalue = process.env[key];
-        if (process.env.SOLIDITY_COVERAGE === 'true') {
+        const envVarValue = process.env[key];
+        if (envVarValue === 'true') {
             isTrue = true;
-        } else if (process.env.SOLIDITY_COVERAGE === 'false' || _.isUndefined(process.env.SOLIDITY_COVERAGE)) {
+        } else if (envVarValue === 'false' || _.isUndefined(envVarValue)) {
             isTrue = false;
         } else {
             throw new Error(
