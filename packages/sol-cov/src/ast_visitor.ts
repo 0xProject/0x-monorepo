@@ -7,6 +7,7 @@ export interface CoverageEntriesDescription {
     fnMap: FnMap;
     branchMap: BranchMap;
     statementMap: StatementMap;
+    modifiersStatementIds: number[];
 }
 
 enum BranchType {
@@ -19,6 +20,7 @@ export class ASTVisitor {
     private _entryId = 0;
     private _fnMap: FnMap = {};
     private _branchMap: BranchMap = {};
+    private _modifiersStatementIds: number[] = [];
     private _statementMap: StatementMap = {};
     private _locationByOffset: LocationByOffset;
     private static _doesLookLikeAnASTNode(ast: any): boolean {
@@ -49,6 +51,7 @@ export class ASTVisitor {
             fnMap: this._fnMap,
             branchMap: this._branchMap,
             statementMap: this._statementMap,
+            modifiersStatementIds: this._modifiersStatementIds,
         };
         return coverageEntriesDescription;
     }
@@ -91,6 +94,7 @@ export class ASTVisitor {
     private _visitModifierArgument(ast: SolidityParser.AST): void {
         const BUILTIN_MODIFIERS = ['public', 'view', 'payable', 'external', 'internal', 'pure', 'constant'];
         if (!_.includes(BUILTIN_MODIFIERS, ast.name)) {
+            this._modifiersStatementIds.push(this._entryId);
             this._visitStatement(ast);
         }
     }
