@@ -7,12 +7,11 @@ import * as _ from 'lodash';
 import * as newman from 'newman';
 import * as yargs from 'yargs';
 
-import * as sraReportCollectionJSON from '../postman_configs/collections/sra_report.postman_collection.json';
+import * as sraReportCollectionJSON from '../../postman_collections/sra_report.postman_collection.json';
 
 import { postmanEnvironmentFactory } from './postman_environment_factory';
 import { utils } from './utils';
 
-const newmanRunAsync = promisify<void>(newman.run);
 const DEFAULT_NETWORK_ID = 1;
 const SUPPORTED_NETWORK_IDS = [1, 3, 4, 42];
 
@@ -97,6 +96,6 @@ const mainAsync = async () => {
         exportEnvironment: args.exportEnvironment,
         ...newmanReporterOptions,
     };
-    await newmanRunAsync(newmanRunOptions);
+    await utils.newmanRunAsync(newmanRunOptions);
 };
 mainAsync().catch(utils.log);
