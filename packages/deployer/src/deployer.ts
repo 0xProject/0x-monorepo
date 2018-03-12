@@ -10,8 +10,8 @@ import {
     ContractArtifact,
     ContractNetworkData,
     DeployerOptions,
-    UrlDeployerOptions,
     ProviderDeployerOptions,
+    UrlDeployerOptions,
 } from './utils/types';
 import { utils } from './utils/utils';
 

@@ -10,6 +10,8 @@ yarn add @0xproject/deployer
 
 ## Usage
 
+### CLI Usage
+
 ```bash
 node ./node_modules/@0xproject/deployer/lib/cli.js --help
 cli.js [command]
@@ -32,6 +34,34 @@ Options:
   --account          account to use for deploying contracts             [string]
   --help             Show help                                         [boolean]
 ```
+
+### API Usage
+
+## Migrations
+
+You might want to write a migrations script (similar to `truffle migrate`), that deploys multiple contracts and configures them. Bellow you'll find a simplest example of such a script to help you get started.
+
+```
+import { Deployer } from '@0xproject/deployer';
+import * as path from 'path';
+
+const deployerOpts = {
+    artifactsDir: path.resolve('src', 'artifacts'),
+    jsonrpcUrl: 'http://localhost:8545',
+    networkId: 50,
+    defaults: {
+        gas: '1000000',
+    },
+};
+
+const deployer = new Deployer(deployerOpts);
+
+(async () => {
+    const etherToken = await deployer.deployAndSaveAsync('WETH9');
+})().catch(console.log);
+```
+
+More sophisticated example can be found [here](https://github.com/0xProject/0x-monorepo/tree/development/packages/contracts/migrations)
 
 ## Contributing
 
