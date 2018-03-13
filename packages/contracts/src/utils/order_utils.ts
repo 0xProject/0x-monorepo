@@ -24,6 +24,7 @@ export const orderUtils = {
     },
     getOrderStruct(signedOrder: SignedOrder): OrderStruct {
         const orderStruct = {
+            senderAddress: signedOrder.senderAddress,
             makerAddress: signedOrder.makerAddress,
             takerAddress: signedOrder.takerAddress,
             makerTokenAddress: signedOrder.makerTokenAddress,
@@ -41,6 +42,7 @@ export const orderUtils = {
     getOrderHashBuff(order: SignedOrder | UnsignedOrder): Buffer {
         const orderSchemaHashBuff = crypto.solSHA3([
             'address exchangeAddress',
+            'address senderAddress',
             'address makerAddress',
             'address takerAddress',
             'address makerTokenAddress',
@@ -55,6 +57,7 @@ export const orderUtils = {
         ]);
         const orderParamsHashBuff = crypto.solSHA3([
             order.exchangeAddress,
+            order.senderAddress,
             order.makerAddress,
             order.takerAddress,
             order.makerTokenAddress,

@@ -1,6 +1,7 @@
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
+import { orderUtils } from './order_utils';
 import { BatchCancelOrders, BatchFillOrders, MarketFillOrders, SignedOrder } from './types';
 
 export const formatters = {
@@ -11,19 +12,8 @@ export const formatters = {
             takerTokenFillAmounts,
         };
         _.forEach(signedOrders, signedOrder => {
-            batchFill.orders.push({
-                makerAddress: signedOrder.makerAddress,
-                takerAddress: signedOrder.takerAddress,
-                makerTokenAddress: signedOrder.makerTokenAddress,
-                takerTokenAddress: signedOrder.takerTokenAddress,
-                feeRecipientAddress: signedOrder.feeRecipientAddress,
-                makerTokenAmount: signedOrder.makerTokenAmount,
-                takerTokenAmount: signedOrder.takerTokenAmount,
-                makerFeeAmount: signedOrder.makerFeeAmount,
-                takerFeeAmount: signedOrder.takerFeeAmount,
-                expirationTimeSeconds: signedOrder.expirationTimeSeconds,
-                salt: signedOrder.salt,
-            });
+            const orderStruct = orderUtils.getOrderStruct(signedOrder);
+            batchFill.orders.push(orderStruct);
             batchFill.signatures.push(signedOrder.signature);
             if (takerTokenFillAmounts.length < signedOrders.length) {
                 batchFill.takerTokenFillAmounts.push(signedOrder.takerTokenAmount);
@@ -38,19 +28,8 @@ export const formatters = {
             takerTokenFillAmount,
         };
         _.forEach(signedOrders, signedOrder => {
-            marketFillOrders.orders.push({
-                makerAddress: signedOrder.makerAddress,
-                takerAddress: signedOrder.takerAddress,
-                makerTokenAddress: signedOrder.makerTokenAddress,
-                takerTokenAddress: signedOrder.takerTokenAddress,
-                feeRecipientAddress: signedOrder.feeRecipientAddress,
-                makerTokenAmount: signedOrder.makerTokenAmount,
-                takerTokenAmount: signedOrder.takerTokenAmount,
-                makerFeeAmount: signedOrder.makerFeeAmount,
-                takerFeeAmount: signedOrder.takerFeeAmount,
-                expirationTimeSeconds: signedOrder.expirationTimeSeconds,
-                salt: signedOrder.salt,
-            });
+            const orderStruct = orderUtils.getOrderStruct(signedOrder);
+            marketFillOrders.orders.push(orderStruct);
             marketFillOrders.signatures.push(signedOrder.signature);
         });
         return marketFillOrders;
@@ -61,19 +40,8 @@ export const formatters = {
             takerTokenCancelAmounts,
         };
         _.forEach(signedOrders, signedOrder => {
-            batchCancel.orders.push({
-                makerAddress: signedOrder.makerAddress,
-                takerAddress: signedOrder.takerAddress,
-                makerTokenAddress: signedOrder.makerTokenAddress,
-                takerTokenAddress: signedOrder.takerTokenAddress,
-                feeRecipientAddress: signedOrder.feeRecipientAddress,
-                makerTokenAmount: signedOrder.makerTokenAmount,
-                takerTokenAmount: signedOrder.takerTokenAmount,
-                makerFeeAmount: signedOrder.makerFeeAmount,
-                takerFeeAmount: signedOrder.takerFeeAmount,
-                expirationTimeSeconds: signedOrder.expirationTimeSeconds,
-                salt: signedOrder.salt,
-            });
+            const orderStruct = orderUtils.getOrderStruct(signedOrder);
+            batchCancel.orders.push(orderStruct);
             if (takerTokenCancelAmounts.length < signedOrders.length) {
                 batchCancel.takerTokenCancelAmounts.push(signedOrder.takerTokenAmount);
             }
