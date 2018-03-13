@@ -40,10 +40,6 @@ jobs:
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run --scope 0x.js test:circleci
-      - save_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo
   test-contracts:
     docker:
       - image: circleci/node:6.12
@@ -57,10 +53,6 @@ jobs:
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run --scope contracts test:circleci
-      - save_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo
   test-deployer:
     docker:
       - image: circleci/node:6.12
@@ -105,15 +97,6 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn prettier:ci
-  coverage_report:
-    working_directory: ~/repo
-    docker:
-      - image: circleci/node:6.12
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn report_coverage
 workflows:
   version: 2
   main:
@@ -137,7 +120,3 @@ workflows:
       - lint:
           requires:
             - build
-      - coverage_report:
-          requires:
-            - test-0xjs
-            - test-contracts
