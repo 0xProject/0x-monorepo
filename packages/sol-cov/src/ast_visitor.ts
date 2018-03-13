@@ -54,8 +54,32 @@ export class ASTVisitor {
     public BreakStatement(ast: Parser.BreakStatement): void {
         this._visitStatement(ast);
     }
+    public ContinueStatement(ast: Parser.ContinueStatement): void {
+        this._visitStatement(ast);
+    }
+    public VariableDeclarationStatement(ast: Parser.VariableDeclarationStatement): void {
+        this._visitStatement(ast);
+    }
+    public Statement(ast: Parser.Statement): void {
+        this._visitStatement(ast);
+    }
+    public WhileStatement(ast: Parser.WhileStatement): void {
+        this._visitStatement(ast);
+    }
+    public SimpleStatement(ast: Parser.SimpleStatement): void {
+        this._visitStatement(ast);
+    }
+    public ThrowStatement(ast: Parser.ThrowStatement): void {
+        this._visitStatement(ast);
+    }
+    public DoWhileStatement(ast: Parser.DoWhileStatement): void {
+        this._visitStatement(ast);
+    }
     public ExpressionStatement(ast: Parser.ExpressionStatement): void {
         this._visitStatement(ast.expression);
+    }
+    public InlineAssemblyStatement(ast: Parser.InlineAssemblyStatement): void {
+        this._visitStatement(ast);
     }
     public BinaryOperation(ast: Parser.BinaryOperation): void {
         const BRANCHING_BIN_OPS = ['&&', '||'];
