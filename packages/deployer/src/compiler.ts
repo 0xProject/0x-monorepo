@@ -19,7 +19,7 @@ import {
 } from './utils/types';
 import { utils } from './utils/utils';
 
-const ALL_CONTRACTS_IDENTIFIER = '*.sol';
+const ALL_CONTRACTS_IDENTIFIER = '*';
 const SOLIDITY_VERSION_REGEX = /(?:solidity\s\^?)(\d+\.\d+\.\d+)/;
 const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
 const IMPORT_REGEX = /(import\s)/;
