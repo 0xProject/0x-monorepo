@@ -1,5 +1,5 @@
-import * as promisify from 'es6-promisify';
 import { execAsync } from 'async-child-process';
+import * as promisify from 'es6-promisify';
 import * as _ from 'lodash';
 import * as publishRelease from 'publish-release';
 import semverSort = require('semver-sort');
@@ -16,7 +16,7 @@ export interface TagAndVersion {
 }
 
 export const postpublishUtils = {
-    getLatestTagAndVersionAsync(subPackageName: string): Promise<TagAndVersion> {
+    async getLatestTagAndVersionAsync(subPackageName: string): Promise<TagAndVersion> {
         const subPackagePrefix = `${subPackageName}@`;
         const gitTagsCommand = `git tag -l "${subPackagePrefix}*"`;
         return execAsync(gitTagsCommand).then((result: any) => {
@@ -36,7 +36,7 @@ export const postpublishUtils = {
             };
         });
     },
-    publishReleaseNotesAsync(tag: string, releaseName: string, assets: string[]) {
+    async publishReleaseNotesAsync(tag: string, releaseName: string, assets: string[]) {
         utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
         return publishReleaseAsync({
             token: githubPersonalAccessToken,
