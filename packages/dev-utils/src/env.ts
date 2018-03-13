@@ -1,6 +1,11 @@
 import * as _ from 'lodash';
 import * as process from 'process';
 
+export enum EnvVars {
+    SolidityCoverage = 'SOLIDITY_COVERAGE',
+    VerboseGanache = 'VERBOSE_GANACHE',
+}
+
 export const env = {
     parseBoolean(key: string): boolean {
         let isTrue: boolean;

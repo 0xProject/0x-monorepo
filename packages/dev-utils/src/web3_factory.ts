@@ -13,7 +13,7 @@ import * as process from 'process';
 
 import { constants } from './constants';
 import { coverage } from './coverage';
-import { env } from './env';
+import { env, EnvVars } from './env';
 
 // HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
 // because they are using the wrong XHR package.
@@ -25,11 +25,6 @@ import * as Web3 from 'web3';
 export interface Web3Config {
     hasAddresses?: boolean; // default: true
     shouldUseInProcessGanache?: boolean; // default: false
-}
-
-enum EnvVars {
-    SolidityCoverage = 'SOLIDITY_COVERAGE',
-    VerboseGanache = 'VERBOSE_GANACHE',
 }
 
 export const web3Factory = {

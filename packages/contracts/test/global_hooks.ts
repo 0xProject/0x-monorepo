@@ -1,7 +1,7 @@
-import { coverage } from '@0xproject/dev-utils';
+import { coverage, env, EnvVars } from '@0xproject/dev-utils';
 
 after('generate coverage report', async () => {
-    if (process.env.SOLIDITY_COVERAGE) {
+    if (env.parseBoolean(EnvVars.SolidityCoverage)) {
         const coverageSubprovider = coverage.getCoverageSubproviderSingleton();
         await coverageSubprovider.writeCoverageAsync();
     }
