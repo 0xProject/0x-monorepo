@@ -81,5 +81,31 @@ export const postpublishUtils = {
         });
         return fileIncludesAdjusted;
     },
+    async generateAndUploadDocsAsync(
+        dirname: string,
+        cwd: string,
+        includedFiles: string[],
+        version: string,
+        S3BucketPath: string,
+    ) {
+        const jsonFilePath = `${dirname}/../${postpublishUtils.generatedDocsDirectoryName}/index.json`;
+        const projectFiles = includedFiles.join(' ');
+        const result = await execAsync(
+            `JSON_FILE_PATH=${jsonFilePath} PROJECT_FILES="${projectFiles}" yarn docs:json`,
+            {
+                cwd,
+            },
+        );
+        if (!_.isEmpty(result.stderr)) {
+            throw new Error(result.stderr);
+        }
+        const fileName = `v${version}.json`;
+        utils.log(`POSTPUBLISH: Doc generation successful, uploading docs... as ${fileName}`);
+        const s3Url = S3BucketPath + fileName;
+        await execAsync(`S3_URL=${s3Url} yarn upload_docs_json`, {
+            cwd,
+        });
+        utils.log(`POSTPUBLISH: Docs uploaded to S3 bucket: ${S3BucketPath}`);
+    },
     generatedDocsDirectoryName,
 };
