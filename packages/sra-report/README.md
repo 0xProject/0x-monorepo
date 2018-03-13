@@ -116,3 +116,9 @@ yarn build
 ```bash
 yarn lint
 ```
+
+### Run Tests
+
+```bash
+yarn test
+```
