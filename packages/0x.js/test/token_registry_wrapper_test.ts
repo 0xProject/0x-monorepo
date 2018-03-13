@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -8,10 +8,11 @@ import { Token, ZeroEx } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const TOKEN_REGISTRY_SIZE_AFTER_MIGRATION = 7;
 
@@ -30,7 +31,6 @@ describe('TokenRegistryWrapper', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        const web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         _.map(tokens, token => {

@@ -1,0 +1,6 @@
+{
+    "extends": ["@0xproject/tslint-config"],
+    "rules": {
+        "completed-docs": false
+    }
+}

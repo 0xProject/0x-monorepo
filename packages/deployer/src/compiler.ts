@@ -1,6 +1,10 @@
+import { promisify } from '@0xproject/utils';
 import * as ethUtil from 'ethereumjs-util';
+import * as fs from 'fs';
+import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as path from 'path';
+import * as requireFromString from 'require-from-string';
 import solc = require('solc');
 import * as Web3 from 'web3';
 
@@ -15,7 +19,6 @@ import {
     ContractSourceData,
     ContractSources,
     ContractSpecificSourceData,
-    ImportContents,
 } from './utils/types';
 import { utils } from './utils/utils';
 
@@ -186,9 +189,22 @@ export class Compiler {
         }
 
         const fullSolcVersion = binPaths[contractSpecificSourceData.solcVersion];
-        const solcBinPath = `./solc/solc_bin/${fullSolcVersion}`;
-        const solcBin = require(solcBinPath);
-        const solcInstance = solc.setupMethods(solcBin);
+        const compilerBinFilename = path.join(__dirname, '../../solc_bin', fullSolcVersion);
+        let solcjs: string;
+        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
+        if (isCompilerAvailableLocally) {
+            solcjs = fs.readFileSync(compilerBinFilename).toString();
+        } else {
+            utils.consoleLog(`Downloading ${fullSolcVersion}...`);
+            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
+            const response = await fetch(url);
+            if (response.status !== 200) {
+                throw new Error(`Failed to load ${fullSolcVersion}`);
+            }
+            solcjs = await response.text();
+            fs.writeFileSync(compilerBinFilename, solcjs);
+        }
+        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
         utils.consoleLog(`Compiling ${fileName}...`);
         const source = this._contractSources[fileName];
@@ -210,11 +226,14 @@ export class Compiler {
                 this._solcErrors.add(normalizedErrMsg);
             });
         }
-
         const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
         const contractIdentifier = `${fileName}:${contractName}`;
         const abi: Web3.ContractAbi = JSON.parse(compiled.contracts[contractIdentifier].interface);
-        const unlinked_binary = `0x${compiled.contracts[contractIdentifier].bytecode}`;
+        const bytecode = `0x${compiled.contracts[contractIdentifier].bytecode}`;
+        const runtimeBytecode = `0x${compiled.contracts[contractIdentifier].runtimeBytecode}`;
+        const sourceMap = compiled.contracts[contractIdentifier].srcmap;
+        const sourceMapRuntime = compiled.contracts[contractIdentifier].srcmapRuntime;
+        const sources = _.keys(compiled.sources);
         const updated_at = Date.now();
         const contractNetworkData: ContractNetworkData = {
             solc_version: contractSpecificSourceData.solcVersion,
@@ -222,8 +241,12 @@ export class Compiler {
             source_tree_hash: sourceTreeHash,
             optimizer_enabled: this._optimizerEnabled,
             abi,
-            unlinked_binary,
+            bytecode,
+            runtime_bytecode: runtimeBytecode,
             updated_at,
+            source_map: sourceMap,
+            source_map_runtime: sourceMapRuntime,
+            sources,
         };
 
         let newArtifact: ContractArtifact;
@@ -284,13 +307,13 @@ export class Compiler {
      * @param  importPath Path to an imported dependency.
      * @return Import contents object containing source code of dependency.
      */
-    private _findImportsIfSourcesExist(importPath: string): ImportContents {
+    private _findImportsIfSourcesExist(importPath: string): solc.ImportContents {
         const fileName = path.basename(importPath);
         const source = this._contractSources[fileName];
         if (_.isUndefined(source)) {
             throw new Error(`Contract source not found for ${fileName}`);
         }
-        const importContents: ImportContents = {
+        const importContents: solc.ImportContents = {
             contents: source,
         };
         return importContents;

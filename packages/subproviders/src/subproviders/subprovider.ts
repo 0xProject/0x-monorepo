@@ -1,7 +1,5 @@
 import promisify = require('es6-promisify');
-import Web3 = require('web3');
-
-import { JSONRPCPayload } from '../types';
+import * as Web3 from 'web3';
 /*
  * A version of the base class Subprovider found in providerEngine
  * This one has an async/await `emitPayloadAsync` and also defined types.
@@ -19,7 +17,9 @@ export class Subprovider {
         // 16 digits
         return datePart + extraPart;
     }
-    private static _createFinalPayload(payload: JSONRPCPayload): Web3.JSONRPCRequestPayload {
+    private static _createFinalPayload(
+        payload: Partial<Web3.JSONRPCRequestPayload> & { method: string },
+    ): Web3.JSONRPCRequestPayload {
         const finalPayload = {
             // defaults
             id: Subprovider._getRandomId(),
@@ -32,7 +32,9 @@ export class Subprovider {
     public setEngine(engine: any): void {
         this._engine = engine;
     }
-    public async emitPayloadAsync(payload: JSONRPCPayload): Promise<any> {
+    public async emitPayloadAsync(
+        payload: Partial<Web3.JSONRPCRequestPayload> & { method: string },
+    ): Promise<Web3.JSONRPCResponsePayload> {
         const finalPayload = Subprovider._createFinalPayload(payload);
         const response = await promisify(this._engine.sendAsync, this._engine)(finalPayload);
         return response;

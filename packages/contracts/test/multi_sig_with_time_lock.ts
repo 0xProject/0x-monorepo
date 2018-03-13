@@ -1,5 +1,5 @@
 import { LogWithDecodedArgs, ZeroEx } from '0x.js';
-import { BlockchainLifecycle, RPC, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, web3Factory } from '@0xproject/dev-utils';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -15,14 +15,12 @@ import { ContractName, SubmissionContractEventArgs } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
 const MULTI_SIG_ABI = artifacts.MultiSigWalletWithTimeLockArtifact.networks[constants.TESTRPC_NETWORK_ID].abi;
 chaiSetup.configure();
 const expect = chai.expect;
-
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
 const abiDecoder = new AbiDecoder([MULTI_SIG_ABI]);
 
@@ -39,11 +37,6 @@ describe('MultiSigWalletWithTimeLock', () => {
     let multiSigWrapper: MultiSigWrapper;
     let txId: BigNumber;
     let initialSecondsTimeLocked: number;
-    let rpc: RPC;
-
-    before(async () => {
-        rpc = new RPC();
-    });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
     });
@@ -192,7 +185,7 @@ describe('MultiSigWalletWithTimeLock', () => {
             });
 
             it('should execute if it has enough confirmations and is past the time lock', async () => {
-                await rpc.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
+                await web3Wrapper.increaseTimeAsync(SECONDS_TIME_LOCKED.toNumber());
                 await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] });
 
                 const secondsTimeLocked = new BigNumber(await multiSig.secondsTimeLocked.callAsync());

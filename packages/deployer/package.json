@@ -6,7 +6,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' src/solc/solc_bin/* ./lib && tsc",
+        "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' ./lib && tsc",
         "test": "npm run build; mocha lib/test/*_test.js",
         "compile": "npm run build; node lib/src/cli.js compile",
         "clean": "shx rm -rf ./lib",
@@ -29,6 +29,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/deployer/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^0.4.10",
+        "@types/require-from-string": "^1.2.0",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
         "ethers-typescript-typings": "^0.0.2",
@@ -45,7 +46,9 @@
         "@0xproject/utils": "^0.4.1",
         "@0xproject/web3-wrapper": "^0.2.1",
         "ethereumjs-util": "^5.1.1",
+        "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
+        "require-from-string": "^2.0.1",
         "solc": "^0.4.18",
         "web3": "^0.20.0",
         "web3-eth-abi": "^1.0.0-beta.24",
