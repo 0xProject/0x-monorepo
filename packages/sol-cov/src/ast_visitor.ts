@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as SolidityParser from 'solidity-parser-sc';
+import * as Parser from 'solidity-parser-antlr';
 
 import { BranchMap, FnMap, LocationByOffset, SingleFileSourceRange, StatementMap } from './types';
 
@@ -23,28 +23,8 @@ export class ASTVisitor {
     private _modifiersStatementIds: number[] = [];
     private _statementMap: StatementMap = {};
     private _locationByOffset: LocationByOffset;
-    private static _doesLookLikeAnASTNode(ast: any): boolean {
-        const isAST = _.isObject(ast) && _.isString(ast.type) && _.isNumber(ast.start) && _.isNumber(ast.end);
-        return isAST;
-    }
     constructor(locationByOffset: LocationByOffset) {
         this._locationByOffset = locationByOffset;
-    }
-    public walkAST(astNode: SolidityParser.AST): void {
-        if (_.isArray(astNode) || _.isObject(astNode)) {
-            if (ASTVisitor._doesLookLikeAnASTNode(astNode)) {
-                const nodeType = astNode.type;
-                const visitorFunctionName = `_visit${nodeType}`;
-                // tslint:disable-next-line:no-this-assignment
-                const self: { [visitorFunctionName: string]: (ast: SolidityParser.AST) => void } = this as any;
-                if (_.isFunction(self[visitorFunctionName])) {
-                    self[visitorFunctionName](astNode);
-                }
-            }
-            _.forEach(astNode, subtree => {
-                this.walkAST(subtree);
-            });
-        }
     }
     public getCollectedCoverageEntries(): CoverageEntriesDescription {
         const coverageEntriesDescription = {
@@ -55,43 +35,38 @@ export class ASTVisitor {
         };
         return coverageEntriesDescription;
     }
-    private _visitConditionalExpression(ast: SolidityParser.AST): void {
-        this._visitBinaryBranch(ast, ast.consequent, ast.alternate, BranchType.ConditionalExpression);
-    }
-    private _visitFunctionDeclaration(ast: SolidityParser.AST): void {
-        const loc = this._getExpressionRange(ast);
-        this._fnMap[this._entryId++] = {
-            name: ast.name,
-            line: loc.start.line,
-            loc,
-        };
-    }
-    private _visitBinaryExpression(ast: SolidityParser.AST): void {
-        this._visitBinaryBranch(ast, ast.left, ast.right, BranchType.BinaryExpression);
-    }
-    private _visitIfStatement(ast: SolidityParser.AST): void {
+    public IfStatement(ast: Parser.IfStatement): void {
         this._visitStatement(ast);
-        this._visitBinaryBranch(ast, ast.consequent, ast.alternate || ast, BranchType.If);
+        this._visitBinaryBranch(ast, ast.trueBody, ast.falseBody || ast, BranchType.If);
     }
-    private _visitBreakStatement(ast: SolidityParser.AST): void {
+    public FunctionDefinition(ast: Parser.FunctionDefinition): void {
+        this._visitFunctionLikeDefinition(ast);
+    }
+    public ModifierDefinition(ast: Parser.ModifierDefinition): void {
+        this._visitFunctionLikeDefinition(ast);
+    }
+    public ForStatement(ast: Parser.ForStatement): void {
         this._visitStatement(ast);
     }
-    private _visitContractStatement(ast: SolidityParser.AST): void {
+    public ReturnStatement(ast: Parser.ReturnStatement): void {
         this._visitStatement(ast);
     }
-    private _visitExpressionStatement(ast: SolidityParser.AST): void {
+    public BreakStatement(ast: Parser.BreakStatement): void {
         this._visitStatement(ast);
     }
-    private _visitForStatement(ast: SolidityParser.AST): void {
-        this._visitStatement(ast);
+    public ExpressionStatement(ast: Parser.ExpressionStatement): void {
+        this._visitStatement(ast.expression);
     }
-    private _visitPlaceholderStatement(ast: SolidityParser.AST): void {
-        this._visitStatement(ast);
+    public BinaryOperation(ast: Parser.BinaryOperation): void {
+        const BRANCHING_BIN_OPS = ['&&', '||'];
+        if (_.includes(BRANCHING_BIN_OPS, ast.operator)) {
+            this._visitBinaryBranch(ast, ast.left, ast.right, BranchType.BinaryExpression);
+        }
     }
-    private _visitReturnStatement(ast: SolidityParser.AST): void {
-        this._visitStatement(ast);
+    public Conditional(ast: Parser.Conditional): void {
+        this._visitBinaryBranch(ast, ast.trueExpression, ast.falseExpression, BranchType.ConditionalExpression);
     }
-    private _visitModifierArgument(ast: SolidityParser.AST): void {
+    public ModifierInvocation(ast: Parser.ModifierInvocation): void {
         const BUILTIN_MODIFIERS = ['public', 'view', 'payable', 'external', 'internal', 'pure', 'constant'];
         if (!_.includes(BUILTIN_MODIFIERS, ast.name)) {
             this._modifiersStatementIds.push(this._entryId);
@@ -99,9 +74,9 @@ export class ASTVisitor {
         }
     }
     private _visitBinaryBranch(
-        ast: SolidityParser.AST,
-        left: SolidityParser.AST,
-        right: SolidityParser.AST,
+        ast: Parser.ASTNode,
+        left: Parser.ASTNode,
+        right: Parser.ASTNode,
         type: BranchType,
     ): void {
         this._branchMap[this._entryId++] = {
@@ -110,16 +85,25 @@ export class ASTVisitor {
             locations: [this._getExpressionRange(left), this._getExpressionRange(right)],
         };
     }
-    private _visitStatement(ast: SolidityParser.AST): void {
+    private _visitStatement(ast: Parser.ASTNode): void {
         this._statementMap[this._entryId++] = this._getExpressionRange(ast);
     }
-    private _getExpressionRange(ast: SolidityParser.AST): SingleFileSourceRange {
-        const start = this._locationByOffset[ast.start - 1];
-        const end = this._locationByOffset[ast.end - 1];
+    private _getExpressionRange(ast: Parser.ASTNode): SingleFileSourceRange {
+        const start = this._locationByOffset[ast.range[0] - 1];
+        const end = this._locationByOffset[ast.range[1]];
         const range = {
             start,
             end,
         };
         return range;
+    }
+    private _visitFunctionLikeDefinition(ast: Parser.ModifierDefinition | Parser.FunctionDefinition): void {
+        const loc = this._getExpressionRange(ast);
+        this._fnMap[this._entryId++] = {
+            name: ast.name,
+            line: loc.start.line,
+            loc,
+        };
+        this._visitStatement(ast);
     }
 }

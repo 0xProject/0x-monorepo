@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as SolidityParser from 'solidity-parser-sc';
+import * as parser from 'solidity-parser-antlr';
 
 import { ASTVisitor, CoverageEntriesDescription } from './ast_visitor';
 import { getLocationByOffset } from './source_maps';
@@ -13,11 +13,11 @@ const coverageEntriesBySourceHash: { [sourceHash: string]: CoverageEntriesDescri
 export const collectCoverageEntries = (contractSource: string, fileName: string) => {
     const sourceHash = ethUtil.sha3(contractSource).toString('hex');
     if (_.isUndefined(coverageEntriesBySourceHash[sourceHash])) {
-        const ast = SolidityParser.parse(contractSource);
+        const ast = parser.parse(contractSource, { range: true });
         const locationByOffset = getLocationByOffset(contractSource);
-        const astVisitor = new ASTVisitor(locationByOffset);
-        astVisitor.walkAST(ast);
-        coverageEntriesBySourceHash[sourceHash] = astVisitor.getCollectedCoverageEntries();
+        const visitor = new ASTVisitor(locationByOffset);
+        parser.visit(ast, visitor);
+        coverageEntriesBySourceHash[sourceHash] = visitor.getCollectedCoverageEntries();
     }
     const coverageEntriesDescription = coverageEntriesBySourceHash[sourceHash];
     return coverageEntriesDescription;

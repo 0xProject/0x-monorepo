@@ -137,9 +137,9 @@ export class CoverageSubprovider extends Subprovider {
         await this._lock.acquire();
         const snapshotId = Number((await this.emitPayloadAsync({ method: 'evm_snapshot' })).result);
         const fakeTxData: MaybeFakeTxData = {
-            from: this._defaultFromAddress,
             isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
             ...callData,
+            from: callData.from || this._defaultFromAddress,
         };
         try {
             await this.emitPayloadAsync({

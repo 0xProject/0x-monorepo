@@ -28,6 +28,7 @@
         "lodash": "^4.17.4",
         "semaphore-async-await": "^1.5.1",
         "solidity-coverage": "^0.4.10",
+        "solidity-parser-antlr": "^0.2.7",
         "solidity-parser-sc": "^0.4.4",
         "web3": "^0.20.0"
     },
