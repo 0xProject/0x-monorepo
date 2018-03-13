@@ -4,6 +4,13 @@ declare module 'dirty-chai';
 declare module 'request-promise-native';
 declare module 'web3-provider-engine';
 declare module 'web3-provider-engine/subproviders/rpc';
+declare module 'async-child-process';
+declare module 'publish-release';
+
+// semver-sort declarations
+declare module 'semver-sort' {
+    const desc: (versions: string[]) => string[];
+}
 
 // HACK: In order to merge the bignumber declaration added by chai-bignumber to the chai Assertion
 // interface we must use `namespace` as the Chai definitelyTyped definition does. Since we otherwise
