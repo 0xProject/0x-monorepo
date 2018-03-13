@@ -23,6 +23,7 @@ pragma experimental "v0.5.0";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MSettlement.sol";
 import "./mixins/MSignatureValidator.sol";
+import "./mixins/MTransactions.sol";
 import "./LibOrder.sol";
 import "./LibErrors.sol";
 import "./LibPartialAmount.sol";
@@ -36,6 +37,7 @@ contract MixinExchangeCore is
     MExchangeCore,
     MSettlement,
     MSignatureValidator,
+    MTransactions,
     SafeMath,
     LibErrors,
     LibPartialAmount
@@ -47,12 +49,6 @@ contract MixinExchangeCore is
     // Mapping of makerAddress => lowest salt an order can have in order to be fillable
     // Orders with a salt less than their maker's epoch are considered cancelled
     mapping (address => uint256) public makerEpoch;
-
-    // Mapping of transaction hash => executed
-    mapping (bytes32 => bool) public transactions;
-
-    // Address of current transaction signer
-    address currentSigner = address(0);
 
     event Fill(
         address indexed makerAddress,
@@ -85,43 +81,6 @@ contract MixinExchangeCore is
     /*
     * Core exchange functions
     */
-
-    /// @dev Executes an exchange method call in the context of signer.
-    /// @param signer Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
-    /// @param signature Proof of signer transaction by signer.
-    function executeTransaction(
-        uint256 salt,
-        address signer,
-        bytes data,
-        bytes signature)
-        public
-    {
-        // Prevent reentrancy
-        require(currentSigner == address(0));
-
-        // Calculate transaction hash
-        bytes32 transactionHash = keccak256(salt, data);
-
-        // Validate transaction has not been execute
-        require(!transactions[transactionHash]);
-
-        // TODO: is SignatureType.Caller necessary if we make this check?
-        if (signer != msg.sender) {
-            // Validate signature
-            require(isValidSignature(transactionHash, signer, signature));
-
-            // Set the current transaction signer
-            currentSigner = signer;
-        }
-
-        // Execute transaction
-        transactions[transactionHash] = true;
-        require(address(this).delegatecall(data));
-
-        // Reset current transaction signer
-        currentSigner = address(0);
-    }
 
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
