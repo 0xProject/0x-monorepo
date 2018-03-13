@@ -9,3 +9,10 @@ declare module 'web3-eth-abi' {
     // tslint:disable-next-line:completed-docs
     export function encodeParameters(typesArray: string[], parameters: any[]): string;
 }
+
+declare module '*.json' {
+    const json: any;
+    /* tslint:disable */
+    export default json;
+    /* tslint:enable */
+}

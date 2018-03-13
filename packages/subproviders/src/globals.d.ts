@@ -134,3 +134,10 @@ declare module 'hdkey' {
     }
     export = HDNode;
 }
+
+declare module '*.json' {
+    const json: any;
+    /* tslint:disable */
+    export default json;
+    /* tslint:enable */
+}

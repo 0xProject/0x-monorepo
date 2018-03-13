@@ -24,7 +24,7 @@
         "test:coverage": "nyc npm run test --all",
         "report_test_coverage": "nyc report --reporter=text-lcov | coveralls",
         "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
-        "clean": "shx rm -rf _bundles lib test_temp",
+        "clean": "shx rm -rf _bundles lib test_temp scripts",
         "build:umd:prod": "NODE_ENV=production webpack",
         "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test:commonjs": "run-s build:commonjs run_mocha",
@@ -44,6 +44,7 @@
     "devDependencies": {
         "@0xproject/abi-gen": "^0.2.5",
         "@0xproject/dev-utils": "^0.2.1",
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@types/bintrees": "^1.0.2",
         "@types/jsonschema": "^1.1.1",

@@ -1,4 +1,4 @@
-import { postpublishUtils } from '@0xproject/dev-utils';
+import { postpublishUtils } from '@0xproject/monorepo-scripts';
 import { execAsync } from 'async-child-process';
 import * as _ from 'lodash';
 

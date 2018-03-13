@@ -1,7 +1,6 @@
 {
     "name": "@0xproject/monorepo-scripts",
     "version": "0.1.12",
-    "private": true,
     "description": "Helper scripts for the monorepo",
     "scripts": {
         "build:watch": "tsc -w",
@@ -28,8 +27,12 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "es6-promisify": "^5.0.0",
+        "async-child-process": "^1.1.1",
+        "publish-release": "0xproject/publish-release",
         "chalk": "^2.3.0",
         "glob": "^7.1.2",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.4",
+        "semver-sort": "^0.0.4"
     }
 }

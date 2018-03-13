@@ -7,7 +7,7 @@
     "scripts": {
         "build:watch": "tsc -w",
         "lint": "tslint --project . 'src/**/*.ts'",
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib scripts",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts"
     },
     "bin": {
@@ -34,6 +34,7 @@
         "yargs": "^10.0.3"
     },
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@0xproject/dev-utils": "^0.2.1",
         "@types/glob": "^5.0.33",
