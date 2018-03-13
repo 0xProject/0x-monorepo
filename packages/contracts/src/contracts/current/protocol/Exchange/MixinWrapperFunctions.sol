@@ -64,18 +64,18 @@ contract MixinWrapperFunctions is
         // | Offset | Length  | Contents                     |
         // |--------|---------|------------------------------|
         // | 0      | 4       | function selector            |
-        // | 4      | 11 * 32 | Order order                  |
-        // | 356    | 32      | uint256 takerTokenFillAmount |
-        // | 388    | 32      | offset to signature (416)    |
-        // | 420    | 32      | len(signature)               |
-        // | 452    | (1)     | signature                    |
+        // | 4      | 12 * 32 | Order order                  |
+        // | 388    | 32      | uint256 takerTokenFillAmount |
+        // | 420    | 32      | offset to signature (448)    |
+        // | 452    | 32      | len(signature)               |
+        // | 484    | (1)     | signature                    |
         // | (2)    | (3)     | padding (zero)               |
         // | (4)    |         | end of input                 |
         
         // (1): len(signature)
-        // (2): 452 + len(signature)
+        // (2): 484 + len(signature)
         // (3): (32 - len(signature)) mod 32
-        // (4): 452 + len(signature) + (32 - len(signature)) mod 32
+        // (4): 484 + len(signature) + (32 - len(signature)) mod 32
         
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
 
@@ -89,27 +89,28 @@ contract MixinWrapperFunctions is
             mstore(start, fillOrderSelector)
 
             // Write order struct
-            mstore(add(start, 4), mload(order))             // makerAddress
-            mstore(add(start, 36), mload(add(order, 32)))   // takerAddress
-            mstore(add(start, 68), mload(add(order, 64)))   // makerTokenAddress
-            mstore(add(start, 100), mload(add(order, 96)))  // takerTokenAddress
-            mstore(add(start, 132), mload(add(order, 128))) // feeRecipientAddress
-            mstore(add(start, 164), mload(add(order, 160))) // makerTokenAmount
-            mstore(add(start, 196), mload(add(order, 192))) // takerTokenAmount
-            mstore(add(start, 228), mload(add(order, 224))) // makerFeeAmount
-            mstore(add(start, 260), mload(add(order, 256))) // takerFeeAmount
-            mstore(add(start, 292), mload(add(order, 288))) // expirationTimeSeconds
-            mstore(add(start, 324), mload(add(order, 320))) // salt
+            mstore(add(start, 4), mload(order))             // senderAddress
+            mstore(add(start, 36), mload(add(order, 32)))   // makerAddress
+            mstore(add(start, 68), mload(add(order, 64)))   // takerAddress
+            mstore(add(start, 100), mload(add(order, 96)))  // makerTokenAddress
+            mstore(add(start, 132), mload(add(order, 128))) // takerTokenAddress
+            mstore(add(start, 164), mload(add(order, 160))) // feeRecipientAddress
+            mstore(add(start, 196), mload(add(order, 192))) // makerTokenAmount
+            mstore(add(start, 228), mload(add(order, 224))) // takerTokenAmount
+            mstore(add(start, 260), mload(add(order, 256))) // makerFeeAmount
+            mstore(add(start, 292), mload(add(order, 288))) // takerFeeAmount
+            mstore(add(start, 324), mload(add(order, 320))) // expirationTimeSeconds
+            mstore(add(start, 356), mload(add(order, 352))) // salt
 
             // Write takerTokenFillAmount
-            mstore(add(start, 356), takerTokenFillAmount)
+            mstore(add(start, 388), takerTokenFillAmount)
 
             // Write signature offset
-            mstore(add(start, 388), 416)
+            mstore(add(start, 420), 448)
 
             // Write signature length
             let sigLen := mload(signature)
-            mstore(add(start, 420), sigLen)
+            mstore(add(start, 452), sigLen)
 
             // Calculate signature length with padding
             let paddingLen := mod(sub(0, sigLen), 32)
@@ -120,14 +121,14 @@ contract MixinWrapperFunctions is
             for { let curr := 0 } 
             lt(curr, sigLenWithPadding)
             { curr := add(curr, 32) }
-            { mstore(add(start, add(452, curr)), mload(add(sigStart, curr))) } // Note: we assume that padding consists of only 0's
+            { mstore(add(start, add(484, curr)), mload(add(sigStart, curr))) } // Note: we assume that padding consists of only 0's
 
             // Execute delegatecall
             let success := delegatecall(
                 gas,                         // forward all gas, TODO: look into gas consumption of assert/throw 
                 address,                     // call address of this contract
                 start,                       // pointer to start of input
-                add(452, sigLenWithPadding), // input length is 420 + signature length + padding length
+                add(484, sigLenWithPadding), // input length is 420 + signature length + padding length
                 start,                       // write output over input
                 32                           // output size is 32 bytes
             )
