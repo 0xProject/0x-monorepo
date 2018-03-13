@@ -120,3 +120,5 @@ workflows:
       - lint:
           requires:
             - build
+notifications:
+    webhooks: https://coveralls.io/webhook?repo_token={{ .Environment.COVERALLS_REPO_TOKEN }}
