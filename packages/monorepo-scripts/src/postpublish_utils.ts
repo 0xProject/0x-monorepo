@@ -19,22 +19,21 @@ export const postpublishUtils = {
     async getLatestTagAndVersionAsync(subPackageName: string): Promise<TagAndVersion> {
         const subPackagePrefix = `${subPackageName}@`;
         const gitTagsCommand = `git tag -l "${subPackagePrefix}*"`;
-        return execAsync(gitTagsCommand).then((result: any) => {
-            if (!_.isEmpty(result.stderr)) {
-                throw new Error(result.stderr);
-            }
-            const tags = result.stdout.trim().split('\n');
-            const versions = tags.map((tag: string) => {
-                return tag.slice(subPackagePrefix.length);
-            });
-            const sortedVersions = semverSort.desc(versions);
-            const latestVersion = sortedVersions[0];
-            const latestTag = subPackagePrefix + latestVersion;
-            return {
-                tag: latestTag,
-                version: latestVersion,
-            };
+        const result = await execAsync(gitTagsCommand);
+        if (!_.isEmpty(result.stderr)) {
+            throw new Error(result.stderr);
+        }
+        const tags = result.stdout.trim().split('\n');
+        const versions = tags.map((tag: string) => {
+            return tag.slice(subPackagePrefix.length);
         });
+        const sortedVersions = semverSort.desc(versions);
+        const latestVersion = sortedVersions[0];
+        const latestTag = subPackagePrefix + latestVersion;
+        return {
+            tag: latestTag,
+            version: latestVersion,
+        };
     },
     async publishReleaseNotesAsync(tag: string, releaseName: string, assets: string[]) {
         utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
