@@ -41,7 +41,7 @@ Options:
 
 You might want to write a migration scripts (similar to `truffle migrate`), that deploys multiple contracts and configures them. Below you'll find a simple example of such a script to help you get started.
 
-```
+```typescript
 import { Deployer } from '@0xproject/deployer';
 import * as path from 'path';
 
