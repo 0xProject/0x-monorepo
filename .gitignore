@@ -77,4 +77,4 @@ bin/
 packages/contracts/src/artifacts
 
 # Monorepo scripts
-packages/**/scripts/
+packages/*/scripts/
