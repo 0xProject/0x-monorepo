@@ -1,4 +1,4 @@
-import { postpublishUtils } from '../postpublish_utils';
+import { postpublishUtils } from '@0xproject/monorepo-scripts';
 
 import * as packageJSON from '../package.json';
 

@@ -2,6 +2,8 @@
     "name": "@0xproject/monorepo-scripts",
     "version": "0.1.12",
     "description": "Helper scripts for the monorepo",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
         "deps_versions": "node ./lib/deps_versions.js",
@@ -19,7 +21,6 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/monorepo-scripts/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.10",
         "@types/glob": "^5.0.33",
         "@types/node": "^8.0.53",
         "shx": "^0.2.2",
