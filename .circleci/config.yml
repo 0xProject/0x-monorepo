@@ -74,6 +74,10 @@ jobs:
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run --scope @0xproject/deployer test:circleci
+      - save_cache:
+          key: coverage-deployer-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/deployer/coverage/lcov.info
   test-rest:
     docker:
       - image: circleci/node:6.12
@@ -87,6 +91,26 @@ jobs:
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run --ignore contracts --ignore 0x.js --ignore @0xproject/deployer test:circleci
+      - save_cache:
+          key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/assert/coverage/lcov.info
+      - save_cache:
+          key: coverage-connect-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/connect/coverage/lcov.info
+      - save_cache:
+          key: coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/dev-utils/coverage/lcov.info
+      - save_cache:
+          key: coverage-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/json-schemas/coverage/lcov.info
+      - save_cache:
+          key: coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/subproviders/coverage/lcov.info
   lint:
     working_directory: ~/repo
     docker:
@@ -118,6 +142,24 @@ jobs:
             - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
+            - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-connect-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-deployer-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
             - coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn report_coverage
 workflows:
@@ -146,4 +188,6 @@ workflows:
       - submit-coverage:
           requires:
             - test-0xjs
+            - test-deployer
+            - test-rest
             - test-contracts

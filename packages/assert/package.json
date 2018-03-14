@@ -12,7 +12,9 @@
         "run_mocha": "mocha lib/test/**/*_test.js",
         "prepublishOnly": "run-p build",
         "test": "run-s clean build run_mocha",
-        "test:circleci": "yarn test"
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "test:circleci": "yarn test:coverage"
     },
     "license": "Apache-2.0",
     "repository": {
@@ -29,6 +31,7 @@
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
         "@types/valid-url": "^1.0.2",
+        "nyc": "^11.0.1",
         "chai": "^4.0.1",
         "chai-typescript-typings": "^0.0.4",
         "copyfiles": "^1.2.0",
