@@ -15,6 +15,7 @@ export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
     private _abiDecoder?: AbiDecoder;
+    private _contractAddressIfExists?: string;
     constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder?: AbiDecoder) {
         this._web3Wrapper = web3Wrapper;
         this._networkId = networkId;
@@ -24,15 +25,7 @@ export class ContractWrapper {
         artifact: Artifact,
         addressIfExists?: string,
     ): Promise<[Web3.ContractAbi, string]> {
-        let contractAddress: string;
-        if (_.isUndefined(addressIfExists)) {
-            if (_.isUndefined(artifact.networks[this._networkId])) {
-                throw new Error('Contract not deployed on network');
-            }
-            contractAddress = artifact.networks[this._networkId].address.toLowerCase();
-        } else {
-            contractAddress = addressIfExists;
-        }
+        const contractAddress = this._getContractAddress(artifact, addressIfExists);
         const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
         if (!doesContractExist) {
             throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
@@ -46,10 +39,11 @@ export class ContractWrapper {
             if (_.isUndefined(contractAddress)) {
                 throw new Error('ContractDoesNotExist');
             }
-            return contractAddress;
+            this._contractAddressIfExists = contractAddress;
         } else {
-            return addressIfExists;
+            this._contractAddressIfExists = addressIfExists;
         }
+        return this._contractAddressIfExists;
     }
     private _setNetworkId(networkId: number): void {
         this._networkId = networkId;
