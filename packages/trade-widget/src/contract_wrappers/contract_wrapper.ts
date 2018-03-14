@@ -20,31 +20,6 @@ export class ContractWrapper {
         this._networkId = networkId;
         this._abiDecoder = abiDecoder;
     }
-    protected async _instantiateContractIfExistsAsync(
-        artifact: Artifact,
-        addressIfExists?: string,
-    ): Promise<Web3.ContractInstance> {
-        let contractAddress: string;
-        if (_.isUndefined(addressIfExists)) {
-            if (_.isUndefined(artifact.networks[this._networkId])) {
-                throw new Error('ContractNotDeployedOnNetwork');
-            }
-            contractAddress = artifact.networks[this._networkId].address.toLowerCase();
-        } else {
-            contractAddress = addressIfExists;
-        }
-        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
-        if (!doesContractExist) {
-            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contract_name]);
-        }
-
-        // const contractInstance = this._web3Wrapper.getContractInstance(
-        //     artifact.networks[this._networkId].abi,
-        //     contractAddress,
-        // );
-        // return contractInstance;
-        return null;
-    }
     protected async _getContractAbiAndAddressFromArtifactsAsync(
         artifact: Artifact,
         addressIfExists?: string,

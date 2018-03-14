@@ -78,3 +78,6 @@ packages/contracts/src/artifacts
 
 # Monorepo scripts
 packages/*/scripts/
+
+# macOS fils
+.DS_Store

@@ -1,6 +1,7 @@
 import { Order, OrderTransactionOpts, SignedOrder } from '0x.js';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
 import { OrderAddresses, OrderValues } from '../../../0x.js/lib/src/types';
@@ -10,6 +11,7 @@ import { ContractWrapper } from './contract_wrapper';
 import { ForwarderContract } from './generated/forwarder';
 
 export class ForwarderWrapper extends ContractWrapper {
+    private _forwarderContractIfExists: ForwarderContract;
     private static _getOrderAddressesAndValues(order: Order): [OrderAddresses, OrderValues] {
         const orderAddresses: OrderAddresses = [
             order.maker,
@@ -39,8 +41,7 @@ export class ForwarderWrapper extends ContractWrapper {
     ): Promise<string> {
         const forwarderInstance = await this._getForwarderContractAsync();
         const [orderAddresses, orderValues] = ForwarderWrapper._getOrderAddressesAndValues(signedOrder);
-        // tslint:disable-next-line:no-console
-        console.log(orderAddresses, orderValues, signedOrder.ecSignature, from, orderTransactionOpts);
+        // TODO remove fixed gas and gas price
         const txHash: string = await forwarderInstance.fillOrder.sendTransactionAsync(
             orderAddresses,
             orderValues,
@@ -58,13 +59,21 @@ export class ForwarderWrapper extends ContractWrapper {
     }
 
     public async getForwarderContractAddressAsync(): Promise<string> {
-        const web3ContractInstance = await this._instantiateContractIfExistsAsync(artifacts.Forwarder);
-        return web3ContractInstance.address;
+        const contractInstance = await this._getForwarderContractAsync();
+        return contractInstance.address;
     }
 
     private async _getForwarderContractAsync(): Promise<ForwarderContract> {
-        const web3ContractInstance = await this._instantiateContractIfExistsAsync(artifacts.Forwarder);
-        const contractInstance = new ForwarderContract(web3ContractInstance, this._web3Wrapper.getContractDefaults());
-        return contractInstance;
+        if (!_.isUndefined(this._forwarderContractIfExists)) {
+            return this._forwarderContractIfExists;
+        }
+        const contractAddress = this._getContractAddress(artifacts.Forwarder);
+        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
+            artifacts.Forwarder,
+            contractAddress,
+        );
+        const contractInstance = new ForwarderContract(this._web3Wrapper, abi, address);
+        this._forwarderContractIfExists = contractInstance;
+        return this._forwarderContractIfExists;
     }
 }

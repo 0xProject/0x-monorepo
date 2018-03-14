@@ -46,7 +46,7 @@
         "build": "tsc",
         "test": "node scripts/test.js --env=jsdom",
         "generate_contract_wrappers":
-            "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../0x.js/contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
+            "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
         "update_contracts":
             "for i in ${npm_package_config_artifacts}; do copyfiles -u 3 ../contracts/artifacts/$i.json ../forwarder-widget/src/artifacts; done;",
         "styleguide": "styleguidist server",
