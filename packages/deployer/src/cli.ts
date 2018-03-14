@@ -13,7 +13,7 @@ const DEFAULT_OPTIMIZER_ENABLED = false;
 const DEFAULT_CONTRACTS_DIR = path.resolve('src/contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('src/artifacts');
 const DEFAULT_NETWORK_ID = 50;
-const DEFAULT_JSONRPC_PORT = 8545;
+const DEFAULT_JSONRPC_URL = 'http://localhost:8545';
 const DEFAULT_GAS_PRICE = (10 ** 9 * 2).toString();
 const DEFAULT_CONTRACTS_LIST = '*';
 
@@ -32,42 +32,11 @@ async function onCompileCommand(argv: CliOptions): Promise<void> {
     await commands.compileAsync(opts);
 }
 /**
- * Compiles all contracts and runs migration script with options passed in through CLI.
- * Uses network ID of running node.
- * @param argv Instance of process.argv provided by yargs.
- */
-async function onMigrateCommand(argv: CliOptions): Promise<void> {
-    const url = `http://localhost:${argv.jsonrpcPort}`;
-    const web3Provider = new Web3.providers.HttpProvider(url);
-    const web3Wrapper = new Web3Wrapper(web3Provider);
-    const networkId = await web3Wrapper.getNetworkIdAsync();
-    const compilerOpts: CompilerOptions = {
-        contractsDir: argv.contractsDir,
-        networkId,
-        optimizerEnabled: argv.shouldOptimize ? 1 : 0,
-        artifactsDir: argv.artifactsDir,
-        specifiedContracts: getContractsSetFromList(argv.contracts),
-    };
-    await commands.compileAsync(compilerOpts);
-
-    const defaults = {
-        gasPrice: new BigNumber(argv.gasPrice),
-        from: argv.account,
-    };
-    const deployerOpts = {
-        artifactsDir: argv.artifactsDir,
-        jsonrpcPort: argv.jsonrpcPort,
-        networkId,
-        defaults,
-    };
-    await commands.migrateAsync(deployerOpts);
-}
-/**
  * Deploys a single contract with provided name and args.
  * @param argv Instance of process.argv provided by yargs.
  */
 async function onDeployCommand(argv: CliOptions): Promise<void> {
-    const url = `http://localhost:${argv.jsonrpcPort}`;
+    const url = argv.jsonrpcUrl;
     const web3Provider = new Web3.providers.HttpProvider(url);
     const web3Wrapper = new Web3Wrapper(web3Provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
@@ -86,7 +55,7 @@ async function onDeployCommand(argv: CliOptions): Promise<void> {
     };
     const deployerOpts: DeployerOptions = {
         artifactsDir: argv.artifactsDir,
-        jsonrpcPort: argv.jsonrpcPort,
+        jsonrpcUrl: argv.jsonrpcUrl,
         networkId,
         defaults,
     };
@@ -151,10 +120,10 @@ function deployCommandBuilder(yargsInstance: any) {
             default: DEFAULT_ARTIFACTS_DIR,
             description: 'path to write contracts artifacts to',
         })
-        .option('jsonrpc-port', {
-            type: 'number',
-            default: DEFAULT_JSONRPC_PORT,
-            description: 'port connected to JSON RPC',
+        .option('jsonrpc-url', {
+            type: 'string',
+            default: DEFAULT_JSONRPC_URL,
+            description: 'url of JSON RPC',
         })
         .option('gas-price', {
             type: 'string',
@@ -171,12 +140,6 @@ function deployCommandBuilder(yargsInstance: any) {
             description: 'comma separated list of contracts to compile',
         })
         .command('compile', 'compile contracts', identityCommandBuilder, onCompileCommand)
-        .command(
-            'migrate',
-            'compile and deploy contracts using migration scripts',
-            identityCommandBuilder,
-            onMigrateCommand,
-        )
         .command('deploy', 'deploy a single contract with provided arguments', deployCommandBuilder, onDeployCommand)
         .help().argv;
 })();

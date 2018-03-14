@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
-import Web3 = require('web3');
+import * as Web3 from 'web3';
+
+import { Subprovider } from './subprovider';
 
 /*
  * This class implements the web3-provider-engine subprovider interface and forwards
@@ -7,9 +9,10 @@ import Web3 = require('web3');
  * provider instance in their browser.
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
-export class InjectedWeb3Subprovider {
+export class InjectedWeb3Subprovider extends Subprovider {
     private _injectedWeb3: Web3;
     constructor(subprovider: Web3.Provider) {
+        super();
         this._injectedWeb3 = new Web3(subprovider);
     }
     public handleRequest(
@@ -39,12 +42,5 @@ export class InjectedWeb3Subprovider {
                 next();
                 return;
         }
-    }
-    // Required to implement this method despite not needing it for this subprovider
-    // The engine argument type should be Web3ProviderEngine, but we've decided to keep it as type any
-    // to remove the provider engine depdency given this method is a noop
-    // tslint:disable-next-line:prefer-function-over-method
-    public setEngine(engine: any) {
-        // noop
     }
 }

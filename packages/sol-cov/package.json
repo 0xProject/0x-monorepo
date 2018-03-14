@@ -1,0 +1,45 @@
+{
+    "name": "@0xproject/sol-cov",
+    "version": "0.0.1",
+    "description": "Generate coverage reports for Solidity code",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build:watch": "tsc -w",
+        "lint": "tslint --project . 'src/**/*.ts'",
+        "clean": "shx rm -rf lib",
+        "build": "tsc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x.js.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x.js/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
+    "dependencies": {
+        "@0xproject/subproviders": "^0.7.0",
+        "@0xproject/utils": "^0.3.4",
+        "ethereumjs-util": "^5.1.1",
+        "glob": "^7.1.2",
+        "istanbul": "^0.4.5",
+        "lodash": "^4.17.4",
+        "semaphore-async-await": "^1.5.1",
+        "solidity-coverage": "^0.4.10",
+        "solidity-parser-antlr": "^0.2.7",
+        "solidity-parser-sc": "^0.4.4",
+        "web3": "^0.20.0"
+    },
+    "devDependencies": {
+        "@0xproject/tslint-config": "^0.4.9",
+        "@types/istanbul": "^0.4.29",
+        "@types/node": "^8.0.53",
+        "npm-run-all": "^4.1.2",
+        "shx": "^0.2.2",
+        "tslint": "5.8.0",
+        "typescript": "2.7.1",
+        "web3-typescript-typings": "^0.9.11"
+    }
+}

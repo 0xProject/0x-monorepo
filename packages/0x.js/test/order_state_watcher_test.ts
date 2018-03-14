@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -22,15 +22,15 @@ import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
 const TIMEOUT_MS = 150;
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('OrderStateWatcher', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let tokens: Token[];
     let tokenUtils: TokenUtils;
@@ -49,7 +49,6 @@ describe('OrderStateWatcher', () => {
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = ZeroEx.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
-        web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
         exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();

@@ -3,6 +3,7 @@
 ## v0.10.0 - _March 4, 2018_
 
     * Support ABIv2 (#401)
+    * Add types for transaction traces (#426)
 
 ## v0.9.11 - _February 16, 2018_
 

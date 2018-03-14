@@ -10,15 +10,15 @@ import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, Zero
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { TokenUtils } from './utils/token_utils';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
 const expect = chai.expect;
 
 const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
 
 describe('ZeroEx library', () => {
-    const web3 = web3Factory.create();
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };

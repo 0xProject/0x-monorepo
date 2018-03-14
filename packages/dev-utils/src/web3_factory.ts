@@ -6,9 +6,14 @@
 import ProviderEngine = require('web3-provider-engine');
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import { EmptyWalletSubprovider, FakeGasEstimateSubprovider } from '@0xproject/subproviders';
+import { EmptyWalletSubprovider, FakeGasEstimateSubprovider, GanacheSubprovider } from '@0xproject/subproviders';
+import * as fs from 'fs';
+import * as _ from 'lodash';
+import * as process from 'process';
 
 import { constants } from './constants';
+import { coverage } from './coverage';
+import { env, EnvVars } from './env';
 
 // HACK: web3 leaks XMLHttpRequest into the global scope and causes requests to hang
 // because they are using the wrong XHR package.
@@ -17,24 +22,52 @@ import { constants } from './constants';
 // tslint:disable-next-line:ordered-imports
 import * as Web3 from 'web3';
 
+export interface Web3Config {
+    hasAddresses?: boolean; // default: true
+    shouldUseInProcessGanache?: boolean; // default: false
+}
+
 export const web3Factory = {
-    create(hasAddresses: boolean = true): Web3 {
-        const provider = this.getRpcProvider(hasAddresses);
+    create(config: Web3Config = {}): Web3 {
+        const provider = this.getRpcProvider(config);
         const web3 = new Web3();
         web3.setProvider(provider);
         return web3;
     },
-    getRpcProvider(hasAddresses: boolean = true): Web3.Provider {
+    getRpcProvider(config: Web3Config = {}): Web3.Provider {
         const provider = new ProviderEngine();
+        const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
+        if (isCoverageEnabled) {
+            provider.addProvider(coverage.getCoverageSubproviderSingleton());
+        }
+        const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubprovider());
         }
         provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_ESTIMATE));
-        provider.addProvider(
-            new RpcSubprovider({
-                rpcUrl: constants.RPC_URL,
-            }),
-        );
+        const logger = {
+            log: (arg: any) => {
+                fs.appendFileSync('ganache.log', `${arg}\n`);
+            },
+        };
+        const shouldUseInProcessGanache = !!config.shouldUseInProcessGanache;
+        if (shouldUseInProcessGanache) {
+            provider.addProvider(
+                new GanacheSubprovider({
+                    logger,
+                    verbose: env.parseBoolean(EnvVars.SolidityCoverage),
+                    port: 8545,
+                    networkId: 50,
+                    mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
+                }),
+            );
+        } else {
+            provider.addProvider(
+                new RpcSubprovider({
+                    rpcUrl: constants.RPC_URL,
+                }),
+            );
+        }
         provider.start();
         return provider;
     },
