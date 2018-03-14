@@ -1,6 +1,6 @@
 ## @0xproject/web3-wrapper
 
-Wrapped version of web3 with a nicer interface that is used across 0x projects and packages
+Wrapped version of web3 with a nicer interface that is used across 0x projects and packages. Visit [the docs](0xproject.com/docs/web3_wrapper).
 
 ## Installation
 
