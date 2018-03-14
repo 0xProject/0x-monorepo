@@ -1,6 +1,5 @@
+import { ECSignature } from '@0xproject/types';
 import * as ethUtil from 'ethereumjs-util';
-
-import { ECSignature } from '../types';
 
 export const signatureUtils = {
     isValidSignature(data: string, signature: ECSignature, signerAddress: string): boolean {

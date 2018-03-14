@@ -1,33 +1,5 @@
+import { ECSignature, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-
-// TODO: Consolidate Order, SignedOrder and ECSignature into a shared package instead of duplicating them from 0x.js
-export interface Order {
-    maker: string;
-    taker: string;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    salt: BigNumber;
-    exchangeContractAddress: string;
-    feeRecipient: string;
-    expirationUnixTimestampSec: BigNumber;
-}
-
-export interface SignedOrder extends Order {
-    ecSignature: ECSignature;
-}
-
-/**
- * Elliptic Curve signature
- */
-export interface ECSignature {
-    v: number;
-    r: string;
-    s: string;
-}
 
 export interface Client {
     getTokenPairsAsync: (requestOpts?: TokenPairsRequestOpts & PagedRequestOpts) => Promise<TokenPairsItem[]>;

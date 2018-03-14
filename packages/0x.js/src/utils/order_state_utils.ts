@@ -1,3 +1,4 @@
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
@@ -6,14 +7,7 @@ import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
 import { RemainingFillableCalculator } from '../order_watcher/remaining_fillable_calculator';
 import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
 import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
-import {
-    ExchangeContractErrs,
-    OrderRelevantState,
-    OrderState,
-    OrderStateInvalid,
-    OrderStateValid,
-    SignedOrder,
-} from '../types';
+import { ExchangeContractErrs, OrderRelevantState, OrderState, OrderStateInvalid, OrderStateValid } from '../types';
 
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
