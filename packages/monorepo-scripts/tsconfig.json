@@ -3,5 +3,5 @@
     "compilerOptions": {
         "outDir": "lib"
     },
-    "include": ["./src/**/*"]
+    "include": ["./src/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
 }

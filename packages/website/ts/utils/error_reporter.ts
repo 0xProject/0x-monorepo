@@ -1,3 +1,4 @@
+import { logUtils } from '@0xproject/utils';
 import { Environments } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -40,7 +41,7 @@ export const errorReporter = {
         return new Promise((resolve, reject) => {
             rollbar.error(err, (rollbarErr: Error) => {
                 if (rollbarErr) {
-                    utils.consoleLog(`Error reporting to rollbar, ignoring: ${rollbarErr}`);
+                    logUtils.log(`Error reporting to rollbar, ignoring: ${rollbarErr}`);
                     // We never want to reject and cause the app to throw because of rollbar
                     resolve();
                 } else {

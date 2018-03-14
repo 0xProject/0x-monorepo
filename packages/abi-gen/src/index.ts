@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import { sync as globSync } from 'glob';
@@ -62,7 +63,7 @@ const args = yargs
 
 function registerPartials(partialsGlob: string) {
     const partialTemplateFileNames = globSync(partialsGlob);
-    utils.log(`Found ${chalk.green(`${partialTemplateFileNames.length}`)} ${chalk.bold('partial')} templates`);
+    logUtils.log(`Found ${chalk.green(`${partialTemplateFileNames.length}`)} ${chalk.bold('partial')} templates`);
     for (const partialTemplateFileName of partialTemplateFileNames) {
         const namedContent = utils.getNamedContent(partialTemplateFileName);
         Handlebars.registerPartial(namedContent.name, namedContent.content);
@@ -77,7 +78,7 @@ function writeOutputFile(name: string, renderedTsCode: string): void {
     }
     const filePath = `${args.output}/${fileName}.ts`;
     fs.writeFileSync(filePath, renderedTsCode);
-    utils.log(`Created: ${chalk.bold(filePath)}`);
+    logUtils.log(`Created: ${chalk.bold(filePath)}`);
 }
 
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
@@ -91,17 +92,17 @@ const template = Handlebars.compile<ContextData>(mainTemplate.content);
 const abiFileNames = globSync(args.abis);
 
 if (_.isEmpty(abiFileNames)) {
-    utils.log(`${chalk.red(`No ABI files found.`)}`);
-    utils.log(`Please make sure you've passed the correct folder name and that the files have
+    logUtils.log(`${chalk.red(`No ABI files found.`)}`);
+    logUtils.log(`Please make sure you've passed the correct folder name and that the files have
                ${chalk.bold('*.json')} extensions`);
     process.exit(1);
 } else {
-    utils.log(`Found ${chalk.green(`${abiFileNames.length}`)} ${chalk.bold('ABI')} files`);
+    logUtils.log(`Found ${chalk.green(`${abiFileNames.length}`)} ${chalk.bold('ABI')} files`);
     mkdirp.sync(args.output);
 }
 for (const abiFileName of abiFileNames) {
     const namedContent = utils.getNamedContent(abiFileName);
-    utils.log(`Processing: ${chalk.bold(namedContent.name)}...`);
+    logUtils.log(`Processing: ${chalk.bold(namedContent.name)}...`);
     const parsedContent = JSON.parse(namedContent.content);
     let ABI;
     if (_.isArray(parsedContent)) {
@@ -112,8 +113,8 @@ for (const abiFileName of abiFileNames) {
         ABI = parsedContent.networks[args.networkId].abi; // 0x contracts package artifact
     }
     if (_.isUndefined(ABI)) {
-        utils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
-        utils.log(
+        logUtils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
+        logUtils.log(
             `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x deployer artifact`,
         );
         process.exit(1);

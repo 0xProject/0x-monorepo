@@ -1,5 +1,5 @@
 import { Order, SignedOrder, ZeroEx } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as express from 'express';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -19,7 +19,6 @@ import { DispatchQueue } from './dispatch_queue';
 import { dispenseAssetTasks } from './dispense_asset_tasks';
 import { idManagement } from './id_management';
 import { rpcUrls } from './rpc_urls';
-import { utils } from './utils';
 
 interface NetworkConfig {
     dispatchQueue: DispatchQueue;
@@ -118,7 +117,7 @@ export class Handler {
             res.status(503).send('QUEUE_IS_FULL');
             return;
         }
-        utils.consoleLog(`Added ${recipient} to queue: ${requestedAssetType} networkId: ${networkId}`);
+        logUtils.log(`Added ${recipient} to queue: ${requestedAssetType} networkId: ${networkId}`);
         res.status(200).end();
     }
     private async _dispenseOrder(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType) {
@@ -163,7 +162,7 @@ export class Handler {
         };
         const signedOrderHash = ZeroEx.getOrderHashHex(signedOrder);
         const payload = JSON.stringify(signedOrder);
-        utils.consoleLog(`Dispensed signed order: ${payload}`);
+        logUtils.log(`Dispensed signed order: ${payload}`);
         res.status(200).send(payload);
     }
 }

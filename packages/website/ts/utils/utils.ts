@@ -95,11 +95,6 @@ export const utils = {
         };
         return order;
     },
-    consoleLog(message: string) {
-        /* tslint:disable */
-        console.log(message);
-        /* tslint:enable */
-    },
     async sleepAsync(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     },

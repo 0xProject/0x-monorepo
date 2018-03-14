@@ -1,6 +1,6 @@
 import { ECSignature, Order, ZeroEx } from '0x.js';
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -326,7 +326,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';
-                utils.consoleLog(`Unexpected error occured: Order validation failed:
+                logUtils.log(`Unexpected error occured: Order validation failed:
                                   ${validationResult.errors}`);
             }
         } catch (err) {
@@ -335,8 +335,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'User denied sign request';
             } else {
                 globalErrMsg = 'An unexpected error occured. Please try refreshing the page';
-                utils.consoleLog(`Unexpected error occured: ${err}`);
-                utils.consoleLog(err.stack);
+                logUtils.log(`Unexpected error occured: ${err}`);
+                logUtils.log(err.stack);
                 await errorReporter.reportAsync(err);
             }
         }

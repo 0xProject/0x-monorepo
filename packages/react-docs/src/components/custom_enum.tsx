@@ -1,3 +1,4 @@
+import { logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -16,7 +17,7 @@ export interface CustomEnumProps {
 export function CustomEnum(props: CustomEnumProps) {
     const type = props.type;
     if (!_.startsWith(type.defaultValue, STRING_ENUM_CODE_PREFIX)) {
-        utils.consoleLog('We do not yet support `Variable` types that are not strEnums');
+        logUtils.log('We do not yet support `Variable` types that are not strEnums');
         return null;
     }
     // Remove the prefix and postfix, leaving only the strEnum values without quotes.

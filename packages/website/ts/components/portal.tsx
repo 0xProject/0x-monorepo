@@ -1,5 +1,5 @@
 import { colors } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import Paper from 'material-ui/Paper';
@@ -374,7 +374,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const order = JSON.parse(decodeURIComponent(orderPair[1]));
         const validationResult = validator.validate(order, portalOrderSchema);
         if (validationResult.errors.length > 0) {
-            utils.consoleLog(`Invalid shared order: ${validationResult.errors}`);
+            logUtils.log(`Invalid shared order: ${validationResult.errors}`);
             return undefined;
         }
         return order;
