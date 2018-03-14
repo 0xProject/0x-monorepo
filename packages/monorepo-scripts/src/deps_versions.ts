@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as _ from 'lodash';
+
+import { utils } from './utils';
 
 interface Dependencies {
     [depName: string]: string;
@@ -45,9 +46,9 @@ _.map(versionsByDependency, (versions: Versions, depName: string) => {
     if (_.uniq(_.values(versions)).length === 1) {
         delete versionsByDependency[depName];
     } else {
-        logUtils.log(chalk.bold(depName));
+        utils.log(chalk.bold(depName));
         _.map(versions, (version: string, packageName: string) => {
-            logUtils.log(`├── ${packageName} -> ${version}`);
+            utils.log(`├── ${packageName} -> ${version}`);
         });
     }
 });

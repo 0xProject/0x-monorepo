@@ -30,7 +30,6 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/utils": "^0.4.1",
         "es6-promisify": "^5.0.0",
         "async-child-process": "^1.1.1",
         "publish-release": "0xproject/publish-release",
