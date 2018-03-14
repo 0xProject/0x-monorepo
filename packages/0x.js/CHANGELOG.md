@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.33.2 - _TBD, 2018_
+
+    * Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package (#452)
+
 ## v0.33.1 - _March 8, 2018_
 
     * Add missing EthersJs typescript typings as dependency

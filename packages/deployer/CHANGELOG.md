@@ -10,6 +10,7 @@
     * Add `bytecode`, `runtime_bytecode`, `source_map`, `source_map_runtime` and `sources` fields to artifacts (#426)
     * Remove 0x-specific `migrate` command (#426)
     * Allow deployer to accept a provider instead of port and host. This makes it possible to run it with in-process ganache-core (#426)
+    * Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package (#452)
 
 ## v0.2.0 - _March 4, 2018_
 

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.5 - _TBD, 2018_
+
+    * Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package (#452)
+
 ## v0.2.4 - _March 4, 2018_
 
     * Add a `backend` parameter that allows you to specify the Ethereum library you use in your templates (`web3` or `ethers`). Ethers auto-converts small ints to numbers whereas Web3 doesn't. Defaults to `web3` (#413)
