@@ -40,6 +40,10 @@ jobs:
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run --scope 0x.js test:circleci
+      - save_cache:
+          key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/0x.js/coverage/lcov.info
   test-contracts:
     docker:
       - image: circleci/node:6.12
@@ -53,6 +57,10 @@ jobs:
           command: npm run testrpc -- --db testrpc_snapshot
           background: true
       - run: yarn lerna:run --scope contracts test:circleci
+      - save_cache:
+          key: coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/contracts/coverage/lcov.info
   test-deployer:
     docker:
       - image: circleci/node:6.12
@@ -97,6 +105,21 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn prettier:ci
+  submit-coverage:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn report_coverage
 workflows:
   version: 2
   main:
@@ -120,6 +143,7 @@ workflows:
       - lint:
           requires:
             - build
-notify:
-  webhooks:
-    - url: https://coveralls.io/webhook?repo_token=ZYESXQbPiGidXzn2qkajycWa42uZHZsMX
+      - submit-coverage:
+          requires:
+            - test-0xjs
+            - test-contracts
