@@ -9,5 +9,5 @@
             "*": ["node_modules/@types/*", "*"]
         }
     },
-    "include": ["./src/ts/**/*"]
+    "include": ["./src/ts/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
 }

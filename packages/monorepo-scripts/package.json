@@ -28,6 +28,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "@0xproject/utils": "^0.4.1",
         "chalk": "^2.3.0",
         "glob": "^7.1.2",
         "lodash": "^4.17.4"

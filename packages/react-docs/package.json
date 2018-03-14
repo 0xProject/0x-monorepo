@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@0xproject/react-shared": "^0.0.1",
+    "@0xproject/utils": "^0.4.1",
     "basscss": "^8.0.3",
     "compare-versions": "^3.0.1",
     "lodash": "^4.17.4",

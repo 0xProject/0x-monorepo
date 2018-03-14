@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import { sync as globSync } from 'glob';
@@ -16,10 +17,6 @@ interface VersionsByDependency {
 }
 
 const PACKAGE_JSON_GLOB = '../*/package.json';
-
-function log(...args: any[]) {
-    console.log(...args); // tslint:disable-line:no-console
-}
 
 function getDependencies(path: string): Dependencies {
     const file = fs.readFileSync(path).toString();
@@ -48,9 +45,9 @@ _.map(versionsByDependency, (versions: Versions, depName: string) => {
     if (_.uniq(_.values(versions)).length === 1) {
         delete versionsByDependency[depName];
     } else {
-        log(chalk.bold(depName));
+        logUtils.log(chalk.bold(depName));
         _.map(versions, (version: string, packageName: string) => {
-            log(`├── ${packageName} -> ${version}`);
+            logUtils.log(`├── ${packageName} -> ${version}`);
         });
     }
 });

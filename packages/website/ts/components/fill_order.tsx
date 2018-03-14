@@ -1,6 +1,6 @@
 import { Order as ZeroExOrder, ZeroEx } from '0x.js';
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as accounting from 'accounting';
 import * as _ from 'lodash';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
@@ -403,7 +403,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 orderJSONErrMsg = 'Submitted order JSON is not a valid order';
-                utils.consoleLog(`Unexpected order JSON validation error: ${validationResult.errors.join(', ')}`);
+                logUtils.log(`Unexpected order JSON validation error: ${validationResult.errors.join(', ')}`);
                 return;
             }
             parsedOrder = order;
@@ -448,7 +448,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 this.props.dispatcher.updateUserSuppliedOrderCache(parsedOrder);
             }
         } catch (err) {
-            utils.consoleLog(`Validate order err: ${err}`);
+            logUtils.log(`Validate order err: ${err}`);
             if (!_.isEmpty(orderJSON)) {
                 orderJSONErrMsg = 'Submitted order JSON is not valid JSON';
             }
@@ -564,7 +564,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 return;
             }
             globalErrMsg = 'Failed to fill order, please refresh and try again';
-            utils.consoleLog(`${err}`);
+            logUtils.log(`${err}`);
             this.setState({
                 globalErrMsg,
             });
@@ -635,7 +635,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             }
             analytics.logEvent('Portal', 'Cancel Order Failure', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
             globalErrMsg = 'Failed to cancel order, please refresh and try again';
-            utils.consoleLog(`${err}`);
+            logUtils.log(`${err}`);
             this.setState({
                 globalErrMsg,
             });
