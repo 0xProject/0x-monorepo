@@ -7,7 +7,7 @@
     "scripts": {
         "build:watch": "tsc -w",
         "lint": "tslint --project . 'src/**/*.ts'",
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib scripts",
         "build": "tsc"
     },
     "repository": {
@@ -33,6 +33,7 @@
         "web3": "^0.20.0"
     },
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.9",
         "@types/istanbul": "^0.4.29",
         "@types/node": "^8.0.53",
