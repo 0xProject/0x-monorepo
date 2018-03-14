@@ -19,10 +19,6 @@ module.exports = {
             md: path.join(__dirname, '/md'),
         },
     },
-    // HACK: Temporary fix for this issue: https://github.com/trufflesuite/ganache-core/issues/84
-    node: {
-        fs: 'empty',
-    },
     module: {
         rules: [
             {
