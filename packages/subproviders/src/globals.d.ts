@@ -144,5 +144,6 @@ declare module 'ganache-core' {
         networkId: number;
         mnemonic: string;
     }
+    // tslint:disable-next-line:completed-docs
     export function provider(opts: GanacheOpts): Web3.Provider;
 }

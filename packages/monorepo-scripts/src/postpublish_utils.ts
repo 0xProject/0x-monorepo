@@ -40,7 +40,7 @@ export const postpublishUtils = {
             assets: _.get(postpublishConfig, 'assets', []),
             docPublishConfigs: {
                 fileIncludes: [
-                    ...(tsConfigJSON as any).include,
+                    ...tsConfigJSON.include,
                     ..._.get(postpublishConfig, 'docPublishConfigs.extraFileIncludes', []),
                 ],
                 s3BucketPath: _.get(postpublishConfig, 'docPublishConfigs.s3BucketPath'),
