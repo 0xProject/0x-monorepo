@@ -32,6 +32,8 @@ public {{this.name}} = {
         txData: TxData = {},
     ): Promise<number> {
         const self = this as {{contractName}}Contract;
+        const inputAbi = _.find(this.abi, {name: '{{this.name}}'}).inputs;
+        [{{> params inputs=inputs}}] = BaseContract._transformABIData(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(this));
         const encodedData = this._ethersInterface.functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data
@@ -49,6 +51,8 @@ public {{this.name}} = {
         txData: TxData = {},
     ): string {
         const self = this as {{contractName}}Contract;
+        const inputAbi = _.find(this.abi, {name: '{{this.name}}'}).inputs;
+        [{{> params inputs=inputs}}] = BaseContract._transformABIData(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(this));
         const abiEncodedTransactionData = this._ethersInterface.functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data

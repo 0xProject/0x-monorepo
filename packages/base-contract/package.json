@@ -6,8 +6,8 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "build": "tsc",
-        "clean": "shx rm -rf lib",
+        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
+        "clean": "shx rm -rf lib scripts",
         "lint": "tslint --project . 'src/**/*.ts'"
     },
     "license": "Apache-2.0",
@@ -20,8 +20,10 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/base-contract/README.md",
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@types/lodash": "^4.14.86",
+        "copyfiles": "^1.2.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",

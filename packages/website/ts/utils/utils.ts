@@ -276,10 +276,6 @@ export const utils = {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
         switch (constructorName) {
-            case 'MetamaskInpageProvider':
-                parsedProviderName = Providers.Metamask;
-                break;
-
             case 'EthereumProvider':
                 parsedProviderName = Providers.Mist;
                 break;
@@ -290,6 +286,8 @@ export const utils = {
         }
         if ((provider as any).isParity) {
             parsedProviderName = Providers.Parity;
+        } else if ((provider as any).isMetaMask) {
+            parsedProviderName = Providers.Metamask;
         }
         return parsedProviderName;
     },

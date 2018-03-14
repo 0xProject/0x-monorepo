@@ -1,4 +1,12 @@
 // tslint:disable:completed-docs
+
+declare module '*.json' {
+    const json: any;
+    /* tslint:disable */
+    export default json;
+    /* tslint:enable */
+}
+
 declare module 'solidity-parser-antlr' {
     export interface BaseASTNode {
         range: [number, number];
