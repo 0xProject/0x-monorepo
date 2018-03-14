@@ -39,9 +39,6 @@ export const postpublishUtils = {
             version: packageJSON.version,
             assets: _.get(postpublishConfig, 'assets', []),
             docPublishConfigs: {
-                // Include any external packages that are part of the 0x.js public interface
-                // to this array so that TypeDoc picks it up and adds it to the Docs JSON
-                // So far, we only have @0xproject/types as part of 0x.js's public interface.
                 fileIncludes: [
                     ...(tsConfigJSON as any).include,
                     ..._.get(postpublishConfig, 'docPublishConfigs.extraFileIncludes', []),
