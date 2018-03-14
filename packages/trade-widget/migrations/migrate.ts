@@ -5,37 +5,10 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 
-function getPartialNameFromFileName(filename: string): string {
-    const name = path.parse(filename).name;
-    return name;
-}
-function getNamedContent(filename: string): { name: string; content: string } {
-    const name = getPartialNameFromFileName(filename);
-    try {
-        const content = fs.readFileSync(filename).toString();
-        return {
-            name,
-            content,
-        };
-    } catch (err) {
-        throw new Error(`Failed to read ${filename}: ${err}`);
-    }
-}
-
-interface ContractArtifact {
-    address: string;
-}
-function getContractArtifactForNetwork(contract: string, networkId: number): ContractArtifact {
-    const namedContent = getNamedContent(`./src/artifacts/${contract}.json`);
-    const parsedContent = JSON.parse(namedContent.content);
-    const artifact = parsedContent.networks[networkId];
-    if (_.isUndefined(artifact)) {
-        throw new Error(`No artifact found for ${contract} on network ${networkId}`);
-    }
-    return artifact;
-}
+import { zeroExArtifacts as artifacts } from '../src/zeroex_artifacts';
 
 const TESTRPC_NETWORK_ID = 50;
+
 /**
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
  * Migrations could be written to run in parallel, but if you want contract addresses to be created deterministically,
@@ -43,20 +16,12 @@ const TESTRPC_NETWORK_ID = 50;
  * @param deployer Deployer instance.
  */
 export const runMigrationsAsync = async (deployer: Deployer) => {
-    const exchangeArtifact = getContractArtifactForNetwork('Exchange', TESTRPC_NETWORK_ID);
-    const tokenTransferProxyArtifact = getContractArtifactForNetwork('TokenTransferProxy', TESTRPC_NETWORK_ID);
-    const zrxTokenArtifact = getContractArtifactForNetwork('ZRXToken', TESTRPC_NETWORK_ID);
-    const etherTokenArtifact = getContractArtifactForNetwork('WETH9', TESTRPC_NETWORK_ID);
+    const exchangeAddress = artifacts.ExchangeArtifact.networks[TESTRPC_NETWORK_ID].address;
+    const tokenTransferProxyAddress = artifacts.TokenTransferProxy.networks[TESTRPC_NETWORK_ID].address;
+    const zrxTokenAddress = artifacts.ZRXArtifact.networks[TESTRPC_NETWORK_ID].address;
+    const etherTokenAddress = artifacts.EtherTokenArtifact.networks[TESTRPC_NETWORK_ID].address;
     const web3Wrapper: Web3Wrapper = deployer.web3Wrapper;
-    // const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
-    // tslint:disable-next-line:no-console
-    console.log(exchangeArtifact.address);
-    const forwarderArgs = [
-        exchangeArtifact.address,
-        tokenTransferProxyArtifact.address,
-        etherTokenArtifact.address,
-        zrxTokenArtifact.address,
-    ];
+    const forwarderArgs = [exchangeAddress, tokenTransferProxyAddress, etherTokenAddress, zrxTokenAddress];
     const forwarder = await deployer.deployAndSaveAsync('Forwarder', forwarderArgs);
 
     // const tokenTransferProxy = await deployer.deployAndSaveAsync(ContractName.TokenTransferProxy);

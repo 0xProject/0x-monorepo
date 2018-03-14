@@ -43,12 +43,16 @@
     "scripts": {
         "start": "node scripts/start.js",
         "build:webpack": "node scripts/build.js",
-        "build": "tsc",
+        "build": "tsc && yarn run copy_artifacts",
         "test": "node scripts/test.js --env=jsdom",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
-        "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 3 ../contracts/artifacts/$i.json ../forwarder-widget/src/artifacts; done;",
+        "copy_artifacts": "copyfiles './src/artifacts/**/*' ./lib",
+        "generate_contract_wrappers":
+            "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
+        "update_contracts":
+            "for i in ${npm_package_config_artifacts}; do copyfiles -u 3 ../contracts/artifacts/$i.json ../forwarder-widget/src/artifacts; done;",
         "styleguide": "styleguidist server",
-        "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
+        "compile":
+            "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
         "migrate": "yarn build && yarn compile && node ./lib/migrations/index.js",
         "styleguide:build": "styleguidist build"
     },
@@ -90,16 +94,9 @@
         "webpack": "^3.11.0"
     },
     "jest": {
-        "collectCoverageFrom": [
-            "src/**/*.{js,jsx,ts,tsx}"
-        ],
-        "setupFiles": [
-            "<rootDir>/config/polyfills.js"
-        ],
-        "testMatch": [
-            "<rootDir>/src/**/__tests__/**/*.ts?(x)",
-            "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"
-        ],
+        "collectCoverageFrom": ["src/**/*.{js,jsx,ts,tsx}"],
+        "setupFiles": ["<rootDir>/config/polyfills.js"],
+        "testMatch": ["<rootDir>/src/**/__tests__/**/*.ts?(x)", "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"],
         "testEnvironment": "node",
         "testURL": "http://localhost",
         "transform": {
@@ -107,9 +104,7 @@
             "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
             "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
         },
-        "transformIgnorePatterns": [
-            "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$"
-        ],
+        "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$"],
         "moduleNameMapper": {
             "^react-native$": "react-native-web"
         },
@@ -133,9 +128,7 @@
         }
     },
     "babel": {
-        "presets": [
-            "react-app"
-        ]
+        "presets": ["react-app"]
     },
     "eslintConfig": {
         "extends": "react-app"
