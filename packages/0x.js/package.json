@@ -31,7 +31,15 @@
         "run_mocha": "mocha lib/test/**/*_test.js --timeout 10000 --bail --exit"
     },
     "config": {
-        "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken"
+        "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
+        "postpublish": {
+            "assets": ["_bundles/index.js", "_bundles/index.min.js"],
+            "docPublishConfigs": {
+                "extraFileIncludes": ["../types/src/index.ts"],
+                "s3BucketPath": "s3://0xjs-docs-jsons/",
+                "s3StagingBucketPath": "s3://staging-0xjs-docs-jsons/"
+            }
+        }
     },
     "repository": {
         "type": "git",
@@ -53,7 +61,6 @@
         "@types/node": "^8.0.53",
         "@types/sinon": "^2.2.2",
         "@types/uuid": "^3.4.2",
-        "async-child-process": "^1.1.1",
         "awesome-typescript-loader": "^3.1.3",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
