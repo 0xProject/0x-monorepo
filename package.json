@@ -7,6 +7,7 @@
         "testrpc": "testrpc -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",
+        "report_coverage": "lcov-result-merger 'packages/*/coverage/lcov.info' | coveralls",
         "lerna:run": "lerna run",
         "lerna:rebuild": "lerna run clean; lerna run build;",
         "lerna:publish":
@@ -16,7 +17,11 @@
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
     },
     "devDependencies": {
+        "@0xproject/utils": "^0.4.1",
+        "async-child-process": "^1.1.1",
+        "coveralls": "^3.0.0",
         "ethereumjs-testrpc": "^6.0.3",
+        "lcov-result-merger": "^2.0.0",
         "lerna": "^2.5.1",
         "prettier": "^1.11.1"
     }
