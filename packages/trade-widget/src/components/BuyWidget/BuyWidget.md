@@ -1,0 +1,5 @@
+BuyWidget example:
+
+```jsx
+<BuyWidget/>
+```

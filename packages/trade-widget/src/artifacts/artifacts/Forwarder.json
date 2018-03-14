@@ -1,0 +1,69 @@
+{
+    "contract_name": "Forwarder",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.18",
+            "keccak256": "0x5971009c48295e967324ca5af840acba446ee256199522553ebcdc492300ac0f",
+            "optimizer_enabled": 0,
+            "abi": [
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "orderAddresses",
+                            "type": "address[5]"
+                        },
+                        {
+                            "name": "orderValues",
+                            "type": "uint256[6]"
+                        },
+                        {
+                            "name": "v",
+                            "type": "uint8"
+                        },
+                        {
+                            "name": "r",
+                            "type": "bytes32"
+                        },
+                        {
+                            "name": "s",
+                            "type": "bytes32"
+                        }
+                    ],
+                    "name": "fillOrder",
+                    "outputs": [],
+                    "payable": true,
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "name": "_exchange",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_tokenProxy",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_etherToken",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_zrxToken",
+                            "type": "address"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "constructor"
+                }
+            ],
+            "unlinked_binary": "0x6060604052341561000f57600080fd5b60405160808061053783398101604052808051906020019091908051906020019091908051906020019091908051906020019091905050836000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555082600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555081600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050505061041c8061011b6000396000f300606060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c7d7b5a614610046575b600080fd5b6100876004808060a0019091908060c001909190803560ff169060200190919080356000191690602001909190803560001916906020019091905050610089565b005b60008060003411151561009b57600080fd5b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168760036005811015156100e357fe5b602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614151561012057600080fd5b349150600260009054906101000a905050816000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bc61394a89898660018b8b8b6000604051602001526040518863ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180886005602002808284378201915050876006602002808284378201915050868152602001851515151581526020018460ff1660ff16815260200183600019166000191681526020018260001916600019168152602001975050505050505050602060405180830381600087803b151561022757600080fd5b6102c65a03f1151561023857600080fd5b5050506040518051905014151561024e57600080fd5b61027f86600060068110151561026057fe5b602002013587600160068110151561027457fe5b602002013584610384565b905086600060058110151561029057fe5b602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a9059cbb33836000604051602001526040518363ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b151561035557600080fd5b6102c65a03f1151561036657600080fd5b50505060405180519050151561037b57600080fd5b50505050505050565b600061039961039385846103a2565b846103d5565b90509392505050565b600080828402905060008414806103c357508284828115156103c057fe5b04145b15156103cb57fe5b8091505092915050565b60008082848115156103e357fe5b04905080915050929150505600a165627a7a723058205a89326d88e417cf27e07b3d455a03dc1088826c73ad66fba4a018aac7bbdc890029",
+            "updated_at": 1519364459005,
+            "address": "0x54a582397ace3f9a6f5a28ce6dc50473e4a9d375",
+            "constructor_args": "0x0000000000000000000000000606a51d56578c6f3836f3e43ed825baa24b1ee9000000000000000000000000d2dbf3250a764eaaa94fa0c84ed87c0edc8ed04e000000000000000000000000ecb1f6420830a55a2c67ca7d101503cbbc18beea00000000000000000000000039c3fc9f4d8430af2713306ce80c584752d9e1c7"
+        }
+    }
+}
