@@ -6,10 +6,10 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' ./lib && tsc",
+        "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test": "npm run build; mocha lib/test/*_test.js",
         "compile": "npm run build; node lib/src/cli.js compile",
-        "clean": "shx rm -rf ./lib",
+        "clean": "shx rm -rf lib scripts",
         "migrate": "npm run build; node lib/src/cli.js migrate",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test:circleci": "yarn test"
@@ -28,6 +28,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/deployer/README.md",
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@types/require-from-string": "^1.2.0",
         "chai": "^4.0.1",

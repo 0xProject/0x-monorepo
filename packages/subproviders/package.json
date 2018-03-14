@@ -6,8 +6,8 @@
     "license": "Apache-2.0",
     "scripts": {
         "build:watch": "tsc -w",
-        "clean": "shx rm -rf lib",
-        "build": "tsc",
+        "clean": "shx rm -rf lib scripts",
+        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "run_mocha_unit": "mocha lib/test/unit/**/*_test.js --timeout 10000 --bail --exit",
         "run_mocha_integration": "mocha lib/test/integration/**/*_test.js --timeout 10000 --bail --exit",
@@ -36,6 +36,7 @@
         "web3-typescript-typings": "^0.10.0"
     },
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@0xproject/utils": "^0.4.1",
         "@types/lodash": "^4.14.86",
@@ -45,6 +46,7 @@
         "chai-as-promised": "^7.1.0",
         "chai-as-promised-typescript-typings": "^0.0.10",
         "chai-typescript-typings": "^0.0.4",
+        "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",

@@ -42,3 +42,10 @@ declare module 'solc' {
 declare module 'web3-eth-abi' {
     export function encodeParameters(typesArray: string[], parameters: any[]): string;
 }
+
+declare module '*.json' {
+    const json: any;
+    /* tslint:disable */
+    export default json;
+    /* tslint:enable */
+}

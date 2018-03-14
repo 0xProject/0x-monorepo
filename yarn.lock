@@ -6,6 +6,13 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
+"@0xproject/tslint-config@0.4.8":
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/@0xproject/tslint-config/-/tslint-config-0.4.8.tgz#5a3dfb1fc94e17752184137b452c5b0b3287d822"
+  dependencies:
+    lodash "^4.17.4"
+    tslint-react "^3.2.0"
+
 "@0xproject/utils@^0.3.4":
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.3.4.tgz#263ac7a5ef0b4c65ce893d3e6d1e9b1c2cf75b0b"

@@ -3,5 +3,5 @@
     "compilerOptions": {
         "outDir": "lib"
     },
-    "include": ["./rules/**/*"]
+    "include": ["./rules/**/*", "./monorepo_scripts/**/*", "../../node_modules/web3-typescript-typings/index.d.ts"]
 }

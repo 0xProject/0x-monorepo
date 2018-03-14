@@ -24,14 +24,22 @@
         "test:coverage": "nyc npm run test --all",
         "report_test_coverage": "nyc report --reporter=text-lcov | coveralls",
         "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
-        "clean": "shx rm -rf _bundles lib test_temp",
+        "clean": "shx rm -rf _bundles lib test_temp scripts",
         "build:umd:prod": "NODE_ENV=production webpack",
-        "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts;",
+        "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test:commonjs": "run-s build:commonjs run_mocha",
         "run_mocha": "mocha lib/test/**/*_test.js --timeout 10000 --bail --exit"
     },
     "config": {
-        "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken"
+        "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
+        "postpublish": {
+            "assets": ["_bundles/index.js", "_bundles/index.min.js"],
+            "docPublishConfigs": {
+                "extraFileIncludes": ["../types/src/index.ts"],
+                "s3BucketPath": "s3://0xjs-docs-jsons/",
+                "s3StagingBucketPath": "s3://staging-0xjs-docs-jsons/"
+            }
+        }
     },
     "repository": {
         "type": "git",
@@ -44,6 +52,7 @@
     "devDependencies": {
         "@0xproject/abi-gen": "^0.2.5",
         "@0xproject/dev-utils": "^0.2.1",
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@types/bintrees": "^1.0.2",
         "@types/jsonschema": "^1.1.1",
@@ -66,6 +75,7 @@
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "opn-cli": "^3.1.0",
+        "prettier": "^1.11.1",
         "request": "^2.81.0",
         "request-promise-native": "^1.0.5",
         "shx": "^0.2.2",

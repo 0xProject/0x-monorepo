@@ -125,6 +125,13 @@ declare module 'hdkey' {
     export = HDNode;
 }
 
+declare module '*.json' {
+    const json: any;
+    /* tslint:disable */
+    export default json;
+    /* tslint:enable */
+}
+
 // ganache-core declarations
 declare module 'ganache-core' {
     import * as Web3 from 'web3';
@@ -137,5 +144,6 @@ declare module 'ganache-core' {
         networkId: number;
         mnemonic: string;
     }
+    // tslint:disable-next-line:completed-docs
     export function provider(opts: GanacheOpts): Web3.Provider;
 }

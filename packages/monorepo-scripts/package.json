@@ -1,8 +1,9 @@
 {
     "name": "@0xproject/monorepo-scripts",
     "version": "0.1.12",
-    "private": true,
     "description": "Helper scripts for the monorepo",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
         "deps_versions": "node ./lib/deps_versions.js",
@@ -19,8 +20,9 @@
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/monorepo-scripts/README.md",
+    "comment": "// We purposefully use an older version of tslint-config here to avoid creating an import cycle",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.10",
+        "@0xproject/tslint-config": "0.4.8",
         "@types/glob": "^5.0.33",
         "@types/node": "^8.0.53",
         "shx": "^0.2.2",
@@ -28,8 +30,12 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "es6-promisify": "^5.0.0",
+        "async-child-process": "^1.1.1",
+        "publish-release": "0xproject/publish-release",
         "chalk": "^2.3.0",
         "glob": "^7.1.2",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.4",
+        "semver-sort": "^0.0.4"
     }
 }

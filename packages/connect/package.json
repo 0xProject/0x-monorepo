@@ -13,8 +13,8 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "build": "tsc",
-        "clean": "shx rm -rf _bundles lib test_temp",
+        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "clean": "shx rm -rf _bundles lib test_temp scripts",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
@@ -22,6 +22,15 @@
         "run_mocha": "mocha lib/test/**/*_test.js",
         "test": "run-s clean build copy_test_fixtures run_mocha",
         "test:circleci": "yarn test"
+    },
+    "config": {
+        "postpublish": {
+            "assets": ["_bundles/index.js", "_bundles/index.min.js"],
+            "docPublishConfigs": {
+                "s3BucketPath": "s3://connect-docs-jsons/",
+                "s3StagingBucketPath": "s3://staging-connect-docs-jsons/"
+            }
+        }
     },
     "repository": {
         "type": "git",
@@ -46,12 +55,14 @@
         "websocket": "^1.0.25"
     },
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@types/fetch-mock": "^5.12.1",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
         "@types/query-string": "^5.0.1",
         "@types/websocket": "^0.0.34",
+        "async-child-process": "^1.1.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-as-promised-typescript-typings": "^0.0.10",
