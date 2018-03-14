@@ -61,6 +61,7 @@
     "CONNECT": "0x Connect",
     "WHITEPAPER": "Whitepaper",
     "WIKI": "Вики",
+    "WEB3_WRAPPER": "Web3Wrapper",
     "FAQ": "Документация",
     "SMART_CONTRACTS": "0x Смарт-контракты ",
     "STANDARD_RELAYER_API": "standard relayer API",

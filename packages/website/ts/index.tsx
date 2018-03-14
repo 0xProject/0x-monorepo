@@ -45,6 +45,9 @@ const LazySmartContractsDocumentation = createLazyComponent('Documentation', asy
 const LazyConnectDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
+const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/web3_wrapper_documentation'),
+);
 
 analytics.init();
 // tslint:disable-next-line:no-floating-promises
@@ -65,6 +68,10 @@ render(
                             <Route path={`${WebsitePaths.Wiki}`} component={Wiki as any} />
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
                             <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
+                            <Route
+                                path={`${WebsitePaths.Web3Wrapper}/:version?`}
+                                component={LazyWeb3WrapperDocumentation}
+                            />
                             <Route
                                 path={`${WebsitePaths.SmartContracts}/:version?`}
                                 component={LazySmartContractsDocumentation}

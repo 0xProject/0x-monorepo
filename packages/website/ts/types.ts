@@ -355,12 +355,14 @@ export enum WebsitePaths {
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
+    Web3Wrapper = '/docs/web3_wrapper',
 }
 
 export enum DocPackages {
     Connect = 'CONNECT',
     ZeroExJs = 'ZERO_EX_JS',
     SmartContracts = 'SMART_CONTRACTS',
+    Web3Wrapper = 'WEB3_WRAPPER',
 }
 
 export interface TimestampMsRange {
@@ -447,6 +449,7 @@ export enum Key {
     Connect = 'CONNECT',
     Whitepaper = 'WHITEPAPER',
     Wiki = 'WIKI',
+    Web3Wrapper = 'WEB3_WRAPPER',
     And = 'AND',
     Faq = 'FAQ',
     SmartContracts = 'SMART_CONTRACTS',

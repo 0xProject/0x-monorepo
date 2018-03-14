@@ -22,12 +22,14 @@ const docIdToS3BucketName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: isDevelopment ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons',
     [DocPackages.SmartContracts]: 'smart-contracts-docs-json',
     [DocPackages.Connect]: isDevelopment ? 'staging-connect-docs-jsons' : 'connect-docs-jsons',
+    [DocPackages.Web3Wrapper]: isDevelopment ? 'staging-web3-wrapper-docs-json' : 'web3-wrapper-docs-json',
 };
 
 const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0x.js',
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
+    [DocPackages.Web3Wrapper]: 'web3-wrapper',
 };
 
 export interface DocPageProps {
