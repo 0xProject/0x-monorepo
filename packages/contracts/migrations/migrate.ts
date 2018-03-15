@@ -3,8 +3,8 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { constants } from '../util/constants';
-import { ContractName } from '../util/types';
+import { constants } from '../src/utils/constants';
+import { ContractName } from '../src/utils/types';
 
 import { tokenInfo } from './config/token_info';
 
