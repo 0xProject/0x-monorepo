@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+// We need the above pragma since this script will be run as a command-line tool.
+
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
