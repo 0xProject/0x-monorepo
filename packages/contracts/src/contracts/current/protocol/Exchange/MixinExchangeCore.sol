@@ -43,6 +43,10 @@ contract MixinExchangeCore is
     mapping (bytes32 => uint256) public filled;
     mapping (bytes32 => uint256) public cancelled;
 
+    // Mapping of makerAddress => lowest salt an order can have in order to be fillable
+    // Orders with a salt less than their maker's epoch are considered cancelled
+    mapping (address => uint256) public makerEpoch;
+
     event LogFill(
         address indexed makerAddress,
         address takerAddress,
@@ -64,6 +68,11 @@ contract MixinExchangeCore is
         uint256 makerTokenCancelledAmount,
         uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
+    );
+
+    event LogCancelBefore(
+        address indexed maker,
+        uint256 salt
     );
 
     /*
@@ -119,6 +128,12 @@ contract MixinExchangeCore is
             return 0;
         }
 
+        // Validate order is not cancelled
+        if (order.salt < makerEpoch[order.makerAddress]) {
+            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
+            return 0;
+        }
+
         // Update state
         filled[orderHash] = safeAdd(filled[orderHash], takerTokenFilledAmount);
 
@@ -154,7 +169,7 @@ contract MixinExchangeCore is
     {
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
-        
+
         // Validate the order
         require(order.makerTokenAmount > 0);
         require(order.takerTokenAmount > 0);
@@ -186,7 +201,16 @@ contract MixinExchangeCore is
         );
         return takerTokenCancelledAmount;
     }
-    
+
+    /// @param salt Orders created with a salt less than this value will be cancelled.
+    function cancelOrdersBefore(uint256 salt)
+        external
+    {
+        require(salt > makerEpoch[msg.sender]); // epoch must be monotonically increasing
+        makerEpoch[msg.sender] = salt;
+        LogCancelBefore(msg.sender, salt);
+    }
+
     /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
