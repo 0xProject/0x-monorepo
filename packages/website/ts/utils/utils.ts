@@ -95,11 +95,6 @@ export const utils = {
         };
         return order;
     },
-    consoleLog(message: string) {
-        /* tslint:disable */
-        console.log(message);
-        /* tslint:enable */
-    },
     async sleepAsync(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
@@ -281,10 +276,6 @@ export const utils = {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
         switch (constructorName) {
-            case 'MetamaskInpageProvider':
-                parsedProviderName = Providers.Metamask;
-                break;
-
             case 'EthereumProvider':
                 parsedProviderName = Providers.Mist;
                 break;
@@ -295,6 +286,8 @@ export const utils = {
         }
         if ((provider as any).isParity) {
             parsedProviderName = Providers.Parity;
+        } else if ((provider as any).isMetaMask) {
+            parsedProviderName = Providers.Metamask;
         }
         return parsedProviderName;
     },

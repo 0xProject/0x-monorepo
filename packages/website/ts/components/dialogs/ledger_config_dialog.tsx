@@ -1,6 +1,6 @@
 import { ZeroEx } from '0x.js';
 import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -239,7 +239,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                 addressBalances.push(balanceInWei);
             }
         } catch (err) {
-            utils.consoleLog(`Ledger error: ${JSON.stringify(err)}`);
+            logUtils.log(`Ledger error: ${JSON.stringify(err)}`);
             this.setState({
                 connectionErrMsg: 'Failed to connect. Follow the instructions and try again.',
             });
@@ -265,7 +265,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     private async _onConnectLedgerClickAsync() {
         const isU2FSupported = await utils.isU2FSupportedAsync();
         if (!isU2FSupported) {
-            utils.consoleLog(`U2F not supported in this browser`);
+            logUtils.log(`U2F not supported in this browser`);
             this.setState({
                 connectionErrMsg: 'U2F not supported by this browser. Try using Chrome.',
             });

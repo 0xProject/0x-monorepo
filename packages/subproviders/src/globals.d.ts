@@ -67,16 +67,6 @@ declare module '@ledgerhq/hw-transport-node-hid' {
     }
 }
 
-// Semaphore-async-await declarations
-declare module 'semaphore-async-await' {
-    class Semaphore {
-        constructor(permits: number);
-        public wait(): Promise<void>;
-        public signal(): void;
-    }
-    export default Semaphore;
-}
-
 // web3-provider-engine declarations
 declare module 'web3-provider-engine/subproviders/subprovider' {
     class Subprovider {}
@@ -133,4 +123,27 @@ declare module 'hdkey' {
         public derive(path: string): HDNode;
     }
     export = HDNode;
+}
+
+declare module '*.json' {
+    const json: any;
+    /* tslint:disable */
+    export default json;
+    /* tslint:enable */
+}
+
+// ganache-core declarations
+declare module 'ganache-core' {
+    import * as Web3 from 'web3';
+    export interface GanacheOpts {
+        verbose: boolean;
+        logger: {
+            log(msg: string): void;
+        };
+        port: number;
+        networkId: number;
+        mnemonic: string;
+    }
+    // tslint:disable-next-line:completed-docs
+    export function provider(opts: GanacheOpts): Web3.Provider;
 }

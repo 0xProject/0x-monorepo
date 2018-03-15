@@ -6,8 +6,9 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
+        "clean": "shx rm -rf lib scripts",
+        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
-        "clean": "shx rm -rf lib",
         "build": "tsc",
         "test": "run-s clean build copy_test_environments copy_test_fixtures run_mocha",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
@@ -38,6 +39,7 @@
         "yargs": "^10.0.3"
     },
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.48",
@@ -48,7 +50,7 @@
         "chai-as-promised": "^7.1.0",
         "chai-as-promised-typescript-typings": "^0.0.10",
         "chai-typescript-typings": "^0.0.4",
-        "copyfiles": "^2.0.0",
+        "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "mocha": "^4.0.1",
         "nock": "^9.2.3",

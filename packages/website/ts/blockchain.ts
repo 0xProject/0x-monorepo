@@ -23,7 +23,7 @@ import {
     LedgerWalletSubprovider,
     RedundantRPCSubprovider,
 } from '@0xproject/subproviders';
-import { BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -405,7 +405,7 @@ export class Blockchain {
                 },
                 5000,
                 (err: Error) => {
-                    utils.consoleLog(`Polling tokenBalance failed: ${err}`);
+                    logUtils.log(`Polling tokenBalance failed: ${err}`);
                     intervalUtils.clearAsyncExcludingInterval(tokenPollInterval);
                     reject(err);
                 },
@@ -822,7 +822,7 @@ export class Blockchain {
         if (!_.isUndefined(contractAddress)) {
             const doesContractExist = await this.doesContractExistAtAddressAsync(contractAddress);
             if (!doesContractExist) {
-                utils.consoleLog(`Contract does not exist: ${artifact.contract_name} at ${contractAddress}`);
+                logUtils.log(`Contract does not exist: ${artifact.contract_name} at ${contractAddress}`);
                 throw new Error(BlockchainCallErrs.ContractDoesNotExist);
             }
         }
@@ -832,7 +832,7 @@ export class Blockchain {
             return contractInstance;
         } catch (err) {
             const errMsg = `${err}`;
-            utils.consoleLog(`Notice: Error encountered: ${err} ${err.stack}`);
+            logUtils.log(`Notice: Error encountered: ${err} ${err.stack}`);
             if (_.includes(errMsg, 'not been deployed to detected network')) {
                 throw new Error(BlockchainCallErrs.ContractDoesNotExist);
             } else {

@@ -8,10 +8,12 @@
         "build:watch": "tsc -w",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test": "run-s clean build run_mocha",
-        "test:circleci": "yarn test",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha lib/test/**/*_test.js",
-        "clean": "shx rm -rf _bundles lib test_temp",
-        "build": "tsc"
+        "clean": "shx rm -rf _bundles lib test_temp scripts",
+        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts"
     },
     "repository": {
         "type": "git",
@@ -28,13 +30,16 @@
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
         "@0xproject/tslint-config": "^0.4.10",
         "@0xproject/utils": "^0.4.1",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",
+        "nyc": "^11.0.1",
         "chai": "^4.0.1",
         "chai-typescript-typings": "^0.0.4",
+        "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "lodash.foreach": "^4.5.0",
         "mocha": "^4.0.1",

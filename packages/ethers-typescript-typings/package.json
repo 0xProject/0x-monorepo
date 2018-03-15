@@ -5,7 +5,9 @@
     "main": "index.d.ts",
     "types": "index.d.ts",
     "scripts": {
-        "lint": "tslint index.d.ts"
+        "lint": "tslint index.d.ts",
+        "build": "tsc && copyfiles -u 1 './lib/**/*' ./scripts",
+        "clean": "shx rm -rf scripts"
     },
     "repository": {
         "type": "git",
@@ -21,6 +23,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethers-typescript-typings#readme",
     "devDependencies": {
+        "@0xproject/monorepo-scripts": "^0.1.12",
+        "copyfiles": "^1.2.0",
+        "shx": "^0.2.2",
         "tslint": "5.8.0",
         "tslint-config-0xproject": "^0.0.2",
         "typescript": "2.7.1"

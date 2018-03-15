@@ -13,14 +13,18 @@
         "copy_artifacts": "copyfiles './src/artifacts/**/*' ./lib",
         "build": "tsc",
         "test": "run-s build run_mocha",
-        "run_mocha": "mocha 'lib/test/**/*.js' --timeout 10000 --bail --exit",
+        "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
+        "run_mocha": "mocha 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile:comment": "Yarn workspaces do not link binaries correctly so we need to reference them directly https://github.com/yarnpkg/yarn/issues/3846",
         "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
         "clean": "shx rm -rf ./lib",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|Arbitrage|EtherDelta|AccountLevels).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
-        "migrate": "node ../deployer/lib/src/cli.js migrate",
+        "migrate": "yarn build && yarn compile && node ./lib/migrations/index.js",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
-        "test:circleci": "yarn test"
+        "coverage:report:text": "istanbul report text",
+        "coverage:report:html": "istanbul report html && open coverage/index.html",
+        "coverage:report:lcov": "istanbul report lcov",
+        "test:circleci": "yarn test:coverage"
     },
     "config": {
         "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,Arbitrage,EtherDelta,AccountLevels"

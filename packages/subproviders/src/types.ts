@@ -91,11 +91,6 @@ export interface PartialTxParams {
 
 export type DoneCallback = (err?: Error) => void;
 
-export interface JSONRPCPayload {
-    params: any[];
-    method: string;
-}
-
 export interface LedgerCommunication {
     close_async: () => Promise<void>;
 }
@@ -118,5 +113,7 @@ export enum NonceSubproviderErrors {
     CannotDetermineAddressFromPayload = 'CANNOT_DETERMINE_ADDRESS_FROM_PAYLOAD',
 }
 
-export type OptionalNextCallback = (callback?: (err: Error | null, result: any, cb: any) => void) => void;
 export type ErrorCallback = (err: Error | null, data?: any) => void;
+export type Callback = () => void;
+export type OnNextCompleted = (err: Error | null, result: any, cb: Callback) => void;
+export type NextCallback = (callback?: OnNextCompleted) => void;

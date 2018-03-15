@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.3.0 - _TBD, 2018_
+
+    * Add coverage subprovider if SOLIDITY_COVERAGE env variable is true (#426)
+    * Refactor `BlockchainLifecycle` to work with in-process ganache (#426)
+    * Remove `RPC` class and move it's logic to `Web3Wrapper` (#426)
+
 ## v0.2.0 - _February 16, 2018_
 
     * Remove subproviders (#392)

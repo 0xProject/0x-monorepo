@@ -1,6 +1,7 @@
 import { SignedOrder, ZeroEx } from '0x.js';
 import { HttpClient } from '@0xproject/connect';
 import { Schema, schemas as schemasByName } from '@0xproject/json-schemas';
+import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as _ from 'lodash';
 
@@ -8,7 +9,6 @@ import { addresses as kovanAddresses } from './contract_addresses/kovan_addresse
 import { addresses as mainnetAddresses } from './contract_addresses/mainnet_addresses';
 import { addresses as rinkebyAddresses } from './contract_addresses/rinkeby_addresses';
 import { addresses as ropstenAddresses } from './contract_addresses/ropsten_addresses';
-import { utils } from './utils';
 
 const ENVIRONMENT_NAME = 'SRA Report';
 
@@ -81,7 +81,7 @@ async function createOrderEnvironmentValuesAsync(url: string) {
             createEnvironmentValue('orderHash', ZeroEx.getOrderHashHex(orderIfExists)),
         ];
     } else {
-        utils.log(`${chalk.red(`No orders from /orders found`)}`);
+        logUtils.log(`${chalk.red(`No orders from /orders found`)}`);
         return [
             createEnvironmentValue('order', ''),
             createEnvironmentValue('orderMaker', ''),

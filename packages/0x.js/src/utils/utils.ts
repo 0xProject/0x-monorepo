@@ -17,10 +17,6 @@ export const utils = {
     bigNumberToBN(value: BigNumber) {
         return new BN(value.toString(), 10);
     },
-    consoleLog(message: string): void {
-        // tslint:disable-next-line: no-console
-        console.log(message);
-    },
     spawnSwitchErr(name: string, value: any): Error {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },

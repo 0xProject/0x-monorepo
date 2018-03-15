@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { assert } from '@0xproject/assert';
 import { Schema, schemas } from '@0xproject/json-schemas';
-import { promisify } from '@0xproject/utils';
+import { logUtils, promisify } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as _ from 'lodash';
 import * as newman from 'newman';
@@ -10,7 +10,6 @@ import * as yargs from 'yargs';
 import * as sraReportCollectionJSON from '../../postman_collections/sra_report.postman_collection.json';
 
 import { postmanEnvironmentFactory } from './postman_environment_factory';
-import { utils } from './utils';
 
 const DEFAULT_NETWORK_ID = 1;
 const SUPPORTED_NETWORK_IDS = [1, 3, 4, 42];
@@ -65,12 +64,12 @@ const args = yargs
 try {
     assert.isWebUri('args', args.endpointUrl);
 } catch (err) {
-    utils.log(`${chalk.red(`Invalid url format:`)} ${args.endpointUrl}`);
+    logUtils.log(`${chalk.red(`Invalid url format:`)} ${args.endpointUrl}`);
     process.exit(1);
 }
 if (!_.includes(SUPPORTED_NETWORK_IDS, args.networkId)) {
-    utils.log(`${chalk.red(`Unsupported network id:`)} ${args.networkId}`);
-    utils.log(`${chalk.bold(`Supported network ids:`)} ${SUPPORTED_NETWORK_IDS}`);
+    logUtils.log(`${chalk.red(`Unsupported network id:`)} ${args.networkId}`);
+    logUtils.log(`${chalk.bold(`Supported network ids:`)} ${SUPPORTED_NETWORK_IDS}`);
     process.exit(1);
 }
 const mainAsync = async () => {
@@ -98,4 +97,4 @@ const mainAsync = async () => {
     };
     await utils.newmanRunAsync(newmanRunOptions);
 };
-mainAsync().catch(utils.log);
+mainAsync().catch(logUtils.log);

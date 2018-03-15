@@ -7,7 +7,7 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import DharmaLoanFrame from 'dharma-loan-frame';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -591,8 +591,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return false;
             }
-            utils.consoleLog(`Unexpected error encountered: ${err}`);
-            utils.consoleLog(err.stack);
+            logUtils.log(`Unexpected error encountered: ${err}`);
+            logUtils.log(err.stack);
             this.setState({
                 errorType: BalanceErrs.mintingFailed,
             });
@@ -623,7 +623,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         );
         const responseBody = await response.text();
         if (response.status !== constants.SUCCESS_STATUS) {
-            utils.consoleLog(`Unexpected status code: ${response.status} -> ${responseBody}`);
+            logUtils.log(`Unexpected status code: ${response.status} -> ${responseBody}`);
             const errorType =
                 response.status === constants.UNAVAILABLE_STATUS
                     ? BalanceErrs.faucetQueueIsFull
