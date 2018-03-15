@@ -7,6 +7,7 @@ const SHOW_DURATION_MS = 4000;
 const titleToIcon: { [title: string]: string } = {
     '0x.js': 'zeroExJs.png',
     Web3Wrapper: 'zeroExJs.png',
+    Deployer: 'zeroExJs.png',
     '0x Connect': 'connect.png',
     '0x Smart Contracts': 'contracts.png',
     Wiki: 'wiki.png',

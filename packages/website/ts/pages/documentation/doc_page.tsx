@@ -23,6 +23,7 @@ const docIdToS3BucketName: { [id: string]: string } = {
     [DocPackages.SmartContracts]: 'smart-contracts-docs-json',
     [DocPackages.Connect]: isDevelopment ? 'staging-connect-docs-jsons' : 'connect-docs-jsons',
     [DocPackages.Web3Wrapper]: isDevelopment ? 'staging-web3-wrapper-docs-json' : 'web3-wrapper-docs-json',
+    [DocPackages.Deployer]: isDevelopment ? 'staging-depoyer-docs-jsons' : 'depoyer-docs-jsons',
 };
 
 const docIdToSubpackageName: { [id: string]: string } = {
@@ -30,6 +31,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
     [DocPackages.Web3Wrapper]: 'web3-wrapper',
+    [DocPackages.Deployer]: 'deployer',
 };
 
 export interface DocPageProps {

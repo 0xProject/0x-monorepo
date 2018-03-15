@@ -12,7 +12,19 @@
         "clean": "shx rm -rf lib scripts",
         "migrate": "npm run build; node lib/src/cli.js migrate",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
-        "test:circleci": "yarn test"
+        "test:circleci": "yarn test",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+    },
+    "config": {
+        "postpublish": {
+            "assets": [],
+            "docPublishConfigs": {
+                "extraFileIncludes": ["../types/src/index.ts"],
+                "s3BucketPath": "s3://depoyer-docs-jsons/",
+                "s3StagingBucketPath": "s3://staging-depoyer-docs-jsons/"
+            }
+        }
     },
     "bin": {
         "0x-deployer": "lib/src/cli.js"
@@ -38,6 +50,7 @@
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
+        "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1",
         "web3-typescript-typings": "^0.10.0"
     },

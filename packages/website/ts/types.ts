@@ -356,6 +356,7 @@ export enum WebsitePaths {
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
     Web3Wrapper = '/docs/web3_wrapper',
+    Deployer = '/docs/deployer',
 }
 
 export enum DocPackages {
@@ -363,6 +364,7 @@ export enum DocPackages {
     ZeroExJs = 'ZERO_EX_JS',
     SmartContracts = 'SMART_CONTRACTS',
     Web3Wrapper = 'WEB3_WRAPPER',
+    Deployer = 'DEPLOYER',
 }
 
 export interface TimestampMsRange {
@@ -444,6 +446,7 @@ export enum Key {
     About = 'ABOUT',
     Careers = 'CAREERS',
     Contact = 'CONTACT',
+    Deployer = 'DEPLOYER',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',
