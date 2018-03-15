@@ -1,4 +1,4 @@
-import { BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -87,7 +87,7 @@ export class BlockchainWatcher {
             },
             5000,
             (err: Error) => {
-                utils.consoleLog(`Watching network and balances failed: ${err.stack}`);
+                logUtils.log(`Watching network and balances failed: ${err.stack}`);
                 this._stopEmittingNetworkConnectionAndUserBalanceStateAsync();
             },
         );

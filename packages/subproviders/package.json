@@ -12,7 +12,9 @@
         "run_mocha_unit": "mocha lib/test/unit/**/*_test.js --timeout 10000 --bail --exit",
         "run_mocha_integration": "mocha lib/test/integration/**/*_test.js --timeout 10000 --bail --exit",
         "test": "npm run test:unit",
-        "test:circleci": "npm run test:unit",
+        "test:unit:coverage": "nyc npm run test:unit --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "test:circleci": "npm run test:unit:coverage",
         "test:all": "run-s test:unit test:integration",
         "test:unit": "run-s clean build run_mocha_unit",
         "test:integration": "run-s clean build run_mocha_integration"
@@ -42,6 +44,7 @@
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
+        "nyc": "^11.0.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-as-promised-typescript-typings": "^0.0.10",

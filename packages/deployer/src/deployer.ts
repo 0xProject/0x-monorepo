@@ -1,4 +1,5 @@
 import { AbiType, TxData } from '@0xproject/types';
+import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -74,7 +75,7 @@ export class Deployer {
             );
         }
         const web3ContractInstance = await this._deployFromAbiAsync(abi, args, txData);
-        utils.consoleLog(`${contractName}.sol successfully deployed at ${web3ContractInstance.address}`);
+        logUtils.log(`${contractName}.sol successfully deployed at ${web3ContractInstance.address}`);
         const contractInstance = new Contract(web3ContractInstance, this._defaults);
         return contractInstance;
     }
@@ -107,7 +108,7 @@ export class Deployer {
                 if (err) {
                     reject(err);
                 } else if (_.isUndefined(res.address) && !_.isUndefined(res.transactionHash)) {
-                    utils.consoleLog(`transactionHash: ${res.transactionHash}`);
+                    logUtils.log(`transactionHash: ${res.transactionHash}`);
                 } else {
                     resolve(res);
                 }

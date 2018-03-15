@@ -1,4 +1,4 @@
-import { promisify } from '@0xproject/utils';
+import { logUtils, promisify } from '@0xproject/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import 'isomorphic-fetch';
@@ -59,9 +59,9 @@ export class Compiler {
                     };
                     const source = await fsWrapper.readFileAsync(contentPath, opts);
                     sources[fileName] = source;
-                    utils.consoleLog(`Reading ${fileName} source...`);
+                    logUtils.log(`Reading ${fileName} source...`);
                 } catch (err) {
-                    utils.consoleLog(`Could not find file at ${contentPath}`);
+                    logUtils.log(`Could not find file at ${contentPath}`);
                 }
             } else {
                 try {
@@ -71,7 +71,7 @@ export class Compiler {
                         ...nestedSources,
                     };
                 } catch (err) {
-                    utils.consoleLog(`${contentPath} is not a directory or ${constants.SOLIDITY_FILE_EXTENSION} file`);
+                    logUtils.log(`${contentPath} is not a directory or ${constants.SOLIDITY_FILE_EXTENSION} file`);
                 }
             }
         }
@@ -164,7 +164,7 @@ export class Compiler {
         });
         await Promise.all(_.map(fileNames, async fileName => this._compileContractAsync(fileName)));
         this._solcErrors.forEach(errMsg => {
-            utils.consoleLog(errMsg);
+            logUtils.log(errMsg);
         });
     }
     /**
@@ -195,7 +195,7 @@ export class Compiler {
         if (isCompilerAvailableLocally) {
             solcjs = fs.readFileSync(compilerBinFilename).toString();
         } else {
-            utils.consoleLog(`Downloading ${fullSolcVersion}...`);
+            logUtils.log(`Downloading ${fullSolcVersion}...`);
             const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
             const response = await fetch(url);
             if (response.status !== 200) {
@@ -206,7 +206,7 @@ export class Compiler {
         }
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
-        utils.consoleLog(`Compiling ${fileName}...`);
+        logUtils.log(`Compiling ${fileName}...`);
         const source = this._contractSources[fileName];
         const input = {
             [fileName]: source,
@@ -270,7 +270,7 @@ export class Compiler {
         const artifactString = utils.stringifyWithFormatting(newArtifact);
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
-        utils.consoleLog(`${fileName} artifact saved!`);
+        logUtils.log(`${fileName} artifact saved!`);
     }
     /**
      * Sets the source tree hash for a file and its dependencies.
@@ -323,7 +323,7 @@ export class Compiler {
      */
     private async _createArtifactsDirIfDoesNotExistAsync(): Promise<void> {
         if (!fsWrapper.doesPathExistSync(this._artifactsDir)) {
-            utils.consoleLog('Creating artifacts directory...');
+            logUtils.log('Creating artifacts directory...');
             await fsWrapper.mkdirAsync(this._artifactsDir);
         }
     }
@@ -344,7 +344,7 @@ export class Compiler {
             contractArtifact = JSON.parse(contractArtifactString);
             return contractArtifact;
         } catch (err) {
-            utils.consoleLog(`Artifact for ${fileName} does not exist`);
+            logUtils.log(`Artifact for ${fileName} does not exist`);
             return undefined;
         }
     }

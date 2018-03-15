@@ -21,7 +21,9 @@
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "run_mocha": "mocha lib/test/**/*_test.js",
         "test": "run-s clean build copy_test_fixtures run_mocha",
-        "test:circleci": "yarn test"
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "test:circleci": "yarn test:coverage"
     },
     "config": {
         "postpublish": {
@@ -62,6 +64,7 @@
         "@types/mocha": "^2.2.42",
         "@types/query-string": "^5.0.1",
         "@types/websocket": "^0.0.34",
+        "nyc": "^11.0.1",
         "async-child-process": "^1.1.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",

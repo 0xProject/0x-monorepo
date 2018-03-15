@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 
 import { configs } from './configs';
 import { rpcUrls } from './rpc_urls';
-import { utils } from './utils';
 
 const DEFAULT_NETWORK_ID = 42; // kovan
 

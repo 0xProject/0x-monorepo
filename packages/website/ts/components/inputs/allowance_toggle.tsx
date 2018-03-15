@@ -1,5 +1,5 @@
 import { constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
@@ -93,8 +93,8 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
-            utils.consoleLog(`Unexpected error encountered: ${err}`);
-            utils.consoleLog(err.stack);
+            logUtils.log(`Unexpected error encountered: ${err}`);
+            logUtils.log(err.stack);
             this.props.onErrorOccurred(BalanceErrs.allowanceSettingFailed);
             await errorReporter.reportAsync(err);
         }
