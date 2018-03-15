@@ -21,6 +21,7 @@ declare module 'newman' {
     export interface NewmanRunExecutionAssertionError {
         message: string;
     }
+    // tslint:disable-next-line:completed-docs
     export function run(options: any, callback?: (err: Error | null, summary: NewmanRunSummary) => void): void;
 }
 
