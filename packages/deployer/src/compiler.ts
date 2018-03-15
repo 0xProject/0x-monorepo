@@ -228,6 +228,11 @@ export class Compiler {
         }
         const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
         const contractIdentifier = `${fileName}:${contractName}`;
+        if (_.isUndefined(compiled.contracts[contractIdentifier])) {
+            throw new Error(
+                `Contract ${contractName} not found in ${fileName}. Please make sure your contract has the same name as a file`,
+            );
+        }
         const abi: Web3.ContractAbi = JSON.parse(compiled.contracts[contractIdentifier].interface);
         const bytecode = `0x${compiled.contracts[contractIdentifier].bytecode}`;
         const runtimeBytecode = `0x${compiled.contracts[contractIdentifier].runtimeBytecode}`;
