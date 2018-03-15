@@ -53,38 +53,43 @@ contract IExchange {
         uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
     );
-    
+
+    event LogCancelBefore(
+        address indexed maker,
+        uint256 salt
+    );
+
     function ZRX_TOKEN_CONTRACT()
       public view
       returns (address);
-      
+
     function TOKEN_TRANSFER_PROXY_CONTRACT()
       public view
       returns (address);
-      
+
     function EXTERNAL_QUERY_GAS_LIMIT()
       public view
       returns (uint16);
-      
+
     function VERSION()
       public view
       returns (string);
-    
+
     function filled(bytes32)
       public view
       returns (uint256);
-      
+
     function cancelled(bytes32)
       public view
       returns (uint256);
-    
+
     /// @dev Calculates the sum of values already filled and cancelled for a given order.
     /// @param orderHash The Keccak-256 hash of the given order.
     /// @return Sum of values already filled and cancelled.
     function getUnavailableTakerTokenAmount(bytes32 orderHash)
         public view
         returns (uint256 unavailableTakerTokenAmount);
-    
+
     /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
@@ -93,7 +98,7 @@ contract IExchange {
     function getPartialAmount(uint256 numerator, uint256 denominator, uint256 target)
         public pure
         returns (uint256 partialAmount);
-    
+
     /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
@@ -102,7 +107,7 @@ contract IExchange {
     function isRoundingError(uint256 numerator, uint256 denominator, uint256 target)
         public pure
         returns (bool isError);
-      
+
     /// @dev Calculates Keccak-256 hash of order with specified parameters.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
@@ -110,7 +115,7 @@ contract IExchange {
     function getOrderHash(address[5] orderAddresses, uint256[6] orderValues)
         public view
         returns (bytes32 orderHash);
-        
+
     /// @dev Verifies that an order signature is valid.
     /// @param signer address of signer.
     /// @param hash Signed Keccak-256 hash.
@@ -126,7 +131,7 @@ contract IExchange {
         bytes32 s)
         public pure
         returns (bool isValid);
-    
+
     /// @dev Fills the input order.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
@@ -144,7 +149,7 @@ contract IExchange {
           bytes32 s)
           public
           returns (uint256 takerTokenFilledAmount);
-      
+
     /// @dev Cancels the input order.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
     /// @param orderValues Array of order's makerTokenAmount, takerTokenAmount, makerFee, takerFee, expirationTimestampInSec, and salt.
@@ -157,6 +162,9 @@ contract IExchange {
         public
         returns (uint256 takerTokenCancelledAmount);
 
+    /// @dev Cancels all orders for a specified maker up to a certain time.
+    /// @param salt Orders created with a lower salt value will be cancelled
+    function cancelOrdersBefore(uint256 salt) external;
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Throws if specified amount not filled entirely.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
