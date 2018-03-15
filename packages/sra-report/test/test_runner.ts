@@ -99,7 +99,7 @@ export const testRunner = {
                 const error = findAssertionErrorIfExists(summary, postmanCollectionRequestName, SCHEMA_ASSERTION_NAME);
                 const errorMessage = _.get(error, 'message');
                 expect(error).to.not.be.undefined();
-                expect(errorMessage).to.equal(`expected false to be true`);
+                expect(errorMessage).to.equal('expected false to be true');
             });
             it('passes when schema is valid', async () => {
                 nockInterceptor.reply(200, correctJson);
