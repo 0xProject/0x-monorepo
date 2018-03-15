@@ -36,7 +36,6 @@ contract MExchangeCore is LibOrder {
         public
         returns (uint256 takerTokenCancelledAmount);
 
-    function cancelOrdersBefore(
-        uint256 salt)
+    function cancelOrdersBefore(uint256 salt)
         external;
 }

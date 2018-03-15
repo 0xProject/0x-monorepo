@@ -164,7 +164,8 @@ contract IExchange {
 
     /// @dev Cancels all orders for a specified maker up to a certain time.
     /// @param salt Orders created with a lower salt value will be cancelled
-    function cancelOrdersBefore(uint256 salt) external;
+    function cancelOrdersBefore(uint256 salt)
+        external;
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Throws if specified amount not filled entirely.
     /// @param orderAddresses Array of order's maker, taker, makerToken, takerToken, and feeRecipient.
