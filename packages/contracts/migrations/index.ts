@@ -2,7 +2,7 @@ import { Deployer } from '@0xproject/deployer';
 import { devConstants } from '@0xproject/dev-utils';
 import * as path from 'path';
 
-import { constants } from '../util/constants';
+import { constants } from '../src/utils/constants';
 
 import { runMigrationsAsync } from './migrate';
 

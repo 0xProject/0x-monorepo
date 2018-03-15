@@ -236,7 +236,7 @@ export class Compiler {
             _.forEach(compiled.errors, errMsg => {
                 const normalizedErrMsg = Compiler._getNormalizedErrMsg(errMsg);
                 if (!Compiler._isErrMsgWarning(normalizedErrMsg)) {
-                    utils.consoleLog(normalizedErrMsg);
+                    logUtils.log(normalizedErrMsg);
                 }
                 this._solcErrors.add(normalizedErrMsg);
             });
