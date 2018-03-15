@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.11;
+pragma solidity ~0.4.11;
 
 import { Token_v1 as Token } from "../../../previous/Token/Token_v1.sol";
 import { Ownable_v1 as Ownable } from "../../../previous/Ownable/Ownable_v1.sol";

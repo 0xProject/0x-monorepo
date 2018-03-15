@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.18;
+pragma solidity ~0.4.18;
 
 import { ERC20Token } from "../ERC20Token/ERC20Token.sol";
 

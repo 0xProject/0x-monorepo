@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.11;
+pragma solidity ~0.4.11;
 
 import { UnlimitedAllowanceToken_v1 as UnlimitedAllowanceToken } from "../../../previous/UnlimitedAllowanceToken/UnlimitedAllowanceToken_v1.sol";
 

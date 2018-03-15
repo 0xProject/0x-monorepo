@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ~0.4.11;
 
 import { Token_v1 as Token } from "../Token/Token_v1.sol";
 

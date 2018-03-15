@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ~0.4.19;
 
 contract AccountLevels {
     //given a user, returns an account level

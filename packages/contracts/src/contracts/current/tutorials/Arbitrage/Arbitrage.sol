@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ~0.4.19;
 
 import { Exchange } from "../../protocol/Exchange/Exchange.sol";
 import { EtherDelta } from "../EtherDelta/EtherDelta.sol";

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ~0.4.18;
 
 import { Mintable } from "../Mintable/Mintable.sol";
 import { Ownable } from "../../utils/Ownable/Ownable.sol";
