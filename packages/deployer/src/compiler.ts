@@ -5,6 +5,7 @@ import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as requireFromString from 'require-from-string';
+import * as semver from 'semver';
 import solc = require('solc');
 import * as Web3 from 'web3';
 
@@ -23,7 +24,7 @@ import {
 import { utils } from './utils/utils';
 
 const ALL_CONTRACTS_IDENTIFIER = '*';
-const SOLIDITY_VERSION_REGEX = /(?:solidity\s\^?)(\d+\.\d+\.\d+)/;
+const SOLIDITY_VERSION_RANGE_REGEX = /pragma solidity (.*);/;
 const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
 const IMPORT_REGEX = /(import\s)/;
 const DEPENDENCY_PATH_REGEX = /"([^"]+)"/; // Source: https://github.com/BlockChainCompany/soljitsu/blob/master/lib/shared.js
@@ -85,10 +86,10 @@ export class Compiler {
     private static _getContractSpecificSourceData(source: string): ContractSpecificSourceData {
         const dependencies: string[] = [];
         const sourceHash = ethUtil.sha3(source);
-        const solcVersion = Compiler._parseSolidityVersion(source);
+        const solcVersionRange = Compiler._parseSolidityVersionRange(source);
         const contractSpecificSourceData: ContractSpecificSourceData = {
             dependencies,
-            solcVersion,
+            solcVersionRange,
             sourceHash,
         };
         const lines = source.split('\n');
@@ -105,17 +106,17 @@ export class Compiler {
         return contractSpecificSourceData;
     }
     /**
-     * Searches Solidity source code for compiler version.
+     * Searches Solidity source code for compiler version range.
      * @param  source Source code of contract.
-     * @return Solc compiler version.
+     * @return Solc compiler version range.
      */
-    private static _parseSolidityVersion(source: string): string {
-        const solcVersionMatch = source.match(SOLIDITY_VERSION_REGEX);
-        if (_.isNull(solcVersionMatch)) {
-            throw new Error('Could not find Solidity version in source');
+    private static _parseSolidityVersionRange(source: string): string {
+        const solcVersionRangeMatch = source.match(SOLIDITY_VERSION_RANGE_REGEX);
+        if (_.isNull(solcVersionRangeMatch)) {
+            throw new Error('Could not find Solidity version range in source');
         }
-        const solcVersion = solcVersionMatch[1];
-        return solcVersion;
+        const solcVersionRange = solcVersionRangeMatch[1];
+        return solcVersionRange;
     }
     /**
      * Normalizes the path found in the error message.
@@ -189,8 +190,12 @@ export class Compiler {
         if (!shouldCompile) {
             return;
         }
-
-        const fullSolcVersion = binPaths[contractSpecificSourceData.solcVersion];
+        const availableCompilerVersions = _.keys(binPaths);
+        const solcVersion = semver.maxSatisfying(
+            availableCompilerVersions,
+            contractSpecificSourceData.solcVersionRange,
+        );
+        const fullSolcVersion = binPaths[solcVersion];
         const compilerBinFilename = path.join(__dirname, '../../solc_bin', fullSolcVersion);
         let solcjs: string;
         const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
@@ -208,7 +213,7 @@ export class Compiler {
         }
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
-        logUtils.log(`Compiling ${fileName}...`);
+        logUtils.log(`Compiling ${fileName} with Solidity v${solcVersion}...`);
         const source = this._contractSources[fileName];
         const input = {
             [fileName]: source,
@@ -243,7 +248,7 @@ export class Compiler {
         const sources = _.keys(compiled.sources);
         const updated_at = Date.now();
         const contractNetworkData: ContractNetworkData = {
-            solc_version: contractSpecificSourceData.solcVersion,
+            solc_version: solcVersion,
             keccak256: sourceHash,
             source_tree_hash: sourceTreeHash,
             optimizer_enabled: this._optimizerEnabled,

@@ -84,7 +84,7 @@ export interface ContractSourceData {
 
 export interface ContractSpecificSourceData {
     dependencies: string[];
-    solcVersion: string;
+    solcVersionRange: string;
     sourceHash: Buffer;
     sourceTreeHashIfExists?: Buffer;
 }
