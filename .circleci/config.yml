@@ -111,6 +111,10 @@ jobs:
           key: coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/subproviders/coverage/lcov.info
+      - save_cache:
+          key: coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/sol-cov/coverage/lcov.info
   lint:
     working_directory: ~/repo
     docker:
@@ -155,6 +159,9 @@ jobs:
       - restore_cache:
           keys:
             - coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-deployer-{{ .Environment.CIRCLE_SHA1 }}
