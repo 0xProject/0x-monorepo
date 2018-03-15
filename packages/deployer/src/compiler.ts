@@ -162,7 +162,9 @@ export class Compiler {
         _.forEach(fileNames, fileName => {
             this._setSourceTreeHash(fileName);
         });
-        await Promise.all(_.map(fileNames, async fileName => this._compileContractAsync(fileName)));
+        for (const fileName of fileNames) {
+            await this._compileContractAsync(fileName);
+        }
         this._solcErrors.forEach(errMsg => {
             logUtils.log(errMsg);
         });
