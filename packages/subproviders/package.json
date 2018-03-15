@@ -65,5 +65,8 @@
     },
     "publishConfig": {
       "access": "public"
+    },
+    "browser": {
+      "ganache-core": false
     }
 }
