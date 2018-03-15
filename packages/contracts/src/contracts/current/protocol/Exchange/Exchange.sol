@@ -30,7 +30,7 @@ contract Exchange is
     MixinSettlementProxy,
     MixinWrapperFunctions
 {
-    string constant public VERSION = "2.0.0-alpha";
+    string constant public VERSION = "2.0.1-alpha";
 
     function Exchange(
         IToken _zrxToken,
