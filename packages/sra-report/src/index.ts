@@ -10,6 +10,7 @@ import * as yargs from 'yargs';
 import * as sraReportCollectionJSON from '../../postman_collections/sra_report.postman_collection.json';
 
 import { postmanEnvironmentFactory } from './postman_environment_factory';
+import { utils } from './utils';
 
 const DEFAULT_NETWORK_ID = 1;
 const SUPPORTED_NETWORK_IDS = [1, 3, 4, 42];
