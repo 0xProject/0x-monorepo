@@ -15,8 +15,10 @@ import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { Footer } from 'ts/components/footer';
 import { PortalMenu } from 'ts/components/portal_menu';
+import { PortalTitle } from 'ts/components/portal_title';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar } from 'ts/components/top_bar/top_bar';
+import { Wallet } from 'ts/components/Wallet';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
@@ -146,7 +148,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             this.props.dispatcher,
         );
         const portalStyle: React.CSSProperties = {
-            minHeight: '100vh',
+            // minHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -156,6 +158,8 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             backgroundColor: colors.darkestGrey,
             color: colors.white,
         };
+        const allTokens = _.values(this.props.tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => t.isTracked);
         return (
             <div style={portalStyle}>
                 <DocumentTitle title="0x Portal DApp" />
@@ -170,9 +174,10 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                     location={this.props.location}
                     blockchain={this._blockchain}
                     translate={this.props.translate}
+                    style={{ backgroundColor: '#f7f7f9' }}
                 />
-                <div id="portal" className="mx-auto max-width-4" style={{ width: '100%' }}>
-                    <Paper className="mb3 mt2">
+                <div id="portal" className="mx-auto" style={{ width: '100%' }}>
+                    <div>
                         {!configs.IS_MAINNET_ENABLED && this.props.networkId === constants.NETWORK_ID_MAINNET ? (
                             <div className="p3 center">
                                 <div className="h2 py2">Mainnet unavailable</div>
@@ -186,12 +191,31 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                                 </div>
                             </div>
                         ) : (
-                            <div className="mx-auto flex">
-                                <div className="col col-2 pr2 pt1 sm-hide xs-hide" style={portalMenuContainerStyle}>
-                                    <PortalMenu menuItemStyle={{ color: colors.white }} />
+                            <div className="clearfix py3" style={{ backgroundColor: '#f7f7f9' }}>
+                                <div className="col col-4 lg-px4 md-px4 sm-px2">
+                                    <h2>Your Account</h2>
+                                    <Wallet
+                                        userAddress={this.props.userAddress}
+                                        networkId={this.props.networkId}
+                                        injectedProviderName={this.props.injectedProviderName}
+                                        providerType={this.props.providerType}
+                                        blockchain={this._blockchain}
+                                        blockchainErr={this.props.blockchainErr}
+                                        blockchainIsLoaded={this.props.blockchainIsLoaded}
+                                        dispatcher={this.props.dispatcher}
+                                        screenWidth={this.props.screenWidth}
+                                        tokenByAddress={this.props.tokenByAddress}
+                                        trackedTokens={trackedTokens}
+                                        userEtherBalanceInWei={this.props.userEtherBalanceInWei}
+                                        lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                    />
                                 </div>
-                                <div className="col col-12 lg-col-10 md-col-10 sm-col sm-col-12">
-                                    <div className="py2" style={{ backgroundColor: colors.grey50 }}>
+                                <div className="col col-8 lg-px4 md-px4 sm-px2">
+                                    <PortalTitle />
+                                    <div style={portalMenuContainerStyle}>
+                                        <PortalMenu menuItemStyle={{ color: colors.white }} />
+                                    </div>
+                                    <div className="py2">
                                         {this.props.blockchainIsLoaded ? (
                                             <Switch>
                                                 <Route
@@ -234,7 +258,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                                 </div>
                             </div>
                         )}
-                    </Paper>
+                    </div>
                     <BlockchainErrDialog
                         blockchain={this._blockchain}
                         blockchainErr={this.props.blockchainErr}
@@ -263,7 +287,6 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         />
                     )}
                 </div>
-                <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </div>
         );
     }

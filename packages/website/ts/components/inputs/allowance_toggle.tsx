@@ -47,22 +47,22 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         }
     }
     public render() {
-        return (
-            <div className="flex">
-                <div>
-                    <Toggle
-                        disabled={this.state.isSpinnerVisible || this.props.isDisabled}
-                        toggled={this._isAllowanceSet()}
-                        onToggle={this._onToggleAllowanceAsync.bind(this)}
-                    />
+        if (this.state.isSpinnerVisible) {
+            return (
+                <div className="pl1" style={{ paddingTop: 3 }}>
+                    <i className="zmdi zmdi-spinner zmdi-hc-spin" />
                 </div>
-                {this.state.isSpinnerVisible && (
-                    <div className="pl1" style={{ paddingTop: 3 }}>
-                        <i className="zmdi zmdi-spinner zmdi-hc-spin" />
-                    </div>
-                )}
-            </div>
-        );
+            );
+        } else {
+            return (
+                <Toggle
+                    disabled={this.state.isSpinnerVisible || this.props.isDisabled}
+                    toggled={this._isAllowanceSet()}
+                    onToggle={this._onToggleAllowanceAsync.bind(this)}
+                    style={{ width: 24, height: 24 }}
+                />
+            );
+        }
     }
     private async _onToggleAllowanceAsync(): Promise<void> {
         if (this.props.userAddress === '') {
