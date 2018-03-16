@@ -60,5 +60,70 @@ describe('Collect coverage entries', () => {
             );
             expect(coverageEntries.modifiersStatementIds).to.be.deep.equal([]);
         });
+        it('correctly collects coverage entries for AllSolidityFeatures contract', () => {
+            const simpleStorageContractBaseName = 'AllSolidityFeatures.sol';
+            const simpleStorageContractFileName = path.resolve(
+                __dirname,
+                'fixtures/contracts',
+                simpleStorageContractBaseName,
+            );
+            const simpleStorageContract = fs.readFileSync(simpleStorageContractFileName).toString();
+            const coverageEntries = collectCoverageEntries(simpleStorageContract);
+            const fnDescriptions = _.values(coverageEntries.fnMap);
+            const fnNames = _.map(fnDescriptions, fnDescription => fnDescription.name);
+            const expectedFnNames = [
+                'f',
+                'c',
+                'test',
+                'getChoice',
+                'Base',
+                'Derived',
+                'f',
+                'f',
+                '',
+                'g',
+                'setData',
+                'getData',
+                'sendHalf',
+                'insert',
+                'remove',
+                'contains',
+                'iterate_start',
+                'iterate_valid',
+                'iterate_advance',
+                'iterate_get',
+                'insert',
+                'sum',
+                'restricted',
+                'DualIndex',
+                'set',
+                'transfer_ownership',
+                'lookup',
+                '',
+                '',
+                'sum',
+                'someFunction',
+                'fun',
+                'at',
+                'test',
+                'get',
+                'returnNumber',
+                'alloc',
+                'ham',
+                'getMyTuple',
+                'ham',
+                'abstain',
+                'foobar',
+                'foobar',
+                'a',
+            ];
+            expect(fnNames).to.be.deep.equal(expectedFnNames);
+
+            const branchDescriptions = _.values(coverageEntries.branchMap);
+            const branchLines = _.map(branchDescriptions, branchDescription => branchDescription.line);
+            expect(branchLines).to.be.deep.equal([94, 115, 119, 130, 151, 187]);
+            const branchTypes = _.map(branchDescriptions, branchDescription => branchDescription.type);
+            expect(branchTypes).to.be.deep.equal(['if', 'if', 'if', 'if', 'binary-expr', 'if']);
+        });
     });
 });
