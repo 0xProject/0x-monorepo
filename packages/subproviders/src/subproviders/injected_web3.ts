@@ -1,6 +1,8 @@
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
+import { Callback, ErrorCallback } from '../types';
+
 import { Subprovider } from './subprovider';
 
 /*
@@ -15,11 +17,7 @@ export class InjectedWeb3Subprovider extends Subprovider {
         super();
         this._injectedWeb3 = new Web3(subprovider);
     }
-    public handleRequest(
-        payload: Web3.JSONRPCRequestPayload,
-        next: () => void,
-        end: (err: Error | null, result: any) => void,
-    ) {
+    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         switch (payload.method) {
             case 'web3_clientVersion':
                 this._injectedWeb3.version.getNode(end);

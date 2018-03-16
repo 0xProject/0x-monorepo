@@ -1,6 +1,8 @@
 import * as Ganache from 'ganache-core';
 import * as Web3 from 'web3';
 
+import { Callback, ErrorCallback } from '../types';
+
 import { Subprovider } from './subprovider';
 
 /*
@@ -16,11 +18,7 @@ export class GanacheSubprovider extends Subprovider {
     }
     // This method needs to be here to satisfy the interface but linter wants it to be static.
     // tslint:disable-next-line:prefer-function-over-method
-    public handleRequest(
-        payload: Web3.JSONRPCRequestPayload,
-        next: () => void,
-        end: (err: Error | null, result: any) => void,
-    ) {
+    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         this._ganacheProvider.sendAsync(payload, (err: Error | null, result: any) => {
             end(err, result && result.result);
         });

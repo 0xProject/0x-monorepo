@@ -8,6 +8,7 @@ import { Lock } from 'semaphore-async-await';
 import * as Web3 from 'web3';
 
 import {
+    Callback,
     LedgerEthereumClient,
     LedgerEthereumClientFactoryAsync,
     LedgerSubproviderConfigs,
@@ -62,7 +63,7 @@ export class LedgerSubprovider extends Subprovider {
     // tslint:disable-next-line:async-suffix
     public async handleRequest(
         payload: Web3.JSONRPCRequestPayload,
-        next: () => void,
+        next: Callback,
         end: (err: Error | null, result?: any) => void,
     ) {
         let accounts;

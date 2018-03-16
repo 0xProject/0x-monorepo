@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 import * as Web3 from 'web3';
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
+import { Callback } from '../types';
+
 import { Subprovider } from './subprovider';
 
 export class RedundantRPCSubprovider extends Subprovider {
@@ -10,7 +12,7 @@ export class RedundantRPCSubprovider extends Subprovider {
     private static async _firstSuccessAsync(
         rpcs: RpcSubprovider[],
         payload: Web3.JSONRPCRequestPayload,
-        next: () => void,
+        next: Callback,
     ): Promise<any> {
         let lastErr: Error | undefined;
         for (const rpc of rpcs) {
@@ -38,7 +40,7 @@ export class RedundantRPCSubprovider extends Subprovider {
     // tslint:disable-next-line:async-suffix
     public async handleRequest(
         payload: Web3.JSONRPCRequestPayload,
-        next: () => void,
+        next: Callback,
         end: (err: Error | null, data?: any) => void,
     ): Promise<void> {
         const rpcsCopy = this._rpcs.slice();
