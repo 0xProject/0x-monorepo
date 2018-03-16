@@ -1,33 +1,36 @@
-### CLI Usage
+#### CLI Usage
 
 ```bash
-node ./node_modules/@0xproject/deployer/lib/cli.js --help
-cli.js [command]
+$ 0x-deployer --help
+0x-deployer [command]
 
 Commands:
-  cli.js compile  compile contracts
-  cli.js deploy   deploy a single contract with provided arguments
+  0x-deployer compile  compile contracts
+  0x-deployer migrate  compile and deploy contracts using migration scripts
+  0x-deployer deploy   deploy a single contract with provided arguments
 
 Options:
   --version          Show version number                               [boolean]
-  --contracts-dir    path of contracts directory to compile
-              [string] [default: "/Users/leonidlogvinov/Dev/0x/contracts"]
+  --contracts-dir    path of contracts directory to compile   [string] [default:
+   "/path/to/contracts"]
   --network-id       mainnet=1, kovan=42, testrpc=50      [number] [default: 50]
   --should-optimize  enable optimizer                 [boolean] [default: false]
-  --artifacts-dir    path to write contracts artifacts to
-       [string] [default: "/Users/leonidlogvinov/Dev/0x/build/artifacts/"]
+  --artifacts-dir    path to write contracts artifacts to     [string] [default:
+   "/path/to/artifacts"]
   --jsonrpc-port     port connected to JSON RPC         [number] [default: 8545]
   --gas-price        gasPrice to be used for transactions
                                                 [string] [default: "2000000000"]
   --account          account to use for deploying contracts             [string]
+  --contracts        comma separated list of contracts to compile
+                                                         [string] [default: "*"]
   --help             Show help                                         [boolean]
 ```
 
-### API Usage
+#### API Usage
 
-#### Migrations
+##### Migrations
 
-You might want to write a migration scripts (similar to `truffle migrate`), that deploys multiple contracts and configures them. Below you'll find a simple example of such a script to help you get started.
+You can write migration scripts (similar to `truffle migrate`), that deploys multiple contracts and configures them. Below you'll find a simple example of such a script to help you get started.
 
 ```typescript
 import { Deployer } from '@0xproject/deployer';
@@ -48,5 +51,7 @@ const deployer = new Deployer(deployerOpts);
     const etherToken = await deployer.deployAndSaveAsync('WETH9');
 })().catch(console.log);
 ```
+
+**Tip:** Be sure to start an Ethereum node at the supplied `jsonrpcUrl`. We recommend testing with [Ganache-cli](https://github.com/trufflesuite/ganache-cli)
 
 A more sophisticated example can be found [here](https://github.com/0xProject/0x-monorepo/tree/development/packages/contracts/migrations)

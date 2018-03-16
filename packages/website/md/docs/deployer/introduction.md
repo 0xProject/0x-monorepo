@@ -1,6 +1,6 @@
 Welcome to the [Deployer](https://github.com/0xProject/0x-monorepo/tree/development/packages/deployer) documentation! Deployer is a tool for compiling and deploying Solidity smart contracts with ease.
 
-It serves a similar purpose to the [Truffle framework](http://truffleframework.com/), but for intermediate to advanced Solidity developers that require greater configurability and reliability.
+It serves a similar purpose as parts of the [Truffle framework](http://truffleframework.com/), but with the UNIX philosophy in mind: Make each program do one thing well. This tool is for intermediate to advanced Solidity developers that require greater configurability and reliability.
 
 Deployer has the following advantages over Truffle:
 

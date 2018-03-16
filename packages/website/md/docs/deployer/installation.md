@@ -1,4 +1,10 @@
-**Install**
+#### CLI Installation
+
+```bash
+npm install @0xproject/deployer -g
+```
+
+#### API Installation
 
 ```bash
 npm install @0xproject/deployer --save
@@ -6,7 +12,7 @@ npm install @0xproject/deployer --save
 
 **Import**
 
-```javascript
+```typescript
 import { Deployer, Compiler } from '@0xproject/deployer';
 ```
 
