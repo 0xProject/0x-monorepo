@@ -20,25 +20,26 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import { Token } from '../../types';
+
 import TokenSelectorItem from '../TokenSelectorItem';
 
 import { definedTokensToIcon } from '../TokenSelectorItem/TokenSelectorItem';
 
 interface TokenSelectorPropTypes {
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>, symbol: string) => void;
 }
 
 interface TokenSelectorState {
-    selectedToken: string;
+    selectedToken: Token;
     active: boolean;
 }
 
 interface TokenMetadata {
     id: string;
-    symbol: string;
+    symbol: Token;
     description: string;
 }
-
 class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelectorState> {
     // tslint:disable-next-line:underscore-private-and-protected
     private static defaultProps = {
@@ -48,19 +49,19 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
     private _tokens: TokenMetadata[];
     constructor(props: TokenSelectorPropTypes) {
         super(props);
-        this.state = { active: false, selectedToken: 'ZRX' };
+        this.state = { active: false, selectedToken: Token.ZRX };
         this.handleItemSelected = this.handleItemSelected.bind(this);
         this._tokens = [
-            { symbol: 'ZRX', id: 'ZRX', description: '0x Token' },
-            { symbol: 'BAT', id: 'BAT', description: 'Basic Attention Token' },
+            { symbol: Token.ZRX, id: Token.ZRX, description: '0x Token' },
+            { symbol: Token.BAT, id: Token.BAT, description: 'Basic Attention Token' },
         ];
     }
 
-    public handleItemSelected(item: TokenSelectorItem, event: any) {
+    public handleItemSelected(event: any, item: TokenSelectorItem) {
         const { onChange } = this.props;
-        onChange(event);
+        onChange(event, item.props.symbol);
         this.setState((prev, props) => {
-            return { ...prev, active: false, selectedToken: item.props.id };
+            return { ...prev, active: false, selectedToken: item.props.symbol };
         });
     }
 
@@ -92,9 +93,7 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
             <Dropdown isHoverable={true} style={fullWidth}>
                 <DropdownTrigger style={fullWidth}>
                     <Field>
-                        <Control hasIcons={['left', 'right']}>
-                            {activeToken}
-                        </Control>
+                        <Control hasIcons={['left', 'right']}>{activeToken}</Control>
                     </Field>
                 </DropdownTrigger>
                 <DropdownMenu style={fullWidth}>

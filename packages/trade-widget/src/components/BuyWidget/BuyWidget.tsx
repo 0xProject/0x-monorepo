@@ -81,25 +81,25 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
 
     // tslint:disable-next-line:member-access
     async componentWillReceiveProps(nextProps: BuyWidgetPropTypes) {
-        // tslint:disable-next-line:no-console
-        console.log('received new props', nextProps);
         this.props = nextProps;
         await this.updateState();
     }
 
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
+        const { balance, tokenBalance, selectedToken, isLoading } = this.state;
+        const { address } = this.props;
         return (
             <Content>
                 <AccountBlockie
-                    account={this.props.address}
-                    ethBalance={this.state.balance}
-                    tokenBalance={this.state.tokenBalance}
-                    selectedToken={this.state.selectedToken}
+                    account={address}
+                    ethBalance={balance}
+                    tokenBalance={tokenBalance}
+                    selectedToken={selectedToken}
                 />
                 <Label isSize="small">SELECT TOKEN</Label>
                 <Field isFullWidth={true}>
-                    <TokenSelector />
+                    <TokenSelector onChange={this.handleTokenSelected.bind(this)} />
                 </Field>
                 <Label style={{ marginTop: 30 }} isSize="small">
                     BUY AMOUNT
@@ -119,12 +119,7 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
                     <strong> ESTIMATED COST </strong>
                 </Field> */}
                 <Field style={{ marginTop: 20 }}>
-                    <Button
-                        isLoading={this.state.isLoading}
-                        isFullWidth={true}
-                        isColor="info"
-                        onClick={this.handleSubmit}
-                    >
+                    <Button isLoading={isLoading} isFullWidth={true} isColor="info" onClick={this.handleSubmit}>
                         SUBMIT ORDER
                     </Button>
                 </Field>
@@ -141,7 +136,9 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         this.setState((prev, props) => {
             return { ...prev, isLoading: true };
         });
-        const txHash = await this._fillOrderAsync(this.props.address, this.state.amount, this.props.order);
+        const { address, order } = this.props;
+        const { amount } = this.state;
+        const txHash = await this._fillOrderAsync(address, amount, order);
         this.setState((prev, props) => {
             return { ...prev, isLoading: false };
         });
@@ -163,19 +160,23 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         });
     }
 
+    // tslint:disable-next-line:underscore-private-and-protected
+    private async handleTokenSelected(event: any, symbol: string) {
+        this.setState((prev, props) => {
+            return { ...prev, selectedToken: symbol, tokenBalance: '' };
+        });
+        await this.updateState();
+    }
+
     // tslint:disable-next-line:member-access underscore-private-and-protected
     private async updateState() {
-        // tslint:disable-next-line:no-console
-        console.log('updating state', this.props.address);
-        if (!_.isUndefined(this.props.address)) {
-            const addressBalance = await this.props.web3Wrapper.getBalanceInWeiAsync(this.props.address);
+        const { address, order, web3Wrapper, zeroEx } = this.props;
+        if (!_.isUndefined(address)) {
+            const addressBalance = await web3Wrapper.getBalanceInWeiAsync(address);
             const ethAddressBalance = ZeroEx.toUnitAmount(addressBalance, ETH_DECIMAL_PLACES).toFixed(4);
             let tokenBalance = new BigNumber(0);
-            if (!_.isUndefined(this.props.order)) {
-                const rawTokenBalance = await this.props.zeroEx.token.getBalanceAsync(
-                    this.props.order.makerTokenAddress,
-                    this.props.address,
-                );
+            if (!_.isUndefined(order)) {
+                const rawTokenBalance = await zeroEx.token.getBalanceAsync(order.makerTokenAddress, address);
                 tokenBalance = ZeroEx.toUnitAmount(rawTokenBalance, ETH_DECIMAL_PLACES);
             }
             this.setState((prev, props) => {

@@ -13,6 +13,10 @@ export interface Artifact {
     };
 }
 
+export enum Token {
+    ZRX = 'ZRX',
+    BAT = 'BAT',
+}
 export declare type OrderUpdateCallback = (order: SignedOrder) => any;
 export interface LiquidityProvider {
     start(): void;
