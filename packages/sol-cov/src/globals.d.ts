@@ -1,5 +1,6 @@
-// tslint:disable:completed-docs
+declare module 'dirty-chai';
 
+// tslint:disable:completed-docs
 declare module '*.json' {
     const json: any;
     /* tslint:disable */

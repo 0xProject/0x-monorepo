@@ -12,12 +12,12 @@ export interface SourceLocation {
 }
 
 export function getLocationByOffset(str: string): LocationByOffset {
-    const locationByOffset: LocationByOffset = {};
+    const locationByOffset: LocationByOffset = { 0: { line: 1, column: 0 } };
     let currentOffset = 0;
     for (const char of str.split('')) {
-        const location = locationByOffset[currentOffset - 1] || { line: 1, column: 0 };
+        const location = locationByOffset[currentOffset];
         const isNewline = char === '\n';
-        locationByOffset[currentOffset] = {
+        locationByOffset[currentOffset + 1] = {
             line: location.line + (isNewline ? 1 : 0),
             column: isNewline ? 0 : location.column + 1,
         };
@@ -59,9 +59,8 @@ export function parseSourceMap(
         if (parsedEntry.fileIndex !== -1) {
             const sourceRange = {
                 location: {
-                    start: locationByOffsetByFileIndex[parsedEntry.fileIndex][parsedEntry.offset - 1],
-                    end:
-                        locationByOffsetByFileIndex[parsedEntry.fileIndex][parsedEntry.offset + parsedEntry.length - 1],
+                    start: locationByOffsetByFileIndex[parsedEntry.fileIndex][parsedEntry.offset],
+                    end: locationByOffsetByFileIndex[parsedEntry.fileIndex][parsedEntry.offset + parsedEntry.length],
                 },
                 fileName: sources[parsedEntry.fileIndex],
             };
