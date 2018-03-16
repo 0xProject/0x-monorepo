@@ -2,7 +2,7 @@
 
 ## v0.6.3 - _TBD, 2018_
 
-    * Consolidate `Order`, `SignedOrder`, and `ECSignature into` the `@0xproject/types` package (#456)
+    * Consolidate `Order`, `SignedOrder`, and `ECSignature` into the `@0xproject/types` package (#456)
 
 ## v0.6.2 - _February 16, 2018_
 
