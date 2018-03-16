@@ -336,7 +336,7 @@ export enum TokenVisibility {
     TRACKED = 'TRACKED',
 }
 
-export interface VersionToFileName {
+export interface VersionToFilePath {
     [version: string]: string;
 }
 

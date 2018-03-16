@@ -29,8 +29,8 @@
         "postpublish": {
             "assets": ["_bundles/index.js", "_bundles/index.min.js"],
             "docPublishConfigs": {
-                "s3BucketPath": "s3://connect-docs-jsons/",
-                "s3StagingBucketPath": "s3://staging-connect-docs-jsons/"
+                "s3BucketPath": "s3://doc-jsons/connect/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/connect/"
             }
         }
     },

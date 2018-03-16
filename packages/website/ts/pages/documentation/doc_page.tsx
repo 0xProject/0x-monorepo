@@ -17,13 +17,13 @@ import { utils } from 'ts/utils/utils';
 
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
-const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
-const docIdToS3BucketName: { [id: string]: string } = {
-    [DocPackages.ZeroExJs]: isDevelopment ? 'staging-0xjs-docs-jsons' : '0xjs-docs-jsons',
-    [DocPackages.SmartContracts]: 'smart-contracts-docs-json',
-    [DocPackages.Connect]: isDevelopment ? 'staging-connect-docs-jsons' : 'connect-docs-jsons',
-    [DocPackages.Web3Wrapper]: isDevelopment ? 'staging-web3-wrapper-docs-json' : 'web3-wrapper-docs-json',
-    [DocPackages.Deployer]: isDevelopment ? 'staging-depoyer-docs-jsons' : 'depoyer-docs-jsons',
+const isDevelopment = configs.ENVIRONMENT !== Environments.DEVELOPMENT;
+const docIdToS3FolderName: { [id: string]: string } = {
+    [DocPackages.ZeroExJs]: '0xjs',
+    [DocPackages.SmartContracts]: 'smart-contracts',
+    [DocPackages.Connect]: 'connect',
+    [DocPackages.Web3Wrapper]: 'web3-wrapper',
+    [DocPackages.Deployer]: 'deployer',
 };
 
 const docIdToSubpackageName: { [id: string]: string } = {
@@ -101,25 +101,25 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         );
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
-        const s3BucketName = docIdToS3BucketName[this.props.docsInfo.id];
-        const docsJsonRoot = `${constants.S3_BUCKET_ROOT}/${s3BucketName}`;
-        const versionToFileName = await docUtils.getVersionToFileNameAsync(docsJsonRoot);
-        const versions = _.keys(versionToFileName);
+        const folderName = docIdToS3FolderName[this.props.docsInfo.id];
+        const docBucketRoot = isDevelopment ? constants.S3_STAGING_DOC_BUCKET_ROOT : constants.S3_DOC_BUCKET_ROOT;
+        const versionToFilePath = await docUtils.getVersionToFilePathAsync(docBucketRoot, folderName);
+        const versions = _.keys(versionToFilePath);
         this.props.dispatcher.updateAvailableDocVersions(versions);
         const sortedVersions = semverSort.desc(versions);
         const latestVersion = sortedVersions[0];
 
         let versionToFetch = latestVersion;
         if (!_.isUndefined(preferredVersionIfExists)) {
-            const preferredVersionFileNameIfExists = versionToFileName[preferredVersionIfExists];
+            const preferredVersionFileNameIfExists = versionToFilePath[preferredVersionIfExists];
             if (!_.isUndefined(preferredVersionFileNameIfExists)) {
                 versionToFetch = preferredVersionIfExists;
             }
         }
         this.props.dispatcher.updateCurrentDocsVersion(versionToFetch);
 
-        const versionFileNameToFetch = versionToFileName[versionToFetch];
-        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFileNameToFetch, docsJsonRoot);
+        const versionFilePathToFetch = versionToFilePath[versionToFetch];
+        const versionDocObj = await docUtils.getJSONDocFileAsync(versionFilePathToFetch, docBucketRoot);
         const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj);
 
         if (!this._isUnmounted) {

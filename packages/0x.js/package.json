@@ -36,8 +36,8 @@
             "assets": ["_bundles/index.js", "_bundles/index.min.js"],
             "docPublishConfigs": {
                 "extraFileIncludes": ["../types/src/index.ts"],
-                "s3BucketPath": "s3://0xjs-docs-jsons/",
-                "s3StagingBucketPath": "s3://staging-0xjs-docs-jsons/"
+                "s3BucketPath": "s3://doc-jsons/0xjs/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/0xjs/"
             }
         }
     },

@@ -23,8 +23,8 @@
             "assets": [],
             "docPublishConfigs": {
                 "extraFileIncludes": ["../types/src/index.ts"],
-                "s3BucketPath": "s3://depoyer-docs-jsons/",
-                "s3StagingBucketPath": "s3://staging-depoyer-docs-jsons/"
+                "s3BucketPath": "s3://doc-jsons/deployer/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/deployer/"
             }
         }
     },

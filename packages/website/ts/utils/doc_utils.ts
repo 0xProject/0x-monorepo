@@ -2,21 +2,21 @@ import { DoxityDocObj, TypeDocNode } from '@0xproject/react-docs';
 import { logUtils } from '@0xproject/utils';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
-import { S3FileObject, VersionToFileName } from 'ts/types';
+import { S3FileObject, VersionToFilePath } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 import convert = require('xml-js');
 
 export const docUtils = {
-    async getVersionToFileNameAsync(s3DocJsonRoot: string): Promise<VersionToFileName> {
-        const versionFileNames = await this.getVersionFileNamesAsync(s3DocJsonRoot);
-        const versionToFileName: VersionToFileName = {};
-        _.each(versionFileNames, fileName => {
-            const [version] = findVersions(fileName);
-            versionToFileName[version] = fileName;
+    async getVersionToFilePathAsync(s3DocJsonRoot: string, folderName: string): Promise<VersionToFilePath> {
+        const versionFilePaths = await this.getVersionFileNamesAsync(s3DocJsonRoot, folderName);
+        const versionToFilePath: VersionToFilePath = {};
+        _.each(versionFilePaths, filePath => {
+            const [version] = findVersions(filePath);
+            versionToFilePath[version] = filePath;
         });
-        return versionToFileName;
+        return versionToFilePath;
     },
-    async getVersionFileNamesAsync(s3DocJsonRoot: string): Promise<string[]> {
+    async getVersionFileNamesAsync(s3DocJsonRoot: string, folderName: string): Promise<string[]> {
         const response = await fetch(s3DocJsonRoot);
         if (response.status !== 200) {
             // TODO: Show the user an error message when the docs fail to load
@@ -33,13 +33,47 @@ export const docUtils = {
             ? (responseObj.ListBucketResult.Contents as S3FileObject[])
             : [responseObj.ListBucketResult.Contents];
 
-        const versionFileNames = _.map(fileObjs, fileObj => {
+        /*
+         * S3 simply pre-fixes files in "folders" with the folder name. Thus, since we
+         * store docJSONs for multiple packages in a single S3 bucket, we must filter out
+         * the versionFileNames for a given folder here (ignoring folder entries)
+         *
+         * Example S3 response:
+         * <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+         * <Name>staging-doc-jsons</Name>
+         * <Prefix/>
+         * <Marker/>
+         * <MaxKeys>1000</MaxKeys>
+         * <IsTruncated>false</IsTruncated>
+         * <Contents>
+         * <Key>0xjs/</Key>
+         * <LastModified>2018-03-16T13:17:46.000Z</LastModified>
+         * <ETag>"d41d8cd98f00b204e9800998ecf8427e"</ETag>
+         * <Size>0</Size>
+         * <StorageClass>STANDARD</StorageClass>
+         * </Contents>
+         * <Contents>
+         * <Key>0xjs/v0.1.0.json</Key>
+         * <LastModified>2018-03-16T13:18:23.000Z</LastModified>
+         * <ETag>"b4f7f74913aab4a5ad1e6a58fcb3b274"</ETag>
+         * <Size>1039050</Size>
+         * <StorageClass>STANDARD</StorageClass>
+         * </Contents>
+         */
+        const relevantObjs = _.filter(fileObjs, fileObj => {
+            const key = fileObj.Key._text;
+            const isInFolderOfInterest = _.includes(key, folderName);
+            const isFileEntry = !_.endsWith(key, '/');
+            return isInFolderOfInterest && isFileEntry;
+        });
+
+        const versionFilePaths = _.map(relevantObjs, fileObj => {
             return fileObj.Key._text;
         });
-        return versionFileNames;
+        return versionFilePaths;
     },
-    async getJSONDocFileAsync(fileName: string, s3DocJsonRoot: string): Promise<TypeDocNode | DoxityDocObj> {
-        const endpoint = `${s3DocJsonRoot}/${fileName}`;
+    async getJSONDocFileAsync(filePath: string, s3DocJsonRoot: string): Promise<TypeDocNode | DoxityDocObj> {
+        const endpoint = `${s3DocJsonRoot}/${filePath}`;
         const response = await fetch(endpoint);
         if (response.status !== 200) {
             // TODO: Show the user an error message when the docs fail to load

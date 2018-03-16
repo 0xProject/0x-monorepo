@@ -16,8 +16,8 @@
         "postpublish": {
             "docPublishConfigs": {
                 "extraFileIncludes": ["../types/src/index.ts"],
-                "s3BucketPath": "s3://web3-wrapper-docs-json/",
-                "s3StagingBucketPath": "s3://staging-web3-wrapper-docs-json/"
+                "s3BucketPath": "s3://doc-jsons/web3-wrapper/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/web3-wrapper/"
             }
         }
     },
