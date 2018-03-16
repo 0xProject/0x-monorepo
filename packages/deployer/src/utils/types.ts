@@ -86,7 +86,7 @@ export interface ContractSpecificSourceData {
     dependencies: string[];
     solcVersionRange: string;
     sourceHash: Buffer;
-    sourceTreeHashIfExists?: Buffer;
+    sourceTreeHash: Buffer;
 }
 
 // TODO: Consolidate with 0x.js definitions once types are moved into a separate package.

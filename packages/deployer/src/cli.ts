@@ -63,9 +63,9 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
         networkId,
         defaults,
     };
-    const deployerArgsString = argv.args;
+    const deployerArgsString = argv.args as string;
     const deployerArgs = deployerArgsString.split(',');
-    await commands.deployAsync(argv.contract, deployerArgs, deployerOpts);
+    await commands.deployAsync(argv.contract as string, deployerArgs, deployerOpts);
 }
 /**
  * Creates a set of contracts to compile.

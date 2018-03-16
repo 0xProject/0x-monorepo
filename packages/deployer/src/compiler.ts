@@ -10,6 +10,14 @@ import solc = require('solc');
 import * as Web3 from 'web3';
 
 import { binPaths } from './solc/bin_paths';
+import {
+    createArtifactsDirIfDoesNotExistAsync,
+    findImportIfExist,
+    getContractArtifactIfExistsAsync,
+    getNormalizedErrMsg,
+    parseDependencies,
+    parseSolidityVersionRange,
+} from './utils/compiler';
 import { constants } from './utils/constants';
 import { fsWrapper } from './utils/fs_wrapper';
 import {
@@ -24,17 +32,13 @@ import {
 import { utils } from './utils/utils';
 
 const ALL_CONTRACTS_IDENTIFIER = '*';
-const SOLIDITY_VERSION_RANGE_REGEX = /pragma solidity (.*);/;
-const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
-const IMPORT_REGEX = /(import\s)/;
-const DEPENDENCY_PATH_REGEX = /"([^"]+)"/; // Source: https://github.com/BlockChainCompany/soljitsu/blob/master/lib/shared.js
 
 export class Compiler {
     private _contractsDir: string;
     private _networkId: number;
     private _optimizerEnabled: boolean;
     private _artifactsDir: string;
-    private _contractSources?: ContractSources;
+    private _contractSources!: ContractSources;
     private _solcErrors: Set<string> = new Set();
     private _specifiedContracts: Set<string> = new Set();
     private _contractSourceData: ContractSourceData = {};
@@ -79,64 +83,6 @@ export class Compiler {
         return sources;
     }
     /**
-     * Gets contract dependendencies and keccak256 hash from source.
-     * @param source Source code of contract.
-     * @return Object with contract dependencies and keccak256 hash of source.
-     */
-    private static _getContractSpecificSourceData(source: string): ContractSpecificSourceData {
-        const dependencies: string[] = [];
-        const sourceHash = ethUtil.sha3(source);
-        const solcVersionRange = Compiler._parseSolidityVersionRange(source);
-        const contractSpecificSourceData: ContractSpecificSourceData = {
-            dependencies,
-            solcVersionRange,
-            sourceHash,
-        };
-        const lines = source.split('\n');
-        _.forEach(lines, line => {
-            if (!_.isNull(line.match(IMPORT_REGEX))) {
-                const dependencyMatch = line.match(DEPENDENCY_PATH_REGEX);
-                if (!_.isNull(dependencyMatch)) {
-                    const dependencyPath = dependencyMatch[1];
-                    const fileName = path.basename(dependencyPath);
-                    contractSpecificSourceData.dependencies.push(fileName);
-                }
-            }
-        });
-        return contractSpecificSourceData;
-    }
-    /**
-     * Searches Solidity source code for compiler version range.
-     * @param  source Source code of contract.
-     * @return Solc compiler version range.
-     */
-    private static _parseSolidityVersionRange(source: string): string {
-        const solcVersionRangeMatch = source.match(SOLIDITY_VERSION_RANGE_REGEX);
-        if (_.isNull(solcVersionRangeMatch)) {
-            throw new Error('Could not find Solidity version range in source');
-        }
-        const solcVersionRange = solcVersionRangeMatch[1];
-        return solcVersionRange;
-    }
-    /**
-     * Normalizes the path found in the error message.
-     * Example: converts 'base/Token.sol:6:46: Warning: Unused local variable'
-     *          to 'Token.sol:6:46: Warning: Unused local variable'
-     * This is used to prevent logging the same error multiple times.
-     * @param  errMsg An error message from the compiled output.
-     * @return The error message with directories truncated from the contract path.
-     */
-    private static _getNormalizedErrMsg(errMsg: string): string {
-        const errPathMatch = errMsg.match(SOLIDITY_FILE_EXTENSION_REGEX);
-        if (_.isNull(errPathMatch)) {
-            throw new Error('Could not find a path in error message');
-        }
-        const errPath = errPathMatch[0];
-        const baseContract = path.basename(errPath);
-        const normalizedErrMsg = errMsg.replace(errPath, baseContract);
-        return normalizedErrMsg;
-    }
-    /**
      * Instantiates a new instance of the Compiler class.
      * @param opts Options specifying directories, network, and optimization settings.
      * @return An instance of the Compiler class.
@@ -149,20 +95,15 @@ export class Compiler {
         this._specifiedContracts = opts.specifiedContracts;
     }
     /**
-     * Compiles all Solidity files found in contractsDir and writes JSON artifacts to artifactsDir.
+     * Compiles selected Solidity files and writes JSON artifacts to artifactsDir.
      */
-    public async compileAllAsync(): Promise<void> {
-        await this._createArtifactsDirIfDoesNotExistAsync();
+    public async compileAsync(): Promise<void> {
+        await createArtifactsDirIfDoesNotExistAsync(this._artifactsDir);
         this._contractSources = await Compiler._getContractSourcesAsync(this._contractsDir);
-        _.forIn(this._contractSources, (source, fileName) => {
-            this._contractSourceData[fileName] = Compiler._getContractSpecificSourceData(source);
-        });
+        _.forIn(this._contractSources, this._setContractSpecificSourceData.bind(this));
         const fileNames = this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)
             ? _.keys(this._contractSources)
             : Array.from(this._specifiedContracts.values());
-        _.forEach(fileNames, fileName => {
-            this._setSourceTreeHash(fileName);
-        });
         for (const fileName of fileNames) {
             await this._compileContractAsync(fileName);
         }
@@ -179,14 +120,19 @@ export class Compiler {
             throw new Error('Contract sources not yet initialized');
         }
         const contractSpecificSourceData = this._contractSourceData[fileName];
-        const currentArtifactIfExists = (await this._getContractArtifactIfExistsAsync(fileName)) as ContractArtifact;
+        const currentArtifactIfExists = await getContractArtifactIfExistsAsync(this._artifactsDir, fileName);
         const sourceHash = `0x${contractSpecificSourceData.sourceHash.toString('hex')}`;
-        const sourceTreeHash = `0x${contractSpecificSourceData.sourceTreeHashIfExists.toString('hex')}`;
+        const sourceTreeHash = `0x${contractSpecificSourceData.sourceTreeHash.toString('hex')}`;
 
-        const shouldCompile =
-            _.isUndefined(currentArtifactIfExists) ||
-            currentArtifactIfExists.networks[this._networkId].optimizer_enabled !== this._optimizerEnabled ||
-            currentArtifactIfExists.networks[this._networkId].source_tree_hash !== sourceTreeHash;
+        let shouldCompile = false;
+        if (_.isUndefined(currentArtifactIfExists)) {
+            shouldCompile = true;
+        } else {
+            const currentArtifact = currentArtifactIfExists as ContractArtifact;
+            shouldCompile =
+                currentArtifact.networks[this._networkId].optimizer_enabled !== this._optimizerEnabled ||
+                currentArtifact.networks[this._networkId].source_tree_hash !== sourceTreeHash;
+        }
         if (!shouldCompile) {
             return;
         }
@@ -221,15 +167,13 @@ export class Compiler {
         const sourcesToCompile = {
             sources: input,
         };
-        const compiled = solcInstance.compile(
-            sourcesToCompile,
-            Number(this._optimizerEnabled),
-            this._findImportsIfSourcesExist.bind(this),
+        const compiled = solcInstance.compile(sourcesToCompile, Number(this._optimizerEnabled), importPath =>
+            findImportIfExist(this._contractSources, importPath),
         );
 
         if (!_.isUndefined(compiled.errors)) {
             _.forEach(compiled.errors, errMsg => {
-                const normalizedErrMsg = Compiler._getNormalizedErrMsg(errMsg);
+                const normalizedErrMsg = getNormalizedErrMsg(errMsg);
                 this._solcErrors.add(normalizedErrMsg);
             });
         }
@@ -263,10 +207,11 @@ export class Compiler {
 
         let newArtifact: ContractArtifact;
         if (!_.isUndefined(currentArtifactIfExists)) {
+            const currentArtifact = currentArtifactIfExists as ContractArtifact;
             newArtifact = {
-                ...currentArtifactIfExists,
+                ...currentArtifact,
                 networks: {
-                    ...currentArtifactIfExists.networks,
+                    ...currentArtifact.networks,
                     [this._networkId]: contractNetworkData,
                 },
             };
@@ -285,79 +230,42 @@ export class Compiler {
         logUtils.log(`${fileName} artifact saved!`);
     }
     /**
-     * Sets the source tree hash for a file and its dependencies.
-     * @param fileName Name of contract file.
+     * Gets contract dependendencies and keccak256 hash from source.
+     * @param source Source code of contract.
+     * @return Object with contract dependencies and keccak256 hash of source.
      */
-    private _setSourceTreeHash(fileName: string): void {
-        const contractSpecificSourceData = this._contractSourceData[fileName];
-        if (_.isUndefined(contractSpecificSourceData)) {
-            throw new Error(`Contract data for ${fileName} not yet set`);
+    private _setContractSpecificSourceData(source: string, fileName: string): void {
+        if (!_.isUndefined(this._contractSourceData[fileName])) {
+            return;
         }
-        if (_.isUndefined(contractSpecificSourceData.sourceTreeHashIfExists)) {
-            const dependencies = contractSpecificSourceData.dependencies;
-            if (dependencies.length === 0) {
-                contractSpecificSourceData.sourceTreeHashIfExists = contractSpecificSourceData.sourceHash;
-            } else {
-                _.forEach(dependencies, dependency => {
-                    this._setSourceTreeHash(dependency);
-                });
-                const dependencySourceTreeHashes = _.map(
-                    dependencies,
-                    dependency => this._contractSourceData[dependency].sourceTreeHashIfExists,
-                );
-                const sourceTreeHashesBuffer = Buffer.concat([
-                    contractSpecificSourceData.sourceHash,
-                    ...dependencySourceTreeHashes,
-                ]);
-                contractSpecificSourceData.sourceTreeHashIfExists = ethUtil.sha3(sourceTreeHashesBuffer);
-            }
-        }
-    }
-    /**
-     * Callback to resolve dependencies with `solc.compile`.
-     * Throws error if contractSources not yet initialized.
-     * @param  importPath Path to an imported dependency.
-     * @return Import contents object containing source code of dependency.
-     */
-    private _findImportsIfSourcesExist(importPath: string): solc.ImportContents {
-        const fileName = path.basename(importPath);
-        const source = this._contractSources[fileName];
-        if (_.isUndefined(source)) {
-            throw new Error(`Contract source not found for ${fileName}`);
-        }
-        const importContents: solc.ImportContents = {
-            contents: source,
+        const sourceHash = ethUtil.sha3(source);
+        const solcVersionRange = parseSolidityVersionRange(source);
+        const dependencies = parseDependencies(source);
+        const sourceTreeHash = this._getSourceTreeHash(fileName, sourceHash, dependencies);
+        this._contractSourceData[fileName] = {
+            dependencies,
+            solcVersionRange,
+            sourceHash,
+            sourceTreeHash,
         };
-        return importContents;
     }
     /**
-     * Creates the artifacts directory if it does not already exist.
-     */
-    private async _createArtifactsDirIfDoesNotExistAsync(): Promise<void> {
-        if (!fsWrapper.doesPathExistSync(this._artifactsDir)) {
-            logUtils.log('Creating artifacts directory...');
-            await fsWrapper.mkdirAsync(this._artifactsDir);
-        }
-    }
-    /**
-     * Gets contract data on network or returns if an artifact does not exist.
+     * Gets the source tree hash for a file and its dependencies.
      * @param fileName Name of contract file.
-     * @return Contract data on network or undefined.
      */
-    private async _getContractArtifactIfExistsAsync(fileName: string): Promise<ContractArtifact | void> {
-        let contractArtifact;
-        const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
-        const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
-        try {
-            const opts = {
-                encoding: 'utf8',
-            };
-            const contractArtifactString = await fsWrapper.readFileAsync(currentArtifactPath, opts);
-            contractArtifact = JSON.parse(contractArtifactString);
-            return contractArtifact;
-        } catch (err) {
-            logUtils.log(`Artifact for ${fileName} does not exist`);
-            return undefined;
+    private _getSourceTreeHash(fileName: string, sourceHash: Buffer, dependencies: string[]): Buffer {
+        if (dependencies.length === 0) {
+            return sourceHash;
+        } else {
+            const dependencySourceTreeHashes = _.map(dependencies, dependency => {
+                const source = this._contractSources[dependency];
+                this._setContractSpecificSourceData(source, dependency);
+                const sourceData = this._contractSourceData[dependency];
+                return this._getSourceTreeHash(dependency, sourceData.sourceHash, sourceData.dependencies);
+            });
+            const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
+            const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
+            return sourceTreeHash;
         }
     }
 }

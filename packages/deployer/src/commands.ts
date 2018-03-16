@@ -5,7 +5,7 @@ import { CompilerOptions, DeployerOptions } from './utils/types';
 export const commands = {
     async compileAsync(opts: CompilerOptions): Promise<void> {
         const compiler = new Compiler(opts);
-        await compiler.compileAllAsync();
+        await compiler.compileAsync();
     },
     async deployAsync(contractName: string, args: any[], opts: DeployerOptions): Promise<void> {
         const deployer = new Deployer(opts);

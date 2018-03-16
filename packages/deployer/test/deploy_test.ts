@@ -38,7 +38,7 @@ beforeEach(function(done: DoneCallback) {
         if (fsWrapper.doesPathExistSync(exchangeArtifactPath)) {
             await fsWrapper.removeFileAsync(exchangeArtifactPath);
         }
-        await compiler.compileAllAsync();
+        await compiler.compileAsync();
         done();
     })().catch(done);
 });
