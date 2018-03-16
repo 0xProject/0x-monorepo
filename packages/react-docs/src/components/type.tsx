@@ -9,6 +9,7 @@ import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
+import { MethodSignature } from './method_signature';
 import { TypeDefinition } from './type_definition';
 
 const typeToSection: { [typeName: string]: string } = {
@@ -99,6 +100,19 @@ export function Type(props: TypeProps): any {
             typeName = _.reduce(unionTypes, (prev: React.ReactNode, curr: React.ReactNode) => {
                 return [prev, '|', curr];
             });
+            break;
+
+        case TypeDocTypes.Reflection:
+            typeName = (
+                <MethodSignature
+                    method={type.method}
+                    sectionName={props.sectionName}
+                    shouldHideMethodName={true}
+                    shouldUseArrowSyntax={true}
+                    docsInfo={props.docsInfo}
+                    typeDefinitionByName={props.typeDefinitionByName}
+                />
+            );
             break;
 
         case TypeDocTypes.TypeParameter:
