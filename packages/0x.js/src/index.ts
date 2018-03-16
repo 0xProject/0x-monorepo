@@ -1,9 +1,6 @@
 export { ZeroEx } from './0x';
 
 export {
-    Order,
-    SignedOrder,
-    ECSignature,
     ZeroExError,
     EventCallback,
     ExchangeContractErrs,
@@ -34,6 +31,9 @@ export {
     BlockParam,
     ContractEventArg,
     LogWithDecodedArgs,
+    Order,
+    SignedOrder,
+    ECSignature,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
 } from '@0xproject/types';
