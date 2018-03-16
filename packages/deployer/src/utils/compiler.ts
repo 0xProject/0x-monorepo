@@ -48,7 +48,7 @@ export async function createArtifactsDirIfDoesNotExistAsync(artifactsDir: string
  * @return Solc compiler version range.
  */
 export function parseSolidityVersionRange(source: string): string {
-    const SOLIDITY_VERSION_RANGE_REGEX = /pragma solidity (.*);/;
+    const SOLIDITY_VERSION_RANGE_REGEX = /pragma\s+solidity\s+(.*);/;
     const solcVersionRangeMatch = source.match(SOLIDITY_VERSION_RANGE_REGEX);
     if (_.isNull(solcVersionRangeMatch)) {
         throw new Error('Could not find Solidity version range in source');
@@ -104,9 +104,6 @@ export function parseDependencies(source: string): string[] {
  */
 export function findImportIfExist(contractSources: ContractSources, importPath: string): solc.ImportContents {
     const fileName = path.basename(importPath);
-    if (_.isUndefined(contractSources)) {
-        throw new Error('Contract sources not yet initialized');
-    }
     const source = contractSources[fileName];
     if (_.isUndefined(source)) {
         throw new Error(`Contract source not found for ${fileName}`);

@@ -7,5 +7,6 @@ export const fsWrapper = {
     writeFileAsync: promisify<undefined>(fs.writeFile),
     mkdirAsync: promisify<undefined>(fs.mkdir),
     doesPathExistSync: fs.existsSync,
+    rmdirSync: fs.rmdirSync,
     removeFileAsync: promisify<undefined>(fs.unlink),
 };
