@@ -12,7 +12,13 @@ export { LedgerSubprovider } from './subproviders/ledger';
 export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
-export { ECSignature, LedgerWalletSubprovider, LedgerCommunicationClient, NonceSubproviderErrors } from './types';
+export {
+    ECSignature,
+    LedgerWalletSubprovider,
+    LedgerCommunicationClient,
+    NonceSubproviderErrors,
+    LedgerSubproviderConfigs,
+} from './types';
 
 /**
  * A factory method for creating a LedgerEthereumClient usable in a browser context.
