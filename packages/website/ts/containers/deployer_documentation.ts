@@ -66,8 +66,7 @@ const docsInfoConfig: DocsInfoConfig = {
         typeNameToExternalLink: {
             Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
             BigNumber: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
-            ContractInstance:
-                'https://github.com/0xProject/0x-monorepo/blob/development/packages/web3-typescript-typings/index.d.ts#L101',
+            ContractInstance: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L98',
         },
         typeNameToPrefix: {
             ContractInstance: 'Web3',
