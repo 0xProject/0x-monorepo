@@ -32,7 +32,7 @@ const DEPENDENCY_PATH_REGEX = /"([^"]+)"/; // Source: https://github.com/BlockCh
 export class Compiler {
     private _contractsDir: string;
     private _networkId: number;
-    private _optimizerEnabled: number;
+    private _optimizerEnabled: boolean;
     private _artifactsDir: string;
     private _contractSources?: ContractSources;
     private _solcErrors: Set<string> = new Set();
@@ -223,7 +223,7 @@ export class Compiler {
         };
         const compiled = solcInstance.compile(
             sourcesToCompile,
-            this._optimizerEnabled,
+            Number(this._optimizerEnabled),
             this._findImportsIfSourcesExist.bind(this),
         );
 

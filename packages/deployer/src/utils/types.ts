@@ -20,7 +20,7 @@ export interface ContractNetworks {
 
 export interface ContractNetworkData {
     solc_version: string;
-    optimizer_enabled: number;
+    optimizer_enabled: boolean;
     keccak256: string;
     source_tree_hash: string;
     abi: Web3.ContractAbi;
@@ -53,7 +53,7 @@ export interface CliOptions extends yargs.Arguments {
 export interface CompilerOptions {
     contractsDir: string;
     networkId: number;
-    optimizerEnabled: number;
+    optimizerEnabled: boolean;
     artifactsDir: string;
     specifiedContracts: Set<string>;
 }

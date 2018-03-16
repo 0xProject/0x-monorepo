@@ -29,7 +29,7 @@ async function onCompileCommandAsync(argv: CliOptions): Promise<void> {
     const opts: CompilerOptions = {
         contractsDir: argv.contractsDir,
         networkId: argv.networkId,
-        optimizerEnabled: argv.shouldOptimize ? 1 : 0,
+        optimizerEnabled: argv.shouldOptimize,
         artifactsDir: argv.artifactsDir,
         specifiedContracts: getContractsSetFromList(argv.contracts),
     };
@@ -47,7 +47,7 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
     const compilerOpts: CompilerOptions = {
         contractsDir: argv.contractsDir,
         networkId,
-        optimizerEnabled: argv.shouldOptimize ? 1 : 0,
+        optimizerEnabled: argv.shouldOptimize,
         artifactsDir: argv.artifactsDir,
         specifiedContracts: getContractsSetFromList(argv.contracts),
     };
