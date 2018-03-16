@@ -77,6 +77,11 @@ export function getNormalizedErrMsg(errMsg: string): string {
     return normalizedErrMsg;
 }
 
+/**
+ * Parses the contract source code and extracts the dendencies
+ * @param  source Contract source code
+ * @return List of dependendencies
+ */
 export function parseDependencies(source: string): string[] {
     // TODO: Use a proper parser
     const IMPORT_REGEX = /(import\s)/;
