@@ -1,6 +1,13 @@
 import { BigNumber } from '@0xproject/utils';
 
-import { BlockParam, BlockParamLiteral, ContractEventArg, LogWithDecodedArgs } from '@0xproject/types';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    ContractEventArg,
+    LogWithDecodedArgs,
+    Order,
+    SignedOrder,
+} from '@0xproject/types';
 
 import * as Web3 from 'web3';
 
@@ -35,15 +42,6 @@ export enum InternalZeroExError {
     NoAbiDecoder = 'NO_ABI_DECODER',
     ZrxNotInTokenRegistry = 'ZRX_NOT_IN_TOKEN_REGISTRY',
     WethNotInTokenRegistry = 'WETH_NOT_IN_TOKEN_REGISTRY',
-}
-
-/**
- * Elliptic Curve signature
- */
-export interface ECSignature {
-    v: number;
-    r: string;
-    s: string;
 }
 
 export type OrderAddresses = [string, string, string, string, string];
@@ -106,25 +104,6 @@ export interface ContractEvent {
 }
 
 export type ContractEventArgs = ExchangeContractEventArgs | TokenContractEventArgs | EtherTokenContractEventArgs;
-
-export interface Order {
-    maker: string;
-    taker: string;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    salt: BigNumber;
-    exchangeContractAddress: string;
-    feeRecipient: string;
-    expirationUnixTimestampSec: BigNumber;
-}
-
-export interface SignedOrder extends Order {
-    ecSignature: ECSignature;
-}
 
 //                          [address, name, symbol, decimals, ipfsHash, swarmHash]
 export type TokenMetadata = [string, string, string, number, string, string];

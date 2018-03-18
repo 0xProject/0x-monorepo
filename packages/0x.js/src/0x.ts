@@ -1,5 +1,5 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
-import { TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { ECSignature, Order, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { AbiDecoder, BigNumber, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
@@ -15,7 +15,7 @@ import { OrderStateWatcher } from './order_watcher/order_state_watcher';
 import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
 import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
 import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
-import { ECSignature, Order, SignedOrder, Web3Provider, ZeroExConfig, ZeroExError } from './types';
+import { Web3Provider, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';

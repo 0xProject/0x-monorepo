@@ -113,8 +113,8 @@ export class ASTVisitor {
         this._statementMap[this._entryId++] = this._getExpressionRange(ast);
     }
     private _getExpressionRange(ast: Parser.ASTNode): SingleFileSourceRange {
-        const start = this._locationByOffset[ast.range[0] - 1];
-        const end = this._locationByOffset[ast.range[1]];
+        const start = this._locationByOffset[ast.range[0]];
+        const end = this._locationByOffset[ast.range[1] + 1];
         const range = {
             start,
             end,

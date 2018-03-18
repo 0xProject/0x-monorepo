@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { BlockParamLiteral, LogWithDecodedArgs } from '@0xproject/types';
+import { BlockParamLiteral, LogWithDecodedArgs, SignedOrder } from '@0xproject/types';
 import { AbiDecoder, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -31,7 +31,6 @@ import {
     OnOrderStateChangeCallback,
     OrderState,
     OrderStateWatcherConfig,
-    SignedOrder,
     ZeroExError,
 } from '../types';
 import { assert } from '../utils/assert';
