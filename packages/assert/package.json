@@ -7,7 +7,7 @@
     "scripts": {
         "build:watch": "tsc -w",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "clean": "shx rm -rf _bundles lib test_temp scripts",
+        "clean": "shx rm -rf lib test_temp scripts",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "run_mocha": "mocha lib/test/**/*_test.js",
         "prepublishOnly": "run-p build",

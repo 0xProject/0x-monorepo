@@ -12,7 +12,7 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha lib/test/**/*_test.js",
-        "clean": "shx rm -rf _bundles lib test_temp scripts",
+        "clean": "shx rm -rf lib test_temp scripts",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts"
     },
     "repository": {
