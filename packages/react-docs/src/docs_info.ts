@@ -97,6 +97,9 @@ export class DocsInfo {
                 const sortedMethodNames = _.sortBy(docSection.methods, 'name');
                 const methodNames = _.map(sortedMethodNames, m => m.name);
                 menuSubsectionsBySection[sectionName] = [...methodNames, ...eventNames];
+                const sortedFunctionNames = _.sortBy(docSection.functions, 'name');
+                const functionNames = _.map(sortedFunctionNames, m => m.name);
+                menuSubsectionsBySection[sectionName] = [...eventNames, ...functionNames, ...methodNames];
             }
         });
         return menuSubsectionsBySection;
