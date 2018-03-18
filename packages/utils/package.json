@@ -31,6 +31,7 @@
     },
     "dependencies": {
         "@0xproject/types": "^0.4.0",
+        "@types/node": "^8.0.53",
         "bignumber.js": "~4.1.0",
         "ethers-contracts": "^2.2.1",
         "ethers-typescript-typings": "^0.0.3",

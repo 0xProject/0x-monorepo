@@ -27,7 +27,6 @@
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.13",
         "@0xproject/tslint-config": "^0.4.11",
-        "@0xproject/web3-wrapper": "^0.3.0",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
@@ -47,6 +46,7 @@
         "@0xproject/subproviders": "^0.8.0",
         "@0xproject/types": "^0.4.0",
         "@0xproject/utils": "^0.4.2",
+        "@0xproject/web3-wrapper": "^0.3.0",
         "ethereumjs-util": "^5.1.2",
         "lodash": "^4.17.4",
         "request-promise-native": "^1.0.5",

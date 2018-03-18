@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.0.3 - _March 18, 2018_
+
+    * Move TS typings from devDependencies to dependencies since they are needed by the package user.
+
 ## v0.0.2 - _March 18, 2018_
 
     * Move example out into a separate sub-package

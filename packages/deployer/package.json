@@ -33,6 +33,7 @@
         "@0xproject/monorepo-scripts": "^0.1.13",
         "@0xproject/tslint-config": "^0.4.11",
         "@types/require-from-string": "^1.2.0",
+        "@types/yargs": "^11.0.0",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
         "ethers-typescript-typings": "^0.0.3",
