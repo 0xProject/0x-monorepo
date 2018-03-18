@@ -157,6 +157,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.JsonSchemas, Deco.CapWords)}
                 />
             </Link>,
+            <Link key="subMenuItem-sol-cov" to={WebsitePaths.SolCov} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.SolCov, Deco.CapWords)}
+                />
+            </Link>,
         ];
         const bottomBorderStyle = this._shouldDisplayBottomBar() ? styles.bottomBar : {};
         const fullWidthClasses = isFullWidthPage ? 'pr4' : '';
@@ -319,6 +325,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
+                    {!this._isViewingSolCovDocs() && (
+                        <Link to={WebsitePaths.SolCov} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.SolCov, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
                     {!this._isViewingPortal() && (
                         <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
                             <MenuItem className="py2">
@@ -351,6 +365,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 !this._isViewingWeb3WrapperDocs() &&
                 !this._isViewingDeployerDocs() &&
                 !this._isViewingJsonSchemasDocs() &&
+                !this._isViewingSolCovDocs() &&
                 !this._isViewingConnectDocs()) ||
             _.isUndefined(this.props.menu)
         ) {
@@ -448,6 +463,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingJsonSchemasDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.JSONSchemas);
     }
+    private _isViewingSolCovDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.SolCov);
+    }
     private _isViewingWiki() {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
     }
@@ -460,6 +478,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             this._isViewingWeb3WrapperDocs() ||
             this._isViewingDeployerDocs() ||
             this._isViewingJsonSchemasDocs() ||
+            this._isViewingSolCovDocs() ||
             this._isViewingConnectDocs()
         );
     }

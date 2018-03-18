@@ -59,6 +59,7 @@
     "CONTACT": "contact",
     "DEPLOYER": "Deployer",
     "JSON_SCHEMAS": "JSON Schemas",
+    "SOL_COV": "Solidty Coverage",
     "BLOG": "blog",
     "FORUM": "forum",
     "CONNECT": "0x Connect",

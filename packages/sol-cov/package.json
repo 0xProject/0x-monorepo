@@ -22,7 +22,7 @@
         "postpublish": {
             "assets": [],
             "docPublishConfigs": {
-                "extraFileIncludes": ["../types/src/index.ts"],
+                "extraFileIncludes": ["../subproviders/src/types.ts"],
                 "s3BucketPath": "s3://doc-jsons/sol-cov/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/sol-cov/"
             }

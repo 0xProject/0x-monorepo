@@ -54,6 +54,9 @@ const LazyDeployerDocumentation = createLazyComponent('Documentation', async () 
 const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/json_schemas_documentation'),
 );
+const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/sol_cov_documentation'),
+);
 
 analytics.init();
 // tslint:disable-next-line:no-floating-promises
@@ -75,6 +78,7 @@ render(
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
                             <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
                             <Route path={`${WebsitePaths.Deployer}/:version?`} component={LazyDeployerDocumentation} />
+                            <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
                             <Route
                                 path={`${WebsitePaths.JSONSchemas}/:version?`}
                                 component={LazyJSONSchemasDocumentation}

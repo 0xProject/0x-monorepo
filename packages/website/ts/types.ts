@@ -358,6 +358,7 @@ export enum WebsitePaths {
     Web3Wrapper = '/docs/web3_wrapper',
     Deployer = '/docs/deployer',
     JSONSchemas = '/docs/json-schemas',
+    SolCov = '/docs/sol-cov',
 }
 
 export enum DocPackages {
@@ -367,6 +368,7 @@ export enum DocPackages {
     Web3Wrapper = 'WEB3_WRAPPER',
     Deployer = 'DEPLOYER',
     JSONSchemas = 'JSON_SCHEMAS',
+    SolCov = 'SOL_COV',
 }
 
 export interface TimestampMsRange {
@@ -450,6 +452,7 @@ export enum Key {
     Contact = 'CONTACT',
     Deployer = 'DEPLOYER',
     JsonSchemas = 'JSON_SCHEMAS',
+    SolCov = 'SOL_COV',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',
