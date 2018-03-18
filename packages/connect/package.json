@@ -28,8 +28,8 @@
     "config": {
         "postpublish": {
             "assets": [
-                "_bundles/index.js",
-                "_bundles/index.min.js"
+                "packages/connect/_bundles/index.js",
+                "packages/connect/_bundles/index.min.js"
             ],
             "docPublishConfigs": {
                 "s3BucketPath": "s3://connect-docs-jsons/",

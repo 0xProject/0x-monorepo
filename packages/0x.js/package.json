@@ -34,8 +34,8 @@
         "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
         "postpublish": {
             "assets": [
-                "_bundles/index.js",
-                "_bundles/index.min.js"
+                "packages/0x.js/_bundles/index.js",
+                "packages/0x.js/_bundles/index.min.js"
             ],
             "docPublishConfigs": {
                 "extraFileIncludes": [
