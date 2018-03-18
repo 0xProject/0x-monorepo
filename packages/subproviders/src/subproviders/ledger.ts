@@ -4,8 +4,8 @@ import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
 import * as _ from 'lodash';
-import Semaphore from 'semaphore-async-await';
-import Web3 = require('web3');
+import { Lock } from 'semaphore-async-await';
+import * as Web3 from 'web3';
 
 import {
     LedgerEthereumClient,
@@ -24,8 +24,8 @@ const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = true;
 
 export class LedgerSubprovider extends Subprovider {
-    private _nonceLock: Semaphore;
-    private _connectionLock: Semaphore;
+    private _nonceLock = new Lock();
+    private _connectionLock = new Lock();
     private _networkId: number;
     private _derivationPath: string;
     private _derivationPathIndex: number;
@@ -39,8 +39,6 @@ export class LedgerSubprovider extends Subprovider {
     }
     constructor(config: LedgerSubproviderConfigs) {
         super();
-        this._nonceLock = new Semaphore(1);
-        this._connectionLock = new Semaphore(1);
         this._networkId = config.networkId;
         this._ledgerEthereumClientFactoryAsync = config.ledgerEthereumClientFactoryAsync;
         this._derivationPath = config.derivationPath || DEFAULT_DERIVATION_PATH;
@@ -134,7 +132,7 @@ export class LedgerSubprovider extends Subprovider {
 
         let ledgerResponse;
         try {
-            ledgerResponse = await this._ledgerClientIfExists.getAddress_async(
+            ledgerResponse = await this._ledgerClientIfExists.getAddress(
                 this._derivationPath,
                 this._shouldAlwaysAskForConfirmation,
                 SHOULD_GET_CHAIN_CODE,
@@ -147,7 +145,7 @@ export class LedgerSubprovider extends Subprovider {
         hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
         hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
 
-        const accounts = [];
+        const accounts: string[] = [];
         for (let i = 0; i < numberOfAccounts; i++) {
             const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
             const derivedPublicKey = derivedHDNode.publicKey;
@@ -173,7 +171,7 @@ export class LedgerSubprovider extends Subprovider {
         const txHex = tx.serialize().toString('hex');
         try {
             const derivationPath = this._getDerivationPath();
-            const result = await this._ledgerClientIfExists.signTransaction_async(derivationPath, txHex);
+            const result = await this._ledgerClientIfExists.signTransaction(derivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
             tx.s = Buffer.from(result.s, 'hex');
@@ -199,7 +197,7 @@ export class LedgerSubprovider extends Subprovider {
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
         try {
             const derivationPath = this._getDerivationPath();
-            const result = await this._ledgerClientIfExists.signPersonalMessage_async(
+            const result = await this._ledgerClientIfExists.signPersonalMessage(
                 derivationPath,
                 ethUtil.stripHexPrefix(data),
             );
@@ -221,27 +219,27 @@ export class LedgerSubprovider extends Subprovider {
         return derivationPath;
     }
     private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
-        await this._connectionLock.wait();
+        await this._connectionLock.acquire();
         if (!_.isUndefined(this._ledgerClientIfExists)) {
-            this._connectionLock.signal();
+            this._connectionLock.release();
             throw new Error(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
         }
         const ledgerEthereumClient = await this._ledgerEthereumClientFactoryAsync();
-        this._connectionLock.signal();
+        this._connectionLock.release();
         return ledgerEthereumClient;
     }
     private async _destroyLedgerClientAsync() {
-        await this._connectionLock.wait();
+        await this._connectionLock.acquire();
         if (_.isUndefined(this._ledgerClientIfExists)) {
-            this._connectionLock.signal();
+            this._connectionLock.release();
             return;
         }
-        await this._ledgerClientIfExists.comm.close_async();
+        await this._ledgerClientIfExists.transport.close();
         this._ledgerClientIfExists = undefined;
-        this._connectionLock.signal();
+        this._connectionLock.release();
     }
     private async _sendTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        await this._nonceLock.wait();
+        await this._nonceLock.acquire();
         try {
             // fill in the extras
             const filledParams = await this._populateMissingTxParamsAsync(txParams);
@@ -253,29 +251,29 @@ export class LedgerSubprovider extends Subprovider {
                 params: [signedTx],
             };
             const result = await this.emitPayloadAsync(payload);
-            this._nonceLock.signal();
+            this._nonceLock.release();
             return result.result;
         } catch (err) {
-            this._nonceLock.signal();
+            this._nonceLock.release();
             throw err;
         }
     }
     private async _signTransactionWithoutSendingAsync(txParams: PartialTxParams): Promise<ResponseWithTxParams> {
-        await this._nonceLock.wait();
+        await this._nonceLock.acquire();
         try {
             // fill in the extras
             const filledParams = await this._populateMissingTxParamsAsync(txParams);
             // sign it
             const signedTx = await this.signTransactionAsync(filledParams);
 
-            this._nonceLock.signal();
+            this._nonceLock.release();
             const result = {
                 raw: signedTx,
                 tx: txParams,
             };
             return result;
         } catch (err) {
-            this._nonceLock.signal();
+            this._nonceLock.release();
             throw err;
         }
     }

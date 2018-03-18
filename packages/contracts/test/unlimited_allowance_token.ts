@@ -11,12 +11,11 @@ import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('UnlimitedAllowanceToken', () => {
     let owner: string;
@@ -34,7 +33,7 @@ describe('UnlimitedAllowanceToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        const tokenInstance = await deployer.deployAsync(ContractName.DummyToken);
+        const tokenInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
         token = new DummyTokenContract(web3Wrapper, tokenInstance.abi, tokenInstance.address);
         await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;

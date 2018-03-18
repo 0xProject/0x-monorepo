@@ -1,4 +1,5 @@
-import { BigNumber } from '@0xproject/utils';
+import { colors } from '@0xproject/react-shared';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import Paper from 'material-ui/Paper';
@@ -24,7 +25,6 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { BlockchainErrs, HashData, Order, ProviderType, ScreenWidths, TokenByAddress, WebsitePaths } from 'ts/types';
-import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -46,7 +46,7 @@ export interface PortalAllProps {
     providerType: ProviderType;
     screenWidth: ScreenWidths;
     tokenByAddress: TokenByAddress;
-    userEtherBalance: BigNumber;
+    userEtherBalanceInWei: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
     userSuppliedOrderCache: Order;
@@ -121,8 +121,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
             });
         }
         if (nextProps.userAddress !== this.state.prevUserAddress) {
+            const newUserAddress = _.isEmpty(nextProps.userAddress) ? undefined : nextProps.userAddress;
             // tslint:disable-next-line:no-floating-promises
-            this._blockchain.userAddressUpdatedFireAndForgetAsync(nextProps.userAddress);
+            this._blockchain.userAddressUpdatedFireAndForgetAsync(newUserAddress);
             this.setState({
                 prevUserAddress: nextProps.userAddress,
             });
@@ -279,7 +280,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 dispatcher={this.props.dispatcher}
                 tokenByAddress={this.props.tokenByAddress}
                 userAddress={this.props.userAddress}
-                userEtherBalance={this.props.userEtherBalance}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
         );
@@ -306,7 +307,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                 tokenByAddress={this.props.tokenByAddress}
                 trackedTokens={trackedTokens}
                 userAddress={this.props.userAddress}
-                userEtherBalance={this.props.userEtherBalance}
+                userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                 networkId={this.props.networkId}
                 lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
             />
@@ -373,7 +374,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const order = JSON.parse(decodeURIComponent(orderPair[1]));
         const validationResult = validator.validate(order, portalOrderSchema);
         if (validationResult.errors.length > 0) {
-            utils.consoleLog(`Invalid shared order: ${validationResult.errors}`);
+            logUtils.log(`Invalid shared order: ${validationResult.errors}`);
             return undefined;
         }
         return order;

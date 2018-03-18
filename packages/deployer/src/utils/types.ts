@@ -24,10 +24,14 @@ export interface ContractNetworkData {
     keccak256: string;
     source_tree_hash: string;
     abi: Web3.ContractAbi;
-    unlinked_binary: string;
+    bytecode: string;
+    runtime_bytecode: string;
     address?: string;
     constructor_args?: string;
     updated_at: number;
+    source_map: string;
+    source_map_runtime: string;
+    sources: string[];
 }
 
 export interface SolcErrors {
@@ -37,7 +41,7 @@ export interface SolcErrors {
 export interface CliOptions extends yargs.Arguments {
     artifactsDir: string;
     contractsDir: string;
-    jsonrpcPort: number;
+    jsonrpcUrl: string;
     networkId: number;
     shouldOptimize: boolean;
     gasPrice: string;
@@ -54,12 +58,21 @@ export interface CompilerOptions {
     specifiedContracts: Set<string>;
 }
 
-export interface DeployerOptions {
+export interface BaseDeployerOptions {
     artifactsDir: string;
-    jsonrpcPort: number;
     networkId: number;
     defaults: Partial<TxData>;
 }
+
+export interface ProviderDeployerOptions extends BaseDeployerOptions {
+    web3Provider: Web3.Provider;
+}
+
+export interface UrlDeployerOptions extends BaseDeployerOptions {
+    jsonrpcUrl: string;
+}
+
+export type DeployerOptions = UrlDeployerOptions | ProviderDeployerOptions;
 
 export interface ContractSources {
     [key: string]: string;
@@ -74,10 +87,6 @@ export interface ContractSpecificSourceData {
     solcVersion: string;
     sourceHash: Buffer;
     sourceTreeHashIfExists?: Buffer;
-}
-
-export interface ImportContents {
-    contents: string;
 }
 
 // TODO: Consolidate with 0x.js definitions once types are moved into a separate package.

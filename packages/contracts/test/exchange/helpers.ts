@@ -17,13 +17,12 @@ import { OrderFactory } from '../../util/order_factory';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
+import { web3, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange', () => {
     let maker: string;
@@ -39,9 +38,9 @@ describe('Exchange', () => {
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const [rep, dgd, zrx] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken),
-            deployer.deployAsync(ContractName.DummyToken),
-            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,

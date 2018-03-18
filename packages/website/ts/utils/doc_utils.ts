@@ -1,6 +1,8 @@
+import { DoxityDocObj, TypeDocNode } from '@0xproject/react-docs';
+import { logUtils } from '@0xproject/utils';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
-import { DoxityDocObj, S3FileObject, TypeDocNode, VersionToFileName } from 'ts/types';
+import { S3FileObject, VersionToFileName } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 import convert = require('xml-js');
 
@@ -19,7 +21,7 @@ export const docUtils = {
         if (response.status !== 200) {
             // TODO: Show the user an error message when the docs fail to load
             const errMsg = await response.text();
-            utils.consoleLog(`Failed to load JSON file list: ${response.status} ${errMsg}`);
+            logUtils.log(`Failed to load JSON file list: ${response.status} ${errMsg}`);
             throw new Error(errMsg);
         }
         const responseXML = await response.text();
@@ -42,7 +44,7 @@ export const docUtils = {
         if (response.status !== 200) {
             // TODO: Show the user an error message when the docs fail to load
             const errMsg = await response.text();
-            utils.consoleLog(`Failed to load Doc JSON: ${response.status} ${errMsg}`);
+            logUtils.log(`Failed to load Doc JSON: ${response.status} ${errMsg}`);
             throw new Error(errMsg);
         }
         const jsonDocObj = await response.json();

@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "0.33.0",
+    "version": "0.33.2",
     "description": "A javascript library for interacting with the 0x protocol",
     "keywords": [
         "0x.js",
@@ -19,19 +19,32 @@
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
-        "test:circleci": "run-s test:coverage report_test_coverage",
+        "test:circleci": "run-s test:coverage",
         "test": "run-s clean test:commonjs",
-        "test:coverage": "nyc npm run test --all",
-        "report_test_coverage": "nyc report --reporter=text-lcov | coveralls",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
-        "clean": "shx rm -rf _bundles lib test_temp",
+        "clean": "shx rm -rf _bundles lib test_temp scripts",
         "build:umd:prod": "NODE_ENV=production webpack",
-        "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts;",
+        "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test:commonjs": "run-s build:commonjs run_mocha",
         "run_mocha": "mocha lib/test/**/*_test.js --timeout 10000 --bail --exit"
     },
     "config": {
-        "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken"
+        "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
+        "postpublish": {
+            "assets": [
+                "packages/0x.js/_bundles/index.js",
+                "packages/0x.js/_bundles/index.min.js"
+            ],
+            "docPublishConfigs": {
+                "extraFileIncludes": [
+                    "../types/src/index.ts"
+                ],
+                "s3BucketPath": "s3://0xjs-docs-jsons/",
+                "s3StagingBucketPath": "s3://staging-0xjs-docs-jsons/"
+            }
+        }
     },
     "repository": {
         "type": "git",
@@ -42,9 +55,10 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.2.4",
-        "@0xproject/dev-utils": "^0.2.0",
-        "@0xproject/tslint-config": "^0.4.10",
+        "@0xproject/abi-gen": "^0.2.6",
+        "@0xproject/dev-utils": "^0.3.0",
+        "@0xproject/monorepo-scripts": "^0.1.13",
+        "@0xproject/tslint-config": "^0.4.11",
         "@types/bintrees": "^1.0.2",
         "@types/jsonschema": "^1.1.1",
         "@types/lodash": "^4.14.86",
@@ -55,18 +69,17 @@
         "awesome-typescript-loader": "^3.1.3",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-as-promised-typescript-typings": "^0.0.10",
+        "chai-as-promised-typescript-typings": "^0.0.11",
         "chai-bignumber": "^2.0.1",
-        "chai-typescript-typings": "^0.0.4",
+        "chai-typescript-typings": "^0.0.5",
         "copyfiles": "^1.2.0",
-        "coveralls": "^3.0.0",
         "dirty-chai": "^2.0.1",
-        "ethers-typescript-typings": "^0.0.2",
         "json-loader": "^0.5.4",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "opn-cli": "^3.1.0",
+        "prettier": "^1.11.1",
         "request": "^2.81.0",
         "request-promise-native": "^1.0.5",
         "shx": "^0.2.2",
@@ -81,22 +94,26 @@
         "webpack": "^3.1.0"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.1.0",
-        "@0xproject/base-contract": "^0.0.2",
-        "@0xproject/json-schemas": "^0.7.13",
-        "@0xproject/types": "^0.3.0",
-        "@0xproject/utils": "^0.4.0",
-        "@0xproject/web3-wrapper": "^0.2.0",
+        "@0xproject/assert": "^0.2.1",
+        "@0xproject/base-contract": "^0.0.4",
+        "@0xproject/json-schemas": "^0.7.15",
+        "@0xproject/types": "^0.4.0",
+        "@0xproject/utils": "^0.4.2",
+        "@0xproject/web3-wrapper": "^0.3.0",
         "bintrees": "^1.0.2",
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",
         "ethereumjs-blockstream": "^2.0.6",
         "ethereumjs-util": "^5.1.1",
         "ethers-contracts": "^2.2.1",
+        "ethers-typescript-typings": "^0.0.3",
         "js-sha3": "^0.7.0",
         "lodash": "^4.17.4",
         "uuid": "^3.1.0",
         "web3": "^0.20.0",
-        "web3-typescript-typings": "^0.10.0"
+        "web3-typescript-typings": "^0.10.1"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ContractAddresses, Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
+import { Environments, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
 
 const BASE_URL = window.location.origin;
 const isDevelopment = _.includes(
@@ -9,6 +9,7 @@ const isDevelopment = _.includes(
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
+    AMOUNT_DISPLAY_PRECSION: 5,
     BACKEND_BASE_URL: 'https://website-api.0xproject.com',
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
@@ -61,6 +62,7 @@ export const configs = {
         TRST: '/images/token_icons/trust.png',
     } as { [symbol: string]: string },
     IS_MAINNET_ENABLED: true,
+    GOOGLE_ANALYTICS_ID: 'UA-98720122-1',
     LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE: '2017-11-22',
     LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2017-12-19',
     // NEW_WRAPPED_ETHERS is temporary until we remove the SHOULD_DEPRECATE_OLD_WETH_TOKEN flag
@@ -94,8 +96,6 @@ export const configs = {
         [3]: [`https://ropsten.infura.io/${INFURA_API_KEY}`],
         [4]: [`https://rinkeby.infura.io/${INFURA_API_KEY}`],
     } as PublicNodeUrlsByNetworkId,
-    SCROLL_CONTAINER_ID: 'documentation',
-    SCROLL_TOP_ID: 'pageScrollTop',
     SHOULD_DEPRECATE_OLD_WETH_TOKEN: true,
     SYMBOLS_OF_MINTABLE_KOVAN_TOKENS: ['MKR', 'MLN', 'GNT', 'DGD', 'REP'],
     SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS: [

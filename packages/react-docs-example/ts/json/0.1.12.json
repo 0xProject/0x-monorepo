@@ -1,0 +1,3318 @@
+{
+    "id": 0,
+    "name": "@0xproject/web3-wrapper",
+    "kind": 0,
+    "flags": {},
+    "children": [
+        {
+            "id": 75,
+            "name": "\"types/src/index\"",
+            "kind": 1,
+            "kindString": "External module",
+            "flags": {
+                "isExported": true
+            },
+            "originalName": "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/packages/types/src/index.ts",
+            "children": [
+                {
+                    "id": 102,
+                    "name": "AbiType",
+                    "kind": 4,
+                    "kindString": "Enumeration",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 104,
+                            "name": "Constructor",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 36,
+                                    "character": 15
+                                }
+                            ],
+                            "defaultValue": "\"constructor\""
+                        },
+                        {
+                            "id": 105,
+                            "name": "Event",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 37,
+                                    "character": 9
+                                }
+                            ],
+                            "defaultValue": "\"event\""
+                        },
+                        {
+                            "id": 106,
+                            "name": "Fallback",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 38,
+                                    "character": 12
+                                }
+                            ],
+                            "defaultValue": "\"fallback\""
+                        },
+                        {
+                            "id": 103,
+                            "name": "Function",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 35,
+                                    "character": 12
+                                }
+                            ],
+                            "defaultValue": "\"function\""
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Enumeration members",
+                            "kind": 16,
+                            "children": [104, 105, 106, 103]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 34,
+                            "character": 19
+                        }
+                    ]
+                },
+                {
+                    "id": 139,
+                    "name": "BlockParamLiteral",
+                    "kind": 4,
+                    "kindString": "Enumeration",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 140,
+                            "name": "Latest",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 64,
+                                    "character": 10
+                                }
+                            ],
+                            "defaultValue": "\"latest\""
+                        },
+                        {
+                            "id": 141,
+                            "name": "Pending",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 65,
+                                    "character": 11
+                                }
+                            ],
+                            "defaultValue": "\"pending\""
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Enumeration members",
+                            "kind": 16,
+                            "children": [140, 141]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 63,
+                            "character": 29
+                        }
+                    ]
+                },
+                {
+                    "id": 122,
+                    "name": "SolidityTypes",
+                    "kind": 4,
+                    "kindString": "Enumeration",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 123,
+                            "name": "Address",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 50,
+                                    "character": 11
+                                }
+                            ],
+                            "defaultValue": "\"address\""
+                        },
+                        {
+                            "id": 126,
+                            "name": "Uint",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 53,
+                                    "character": 8
+                                }
+                            ],
+                            "defaultValue": "\"uint\""
+                        },
+                        {
+                            "id": 124,
+                            "name": "Uint256",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 51,
+                                    "character": 11
+                                }
+                            ],
+                            "defaultValue": "\"uint256\""
+                        },
+                        {
+                            "id": 125,
+                            "name": "Uint8",
+                            "kind": 16,
+                            "kindString": "Enumeration member",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 52,
+                                    "character": 9
+                                }
+                            ],
+                            "defaultValue": "\"uint8\""
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Enumeration members",
+                            "kind": 16,
+                            "children": [123, 126, 124, 125]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 49,
+                            "character": 25
+                        }
+                    ]
+                },
+                {
+                    "id": 107,
+                    "name": "DecodedLogArgs",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "indexSignature": {
+                        "id": 108,
+                        "name": "__index",
+                        "kind": 8192,
+                        "kindString": "Index signature",
+                        "flags": {},
+                        "parameters": [
+                            {
+                                "id": 109,
+                                "name": "argName",
+                                "kind": 32768,
+                                "kindString": "Parameter",
+                                "flags": {},
+                                "type": {
+                                    "type": "intrinsic",
+                                    "name": "string"
+                                }
+                            }
+                        ],
+                        "type": {
+                            "type": "reference",
+                            "name": "ContractEventArg",
+                            "id": 151
+                        }
+                    },
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 43,
+                            "character": 31
+                        }
+                    ]
+                },
+                {
+                    "id": 99,
+                    "name": "JSONRPCPayload",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 101,
+                            "name": "method",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 31,
+                                    "character": 10
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 100,
+                            "name": "params",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 30,
+                                    "character": 10
+                                }
+                            ],
+                            "type": {
+                                "type": "array",
+                                "elementType": {
+                                    "type": "intrinsic",
+                                    "name": "any"
+                                }
+                            }
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Properties",
+                            "kind": 1024,
+                            "children": [101, 100]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 29,
+                            "character": 31
+                        }
+                    ]
+                },
+                {
+                    "id": 110,
+                    "name": "LogWithDecodedArgs",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "typeParameter": [
+                        {
+                            "id": 111,
+                            "name": "ArgsType",
+                            "kind": 131072,
+                            "kindString": "Type parameter",
+                            "flags": {}
+                        }
+                    ],
+                    "children": [
+                        {
+                            "id": 119,
+                            "name": "address",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 414,
+                                    "character": 19
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "LogEntry.address"
+                            }
+                        },
+                        {
+                            "id": 113,
+                            "name": "args",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 125,
+                                    "character": 16
+                                }
+                            ],
+                            "type": {
+                                "type": "typeParameter",
+                                "name": "ArgsType"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "DecodedLogEntry.args"
+                            }
+                        },
+                        {
+                            "id": 117,
+                            "name": "blockHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 412,
+                                    "character": 21
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "LogEntry.blockHash"
+                            }
+                        },
+                        {
+                            "id": 118,
+                            "name": "blockNumber",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 413,
+                                    "character": 23
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "number"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "LogEntry.blockNumber"
+                            }
+                        },
+                        {
+                            "id": 120,
+                            "name": "data",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 415,
+                                    "character": 16
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "LogEntry.data"
+                            }
+                        },
+                        {
+                            "id": 112,
+                            "name": "event",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 124,
+                                    "character": 17
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "DecodedLogEntry.event"
+                            }
+                        },
+                        {
+                            "id": 114,
+                            "name": "logIndex",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 409,
+                                    "character": 20
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "number"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "LogEntry.logIndex"
+                            }
+                        },
+                        {
+                            "id": 121,
+                            "name": "topics",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 416,
+                                    "character": 18
+                                }
+                            ],
+                            "type": {
+                                "type": "array",
+                                "elementType": {
+                                    "type": "intrinsic",
+                                    "name": "string"
+                                }
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "LogEntry.topics"
+                            }
+                        },
+                        {
+                            "id": 116,
+                            "name": "transactionHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 411,
+                                    "character": 27
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "LogEntry.transactionHash"
+                            }
+                        },
+                        {
+                            "id": 115,
+                            "name": "transactionIndex",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName":
+                                        "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/node_modules/web3-typescript-typings/index.d.ts",
+                                    "line": 410,
+                                    "character": 28
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "number"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "LogEntry.transactionIndex"
+                            }
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Properties",
+                            "kind": 1024,
+                            "children": [119, 113, 117, 118, 120, 112, 114, 121, 116, 115]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 47,
+                            "character": 35
+                        }
+                    ],
+                    "extendedTypes": [
+                        {
+                            "type": "reference",
+                            "name": "DecodedLogEntry",
+                            "typeArguments": [
+                                {
+                                    "type": "typeParameter",
+                                    "name": "ArgsType"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 142,
+                    "name": "RawLogEntry",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 148,
+                            "name": "address",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 76,
+                                    "character": 11
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 146,
+                            "name": "blockHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 74,
+                                    "character": 13
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 147,
+                            "name": "blockNumber",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 75,
+                                    "character": 15
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 149,
+                            "name": "data",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 77,
+                                    "character": 8
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 143,
+                            "name": "logIndex",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 71,
+                                    "character": 12
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 150,
+                            "name": "topics",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 78,
+                                    "character": 10
+                                }
+                            ],
+                            "type": {
+                                "type": "array",
+                                "elementType": {
+                                    "type": "intrinsic",
+                                    "name": "string"
+                                }
+                            }
+                        },
+                        {
+                            "id": 145,
+                            "name": "transactionHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 73,
+                                    "character": 19
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 144,
+                            "name": "transactionIndex",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 72,
+                                    "character": 20
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Properties",
+                            "kind": 1024,
+                            "children": [148, 146, 147, 149, 143, 150, 145, 144]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 70,
+                            "character": 28
+                        }
+                    ]
+                },
+                {
+                    "id": 87,
+                    "name": "TransactionReceipt",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 88,
+                            "name": "blockHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 16,
+                                    "character": 13
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 89,
+                            "name": "blockNumber",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 17,
+                                    "character": 15
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                            }
+                        },
+                        {
+                            "id": 97,
+                            "name": "contractAddress",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 25,
+                                    "character": 19
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 95,
+                            "name": "cumulativeGasUsed",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 23,
+                                    "character": 21
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                            }
+                        },
+                        {
+                            "id": 92,
+                            "name": "from",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 20,
+                                    "character": 8
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 96,
+                            "name": "gasUsed",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 24,
+                                    "character": 11
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                            }
+                        },
+                        {
+                            "id": 98,
+                            "name": "logs",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 26,
+                                    "character": 8
+                                }
+                            ],
+                            "type": {
+                                "type": "array",
+                                "elementType": {
+                                    "type": "reference",
+                                    "name": "LogEntry"
+                                }
+                            }
+                        },
+                        {
+                            "id": 94,
+                            "name": "status",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 22,
+                                    "character": 10
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    },
+                                    {
+                                        "type": "unknown",
+                                        "name": "0"
+                                    },
+                                    {
+                                        "type": "unknown",
+                                        "name": "1"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 93,
+                            "name": "to",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 21,
+                                    "character": 6
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 90,
+                            "name": "transactionHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 18,
+                                    "character": 19
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 91,
+                            "name": "transactionIndex",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 19,
+                                    "character": 20
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                            }
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Properties",
+                            "kind": 1024,
+                            "children": [88, 89, 97, 95, 92, 96, 98, 94, 93, 90, 91]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 15,
+                            "character": 35
+                        }
+                    ],
+                    "extendedBy": [
+                        {
+                            "type": "reference",
+                            "name": "TransactionReceiptWithDecodedLogs",
+                            "id": 127
+                        }
+                    ]
+                },
+                {
+                    "id": 127,
+                    "name": "TransactionReceiptWithDecodedLogs",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 129,
+                            "name": "blockHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 16,
+                                    "character": 13
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.blockHash",
+                                "id": 88
+                            }
+                        },
+                        {
+                            "id": 130,
+                            "name": "blockNumber",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 17,
+                                    "character": 15
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.blockNumber",
+                                "id": 89
+                            }
+                        },
+                        {
+                            "id": 138,
+                            "name": "contractAddress",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 25,
+                                    "character": 19
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.contractAddress",
+                                "id": 97
+                            }
+                        },
+                        {
+                            "id": 136,
+                            "name": "cumulativeGasUsed",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 23,
+                                    "character": 21
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.cumulativeGasUsed",
+                                "id": 95
+                            }
+                        },
+                        {
+                            "id": 133,
+                            "name": "from",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 20,
+                                    "character": 8
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.from",
+                                "id": 92
+                            }
+                        },
+                        {
+                            "id": 137,
+                            "name": "gasUsed",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 24,
+                                    "character": 11
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.gasUsed",
+                                "id": 96
+                            }
+                        },
+                        {
+                            "id": 128,
+                            "name": "logs",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 57,
+                                    "character": 8
+                                }
+                            ],
+                            "type": {
+                                "type": "reference",
+                                "name": "Array",
+                                "typeArguments": [
+                                    {
+                                        "type": "union",
+                                        "types": [
+                                            {
+                                                "type": "reference",
+                                                "name": "LogWithDecodedArgs",
+                                                "id": 110,
+                                                "typeArguments": [
+                                                    {
+                                                        "type": "reference",
+                                                        "name": "DecodedLogArgs",
+                                                        "id": 107
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "reference",
+                                                "name": "LogEntry"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "overwrites": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.logs",
+                                "id": 98
+                            }
+                        },
+                        {
+                            "id": 135,
+                            "name": "status",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 22,
+                                    "character": 10
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    },
+                                    {
+                                        "type": "unknown",
+                                        "name": "0"
+                                    },
+                                    {
+                                        "type": "unknown",
+                                        "name": "1"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.status",
+                                "id": 94
+                            }
+                        },
+                        {
+                            "id": 134,
+                            "name": "to",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 21,
+                                    "character": 6
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.to",
+                                "id": 93
+                            }
+                        },
+                        {
+                            "id": 131,
+                            "name": "transactionHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 18,
+                                    "character": 19
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.transactionHash",
+                                "id": 90
+                            }
+                        },
+                        {
+                            "id": 132,
+                            "name": "transactionIndex",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 19,
+                                    "character": 20
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "number"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TransactionReceipt.transactionIndex",
+                                "id": 91
+                            }
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Properties",
+                            "kind": 1024,
+                            "children": [129, 130, 138, 136, 133, 137, 128, 135, 134, 131, 132]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 56,
+                            "character": 50
+                        }
+                    ],
+                    "extendedTypes": [
+                        {
+                            "type": "reference",
+                            "name": "TransactionReceipt",
+                            "id": 87
+                        }
+                    ]
+                },
+                {
+                    "id": 76,
+                    "name": "TxData",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 77,
+                            "name": "from",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 5,
+                                    "character": 8
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "undefined"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 78,
+                            "name": "gas",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 6,
+                                    "character": 7
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "undefined"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "number"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 79,
+                            "name": "gasPrice",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 7,
+                                    "character": 12
+                                }
+                            ],
+                            "type": {
+                                "type": "reference",
+                                "name": "BigNumber"
+                            }
+                        },
+                        {
+                            "id": 80,
+                            "name": "nonce",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 8,
+                                    "character": 9
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "undefined"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "number"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Properties",
+                            "kind": 1024,
+                            "children": [77, 78, 79, 80]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 4,
+                            "character": 23
+                        }
+                    ],
+                    "extendedBy": [
+                        {
+                            "type": "reference",
+                            "name": "TxDataPayable",
+                            "id": 81
+                        }
+                    ]
+                },
+                {
+                    "id": 81,
+                    "name": "TxDataPayable",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 83,
+                            "name": "from",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 5,
+                                    "character": 8
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "undefined"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TxData.from",
+                                "id": 77
+                            }
+                        },
+                        {
+                            "id": 84,
+                            "name": "gas",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 6,
+                                    "character": 7
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "undefined"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "number"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TxData.gas",
+                                "id": 78
+                            }
+                        },
+                        {
+                            "id": 85,
+                            "name": "gasPrice",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 7,
+                                    "character": 12
+                                }
+                            ],
+                            "type": {
+                                "type": "reference",
+                                "name": "BigNumber"
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TxData.gasPrice",
+                                "id": 79
+                            }
+                        },
+                        {
+                            "id": 86,
+                            "name": "nonce",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 8,
+                                    "character": 9
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "undefined"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "number"
+                                    }
+                                ]
+                            },
+                            "inheritedFrom": {
+                                "type": "reference",
+                                "name": "TxData.nonce",
+                                "id": 80
+                            }
+                        },
+                        {
+                            "id": 82,
+                            "name": "value",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {
+                                "isExported": true,
+                                "isOptional": true
+                            },
+                            "sources": [
+                                {
+                                    "fileName": "types/src/index.ts",
+                                    "line": 12,
+                                    "character": 9
+                                }
+                            ],
+                            "type": {
+                                "type": "reference",
+                                "name": "BigNumber"
+                            }
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Properties",
+                            "kind": 1024,
+                            "children": [83, 84, 85, 86, 82]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 11,
+                            "character": 30
+                        }
+                    ],
+                    "extendedTypes": [
+                        {
+                            "type": "reference",
+                            "name": "TxData",
+                            "id": 76
+                        }
+                    ]
+                },
+                {
+                    "id": 153,
+                    "name": "BlockParam",
+                    "kind": 4194304,
+                    "kindString": "Type alias",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 68,
+                            "character": 22
+                        }
+                    ],
+                    "type": {
+                        "type": "union",
+                        "types": [
+                            {
+                                "type": "reference",
+                                "name": "BlockParamLiteral",
+                                "id": 139
+                            },
+                            {
+                                "type": "intrinsic",
+                                "name": "number"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": 151,
+                    "name": "ContractEventArg",
+                    "kind": 4194304,
+                    "kindString": "Type alias",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 41,
+                            "character": 28
+                        }
+                    ],
+                    "type": {
+                        "type": "union",
+                        "types": [
+                            {
+                                "type": "intrinsic",
+                                "name": "string"
+                            },
+                            {
+                                "type": "reference",
+                                "name": "BigNumber"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": 152,
+                    "name": "RawLog",
+                    "kind": 4194304,
+                    "kindString": "Type alias",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "sources": [
+                        {
+                            "fileName": "types/src/index.ts",
+                            "line": 48,
+                            "character": 18
+                        }
+                    ],
+                    "type": {
+                        "type": "reference",
+                        "name": "LogEntry"
+                    }
+                }
+            ],
+            "groups": [
+                {
+                    "title": "Enumerations",
+                    "kind": 4,
+                    "children": [102, 139, 122]
+                },
+                {
+                    "title": "Interfaces",
+                    "kind": 256,
+                    "children": [107, 99, 110, 142, 87, 127, 76, 81]
+                },
+                {
+                    "title": "Type aliases",
+                    "kind": 4194304,
+                    "children": [153, 151, 152]
+                }
+            ],
+            "sources": [
+                {
+                    "fileName": "types/src/index.ts",
+                    "line": 1,
+                    "character": 0
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "\"web3-wrapper/src/index\"",
+            "kind": 1,
+            "kindString": "External module",
+            "flags": {
+                "isExported": true
+            },
+            "originalName":
+                "/Users/fabioberger/Documents/projects/0x_project/0x-monorepo/packages/web3-wrapper/src/index.ts",
+            "children": [
+                {
+                    "id": 11,
+                    "name": "Web3Wrapper",
+                    "kind": 128,
+                    "kindString": "Class",
+                    "flags": {
+                        "isExported": true
+                    },
+                    "children": [
+                        {
+                            "id": 12,
+                            "name": "constructor",
+                            "kind": 512,
+                            "kindString": "Constructor",
+                            "flags": {
+                                "isExported": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 13,
+                                    "name": "new Web3Wrapper",
+                                    "kind": 16384,
+                                    "kindString": "Constructor signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 14,
+                                            "name": "provider",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "reference",
+                                                "name": "Provider"
+                                            }
+                                        },
+                                        {
+                                            "id": 15,
+                                            "name": "defaults",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {
+                                                "isOptional": true
+                                            },
+                                            "type": {
+                                                "type": "reference",
+                                                "name": "Partial",
+                                                "typeArguments": [
+                                                    {
+                                                        "type": "reference",
+                                                        "name": "TxData"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Web3Wrapper",
+                                        "id": 11
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 20,
+                                    "character": 38
+                                }
+                            ]
+                        },
+                        {
+                            "id": 42,
+                            "name": "doesContractExistAtAddressAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 43,
+                                    "name": "doesContractExistAtAddressAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 44,
+                                            "name": "address",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "boolean"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 75,
+                                    "character": 48
+                                }
+                            ]
+                        },
+                        {
+                            "id": 69,
+                            "name": "estimateGasAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 70,
+                                    "name": "estimateGasAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 71,
+                                            "name": "data",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "number"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 133,
+                                    "character": 33
+                                }
+                            ]
+                        },
+                        {
+                            "id": 57,
+                            "name": "getAvailableAddressesAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 58,
+                                    "name": "getAvailableAddressesAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "array",
+                                                "elementType": {
+                                                    "type": "intrinsic",
+                                                    "name": "string"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 97,
+                                    "character": 43
+                                }
+                            ]
+                        },
+                        {
+                            "id": 39,
+                            "name": "getBalanceInWeiAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 40,
+                                    "name": "getBalanceInWeiAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 41,
+                                            "name": "owner",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "reference",
+                                                "name": "BigNumber"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 69,
+                                    "character": 37
+                                }
+                            ]
+                        },
+                        {
+                            "id": 51,
+                            "name": "getBlockAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 52,
+                                    "name": "getBlockAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 53,
+                                            "name": "blockParam",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "union",
+                                                "types": [
+                                                    {
+                                                        "type": "intrinsic",
+                                                        "name": "string"
+                                                    },
+                                                    {
+                                                        "type": "reference",
+                                                        "name": "Web3.BlockParam"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "reference",
+                                                "name": "BlockWithoutTransactionData"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 89,
+                                    "character": 30
+                                }
+                            ]
+                        },
+                        {
+                            "id": 49,
+                            "name": "getBlockNumberAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 50,
+                                    "name": "getBlockNumberAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "number"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 85,
+                                    "character": 36
+                                }
+                            ]
+                        },
+                        {
+                            "id": 54,
+                            "name": "getBlockTimestampAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 55,
+                                    "name": "getBlockTimestampAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 56,
+                                            "name": "blockParam",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "union",
+                                                "types": [
+                                                    {
+                                                        "type": "intrinsic",
+                                                        "name": "string"
+                                                    },
+                                                    {
+                                                        "type": "reference",
+                                                        "name": "Web3.BlockParam"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "number"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 93,
+                                    "character": 39
+                                }
+                            ]
+                        },
+                        {
+                            "id": 16,
+                            "name": "getContractDefaults",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 17,
+                                    "name": "getContractDefaults",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Partial",
+                                        "typeArguments": [
+                                            {
+                                                "type": "reference",
+                                                "name": "TxData"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 33,
+                                    "character": 30
+                                }
+                            ]
+                        },
+                        {
+                            "id": 62,
+                            "name": "getContractFromAbi",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 63,
+                                    "name": "getContractFromAbi",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 64,
+                                            "name": "abi",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "reference",
+                                                "name": "Web3.ContractAbi"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Contract",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "any"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 125,
+                                    "character": 29
+                                }
+                            ]
+                        },
+                        {
+                            "id": 65,
+                            "name": "getContractInstance",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 66,
+                                    "name": "getContractInstance",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 67,
+                                            "name": "abi",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "reference",
+                                                "name": "Web3.ContractAbi"
+                                            }
+                                        },
+                                        {
+                                            "id": 68,
+                                            "name": "address",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "ContractInstance"
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 129,
+                                    "character": 30
+                                }
+                            ]
+                        },
+                        {
+                            "id": 34,
+                            "name": "getCurrentProvider",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 35,
+                                    "name": "getCurrentProvider",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Provider"
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 62,
+                                    "character": 29
+                                }
+                            ]
+                        },
+                        {
+                            "id": 59,
+                            "name": "getLogsAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 60,
+                                    "name": "getLogsAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 61,
+                                            "name": "filter",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "reference",
+                                                "name": "FilterObject"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "array",
+                                                "elementType": {
+                                                    "type": "reference",
+                                                    "name": "LogEntry"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 101,
+                                    "character": 29
+                                }
+                            ]
+                        },
+                        {
+                            "id": 29,
+                            "name": "getNetworkIdAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 30,
+                                    "name": "getNetworkIdAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "number"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 50,
+                                    "character": 34
+                                }
+                            ]
+                        },
+                        {
+                            "id": 27,
+                            "name": "getNodeVersionAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 28,
+                                    "name": "getNodeVersionAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 46,
+                                    "character": 36
+                                }
+                            ]
+                        },
+                        {
+                            "id": 31,
+                            "name": "getTransactionReceiptAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 32,
+                                    "name": "getTransactionReceiptAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 33,
+                                            "name": "txHash",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "reference",
+                                                "name": "TransactionReceipt"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 55,
+                                    "character": 43
+                                }
+                            ]
+                        },
+                        {
+                            "id": 21,
+                            "name": "isAddress",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 22,
+                                    "name": "isAddress",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 23,
+                                            "name": "address",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "intrinsic",
+                                        "name": "boolean"
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 39,
+                                    "character": 20
+                                }
+                            ]
+                        },
+                        {
+                            "id": 24,
+                            "name": "isSenderAddressAvailableAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 25,
+                                    "name": "isSenderAddressAvailableAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 26,
+                                            "name": "senderAddress",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "boolean"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 42,
+                                    "character": 46
+                                }
+                            ]
+                        },
+                        {
+                            "id": 72,
+                            "name": "sendTransactionAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 73,
+                                    "name": "sendTransactionAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 74,
+                                            "name": "txData",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "reference",
+                                                "name": "TxData"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 137,
+                                    "character": 37
+                                }
+                            ]
+                        },
+                        {
+                            "id": 18,
+                            "name": "setProvider",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 19,
+                                    "name": "setProvider",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 20,
+                                            "name": "provider",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "reference",
+                                                "name": "Provider"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "intrinsic",
+                                        "name": "void"
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 36,
+                                    "character": 22
+                                }
+                            ]
+                        },
+                        {
+                            "id": 45,
+                            "name": "signTransactionAsync",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 46,
+                                    "name": "signTransactionAsync",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 47,
+                                            "name": "address",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        },
+                                        {
+                                            "id": 48,
+                                            "name": "message",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "Promise",
+                                        "typeArguments": [
+                                            {
+                                                "type": "intrinsic",
+                                                "name": "string"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 81,
+                                    "character": 37
+                                }
+                            ]
+                        },
+                        {
+                            "id": 36,
+                            "name": "toWei",
+                            "kind": 2048,
+                            "kindString": "Method",
+                            "flags": {
+                                "isExported": true,
+                                "isPublic": true
+                            },
+                            "signatures": [
+                                {
+                                    "id": 37,
+                                    "name": "toWei",
+                                    "kind": 4096,
+                                    "kindString": "Call signature",
+                                    "flags": {},
+                                    "parameters": [
+                                        {
+                                            "id": 38,
+                                            "name": "ethAmount",
+                                            "kind": 32768,
+                                            "kindString": "Parameter",
+                                            "flags": {},
+                                            "type": {
+                                                "type": "reference",
+                                                "name": "BigNumber"
+                                            }
+                                        }
+                                    ],
+                                    "type": {
+                                        "type": "reference",
+                                        "name": "BigNumber"
+                                    }
+                                }
+                            ],
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 65,
+                                    "character": 16
+                                }
+                            ]
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Constructors",
+                            "kind": 512,
+                            "children": [12]
+                        },
+                        {
+                            "title": "Methods",
+                            "kind": 2048,
+                            "children": [
+                                42,
+                                69,
+                                57,
+                                39,
+                                51,
+                                49,
+                                54,
+                                16,
+                                62,
+                                65,
+                                34,
+                                59,
+                                29,
+                                27,
+                                31,
+                                21,
+                                24,
+                                72,
+                                18,
+                                45,
+                                36
+                            ]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "web3-wrapper/src/index.ts",
+                            "line": 17,
+                            "character": 24
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "RawLogEntry",
+                    "kind": 256,
+                    "kindString": "Interface",
+                    "flags": {},
+                    "children": [
+                        {
+                            "id": 8,
+                            "name": "address",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {},
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 12,
+                                    "character": 11
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 6,
+                            "name": "blockHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {},
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 10,
+                                    "character": 13
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 7,
+                            "name": "blockNumber",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {},
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 11,
+                                    "character": 15
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 9,
+                            "name": "data",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {},
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 13,
+                                    "character": 8
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 3,
+                            "name": "logIndex",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {},
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 7,
+                                    "character": 12
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 10,
+                            "name": "topics",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {},
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 14,
+                                    "character": 10
+                                }
+                            ],
+                            "type": {
+                                "type": "array",
+                                "elementType": {
+                                    "type": "intrinsic",
+                                    "name": "string"
+                                }
+                            }
+                        },
+                        {
+                            "id": 5,
+                            "name": "transactionHash",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {},
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 9,
+                                    "character": 19
+                                }
+                            ],
+                            "type": {
+                                "type": "intrinsic",
+                                "name": "string"
+                            }
+                        },
+                        {
+                            "id": 4,
+                            "name": "transactionIndex",
+                            "kind": 1024,
+                            "kindString": "Property",
+                            "flags": {},
+                            "sources": [
+                                {
+                                    "fileName": "web3-wrapper/src/index.ts",
+                                    "line": 8,
+                                    "character": 20
+                                }
+                            ],
+                            "type": {
+                                "type": "union",
+                                "types": [
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "string"
+                                    },
+                                    {
+                                        "type": "intrinsic",
+                                        "name": "null"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "groups": [
+                        {
+                            "title": "Properties",
+                            "kind": 1024,
+                            "children": [8, 6, 7, 9, 3, 10, 5, 4]
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "fileName": "web3-wrapper/src/index.ts",
+                            "line": 6,
+                            "character": 21
+                        }
+                    ]
+                }
+            ],
+            "groups": [
+                {
+                    "title": "Classes",
+                    "kind": 128,
+                    "children": [11]
+                },
+                {
+                    "title": "Interfaces",
+                    "kind": 256,
+                    "children": [2]
+                }
+            ],
+            "sources": [
+                {
+                    "fileName": "web3-wrapper/src/index.ts",
+                    "line": 1,
+                    "character": 0
+                }
+            ]
+        }
+    ],
+    "groups": [
+        {
+            "title": "External modules",
+            "kind": 1,
+            "children": [75, 1]
+        }
+    ]
+}

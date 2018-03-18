@@ -1,23 +1,14 @@
-import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
+import { ECSignature, ExchangeContractErrs, Web3Provider, ZeroEx, ZeroExError } from '0x.js';
+import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import deepEqual = require('deep-equal');
-import isMobile = require('is-mobile');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { scroller } from 'react-scroll';
-import {
-    EtherscanLinkSuffixes,
-    Networks,
-    Order,
-    ScreenWidths,
-    Side,
-    SideToAssetToken,
-    Token,
-    TokenByAddress,
-} from 'ts/types';
+import { Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
+import Web3 = require('web3');
 
 const LG_MIN_EM = 64;
 const MD_MIN_EM = 52;
@@ -104,11 +95,6 @@ export const utils = {
         };
         return order;
     },
-    consoleLog(message: string) {
-        /* tslint:disable */
-        console.log(message);
-        /* tslint:enable */
-    },
     async sleepAsync(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
@@ -139,21 +125,6 @@ export const utils = {
         } else {
             return ScreenWidths.Sm;
         }
-    },
-    isUserOnMobile(): boolean {
-        const isUserOnMobile = isMobile();
-        return isUserOnMobile;
-    },
-    getEtherScanLinkIfExists(addressOrTxHash: string, networkId: number, suffix: EtherscanLinkSuffixes): string {
-        const networkName = constants.NETWORK_NAME_BY_ID[networkId];
-        if (_.isUndefined(networkName)) {
-            return undefined;
-        }
-        const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
-        return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
-    },
-    setUrlHash(anchorId: string) {
-        window.location.hash = anchorId;
     },
     async isU2FSupportedAsync(): Promise<boolean> {
         const w = window as any;
@@ -201,10 +172,6 @@ export const utils = {
             default:
                 return 'production';
         }
-    },
-    getIdFromName(name: string) {
-        const id = name.replace(/ /g, '-');
-        return id;
     },
     getAddressBeginAndEnd(address: string): string {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
@@ -283,9 +250,9 @@ export const utils = {
     isTestNetwork(networkId: number): boolean {
         const isTestNetwork = _.includes(
             [
-                constants.NETWORK_ID_BY_NAME[Networks.Kovan],
-                constants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
-                constants.NETWORK_ID_BY_NAME[Networks.Ropsten],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Kovan],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
+                sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten],
             ],
             networkId,
         );
@@ -297,18 +264,6 @@ export const utils = {
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
-    scrollToHash(hash: string, containerId: string): void {
-        let finalHash = hash;
-        if (_.isEmpty(hash)) {
-            finalHash = configs.SCROLL_TOP_ID; // scroll to the top
-        }
-
-        scroller.scrollTo(finalHash, {
-            duration: 0,
-            offset: 0,
-            containerId,
-        });
-    },
     async onPageLoadAsync(): Promise<void> {
         if (document.readyState === 'complete') {
             return; // Already loaded
@@ -316,5 +271,24 @@ export const utils = {
         return new Promise<void>((resolve, reject) => {
             window.onload = () => resolve();
         });
+    },
+    getProviderType(provider: Web3.Provider): Providers | string {
+        const constructorName = provider.constructor.name;
+        let parsedProviderName = constructorName;
+        switch (constructorName) {
+            case 'EthereumProvider':
+                parsedProviderName = Providers.Mist;
+                break;
+
+            default:
+                parsedProviderName = constructorName;
+                break;
+        }
+        if ((provider as any).isParity) {
+            parsedProviderName = Providers.Parity;
+        } else if ((provider as any).isMetaMask) {
+            parsedProviderName = Providers.Metamask;
+        }
+        return parsedProviderName;
     },
 };

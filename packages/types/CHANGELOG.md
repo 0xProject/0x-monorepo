@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v0.4.0 - _March 18, 2018_
+
+    * Remove `JSONRPCPayload` (#426)
+    * Consolidate `Order`, `SignedOrder`, and `ECSignature` into the `@0xproject/types` package (#456)
+
+## v0.3.1 - _March 8, 2018_
+
+    * Added `RawLogEntry` type.
+
 ## v0.3.0 - _March 4, 2018_
 
     * Add `data` to `TxData` (#413)

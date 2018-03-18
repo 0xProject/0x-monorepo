@@ -22,12 +22,11 @@ import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
+import { web3, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange', () => {
     let maker: string;
@@ -56,9 +55,9 @@ describe('Exchange', () => {
         tokenOwner = accounts[0];
         [maker, taker, feeRecipient] = accounts;
         const [repInstance, dgdInstance, zrxInstance] = await Promise.all([
-            deployer.deployAsync(ContractName.DummyToken),
-            deployer.deployAsync(ContractName.DummyToken),
-            deployer.deployAsync(ContractName.DummyToken),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
+            deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
         rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
         dgd = new DummyTokenContract(web3Wrapper, dgdInstance.abi, dgdInstance.address);

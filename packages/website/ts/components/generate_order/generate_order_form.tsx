@@ -1,10 +1,10 @@
 import { ECSignature, Order, ZeroEx } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
+import { colors, constants as sharedConstants } from '@0xproject/react-shared';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import * as React from 'react';
-import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { ExpirationInput } from 'ts/components/inputs/expiration_input';
 import { HashInput } from 'ts/components/inputs/hash_input';
@@ -20,7 +20,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
-import { colors } from 'ts/utils/colors';
+import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -237,8 +237,9 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
 
         // Check if all required inputs were supplied
         const debitToken = this.props.sideToAssetToken[Side.Deposit];
+        const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [debitBalance, debitAllowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
-            this.props.userAddress,
+            userAddressIfExists,
             debitToken.address,
         );
         const receiveAmount = this.props.sideToAssetToken[Side.Receive].amount;
@@ -253,14 +254,9 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         ) {
             const didSignSuccessfully = await this._signTransactionAsync();
             if (didSignSuccessfully) {
-                const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+                const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
                 const eventLabel = `${this.props.tokenByAddress[debitToken.address].symbol}-${networkName}`;
-                ReactGA.event({
-                    category: 'Portal',
-                    action: 'Sign Order Success',
-                    label: eventLabel,
-                    value: debitToken.amount.toNumber(),
-                });
+                analytics.logEvent('Portal', 'Sign Order Success', eventLabel, debitToken.amount.toNumber());
                 this.setState({
                     globalErrMsg: '',
                     shouldShowIncompleteErrs: false,
@@ -273,11 +269,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'You must enable wallet communication';
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             }
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Sign Order Failure',
-                label: globalErrMsg,
-            });
+            analytics.logEvent('Portal', 'Sign Order Failure', globalErrMsg);
             this.setState({
                 globalErrMsg,
                 shouldShowIncompleteErrs: true,
@@ -334,7 +326,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';
-                utils.consoleLog(`Unexpected error occured: Order validation failed:
+                logUtils.log(`Unexpected error occured: Order validation failed:
                                   ${validationResult.errors}`);
             }
         } catch (err) {
@@ -343,8 +335,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'User denied sign request';
             } else {
                 globalErrMsg = 'An unexpected error occured. Please try refreshing the page';
-                utils.consoleLog(`Unexpected error occured: ${err}`);
-                utils.consoleLog(err.stack);
+                logUtils.log(`Unexpected error occured: ${err}`);
+                logUtils.log(err.stack);
                 await errorReporter.reportAsync(err);
             }
         }

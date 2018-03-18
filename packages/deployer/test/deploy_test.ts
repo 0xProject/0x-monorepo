@@ -24,7 +24,7 @@ const compiler = new Compiler(compilerOpts);
 const deployerOpts = {
     artifactsDir,
     networkId: constants.networkId,
-    jsonrpcPort: constants.jsonrpcPort,
+    jsonrpcUrl: constants.jsonrpcUrl,
     defaults: {
         gasPrice: constants.gasPrice,
     },
@@ -53,7 +53,7 @@ describe('#Compiler', () => {
         const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
         const exchangeContractData: ContractNetworkData = exchangeArtifact.networks[constants.networkId];
         // The last 43 bytes of the binaries are metadata which may not be equivalent
-        const unlinkedBinaryWithoutMetadata = exchangeContractData.unlinked_binary.slice(0, -86);
+        const unlinkedBinaryWithoutMetadata = exchangeContractData.bytecode.slice(0, -86);
         const exchangeBinaryWithoutMetadata = exchange_binary.slice(0, -86);
         expect(unlinkedBinaryWithoutMetadata).to.equal(exchangeBinaryWithoutMetadata);
     });

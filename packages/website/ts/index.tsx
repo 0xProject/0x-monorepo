@@ -2,7 +2,6 @@
 import { MuiThemeProvider } from 'material-ui/styles';
 import * as React from 'react';
 import { render } from 'react-dom';
-import * as ReactGA from 'react-ga';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
@@ -17,7 +16,9 @@ import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { reducer, State } from 'ts/redux/reducer';
 import { WebsitePaths } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { muiTheme } from 'ts/utils/mui_theme';
+import { utils } from 'ts/utils/utils';
 import 'whatwg-fetch';
 injectTapEventPlugin();
 
@@ -45,7 +46,9 @@ const LazyConnectDocumentation = createLazyComponent('Documentation', async () =
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
 
-ReactGA.initialize('UA-98720122-1');
+analytics.init();
+// tslint:disable-next-line:no-floating-promises
+analytics.logProviderAsync((window as any).web3);
 const store: ReduxStore<State> = createStore(reducer);
 render(
     <Router>

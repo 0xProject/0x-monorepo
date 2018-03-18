@@ -1,20 +1,11 @@
-import { TransactionReceipt, TxData } from '@0xproject/types';
+import { RawLogEntry, TransactionReceipt, TxData } from '@0xproject/types';
 import { BigNumber, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
-interface RawLogEntry {
-    logIndex: string | null;
-    transactionIndex: string | null;
-    transactionHash: string;
-    blockHash: string | null;
-    blockNumber: string | null;
-    address: string;
-    data: string;
-    topics: string[];
-}
-
 export class Web3Wrapper {
+    // This is here purely to reliably distinguish it from other objects in runtime (like BigNumber.isBigNumber)
+    public isZeroExWeb3Wrapper = true;
     private _web3: Web3;
     private _defaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
@@ -22,7 +13,7 @@ export class Web3Wrapper {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
-            // We re-assign the send method so that Web3@1.0 providers work with 0x.js
+            // We re-assign the send method so that Web3@1.0 providers work with @0xproject/web3-wrapper
             (provider as any).sendAsync = (provider as any).send;
         }
         this._web3 = new Web3();
@@ -32,6 +23,9 @@ export class Web3Wrapper {
     }
     public getContractDefaults(): Partial<TxData> {
         return this._defaults;
+    }
+    public getProvider(): Web3.Provider {
+        return this._web3.currentProvider;
     }
     public setProvider(provider: Web3.Provider) {
         this._web3.setProvider(provider);
@@ -100,6 +94,20 @@ export class Web3Wrapper {
         const normalizedAddresses = _.map(addresses, address => address.toLowerCase());
         return normalizedAddresses;
     }
+    public async takeSnapshotAsync(): Promise<number> {
+        const snapshotId = Number(await this._sendRawPayloadAsync<string>({ method: 'evm_snapshot', params: [] }));
+        return snapshotId;
+    }
+    public async revertSnapshotAsync(snapshotId: number): Promise<boolean> {
+        const didRevert = await this._sendRawPayloadAsync<boolean>({ method: 'evm_revert', params: [snapshotId] });
+        return didRevert;
+    }
+    public async mineBlockAsync(): Promise<void> {
+        await this._sendRawPayloadAsync<string>({ method: 'evm_mine', params: [] });
+    }
+    public async increaseTimeAsync(timeDelta: number): Promise<void> {
+        await this._sendRawPayloadAsync<string>({ method: 'evm_increaseTime', params: [timeDelta] });
+    }
     public async getLogsAsync(filter: Web3.FilterObject): Promise<Web3.LogEntry[]> {
         let fromBlock = filter.fromBlock;
         if (_.isNumber(fromBlock)) {
@@ -140,7 +148,7 @@ export class Web3Wrapper {
         const txHash = await promisify<string>(this._web3.eth.sendTransaction)(txData);
         return txHash;
     }
-    private async _sendRawPayloadAsync<A>(payload: Web3.JSONRPCRequestPayload): Promise<A> {
+    private async _sendRawPayloadAsync<A>(payload: Partial<Web3.JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);
         const response = await promisify<Web3.JSONRPCResponsePayload>(sendAsync)(payload);
         const result = response.result;

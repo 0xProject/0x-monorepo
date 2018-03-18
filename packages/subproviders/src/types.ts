@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 export interface LedgerCommunicationClient {
-    close_async: () => Promise<void>;
+    close: () => Promise<void>;
 }
 
 /*
@@ -12,14 +12,14 @@ export interface LedgerCommunicationClient {
 export interface LedgerEthereumClient {
     // shouldGetChainCode is defined as `true` instead of `boolean` because other types rely on the assumption
     // that we get back the chain code and we don't have dependent types to express it properly
-    getAddress_async: (
+    getAddress: (
         derivationPath: string,
         askForDeviceConfirmation: boolean,
         shouldGetChainCode: true,
     ) => Promise<LedgerGetAddressResult>;
-    signPersonalMessage_async: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
-    signTransaction_async: (derivationPath: string, txHex: string) => Promise<ECSignatureString>;
-    comm: LedgerCommunicationClient;
+    signTransaction: (derivationPath: string, rawTxHex: string) => Promise<ECSignatureString>;
+    signPersonalMessage: (derivationPath: string, messageHex: string) => Promise<ECSignature>;
+    transport: LedgerCommunicationClient;
 }
 
 export interface ECSignatureString {
@@ -91,11 +91,6 @@ export interface PartialTxParams {
 
 export type DoneCallback = (err?: Error) => void;
 
-export interface JSONRPCPayload {
-    params: any[];
-    method: string;
-}
-
 export interface LedgerCommunication {
     close_async: () => Promise<void>;
 }
@@ -118,5 +113,7 @@ export enum NonceSubproviderErrors {
     CannotDetermineAddressFromPayload = 'CANNOT_DETERMINE_ADDRESS_FROM_PAYLOAD',
 }
 
-export type OptionalNextCallback = (callback?: (err: Error | null, result: any, cb: any) => void) => void;
 export type ErrorCallback = (err: Error | null, data?: any) => void;
+export type Callback = () => void;
+export type OnNextCompleted = (err: Error | null, result: any, cb: Callback) => void;
+export type NextCallback = (callback?: OnNextCompleted) => void;

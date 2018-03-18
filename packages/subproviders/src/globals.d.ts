@@ -32,43 +32,39 @@ interface ECSignature {
     r: string;
     s: string;
 }
-declare module 'ledgerco' {
-    interface comm {
-        close_async(): Promise<void>;
-    }
-    export class comm_node implements comm {
-        public static create_async(timeoutMilliseconds?: number): Promise<comm_node>;
-        public close_async(): Promise<void>;
-    }
-    export class comm_u2f implements comm {
-        public static create_async(): Promise<comm_u2f>;
-        public close_async(): Promise<void>;
-    }
-    export class eth {
-        public comm: comm;
-        constructor(comm: comm);
-        public getAddress_async(
+
+interface LedgerTransport {
+    close(): Promise<void>;
+}
+
+declare module '@ledgerhq/hw-app-eth' {
+    class Eth {
+        public transport: LedgerTransport;
+        constructor(transport: LedgerTransport);
+        public getAddress(
             path: string,
-            display?: boolean,
-            chaincode?: boolean,
+            boolDisplay?: boolean,
+            boolChaincode?: boolean,
         ): Promise<{ publicKey: string; address: string; chainCode: string }>;
-        public signTransaction_async(path: string, rawTxHex: string): Promise<ECSignatureString>;
-        public getAppConfiguration_async(): Promise<{
-            arbitraryDataEnabled: number;
-            version: string;
-        }>;
-        public signPersonalMessage_async(path: string, messageHex: string): Promise<ECSignature>;
+        public signTransaction(path: string, rawTxHex: string): Promise<ECSignatureString>;
+        public getAppConfiguration(): Promise<{ arbitraryDataEnabled: number; version: string }>;
+        public signPersonalMessage(path: string, messageHex: string): Promise<ECSignature>;
+    }
+    export default Eth;
+}
+
+declare module '@ledgerhq/hw-transport-u2f' {
+    export default class TransportU2F implements LedgerTransport {
+        public static create(): Promise<LedgerTransport>;
+        public close(): Promise<void>;
     }
 }
 
-// Semaphore-async-await declarations
-declare module 'semaphore-async-await' {
-    class Semaphore {
-        constructor(permits: number);
-        public wait(): Promise<void>;
-        public signal(): void;
+declare module '@ledgerhq/hw-transport-node-hid' {
+    export default class TransportNodeHid implements LedgerTransport {
+        public static create(): Promise<LedgerTransport>;
+        public close(): Promise<void>;
     }
-    export default Semaphore;
 }
 
 // web3-provider-engine declarations
@@ -127,4 +123,27 @@ declare module 'hdkey' {
         public derive(path: string): HDNode;
     }
     export = HDNode;
+}
+
+declare module '*.json' {
+    const json: any;
+    /* tslint:disable */
+    export default json;
+    /* tslint:enable */
+}
+
+// ganache-core declarations
+declare module 'ganache-core' {
+    import * as Web3 from 'web3';
+    export interface GanacheOpts {
+        verbose: boolean;
+        logger: {
+            log(msg: string): void;
+        };
+        port: number;
+        networkId: number;
+        mnemonic: string;
+    }
+    // tslint:disable-next-line:completed-docs
+    export function provider(opts: GanacheOpts): Web3.Provider;
 }

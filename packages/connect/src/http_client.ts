@@ -1,5 +1,6 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
+import { SignedOrder } from '@0xproject/types';
 import 'isomorphic-fetch';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
@@ -15,7 +16,6 @@ import {
     OrderbookResponse,
     OrdersRequestOpts,
     PagedRequestOpts,
-    SignedOrder,
     TokenPairsItem,
     TokenPairsRequestOpts,
 } from './types';
@@ -61,7 +61,7 @@ export class HttpClient implements Client {
      * @return  An instance of HttpClient
      */
     constructor(url: string) {
-        assert.isHttpUrl('url', url);
+        assert.isWebUri('url', url);
         this._apiEndpointUrl = url.replace(TRAILING_SLASHES_REGEX, ''); // remove trailing slashes
     }
     /**

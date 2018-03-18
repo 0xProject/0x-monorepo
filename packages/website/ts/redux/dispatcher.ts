@@ -86,7 +86,7 @@ export class Dispatcher {
             type: ActionTypes.UpdateOrderTakerAddress,
         });
     }
-    public updateUserAddress(address: string) {
+    public updateUserAddress(address?: string) {
         this._dispatch({
             data: address,
             type: ActionTypes.UpdateUserAddress,
@@ -125,14 +125,14 @@ export class Dispatcher {
     public batchDispatch(
         tokenByAddress: TokenByAddress,
         networkId: number,
-        userAddress: string,
+        userAddressIfExists: string | undefined,
         sideToAssetToken: SideToAssetToken,
     ) {
         this._dispatch({
             data: {
                 tokenByAddress,
                 networkId,
-                userAddress,
+                userAddressIfExists,
                 sideToAssetToken,
             },
             type: ActionTypes.BatchDispatch,
@@ -155,7 +155,7 @@ export class Dispatcher {
             type: ActionTypes.UpdateOrderECSignature,
         });
     }
-    public updateUserEtherBalance(balance: BigNumber) {
+    public updateUserWeiBalance(balance: BigNumber) {
         this._dispatch({
             data: balance,
             type: ActionTypes.UpdateUserEtherBalance,

@@ -11,12 +11,11 @@ import { constants } from '../../util/constants';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
+import { web3, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('TokenTransferProxy', () => {
     let accounts: string[];
@@ -38,7 +37,7 @@ describe('TokenTransferProxy', () => {
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
         );
-        const repInstance = await deployer.deployAsync(ContractName.DummyToken);
+        const repInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
         rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
 
         dmyBalances = new Balances([rep], [accounts[0], accounts[1]]);

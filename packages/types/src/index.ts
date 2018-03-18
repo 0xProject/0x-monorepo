@@ -27,11 +27,6 @@ export interface TransactionReceipt {
     logs: Web3.LogEntry[];
 }
 
-export interface JSONRPCPayload {
-    params: any[];
-    method: string;
-}
-
 export enum AbiType {
     Function = 'function',
     Constructor = 'constructor',
@@ -67,3 +62,42 @@ export enum BlockParamLiteral {
 }
 
 export type BlockParam = BlockParamLiteral | number;
+
+export interface RawLogEntry {
+    logIndex: string | null;
+    transactionIndex: string | null;
+    transactionHash: string;
+    blockHash: string | null;
+    blockNumber: string | null;
+    address: string;
+    data: string;
+    topics: string[];
+}
+
+export interface Order {
+    maker: string;
+    taker: string;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    makerTokenAmount: BigNumber;
+    takerTokenAmount: BigNumber;
+    makerTokenAddress: string;
+    takerTokenAddress: string;
+    salt: BigNumber;
+    exchangeContractAddress: string;
+    feeRecipient: string;
+    expirationUnixTimestampSec: BigNumber;
+}
+
+export interface SignedOrder extends Order {
+    ecSignature: ECSignature;
+}
+
+/**
+ * Elliptic Curve signature
+ */
+export interface ECSignature {
+    v: number;
+    r: string;
+    s: string;
+}

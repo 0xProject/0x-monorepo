@@ -1,4 +1,5 @@
 import { ZeroEx } from '0x.js';
+import { colors, EtherscanLinkSuffixes } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
@@ -7,10 +8,9 @@ import * as React from 'react';
 import * as ReactTooltip from 'react-tooltip';
 import { EtherScanIcon } from 'ts/components/ui/etherscan_icon';
 import { Party } from 'ts/components/ui/party';
-import { EtherscanLinkSuffixes, Fill, Token, TokenByAddress } from 'ts/types';
-import { colors } from 'ts/utils/colors';
+import { Fill, Token, TokenByAddress } from 'ts/types';
+import { configs } from 'ts/utils/configs';
 
-const PRECISION = 5;
 const IDENTICON_DIAMETER = 40;
 
 interface TradeHistoryItemProps {
@@ -131,7 +131,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
                     {this._renderAmount(givenAmount, givenToken.symbol, givenToken.decimals)}
                 </div>
                 <div style={{ color: colors.grey400, fontSize: 14 }}>
-                    {exchangeRate.toFixed(PRECISION)} {givenToken.symbol}/{receiveToken.symbol}
+                    {exchangeRate.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} {givenToken.symbol}/{receiveToken.symbol}
                 </div>
             </div>
         );
@@ -163,7 +163,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
         const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
         return (
             <span>
-                {unitAmount.toFixed(PRECISION)} {symbol}
+                {unitAmount.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} {symbol}
             </span>
         );
     }

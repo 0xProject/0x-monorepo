@@ -1,4 +1,6 @@
-import { JSONRPCPayload } from '@0xproject/types';
+import * as Web3 from 'web3';
+
+import { Subprovider } from './subprovider';
 
 /*
  * This class implements the web3-provider-engine subprovider interface and returns
@@ -8,14 +10,19 @@ import { JSONRPCPayload } from '@0xproject/types';
  * Source: https://github.com/trufflesuite/ganache-cli/issues/437
  * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
-export class FakeGasEstimateSubprovider {
+export class FakeGasEstimateSubprovider extends Subprovider {
     private _constantGasAmount: number;
     constructor(constantGasAmount: number) {
+        super();
         this._constantGasAmount = constantGasAmount;
     }
     // This method needs to be here to satisfy the interface but linter wants it to be static.
     // tslint:disable-next-line:prefer-function-over-method
-    public handleRequest(payload: JSONRPCPayload, next: () => void, end: (err: Error | null, result: any) => void) {
+    public handleRequest(
+        payload: Web3.JSONRPCRequestPayload,
+        next: () => void,
+        end: (err: Error | null, result: any) => void,
+    ) {
         switch (payload.method) {
             case 'eth_estimateGas':
                 end(null, this._constantGasAmount);
@@ -25,10 +32,5 @@ export class FakeGasEstimateSubprovider {
                 next();
                 return;
         }
-    }
-    // Required to implement this method despite not needing it for this subprovider
-    // tslint:disable-next-line:prefer-function-over-method
-    public setEngine(engine: any) {
-        // noop
     }
 }

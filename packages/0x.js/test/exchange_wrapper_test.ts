@@ -26,15 +26,15 @@ import { constants } from './utils/constants';
 import { FillScenarios } from './utils/fill_scenarios';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
 import { TokenUtils } from './utils/token_utils';
+import { web3, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const NON_EXISTENT_ORDER_HASH = '0x79370342234e7acd6bbeac335bd3bb1d368383294b64b8160a00f4060e4d3777';
 
 describe('ExchangeWrapper', () => {
-    let web3: Web3;
     let zeroEx: ZeroEx;
     let tokenUtils: TokenUtils;
     let tokens: Token[];
@@ -46,7 +46,6 @@ describe('ExchangeWrapper', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
         exchangeContractAddress = zeroEx.exchange.getContractAddress();
         userAddresses = await zeroEx.getAvailableAddressesAsync();

@@ -8,6 +8,7 @@ import { constants } from './utils/constants';
 
 chaiSetup.configure();
 const expect = chai.expect;
+const web3 = web3Factory.create();
 
 describe('TokenTransferProxyWrapper', () => {
     let zeroEx: ZeroEx;
@@ -15,7 +16,6 @@ describe('TokenTransferProxyWrapper', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        const web3 = web3Factory.create();
         zeroEx = new ZeroEx(web3.currentProvider, config);
     });
     describe('#isAuthorizedAsync', () => {

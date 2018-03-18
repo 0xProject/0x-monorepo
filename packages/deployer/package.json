@@ -1,18 +1,20 @@
 {
     "name": "@0xproject/deployer",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Smart contract deployer of 0x protocol",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
-        "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' src/solc/solc_bin/* ./lib && tsc",
+        "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test": "npm run build; mocha lib/test/*_test.js",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "compile": "npm run build; node lib/src/cli.js compile",
-        "clean": "shx rm -rf ./lib",
+        "clean": "shx rm -rf lib scripts",
         "migrate": "npm run build; node lib/src/cli.js migrate",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
-        "test:circleci": "yarn test"
+        "test:circleci": "yarn test:coverage"
     },
     "bin": {
         "0x-deployer": "lib/src/cli.js"
@@ -28,27 +30,35 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/deployer/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^0.4.10",
+        "@0xproject/monorepo-scripts": "^0.1.13",
+        "@0xproject/tslint-config": "^0.4.11",
+        "@types/require-from-string": "^1.2.0",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
-        "ethers-typescript-typings": "^0.0.2",
+        "ethers-typescript-typings": "^0.0.3",
         "mocha": "^4.0.1",
+        "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.10.0"
+        "web3-typescript-typings": "^0.10.1"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.7.13",
-        "@0xproject/types": "^0.3.0",
-        "@0xproject/utils": "^0.4.0",
-        "@0xproject/web3-wrapper": "^0.2.0",
+        "@0xproject/json-schemas": "^0.7.15",
+        "@0xproject/types": "^0.4.0",
+        "@0xproject/utils": "^0.4.2",
+        "@0xproject/web3-wrapper": "^0.3.0",
         "ethereumjs-util": "^5.1.1",
+        "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
+        "require-from-string": "^2.0.1",
         "solc": "^0.4.18",
         "web3": "^0.20.0",
         "web3-eth-abi": "^1.0.0-beta.24",
         "yargs": "^10.0.3"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

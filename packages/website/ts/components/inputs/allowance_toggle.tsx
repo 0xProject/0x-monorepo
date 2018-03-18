@@ -1,11 +1,12 @@
-import { BigNumber } from '@0xproject/utils';
+import { constants as sharedConstants } from '@0xproject/react-shared';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
 import * as React from 'react';
-import * as ReactGA from 'react-ga';
 import { Blockchain } from 'ts/blockchain';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -66,6 +67,7 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
     private async _onToggleAllowanceAsync(): Promise<void> {
         if (this.props.userAddress === '') {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
+            return;
         }
 
         this.setState({
@@ -76,24 +78,14 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
         if (!this._isAllowanceSet()) {
             newAllowanceAmountInBaseUnits = DEFAULT_ALLOWANCE_AMOUNT_IN_BASE_UNITS;
         }
-        const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
+        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
         const eventLabel = `${this.props.token.symbol}-${networkName}`;
         try {
             await this.props.blockchain.setProxyAllowanceAsync(this.props.token, newAllowanceAmountInBaseUnits);
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Set Allowance Success',
-                label: eventLabel,
-                value: newAllowanceAmountInBaseUnits.toNumber(),
-            });
+            analytics.logEvent('Portal', 'Set Allowance Success', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
             await this.props.refetchTokenStateAsync();
         } catch (err) {
-            ReactGA.event({
-                category: 'Portal',
-                action: 'Set Allowance Failure',
-                label: eventLabel,
-                value: newAllowanceAmountInBaseUnits.toNumber(),
-            });
+            analytics.logEvent('Portal', 'Set Allowance Failure', eventLabel, newAllowanceAmountInBaseUnits.toNumber());
             this.setState({
                 isSpinnerVisible: false,
             });
@@ -101,8 +93,8 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
-            utils.consoleLog(`Unexpected error encountered: ${err}`);
-            utils.consoleLog(err.stack);
+            logUtils.log(`Unexpected error encountered: ${err}`);
+            logUtils.log(err.stack);
             this.props.onErrorOccurred(BalanceErrs.allowanceSettingFailed);
             await errorReporter.reportAsync(err);
         }

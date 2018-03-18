@@ -73,9 +73,6 @@ export const utils = {
     isObjectType(tsType: string): boolean {
         return /^{.*}$/.test(tsType);
     },
-    log(...args: any[]): void {
-        console.log(...args); // tslint:disable-line:no-console
-    },
     getPartialNameFromFileName(filename: string): string {
         const name = path.parse(filename).name;
         return name;

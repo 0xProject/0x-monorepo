@@ -1,4 +1,5 @@
-import { TxData } from '@0xproject/types';
+import { AbiType, TxData } from '@0xproject/types';
+import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -6,7 +7,13 @@ import * as Web3 from 'web3';
 import { Contract } from './utils/contract';
 import { encoder } from './utils/encoder';
 import { fsWrapper } from './utils/fs_wrapper';
-import { ContractArtifact, ContractNetworkData, DeployerOptions } from './utils/types';
+import {
+    ContractArtifact,
+    ContractNetworkData,
+    DeployerOptions,
+    ProviderDeployerOptions,
+    UrlDeployerOptions,
+} from './utils/types';
 import { utils } from './utils/utils';
 
 // Gas added to gas estimate to make sure there is sufficient gas for deployment.
@@ -15,17 +22,23 @@ const EXTRA_GAS = 200000;
 export class Deployer {
     public web3Wrapper: Web3Wrapper;
     private _artifactsDir: string;
-    private _jsonrpcPort: number;
     private _networkId: number;
     private _defaults: Partial<TxData>;
 
     constructor(opts: DeployerOptions) {
         this._artifactsDir = opts.artifactsDir;
-        this._jsonrpcPort = opts.jsonrpcPort;
         this._networkId = opts.networkId;
-        const jsonrpcUrl = `http://localhost:${this._jsonrpcPort}`;
-        const web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
         this._defaults = opts.defaults;
+        let web3Provider: Web3.Provider;
+        if (_.isUndefined((opts as ProviderDeployerOptions).web3Provider)) {
+            const jsonrpcUrl = (opts as UrlDeployerOptions).jsonrpcUrl;
+            if (_.isUndefined(jsonrpcUrl)) {
+                throw new Error(`Deployer options don't contain web3Provider nor jsonrpcUrl. Please pass one of them`);
+            }
+            web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
+        } else {
+            web3Provider = (opts as ProviderDeployerOptions).web3Provider;
+        }
         this.web3Wrapper = new Web3Wrapper(web3Provider, this._defaults);
     }
     /**
@@ -39,7 +52,7 @@ export class Deployer {
         const contractNetworkDataIfExists: ContractNetworkData = this._getContractNetworkDataFromArtifactIfExists(
             contractArtifactIfExists,
         );
-        const data = contractNetworkDataIfExists.unlinked_binary;
+        const data = contractNetworkDataIfExists.bytecode;
         const from = await this._getFromAddressAsync();
         const gas = await this._getAllowableGasEstimateAsync(data);
         const txData = {
@@ -49,8 +62,20 @@ export class Deployer {
             gas,
         };
         const abi = contractNetworkDataIfExists.abi;
+        const constructorAbi = _.find(abi, { type: AbiType.Constructor }) as Web3.ConstructorAbi;
+        const constructorArgs = _.isUndefined(constructorAbi) ? [] : constructorAbi.inputs;
+        if (constructorArgs.length !== args.length) {
+            const constructorSignature = `constructor(${_.map(constructorArgs, arg => `${arg.type} ${arg.name}`).join(
+                ', ',
+            )})`;
+            throw new Error(
+                `${contractName} expects ${constructorArgs.length} constructor params: ${constructorSignature}. Got ${
+                    args.length
+                }`,
+            );
+        }
         const web3ContractInstance = await this._deployFromAbiAsync(abi, args, txData);
-        utils.consoleLog(`${contractName}.sol successfully deployed at ${web3ContractInstance.address}`);
+        logUtils.log(`${contractName}.sol successfully deployed at ${web3ContractInstance.address}`);
         const contractInstance = new Contract(web3ContractInstance, this._defaults);
         return contractInstance;
     }
@@ -83,7 +108,7 @@ export class Deployer {
                 if (err) {
                     reject(err);
                 } else if (_.isUndefined(res.address) && !_.isUndefined(res.transactionHash)) {
-                    utils.consoleLog(`transactionHash: ${res.transactionHash}`);
+                    logUtils.log(`transactionHash: ${res.transactionHash}`);
                 } else {
                     resolve(res);
                 }
