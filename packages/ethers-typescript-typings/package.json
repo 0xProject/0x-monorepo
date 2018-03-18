@@ -1,6 +1,6 @@
 {
     "name": "ethers-typescript-typings",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Typescript type definitions for ethers.js",
     "main": "index.d.ts",
     "types": "index.d.ts",
@@ -23,7 +23,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethers-typescript-typings#readme",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.12",
+        "@0xproject/monorepo-scripts": "^0.1.13",
         "copyfiles": "^1.2.0",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
@@ -31,6 +31,6 @@
         "typescript": "2.7.1"
     },
     "publishConfig": {
-      "access": "public"
+        "access": "public"
     }
 }

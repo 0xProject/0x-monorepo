@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/react-shared",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "0x shared react components",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -21,9 +21,9 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.2.1",
-        "@0xproject/monorepo-scripts": "^0.1.12",
-        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/dev-utils": "^0.3.0",
+        "@0xproject/monorepo-scripts": "^0.1.13",
+        "@0xproject/tslint-config": "^0.4.11",
         "@types/lodash": "^4.14.86",
         "@types/material-ui": "0.18.0",
         "@types/node": "^8.0.53",

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "0.6.3",
+    "version": "0.6.4",
     "description": "A javascript library for interacting with the standard relayer api",
     "keywords": [
         "connect",
@@ -27,7 +27,10 @@
     },
     "config": {
         "postpublish": {
-            "assets": ["_bundles/index.js", "_bundles/index.min.js"],
+            "assets": [
+                "_bundles/index.js",
+                "_bundles/index.min.js"
+            ],
             "docPublishConfigs": {
                 "s3BucketPath": "s3://connect-docs-jsons/",
                 "s3StagingBucketPath": "s3://staging-connect-docs-jsons/"
@@ -48,39 +51,39 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^0.2.0",
-        "@0xproject/json-schemas": "^0.7.14",
-        "@0xproject/types": "^0.3.1",
-        "@0xproject/utils": "^0.4.1",
+        "@0xproject/assert": "^0.2.1",
+        "@0xproject/json-schemas": "^0.7.15",
+        "@0xproject/types": "^0.4.0",
+        "@0xproject/utils": "^0.4.2",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.12",
-        "@0xproject/tslint-config": "^0.4.10",
+        "@0xproject/monorepo-scripts": "^0.1.13",
+        "@0xproject/tslint-config": "^0.4.11",
         "@types/fetch-mock": "^5.12.1",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
         "@types/query-string": "^5.0.1",
         "@types/websocket": "^0.0.34",
-        "nyc": "^11.0.1",
         "async-child-process": "^1.1.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-as-promised-typescript-typings": "^0.0.10",
-        "chai-typescript-typings": "^0.0.4",
+        "chai-as-promised-typescript-typings": "^0.0.11",
+        "chai-typescript-typings": "^0.0.5",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "fetch-mock": "^5.13.1",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
+        "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typedoc": "~0.8.0",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.10.0"
+        "web3-typescript-typings": "^0.10.1"
     },
     "publishConfig": {
         "access": "public"

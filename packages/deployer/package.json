@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/deployer",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "description": "Smart contract deployer of 0x protocol",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -30,25 +30,25 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/deployer/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.12",
-        "@0xproject/tslint-config": "^0.4.10",
+        "@0xproject/monorepo-scripts": "^0.1.13",
+        "@0xproject/tslint-config": "^0.4.11",
         "@types/require-from-string": "^1.2.0",
         "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
-        "nyc": "^11.0.1",
-        "ethers-typescript-typings": "^0.0.2",
+        "ethers-typescript-typings": "^0.0.3",
         "mocha": "^4.0.1",
+        "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.10.0"
+        "web3-typescript-typings": "^0.10.1"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.7.14",
-        "@0xproject/types": "^0.3.1",
-        "@0xproject/utils": "^0.4.1",
-        "@0xproject/web3-wrapper": "^0.2.1",
+        "@0xproject/json-schemas": "^0.7.15",
+        "@0xproject/types": "^0.4.0",
+        "@0xproject/utils": "^0.4.2",
+        "@0xproject/web3-wrapper": "^0.3.0",
         "ethereumjs-util": "^5.1.1",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
@@ -59,6 +59,6 @@
         "yargs": "^10.0.3"
     },
     "publishConfig": {
-      "access": "public"
+        "access": "public"
     }
 }
