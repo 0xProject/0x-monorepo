@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/assert",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Provides a standard way of performing type and schema validation across 0x projects",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -26,13 +26,13 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/assert/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.13",
-        "@0xproject/tslint-config": "^0.4.11",
+        "@0xproject/monorepo-scripts": "^0.1.14",
+        "@0xproject/tslint-config": "^0.4.12",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
         "@types/valid-url": "^1.0.2",
         "chai": "^4.0.1",
-        "chai-typescript-typings": "^0.0.5",
+        "chai-typescript-typings": "^0.0.6",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "mocha": "^4.0.1",
@@ -43,8 +43,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.7.15",
-        "@0xproject/utils": "^0.4.2",
+        "@0xproject/json-schemas": "^0.7.16",
+        "@0xproject/utils": "^0.4.3",
         "lodash": "^4.17.4",
         "valid-url": "^1.0.9"
     },

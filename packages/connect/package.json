@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "0.6.4",
+    "version": "0.6.5",
     "description": "A javascript library for interacting with the standard relayer api",
     "keywords": [
         "connect",
@@ -51,18 +51,18 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^0.2.1",
-        "@0xproject/json-schemas": "^0.7.15",
-        "@0xproject/types": "^0.4.0",
-        "@0xproject/utils": "^0.4.2",
+        "@0xproject/assert": "^0.2.2",
+        "@0xproject/json-schemas": "^0.7.16",
+        "@0xproject/types": "^0.4.1",
+        "@0xproject/utils": "^0.4.3",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.13",
-        "@0xproject/tslint-config": "^0.4.11",
+        "@0xproject/monorepo-scripts": "^0.1.14",
+        "@0xproject/tslint-config": "^0.4.12",
         "@types/fetch-mock": "^5.12.1",
         "@types/lodash": "^4.14.86",
         "@types/mocha": "^2.2.42",
@@ -71,8 +71,8 @@
         "async-child-process": "^1.1.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-as-promised-typescript-typings": "^0.0.11",
-        "chai-typescript-typings": "^0.0.5",
+        "chai-as-promised-typescript-typings": "^0.0.12",
+        "chai-typescript-typings": "^0.0.6",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "fetch-mock": "^5.13.1",
@@ -83,7 +83,7 @@
         "tslint": "5.8.0",
         "typedoc": "~0.8.0",
         "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.10.1"
+        "web3-typescript-typings": "^0.10.2"
     },
     "publishConfig": {
         "access": "public"
