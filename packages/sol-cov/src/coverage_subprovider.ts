@@ -1,4 +1,4 @@
-import { Callback, NextCallback, Subprovider } from '@0xproject/subproviders';
+import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0xproject/subproviders';
 import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
@@ -35,11 +35,7 @@ export class CoverageSubprovider extends Subprovider {
             this._getContractCodeAsync.bind(this),
         );
     }
-    public handleRequest(
-        payload: Web3.JSONRPCRequestPayload,
-        next: NextCallback,
-        end: (err: Error | null, result: any) => void,
-    ) {
+    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
         switch (payload.method) {
             case 'eth_sendTransaction':
                 const txData = payload.params[0];
