@@ -2,7 +2,7 @@ import Eth from '@ledgerhq/hw-app-eth';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 
 import { LedgerEthereumClient } from './types';
-export { Callback, NextCallback } from './types';
+export { Callback, ErrorCallback, NextCallback } from './types';
 
 export { EmptyWalletSubprovider } from './subproviders/empty_wallet_subprovider';
 export { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_subprovider';

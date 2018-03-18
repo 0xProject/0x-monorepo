@@ -7,6 +7,7 @@
     * Add types for `NextCallback`, `OnNextCompleted` (#426)
     * Introduce `JSONRPCRequestPayloadWithMethod` type
     * Ignore `ganache-core` dependency when using package in a browser environment.
+    * Export `ErrorCallback` type.
 
 ## v0.7.0 - _March 8, 2018_
 
