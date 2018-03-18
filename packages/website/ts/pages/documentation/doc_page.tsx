@@ -26,6 +26,7 @@ const docIdToS3FolderName: { [id: string]: string } = {
     [DocPackages.Deployer]: 'deployer',
     [DocPackages.JSONSchemas]: 'json-schemas',
     [DocPackages.SolCov]: 'sol-cov',
+    [DocPackages.Subproviders]: 'subproviders',
 };
 
 const docIdToSubpackageName: { [id: string]: string } = {
@@ -36,6 +37,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.Deployer]: 'deployer',
     [DocPackages.JSONSchemas]: 'json-schemas',
     [DocPackages.SolCov]: 'sol-cov',
+    [DocPackages.Subproviders]: 'subproviders',
 };
 
 export interface DocPageProps {

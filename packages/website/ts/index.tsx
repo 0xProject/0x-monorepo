@@ -57,6 +57,9 @@ const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async 
 const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/sol_cov_documentation'),
 );
+const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/subproviders_documentation'),
+);
 
 analytics.init();
 // tslint:disable-next-line:no-floating-promises
@@ -82,6 +85,10 @@ render(
                             <Route
                                 path={`${WebsitePaths.JSONSchemas}/:version?`}
                                 component={LazyJSONSchemasDocumentation}
+                            />
+                            <Route
+                                path={`${WebsitePaths.Subproviders}/:version?`}
+                                component={LazySubprovidersDocumentation}
                             />
                             <Route
                                 path={`${WebsitePaths.Web3Wrapper}/:version?`}

@@ -120,6 +120,18 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.StandardRelayerApi, Deco.CapWords)}
                 />
             </a>,
+            <Link key="subMenuItem-jsonSchema" to={WebsitePaths.JSONSchemas} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.JsonSchemas, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-subproviders" to={WebsitePaths.Subproviders} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.Subproviders, Deco.CapWords)}
+                />
+            </Link>,
             <Link key="subMenuItem-web3Wrapper" to={WebsitePaths.Web3Wrapper} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
@@ -130,12 +142,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
                     primaryText={this.props.translate.get(Key.Deployer, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-jsonSchema" to={WebsitePaths.JSONSchemas} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.JsonSchemas, Deco.CapWords)}
                 />
             </Link>,
             <Link key="subMenuItem-sol-cov" to={WebsitePaths.SolCov} className="text-decoration-none">
@@ -333,6 +339,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
+                    {!this._isViewingSubprovidersDocs() && (
+                        <Link to={WebsitePaths.Subproviders} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.Subproviders, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
                     {!this._isViewingPortal() && (
                         <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
                             <MenuItem className="py2">
@@ -366,6 +380,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 !this._isViewingDeployerDocs() &&
                 !this._isViewingJsonSchemasDocs() &&
                 !this._isViewingSolCovDocs() &&
+                !this._isViewingSubprovidersDocs() &&
                 !this._isViewingConnectDocs()) ||
             _.isUndefined(this.props.menu)
         ) {
@@ -466,6 +481,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingSolCovDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.SolCov);
     }
+    private _isViewingSubprovidersDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.Subproviders);
+    }
     private _isViewingWiki() {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
     }
@@ -479,7 +497,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             this._isViewingDeployerDocs() ||
             this._isViewingJsonSchemasDocs() ||
             this._isViewingSolCovDocs() ||
+            this._isViewingSubprovidersDocs() ||
             this._isViewingConnectDocs()
         );
     }
-}
+} // tslint:disable:max-file-line-count

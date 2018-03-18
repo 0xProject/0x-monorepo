@@ -359,6 +359,7 @@ export enum WebsitePaths {
     Deployer = '/docs/deployer',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
+    Subproviders = '/docs/subproviders',
 }
 
 export enum DocPackages {
@@ -369,6 +370,7 @@ export enum DocPackages {
     Deployer = 'DEPLOYER',
     JSONSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
+    Subproviders = 'SUBPROVIDERS',
 }
 
 export interface TimestampMsRange {
@@ -453,6 +455,7 @@ export enum Key {
     Deployer = 'DEPLOYER',
     JsonSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
+    Subproviders = 'SUBPROVIDERS',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',

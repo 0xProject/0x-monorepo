@@ -17,7 +17,20 @@
         "test:circleci": "npm run test:unit:coverage",
         "test:all": "run-s test:unit test:integration",
         "test:unit": "run-s clean build run_mocha_unit",
-        "test:integration": "run-s clean build run_mocha_integration"
+        "test:integration": "run-s clean build run_mocha_integration",
+        "docs:stage": "yarn build && node ./scripts/stagedocs.js",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+    },
+    "config": {
+        "postpublish": {
+            "assets": [],
+            "docPublishConfigs": {
+                "extraFileIncludes": ["../types/src/index.ts"],
+                "s3BucketPath": "s3://doc-jsons/subproviders/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/subproviders/"
+            }
+        }
     },
     "dependencies": {
         "@0xproject/assert": "^0.2.0",
@@ -57,6 +70,7 @@
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
         "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
+        "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1",
         "webpack": "^3.1.0"
     },

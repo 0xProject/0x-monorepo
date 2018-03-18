@@ -10,6 +10,7 @@ const titleToIcon: { [title: string]: string } = {
     Deployer: 'zeroExJs.png',
     'Sol-cov': 'zeroExJs.png',
     'JSON Schemas': 'zeroExJs.png',
+    Subproviders: 'zeroExJs.png',
     '0x Connect': 'connect.png',
     '0x Smart Contracts': 'contracts.png',
     Wiki: 'wiki.png',
