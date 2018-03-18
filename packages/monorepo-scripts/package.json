@@ -37,5 +37,8 @@
         "lodash": "^4.17.4",
         "publish-release": "0xproject/publish-release",
         "semver-sort": "^0.0.4"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

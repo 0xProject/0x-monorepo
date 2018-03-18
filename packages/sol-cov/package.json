@@ -13,7 +13,7 @@
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha lib/test/**/*_test.js",
         "clean": "shx rm -rf lib scripts",
-        "build": "copyfiles 'test/fixtures/**/*' ./lib && tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts"
+        "build": "copyfiles 'test/fixtures/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts"
     },
     "repository": {
         "type": "git",
@@ -55,5 +55,8 @@
         "tslint": "5.8.0",
         "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.11"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }
