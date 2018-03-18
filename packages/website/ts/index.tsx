@@ -51,6 +51,9 @@ const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async 
 const LazyDeployerDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/deployer_documentation'),
 );
+const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/json_schemas_documentation'),
+);
 
 analytics.init();
 // tslint:disable-next-line:no-floating-promises
@@ -72,6 +75,10 @@ render(
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
                             <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
                             <Route path={`${WebsitePaths.Deployer}/:version?`} component={LazyDeployerDocumentation} />
+                            <Route
+                                path={`${WebsitePaths.JSONSchemas}/:version?`}
+                                component={LazyJSONSchemasDocumentation}
+                            />
                             <Route
                                 path={`${WebsitePaths.Web3Wrapper}/:version?`}
                                 component={LazyWeb3WrapperDocumentation}

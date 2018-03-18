@@ -151,6 +151,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.Deployer, Deco.CapWords)}
                 />
             </Link>,
+            <Link key="subMenuItem-jsonSchema" to={WebsitePaths.JSONSchemas} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.JsonSchemas, Deco.CapWords)}
+                />
+            </Link>,
         ];
         const bottomBorderStyle = this._shouldDisplayBottomBar() ? styles.bottomBar : {};
         const fullWidthClasses = isFullWidthPage ? 'pr4' : '';
@@ -305,6 +311,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
+                    {!this._isViewingJsonSchemasDocs() && (
+                        <Link to={WebsitePaths.JSONSchemas} className="text-decoration-none">
+                            <MenuItem className="py2">
+                                {this.props.translate.get(Key.JsonSchemas, Deco.Cap)}{' '}
+                                {this.props.translate.get(Key.Docs, Deco.Cap)}
+                            </MenuItem>
+                        </Link>
+                    )}
                     {!this._isViewingPortal() && (
                         <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
                             <MenuItem className="py2">
@@ -336,6 +350,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 !this._isViewingSmartContractsDocs() &&
                 !this._isViewingWeb3WrapperDocs() &&
                 !this._isViewingDeployerDocs() &&
+                !this._isViewingJsonSchemasDocs() &&
                 !this._isViewingConnectDocs()) ||
             _.isUndefined(this.props.menu)
         ) {
@@ -430,6 +445,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingDeployerDocs() {
         return _.includes(this.props.location.pathname, WebsitePaths.Deployer);
     }
+    private _isViewingJsonSchemasDocs() {
+        return _.includes(this.props.location.pathname, WebsitePaths.JSONSchemas);
+    }
     private _isViewingWiki() {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
     }
@@ -441,6 +459,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             this._isViewingSmartContractsDocs() ||
             this._isViewingWeb3WrapperDocs() ||
             this._isViewingDeployerDocs() ||
+            this._isViewingJsonSchemasDocs() ||
             this._isViewingConnectDocs()
         );
     }

@@ -357,6 +357,7 @@ export enum WebsitePaths {
     Connect = '/docs/connect',
     Web3Wrapper = '/docs/web3_wrapper',
     Deployer = '/docs/deployer',
+    JSONSchemas = '/docs/json-schemas',
 }
 
 export enum DocPackages {
@@ -365,6 +366,7 @@ export enum DocPackages {
     SmartContracts = 'SMART_CONTRACTS',
     Web3Wrapper = 'WEB3_WRAPPER',
     Deployer = 'DEPLOYER',
+    JSONSchemas = 'JSON_SCHEMAS',
 }
 
 export interface TimestampMsRange {
@@ -447,6 +449,7 @@ export enum Key {
     Careers = 'CAREERS',
     Contact = 'CONTACT',
     Deployer = 'DEPLOYER',
+    JsonSchemas = 'JSON_SCHEMAS',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',

@@ -17,13 +17,14 @@ import { utils } from 'ts/utils/utils';
 
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
-const isDevelopment = configs.ENVIRONMENT !== Environments.DEVELOPMENT;
+const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
 const docIdToS3FolderName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0xjs',
     [DocPackages.SmartContracts]: 'smart-contracts',
     [DocPackages.Connect]: 'connect',
     [DocPackages.Web3Wrapper]: 'web3-wrapper',
     [DocPackages.Deployer]: 'deployer',
+    [DocPackages.JSONSchemas]: 'json-schemas',
 };
 
 const docIdToSubpackageName: { [id: string]: string } = {
@@ -32,6 +33,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.SmartContracts]: 'contracts',
     [DocPackages.Web3Wrapper]: 'web3-wrapper',
     [DocPackages.Deployer]: 'deployer',
+    [DocPackages.JSONSchemas]: 'json-schemas',
 };
 
 export interface DocPageProps {
