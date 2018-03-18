@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/assert",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "Provides a standard way of performing type and schema validation across 0x projects",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -43,7 +43,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.7.16",
+        "@0xproject/json-schemas": "^0.7.17",
         "@0xproject/utils": "^0.4.3",
         "lodash": "^4.17.4",
         "valid-url": "^1.0.9"

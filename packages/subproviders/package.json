@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/subproviders",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
@@ -20,7 +20,7 @@
         "test:integration": "run-s clean build run_mocha_integration"
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.2",
+        "@0xproject/assert": "^0.2.3",
         "@0xproject/types": "^0.4.1",
         "@0xproject/utils": "^0.4.3",
         "@ledgerhq/hw-app-eth": "^4.3.0",

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Generate coverage reports for Solidity code",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -25,7 +25,7 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/subproviders": "^0.8.1",
+        "@0xproject/subproviders": "^0.8.2",
         "@0xproject/utils": "^0.3.4",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",

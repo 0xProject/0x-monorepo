@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/dev-utils",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "0x dev TS utils",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -42,8 +42,8 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/sol-cov": "^0.0.3",
-        "@0xproject/subproviders": "^0.8.1",
+        "@0xproject/sol-cov": "^0.0.4",
+        "@0xproject/subproviders": "^0.8.2",
         "@0xproject/types": "^0.4.1",
         "@0xproject/utils": "^0.4.3",
         "@0xproject/web3-wrapper": "^0.3.1",
