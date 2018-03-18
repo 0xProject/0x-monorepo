@@ -120,25 +120,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.StandardRelayerApi, Deco.CapWords)}
                 />
             </a>,
-            <a
-                key="subMenuItem-github"
-                target="_blank"
-                className="text-decoration-none"
-                href={constants.URL_GITHUB_ORG}
-            >
-                <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="GitHub" />
-            </a>,
-            <a
-                key="subMenuItem-whitePaper"
-                target="_blank"
-                className="text-decoration-none"
-                href={`${WebsitePaths.Whitepaper}`}
-            >
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.Whitepaper, Deco.CapWords)}
-                />
-            </a>,
             <Link key="subMenuItem-web3Wrapper" to={WebsitePaths.Web3Wrapper} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
@@ -163,6 +144,25 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     primaryText={this.props.translate.get(Key.SolCov, Deco.CapWords)}
                 />
             </Link>,
+            <a
+                key="subMenuItem-whitePaper"
+                target="_blank"
+                className="text-decoration-none"
+                href={`${WebsitePaths.Whitepaper}`}
+            >
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.Whitepaper, Deco.CapWords)}
+                />
+            </a>,
+            <a
+                key="subMenuItem-github"
+                target="_blank"
+                className="text-decoration-none"
+                href={constants.URL_GITHUB_ORG}
+            >
+                <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="GitHub" />
+            </a>,
         ];
         const bottomBorderStyle = this._shouldDisplayBottomBar() ? styles.bottomBar : {};
         const fullWidthClasses = isFullWidthPage ? 'pr4' : '';
