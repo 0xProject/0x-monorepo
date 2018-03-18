@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "0.33.4",
+    "version": "0.33.5",
     "description": "A javascript library for interacting with the 0x protocol",
     "keywords": [
         "0x.js",
@@ -34,8 +34,8 @@
         "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
         "postpublish": {
             "assets": [
-                "_bundles/index.js",
-                "_bundles/index.min.js"
+                "packages/0x.js/_bundles/index.js",
+                "packages/0x.js/_bundles/index.min.js"
             ],
             "docPublishConfigs": {
                 "extraFileIncludes": [

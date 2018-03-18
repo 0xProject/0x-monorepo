@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/website",
-    "version": "0.0.21",
+    "version": "0.0.22",
     "private": true,
     "description": "Website and 0x portal dapp",
     "scripts": {
@@ -18,7 +18,7 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.33.4",
+        "0x.js": "^0.33.5",
         "@0xproject/react-docs": "^0.0.4",
         "@0xproject/react-shared": "^0.0.4",
         "@0xproject/subproviders": "^0.8.2",
