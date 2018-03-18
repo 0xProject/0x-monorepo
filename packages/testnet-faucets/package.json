@@ -15,7 +15,7 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.33.5",
+        "0x.js": "^0.33.6",
         "@0xproject/subproviders": "^0.8.2",
         "@0xproject/utils": "^0.4.3",
         "body-parser": "^1.17.1",

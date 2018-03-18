@@ -23,7 +23,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-report/README.md",
     "dependencies": {
-        "0x.js": "^0.33.5",
+        "0x.js": "^0.33.6",
         "@0xproject/assert": "^0.2.3",
         "@0xproject/connect": "^0.6.6",
         "@0xproject/json-schemas": "^0.7.17",

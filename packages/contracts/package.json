@@ -67,7 +67,7 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "0x.js": "^0.33.5",
+        "0x.js": "^0.33.6",
         "@0xproject/deployer": "^0.3.2",
         "@0xproject/json-schemas": "^0.7.17",
         "@0xproject/types": "^0.4.1",
