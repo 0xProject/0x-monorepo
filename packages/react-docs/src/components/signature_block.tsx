@@ -3,16 +3,16 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from '../types';
+import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptFunction, TypescriptMethod } from '../types';
 import { constants } from '../utils/constants';
 import { typeDocUtils } from '../utils/typedoc_utils';
 
 import { Comment } from './comment';
-import { MethodSignature } from './method_signature';
+import { Signature } from './signature';
 import { SourceLink } from './source_link';
 
-export interface MethodBlockProps {
-    method: SolidityMethod | TypescriptMethod;
+export interface SignatureBlockProps {
+    method: SolidityMethod | TypescriptFunction | TypescriptMethod;
     sectionName: string;
     libraryVersion: string;
     typeDefinitionByName: TypeDefinitionByName;
@@ -20,7 +20,7 @@ export interface MethodBlockProps {
     sourceUrl: string;
 }
 
-export interface MethodBlockState {
+export interface SignatureBlockState {
     shouldShowAnchor: boolean;
 }
 
@@ -35,8 +35,8 @@ const styles: Styles = {
     },
 };
 
-export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockState> {
-    constructor(props: MethodBlockProps) {
+export class SignatureBlock extends React.Component<SignatureBlockProps, SignatureBlockState> {
+    constructor(props: SignatureBlockProps) {
         super(props);
         this.state = {
             shouldShowAnchor: false,
@@ -56,7 +56,7 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
-                {!method.isConstructor && (
+                {!(method as TypescriptMethod).isConstructor && (
                     <div className="flex pb2 pt2">
                         {(method as TypescriptMethod).isStatic && this._renderChip('Static')}
                         {(method as SolidityMethod).isConstant && this._renderChip('Constant')}
@@ -72,8 +72,12 @@ export class MethodBlock extends React.Component<MethodBlockProps, MethodBlockSt
                     </div>
                 )}
                 <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
-                    <MethodSignature
-                        method={method}
+                    <Signature
+                        name={method.name}
+                        returnType={method.returnType}
+                        parameters={method.parameters}
+                        typeParameter={(method as TypescriptMethod).typeParameter}
+                        callPath={(method as TypescriptMethod).callPath}
                         sectionName={this.props.sectionName}
                         typeDefinitionByName={this.props.typeDefinitionByName}
                         docsInfo={this.props.docsInfo}

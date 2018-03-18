@@ -9,7 +9,7 @@ import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
-import { MethodSignature } from './method_signature';
+import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';
 
 const typeToSection: { [typeName: string]: string } = {
@@ -104,8 +104,12 @@ export function Type(props: TypeProps): any {
 
         case TypeDocTypes.Reflection:
             typeName = (
-                <MethodSignature
-                    method={type.method}
+                <Signature
+                    name={type.method.name}
+                    returnType={type.method.returnType}
+                    parameters={type.method.parameters}
+                    typeParameter={type.method.typeParameter}
+                    callPath={type.method.callPath}
                     sectionName={props.sectionName}
                     shouldHideMethodName={true}
                     shouldUseArrowSyntax={true}

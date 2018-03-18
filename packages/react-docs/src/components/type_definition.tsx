@@ -11,7 +11,7 @@ import { Comment } from './comment';
 import { CustomEnum } from './custom_enum';
 import { Enum } from './enum';
 import { Interface } from './interface';
-import { MethodSignature } from './method_signature';
+import { Signature } from './signature';
 import { Type } from './type';
 
 export interface TypeDefinitionProps {
@@ -79,8 +79,12 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                                 docsInfo={this.props.docsInfo}
                             />
                         ) : (
-                            <MethodSignature
-                                method={customType.type.method}
+                            <Signature
+                                name={customType.type.method.name}
+                                returnType={customType.type.method.returnType}
+                                parameters={customType.type.method.parameters}
+                                typeParameter={customType.type.method.typeParameter}
+                                callPath={customType.type.method.callPath}
                                 sectionName={this.props.sectionName}
                                 shouldHideMethodName={true}
                                 shouldUseArrowSyntax={true}

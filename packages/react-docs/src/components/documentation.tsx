@@ -25,6 +25,7 @@ import {
     SolidityMethod,
     SupportedDocJson,
     TypeDefinitionByName,
+    TypescriptFunction,
     TypescriptMethod,
 } from '../types';
 import { constants } from '../utils/constants';
@@ -33,7 +34,7 @@ import { utils } from '../utils/utils';
 import { Badge } from './badge';
 import { Comment } from './comment';
 import { EventDefinition } from './event_definition';
-import { MethodBlock } from './method_block';
+import { SignatureBlock } from './signature_block';
 import { SourceLink } from './source_link';
 import { Type } from './type';
 import { TypeDefinition } from './type_definition';
@@ -216,8 +217,12 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
 
         const sortedMethods = _.sortBy(docSection.methods, 'name');
         const methodDefs = _.map(sortedMethods, method => {
-            const isConstructor = false;
-            return this._renderMethodBlocks(method, sectionName, isConstructor, typeDefinitionByName);
+            return this._renderSignatureBlocks(method, sectionName, typeDefinitionByName);
+        });
+
+        const sortedFunctions = _.sortBy(docSection.functions, 'name');
+        const functionDefs = _.map(sortedFunctions, func => {
+            return this._renderSignatureBlocks(func, sectionName, typeDefinitionByName);
         });
 
         const sortedEvents = _.sortBy(docSection.events, 'name');
@@ -260,6 +265,12 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     <div>
                         <h2 style={headerStyle}>Methods</h2>
                         <div>{methodDefs}</div>
+                    </div>
+                )}
+                {docSection.functions.length > 0 && (
+                    <div>
+                        <h2 style={headerStyle}>Functions</h2>
+                        <div>{functionDefs}</div>
                     </div>
                 )}
                 {!_.isUndefined(docSection.events) &&
@@ -318,7 +329,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         typeDefinitionByName: TypeDefinitionByName,
     ): React.ReactNode {
         const constructorDefs = _.map(constructors, constructor => {
-            return this._renderMethodBlocks(constructor, sectionName, constructor.isConstructor, typeDefinitionByName);
+            return this._renderSignatureBlocks(constructor, sectionName, typeDefinitionByName);
         });
         return <div>{constructorDefs}</div>;
     }
@@ -340,14 +351,13 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             </div>
         );
     }
-    private _renderMethodBlocks(
-        method: SolidityMethod | TypescriptMethod,
+    private _renderSignatureBlocks(
+        method: SolidityMethod | TypescriptFunction | TypescriptMethod,
         sectionName: string,
-        isConstructor: boolean,
         typeDefinitionByName: TypeDefinitionByName,
     ): React.ReactNode {
         return (
-            <MethodBlock
+            <SignatureBlock
                 key={`method-${method.name}-${sectionName}`}
                 sectionName={sectionName}
                 method={method}

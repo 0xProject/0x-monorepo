@@ -15,6 +15,7 @@ import {
     TypeDocNode,
     TypeDocType,
     TypeParameter,
+    TypescriptFunction,
     TypescriptMethod,
 } from '../types';
 import { utils } from '../utils/utils';
@@ -81,17 +82,16 @@ export const typeDocUtils = {
                 }
             }
 
-            // Since the `types.ts` file is the only file that does not export a module/class but
-            // instead has each type export itself, we do not need to go down two levels of nesting
-            // for it.
             let entities;
             let packageComment = '';
-            if (sectionName === docsInfo.sections.types) {
-                entities = packageDefinitionWithMergedChildren.children;
-            } else {
+            // HACK: We assume 1 exported class per file
+            const isClassExport = packageDefinitionWithMergedChildren.children[0].kindString === KindString.Class;
+            if (isClassExport) {
                 entities = packageDefinitionWithMergedChildren.children[0].children;
                 const commentObj = packageDefinitionWithMergedChildren.children[0].comment;
                 packageComment = !_.isUndefined(commentObj) ? commentObj.shortText : packageComment;
+            } else {
+                entities = packageDefinitionWithMergedChildren.children;
             }
 
             const docSection = typeDocUtils._convertEntitiesToDocSection(entities, docsInfo, sectionName);
@@ -105,6 +105,7 @@ export const typeDocUtils = {
             comment: '',
             constructors: [],
             methods: [],
+            functions: [],
             properties: [],
             types: [],
         };
@@ -122,6 +123,13 @@ export const typeDocUtils = {
                         docsInfo.id,
                     );
                     docSection.constructors.push(constructor);
+                    break;
+
+                case KindString.Function:
+                    if (entity.flags.isExported) {
+                        const func = typeDocUtils._convertFunction(entity, docsInfo.sections, sectionName, docsInfo.id);
+                        docSection.functions.push(func);
+                    }
                     break;
 
                 case KindString.Method:
@@ -302,6 +310,38 @@ export const typeDocUtils = {
             typeParameter,
         };
         return method;
+    },
+    _convertFunction(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        docId: string,
+    ): TypescriptFunction {
+        const signature = entity.signatures[0];
+        const source = entity.sources[0];
+        const hasComment = !_.isUndefined(signature.comment);
+
+        const parameters = _.map(signature.parameters, param => {
+            return typeDocUtils._convertParameter(param, sections, sectionName, docId);
+        });
+        const returnType = typeDocUtils._convertType(signature.type, sections, sectionName, docId);
+        const typeParameter = _.isUndefined(signature.typeParameter)
+            ? undefined
+            : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId);
+
+        const func = {
+            name: signature.name,
+            comment: hasComment ? signature.comment.shortText : undefined,
+            returnComment: hasComment && signature.comment.returns ? signature.comment.returns : undefined,
+            source: {
+                fileName: source.fileName,
+                line: source.line,
+            },
+            parameters,
+            returnType,
+            typeParameter,
+        };
+        return func;
     },
     _convertTypeParameter(
         entity: TypeDocNode,
