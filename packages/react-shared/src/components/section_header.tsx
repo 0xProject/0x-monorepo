@@ -48,7 +48,7 @@ export class SectionHeader extends React.Component<SectionHeaderProps, SectionHe
                         title={
                             <span
                                 style={{
-                                    textTransform: 'uppercase',
+                                    textTransform: 'capitalize',
                                     color: colors.grey,
                                     fontFamily: 'Roboto Mono',
                                     fontWeight: 300,
