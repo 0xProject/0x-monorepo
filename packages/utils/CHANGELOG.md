@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.4.1 - _TBD, 2018_
+## v0.4.1 - _March 18, 2018_
 
     * Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package (#452)
 
