@@ -35,6 +35,7 @@ interface TokenSelectorItemPropTypes {
     id: string;
     description: string;
     symbol: AssetToken;
+    isActive?: boolean;
     onClick: (item: TokenSelectorItem, event: any) => void;
 }
 
@@ -51,14 +52,17 @@ class TokenSelectorItem extends React.Component<TokenSelectorItemPropTypes> {
 
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
-        const { id, description, symbol } = this.props;
+        const { id, description, symbol, isActive } = this.props;
         return (
             <div id={id}>
-                <DropdownItem onClick={this.handleClicked.bind(this)} href="#">
+                <DropdownItem isActive={isActive} onClick={this.handleClicked.bind(this)} href="#">
                     <Field hasAddons={true}>
                         {definedTokensToIcon[symbol]}
                         <Control isExpanded={true} hasIcons={'left'}>
-                            <Label style={{ paddingLeft: '5px', paddingTop: '5px' }} isSize={'small'}>
+                            <Label
+                                style={{ paddingLeft: '5px', paddingTop: '5px', color: isActive ? '#fff' : '#363636' }}
+                                isSize={'small'}
+                            >
                                 {description}
                             </Label>
                         </Control>

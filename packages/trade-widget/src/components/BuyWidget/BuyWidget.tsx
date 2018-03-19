@@ -149,7 +149,7 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
     }
 
     // tslint:disable-next-line:underscore-private-and-protected
-    private async handleTokenSelected(event: any, token: AssetToken) {
+    private async handleTokenSelected(token: AssetToken) {
         this.props.dispatcher.updateSelectedToken(token);
     }
 

@@ -27,12 +27,8 @@ import TokenSelectorItem from '../TokenSelectorItem';
 import { definedTokensToIcon } from '../TokenSelectorItem/TokenSelectorItem';
 
 interface TokenSelectorPropTypes {
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>, token: AssetToken) => void;
+    onChange?: (token: AssetToken) => void;
     selectedToken: AssetToken;
-}
-
-interface TokenSelectorState {
-    active: boolean;
 }
 
 interface TokenMetadata {
@@ -40,7 +36,7 @@ interface TokenMetadata {
     symbol: AssetToken;
     description: string;
 }
-class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelectorState> {
+class TokenSelector extends React.Component<TokenSelectorPropTypes> {
     // tslint:disable-next-line:underscore-private-and-protected
     private static defaultProps = {
         // tslint:disable-next-line:no-empty
@@ -49,7 +45,6 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
     private _tokens: TokenMetadata[];
     constructor(props: TokenSelectorPropTypes) {
         super(props);
-        this.state = { active: false };
         this.handleItemSelected = this.handleItemSelected.bind(this);
         this._tokens = [
             { symbol: AssetToken.ZRX, id: AssetToken.ZRX, description: '0x Token' },
@@ -59,10 +54,7 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
 
     public handleItemSelected(event: any, item: TokenSelectorItem) {
         const { onChange } = this.props;
-        onChange(event, item.props.symbol);
-        this.setState((prev, props) => {
-            return { ...prev, active: false };
-        });
+        onChange(item.props.symbol);
     }
 
     // tslint:disable-next-line:prefer-function-over-method member-access
@@ -70,16 +62,18 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
         const fullWidth = {
             width: '100%',
         };
+        const { selectedToken } = this.props;
         const dropdownItems = _.map(this._tokens, tokenItem => (
             <TokenSelectorItem
                 description={tokenItem.description}
                 symbol={tokenItem.symbol}
                 id={tokenItem.id}
                 key={tokenItem.id}
+                isActive={tokenItem.symbol === selectedToken}
                 onClick={this.handleItemSelected}
             />
         ));
-        const currentMetadata = this._getTokenMetadata(this.props.selectedToken);
+        const currentMetadata = this._getTokenMetadata(selectedToken);
         const currentIcon = definedTokensToIcon[currentMetadata.symbol];
         const activeToken = (
             <Button className={'select is-fullwidth'}>
