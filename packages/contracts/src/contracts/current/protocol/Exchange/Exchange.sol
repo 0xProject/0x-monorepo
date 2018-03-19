@@ -37,11 +37,12 @@ contract Exchange is
 
     function Exchange(
         IToken _zrxToken,
-        ITokenTransferProxy _tokenTransferProxy)
+        ITokenTransferProxy _tokenTransferProxy,
+        AssetTransferProxy _assetTransferProxy)
         public
         MixinExchangeCore()
         MixinSignatureValidator()
-        MixinSettlementProxy(new AssetTransferProxy(new ERC20TransferProxy(_tokenTransferProxy)), _tokenTransferProxy, _zrxToken)
+        MixinSettlementProxy(_assetTransferProxy, _tokenTransferProxy, _zrxToken)
         MixinWrapperFunctions()
     {}
 }

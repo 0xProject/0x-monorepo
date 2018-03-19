@@ -33,6 +33,10 @@ describe('Exchange', () => {
         [makerAddress, feeRecipientAddress] = accounts;
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
+        const assetTransferProxy = await deployer.deployAsync(ContractName.AssetTransferProxy);
+        const erc20TransferProxy = await deployer.deployAsync(ContractName.ERC20TransferProxy, [
+            tokenTransferProxy.address,
+        ]);
         const [rep, dgd, zrx] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
@@ -41,8 +45,10 @@ describe('Exchange', () => {
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             tokenTransferProxy.address,
+            assetTransferProxy.address,
         ]);
         const exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
+        await assetTransferProxy.registerAssetProxy(1, erc20TransferProxy.address, false, { from: accounts[0] });
         await tokenTransferProxy.addAuthorizedAddress(exchange.address, { from: accounts[0] });
         const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);

@@ -90,6 +90,8 @@ export enum ContractName {
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
+    AssetTransferProxy = 'AssetTransferProxy',
+    ERC20TransferProxy = 'ERC20TransferProxy',
 }
 
 export interface Artifact {

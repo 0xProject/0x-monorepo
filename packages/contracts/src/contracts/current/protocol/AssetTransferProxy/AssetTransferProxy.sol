@@ -53,11 +53,10 @@ contract AssetTransferProxy is
         owner_ = owner;
     }*/
 
-    function AssetTransferProxy(IAssetProxy erc20AssetProxyContract)
+    function AssetTransferProxy()
         public
     {
         //owner_ = owner;
-        registerAssetProxy(AssetIds.ERC20, erc20AssetProxyContract, false);
     }
 
     // tokenMetadata[0] => AssetClassId
