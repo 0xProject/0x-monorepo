@@ -8,7 +8,8 @@ import { Dispatcher } from '../redux/dispatcher';
 import { State } from '../redux/reducer';
 import { AccountTokenBalances, AccountWeiBalances } from '../types';
 
-const POLLING_INTERVAL = 3000;
+const POLLING_INTERVAL = 2000;
+const BALANCE_POLLING_INTERVAL = 5000;
 
 /**
  * Watch for user account changes and network changes
@@ -16,7 +17,6 @@ const POLLING_INTERVAL = 3000;
  */
 export class BlockchainSaga {
     private _store: Store<State>;
-    private _networkId: number;
     private _dispatch: Dispatcher;
     // private _userWeiBalances: AccountWeiBalances = {};
     private _web3Wrapper: Web3Wrapper;
@@ -26,14 +26,19 @@ export class BlockchainSaga {
         this._web3Wrapper = web3Wrapper;
         this._store = store;
         this._zeroEx = zeroEx;
-        this._startPolling();
+        this._startPolling().catch(console.log);
     }
-    private _startPolling() {
+    private async _startPolling() {
+        await this._checkBlockchainAsync();
+        await this._checkBalancesAsync();
         setInterval(this._checkBlockchainAsync.bind(this), POLLING_INTERVAL);
+        setInterval(this._checkBalancesAsync.bind(this), BALANCE_POLLING_INTERVAL);
     }
     private async _checkBlockchainAsync() {
         await this._checkUserAccountAsync();
         await this._checkNetworkIdAsync();
+    }
+    private async _checkBalancesAsync() {
         await this._checkUserBalanceAsync();
         await this._checkTokenBalanceAsync();
     }
@@ -64,10 +69,10 @@ export class BlockchainSaga {
     }
 
     private async _checkNetworkIdAsync() {
-        const networkId = await this._web3Wrapper.getNetworkIdAsync();
-        if (this._networkId !== networkId) {
-            this._networkId = networkId;
-            this._dispatch.updateNetworkId(this._networkId);
+        const currentNetworkId = await this._web3Wrapper.getNetworkIdAsync();
+        const networkId = this._store.getState().networkId;
+        if (networkId !== currentNetworkId) {
+            this._dispatch.updateNetworkId(currentNetworkId);
         }
     }
 

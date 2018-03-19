@@ -36,7 +36,7 @@ interface TokenSelectorItemPropTypes {
     description: string;
     symbol: AssetToken;
     isActive?: boolean;
-    onClick: (item: TokenSelectorItem, event: any) => void;
+    onClick: (item: TokenSelectorItem) => void;
 }
 
 class TokenSelectorItem extends React.Component<TokenSelectorItemPropTypes> {
@@ -47,7 +47,7 @@ class TokenSelectorItem extends React.Component<TokenSelectorItemPropTypes> {
     // tslint:disable-next-line:member-access
     public handleClicked(e: any) {
         const { onClick } = this.props;
-        onClick(e, this);
+        onClick(this);
     }
 
     // tslint:disable-next-line:prefer-function-over-method member-access

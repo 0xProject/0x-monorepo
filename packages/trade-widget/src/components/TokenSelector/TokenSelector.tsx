@@ -52,7 +52,7 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes> {
         ];
     }
 
-    public handleItemSelected(event: any, item: TokenSelectorItem) {
+    public handleItemSelected(item: TokenSelectorItem) {
         const { onChange } = this.props;
         onChange(item.props.symbol);
     }

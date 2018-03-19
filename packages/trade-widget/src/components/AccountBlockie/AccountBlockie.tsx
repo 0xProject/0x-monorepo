@@ -1,6 +1,6 @@
 import { ZeroEx } from '0x.js';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
-import { Content, Field, Label } from 'bloomer';
+import { Button, Content, Field, Label } from 'bloomer';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -33,7 +33,15 @@ class AccountBlockie extends React.Component<AccountBlockieProps, {}> {
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
         if (!this.props.account) {
-            return <Content />;
+            return (
+                <Content>
+                    <Field hasAddons={'centered'}>
+                        <Button isColor="white" isLoading={true}>
+                            isLoading={true}
+                        </Button>
+                    </Field>
+                </Content>
+            );
         }
         return (
             <Content>
