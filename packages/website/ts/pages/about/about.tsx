@@ -108,6 +108,27 @@ const teamRow3: ProfileInfo[] = [
     },
 ];
 
+const teamRow4: ProfileInfo[] = [
+    {
+        name: 'Blake Henderson',
+        title: 'Operations and Analytics',
+        description: `Previously analytics at LinkedIn. Economics at UC San Diego. `,
+        image: '/images/team/blake.jpg',
+        linkedIn: 'https://www.linkedin.com/in/blakerhenderson/',
+        github: '',
+        medium: '',
+    },
+    {
+        name: 'Zack Skelly',
+        title: 'Lead Recruiter',
+        description: `Talent. Previously first recruiter at Heap, recruiting at Dropbox and Google. English Rhetoric and Composition at Pepperdine.`,
+        image: '/images/team/zach.png',
+        linkedIn: 'https://www.linkedin.com/in/zackaryskelly/',
+        github: '',
+        medium: '',
+    },
+];
+
 const advisors: ProfileInfo[] = [
     {
         name: 'Fred Ehrsam',
@@ -200,6 +221,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         <div className="clearfix pb3">{this._renderProfiles(teamRow1)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow2)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow3)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow4)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
