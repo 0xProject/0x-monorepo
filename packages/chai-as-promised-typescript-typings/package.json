@@ -1,6 +1,6 @@
 {
     "name": "chai-as-promised-typescript-typings",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "description": "Typescript type definitions for chai-as-promised",
     "main": "index.d.ts",
     "types": "index.d.ts",
@@ -22,10 +22,10 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/chai-as-promised-typescript-typings#readme",
     "dependencies": {
-        "chai-typescript-typings": "^0.0.5"
+        "chai-typescript-typings": "^0.0.6"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.13",
+        "@0xproject/monorepo-scripts": "^0.1.14",
         "copyfiles": "^1.2.0",
         "shx": "^0.2.2"
     },

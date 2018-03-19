@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.3.1 - _March 18, 2018_
+
+    * Add TS types for `yargs`
+
 ## v0.3.0 - _March 18, 2018_
 
     * Add support for Solidity 0.4.20 and 0.4.21
