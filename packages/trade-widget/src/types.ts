@@ -1,4 +1,5 @@
 import { Order, SignedOrder } from '0x.js';
+import { BigNumber } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 export type ArtifactContractName = 'Forwarder';
@@ -16,6 +17,16 @@ export interface Artifact {
 export enum AssetToken {
     ZRX = 'ZRX',
     BAT = 'BAT',
+}
+
+export interface TokenBalances {
+    [token: string]: BigNumber;
+}
+export interface AccountTokenBalances {
+    [address: string]: TokenBalances;
+}
+export interface AccountWeiBalances {
+    [address: string]: BigNumber;
 }
 
 export enum ActionTypes {

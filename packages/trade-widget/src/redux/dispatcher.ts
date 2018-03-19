@@ -23,15 +23,15 @@ export class Dispatcher {
             type: ActionTypes.UpdateUserAddress,
         });
     }
-    public updateUserWeiBalance(balance: BigNumber) {
+    public updateUserWeiBalance(address: string, balance: BigNumber) {
         this._dispatch({
-            data: balance,
+            data: { address, balance },
             type: ActionTypes.UpdateUserWeiBalance,
         });
     }
-    public updateUserTokenBalance(balance: BigNumber) {
+    public updateUserTokenBalance(address: string, balance: BigNumber, token: AssetToken) {
         this._dispatch({
-            data: balance,
+            data: { address, balance, token },
             type: ActionTypes.UpdateUserTokenBalance,
         });
     }

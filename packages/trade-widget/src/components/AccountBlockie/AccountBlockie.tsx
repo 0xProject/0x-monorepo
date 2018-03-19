@@ -1,3 +1,5 @@
+import { ZeroEx } from '0x.js';
+import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Content, Field, Label } from 'bloomer';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -8,6 +10,8 @@ import { AssetToken } from '../../types';
 
 import { Blockie } from './Blockie';
 
+const ETH_DECIMAL_PLACES = 18;
+
 /**
  * AccountBlockie properties.
  */
@@ -15,25 +19,17 @@ interface AccountBlockieProps {
     /** account the account to display in the component, used to seed the image */
     account?: string;
     /** ethBalance the balance to display in the component */
-    ethBalance: string;
+    ethBalance: BigNumber;
     /** selectedToken the token to display in the component */
     selectedToken: AssetToken;
     /** tokenBalance the token balance to display in the component */
-    tokenBalance: string;
+    tokenBalance: BigNumber;
 }
 
 /**
  * AccountBlockie displays an image of the given account to give a visual representation of the address
  */
 class AccountBlockie extends React.Component<AccountBlockieProps, {}> {
-    // tslint:disable-next-line:prefer-function-over-method member-access
-    minimisedAccount(account: string): string {
-        //   0xea95a7...609353b2
-        const initial = account.substring(0, 6);
-        const end = account.substring(account.length - 6, account.length);
-        const minimised = `${initial}...${end}`;
-        return minimised;
-    }
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
         if (!this.props.account) {
@@ -47,20 +43,44 @@ class AccountBlockie extends React.Component<AccountBlockieProps, {}> {
                 <Field isMarginless={true} hasAddons={'centered'}>
                     <Label style={{ color: '#3636367d' }} isSize={'small'}>
                         {' '}
-                        {this.minimisedAccount(this.props.account)}{' '}
+                        {this._renderMinimisedAccount()}{' '}
                     </Label>
                 </Field>
                 <Field isMarginless={true} hasAddons={'centered'}>
-                    <Label isSize={'small'}> {this.props.ethBalance} ETH</Label>
+                    <Label isSize={'small'}> {this._renderEthBalance()} ETH</Label>
                 </Field>
                 <Field isMarginless={true} hasAddons={'centered'}>
                     <Label isSize={'small'}>
                         {' '}
-                        {this.props.tokenBalance} {this.props.selectedToken}
+                        {this._renderTokenBalance()} {this.props.selectedToken}
                     </Label>
                 </Field>
             </Content>
         );
+    }
+    private _renderEthBalance(): string {
+        const { ethBalance } = this.props;
+        return ethBalance
+            ? ZeroEx.toUnitAmount(ethBalance, ETH_DECIMAL_PLACES)
+                  .toFixed(4)
+                  .toString()
+            : '';
+    }
+    private _renderTokenBalance(): string {
+        const { tokenBalance } = this.props;
+        return tokenBalance
+            ? ZeroEx.toUnitAmount(tokenBalance, ETH_DECIMAL_PLACES)
+                  .toFixed(0)
+                  .toString()
+            : '';
+    }
+    private _renderMinimisedAccount(): string {
+        //   0xea95a7...609353b2
+        const account = this.props.account;
+        const initial = account.substring(0, 6);
+        const end = account.substring(account.length - 6, account.length);
+        const minimised = `${initial}...${end}`;
+        return minimised;
     }
 }
 

@@ -6,6 +6,7 @@ import { Store } from 'redux';
 
 import { Dispatcher } from '../redux/dispatcher';
 import { State } from '../redux/reducer';
+import { AccountTokenBalances, AccountWeiBalances } from '../types';
 
 const POLLING_INTERVAL = 3000;
 
@@ -14,13 +15,12 @@ const POLLING_INTERVAL = 3000;
  * which are outside of our control. I.e injected web3 providers
  */
 export class BlockchainSaga {
-    private _zeroEx: ZeroEx;
     private _store: Store<State>;
     private _networkId: number;
     private _dispatch: Dispatcher;
-    private _userAccount: string;
-    private _userWeiBalance: BigNumber = new BigNumber(0);
+    // private _userWeiBalances: AccountWeiBalances = {};
     private _web3Wrapper: Web3Wrapper;
+    private _zeroEx: ZeroEx;
     constructor(dispatch: Dispatcher, store: Store<State>, web3Wrapper: Web3Wrapper, zeroEx: ZeroEx) {
         this._dispatch = dispatch;
         this._web3Wrapper = web3Wrapper;
@@ -32,31 +32,51 @@ export class BlockchainSaga {
         setInterval(this._checkBlockchainAsync.bind(this), POLLING_INTERVAL);
     }
     private async _checkBlockchainAsync() {
-        const userAccounts = await this._web3Wrapper.getAvailableAddressesAsync();
-        const userAccount = userAccounts[0];
-        if (this._userAccount !== userAccount) {
-            this._userAccount = userAccount;
-            this._userWeiBalance = undefined;
-            this._dispatch.updateUserAddress(this._userAccount);
+        await this._checkUserAccountAsync();
+        await this._checkNetworkIdAsync();
+        await this._checkUserBalanceAsync();
+        await this._checkTokenBalanceAsync();
+    }
+
+    private async _checkTokenBalanceAsync() {
+        const currentToken = this._store.getState().selectedToken;
+        const currentUser = this._store.getState().userAddress;
+        const userTokenBalances = this._store.getState().userTokenBalances[currentUser];
+        let tokenBalance = new BigNumber(0);
+
+        // TODO this won't work for the many tokens and NFTs not in the registry
+        const tokenAddress = await this._zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(currentToken);
+        if (tokenAddress) {
+            tokenBalance = await this._zeroEx.token.getBalanceAsync(tokenAddress, currentUser);
         }
+        if (_.isUndefined(userTokenBalances[currentToken]) || !tokenBalance.eq(userTokenBalances[currentToken])) {
+            this._dispatch.updateUserTokenBalance(currentUser, tokenBalance, currentToken);
+        }
+    }
+
+    private async _checkUserBalanceAsync() {
+        const userAccount = this._store.getState().userAddress;
+        const usersWeiBalance = this._store.getState().usersWeiBalance;
+        const userWeiBalance = await this._web3Wrapper.getBalanceInWeiAsync(userAccount);
+        if (_.isUndefined(usersWeiBalance[userAccount]) || !userWeiBalance.eq(usersWeiBalance[userAccount])) {
+            this._dispatch.updateUserWeiBalance(userAccount, userWeiBalance);
+        }
+    }
+
+    private async _checkNetworkIdAsync() {
         const networkId = await this._web3Wrapper.getNetworkIdAsync();
         if (this._networkId !== networkId) {
             this._networkId = networkId;
             this._dispatch.updateNetworkId(this._networkId);
         }
-        const userWeiBalance = await this._web3Wrapper.getBalanceInWeiAsync(this._userAccount);
-        if (!_.isUndefined(userWeiBalance)) {
-            if (_.isUndefined(this._userWeiBalance) || !userWeiBalance.eq(this._userWeiBalance)) {
-                this._userWeiBalance = userWeiBalance;
-                this._dispatch.updateUserWeiBalance(this._userWeiBalance);
-            }
+    }
+
+    private async _checkUserAccountAsync() {
+        const userAccounts = await this._web3Wrapper.getAvailableAddressesAsync();
+        const currentUserAccount = userAccounts[0];
+        const userAccount = this._store.getState().userAddress;
+        if (userAccount !== currentUserAccount) {
+            this._dispatch.updateUserAddress(currentUserAccount);
         }
-        const currentOrder = this._store.getState().order;
-        const currentToken = this._store.getState().selectedToken;
-        let tokenBalance = new BigNumber(0);
-        if (!_.isUndefined(currentOrder)) {
-            tokenBalance = await this._zeroEx.token.getBalanceAsync(currentOrder.makerTokenAddress, this._userAccount);
-        }
-        this._dispatch.updateUserTokenBalance(tokenBalance);
     }
 }

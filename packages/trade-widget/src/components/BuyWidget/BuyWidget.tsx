@@ -31,7 +31,7 @@ import { artifacts } from '../../artifacts';
 import { ForwarderWrapper } from '../../contract_wrappers/forwarder_wrapper';
 
 import { Dispatcher } from '../../redux/dispatcher';
-import { AssetToken } from '../../types';
+import { AccountTokenBalances, AccountWeiBalances, AssetToken, TokenBalances } from '../../types';
 import AccountBlockie from '../AccountBlockie';
 import TokenSelector from '../TokenSelector';
 
@@ -44,13 +44,13 @@ interface BuyWidgetPropTypes {
     onAmountChange?: (amount: BigNumber) => any;
     onTransactionSubmitted?: (txHash: string) => any;
     address: string;
+    networkId: number;
+    weiBalances: AccountWeiBalances;
+    tokenBalances: AccountTokenBalances;
+    selectedToken: AssetToken;
     order: SignedOrder;
     web3Wrapper: Web3Wrapper;
     zeroEx: ZeroEx;
-    networkId: number;
-    balance: BigNumber;
-    tokenBalance: BigNumber;
-    selectedToken: AssetToken;
     dispatcher: Dispatcher;
 }
 
@@ -78,25 +78,15 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
         const { isLoading } = this.state;
-        const { address, balance, tokenBalance, selectedToken } = this.props;
-        const blockieBalance = balance
-            ? ZeroEx.toUnitAmount(balance, ETH_DECIMAL_PLACES)
-                  .toFixed(4)
-                  .toString()
-            : '';
-
-        const blockieTokenBalance = tokenBalance
-            ? ZeroEx.toUnitAmount(tokenBalance, ETH_DECIMAL_PLACES)
-                  .toFixed(0)
-                  .toString()
-            : '';
-
+        const { address, weiBalances, tokenBalances, selectedToken } = this.props;
+        const tokenBalance = tokenBalances[address] ? tokenBalances[address][selectedToken] : new BigNumber(0);
+        const weiBalance = weiBalances[address] || new BigNumber(0);
         return (
             <Content>
                 <AccountBlockie
                     account={address}
-                    ethBalance={blockieBalance}
-                    tokenBalance={blockieTokenBalance}
+                    ethBalance={weiBalance}
+                    tokenBalance={tokenBalance}
                     selectedToken={selectedToken}
                 />
                 <Label isSize="small">SELECT TOKEN</Label>
@@ -125,7 +115,7 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
                 </Field> */}
                 <Field style={{ marginTop: 20 }}>
                     <Button isLoading={isLoading} isFullWidth={true} isColor="info" onClick={this.handleSubmit}>
-                        SUBMIT ORDER
+                        BUY TOKENS
                     </Button>
                 </Field>
                 <Field style={{ marginTop: 20 }} isGrouped={'centered'}>

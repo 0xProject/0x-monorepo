@@ -6,15 +6,15 @@ import { connect } from 'react-redux';
 import * as BuyWidgetComponent from '../components/BuyWidget';
 import { Dispatcher } from '../redux/dispatcher';
 import { State } from '../redux/reducer';
-import { AssetToken } from '../types';
+import { AccountTokenBalances, AccountWeiBalances, AssetToken, TokenBalances } from '../types';
 
 interface ConnectedState {
     networkId: number;
     address: string;
-    balance: BigNumber;
-    tokenBalance: BigNumber;
-    order: SignedOrder;
     selectedToken: AssetToken;
+    tokenBalances: AccountTokenBalances;
+    weiBalances: AccountWeiBalances;
+    order: SignedOrder;
 }
 
 interface BuyWidgetProps {
@@ -26,9 +26,9 @@ interface BuyWidgetProps {
 const mapStateToProps = (state: State, ownProps: BuyWidgetProps): ConnectedState => ({
     networkId: state.networkId,
     address: state.userAddress,
-    balance: state.userWeiBalance,
     order: state.order,
-    tokenBalance: state.userTokenBalance,
+    weiBalances: state.usersWeiBalance,
+    tokenBalances: state.userTokenBalances,
     selectedToken: state.selectedToken,
 });
 
