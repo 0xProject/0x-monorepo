@@ -41,7 +41,7 @@ const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday
 
 const AIRTABLE_RELAYER_INFO = 'Relayer Info';
 
-export const scrapeDataScripts = {
+export const pullDataScripts = {
     getAllEvents(fromBlockNumber: number, toBlockNumber: number): any {
         return new Promise((resolve, reject) => {
             const getLogsPromises: any[] = [];
@@ -106,7 +106,7 @@ export const scrapeDataScripts = {
                 });
         });
     },
-    getPriceData(symbol: string, timestamp: number): any {
+    getPriceData(symbol: string, timestamp: number, timeDelay?: number): any {
         return new Promise((resolve, reject) => {
             if(symbol === 'WETH') {
                 symbol = 'ETH';
@@ -117,13 +117,15 @@ export const scrapeDataScripts = {
                 ts: timestamp / 1000,
             });
             console.debug(parsedParams);
-            request(PRICE_API_ENDPOINT + '?' + parsedParams, (error, response, body) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(JSON.parse(body));
-                }
-            });
+            setTimeout(() => {
+                request(PRICE_API_ENDPOINT + '?' + parsedParams, (error, response, body) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(JSON.parse(body));
+                    }
+                });
+            }, timeDelay);
         });
     },
     async getOrderBook(sraEndpoint: string): Promise<Object> {
@@ -173,9 +175,33 @@ export const scrapeDataScripts = {
     },
 };
 
+export const scrapeDataScripts = {
+    scrapeAllPricesToDB(fromTime: number, toTime: number, timeDelay: 500) {
+        const fromDate = new Date(fromTime);
+        fromDate.setUTCHours(0);
+        fromDate.setUTCMinutes(0);
+        fromDate.setUTCSeconds(0);
+        fromDate.setUTCMilliseconds(0);
+        const toDate = new Date(toTime);
+        postgresClient
+            .query(dataFetchingQueries.get_token_registry, [])
+            .then((result: any) => {
+                for (let curDate = fromDate; curDate < toDate; curDate.setDate(curDate.getDate() + 1)) {
+                    for (const token of Object.values(result.rows)) {
+                        console.debug("Scraping " + curDate + " " + token);
+                        q.push(_scrapePriceToDB(curDate.getTime(), token));
+                    }
+                }
+            })
+            .catch((err: any) => {
+                console.debug(err);
+            });
+    } 
+}
+
 function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
     return (cb: () => void) => {
-        scrapeDataScripts
+        pullDataScripts
             .getAllEvents(fromBlock, toBlock)
             .then((data: any) => {
                 const parsedEvents: any = {};
@@ -214,7 +240,7 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
 
 function _scrapeBlockToDB(block: number): any {
     return (cb: () => void) => {
-        scrapeDataScripts
+        pullDataScripts
             .getBlockInfo(block)
             .then((data: any) => {
                 const parsedBlock = typeConverters.convertLogBlockToBlockObject(data);
@@ -258,7 +284,7 @@ function _scrapeAllRelayersToDB(): any {
 
 function _scrapeTransactionToDB(transactionHash: string): any {
     return (cb: () => void) => {
-        scrapeDataScripts
+        pullDataScripts
             .getTransactionInfo(transactionHash)
             .then((data: any) => {
                 const parsedTransaction = typeConverters.convertLogTransactionToTransactionObject(data);
@@ -279,7 +305,7 @@ function _scrapeTransactionToDB(transactionHash: string): any {
 
 function _scrapeTokenRegistryToDB(): any {
     return (cb: () => void) => {
-        scrapeDataScripts
+        pullDataScripts
             .getTokenRegistry()
             .then((data: any) => {
                 const parsedTokens: any = [];
@@ -295,10 +321,10 @@ function _scrapeTokenRegistryToDB(): any {
     };
 }
 
-function _scrapePriceToDB(timestamp: number, token: any): any {
+function _scrapePriceToDB(timestamp: number, token: any, timeDelay?: number): any {
     return (cb: () => void) => {
-        scrapeDataScripts
-            .getPriceData(token.symbol, timestamp)
+        pullDataScripts
+            .getPriceData(token.symbol, timestamp, timeDelay)
             .then((data: any) => {
                 const safeSymbol = token.symbol === 'WETH' ? 'ETH' : token.symbol;
                 const parsedPrice = {
@@ -321,7 +347,7 @@ function _scrapePriceToDB(timestamp: number, token: any): any {
 
 function _scrapeHistoricalPricesToDB(token: any, fromTimestamp: number, toTimestamp: number): any {
     return (cb: () => void) => {
-        scrapeDataScripts
+        pullDataScripts
             .getHistoricalPrices(token, BASE_SYMBOL, fromTimestamp, toTimestamp)
             .then((data: any) => {
                 const parsedHistoricalPrices: any = [];
@@ -353,7 +379,7 @@ function _scrapeHistoricalPricesToDB(token: any, fromTimestamp: number, toTimest
 
 function _scrapeOrderBookToDB(id: string, sraEndpoint: string): any {
     return (cb: () => void) => {
-        scrapeDataScripts
+        pullDataScripts
             .getOrderBook(sraEndpoint)
             .then((data: any) => {
                 for(const book of data) {
