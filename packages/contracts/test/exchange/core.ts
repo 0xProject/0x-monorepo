@@ -743,30 +743,30 @@ describe('Exchange', () => {
     });
 
    describe('cancelOrdersBefore', () => {
-        it('should fail to set timestamp less than existing CancelBefore timestamp', async () => {
-            const timestamp = new BigNumber(1);
-            await exWrapper.cancelOrdersBeforeAsync(timestamp, makerAddress);
-            const lesser_timestamp = new BigNumber(0);
+        it('should fail to set makerEpoch less than current makerEpoch', async () => {
+            const makerEpoch = new BigNumber(1);
+            await exWrapper.cancelOrdersBeforeAsync(makerEpoch, makerAddress);
+            const lesserMakerEpoch = new BigNumber(0);
             return expect(
-                exWrapper.cancelOrdersBeforeAsync(lesser_timestamp, makerAddress),
+                exWrapper.cancelOrdersBeforeAsync(lesserMakerEpoch, makerAddress),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should fail to set timestamp equal to existing CancelBefore timestamp', async () => {
-            const timestamp = new BigNumber(1);
-            await exWrapper.cancelOrdersBeforeAsync(timestamp, makerAddress);
+        it('should fail to set makerEpoch equal to existing makerEpoch', async () => {
+            const makerEpoch = new BigNumber(1);
+            await exWrapper.cancelOrdersBeforeAsync(makerEpoch, makerAddress);
             return expect(
-                exWrapper.cancelOrdersBeforeAsync(timestamp, makerAddress),
+                exWrapper.cancelOrdersBeforeAsync(makerEpoch, makerAddress),
             ).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should cancel only orders with a timestamp less than CancelBefore timestamp', async () => {
-            // Cancel all transactions with a timestamp less than 1
-            const timestamp = new BigNumber(1);
-            await exWrapper.cancelOrdersBeforeAsync(timestamp, makerAddress);
+        it('should cancel only orders with a makerEpoch less than existing makerEpoch', async () => {
+            // Cancel all transactions with a makerEpoch less than 1
+            const makerEpoch = new BigNumber(1);
+            await exWrapper.cancelOrdersBeforeAsync(makerEpoch, makerAddress);
 
-            // Create 3 orders with timestamps 0,1,2
-            // Since we cancelled with timestamp=1, orders with timestamp<1 will not be processed
+            // Create 3 orders with makerEpoch values: 0,1,2
+            // Since we cancelled with makerEpoch=1, orders with makerEpoch<1 will not be processed
             balances = await dmyBalances.getAsync();
             const signedOrders = await Promise.all([
                 orderFactory.newSignedOrder({

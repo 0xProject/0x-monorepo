@@ -29,7 +29,7 @@ export interface BatchCancelOrders {
 }
 
 export interface CancelOrdersBefore {
-    timestamp: BigNumber;
+    salt: BigNumber;
 }
 
 export interface DefaultOrderParams {
