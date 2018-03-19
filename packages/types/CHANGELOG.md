@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## v0.4.0 - _TBD, 2018_
+## v0.4.0 - _March 18, 2018_
 
     * Remove `JSONRPCPayload` (#426)
+    * Consolidate `Order`, `SignedOrder`, and `ECSignature` into the `@0xproject/types` package (#456)
 
 ## v0.3.1 - _March 8, 2018_
 

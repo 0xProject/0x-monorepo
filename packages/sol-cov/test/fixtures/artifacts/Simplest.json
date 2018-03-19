@@ -1,0 +1,20 @@
+{
+    "contract_name": "Simplest",
+    "networks": {
+        "50": {
+            "solc_version": "0.4.21",
+            "keccak256": "0x8e7d62e19c7c7b8bf9a4a43749e111605950cc877574fb9640a1a07d1c3749f9",
+            "source_tree_hash": "0x8e7d62e19c7c7b8bf9a4a43749e111605950cc877574fb9640a1a07d1c3749f9",
+            "optimizer_enabled": 0,
+            "abi": [],
+            "bytecode":
+                "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a7230582097cfe05b4d18d6ffb3a8d8fab0570cf09640d3131b9677ddb9be4e9fbcb65f010029",
+            "runtime_bytecode":
+                "0x6060604052600080fd00a165627a7a7230582097cfe05b4d18d6ffb3a8d8fab0570cf09640d3131b9677ddb9be4e9fbcb65f010029",
+            "updated_at": 1521118525393,
+            "source_map": "26:21:0:-;;;;;;;;;;;;;;;;;",
+            "source_map_runtime": "26:21:0:-;;;;;",
+            "sources": ["Simplest.sol"]
+        }
+    }
+}

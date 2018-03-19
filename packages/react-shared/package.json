@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/react-shared",
-    "version": "0.0.1",
+    "version": "0.0.4",
     "description": "0x shared react components",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -21,21 +21,21 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.2.1",
-        "@0xproject/monorepo-scripts": "^0.1.12",
-        "@0xproject/tslint-config": "^0.4.10",
-        "@types/lodash": "^4.14.86",
-        "@types/material-ui": "0.18.0",
-        "@types/node": "^8.0.53",
-        "@types/react": "^15.0.15",
-        "@types/react-dom": "^0.14.23",
-        "@types/react-scroll": "0.0.31",
+        "@0xproject/dev-utils": "^0.3.2",
+        "@0xproject/monorepo-scripts": "^0.1.14",
+        "@0xproject/tslint-config": "^0.4.12",
         "copyfiles": "^1.2.0",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "@types/lodash": "^4.14.86",
+        "@types/material-ui": "0.18.0",
+        "@types/node": "^8.0.53",
+        "@types/react": "^15.0.15",
+        "@types/react-dom": "^0.14.23",
+        "@types/react-scroll": "0.0.31",
         "basscss": "^8.0.3",
         "is-mobile": "^0.2.2",
         "lodash": "^4.17.4",

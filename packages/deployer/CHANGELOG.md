@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## v0.3.0 - _TBD, 2018_
+## v0.3.1 - _March 18, 2018_
+
+    * Add TS types for `yargs`
+
+## v0.3.0 - _March 18, 2018_
 
     * Add support for Solidity 0.4.20 and 0.4.21
     * Replace `jsonrpcPort` config with `jsonrpcUrl` (#426)
@@ -11,6 +15,7 @@
     * Remove 0x-specific `migrate` command (#426)
     * Allow deployer to accept a provider instead of port and host. This makes it possible to run it with in-process ganache-core (#426)
     * Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package (#452)
+    * Add `#!/usr/bin/env node` pragma above `cli.ts` script to fix command-line error.
 
 ## v0.2.0 - _March 4, 2018_
 

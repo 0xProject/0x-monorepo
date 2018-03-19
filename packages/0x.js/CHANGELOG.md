@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## v0.33.2 - _TBD, 2018_
+## v0.33.2 - _March 18, 2018_
 
     * Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package (#452)
+    * Consolidate `Order`, `SignedOrder`, and `ECSignature` into the `@0xproject/types` package (#456)
 
 ## v0.33.1 - _March 8, 2018_
 

@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## v0.4.1 - _TBD, 2018_
+## v0.4.3 - _March 18, 2018_
+
+    * Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface.
+
+## v0.4.2 - _March 18, 2018_
 
     * Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package (#452)
 
