@@ -101,7 +101,7 @@
                 "previous/SafeMath/SafeMath_v1.sol",
                 "previous/Token/Token_v1.sol"
             ],
-            "address": "0xdc688d29394a3f1e6f1e5100862776691afaf3d2",
+            "address": "0x6000eca38b8b5bba64986182fe2a69c57f6b5414",
             "constructor_args": "0x00000000000000000000000048bacb9266a570d521063ef5dd96e61686dbe7880000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48000000000000000000000000871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c0000000000000000000000001d7022f5b17d2f8b695918fb48fa1089c9f85401"
         }
     }

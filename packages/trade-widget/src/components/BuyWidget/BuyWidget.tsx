@@ -85,7 +85,7 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
             <Content>
                 <AccountBlockie
                     account={address}
-                    ethBalance={weiBalance}
+                    weiBalance={weiBalance}
                     tokenBalance={tokenBalance}
                     selectedToken={selectedToken}
                 />

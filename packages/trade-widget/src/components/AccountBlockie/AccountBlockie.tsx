@@ -18,8 +18,8 @@ const ETH_DECIMAL_PLACES = 18;
 interface AccountBlockieProps {
     /** account the account to display in the component, used to seed the image */
     account?: string;
-    /** ethBalance the balance to display in the component */
-    ethBalance: BigNumber;
+    /** weiBalance the balance to display in the component */
+    weiBalance: BigNumber;
     /** selectedToken the token to display in the component */
     selectedToken: AssetToken;
     /** tokenBalance the token balance to display in the component */
@@ -59,9 +59,9 @@ class AccountBlockie extends React.Component<AccountBlockieProps, {}> {
         );
     }
     private _renderEthBalance(): string {
-        const { ethBalance } = this.props;
-        return ethBalance
-            ? ZeroEx.toUnitAmount(ethBalance, ETH_DECIMAL_PLACES)
+        const { weiBalance } = this.props;
+        return weiBalance
+            ? ZeroEx.toUnitAmount(weiBalance, ETH_DECIMAL_PLACES)
                   .toFixed(4)
                   .toString()
             : '';
