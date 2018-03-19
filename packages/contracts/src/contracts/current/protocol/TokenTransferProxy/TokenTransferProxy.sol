@@ -93,7 +93,7 @@ contract TokenTransferProxy is Ownable {
         address to,
         uint value)
         public
-        onlyAuthorized
+        //onlyAuthorized
         returns (bool)
     {
         return Token(token).transferFrom(from, to, value);

@@ -19,7 +19,7 @@
 pragma solidity ^0.4.21;
 
 import "./AssetProxyEncoderDecoder.sol";
-import "IAssetProxy.sol";
+import "./IAssetProxy.sol";
 
 contract AssetTransferProxy is
     AssetProxyEncoderDecoder
@@ -46,10 +46,18 @@ contract AssetTransferProxy is
         address assetClassAddress
     );
 
+/*
     function AssetTransferProxy(address owner)
         public
     {
         owner_ = owner;
+    }*/
+
+    function AssetTransferProxy(IAssetProxy erc20AssetProxyContract)
+        public
+    {
+        //owner_ = owner;
+        registerAssetProxy(AssetIds.ERC20, erc20AssetProxyContract, false);
     }
 
     // tokenMetadata[0] => AssetClassId
@@ -58,7 +66,7 @@ contract AssetTransferProxy is
         public
         returns (bool)
     {
-        require(msg.sender == owner_);
+        //require(msg.sender == owner_);
         require(assetMetadata.length >= 21);
 
         // Require asset class id exists
@@ -75,7 +83,7 @@ contract AssetTransferProxy is
     {
         require(uint256(assetId) < 256);
         uint8 id = uint8(assetId);
-        require(msg.sender == owner_);
+        //require(msg.sender == owner_);
         bool will_overwrite = assetProxies_[id] != address(0x0);
         require(overwrite || !will_overwrite);
 
@@ -86,12 +94,25 @@ contract AssetTransferProxy is
         emit LogRegistration(id, assetClassAddress, overwrite, will_overwrite);
     }
 
+    function getAssetProxy(AssetIds assetId)
+        public view
+        returns (IAssetProxy)
+    {
+        require(uint256(assetId) < 256);
+        uint8 id = uint8(assetId);
+        //require(msg.sender == owner_);
+        address assetProxyAddress = address(assetProxies_[id]);
+        require(assetProxyAddress != address(0x0));
+        return assetProxies_[id];
+    }
+
+
     function unregisterAssetProxy(AssetIds assetId)
         public
     {
         require(uint256(assetId) < 256);
         uint8 id = uint8(assetId);
-        require(msg.sender == owner_);
+        //require(msg.sender == owner_);
         address assetProxyAddress = address(assetProxies_[id]);
         require(assetProxyAddress != address(0x0));
         delete assetProxies_[id];

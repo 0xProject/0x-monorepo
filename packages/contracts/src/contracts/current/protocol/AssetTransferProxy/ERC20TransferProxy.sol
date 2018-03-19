@@ -18,19 +18,28 @@
 
 pragma solidity ^0.4.21;
 
-import "./AssetClassProxy.sol";
+import "./IAssetProxy.sol";
+import "./AssetProxyEncoderDecoder.sol";
 import "../utils/Memory/Memory.sol";
+import "../TokenTransferProxy/ITokenTransferProxy.sol";
 
 contract ERC20TransferProxy is
     IAssetProxy,
     AssetProxyEncoderDecoder
 {
+    ITokenTransferProxy TRANSFER_PROXY;
+
+    function ERC20TransferProxy(ITokenTransferProxy tokenTransferProxyContract)
+        public
+    {
+        TRANSFER_PROXY = tokenTransferProxyContract;
+    }
 
     function transferFrom(bytes assetMetadata, address from, address to, uint256 amount)
         public
         returns (bool success)
     {
         address token = decodeERC20Metadata(assetMetadata);
-        //return Token(token).transferFrom(from, to, value);
+        return TRANSFER_PROXY.transferFrom(token, from, to, amount);
     }
 }
