@@ -111,8 +111,8 @@ const teamRow3: ProfileInfo[] = [
 const teamRow4: ProfileInfo[] = [
     {
         name: 'Blake Henderson',
-        title: 'Operations and Analytics',
-        description: `Previously analytics at LinkedIn. Economics at UC San Diego. `,
+        title: 'Operations Associate',
+        description: `Operations and Analytics. Previously analytics at LinkedIn. Economics at UC San Diego. `,
         image: '/images/team/blake.jpg',
         linkedIn: 'https://www.linkedin.com/in/blakerhenderson/',
         github: '',
