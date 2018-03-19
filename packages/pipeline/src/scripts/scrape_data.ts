@@ -176,7 +176,7 @@ export const pullDataScripts = {
 };
 
 export const scrapeDataScripts = {
-    scrapeAllPricesToDB(fromTime: number, toTime: number, timeDelay: 500) {
+    scrapeAllPricesToDB(fromTime: number, toTime: number) {
         const fromDate = new Date(fromTime);
         fromDate.setUTCHours(0);
         fromDate.setUTCMinutes(0);
@@ -189,7 +189,7 @@ export const scrapeDataScripts = {
                 for (let curDate = fromDate; curDate < toDate; curDate.setDate(curDate.getDate() + 1)) {
                     for (const token of Object.values(result.rows)) {
                         console.debug("Scraping " + curDate + " " + token);
-                        q.push(_scrapePriceToDB(curDate.getTime(), token));
+                        q.push(_scrapePriceToDB(curDate.getTime(), token, 500));
                     }
                 }
             })
