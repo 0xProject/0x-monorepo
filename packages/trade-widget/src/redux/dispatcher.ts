@@ -2,7 +2,7 @@ import { SignedOrder } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import { Dispatch } from 'redux';
 
-import { ActionTypes } from '../types';
+import { ActionTypes, AssetToken } from '../types';
 
 import { State } from './reducer';
 
@@ -33,6 +33,12 @@ export class Dispatcher {
         this._dispatch({
             data: balance,
             type: ActionTypes.UpdateUserTokenBalance,
+        });
+    }
+    public updateSelectedToken(token: AssetToken) {
+        this._dispatch({
+            data: token,
+            type: ActionTypes.UpdateSelectedToken,
         });
     }
     public updateOrder(order: SignedOrder) {

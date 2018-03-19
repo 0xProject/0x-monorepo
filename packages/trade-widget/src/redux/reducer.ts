@@ -61,6 +61,6 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
             };
         }
         default:
-            return state;
+            return { ...state };
     }
 }

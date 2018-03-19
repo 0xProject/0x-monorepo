@@ -4,6 +4,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Web3 from 'web3';
 
+import { AssetToken } from '../../types';
+
 import { Blockie } from './Blockie';
 
 /**
@@ -15,7 +17,7 @@ interface AccountBlockieProps {
     /** ethBalance the balance to display in the component */
     ethBalance: string;
     /** selectedToken the token to display in the component */
-    selectedToken?: string;
+    selectedToken: AssetToken;
     /** tokenBalance the token balance to display in the component */
     tokenBalance: string;
 }

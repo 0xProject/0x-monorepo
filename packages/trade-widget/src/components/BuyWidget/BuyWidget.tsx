@@ -30,6 +30,8 @@ import * as Web3ProviderEngine from 'web3-provider-engine';
 import { artifacts } from '../../artifacts';
 import { ForwarderWrapper } from '../../contract_wrappers/forwarder_wrapper';
 
+import { Dispatcher } from '../../redux/dispatcher';
+import { AssetToken } from '../../types';
 import AccountBlockie from '../AccountBlockie';
 import TokenSelector from '../TokenSelector';
 
@@ -48,12 +50,13 @@ interface BuyWidgetPropTypes {
     networkId: number;
     balance: BigNumber;
     tokenBalance: BigNumber;
+    selectedToken: AssetToken;
+    dispatcher: Dispatcher;
 }
 
 interface BuyWidgetState {
     amount?: BigNumber;
     isLoading: boolean;
-    selectedToken?: string;
 }
 
 const ETH_DECIMAL_PLACES = 18;
@@ -63,7 +66,6 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         super(props);
         this.state = {
             amount: new BigNumber(1),
-            selectedToken: 'ZRX',
             isLoading: false,
         };
 
@@ -75,8 +77,8 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
 
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
-        const { selectedToken, isLoading } = this.state;
-        const { address, balance, tokenBalance } = this.props;
+        const { isLoading } = this.state;
+        const { address, balance, tokenBalance, selectedToken } = this.props;
         const blockieBalance = balance
             ? ZeroEx.toUnitAmount(balance, ETH_DECIMAL_PLACES)
                   .toFixed(4)
@@ -88,6 +90,7 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
                   .toFixed(0)
                   .toString()
             : '';
+
         return (
             <Content>
                 <AccountBlockie
@@ -98,7 +101,10 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
                 />
                 <Label isSize="small">SELECT TOKEN</Label>
                 <Field isFullWidth={true}>
-                    <TokenSelector onChange={this.handleTokenSelected.bind(this)} />
+                    <TokenSelector
+                        selectedToken={this.props.selectedToken}
+                        onChange={this.handleTokenSelected.bind(this)}
+                    />
                 </Field>
                 <Label style={{ marginTop: 30 }} isSize="small">
                     BUY AMOUNT
@@ -159,10 +165,8 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
     }
 
     // tslint:disable-next-line:underscore-private-and-protected
-    private async handleTokenSelected(event: any, symbol: string) {
-        this.setState((prev, props) => {
-            return { ...prev, selectedToken: symbol };
-        });
+    private async handleTokenSelected(event: any, token: AssetToken) {
+        this.props.dispatcher.updateSelectedToken(token);
     }
 
     private async _fillOrderAsync(

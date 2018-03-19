@@ -27,11 +27,11 @@ import TokenSelectorItem from '../TokenSelectorItem';
 import { definedTokensToIcon } from '../TokenSelectorItem/TokenSelectorItem';
 
 interface TokenSelectorPropTypes {
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>, symbol: string) => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>, token: AssetToken) => void;
+    selectedToken: AssetToken;
 }
 
 interface TokenSelectorState {
-    selectedToken: AssetToken;
     active: boolean;
 }
 
@@ -49,7 +49,7 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
     private _tokens: TokenMetadata[];
     constructor(props: TokenSelectorPropTypes) {
         super(props);
-        this.state = { active: false, selectedToken: AssetToken.ZRX };
+        this.state = { active: false };
         this.handleItemSelected = this.handleItemSelected.bind(this);
         this._tokens = [
             { symbol: AssetToken.ZRX, id: AssetToken.ZRX, description: '0x Token' },
@@ -61,7 +61,7 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
         const { onChange } = this.props;
         onChange(event, item.props.symbol);
         this.setState((prev, props) => {
-            return { ...prev, active: false, selectedToken: item.props.symbol };
+            return { ...prev, active: false };
         });
     }
 
@@ -79,7 +79,7 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
                 onClick={this.handleItemSelected}
             />
         ));
-        const currentMetadata = this._getTokenMetadata(this.state.selectedToken);
+        const currentMetadata = this._getTokenMetadata(this.props.selectedToken);
         const currentIcon = definedTokensToIcon[currentMetadata.symbol];
         const activeToken = (
             <Button className={'select is-fullwidth'}>
@@ -103,9 +103,9 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
         );
     }
 
-    private _getTokenMetadata(symbol: string): TokenMetadata {
+    private _getTokenMetadata(token: AssetToken): TokenMetadata {
         return _.find(this._tokens, tokenMetadata => {
-            return tokenMetadata.symbol === symbol;
+            return tokenMetadata.symbol === token;
         });
     }
 }

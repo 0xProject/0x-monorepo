@@ -81,7 +81,7 @@ class App extends React.Component<{}, AppState> {
                                         <Label isSize={'small'}>0x TRADE WIDGET</Label>
                                     </CardHeaderTitle>
                                     <CardContent>
-                                        <BuyWidget zeroEx={zeroEx} web3Wrapper={web3Wrapper} />
+                                        <BuyWidget zeroEx={zeroEx} web3Wrapper={web3Wrapper} dispatcher={dispatcher} />
                                     </CardContent>
                                 </Card>
                             </Column>
