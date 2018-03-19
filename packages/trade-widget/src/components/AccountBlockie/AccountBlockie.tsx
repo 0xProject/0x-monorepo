@@ -13,11 +13,11 @@ interface AccountBlockieProps {
     /** account the account to display in the component, used to seed the image */
     account?: string;
     /** ethBalance the balance to display in the component */
-    ethBalance?: string;
+    ethBalance: string;
     /** selectedToken the token to display in the component */
     selectedToken?: string;
     /** tokenBalance the token balance to display in the component */
-    tokenBalance?: string;
+    tokenBalance: string;
 }
 
 /**
@@ -35,21 +35,27 @@ class AccountBlockie extends React.Component<AccountBlockieProps, {}> {
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
         if (!this.props.account) {
-            return (<Content/>);
+            return <Content />;
         }
         return (
             <Content>
                 <Field isMarginless={true} hasAddons={'centered'}>
-                    <Blockie style={{'border-radius': '50%'}} seed={this.props.account} />
+                    <Blockie style={{ 'border-radius': '50%' }} seed={this.props.account} />
                 </Field>
                 <Field isMarginless={true} hasAddons={'centered'}>
-                    <Label style={{color: '#3636367d'}} isSize={'small'}> {this.minimisedAccount(this.props.account)} </Label>
+                    <Label style={{ color: '#3636367d' }} isSize={'small'}>
+                        {' '}
+                        {this.minimisedAccount(this.props.account)}{' '}
+                    </Label>
                 </Field>
                 <Field isMarginless={true} hasAddons={'centered'}>
                     <Label isSize={'small'}> {this.props.ethBalance} ETH</Label>
                 </Field>
                 <Field isMarginless={true} hasAddons={'centered'}>
-                    <Label isSize={'small'}> {this.props.tokenBalance} {this.props.selectedToken}</Label>
+                    <Label isSize={'small'}>
+                        {' '}
+                        {this.props.tokenBalance} {this.props.selectedToken}
+                    </Label>
                 </Field>
             </Content>
         );

@@ -20,7 +20,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { Token } from '../../types';
+import { AssetToken } from '../../types';
 
 import TokenSelectorItem from '../TokenSelectorItem';
 
@@ -31,13 +31,13 @@ interface TokenSelectorPropTypes {
 }
 
 interface TokenSelectorState {
-    selectedToken: Token;
+    selectedToken: AssetToken;
     active: boolean;
 }
 
 interface TokenMetadata {
     id: string;
-    symbol: Token;
+    symbol: AssetToken;
     description: string;
 }
 class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelectorState> {
@@ -49,11 +49,11 @@ class TokenSelector extends React.Component<TokenSelectorPropTypes, TokenSelecto
     private _tokens: TokenMetadata[];
     constructor(props: TokenSelectorPropTypes) {
         super(props);
-        this.state = { active: false, selectedToken: Token.ZRX };
+        this.state = { active: false, selectedToken: AssetToken.ZRX };
         this.handleItemSelected = this.handleItemSelected.bind(this);
         this._tokens = [
-            { symbol: Token.ZRX, id: Token.ZRX, description: '0x Token' },
-            { symbol: Token.BAT, id: Token.BAT, description: 'Basic Attention Token' },
+            { symbol: AssetToken.ZRX, id: AssetToken.ZRX, description: '0x Token' },
+            { symbol: AssetToken.BAT, id: AssetToken.BAT, description: 'Basic Attention Token' },
         ];
     }
 

@@ -20,15 +20,21 @@ import {
 import 'bulma/css/bulma.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, Store as ReduxStore } from 'redux';
 import * as Web3 from 'web3';
 import * as Web3ProviderEngine from 'web3-provider-engine';
 
 import './App.css';
-import BuyWidget from './components/BuyWidget';
+import { BuyWidget } from './containers/buy_widget';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
 import { FixedProvider } from './liquidity_providers/fixed_provider';
+import { Dispatcher } from './redux/dispatcher';
+import { reducer, State } from './redux/reducer';
+import { BlockchainSaga } from './sagas/blockchain_saga';
+import { AssetToken } from './types';
 
 const TEST_NETWORK_ID = 50;
 const TEST_RPC = 'http://127.0.0.1:8545';
@@ -41,62 +47,53 @@ providerEngine.start();
 const web3Wrapper = new Web3Wrapper(providerEngine);
 const zeroEx = new ZeroEx(providerEngine, { networkId: TEST_NETWORK_ID });
 
-interface AppState {
-    address: string;
-    order: SignedOrder;
-}
-// TODO I don't like how there is state of order here and props of order in the BuyWidget
+interface AppState {}
+const store: ReduxStore<State> = createStore(
+    reducer,
+    (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
+);
+
+const reduxDispatch = store.dispatch;
+const dispatcher = new Dispatcher(reduxDispatch);
+
+const blockchainSaga = new BlockchainSaga(dispatcher, store, web3Wrapper, zeroEx);
+
 class App extends React.Component<{}, AppState> {
     private _provider: FixedProvider;
     constructor(props: {}) {
         super(props);
-        this.state = {
-            address: undefined,
-            order: undefined,
-        };
         this._provider = new FixedProvider(this._orderUpdatedAsync.bind(this));
     }
     // tslint:disable-next-line:member-access
     async componentDidMount() {
-        await this._fetchAccountsAsync();
         await this._provider.start();
     }
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
         return (
-            <Container style={{ marginTop: 20, marginLeft: 20 }}>
-                <Content>
-                    <Columns>
-                        <Column isSize={{ mobile: 12, default: '1/4' }}>
-                            <Card>
-                                <CardHeaderTitle>
-                                    <Label isSize={'small'}>0x TRADE WIDGET</Label>
-                                </CardHeaderTitle>
-                                <CardContent>
-                                    <BuyWidget
-                                        address={this.state.address}
-                                        order={this.state.order}
-                                        zeroEx={zeroEx}
-                                        web3Wrapper={web3Wrapper}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </Column>
-                    </Columns>
-                </Content>
-            </Container>
+            <Provider store={store}>
+                <Container style={{ marginTop: 20, marginLeft: 20 }}>
+                    <Content>
+                        <Columns>
+                            <Column isSize={{ mobile: 12, default: '1/4' }}>
+                                <Card>
+                                    <CardHeaderTitle>
+                                        <Label isSize={'small'}>0x TRADE WIDGET</Label>
+                                    </CardHeaderTitle>
+                                    <CardContent>
+                                        <BuyWidget zeroEx={zeroEx} web3Wrapper={web3Wrapper} />
+                                    </CardContent>
+                                </Card>
+                            </Column>
+                        </Columns>
+                    </Content>
+                </Container>
+            </Provider>
         );
     }
-    private async _fetchAccountsAsync(): Promise<void> {
-        const address = (await web3Wrapper.getAvailableAddressesAsync())[0];
-        this.setState((prev, _) => {
-            return { ...prev, address };
-        });
-    }
+    // tslint:disable-next-line:prefer-function-over-method
     private async _orderUpdatedAsync(order: SignedOrder): Promise<void> {
-        this.setState((prev, _) => {
-            return { ...prev, order };
-        });
+        dispatcher.updateOrder(order);
     }
 }
 

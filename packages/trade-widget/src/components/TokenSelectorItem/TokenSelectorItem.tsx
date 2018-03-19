@@ -30,11 +30,11 @@ const definedTokensToIcon: { [index: string]: JSX.Element } = {
     ZRX: <span className={'icon-ZeroEx is-left icon'} />,
 };
 
-import { Token } from '../../types';
+import { AssetToken } from '../../types';
 interface TokenSelectorItemPropTypes {
     id: string;
     description: string;
-    symbol: Token;
+    symbol: AssetToken;
     onClick: (item: TokenSelectorItem, event: any) => void;
 }
 

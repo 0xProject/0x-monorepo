@@ -42,15 +42,16 @@ interface BuyWidgetPropTypes {
     onAmountChange?: (amount: BigNumber) => any;
     onTransactionSubmitted?: (txHash: string) => any;
     address: string;
-    order?: SignedOrder;
+    order: SignedOrder;
     web3Wrapper: Web3Wrapper;
     zeroEx: ZeroEx;
+    networkId: number;
+    balance: BigNumber;
+    tokenBalance: BigNumber;
 }
 
 interface BuyWidgetState {
     amount?: BigNumber;
-    balance?: string;
-    tokenBalance?: string;
     isLoading: boolean;
     selectedToken?: string;
 }
@@ -62,8 +63,6 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         super(props);
         this.state = {
             amount: new BigNumber(1),
-            balance: undefined,
-            tokenBalance: undefined,
             selectedToken: 'ZRX',
             isLoading: false,
         };
@@ -74,27 +73,27 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         this._forwarder = new ForwarderWrapper(this.props.web3Wrapper, 50, abiDecoder);
     }
 
-    // tslint:disable-next-line:member-access
-    async componentDidMount() {
-        await this.updateState();
-    }
-
-    // tslint:disable-next-line:member-access
-    async componentWillReceiveProps(nextProps: BuyWidgetPropTypes) {
-        this.props = nextProps;
-        await this.updateState();
-    }
-
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
-        const { balance, tokenBalance, selectedToken, isLoading } = this.state;
-        const { address } = this.props;
+        const { selectedToken, isLoading } = this.state;
+        const { address, balance, tokenBalance } = this.props;
+        const blockieBalance = balance
+            ? ZeroEx.toUnitAmount(balance, ETH_DECIMAL_PLACES)
+                  .toFixed(4)
+                  .toString()
+            : '';
+
+        const blockieTokenBalance = tokenBalance
+            ? ZeroEx.toUnitAmount(tokenBalance, ETH_DECIMAL_PLACES)
+                  .toFixed(0)
+                  .toString()
+            : '';
         return (
             <Content>
                 <AccountBlockie
                     account={address}
-                    ethBalance={balance}
-                    tokenBalance={tokenBalance}
+                    ethBalance={blockieBalance}
+                    tokenBalance={blockieTokenBalance}
                     selectedToken={selectedToken}
                 />
                 <Label isSize="small">SELECT TOKEN</Label>
@@ -142,7 +141,6 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         this.setState((prev, props) => {
             return { ...prev, isLoading: false };
         });
-        await this.updateState();
     }
 
     // tslint:disable-next-line:underscore-private-and-protected
@@ -163,30 +161,8 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
     // tslint:disable-next-line:underscore-private-and-protected
     private async handleTokenSelected(event: any, symbol: string) {
         this.setState((prev, props) => {
-            return { ...prev, selectedToken: symbol, tokenBalance: '' };
+            return { ...prev, selectedToken: symbol };
         });
-        await this.updateState();
-    }
-
-    // tslint:disable-next-line:member-access underscore-private-and-protected
-    private async updateState() {
-        const { address, order, web3Wrapper, zeroEx } = this.props;
-        if (!_.isUndefined(address)) {
-            const addressBalance = await web3Wrapper.getBalanceInWeiAsync(address);
-            const ethAddressBalance = ZeroEx.toUnitAmount(addressBalance, ETH_DECIMAL_PLACES).toFixed(4);
-            let tokenBalance = new BigNumber(0);
-            if (!_.isUndefined(order)) {
-                const rawTokenBalance = await zeroEx.token.getBalanceAsync(order.makerTokenAddress, address);
-                tokenBalance = ZeroEx.toUnitAmount(rawTokenBalance, ETH_DECIMAL_PLACES);
-            }
-            this.setState((prev, props) => {
-                return {
-                    ...prev,
-                    balance: ethAddressBalance.toString(),
-                    tokenBalance: tokenBalance.toString(),
-                };
-            });
-        }
     }
 
     private async _fillOrderAsync(
