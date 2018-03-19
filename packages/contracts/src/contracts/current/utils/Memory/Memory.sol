@@ -53,7 +53,7 @@ contract Memory {
       index += 20;
 
       // stores additional bytes that occupy the 32-byte word where we'll be storing the address
-      bytes32 word;
+      bytes32 neighbors;
 
       // Store address into array memory
       assembly {
@@ -65,10 +65,10 @@ contract Memory {
           // 1. Add index to address of bytes array
           // 2. Load 32-byte word from memory
           // 3. Apply 12-byte mask to obtain extra bytes occupying word of memory where we'll store the address
-          word := and(mload(add(b, index)), 0xffffffffffffffffffffffff0000000000000000000000000000000000000000)
+          neighbors := and(mload(add(b, index)), 0xffffffffffffffffffffffff0000000000000000000000000000000000000000)
 
           // Store the neighbors and address into memory
-          mstore(add(b, index), xor(input, word))
+          mstore(add(b, index), xor(input, neighbors))
       }
   }
 }
