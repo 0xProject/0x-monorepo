@@ -168,11 +168,11 @@ export class ExchangeWrapper {
         return tx;
     }
     public async cancelOrdersBeforeAsync(
-        timestamp: BigNumber,
+        salt: BigNumber,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._exchange.cancelOrdersBefore.sendTransactionAsync(
-            timestamp,
+            salt,
             { from },
         );
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
