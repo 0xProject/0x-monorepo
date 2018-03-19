@@ -36,6 +36,8 @@ export enum ActionTypes {
     UpdateUserWeiBalance = 'UPDATE_USER_WEI_BALANCE',
     UpdateOrder = 'UPDATE_ORDER',
     UpdateUserTokenBalance = 'UPDATE_USER_TOKEN_BALANCE',
+    TransactionSubmitted = 'TRANSACTION_SUBMITTED',
+    TransactionMined = 'TRANSACTION_MINED',
 }
 export interface Action {
     type: ActionTypes;

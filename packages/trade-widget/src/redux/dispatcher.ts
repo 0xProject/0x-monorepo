@@ -1,4 +1,4 @@
-import { SignedOrder } from '0x.js';
+import { SignedOrder, TransactionReceiptWithDecodedLogs } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import { Dispatch } from 'redux';
 
@@ -45,6 +45,18 @@ export class Dispatcher {
         this._dispatch({
             data: order,
             type: ActionTypes.UpdateOrder,
+        });
+    }
+    public transactionSubmitted(txHash: string) {
+        this._dispatch({
+            data: txHash,
+            type: ActionTypes.TransactionSubmitted,
+        });
+    }
+    public transactionMined(receipt: TransactionReceiptWithDecodedLogs) {
+        this._dispatch({
+            data: receipt,
+            type: ActionTypes.TransactionMined,
         });
     }
 }

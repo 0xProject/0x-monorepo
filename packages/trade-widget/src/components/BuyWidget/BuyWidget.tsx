@@ -35,10 +35,6 @@ import { AccountTokenBalances, AccountWeiBalances, AssetToken, TokenBalances } f
 import AccountBlockie from '../AccountBlockie';
 import TokenSelector from '../TokenSelector';
 
-const artifactJSONs = _.values(artifacts);
-const abiArrays = _.map(artifactJSONs, artifact => artifact.networks[50].abi);
-const abiDecoder = new AbiDecoder(abiArrays);
-
 interface BuyWidgetPropTypes {
     onTokenChange?: (token: string) => any;
     onAmountChange?: (amount: BigNumber) => any;
@@ -71,8 +67,6 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
 
         this.handleAmountChange = this.handleAmountChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        // TODO remove 50 constant here
-        this._forwarder = new ForwarderWrapper(this.props.web3Wrapper, 50, abiDecoder);
     }
 
     // tslint:disable-next-line:prefer-function-over-method member-access
@@ -164,9 +158,19 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         fillAmount: BigNumber,
         signedOrder: SignedOrder,
     ): Promise<string> {
-        const txHash = await this._forwarder.fillOrderAsync(signedOrder, fillAmount, takerAddress);
+        const txHash = await this._getForwarder().fillOrderAsync(signedOrder, fillAmount, takerAddress);
+        this.props.dispatcher.transactionSubmitted(txHash);
         const receipt = await this.props.zeroEx.awaitTransactionMinedAsync(txHash);
+        this.props.dispatcher.transactionMined(receipt);
         return txHash;
+    }
+
+    private _getForwarder(): ForwarderWrapper {
+        const artifactJSONs = _.values(artifacts);
+        const abiArrays = _.map(artifactJSONs, artifact => artifact.networks[this.props.networkId].abi);
+        const abiDecoder = new AbiDecoder(abiArrays);
+        this._forwarder = new ForwarderWrapper(this.props.web3Wrapper, this.props.networkId, abiDecoder);
+        return this._forwarder;
     }
 }
 
