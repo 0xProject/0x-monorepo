@@ -23,7 +23,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('Exchange', () => {
+describe.skip('Exchange wrappers', () => {
     let makerAddress: string;
     let tokenOwner: string;
     let takerAddress: string;

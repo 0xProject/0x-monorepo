@@ -17,17 +17,24 @@
 */
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
+pragma experimental "v0.5.0";
 
 import "./mixins/MSignatureValidator.sol";
+import "./mixins/MTransactions.sol";
 
-contract MixinTransactions is MSignatureValidator {
+contract MixinTransactions is
+    MSignatureValidator,
+    MTransactions
+{
+
     // Mapping of transaction hash => executed
     mapping (bytes32 => bool) public transactions;
 
     // Address of current transaction signer
-    address currentSigner = address(0);
+    address currentSigner;
 
     /// @dev Executes an exchange method call in the context of signer.
+    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
     /// @param signer Address of transaction signer.
     /// @param data AbiV2 encoded calldata.
     /// @param signature Proof of signer transaction by signer.
@@ -36,7 +43,7 @@ contract MixinTransactions is MSignatureValidator {
         address signer,
         bytes data,
         bytes signature)
-        public
+        external
     {
         // Prevent reentrancy
         require(currentSigner == address(0));
@@ -44,7 +51,7 @@ contract MixinTransactions is MSignatureValidator {
         // Calculate transaction hash
         bytes32 transactionHash = keccak256(salt, data);
 
-        // Validate transaction has not been execute
+        // Validate transaction has not been executed
         require(!transactions[transactionHash]);
 
         // TODO: is SignatureType.Caller necessary if we make this check?
@@ -62,5 +69,14 @@ contract MixinTransactions is MSignatureValidator {
 
         // Reset current transaction signer
         currentSigner = address(0);
+    }
+
+    function getSignerAddress()
+        internal
+        view
+        returns (address)
+    {
+        address signerAddress = currentSigner == address(0) ? msg.sender : currentSigner;
+        return signerAddress;
     }
 }

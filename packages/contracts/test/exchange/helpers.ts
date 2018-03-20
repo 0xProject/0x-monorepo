@@ -20,7 +20,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('Exchange', () => {
+describe.skip('Exchange helpers', () => {
     let makerAddress: string;
     let feeRecipientAddress: string;
 

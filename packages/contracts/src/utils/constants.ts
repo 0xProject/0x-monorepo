@@ -19,6 +19,8 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
 ];
 
 export const constants = {
+    FILL_ORDER_FUNCTION_SIGNATURE:
+        'fillOrder((address,address,address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256),uint256,bytes)',
     NULL_BYTES: '0x',
     INVALID_OPCODE: 'invalid opcode',
     REVERT: 'revert',

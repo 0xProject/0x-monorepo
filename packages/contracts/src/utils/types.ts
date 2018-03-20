@@ -144,3 +144,10 @@ export enum SignatureType {
     Trezor,
     Contract,
 }
+
+export interface SignedTransaction {
+    salt: BigNumber;
+    signer: string;
+    data: string;
+    signature: string;
+}

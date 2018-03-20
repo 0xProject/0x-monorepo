@@ -21,13 +21,9 @@ pragma experimental ABIEncoderV2;
 import "./MSignatureValidator.sol";
 
 contract MTransactions is MSignatureValidator {
-    // Mapping of transaction hash => executed
-    mapping (bytes32 => bool) public transactions;
-
-    // Address of current transaction signer
-    address currentSigner;
 
     /// @dev Executes an exchange method call in the context of signer.
+    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
     /// @param signer Address of transaction signer.
     /// @param data AbiV2 encoded calldata.
     /// @param signature Proof of signer transaction by signer.
@@ -36,5 +32,10 @@ contract MTransactions is MSignatureValidator {
         address signer,
         bytes data,
         bytes signature)
-        public;
+        external;
+
+    function getSignerAddress()
+        internal
+        view
+        returns (address);
 }

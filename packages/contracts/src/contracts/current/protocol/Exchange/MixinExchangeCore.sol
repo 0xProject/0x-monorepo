@@ -111,7 +111,7 @@ contract MixinExchangeCore is
         }
 
         // Validate transaction signed by taker
-        address takerAddress = currentSigner == address(0) ? msg.sender : currentSigner;
+        address takerAddress = getSignerAddress();
         if (order.takerAddress != address(0)) {
             require(order.takerAddress == takerAddress);
         }
@@ -193,7 +193,7 @@ contract MixinExchangeCore is
         }
         
         // Validate transaction signed by maker
-        address makerAddress = currentSigner == address(0) ? msg.sender : currentSigner;
+        address makerAddress = getSignerAddress();
         require(order.makerAddress == makerAddress);
         
         if (block.timestamp >= order.expirationTimeSeconds) {

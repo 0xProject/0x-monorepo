@@ -17,7 +17,6 @@ import {
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
-import { crypto } from '../../src/utils/crypto';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
@@ -30,7 +29,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('Exchange', () => {
+describe('Exchange core', () => {
     let makerAddress: string;
     let tokenOwner: string;
     let takerAddress: string;
@@ -438,8 +437,6 @@ describe('Exchange', () => {
             const expectedFilledTakerTokenAmount = signedOrder.takerTokenAmount.div(divisor);
             const expectedFeeMPaid = signedOrder.makerFeeAmount.div(divisor);
             const expectedFeeTPaid = signedOrder.takerFeeAmount.div(divisor);
-            const tokensHashBuff = crypto.solSHA3([signedOrder.makerTokenAddress, signedOrder.takerTokenAddress]);
-            const expectedTokens = ethUtil.bufferToHex(tokensHashBuff);
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
             expect(takerAddress).to.be.equal(logArgs.takerAddress);
@@ -469,8 +466,6 @@ describe('Exchange', () => {
             const expectedFilledTakerTokenAmount = signedOrder.takerTokenAmount.div(divisor);
             const expectedFeeMPaid = new BigNumber(0);
             const expectedFeeTPaid = new BigNumber(0);
-            const tokensHashBuff = crypto.solSHA3([signedOrder.makerTokenAddress, signedOrder.takerTokenAddress]);
-            const expectedTokens = ethUtil.bufferToHex(tokensHashBuff);
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
             expect(takerAddress).to.be.equal(logArgs.takerAddress);
