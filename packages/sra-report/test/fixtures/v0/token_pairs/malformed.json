@@ -1,0 +1,30 @@
+[
+    {
+        "tokenA": {
+            "address": "4a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenB": {
+            "address": "0x01b3ec4aae1b8729529beb4965f27d008788b0eb",
+            "minAmount": "1",
+            "maxAmount": 999999999999999999999,
+            "precision": 8
+        }
+    },
+    {
+        "tokenA": {
+            "address": "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        },
+        "tokenX": {
+            "address": "0x0371a82e4a9d0a4312f3ee2ac9c6958512891372",
+            "minAmount": "1",
+            "maxAmount": "999999999999999999999",
+            "precision": 8
+        }
+    }
+]

@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.3.0 _TBD, 2018_
+## v0.3.0 _March 18, 2018_
 
     * Add `web3Wrapper.takeSnapshotAsync`, `web3Wrapper.revertSnapshotAsync`, `web3Wrapper.mineBlockAsync`, `web3Wrapper.increaseTimeAsync` (#426)
     * Add `web3Wrapper.isZeroExWeb3Wrapper` for runtime instanceOf checks (#426)

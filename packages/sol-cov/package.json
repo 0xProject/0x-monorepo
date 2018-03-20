@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "0.0.1",
+    "version": "0.0.4",
     "description": "Generate coverage reports for Solidity code",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -38,7 +38,7 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/subproviders": "^0.7.0",
+        "@0xproject/subproviders": "^0.8.2",
         "@0xproject/utils": "^0.3.4",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
@@ -51,23 +51,26 @@
         "web3": "^0.20.0"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.12",
-        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/monorepo-scripts": "^0.1.14",
+        "@0xproject/tslint-config": "^0.4.12",
         "@types/istanbul": "^0.4.29",
-        "@types/node": "^8.0.53",
         "@types/mocha": "^2.2.42",
-        "sinon": "^4.0.0",
-        "copyfiles": "^1.2.0",
-        "nyc": "^11.0.1",
+        "@types/node": "^8.0.53",
         "chai": "^4.0.1",
+        "chai-typescript-typings": "^0.0.6",
+        "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
-        "chai-typescript-typings": "^0.0.4",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
+        "nyc": "^11.0.1",
         "shx": "^0.2.2",
+        "sinon": "^4.0.0",
         "tslint": "5.8.0",
         "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1",
         "web3-typescript-typings": "^0.9.11"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/monorepo-scripts",
-    "version": "0.1.12",
+    "version": "0.1.14",
     "description": "Helper scripts for the monorepo",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -30,12 +30,15 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "es6-promisify": "^5.0.0",
         "async-child-process": "^1.1.1",
-        "publish-release": "0xproject/publish-release",
         "chalk": "^2.3.0",
+        "es6-promisify": "^5.0.0",
         "glob": "^7.1.2",
         "lodash": "^4.17.4",
+        "publish-release": "0xproject/publish-release",
         "semver-sort": "^0.0.4"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

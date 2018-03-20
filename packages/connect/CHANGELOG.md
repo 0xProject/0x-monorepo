@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.6.3 - _TBD, 2018_
+## v0.6.4 - _March 18, 2018_
 
     * Consolidate `Order`, `SignedOrder`, and `ECSignature` into the `@0xproject/types` package (#456)
 

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/subproviders",
-    "version": "0.7.0",
+    "version": "0.8.2",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
@@ -33,9 +33,9 @@
         }
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.0",
-        "@0xproject/types": "^0.3.1",
-        "@0xproject/utils": "^0.4.1",
+        "@0xproject/assert": "^0.2.3",
+        "@0xproject/types": "^0.4.1",
+        "@0xproject/utils": "^0.4.3",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "^4.3.0",
         "bn.js": "^4.11.8",
@@ -48,24 +48,24 @@
         "semaphore-async-await": "^1.5.1",
         "web3": "^0.20.0",
         "web3-provider-engine": "^13.0.1",
-        "web3-typescript-typings": "^0.10.0"
+        "web3-typescript-typings": "^0.10.2"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.12",
-        "@0xproject/tslint-config": "^0.4.10",
-        "@0xproject/utils": "^0.4.1",
-        "@types/lodash": "^4.14.86",
+        "@0xproject/monorepo-scripts": "^0.1.14",
+        "@0xproject/tslint-config": "^0.4.12",
+        "@0xproject/utils": "^0.4.3",
+        "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
-        "nyc": "^11.0.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-as-promised-typescript-typings": "^0.0.10",
-        "chai-typescript-typings": "^0.0.4",
+        "chai-as-promised-typescript-typings": "^0.0.12",
+        "chai-typescript-typings": "^0.0.6",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "mocha": "^4.0.1",
         "npm-run-all": "^4.1.2",
+        "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "types-bn": "^0.0.1",
@@ -78,9 +78,9 @@
         "@ledgerhq/hw-transport-node-hid": "^4.3.0"
     },
     "publishConfig": {
-      "access": "public"
+        "access": "public"
     },
     "browser": {
-      "ganache-core": false
+        "ganache-core": false
     }
 }
