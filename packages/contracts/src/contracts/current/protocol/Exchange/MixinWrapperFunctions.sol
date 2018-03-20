@@ -129,7 +129,7 @@ contract MixinWrapperFunctions is
                 gas,                         // forward all gas, TODO: look into gas consumption of assert/throw
                 address,                     // call address of this contract
                 start,                       // pointer to start of input
-                add(516, sigLenWithPadding), // input length is 420 + signature length + padding length
+                add(516, sigLenWithPadding), // input length is  484 + signature length + padding length
                 start,                       // write output over input
                 32                           // output size is 32 bytes
             )
