@@ -70,7 +70,7 @@ export class Web3Wrapper {
         const codeIsEmpty = /^0x0{0,40}$/i.test(code);
         return !codeIsEmpty;
     }
-    public async signTransactionAsync(address: string, message: string): Promise<string> {
+    public async signMessageAsync(address: string, message: string): Promise<string> {
         const signData = await promisify<string>(this._web3.eth.sign)(address, message);
         return signData;
     }
