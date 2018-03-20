@@ -1,13 +1,16 @@
 # CHANGELOG
 
+## v0.8.1 - _TBD_
+
+*   Introduce `JSONRPCRequestPayloadWithMethod` type (#465)
+*   Export `ErrorCallback` type. (#465)
+
 ## v0.8.0 - _March 18, 2018_
 
     * Export `GanacheSubprovider` and `Subprovider` (#426)
     * Make all subproviders to derive from `Subprovider` (#426)
     * Add types for `NextCallback`, `OnNextCompleted` (#426)
-    * Introduce `JSONRPCRequestPayloadWithMethod` type
     * Ignore `ganache-core` dependency when using package in a browser environment.
-    * Export `ErrorCallback` type.
 
 ## v0.7.0 - _March 8, 2018_
 
