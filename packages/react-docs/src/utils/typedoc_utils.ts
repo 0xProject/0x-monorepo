@@ -170,7 +170,11 @@ export const typeDocUtils = {
                             sectionName,
                             docsInfo.id,
                         );
-                        docSection.types.push(customType);
+                        const seenTypeNames = _.map(docSection.types, t => t.name);
+                        const isUnseen = !_.includes(seenTypeNames, customType.name);
+                        if (isUnseen) {
+                            docSection.types.push(customType);
+                        }
                     }
                     break;
 

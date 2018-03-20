@@ -122,7 +122,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                     const name = `${menuItemName}-${entityName}`;
                     const id = utils.getIdFromName(name);
                     return (
-                        <li key={`menuItem-${entityName}`}>
+                        <li key={`menuSubsectionItem-${name}`}>
                             <ScrollLink
                                 to={id}
                                 offset={0}
