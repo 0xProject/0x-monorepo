@@ -120,6 +120,7 @@ describe('Exchange core', () => {
             }),
             zrx.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             zrx.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner }),
+            zrx.setBalance.sendTransactionAsync(feeRecipientAddress, INITIAL_BALANCE, { from: tokenOwner }),
         ]);
     });
     beforeEach(async () => {

@@ -19,7 +19,7 @@ export class TransactionFactory {
         signatureType: SignatureType = SignatureType.Ecrecover,
     ): SignedTransaction {
         const salt = ZeroEx.generatePseudoRandomSalt();
-        const txHash = crypto.solSHA3([salt, data]);
+        const txHash = crypto.solSHA3([salt, ethUtil.toBuffer(data)]);
         const signature = signingUtils.signMessage(txHash, this._privateKey, signatureType);
         const signedTx = {
             salt,

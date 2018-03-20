@@ -12,6 +12,7 @@ import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
+import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
 import { TransactionFactory } from '../../src/utils/transaction_factory';
@@ -26,12 +27,11 @@ import {
 } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
+import { web3, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const blockchainLifecycle = new BlockchainLifecycle();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange transactions', () => {
     let senderAddress: string;
@@ -56,6 +56,7 @@ describe('Exchange transactions', () => {
     let orderFactory: OrderFactory;
     let transactionFactory: TransactionFactory;
     let zeroEx: ZeroEx;
+    let exWrapper: ExchangeWrapper;
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
@@ -85,6 +86,7 @@ describe('Exchange transactions', () => {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
+        exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
         const defaultOrderParams = {
             senderAddress,
@@ -128,6 +130,7 @@ describe('Exchange transactions', () => {
             }),
             zrx.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             zrx.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner }),
+            zrx.setBalance.sendTransactionAsync(feeRecipientAddress, INITIAL_BALANCE, { from: tokenOwner }),
         ]);
     });
     beforeEach(async () => {
@@ -147,22 +150,13 @@ describe('Exchange transactions', () => {
 
             it('should transfer the correct amounts when signed by taker and called by sender', async () => {
                 const takerTokenFillAmount = signedOrder.takerTokenAmount.div(2);
-                const abiEncodedData = exchange.fillOrder.getABIEncodedTransactionData(
+                const data = exchange.fillOrder.getABIEncodedTransactionData(
                     order,
                     takerTokenFillAmount,
                     signedOrder.signature,
                 );
-                const selectorBuff = ethUtil.sha3(constants.FILL_ORDER_FUNCTION_SIGNATURE).slice(0, 4);
-                const data = `0x${selectorBuff.toString('hex')}${abiEncodedData.slice(2)}`;
                 const signedTx = transactionFactory.newSignedTransaction(data);
-                await exchange.executeTransaction.sendTransactionAsync(
-                    signedTx.salt,
-                    signedTx.signer,
-                    signedTx.data,
-                    signedTx.signature,
-                    { from: senderAddress },
-                );
-
+                await exWrapper.executeTransactionAsync(signedTx, senderAddress);
                 const newBalances = await dmyBalances.getAsync();
 
                 const makerTokenFillAmount = takerTokenFillAmount
