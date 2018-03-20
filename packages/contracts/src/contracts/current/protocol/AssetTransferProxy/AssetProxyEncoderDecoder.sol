@@ -73,7 +73,7 @@ contract AssetProxyEncoderDecoder is
             return encodeERC20Metadata(makerTokenAddress);
         }
 
-        // Conflict importing LibErrors.sol. Looking into this.
+        // @TODO: Fix conflict importing LibErrors.sol.
         // LogError(Errors.UNKNOWN_MAKER_ASSET_PROXY_ID, orderHash);
         revert();
     }
@@ -91,7 +91,7 @@ contract AssetProxyEncoderDecoder is
             return encodeERC20Metadata(takerTokenAddress);
         }
 
-        // Conflict importing LibErrors.sol. Looking into this.
+        // @TODO: Fix conflict importing LibErrors.sol.
         // LogError(Errors.UNKNOWN_TAKER_ASSET_PROXY_ID, orderHash);
         revert();
     }
