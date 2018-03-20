@@ -16,15 +16,11 @@ import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
+const DEFAULT_ICON = 'zeroExJs.png';
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
 const idToIcon: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: 'zeroExJs.png',
-    [DocPackages.Web3Wrapper]: 'zeroExJs.png',
-    [DocPackages.Deployer]: 'zeroExJs.png',
-    [DocPackages.SolCov]: 'zeroExJs.png',
-    [DocPackages.JSONSchemas]: 'zeroExJs.png',
-    [DocPackages.Subproviders]: 'zeroExJs.png',
     [DocPackages.Connect]: 'connect.png',
     [DocPackages.SmartContracts]: 'contracts.png',
 };
@@ -79,7 +75,8 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             ? {}
             : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         const sourceUrl = this._getSourceUrl();
-        const iconUrl = idToIcon[this.props.docsInfo.id];
+        const iconFileName = idToIcon[this.props.docsInfo.id] || DEFAULT_ICON;
+        const iconUrl = `/images/doc_icons/${iconFileName}`;
         return (
             <div>
                 <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`} />

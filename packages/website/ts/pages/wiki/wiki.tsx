@@ -88,7 +88,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             ...styles.mainContainers,
             overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
         };
-        const sidebarHeader = <SidebarHeader title="Wiki" iconUrl="wiki.png" />;
+        const sidebarHeader = <SidebarHeader title="Wiki" iconUrl="/images/doc_icons/wiki.png" />;
         return (
             <div>
                 <DocumentTitle title="0x Protocol Wiki" />

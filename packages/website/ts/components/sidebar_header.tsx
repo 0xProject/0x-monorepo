@@ -26,7 +26,7 @@ export class SidebarHeader extends React.Component<SidebarHeaderProps, SidebarHe
                 </div>
                 <div className="flex">
                     <div>
-                        <img src={`/images/doc_icons/${this.props.iconUrl}`} width="22" />
+                        <img src={this.props.iconUrl} width="22" />
                     </div>
                     <div className="pl1" style={{ fontWeight: 600, fontSize: 20, lineHeight: 1.2 }}>
                         {this.props.title}
