@@ -86,10 +86,6 @@ contract MixinSettlementProxy is
     {
         makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
 
-        //emit LogGreg(order.makerAssetId, order.takerAssetId);
-        require(order.takerAssetId == 70);
-
-
         require(
             TRANSFER_PROXY.transferFrom(
                 encodeERC20Metadata(order.makerTokenAddress),
