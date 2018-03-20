@@ -74,7 +74,7 @@ contract AssetProxyEncoderDecoder is
         }
 
         // Conflict importing LibErrors.sol. Looking into this.
-        // LogError(Errors.UNKNOWN_MAKER_ASSET_ID, orderHash);
+        // LogError(Errors.UNKNOWN_MAKER_ASSET_PROXY_ID, orderHash);
         revert();
     }
 
@@ -92,7 +92,7 @@ contract AssetProxyEncoderDecoder is
         }
 
         // Conflict importing LibErrors.sol. Looking into this.
-        // LogError(Errors.UNKNOWN_TAKER_ASSET_ID, orderHash);
+        // LogError(Errors.UNKNOWN_TAKER_ASSET_PROXY_ID, orderHash);
         revert();
     }
 }
