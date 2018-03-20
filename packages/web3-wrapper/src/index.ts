@@ -8,8 +8,7 @@ import * as Web3 from 'web3';
  */
 export class Web3Wrapper {
     /**
-     * This is here purely to reliably distinguish it from other objects in runtime
-     * Similar to: BigNumber.isBigNumber
+     * Flag to check if this instance is of type Web3Wrapper
      */
     public isZeroExWeb3Wrapper = true;
     private _web3: Web3;
@@ -18,7 +17,7 @@ export class Web3Wrapper {
     /**
      * Instantiates a new Web3Wrapper.
      * @param   provider    The Web3 provider instance you would like the Web3Wrapper to use for interacting with
-     *                      the Ethereum network.
+     *                      the backing Ethereum node.
      * @param   defaults    Override TxData defaults sent with RPC requests to the backing Ethereum node.
      * @return  An instance of the Web3Wrapper class.
      */
@@ -76,7 +75,7 @@ export class Web3Wrapper {
         return _.includes(addresses, normalizedAddress);
     }
     /**
-     * Fetch the backing Ethereum node's version string e.g `MetaMask/v4.2.0`
+     * Fetch the backing Ethereum node's version string (e.g `MetaMask/v4.2.0`)
      * @returns Ethereum node's version string
      */
     public async getNodeVersionAsync(): Promise<string> {
@@ -85,7 +84,7 @@ export class Web3Wrapper {
     }
     /**
      * Fetches the networkId of the backing Ethereum node
-     * @returns The networkId
+     * @returns The network id
      */
     public async getNetworkIdAsync(): Promise<number> {
         const networkIdStr = await promisify<string>(this._web3.version.getNetwork)();
@@ -126,7 +125,7 @@ export class Web3Wrapper {
     }
     /**
      * Check if a contract exists at a given address
-     * @param address Account address to check
+     * @param address Address to which to check
      * @returns Whether or not contract code was found at the supplied address
      */
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
@@ -146,7 +145,7 @@ export class Web3Wrapper {
         return signData;
     }
     /**
-     * Fetches the latest blockNumber
+     * Fetches the latest block number
      * @returns Block number
      */
     public async getBlockNumberAsync(): Promise<number> {
@@ -165,14 +164,14 @@ export class Web3Wrapper {
     /**
      * Fetch a block's timestamp
      * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
-     * @returns The timestamp the block was mined
+     * @returns The block's timestamp
      */
     public async getBlockTimestampAsync(blockParam: string | Web3.BlockParam): Promise<number> {
         const { timestamp } = await this.getBlockAsync(blockParam);
         return timestamp;
     }
     /**
-     * Retrieve the user addresses available through the provider
+     * Retrieve the user addresses available through the backing provider
      * @returns Available user addresses
      */
     public async getAvailableAddressesAsync(): Promise<string[]> {
@@ -182,7 +181,7 @@ export class Web3Wrapper {
     }
     /**
      * Take a snapshot of the blockchain state on a TestRPC/Ganache local node
-     * @returns The snapshot Id. This can be used to revert to this snapshot
+     * @returns The snapshot id. This can be used to revert to this snapshot
      */
     public async takeSnapshotAsync(): Promise<number> {
         const snapshotId = Number(await this._sendRawPayloadAsync<string>({ method: 'evm_snapshot', params: [] }));
@@ -190,7 +189,7 @@ export class Web3Wrapper {
     }
     /**
      * Revert the blockchain state to a previous snapshot state on TestRPC/Ganache local node
-     * @param snapshotId snapshot Id to revert to
+     * @param snapshotId snapshot id to revert to
      * @returns Whether the revert was successful
      */
     public async revertSnapshotAsync(snapshotId: number): Promise<boolean> {
@@ -242,7 +241,7 @@ export class Web3Wrapper {
     /**
      * Get a Web3 contract factory instance for a given ABI
      * @param abi Smart contract ABI
-     * @returns Web3 contract factory which can create Web3 Contract instances for the supplied ABI
+     * @returns Web3 contract factory which can create Web3 Contract instances from the supplied ABI
      */
     public getContractFromAbi(abi: Web3.ContractAbi): Web3.Contract<any> {
         const web3Contract = this._web3.eth.contract(abi);
@@ -260,7 +259,7 @@ export class Web3Wrapper {
     /**
      * Call a smart contract method at a given block height
      * @param callData Call data
-     * @param defaultBlock Block height at which to make the call
+     * @param defaultBlock Block height at which to make the call. Defaults to `latest`
      * @returns The raw call result
      */
     public async callAsync(callData: Web3.CallData, defaultBlock?: Web3.BlockParam): Promise<string> {
