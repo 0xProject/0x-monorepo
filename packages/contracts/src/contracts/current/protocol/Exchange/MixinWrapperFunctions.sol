@@ -64,11 +64,11 @@ contract MixinWrapperFunctions is
         // | Offset | Length  | Contents                     |
         // |--------|---------|------------------------------|
         // | 0      | 4       | function selector            |
-        // | 4      | 11 * 32 | Order order                  |
-        // | 356    | 32      | uint256 takerTokenFillAmount |
-        // | 388    | 32      | offset to signature (416)    |
-        // | 420    | 32      | len(signature)               |
-        // | 452    | (1)     | signature                    |
+        // | 4      | 13 * 32 | Order order                  |
+        // | 420    | 32      | uint256 takerTokenFillAmount |
+        // | 452    | 32      | offset to signature (416)    |
+        // | 484    | 32      | len(signature)               |
+        // | 516    | (1)     | signature                    |
         // | (2)    | (3)     | padding (zero)               |
         // | (4)    |         | end of input                 |
 
@@ -100,8 +100,8 @@ contract MixinWrapperFunctions is
             mstore(add(start, 260), mload(add(order, 256))) // takerFeeAmount
             mstore(add(start, 292), mload(add(order, 288))) // expirationTimeSeconds
             mstore(add(start, 324), mload(add(order, 320))) // salt
-            mstore(add(start, 356), mload(add(order, 352))) // makerAssetId
-            mstore(add(start, 388), mload(add(order, 384))) // takerAssetId
+            mstore(add(start, 356), mload(add(order, 352))) // makerAssetProxyId
+            mstore(add(start, 388), mload(add(order, 384))) // takerAssetProxyId
 
             // Write takerTokenFillAmount
             mstore(add(start, 420), takerTokenFillAmount)

@@ -89,7 +89,7 @@ contract MixinSettlementProxy is
 
         require(
             TRANSFER_PROXY.transferFrom(
-                encodeMakerMetadata(order.makerAssetId, order.makerTokenAddress, orderHash),
+                encodeMakerMetadata(order.makerAssetProxyId, order.makerTokenAddress, orderHash),
                 order.makerAddress,
                 takerAddress,
                 makerTokenFilledAmount
@@ -98,7 +98,7 @@ contract MixinSettlementProxy is
 
         require(
             TRANSFER_PROXY.transferFrom(
-                encodeTakerMetadata(order.takerAssetId, order.takerTokenAddress, orderHash),
+                encodeTakerMetadata(order.takerAssetProxyId, order.takerTokenAddress, orderHash),
                 takerAddress,
                 order.makerAddress,
                 takerTokenFilledAmount
