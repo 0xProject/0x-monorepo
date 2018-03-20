@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/deployer",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "Smart contract deployer of 0x protocol",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
