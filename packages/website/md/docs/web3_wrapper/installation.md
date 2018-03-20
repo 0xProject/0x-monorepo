@@ -15,3 +15,11 @@ or
 ```javascript
 var Web3Wrapper = require('@0xproject/web3-wrapper').Web3Wrapper;
 ```
+
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```
+"include": [
+    "./node_modules/web3-typescript-typings/index.d.ts",
+]
+```
