@@ -23,8 +23,8 @@ export const formatters = {
                 takerFeeAmount: signedOrder.takerFeeAmount,
                 expirationTimeSeconds: signedOrder.expirationTimeSeconds,
                 salt: signedOrder.salt,
-        	makerAssetProxyId: signedOrder.makerAssetProxyId,
-        	takerAssetProxyId: signedOrder.takerAssetProxyId,
+                makerAssetProxyId: signedOrder.makerAssetProxyId,
+                takerAssetProxyId: signedOrder.takerAssetProxyId,
             });
             batchFill.signatures.push(signedOrder.signature);
             if (takerTokenFillAmounts.length < signedOrders.length) {
@@ -53,7 +53,7 @@ export const formatters = {
                 expirationTimeSeconds: signedOrder.expirationTimeSeconds,
                 salt: signedOrder.salt,
                 makerAssetProxyId: signedOrder.makerAssetProxyId,
-        	takerAssetProxyId: signedOrder.takerAssetProxyId,
+                takerAssetProxyId: signedOrder.takerAssetProxyId,
             });
             marketFillOrders.signatures.push(signedOrder.signature);
         });
@@ -78,7 +78,7 @@ export const formatters = {
                 expirationTimeSeconds: signedOrder.expirationTimeSeconds,
                 salt: signedOrder.salt,
                 makerAssetProxyId: signedOrder.makerAssetProxyId,
-        	takerAssetProxyId: signedOrder.takerAssetProxyId,
+                takerAssetProxyId: signedOrder.takerAssetProxyId,
             });
             if (takerTokenCancelAmounts.length < signedOrders.length) {
                 batchCancel.takerTokenCancelAmounts.push(signedOrder.takerTokenAmount);
