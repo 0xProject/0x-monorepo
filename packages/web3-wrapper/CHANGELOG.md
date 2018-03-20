@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.4.0 _TBD_
+
+    * Rename `signTransactionAsync` to `signMessageAsync` for clarity (#465)
+
 ## v0.3.0 _March 18, 2018_
 
     * Add `web3Wrapper.takeSnapshotAsync`, `web3Wrapper.revertSnapshotAsync`, `web3Wrapper.mineBlockAsync`, `web3Wrapper.increaseTimeAsync` (#426)
