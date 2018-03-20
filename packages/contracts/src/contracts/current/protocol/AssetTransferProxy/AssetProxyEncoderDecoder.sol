@@ -49,4 +49,30 @@ contract AssetProxyEncoderDecoder is
         require(assetMetadata[0] == byte(uint8(AssetIds.ERC20)));
         return getAddress(assetMetadata, 1);
     }
+
+    function encodeMakerMetadata(uint8 makerAssetId, address makerTokenAddress, bytes32 orderHash)
+        public pure
+        returns (bytes assetMetadata)
+    {
+        if(AssetIds(makerAssetId) == AssetIds.ERC20) {
+            return encodeERC20Metadata(makerTokenAddress);
+        }
+
+        // Conflict importing LibErrors.sol. Looking into this.
+        // LogError(Errors.UNKNOWN_MAKER_ASSET_ID, orderHash);
+        revert();
+    }
+
+    function encodeTakerMetadata(uint8 takerAssetId, address takerTokenAddress, bytes32 orderHash)
+        public pure
+        returns (bytes assetMetadata)
+    {
+        if(AssetIds(takerAssetId) == AssetIds.ERC20) {
+            return encodeERC20Metadata(takerTokenAddress);
+        }
+
+        // Conflict importing LibErrors.sol. Looking into this.
+        // LogError(Errors.UNKNOWN_TAKER_ASSET_ID, orderHash);
+        revert();
+    }
 }

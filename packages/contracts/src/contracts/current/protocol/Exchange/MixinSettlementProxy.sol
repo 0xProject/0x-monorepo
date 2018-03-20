@@ -85,10 +85,11 @@ contract MixinSettlementProxy is
         )
     {
         makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
+        bytes32 orderHash = getOrderHash(order);
 
         require(
             TRANSFER_PROXY.transferFrom(
-                encodeERC20Metadata(order.makerTokenAddress),
+                encodeMakerMetadata(order.makerAssetId, order.makerTokenAddress, orderHash),
                 order.makerAddress,
                 takerAddress,
                 makerTokenFilledAmount
@@ -97,7 +98,7 @@ contract MixinSettlementProxy is
 
         require(
             TRANSFER_PROXY.transferFrom(
-                encodeERC20Metadata(order.takerTokenAddress),
+                encodeTakerMetadata(order.takerAssetId, order.takerTokenAddress, orderHash),
                 takerAddress,
                 order.makerAddress,
                 takerTokenFilledAmount

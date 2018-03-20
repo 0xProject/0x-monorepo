@@ -23,7 +23,6 @@ import "./MixinExchangeCore.sol";
 import "./MixinSignatureValidator.sol";
 import "./MixinSettlementProxy.sol";
 import "./MixinWrapperFunctions.sol";
-//import "./AssetTransferProxy/AssetTransferProxy.sol";
 import "./AssetTransferProxy/ERC20TransferProxy.sol";
 import "../TokenTransferProxy/ITokenTransferProxy.sol";
 

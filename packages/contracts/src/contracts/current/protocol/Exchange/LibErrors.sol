@@ -23,10 +23,12 @@ contract LibErrors {
 
     // Error Codes
     enum Errors {
-        ORDER_EXPIRED,                    // Order has already expired
-        ORDER_FULLY_FILLED_OR_CANCELLED,  // Order has already been fully filled or cancelled
-        ROUNDING_ERROR_TOO_LARGE,         // Rounding error too large
-        INSUFFICIENT_BALANCE_OR_ALLOWANCE // Insufficient balance or allowance for token transfer
+        ORDER_EXPIRED,                      // Order has already expired
+        ORDER_FULLY_FILLED_OR_CANCELLED,    // Order has already been fully filled or cancelled
+        ROUNDING_ERROR_TOO_LARGE,           // Rounding error too large
+        INSUFFICIENT_BALANCE_OR_ALLOWANCE,  // Insufficient balance or allowance for token transfer
+        UNKNOWN_MAKER_ASSET_ID,             // The maker's asset ID is not recognized by transfer proxy
+        UNKNOWN_TAKER_ASSET_ID              // The taker's asset ID is not recognized by transfer proxy
     }
 
     event LogError(uint8 indexed errorId, bytes32 indexed orderHash);

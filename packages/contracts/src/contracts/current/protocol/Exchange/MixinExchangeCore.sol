@@ -154,7 +154,7 @@ contract MixinExchangeCore is
     {
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
-        
+
         // Validate the order
         require(order.makerTokenAmount > 0);
         require(order.takerTokenAmount > 0);
@@ -186,7 +186,7 @@ contract MixinExchangeCore is
         );
         return takerTokenCancelledAmount;
     }
-    
+
     /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
