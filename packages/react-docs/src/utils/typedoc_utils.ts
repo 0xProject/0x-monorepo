@@ -159,7 +159,6 @@ export const typeDocUtils = {
                     break;
 
                 case KindString.Interface:
-                case KindString.Function:
                 case KindString.Variable:
                 case KindString.Enumeration:
                 case KindString.TypeAlias:
