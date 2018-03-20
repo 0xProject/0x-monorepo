@@ -141,8 +141,8 @@ export class Web3Wrapper {
         return gas;
     }
     public async callAsync(callData: Web3.CallData, defaultBlock?: Web3.BlockParam): Promise<string> {
-        const rawCalllResult = await promisify<string>(this._web3.eth.call)(callData, defaultBlock);
-        return rawCalllResult;
+        const rawCallResult = await promisify<string>(this._web3.eth.call)(callData, defaultBlock);
+        return rawCallResult;
     }
     public async sendTransactionAsync(txData: Web3.TxData): Promise<string> {
         const txHash = await promisify<string>(this._web3.eth.sendTransaction)(txData);
