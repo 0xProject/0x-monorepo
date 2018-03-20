@@ -28,13 +28,25 @@ contract ERC20TransferProxy is
 {
     ITokenTransferProxy TRANSFER_PROXY;
 
+    /// @dev Contract constructor.
+    /// @param tokenTransferProxyContract erc20 token transfer proxy contract.
     function ERC20TransferProxy(ITokenTransferProxy tokenTransferProxyContract)
         public
     {
         TRANSFER_PROXY = tokenTransferProxyContract;
     }
 
-    function transferFrom(bytes assetMetadata, address from, address to, uint256 amount)
+    /// @dev Transfers ERC20 tokens.
+    /// @param assetMetadata Byte array encoded for the respective asset proxy.
+    /// @param from Address to transfer token from.
+    /// @param to Address to transfer token to.
+    /// @param amount Amount of token to transfer.
+    /// @return Success of transfer.
+    function transferFrom(
+        bytes assetMetadata,
+        address from,
+        address to,
+        uint256 amount)
         public
         onlyAuthorized
         returns (bool success)

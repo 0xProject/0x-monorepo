@@ -23,38 +23,53 @@ import "../../utils/Memory/Memory.sol";
 contract AssetProxyEncoderDecoder is
     Memory
 {
-    enum AssetIds {
-      ERC20,
-      ERC721,
-      ENS,
-      OWNABLE,
-      ACCEPT_OWNERSHIP
+    // Supported asset proxies
+    enum AssetProxyId {
+        ERC20,
+        ERC721,
+        ENS,
+        OWNABLE,
+        ACCEPT_OWNERSHIP
     }
 
+    /// @dev Encodes ERC20 order metadata into a byte array for the ERC20 asset proxy.
+    /// @param tokenAddress Address of ERC20 token.
+    /// @return assetMetadata Byte array encoded for the ERC20 asset proxy.
     function encodeERC20Metadata(address tokenAddress)
         public pure
         returns (bytes assetMetadata)
     {
         assetMetadata = new bytes(21);
-        assetMetadata[0] = byte(uint8(AssetIds.ERC20));
+        assetMetadata[0] = byte(uint8(AssetProxyId.ERC20));
         putAddress(tokenAddress, assetMetadata, 1);
         return assetMetadata;
     }
 
+    /// @dev Decodes ERC20-encoded byte array for the ERC20 asset proxy.
+    /// @param assetMetadata Byte array encoded for the ERC20 asset proxy.
+    /// @return tokenAddress Address of ERC20 token.
     function decodeERC20Metadata(bytes assetMetadata)
         public pure
         returns (address tokenAddress)
     {
         require(assetMetadata.length == 21);
-        require(assetMetadata[0] == byte(uint8(AssetIds.ERC20)));
+        require(assetMetadata[0] == byte(uint8(AssetProxyId.ERC20)));
         return getAddress(assetMetadata, 1);
     }
 
-    function encodeMakerMetadata(uint8 makerAssetId, address makerTokenAddress, bytes32 orderHash)
+    /// @dev Encodes order's maker metadata into a byte array for the respective asset proxy.
+    /// @param makerAssetProxyId Id of the asset proxy.
+    /// @param makerTokenAddress Address of the asset.
+    /// @param orderHash Hash of order.
+    /// @return assetMetadata Byte array encoded for the respective asset proxy.
+    function encodeMakerMetadata(
+        uint8 makerAssetProxyId,
+        address makerTokenAddress,
+        bytes32 orderHash)
         public pure
         returns (bytes assetMetadata)
     {
-        if(AssetIds(makerAssetId) == AssetIds.ERC20) {
+        if(AssetProxyId(makerAssetProxyId) == AssetProxyId.ERC20) {
             return encodeERC20Metadata(makerTokenAddress);
         }
 
@@ -63,11 +78,16 @@ contract AssetProxyEncoderDecoder is
         revert();
     }
 
-    function encodeTakerMetadata(uint8 takerAssetId, address takerTokenAddress, bytes32 orderHash)
+    /// @dev Encodes order's taker metadata into a byte array for the respective asset proxy.
+    /// @param takerAssetProxyId Id of the asset proxy.
+    /// @param takerTokenAddress Address of the asset.
+    /// @param orderHash Hash of order.
+    /// @return assetMetadata Byte array encoded for the respective asset proxy.
+    function encodeTakerMetadata(uint8 takerAssetProxyId, address takerTokenAddress, bytes32 orderHash)
         public pure
         returns (bytes assetMetadata)
     {
-        if(AssetIds(takerAssetId) == AssetIds.ERC20) {
+        if(AssetProxyId(takerAssetProxyId) == AssetProxyId.ERC20) {
             return encodeERC20Metadata(takerTokenAddress);
         }
 

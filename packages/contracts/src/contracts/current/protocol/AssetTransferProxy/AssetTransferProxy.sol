@@ -26,87 +26,107 @@ contract AssetTransferProxy is
     AssetProxyEncoderDecoder,
     Authorizable
 {
+    // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (uint8 => IAssetProxy) public assetProxies_;
-    address public owner_;
 
-    event LogTransfer(
-        uint8 id,
-        address from,
-        address to,
-        uint256 amount
-    );
-
-    event LogAssetRegistration(
-        uint8 id,
+    // Logs registration of new asset proxy
+    event LogAssetProxyRegistration(
+        AssetProxyId id,
         address assetClassAddress,
         bool overwrite,
         bool did_overwrite
     );
 
-    event LogAssetUnregistration(
-        uint8 id,
+    // Logs unregistration of an existing asset proxy
+    event LogAssetProxyUnregistration(
+        AssetProxyId id,
         address assetClassAddress
     );
 
-    // tokenMetadata[0] => AssetClassId
-    // [tokenMetadata[1],..,tokenMetadata[21] => Asset Address
-    function transferFrom(bytes assetMetadata, address from, address to, uint256 amount)
+    /// @dev Delegates transfer to the corresponding asset proxy.
+    /// @param assetMetadata Byte array encoded for the respective asset proxy.
+    /// @param from Address to transfer token from.
+    /// @param to Address to transfer token to.
+    /// @param amount Amount of token to transfer.
+    /// @return Success of transfer.
+    function transferFrom(
+        bytes assetMetadata,
+        address from,
+        address to,
+        uint256 amount)
         public
         onlyAuthorized
         returns (bool)
     {
-        require(assetMetadata.length >= 21);
+        // Lookup asset proxy
+        require(assetMetadata.length >= 1);
+        uint8 id = uint8(assetMetadata[0]);
+        IAssetProxy assetProxy = assetProxies_[id];
+        require(assetProxy != address(0x0));
 
-        // Require asset class id exists
-        uint8 assetClassId = uint8(assetMetadata[0]);
-        IAssetProxy assetClass = assetProxies_[assetClassId];
-        require(assetClass != address(0x0));
-
-        // Delegate transfer to asset class
-        return assetClass.transferFrom(assetMetadata, from, to, amount);
+        // Delegate transfer to asset proxy
+        return assetProxy.transferFrom(assetMetadata, from, to, amount);
     }
 
-    function registerAssetProxy(AssetIds assetId, address assetClassAddress, bool overwrite)
+    /// @dev Registers a new asset proxy.
+    /// @param assetProxyId Id of the asset proxy.
+    /// @param assetProxyAddress address of the asset proxy contract.
+    /// @param overwrite Any existing asset proxy registered with the same assetProxyId will be overwritten.
+    function registerAssetProxy(
+        AssetProxyId assetProxyId,
+        address assetProxyAddress,
+        bool overwrite)
         public
         onlyAuthorized
     {
-        require(uint256(assetId) < 256);
-        uint8 id = uint8(assetId);
-        //require(msg.sender == owner_);
-        bool will_overwrite = assetProxies_[id] != address(0x0);
+        // Convert assetProxyId to mapping id
+        require(uint256(assetProxyId) < 256);
+        uint8 id = uint8(assetProxyId);
+
+        // Ensure an existing asset proxy is not unintentionally overwritten
+        bool will_overwrite = (assetProxies_[id] != address(0x0));
         require(overwrite || !will_overwrite);
 
-        // Store asset class and record its id
-        assetProxies_[id] = IAssetProxy(assetClassAddress);
-
-        // Log registration
-        emit LogAssetRegistration(id, assetClassAddress, overwrite, will_overwrite);
+        // Store asset proxy and log registration
+        assetProxies_[id] = IAssetProxy(assetProxyAddress);
+        emit LogAssetProxyRegistration(assetProxyId, assetProxyAddress, overwrite, will_overwrite);
     }
 
-    function getAssetProxy(AssetIds assetId)
+    /// @dev Gets an asset proxy.
+    /// @param assetProxyId Id of the asset proxy.
+    /// @return The asset proxy registered to assetProxyId.
+    function getAssetProxy(AssetProxyId assetProxyId)
         public view
         returns (IAssetProxy)
     {
-        require(uint256(assetId) < 256);
-        uint8 id = uint8(assetId);
-        //require(msg.sender == owner_);
-        address assetProxyAddress = address(assetProxies_[id]);
-        require(assetProxyAddress != address(0x0));
-        return assetProxies_[id];
+        // Convert assetProxyId to mapping id
+        require(uint256(assetProxyId) < 256);
+        uint8 id = uint8(assetProxyId);
+
+        // Ensure asset proxy exists
+        IAssetProxy assetProxy = assetProxies_[id];
+        require(assetProxy != address(0x0));
+
+        // Return asset proxy
+        return assetProxy;
     }
 
-    function unregisterAssetProxy(AssetIds assetId)
+    /// @dev Unregisters an asset proxy.
+    /// @param assetProxyId Id of the asset proxy to unregister.
+    function unregisterAssetProxy(AssetProxyId assetProxyId)
         public
         onlyAuthorized
     {
-        require(uint256(assetId) < 256);
-        uint8 id = uint8(assetId);
-        //require(msg.sender == owner_);
-        address assetProxyAddress = address(assetProxies_[id]);
-        require(assetProxyAddress != address(0x0));
-        delete assetProxies_[id];
+        // Convert assetProxyId to mapping id
+        require(uint256(assetProxyId) < 256);
+        uint8 id = uint8(assetProxyId);
 
-        // Log unregistration
-        emit LogAssetUnregistration(id, assetProxyAddress);
+        // Ensure asset proxy exists
+        IAssetProxy assetProxy = assetProxies_[id];
+        require(assetProxy != address(0x0));
+
+        // Delete asset proxy and record unregistration
+        delete assetProxies_[id];
+        emit LogAssetProxyUnregistration(assetProxyId, assetProxy);
     }
 }

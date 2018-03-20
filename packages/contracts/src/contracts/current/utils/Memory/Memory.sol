@@ -19,56 +19,68 @@
 pragma solidity ^0.4.21;
 
 contract Memory {
-  // Get address from a bytes array
-  function getAddress(bytes b, uint256 index)
-      public pure
-      returns (address result)
-  {
-      require(b.length >= index + 20); // 20 is length of address
 
-      // Add offset to index:
-      // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
-      // 2. Account for size difference between address length and 32-byte storage word (subtract 12 from index)
-      index += 20;
+    /// @dev Gets an address from a position in a byte array.
+    /// @param b Byte array containing an address.
+    /// @param index Index in byte array of address.
+    /// @return address from byte array.
+    function getAddress(
+        bytes b,
+        uint256 index)
+        public pure
+        returns (address result)
+    {
+        require(b.length >= index + 20); // 20 is length of address
 
-      // Read address from array memory
-      assembly {
-          // 1. Add index to to address of bytes array
-          // 2. Load 32-byte word from memory
-          // 3. Apply 20-byte mask to obtain address
-          result := and(mload(add(b, index)), 0xffffffffffffffffffffffffffffffffffffffff)
-      }
-      return result;
-  }
+        // Add offset to index:
+        // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
+        // 2. Account for size difference between address length and 32-byte storage word (subtract 12 from index)
+        index += 20;
 
-  // Put address into a bytes array
-  function putAddress(address input, bytes b, uint256 index)
-      public pure
-  {
-      require(b.length >= index + 20); // 20 is length of address
+        // Read address from array memory
+        assembly {
+            // 1. Add index to to address of bytes array
+            // 2. Load 32-byte word from memory
+            // 3. Apply 20-byte mask to obtain address
+            result := and(mload(add(b, index)), 0xffffffffffffffffffffffffffffffffffffffff)
+        }
+        return result;
+    }
 
-      // Add offset to index:
-      // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
-      // 2. Account for size difference between address length and 32-byte storage word (subtract 12 from index)
-      index += 20;
+    /// @dev Puts an address into a specific position in a byte array.
+    /// @param input Address to put into byte array.
+    /// @param b Byte array to insert address into.
+    /// @param index Index in byte array of address.
+    function putAddress(
+        address input,
+        bytes b,
+        uint256 index)
+        public pure
+    {
+        require(b.length >= index + 20); // 20 is length of address
 
-      // stores additional bytes that occupy the 32-byte word where we'll be storing the address
-      bytes32 neighbors;
+        // Add offset to index:
+        // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
+        // 2. Account for size difference between address length and 32-byte storage word (subtract 12 from index)
+        index += 20;
 
-      // Store address into array memory
-      assembly {
-          // The address occupies 20 bytes and mstore stores 32 bytes.
-          // First fetch the 32-byte word where we'll be storing the address, then
-          // apply a mask so we have only the bytes in the word that the address will not occupy.
-          // Then combine these bytes with the address and store the 32 bytes back to memory with mstore.
+        // stores additional bytes that occupy the 32-byte word where we'll be storing the address
+        bytes32 neighbors;
 
-          // 1. Add index to address of bytes array
-          // 2. Load 32-byte word from memory
-          // 3. Apply 12-byte mask to obtain extra bytes occupying word of memory where we'll store the address
-          neighbors := and(mload(add(b, index)), 0xffffffffffffffffffffffff0000000000000000000000000000000000000000)
+        // Store address into array memory
+        assembly {
+            // The address occupies 20 bytes and mstore stores 32 bytes.
+            // First fetch the 32-byte word where we'll be storing the address, then
+            // apply a mask so we have only the bytes in the word that the address will not occupy.
+            // Then combine these bytes with the address and store the 32 bytes back to memory with mstore.
 
-          // Store the neighbors and address into memory
-          mstore(add(b, index), xor(input, neighbors))
-      }
-  }
+            // 1. Add index to address of bytes array
+            // 2. Load 32-byte word from memory
+            // 3. Apply 12-byte mask to obtain extra bytes occupying word of memory where we'll store the address
+            neighbors := and(mload(add(b, index)), 0xffffffffffffffffffffffff0000000000000000000000000000000000000000)
+
+            // Store the neighbors and address into memory
+            mstore(add(b, index), xor(input, neighbors))
+        }
+    }
 }
