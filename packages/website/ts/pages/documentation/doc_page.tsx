@@ -15,9 +15,20 @@ import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
+const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
-const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
+const idToIcon: { [id: string]: string } = {
+    [DocPackages.ZeroExJs]: 'zeroExJs.png',
+    [DocPackages.Web3Wrapper]: 'zeroExJs.png',
+    [DocPackages.Deployer]: 'zeroExJs.png',
+    [DocPackages.SolCov]: 'zeroExJs.png',
+    [DocPackages.JSONSchemas]: 'zeroExJs.png',
+    [DocPackages.Subproviders]: 'zeroExJs.png',
+    [DocPackages.Connect]: 'connect.png',
+    [DocPackages.SmartContracts]: 'contracts.png',
+};
+
 const docIdToS3FolderName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0xjs',
     [DocPackages.SmartContracts]: 'smart-contracts',
@@ -79,6 +90,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             ? {}
             : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         const sourceUrl = this._getSourceUrl();
+        const iconUrl = idToIcon[this.props.docsInfo.id];
         return (
             <div>
                 <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`} />
@@ -92,13 +104,14 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     docsInfo={this.props.docsInfo}
                     translate={this.props.translate}
                     onVersionSelected={this._onVersionSelected.bind(this)}
+                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} iconUrl={iconUrl} />}
                 />
                 <Documentation
                     selectedVersion={this.props.docsVersion}
                     availableVersions={this.props.availableDocVersions}
                     docsInfo={this.props.docsInfo}
                     docAgnosticFormat={this.state.docAgnosticFormat}
-                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
+                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} iconUrl={iconUrl} />}
                     sourceUrl={sourceUrl}
                     topBarHeight={60}
                     onVersionSelected={this._onVersionSelected.bind(this)}

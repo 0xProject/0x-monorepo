@@ -39,6 +39,7 @@ interface TopBarProps {
     style?: React.CSSProperties;
     isNightVersion?: boolean;
     onVersionSelected?: (semver: string) => void;
+    sidebarHeader?: React.ReactNode;
 }
 
 interface TopBarState {
@@ -393,7 +394,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menu}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} />}
+                    sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
@@ -413,7 +414,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <NestedSidebarMenu
                     topLevelMenu={this.props.menuSubsectionsBySection}
                     menuSubsectionsBySection={this.props.menuSubsectionsBySection}
-                    sidebarHeader={<SidebarHeader title="Wiki" />}
+                    sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
                 />

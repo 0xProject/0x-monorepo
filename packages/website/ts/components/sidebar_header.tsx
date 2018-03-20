@@ -4,20 +4,9 @@ import * as React from 'react';
 
 const SHOW_DURATION_MS = 4000;
 
-const titleToIcon: { [title: string]: string } = {
-    '0x.js': 'zeroExJs.png',
-    Web3Wrapper: 'zeroExJs.png',
-    Deployer: 'zeroExJs.png',
-    'Sol-cov': 'zeroExJs.png',
-    'JSON Schemas': 'zeroExJs.png',
-    Subproviders: 'zeroExJs.png',
-    '0x Connect': 'connect.png',
-    '0x Smart Contracts': 'contracts.png',
-    Wiki: 'wiki.png',
-};
-
 interface SidebarHeaderProps {
     title: string;
+    iconUrl: string;
 }
 
 interface SidebarHeaderState {}
@@ -37,7 +26,7 @@ export class SidebarHeader extends React.Component<SidebarHeaderProps, SidebarHe
                 </div>
                 <div className="flex">
                     <div>
-                        <img src={`/images/doc_icons/${titleToIcon[this.props.title]}`} width="22" />
+                        <img src={`/images/doc_icons/${this.props.iconUrl}`} width="22" />
                     </div>
                     <div className="pl1" style={{ fontWeight: 600, fontSize: 20, lineHeight: 1.2 }}>
                         {this.props.title}

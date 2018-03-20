@@ -88,6 +88,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             ...styles.mainContainers,
             overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
         };
+        const sidebarHeader = <SidebarHeader title="Wiki" iconUrl="wiki.png" />;
         return (
             <div>
                 <DocumentTitle title="0x Protocol Wiki" />
@@ -96,6 +97,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                     location={this.props.location}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     translate={this.props.translate}
+                    sidebarHeader={sidebarHeader}
                 />
                 {_.isUndefined(this.state.articlesBySection) ? (
                     <div className="col col-12" style={mainContainersStyle}>
@@ -134,7 +136,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                                     <NestedSidebarMenu
                                         topLevelMenu={menuSubsectionsBySection}
                                         menuSubsectionsBySection={menuSubsectionsBySection}
-                                        sidebarHeader={<SidebarHeader title="Wiki" />}
+                                        sidebarHeader={sidebarHeader}
                                     />
                                 </div>
                             </div>
