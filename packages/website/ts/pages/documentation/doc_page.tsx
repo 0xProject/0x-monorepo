@@ -29,17 +29,6 @@ const idToIcon: { [id: string]: string } = {
     [DocPackages.SmartContracts]: 'contracts.png',
 };
 
-const docIdToS3FolderName: { [id: string]: string } = {
-    [DocPackages.ZeroExJs]: '0xjs',
-    [DocPackages.SmartContracts]: 'smart-contracts',
-    [DocPackages.Connect]: 'connect',
-    [DocPackages.Web3Wrapper]: 'web3-wrapper',
-    [DocPackages.Deployer]: 'deployer',
-    [DocPackages.JSONSchemas]: 'json-schemas',
-    [DocPackages.SolCov]: 'sol-cov',
-    [DocPackages.Subproviders]: 'subproviders',
-};
-
 const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0x.js',
     [DocPackages.Connect]: 'connect',
@@ -120,7 +109,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         );
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
-        const folderName = docIdToS3FolderName[this.props.docsInfo.id];
+        const folderName = docIdToSubpackageName[this.props.docsInfo.id];
         const docBucketRoot = isDevelopment ? constants.S3_STAGING_DOC_BUCKET_ROOT : constants.S3_DOC_BUCKET_ROOT;
         const versionToFilePath = await docUtils.getVersionToFilePathAsync(docBucketRoot, folderName);
         const versions = _.keys(versionToFilePath);
