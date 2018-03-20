@@ -31,20 +31,30 @@ import { artifacts } from '../../artifacts';
 import { ForwarderWrapper } from '../../contract_wrappers/forwarder_wrapper';
 
 import { Dispatcher } from '../../redux/dispatcher';
-import { AccountTokenBalances, AccountWeiBalances, AssetToken, TokenBalances } from '../../types';
+import {
+    AccountTokenBalances,
+    AccountWeiBalances,
+    AssetToken,
+    Quote,
+    QuoteRequest,
+    TokenBalances,
+    TokenPair,
+} from '../../types';
 import AccountBlockie from '../AccountBlockie';
 import TokenSelector from '../TokenSelector';
 
-interface BuyWidgetPropTypes {
+/* tslint:disable:prefer-function-over-method member-access */
+
+interface BuyWidgetProps {
     onTokenChange?: (token: string) => any;
     onAmountChange?: (amount: BigNumber) => any;
     onTransactionSubmitted?: (txHash: string) => any;
+    requestQuote: QuoteRequest;
     address: string;
     networkId: number;
     weiBalances: AccountWeiBalances;
     tokenBalances: AccountTokenBalances;
     selectedToken: AssetToken;
-    order: SignedOrder;
     web3Wrapper: Web3Wrapper;
     zeroEx: ZeroEx;
     dispatcher: Dispatcher;
@@ -53,23 +63,28 @@ interface BuyWidgetPropTypes {
 interface BuyWidgetState {
     amount?: BigNumber;
     isLoading: boolean;
+    quote: Quote;
 }
 
 const ETH_DECIMAL_PLACES = 18;
-class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
+class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
     private _forwarder: ForwarderWrapper;
     constructor(props: any) {
         super(props);
         this.state = {
             amount: new BigNumber(1),
             isLoading: false,
+            quote: undefined,
         };
 
-        this.handleAmountChange = this.handleAmountChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this._handleAmountChange = this._handleAmountChange.bind(this);
+        this._handleSubmitAsync = this._handleSubmitAsync.bind(this);
     }
 
-    // tslint:disable-next-line:prefer-function-over-method member-access
+    public async componentWillReceiveProps(nextProps: BuyWidgetProps) {
+        await this._quoteSelectedTokenAsync();
+    }
+
     render() {
         const { isLoading } = this.state;
         const { address, weiBalances, tokenBalances, selectedToken } = this.props;
@@ -87,7 +102,7 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
                 <Field isFullWidth={true}>
                     <TokenSelector
                         selectedToken={this.props.selectedToken}
-                        onChange={this.handleTokenSelected.bind(this)}
+                        onChange={this._handleTokenSelected.bind(this)}
                     />
                 </Field>
                 <Label style={{ marginTop: 30 }} isSize="small">
@@ -95,7 +110,7 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
                 </Label>
                 <Field hasAddons={true}>
                     <Control isExpanded={true}>
-                        <Input type="text" placeholder="1" onChange={this.handleAmountChange.bind(this)} />
+                        <Input type="text" placeholder="1" onChange={this._handleAmountChange.bind(this)} />
                     </Control>
                     <Control>
                         <Select>
@@ -108,7 +123,7 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
                     <strong> ESTIMATED COST </strong>
                 </Field> */}
                 <Field style={{ marginTop: 20 }}>
-                    <Button isLoading={isLoading} isFullWidth={true} isColor="info" onClick={this.handleSubmit}>
+                    <Button isLoading={isLoading} isFullWidth={true} isColor="info" onClick={this._handleSubmitAsync}>
                         BUY TOKENS
                     </Button>
                 </Field>
@@ -119,22 +134,20 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         );
     }
 
-    // tslint:disable-next-line:underscore-private-and-protected
-    private async handleSubmit(event: any) {
+    private async _handleSubmitAsync(event: any) {
         event.preventDefault();
         this.setState((prev, props) => {
             return { ...prev, isLoading: true };
         });
-        const { address, order } = this.props;
-        const { amount } = this.state;
-        const txHash = await this._fillOrderAsync(address, amount, order);
+        const { address } = this.props;
+        const { amount, quote } = this.state;
+        const txHash = await this._fillOrderAsync(address, amount, quote.orders[0]);
         this.setState((prev, props) => {
             return { ...prev, isLoading: false };
         });
     }
 
-    // tslint:disable-next-line:underscore-private-and-protected
-    private handleAmountChange(event: any) {
+    private _handleAmountChange(event: any) {
         event.preventDefault();
         const rawValue = event.target.value;
         let value: undefined | BigNumber;
@@ -142,14 +155,14 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
             const ethValue = new BigNumber(rawValue);
             const fillAmount = ZeroEx.toBaseUnitAmount(ethValue, ETH_DECIMAL_PLACES);
             value = fillAmount;
+            this.setState((prev, props) => {
+                return { ...prev, amount: value };
+            });
+            this._quoteSelectedTokenAsync().catch(console.log);
         }
-        this.setState((prev, props) => {
-            return { ...prev, amount: value };
-        });
     }
 
-    // tslint:disable-next-line:underscore-private-and-protected
-    private async handleTokenSelected(token: AssetToken) {
+    private _handleTokenSelected(token: AssetToken) {
         this.props.dispatcher.updateSelectedToken(token);
     }
 
@@ -171,6 +184,32 @@ class BuyWidget extends React.Component<BuyWidgetPropTypes, BuyWidgetState> {
         const abiDecoder = new AbiDecoder(abiArrays);
         this._forwarder = new ForwarderWrapper(this.props.web3Wrapper, this.props.networkId, abiDecoder);
         return this._forwarder;
+    }
+
+    private async _quoteSelectedTokenAsync() {
+        const oldQuote = this.state.quote;
+        const { amount } = this.state;
+        const { selectedToken, requestQuote } = this.props;
+        // Avoid unncesscary quoting
+        if (
+            !_.isUndefined(oldQuote) &&
+            !_.isUndefined(amount) &&
+            oldQuote.pair.maker === selectedToken &&
+            oldQuote.amount.eq(amount)
+        ) {
+            return;
+        }
+
+        this.setState((prev, props) => {
+            return { ...prev, isLoading: true };
+        });
+        const tokenPair: TokenPair = { maker: selectedToken, taker: AssetToken.WETH };
+        const quote = await requestQuote(amount, tokenPair);
+        // tslint:disable-next-line:no-console
+        console.log('got quote', quote);
+        this.setState((prev, props) => {
+            return { ...prev, quote, isLoading: false };
+        });
     }
 }
 

@@ -13,20 +13,32 @@ const BALANCE_POLLING_INTERVAL = 5000;
 
 /**
  * Watch for user account changes and network changes
- * which are outside of our control. I.e injected web3 providers
+ * which are outside of our control. I.e injected web3 providers, balance changes
  */
 export class BlockchainSaga {
     private _store: Store<State>;
     private _dispatch: Dispatcher;
-    // private _userWeiBalances: AccountWeiBalances = {};
     private _web3Wrapper: Web3Wrapper;
     private _zeroEx: ZeroEx;
+    private _prevState: State;
     constructor(dispatch: Dispatcher, store: Store<State>, web3Wrapper: Web3Wrapper, zeroEx: ZeroEx) {
         this._dispatch = dispatch;
         this._web3Wrapper = web3Wrapper;
         this._store = store;
         this._zeroEx = zeroEx;
         this._startPolling().catch(console.log);
+        store.subscribe(this._handleStateChange.bind(this));
+        this._handleStateChange();
+    }
+    // The intention here is to stop any long running processes
+    // if they are not relevant anymore. I.e watching for balance changes
+    // on an old network.
+    private _handleStateChange() {
+        const nextState = this._store.getState();
+        const lastAction = nextState.lastAction;
+        if (nextState !== this._prevState) {
+            this._prevState = nextState;
+        }
     }
     private async _startPolling() {
         await this._checkBlockchainAsync();

@@ -17,6 +17,7 @@ export interface Artifact {
 export enum AssetToken {
     ZRX = 'ZRX',
     BAT = 'BAT',
+    WETH = 'WETH',
 }
 
 export interface TokenBalances {
@@ -34,7 +35,6 @@ export enum ActionTypes {
     UpdateSelectedToken = 'UPDATE_SELECTED_TOKEN',
     UpdateUserAddress = 'UPDATE_USER_ACCOUNT',
     UpdateUserWeiBalance = 'UPDATE_USER_WEI_BALANCE',
-    UpdateOrder = 'UPDATE_ORDER',
     UpdateUserTokenBalance = 'UPDATE_USER_TOKEN_BALANCE',
     TransactionSubmitted = 'TRANSACTION_SUBMITTED',
     TransactionMined = 'TRANSACTION_MINED',
@@ -45,7 +45,21 @@ export interface Action {
 }
 
 export declare type OrderUpdateCallback = (order: SignedOrder) => any;
+export declare type QuoteRequest = (amount: BigNumber, pair: TokenPair) => Promise<Quote>;
 export interface LiquidityProvider {
+    requestQuoteAsync: QuoteRequest;
     start(): void;
     stop(): void;
+    // requestQuoteAsync(amount: BigNumber, pair: TokenPair): Promise<Quote>;
+}
+
+export interface TokenPair {
+    maker: AssetToken;
+    taker: AssetToken;
+}
+export interface Quote {
+    pair: TokenPair;
+    orders: SignedOrder[];
+    amount: BigNumber;
+    maxAmount: BigNumber; // Helps prevent re-fetching if the user wants to buy more
 }

@@ -41,12 +41,6 @@ export class Dispatcher {
             type: ActionTypes.UpdateSelectedToken,
         });
     }
-    public updateOrder(order: SignedOrder) {
-        this._dispatch({
-            data: order,
-            type: ActionTypes.UpdateOrder,
-        });
-    }
     public transactionSubmitted(txHash: string) {
         this._dispatch({
             data: txHash,

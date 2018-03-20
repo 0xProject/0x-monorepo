@@ -47,26 +47,19 @@ providerEngine.start();
 const web3Wrapper = new Web3Wrapper(providerEngine);
 const zeroEx = new ZeroEx(providerEngine, { networkId: TEST_NETWORK_ID });
 
-interface AppState {}
 const store: ReduxStore<State> = createStore(
     reducer,
     (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
 );
 
-const reduxDispatch = store.dispatch;
-const dispatcher = new Dispatcher(reduxDispatch);
-
+const dispatcher = new Dispatcher(store.dispatch);
 const blockchainSaga = new BlockchainSaga(dispatcher, store, web3Wrapper, zeroEx);
 
-class App extends React.Component<{}, AppState> {
+class App extends React.Component {
     private _provider: FixedProvider;
     constructor(props: {}) {
         super(props);
         this._provider = new FixedProvider(this._orderUpdatedAsync.bind(this));
-    }
-    // tslint:disable-next-line:member-access
-    async componentDidMount() {
-        await this._provider.start();
     }
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
@@ -81,7 +74,12 @@ class App extends React.Component<{}, AppState> {
                                         <Label isSize={'small'}>0x TRADE WIDGET</Label>
                                     </CardHeaderTitle>
                                     <CardContent>
-                                        <BuyWidget zeroEx={zeroEx} web3Wrapper={web3Wrapper} dispatcher={dispatcher} />
+                                        <BuyWidget
+                                            zeroEx={zeroEx}
+                                            web3Wrapper={web3Wrapper}
+                                            dispatcher={dispatcher}
+                                            requestQuote={this._provider.requestQuoteAsync.bind(this._provider)}
+                                        />
                                     </CardContent>
                                 </Card>
                             </Column>
@@ -93,7 +91,7 @@ class App extends React.Component<{}, AppState> {
     }
     // tslint:disable-next-line:prefer-function-over-method
     private async _orderUpdatedAsync(order: SignedOrder): Promise<void> {
-        dispatcher.updateOrder(order);
+        // dispatcher.updateOrder(order);
     }
 }
 

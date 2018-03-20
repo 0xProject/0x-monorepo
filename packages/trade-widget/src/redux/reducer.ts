@@ -1,6 +1,7 @@
 import { SignedOrder, ZeroEx } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { combineReducers } from 'redux';
 
 import { AccountTokenBalances, AccountWeiBalances, Action, ActionTypes, AssetToken } from '../types';
 
@@ -8,23 +9,31 @@ export interface State {
     networkId: number;
     userAddress?: string;
     selectedToken: AssetToken;
-    order: SignedOrder;
     userTokenBalances: AccountTokenBalances;
     usersWeiBalance: AccountWeiBalances;
+    lastAction: Action;
 }
 const INITIAL_STATE: State = {
     networkId: undefined,
     userAddress: undefined,
-    order: undefined,
     selectedToken: AssetToken.ZRX,
     userTokenBalances: {},
     usersWeiBalance: {},
+    lastAction: undefined,
 };
 
+function lastActionReducer(state: State = INITIAL_STATE, action: Action) {
+    return {
+        ...state,
+        lastAction: action,
+    };
+}
 /**
  * Reducer
  */
 export function reducer(state: State = INITIAL_STATE, action: Action) {
+    // tslint:disable-next-line:no-parameter-reassignment
+    state = { ...state, lastAction: action };
     switch (action.type) {
         case ActionTypes.UpdateNetworkId: {
             return {
@@ -69,12 +78,6 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
             return {
                 ...state,
                 userTokenBalances: { ...tokenBalances },
-            };
-        }
-        case ActionTypes.UpdateOrder: {
-            return {
-                ...state,
-                order: action.data,
             };
         }
         default:

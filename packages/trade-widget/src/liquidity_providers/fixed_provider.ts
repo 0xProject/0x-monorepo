@@ -1,7 +1,7 @@
 import { SignedOrder } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 
-import { LiquidityProvider, OrderUpdateCallback } from '../types';
+import { LiquidityProvider, OrderUpdateCallback, Quote, TokenPair } from '../types';
 
 function convertPortalOrder(json: any): SignedOrder {
     const rawSignedOrder = json.signedOrder;
@@ -62,6 +62,16 @@ class FixedProvider implements LiquidityProvider {
 
     // tslint:disable-next-line:prefer-function-over-method no-empty
     public async stop() {}
+
+    public async requestQuoteAsync(amount: BigNumber, pair: TokenPair): Promise<Quote> {
+        const latestOrder = await this._fetchLatestOrderAsync();
+        return {
+            amount,
+            pair,
+            orders: [latestOrder],
+            maxAmount: amount,
+        };
+    }
 
     // tslint:disable-next-line:prefer-function-over-method
     private async _fetchLatestOrderAsync(): Promise<SignedOrder> {
