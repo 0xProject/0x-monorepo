@@ -41,7 +41,7 @@
         "@0xproject/monorepo-scripts": "^0.1.14",
         "@0xproject/tslint-config": "^0.4.12",
         "@0xproject/utils": "^0.4.3",
-        "@types/lodash": "^4.14.86",
+        "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
         "chai": "^4.0.1",

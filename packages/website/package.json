@@ -70,7 +70,7 @@
         "@types/dateformat": "^1.0.1",
         "@types/deep-equal": "^1.0.0",
         "@types/jsonschema": "^1.1.1",
-        "@types/lodash": "^4.14.86",
+        "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
         "@types/moment": "^2.13.0",
         "@types/node": "^8.0.53",

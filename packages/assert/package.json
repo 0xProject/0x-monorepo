@@ -28,7 +28,7 @@
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.14",
         "@0xproject/tslint-config": "^0.4.12",
-        "@types/lodash": "^4.14.86",
+        "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/valid-url": "^1.0.2",
         "chai": "^4.0.1",

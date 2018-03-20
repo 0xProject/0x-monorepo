@@ -61,7 +61,7 @@
         "@0xproject/monorepo-scripts": "^0.1.14",
         "@0xproject/tslint-config": "^0.4.12",
         "@types/fetch-mock": "^5.12.1",
-        "@types/lodash": "^4.14.86",
+        "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/query-string": "^5.0.1",
         "@types/websocket": "^0.0.34",
