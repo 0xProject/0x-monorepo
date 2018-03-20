@@ -54,9 +54,6 @@ export class Web3Wrapper {
         }
         return transactionReceipt;
     }
-    public getCurrentProvider(): Web3.Provider {
-        return this._web3.currentProvider;
-    }
     public toWei(ethAmount: BigNumber): BigNumber {
         const balanceWei = this._web3.toWei(ethAmount, 'ether');
         return balanceWei;
