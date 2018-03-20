@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import { MenuItem } from 'ts/components/ui/menu_item';
-import { WebsitePaths } from 'ts/types';
+import { Environments, WebsitePaths } from 'ts/types';
+import { configs } from 'ts/utils/configs';
 
 export interface PortalMenuProps {
     menuItemStyle: React.CSSProperties;
@@ -57,6 +58,16 @@ export class PortalMenu extends React.Component<PortalMenuProps, PortalMenuState
                 >
                     {this._renderMenuItemWithIcon('Wrap ETH', 'zmdi-circle-o')}
                 </MenuItem>
+                {configs.ENVIRONMENT === Environments.DEVELOPMENT && (
+                    <MenuItem
+                        style={this.props.menuItemStyle}
+                        className="py2"
+                        to={`${WebsitePaths.Portal}/wallet`}
+                        onClick={this.props.onClick.bind(this)}
+                    >
+                        {this._renderMenuItemWithIcon('Wallet', 'zmdi-balance-wallet')}
+                    </MenuItem>
+                )}
             </div>
         );
     }
