@@ -38,6 +38,8 @@ export interface DefaultOrderParams {
     takerTokenAmount: BigNumber;
     makerFeeAmount: BigNumber;
     takerFeeAmount: BigNumber;
+    makerAssetId: number;
+    takerAssetId: number;
 }
 
 export interface TransactionDataParams {
@@ -126,6 +128,8 @@ export interface OrderStruct {
     takerFeeAmount: BigNumber;
     expirationTimeSeconds: BigNumber;
     salt: BigNumber;
+    makerAssetId: number;
+    takerAssetId: number;
 }
 
 export interface UnsignedOrder extends OrderStruct {

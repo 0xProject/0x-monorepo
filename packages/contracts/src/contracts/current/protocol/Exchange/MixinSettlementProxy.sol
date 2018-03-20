@@ -68,6 +68,11 @@ contract MixinSettlementProxy is
         TOKEN_TRANSFER_PROXY = transferProxyContract;
     }
 
+    event LogGreg(
+            uint256 makerAssetType,
+            uint256 takerAssetType
+    );
+
     function settleOrder(
         Order order,
         address takerAddress,
@@ -80,6 +85,10 @@ contract MixinSettlementProxy is
         )
     {
         makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
+
+        //emit LogGreg(order.makerAssetId, order.takerAssetId);
+        require(order.takerAssetId == 70);
+
 
         require(
             TRANSFER_PROXY.transferFrom(

@@ -117,6 +117,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            makerAssetId: 0,
+            takerAssetId: 70,
         };
 
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];

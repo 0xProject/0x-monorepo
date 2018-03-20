@@ -60,7 +60,7 @@ contract MixinWrapperFunctions is
         // We need to call MExchangeCore.fillOrder using a delegatecall in
         // assembly so that we can intercept a call that throws. For this, we
         // need the input encoded in memory in the Ethereum ABIv2 format [1].
-        
+
         // | Offset | Length  | Contents                     |
         // |--------|---------|------------------------------|
         // | 0      | 4       | function selector            |
@@ -71,12 +71,12 @@ contract MixinWrapperFunctions is
         // | 452    | (1)     | signature                    |
         // | (2)    | (3)     | padding (zero)               |
         // | (4)    |         | end of input                 |
-        
+
         // (1): len(signature)
         // (2): 452 + len(signature)
         // (3): (32 - len(signature)) mod 32
         // (4): 452 + len(signature) + (32 - len(signature)) mod 32
-        
+
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
 
         bytes4 fillOrderSelector = this.fillOrder.selector;
@@ -100,16 +100,18 @@ contract MixinWrapperFunctions is
             mstore(add(start, 260), mload(add(order, 256))) // takerFeeAmount
             mstore(add(start, 292), mload(add(order, 288))) // expirationTimeSeconds
             mstore(add(start, 324), mload(add(order, 320))) // salt
+            mstore(add(start, 356), mload(add(order, 352))) // makerAssetId
+            mstore(add(start, 388), mload(add(order, 384))) // takerAssetId
 
             // Write takerTokenFillAmount
-            mstore(add(start, 356), takerTokenFillAmount)
+            mstore(add(start, 420), takerTokenFillAmount)
 
             // Write signature offset
-            mstore(add(start, 388), 416)
+            mstore(add(start, 452), 480)
 
             // Write signature length
             let sigLen := mload(signature)
-            mstore(add(start, 420), sigLen)
+            mstore(add(start, 484), sigLen)
 
             // Calculate signature length with padding
             let paddingLen := mod(sub(0, sigLen), 32)
@@ -117,17 +119,17 @@ contract MixinWrapperFunctions is
 
             // Write signature
             let sigStart := add(signature, 32)
-            for { let curr := 0 } 
+            for { let curr := 0 }
             lt(curr, sigLenWithPadding)
             { curr := add(curr, 32) }
-            { mstore(add(start, add(452, curr)), mload(add(sigStart, curr))) } // Note: we assume that padding consists of only 0's
+            { mstore(add(start, add(516, curr)), mload(add(sigStart, curr))) } // Note: we assume that padding consists of only 0's
 
             // Execute delegatecall
             let success := delegatecall(
-                gas,                         // forward all gas, TODO: look into gas consumption of assert/throw 
+                gas,                         // forward all gas, TODO: look into gas consumption of assert/throw
                 address,                     // call address of this contract
                 start,                       // pointer to start of input
-                add(452, sigLenWithPadding), // input length is 420 + signature length + padding length
+                add(516, sigLenWithPadding), // input length is 420 + signature length + padding length
                 start,                       // write output over input
                 32                           // output size is 32 bytes
             )
@@ -275,5 +277,5 @@ contract MixinWrapperFunctions is
             );
         }
     }
-    
+
 }

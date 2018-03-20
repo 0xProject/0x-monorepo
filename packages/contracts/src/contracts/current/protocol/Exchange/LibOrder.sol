@@ -33,7 +33,9 @@ contract LibOrder {
         "uint256 makerFeeAmount",
         "uint256 takerFeeAmount",
         "uint256 expirationTimeSeconds",
-        "uint256 salt"
+        "uint256 salt",
+        "uint8 makerAssetId",
+        "uint8 takerAssetId"
     );
 
     struct Order {
@@ -48,6 +50,8 @@ contract LibOrder {
         uint256 takerFeeAmount;
         uint256 expirationTimeSeconds;
         uint256 salt;
+        uint8 makerAssetId;
+        uint8 takerAssetId;
     }
 
     /// @dev Calculates Keccak-256 hash of the order.
@@ -73,7 +77,9 @@ contract LibOrder {
                 order.makerFeeAmount,
                 order.takerFeeAmount,
                 order.expirationTimeSeconds,
-                order.salt
+                order.salt,
+                order.makerAssetId,
+                order.takerAssetId
             )
         );
         return orderHash;

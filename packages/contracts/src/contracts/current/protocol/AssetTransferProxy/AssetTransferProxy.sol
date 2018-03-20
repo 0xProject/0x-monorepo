@@ -55,7 +55,6 @@ contract AssetTransferProxy is
         onlyAuthorized
         returns (bool)
     {
-        //require(msg.sender == owner_);
         require(assetMetadata.length >= 21);
 
         // Require asset class id exists
