@@ -2,7 +2,6 @@ import Eth from '@ledgerhq/hw-app-eth';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 
 import { LedgerEthereumClient } from './types';
-export { Callback, ErrorCallback, NextCallback } from './types';
 
 export { EmptyWalletSubprovider } from './subproviders/empty_wallet_subprovider';
 export { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_subprovider';
@@ -13,6 +12,9 @@ export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
 export {
+    Callback,
+    ErrorCallback,
+    NextCallback,
     ECSignature,
     LedgerWalletSubprovider,
     LedgerCommunicationClient,
