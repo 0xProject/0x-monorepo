@@ -373,39 +373,6 @@ export enum DocPackages {
     Subproviders = 'SUBPROVIDERS',
 }
 
-export interface TimestampMsRange {
-    startTimestampMs: number;
-    endTimestampMs: number;
-}
-
-export interface OutdatedWrappedEtherByNetworkId {
-    [networkId: number]: {
-        address: string;
-        timestampMsRange: TimestampMsRange;
-    };
-}
-
-export enum SmartContractDocSections {
-    Introduction = 'Introduction',
-    Exchange = 'Exchange',
-    TokenTransferProxy = 'TokenTransferProxy',
-    TokenRegistry = 'TokenRegistry',
-    ZRXToken = 'ZRXToken',
-}
-
-export interface MaterialUIPosition {
-    vertical: 'bottom' | 'top' | 'center';
-    horizontal: 'left' | 'middle' | 'right';
-}
-
-export enum Language {
-    English = 'EN',
-    Spanish = 'ES',
-    Chinese = 'ZH',
-    Korean = 'KO',
-    Russian = 'RU',
-}
-
 export enum Key {
     TopHeader = 'TOP_HEADER',
     TopTagline = 'TOP_TAGLINE',
@@ -473,15 +440,48 @@ export enum Key {
     RocketChat = 'ROCKETCHAT',
 }
 
+export enum SmartContractDocSections {
+    Introduction = 'Introduction',
+    Exchange = 'Exchange',
+    TokenTransferProxy = 'TokenTransferProxy',
+    TokenRegistry = 'TokenRegistry',
+    ZRXToken = 'ZRXToken',
+}
+
+export enum Language {
+    English = 'EN',
+    Spanish = 'ES',
+    Chinese = 'ZH',
+    Korean = 'KO',
+    Russian = 'RU',
+}
+
 export enum Deco {
     Cap,
     CapWords,
     Upper,
 }
 
+export interface MaterialUIPosition {
+    vertical: 'bottom' | 'top' | 'center';
+    horizontal: 'left' | 'middle' | 'right';
+}
+
 export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
+}
+
+export interface TimestampMsRange {
+    startTimestampMs: number;
+    endTimestampMs: number;
+}
+
+export interface OutdatedWrappedEtherByNetworkId {
+    [networkId: number]: {
+        address: string;
+        timestampMsRange: TimestampMsRange;
+    };
 }
 // tslint:disable:max-file-line-count
