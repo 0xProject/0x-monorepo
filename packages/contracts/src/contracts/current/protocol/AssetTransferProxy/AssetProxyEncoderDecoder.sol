@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.21;
 
-import "../utils/Memory/Memory.sol";
+import "../../utils/Memory/Memory.sol";
 
 contract AssetProxyEncoderDecoder is
     Memory

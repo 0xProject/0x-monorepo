@@ -20,9 +20,11 @@ pragma solidity ^0.4.21;
 
 import "./AssetProxyEncoderDecoder.sol";
 import "./IAssetProxy.sol";
+import "../../utils/Authorizable/Authorizable.sol";
 
 contract AssetTransferProxy is
-    AssetProxyEncoderDecoder
+    AssetProxyEncoderDecoder,
+    Authorizable
 {
     mapping (uint8 => IAssetProxy) public assetProxies_;
     address public owner_;
@@ -34,35 +36,23 @@ contract AssetTransferProxy is
         uint256 amount
     );
 
-    event LogRegistration(
+    event LogAssetRegistration(
         uint8 id,
         address assetClassAddress,
         bool overwrite,
         bool did_overwrite
     );
 
-    event LogUnregistration(
+    event LogAssetUnregistration(
         uint8 id,
         address assetClassAddress
     );
-
-/*
-    function AssetTransferProxy(address owner)
-        public
-    {
-        owner_ = owner;
-    }*/
-
-    function AssetTransferProxy()
-        public
-    {
-        //owner_ = owner;
-    }
 
     // tokenMetadata[0] => AssetClassId
     // [tokenMetadata[1],..,tokenMetadata[21] => Asset Address
     function transferFrom(bytes assetMetadata, address from, address to, uint256 amount)
         public
+        onlyAuthorized
         returns (bool)
     {
         //require(msg.sender == owner_);
@@ -79,6 +69,7 @@ contract AssetTransferProxy is
 
     function registerAssetProxy(AssetIds assetId, address assetClassAddress, bool overwrite)
         public
+        onlyAuthorized
     {
         require(uint256(assetId) < 256);
         uint8 id = uint8(assetId);
@@ -90,7 +81,7 @@ contract AssetTransferProxy is
         assetProxies_[id] = IAssetProxy(assetClassAddress);
 
         // Log registration
-        emit LogRegistration(id, assetClassAddress, overwrite, will_overwrite);
+        emit LogAssetRegistration(id, assetClassAddress, overwrite, will_overwrite);
     }
 
     function getAssetProxy(AssetIds assetId)
@@ -105,9 +96,9 @@ contract AssetTransferProxy is
         return assetProxies_[id];
     }
 
-
     function unregisterAssetProxy(AssetIds assetId)
         public
+        onlyAuthorized
     {
         require(uint256(assetId) < 256);
         uint8 id = uint8(assetId);
@@ -117,6 +108,6 @@ contract AssetTransferProxy is
         delete assetProxies_[id];
 
         // Log unregistration
-        emit LogUnregistration(id, assetProxyAddress);
+        emit LogAssetUnregistration(id, assetProxyAddress);
     }
 }

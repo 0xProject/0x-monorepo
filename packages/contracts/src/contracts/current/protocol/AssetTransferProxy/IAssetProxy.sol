@@ -18,6 +18,8 @@
 
 pragma solidity ^0.4.21;
 
-contract IAssetProxy {
+import {IAuthorizable as IAssetProxyAuthorizable} from "../../utils/Authorizable/IAuthorizable.sol";
+
+contract IAssetProxy is IAssetProxyAuthorizable {
     function transferFrom(bytes assetMetadata, address from, address to, uint256 amount) public returns (bool success);
 }

@@ -18,14 +18,13 @@
 
 pragma solidity ^0.4.21;
 
-import "./IAssetProxy.sol";
 import "./AssetProxyEncoderDecoder.sol";
-import "../utils/Memory/Memory.sol";
 import "../TokenTransferProxy/ITokenTransferProxy.sol";
+import {Authorizable as ERC20TransferProxyAuthorizable} from "../../utils/Authorizable/Authorizable.sol";
 
 contract ERC20TransferProxy is
-    IAssetProxy,
-    AssetProxyEncoderDecoder
+    AssetProxyEncoderDecoder,
+    ERC20TransferProxyAuthorizable
 {
     ITokenTransferProxy TRANSFER_PROXY;
 
@@ -37,6 +36,7 @@ contract ERC20TransferProxy is
 
     function transferFrom(bytes assetMetadata, address from, address to, uint256 amount)
         public
+        onlyAuthorized
         returns (bool success)
     {
         address token = decodeERC20Metadata(assetMetadata);
