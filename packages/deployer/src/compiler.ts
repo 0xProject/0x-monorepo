@@ -182,7 +182,7 @@ export class Compiler {
         const contractIdentifier = `${fileName}:${contractName}`;
         if (_.isUndefined(compiled.contracts[contractIdentifier])) {
             throw new Error(
-                `Contract ${contractName} not found in ${fileName}. Please make sure your contract has the same name as a file`,
+                `Contract ${contractName} not found in ${fileName}. Please make sure your contract has the same name as it's file name`,
             );
         }
         const abi: Web3.ContractAbi = JSON.parse(compiled.contracts[contractIdentifier].interface);
