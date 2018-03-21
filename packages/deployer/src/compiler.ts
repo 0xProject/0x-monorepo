@@ -38,6 +38,7 @@ export class Compiler {
     private _networkId: number;
     private _optimizerEnabled: boolean;
     private _artifactsDir: string;
+    // This get's set in the beggining of `compileAsync` function. It's not called from a constructor, but it's the only public method of that class and could as well be.
     private _contractSources!: ContractSources;
     private _solcErrors: Set<string> = new Set();
     private _specifiedContracts: Set<string> = new Set();
