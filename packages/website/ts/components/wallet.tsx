@@ -20,7 +20,7 @@ import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
 import { Identicon } from 'ts/components/ui/identicon';
 import { TokenIcon } from 'ts/components/ui/token_icon';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { BalanceErrs, BlockchainErrs, Token, TokenByAddress } from 'ts/types';
+import { BalanceErrs, BlockchainErrs, Token, TokenByAddress, TokenState, TokenStateByAddress } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
@@ -39,16 +39,6 @@ export interface WalletProps {
 
 interface WalletState {
     trackedTokenStateByAddress: TokenStateByAddress;
-}
-
-interface TokenStateByAddress {
-    [address: string]: TokenState;
-}
-
-interface TokenState {
-    balance: BigNumber;
-    allowance: BigNumber;
-    isLoaded: boolean;
 }
 
 enum WrappedEtherAction {

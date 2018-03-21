@@ -21,11 +21,6 @@ export interface TokenByAddress {
     [address: string]: Token;
 }
 
-export interface TokenState {
-    allowance: BigNumber;
-    balance: BigNumber;
-}
-
 export interface AssetToken {
     address?: string;
     amount?: BigNumber;
@@ -468,5 +463,15 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
+}
+
+export interface TokenStateByAddress {
+    [address: string]: TokenState;
+}
+
+export interface TokenState {
+    balance: BigNumber;
+    allowance: BigNumber;
+    isLoaded: boolean;
 }
 // tslint:disable:max-file-line-count
