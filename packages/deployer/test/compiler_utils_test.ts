@@ -13,7 +13,7 @@ import { fsWrapper } from '../src/utils/fs_wrapper';
 chai.use(dirtyChai);
 const expect = chai.expect;
 
-describe.only('Compiler utils', () => {
+describe('Compiler utils', () => {
     describe('#getNormalizedErrorMessage', () => {
         it('normalizes the error message', () => {
             const errMsg = 'base/Token.sol:6:46: Warning: Unused local variable';
