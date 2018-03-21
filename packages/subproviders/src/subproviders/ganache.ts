@@ -5,20 +5,23 @@ import { Callback, ErrorCallback } from '../types';
 
 import { Subprovider } from './subprovider';
 
-/*
- * This class implements the web3-provider-engine subprovider interface and returns
- * the provider connected to a in-process ganache.
- * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
+/**
+ * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+ * It intercepts all JSON RPC requests and relays them to an in-process ganache instance.
  */
 export class GanacheSubprovider extends Subprovider {
     private _ganacheProvider: Web3.Provider;
+    /**
+     * Instantiates a GanacheSubprovider
+     * @param opts The desired opts with which to instantiate the Ganache provider
+     */
     constructor(opts: any) {
         super();
         this._ganacheProvider = Ganache.provider(opts);
     }
     // This method needs to be here to satisfy the interface but linter wants it to be static.
-    // tslint:disable-next-line:prefer-function-over-method
-    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    // tslint:disable-next-line:prefer-function-over-method underscore-private-and-protected
+    private handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         this._ganacheProvider.sendAsync(payload, (err: Error | null, result: any) => {
             end(err, result && result.result);
         });

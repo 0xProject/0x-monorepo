@@ -24,7 +24,7 @@ export {
 
 /**
  * A factory method for creating a LedgerEthereumClient usable in a browser context.
- * @return LedgerEthereumClient A browser client
+ * @return LedgerEthereumClient A browser client for the LedgerSubprovider
  */
 export async function ledgerEthereumBrowserClientFactoryAsync(): Promise<LedgerEthereumClient> {
     const ledgerConnection = await TransportU2F.create();

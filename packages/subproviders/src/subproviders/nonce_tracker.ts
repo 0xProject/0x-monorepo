@@ -10,13 +10,13 @@ import { Callback, ErrorCallback, NextCallback, NonceSubproviderErrors } from '.
 
 import { Subprovider } from './subprovider';
 
-// We do not export this since this is not our error, and we do not throw this error
 const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
-/*
-    This class is heavily inspiried by the Web3ProviderEngine NonceSubprovider
-    We have added the additional feature of clearing any nonce balues when an error message
-    describes a nonce value being too low.
-*/
+
+/**
+ * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+ * It is heavily inspired by the [NonceSubprovider](https://github.com/MetaMask/provider-engine/blob/master/subproviders/nonce-tracker.js).
+ * We added the additional feature of clearing the cached nonce value when a `nonce value too low` error occurs.
+ */
 export class NonceTrackerSubprovider extends Subprovider {
     private _nonceCache: { [address: string]: string } = {};
     private static _reconstructTransaction(payload: Web3.JSONRPCRequestPayload): EthereumTx {
@@ -47,8 +47,8 @@ export class NonceTrackerSubprovider extends Subprovider {
         }
     }
     // Required to implement this public interface which doesn't conform to our linting rule.
-    // tslint:disable-next-line:async-suffix
-    public async handleRequest(
+    // tslint:disable-next-line:prefer-function-over-method underscore-private-and-protected
+    private async handleRequest(
         payload: Web3.JSONRPCRequestPayload,
         next: NextCallback,
         end: ErrorCallback,

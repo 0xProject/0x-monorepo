@@ -2,10 +2,9 @@ import promisify = require('es6-promisify');
 import * as Web3 from 'web3';
 
 import { JSONRPCRequestPayloadWithMethod } from '../types';
-/*
- * A version of the base class Subprovider found in providerEngine
+/**
+ * A altered version of the base class Subprovider found in [web3-provider-engine](https://github.com/MetaMask/provider-engine).
  * This one has an async/await `emitPayloadAsync` and also defined types.
- * Altered version of: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
  */
 export class Subprovider {
     private _engine: any;
@@ -31,14 +30,26 @@ export class Subprovider {
         };
         return finalPayload;
     }
-    public setEngine(engine: any): void {
-        this._engine = engine;
-    }
+    /**
+     * Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+     * this subprovider is a part of. The payload will cascade down the subprovider middleware
+     * stack until finding the responsible entity for handling the request.
+     * @param payload JSON RPC payload
+     * @returns JSON RPC response payload
+     */
     public async emitPayloadAsync(
         payload: Partial<JSONRPCRequestPayloadWithMethod>,
     ): Promise<Web3.JSONRPCResponsePayload> {
         const finalPayload = Subprovider._createFinalPayload(payload);
         const response = await promisify(this._engine.sendAsync, this._engine)(finalPayload);
         return response;
+    }
+    /**
+     * Set's the subprovider's engine to the ProviderEngine it is added to.
+     * This is only called within the ProviderEngine source code
+     */
+    // tslint:disable-next-line:underscore-private-and-protected
+    private setEngine(engine: any): void {
+        this._engine = engine;
     }
 }
