@@ -144,13 +144,13 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             // Add placeholder entry for this token to the state, since fetching the
             // balance/allowance is asynchronous
             const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
-            for (const tokenAddress of newTokenAddresses) {
+            _.each(newTokenAddresses, (tokenAddress: string) => {
                 trackedTokenStateByAddress[tokenAddress] = {
                     balance: new BigNumber(0),
                     allowance: new BigNumber(0),
                     isLoaded: false,
                 };
-            }
+            });
             this.setState({
                 trackedTokenStateByAddress,
             });
@@ -161,7 +161,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     public render() {
         const isReadyToRender = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
-        return <div style={styles.wallet}>{isReadyToRender ? this._renderRows() : <div />}</div>;
+        return <div style={styles.wallet}>{isReadyToRender && this._renderRows()}</div>;
     }
     private _renderRows() {
         return (
