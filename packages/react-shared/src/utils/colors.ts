@@ -45,4 +45,7 @@ export const colors = {
     orange: '#E69D00',
     amber800: '#FF8F00',
     darkYellow: '#caca03',
+    walletBoxShadow: 'rgba(56, 59, 137, 0.2)',
+    walletBorder: '#f5f5f6',
+    walletDefaultItemBackground: '#fbfbfc',
 };
