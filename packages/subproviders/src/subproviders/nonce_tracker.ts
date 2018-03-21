@@ -46,7 +46,7 @@ export class NonceTrackerSubprovider extends Subprovider {
                 throw new Error(NonceSubproviderErrors.CannotDetermineAddressFromPayload);
         }
     }
-    // Required to implement this public interface which doesn't conform to our linting rule.
+    // This method must conform to the web3-provider-engine interface
     // tslint:disable-next-line:prefer-function-over-method underscore-private-and-protected
     private async handleRequest(
         payload: Web3.JSONRPCRequestPayload,

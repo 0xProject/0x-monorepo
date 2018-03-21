@@ -9,7 +9,7 @@ import { Subprovider } from './subprovider';
  * It intercepts the `eth_accounts` JSON RPC requests and never returns any addresses when queried.
  */
 export class EmptyWalletSubprovider extends Subprovider {
-    // This method needs to be here to satisfy the interface but linter wants it to be static.
+    // This method must conform to the web3-provider-engine interface
     // tslint:disable-next-line:prefer-function-over-method underscore-private-and-protected
     private handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         switch (payload.method) {

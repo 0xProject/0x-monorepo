@@ -21,7 +21,7 @@ export class InjectedWeb3Subprovider extends Subprovider {
         super();
         this._injectedWeb3 = new Web3(provider);
     }
-    // This method needs to be here to satisfy the interface but linter wants it to be static.
+    // This method must conform to the web3-provider-engine interface
     // tslint:disable-next-line:prefer-function-over-method underscore-private-and-protected
     private handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         switch (payload.method) {
