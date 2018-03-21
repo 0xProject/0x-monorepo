@@ -21,7 +21,8 @@ import 'bulma/css/bulma.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, Store as ReduxStore } from 'redux';
+import { applyMiddleware, createStore, Store as ReduxStore } from 'redux';
+import thunk from 'redux-thunk';
 import * as Web3 from 'web3';
 import * as Web3ProviderEngine from 'web3-provider-engine';
 
@@ -49,7 +50,10 @@ const zeroEx = new ZeroEx(providerEngine, { networkId: TEST_NETWORK_ID });
 
 const store: ReduxStore<State> = createStore(
     reducer,
-    (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
+    applyMiddleware(
+        thunk,
+        (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
+    ),
 );
 
 const dispatcher = new Dispatcher(store.dispatch);

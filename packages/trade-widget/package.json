@@ -46,13 +46,10 @@
         "build": "tsc && yarn run copy_artifacts",
         "test": "node scripts/test.js --env=jsdom",
         "copy_artifacts": "copyfiles './src/artifacts/**/*' ./lib",
-        "generate_contract_wrappers":
-            "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
-        "update_contracts":
-            "for i in ${npm_package_config_artifacts}; do copyfiles -u 3 ../contracts/artifacts/$i.json ../trade-widget/src/artifacts; done;",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
+        "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 3 ../contracts/artifacts/$i.json ../trade-widget/src/artifacts; done;",
         "styleguide": "styleguidist server",
-        "compile":
-            "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
+        "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
         "migrate": "yarn build && yarn compile && node ./lib/migrations/index.js",
         "styleguide:build": "styleguidist build"
     },
@@ -62,6 +59,7 @@
     },
     "devDependencies": {
         "0x.js": "^0.32.4",
+        "@0xproject/abi-gen": "^0.2.7",
         "@0xproject/base-contract": "^0.0.3",
         "@0xproject/deployer": "^0.2.1",
         "@0xproject/dev-utils": "^0.2.1",
@@ -78,7 +76,7 @@
         "awesome-typescript-loader": "^3.4.1",
         "copyfiles": "^1.2.0",
         "ethers-contracts": "^2.2.1",
-        "ethers-typescript-typings": "^0.0.2",
+        "ethers-typescript-typings": "^0.0.4",
         "json-loader": "^0.5.7",
         "lodash": "^4.17.5",
         "prop-types": "^15.6.1",
@@ -88,6 +86,7 @@
         "react-scripts-ts": "^2.13.0",
         "react-styleguidist": "^6.2.7",
         "redux": "^3.7.2",
+        "redux-thunk": "^2.2.0",
         "tslint": "^5.9.1",
         "typescript": "^2.7.2",
         "web3": "^0.20.0",
@@ -96,9 +95,16 @@
         "webpack": "^3.11.0"
     },
     "jest": {
-        "collectCoverageFrom": ["src/**/*.{js,jsx,ts,tsx}"],
-        "setupFiles": ["<rootDir>/config/polyfills.js"],
-        "testMatch": ["<rootDir>/src/**/__tests__/**/*.ts?(x)", "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"],
+        "collectCoverageFrom": [
+            "src/**/*.{js,jsx,ts,tsx}"
+        ],
+        "setupFiles": [
+            "<rootDir>/config/polyfills.js"
+        ],
+        "testMatch": [
+            "<rootDir>/src/**/__tests__/**/*.ts?(x)",
+            "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"
+        ],
         "testEnvironment": "node",
         "testURL": "http://localhost",
         "transform": {
@@ -106,7 +112,9 @@
             "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
             "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
         },
-        "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$"],
+        "transformIgnorePatterns": [
+            "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$"
+        ],
         "moduleNameMapper": {
             "^react-native$": "react-native-web"
         },
@@ -130,7 +138,9 @@
         }
     },
     "babel": {
-        "presets": ["react-app"]
+        "presets": [
+            "react-app"
+        ]
     },
     "eslintConfig": {
         "extends": "react-app"

@@ -1,6 +1,7 @@
 import { SignedOrder, TransactionReceiptWithDecodedLogs } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
 import { Dispatch } from 'redux';
+import thunk from 'redux-thunk';
 
 import { ActionTypes, AssetToken } from '../types';
 
