@@ -85,6 +85,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             : styles.menuItemWithoutHeaders;
         const menuItemInnerDivStyles = this.props.shouldDisplaySectionHeaders ? styles.menuItemInnerDivWithHeaders : {};
         const menuItems = _.map(menuItemNames, menuItemName => {
+            const finalMenuItemName = menuItemName.replace(/-/g, ' ');
             const id = utils.getIdFromName(menuItemName);
             return (
                 <div key={menuItemName}>
@@ -96,11 +97,11 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                         containerId={constants.DOCS_CONTAINER_ID}
                     >
                         <MenuItem
-                            onTouchTap={this._onMenuItemClick.bind(this, menuItemName)}
+                            onTouchTap={this._onMenuItemClick.bind(this, finalMenuItemName)}
                             style={menuItemStyles}
                             innerDivStyle={menuItemInnerDivStyles}
                         >
-                            <span style={{ textTransform: 'capitalize' }}>{menuItemName}</span>
+                            <span style={{ textTransform: 'capitalize' }}>{finalMenuItemName}</span>
                         </MenuItem>
                     </ScrollLink>
                     {this._renderMenuItemSubsections(menuItemName)}

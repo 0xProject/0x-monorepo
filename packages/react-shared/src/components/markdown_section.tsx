@@ -43,6 +43,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const { sectionName, markdownContent, headerSize, githubLink } = this.props as PropsWithDefaults;
 
         const id = utils.getIdFromName(sectionName);
+        const finalSectionName = sectionName.replace(/-/g, ' ');
         return (
             <div
                 className="md-px1 sm-px2 overflow-hidden"
@@ -55,7 +56,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                             <span style={{ textTransform: 'capitalize', color: colors.grey700 }}>
                                 <AnchorTitle
                                     headerSize={headerSize}
-                                    title={sectionName}
+                                    title={finalSectionName}
                                     id={id}
                                     shouldShowAnchor={this.state.shouldShowAnchor}
                                 />
