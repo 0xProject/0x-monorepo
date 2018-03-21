@@ -67,7 +67,7 @@
         "@0xproject/deployer": "^0.3.2",
         "@0xproject/dev-utils": "^0.3.0",
         "@0xproject/subproviders": "^0.8.2",
-        "@0xproject/tslint-config": "^0.4.9",
+        "@0xproject/tslint-config": "^0.4.12",
         "@0xproject/types": "^0.4.1",
         "@0xproject/utils": "^0.4.3",
         "@0xproject/web3-wrapper": "^0.3.1",
@@ -94,7 +94,7 @@
         "typescript": "^2.7.2",
         "web3": "^0.20.0",
         "web3-provider-engine": "^13.6.5",
-        "web3-typescript-typings": "^0.10.0",
+        "web3-typescript-typings": "^0.10.2",
         "webpack": "^3.11.0"
     },
     "jest": {

@@ -162,9 +162,9 @@ export class ForwarderContract extends BaseContract {
                 data: encodedData,
             });
             const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = theAbi.outputs as Web3.DataItem[];
+            const outputAbi = theAbi.outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
-            let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
+            let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult);
             resultArray = BaseContract._transformABIData(
                 outputAbi,
                 resultArray,

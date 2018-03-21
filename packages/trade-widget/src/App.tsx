@@ -21,7 +21,7 @@ import 'bulma/css/bulma.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { applyMiddleware, createStore, Store as ReduxStore } from 'redux';
+import { applyMiddleware, compose, createStore, Store as ReduxStore } from 'redux';
 import thunk from 'redux-thunk';
 import * as Web3 from 'web3';
 import * as Web3ProviderEngine from 'web3-provider-engine';
@@ -48,13 +48,8 @@ providerEngine.start();
 const web3Wrapper = new Web3Wrapper(providerEngine);
 const zeroEx = new ZeroEx(providerEngine, { networkId: TEST_NETWORK_ID });
 
-const store: ReduxStore<State> = createStore(
-    reducer,
-    applyMiddleware(
-        thunk,
-        (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
-    ),
-);
+const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store: ReduxStore<State> = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
 
 const dispatcher = new Dispatcher(store.dispatch);
 const blockchainSaga = new BlockchainSaga(dispatcher, store, web3Wrapper, zeroEx);
