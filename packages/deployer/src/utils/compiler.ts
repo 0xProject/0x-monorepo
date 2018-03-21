@@ -9,6 +9,7 @@ import { ContractArtifact, ContractSources } from './types';
 
 /**
  * Gets contract data on network or returns if an artifact does not exist.
+ * @param artifactsDir Path to the artifacts directory.
  * @param fileName Name of contract file.
  * @return Contract data on network or undefined.
  */
@@ -34,6 +35,7 @@ export async function getContractArtifactIfExistsAsync(
 
 /**
  * Creates the artifacts directory if it does not already exist.
+ * @param artifactsDir Path to the artifacts directory.
  */
 export async function createArtifactsDirIfDoesNotExistAsync(artifactsDir: string): Promise<void> {
     if (!fsWrapper.doesPathExistSync(artifactsDir)) {
@@ -104,6 +106,7 @@ export function parseDependencies(source: string): string[] {
 /**
  * Callback to resolve dependencies with `solc.compile`.
  * Throws error if contractSources not yet initialized.
+ * @param  contractSources Source codes of contracts.
  * @param  importPath Path to an imported dependency.
  * @return Import contents object containing source code of dependency.
  */
