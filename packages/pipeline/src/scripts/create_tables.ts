@@ -211,7 +211,7 @@ export const insertDataScripts = {
                     safeArray.push('default');
                 }
             }
-            const queryString = `INSERT INTO ${table} (${columns}) VALUES (${safeArray})`;
+            const queryString = `INSERT INTO ${table} (${columns}) VALUES (${safeArray}) ON CONFLICT DO NOTHING`;
             console.log(queryString);
             postgresClient
                 .query(queryString)
@@ -249,14 +249,14 @@ export const insertDataScripts = {
                     }
                     return '(' + safeArray + ')';
                 });
-                const queryString = `INSERT INTO ${table} (${columns}) VALUES ${rowsSplit}`;
+                const queryString = `INSERT INTO ${table} (${columns}) VALUES ${rowsSplit} ON CONFLICT DO NOTHING`;
                 postgresClient
                     .query(queryString)
                     .then((data: any) => {
                         resolve(data);
                     })
                     .catch((err: any) => {
-                        console.log(err);
+                        //console.log(err);
                         reject(err);
                     });
             } else {
