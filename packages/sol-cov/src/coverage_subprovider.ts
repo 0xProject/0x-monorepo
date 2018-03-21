@@ -12,18 +12,25 @@ interface MaybeFakeTxData extends Web3.TxData {
     isFakeTransaction?: boolean;
 }
 
-/*
- * This class implements the web3-provider-engine subprovider interface and collects traces of all transactions that were sent and all calls that were executed.
- * Because there is no notion of call trace in the rpc - we collect them in rather non-obvious/hacky way.
+/**
+ * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+ * It collects traces of all transactions that were sent and all calls that were executed through JSON RPC.
+ * Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
  * On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
- * That allows us to not influence the test behaviour.
- * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
+ * That allows us to avoid influencing test behaviour.
  */
 export class CoverageSubprovider extends Subprovider {
     // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
     private _lock: Lock;
     private _coverageManager: CoverageManager;
     private _defaultFromAddress: string;
+    /**
+     * Instantiates a CoverageSubprovider
+     * @param artifactsPath Path to the smart contract artifacts
+     * @param sourcePath Path to the smart contract source files
+     * @param networkId network id
+     * @param defaultFromAddress default from address to use when sending transactions
+     */
     constructor(artifactsPath: string, sourcesPath: string, networkId: number, defaultFromAddress: string) {
         super();
         this._lock = new Lock();
@@ -35,7 +42,12 @@ export class CoverageSubprovider extends Subprovider {
             this._getContractCodeAsync.bind(this),
         );
     }
-    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
+    public async writeCoverageAsync(): Promise<void> {
+        await this._coverageManager.writeCoverageAsync();
+    }
+    // This method must conform to the web3-provider-engine interface
+    // tslint:disable-next-line:prefer-function-over-method underscore-private-and-protected
+    private handleRequest(payload: Web3.JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
         switch (payload.method) {
             case 'eth_sendTransaction':
                 const txData = payload.params[0];
@@ -52,9 +64,6 @@ export class CoverageSubprovider extends Subprovider {
                 next();
                 return;
         }
-    }
-    public async writeCoverageAsync(): Promise<void> {
-        await this._coverageManager.writeCoverageAsync();
     }
     private async _onTransactionSentAsync(
         txData: MaybeFakeTxData,
