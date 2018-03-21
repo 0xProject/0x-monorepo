@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ~0.4.14;
+pragma solidity ^0.4.14;
 
 import { TokenTransferProxy } from "../TokenTransferProxy/TokenTransferProxy.sol";
 import { Token_v1 as Token } from "../../../previous/Token/Token_v1.sol";

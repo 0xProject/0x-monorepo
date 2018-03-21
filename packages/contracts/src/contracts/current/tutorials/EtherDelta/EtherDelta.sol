@@ -1,4 +1,4 @@
-pragma solidity ~0.4.19;
+pragma solidity ^0.4.19;
 
 import { SafeMath } from "../../utils/SafeMath/SafeMath.sol";
 import { AccountLevels } from "./AccountLevels.sol";
