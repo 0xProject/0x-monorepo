@@ -28,6 +28,10 @@ const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
 const IMPORT_REGEX = /(import\s)/;
 const DEPENDENCY_PATH_REGEX = /"([^"]+)"/; // Source: https://github.com/BlockChainCompany/soljitsu/blob/master/lib/shared.js
 
+/**
+ * The Compiler facilitates compiling Solidity smart contracts and saves the results
+ * to artifact files.
+ */
 export class Compiler {
     private _contractsDir: string;
     private _networkId: number;
@@ -148,7 +152,7 @@ export class Compiler {
         this._specifiedContracts = opts.specifiedContracts;
     }
     /**
-     * Compiles all Solidity files found in contractsDir and writes JSON artifacts to artifactsDir.
+     * Compiles all Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
      */
     public async compileAllAsync(): Promise<void> {
         await this._createArtifactsDirIfDoesNotExistAsync();

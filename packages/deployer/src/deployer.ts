@@ -19,12 +19,21 @@ import { utils } from './utils/utils';
 // Gas added to gas estimate to make sure there is sufficient gas for deployment.
 const EXTRA_GAS = 200000;
 
+/**
+ * The Deployer facilitates deploying Solidity smart contracts to the blockchain.
+ * It can be used to build custom migration scripts.
+ */
 export class Deployer {
     public web3Wrapper: Web3Wrapper;
     private _artifactsDir: string;
     private _networkId: number;
     private _defaults: Partial<TxData>;
 
+    /**
+     * Instantiate a new instance of the Deployer class.
+     * @param opts Deployer options, including either an RPC url or Provider instance.
+     * @returns A Deployer instance
+     */
     constructor(opts: DeployerOptions) {
         this._artifactsDir = opts.artifactsDir;
         this._networkId = opts.networkId;
@@ -42,8 +51,8 @@ export class Deployer {
         this.web3Wrapper = new Web3Wrapper(web3Provider, this._defaults);
     }
     /**
-     * Loads contract artifact and deploys contract with given arguments.
-     * @param contractName Name of the contract to deploy. Must match name of an artifact in artifacts directory.
+     * Loads a contract's corresponding artifacts and deploys it with the supplied constructor arguments.
+     * @param contractName Name of the contract to deploy. Must match name of an artifact in supplied artifacts directory.
      * @param args Array of contract constructor arguments.
      * @return Deployed contract instance.
      */
@@ -80,7 +89,8 @@ export class Deployer {
         return contractInstance;
     }
     /**
-     * Loads contract artifact, deploys with given arguments, and saves updated data to artifact.
+     * Loads a contract's artifact, deploys it with supplied constructor arguments, and saves the updated data
+     * back to the artifact file.
      * @param contractName Name of the contract to deploy. Must match name of an artifact in artifacts directory.
      * @param args Array of contract constructor arguments.
      * @return Deployed contract instance.
