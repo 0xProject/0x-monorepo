@@ -2,25 +2,24 @@
 
 Contains 0x-related json schemas
 
+### Read the [Documentation](0xproject.com/docs/json-schemas).
+
 ## Installation
 
 ```bash
-yarn add @0xproject/json-schemas
+npm install @0xproject/json-schemas --save
 ```
 
-## Usage
+**Import**
 
 ```javascript
-import {SchemaValidator, ValidatorResult, schemas} from '@0xproject/json-schemas';
+import { schemas } from '@0xproject/json-schemas';
+```
 
-const {orderSchema} = schemas;
-const validator = new SchemaValidator();
+or
 
-const order = {
-    ...
-};
-const validatorResult: ValidatorResult = validator.validate(order, orderSchema); // Contains all errors
-const isValid: boolean = validator.isValid(order, orderSchema); // Only returns boolean
+```javascript
+var schemas = require('@0xproject/json-schemas').schemas;
 ```
 
 ## Contributing

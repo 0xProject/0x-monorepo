@@ -14,12 +14,14 @@ import { Translate } from 'ts/utils/translate';
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/json_schemas/introduction');
 const InstallationMarkdown = require('md/docs/json_schemas/installation');
+const UsageMarkdown = require('md/docs/json_schemas/usage');
 const SchemasMarkdown = require('md/docs/json_schemas/schemas');
 /* tslint:enable:no-var-requires */
 
 const docSections = {
     introduction: 'introduction',
     installation: 'installation',
+    usage: 'usage',
     schemaValidator: 'schemaValidator',
     schemas: 'schemas',
 };
@@ -32,6 +34,7 @@ const docsInfoConfig: DocsInfoConfig = {
     menu: {
         introduction: [docSections.introduction],
         install: [docSections.installation],
+        usage: [docSections.usage],
         schemaValidator: [docSections.schemaValidator],
         schemas: [docSections.schemas],
     },
@@ -39,6 +42,7 @@ const docsInfoConfig: DocsInfoConfig = {
         [docSections.introduction]: IntroMarkdown,
         [docSections.installation]: InstallationMarkdown,
         [docSections.schemas]: SchemasMarkdown,
+        [docSections.usage]: UsageMarkdown,
     },
     sectionNameToModulePath: {
         [docSections.schemaValidator]: ['"json-schemas/src/schema_validator"'],
