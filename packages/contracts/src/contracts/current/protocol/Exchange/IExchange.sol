@@ -163,8 +163,8 @@ contract IExchange {
         returns (uint256 takerTokenCancelledAmount);
 
     /// @dev Cancels all orders for a specified maker up to a certain time.
-    /// @param salt Orders created with a lower salt value will be cancelled
-    function cancelOrdersBefore(uint256 salt)
+    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
+    function cancelOrdersUpTo(uint256 salt)
         external;
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Throws if specified amount not filled entirely.

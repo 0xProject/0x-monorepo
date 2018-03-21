@@ -70,9 +70,9 @@ contract MixinExchangeCore is
         bytes32 indexed orderHash
     );
 
-    event LogCancelBefore(
+    event LogCancelUpTo(
         address indexed maker,
-        uint256 salt
+        uint256 makerEpoch
     );
 
     /*
@@ -202,13 +202,14 @@ contract MixinExchangeCore is
         return takerTokenCancelledAmount;
     }
 
-    /// @param salt Orders created with a salt less than this value will be cancelled.
-    function cancelOrdersBefore(uint256 salt)
+    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
+    function cancelOrdersUpTo(uint256 salt)
         external
     {
-        require(salt > makerEpoch[msg.sender]); // epoch must be monotonically increasing
-        makerEpoch[msg.sender] = salt;
-        LogCancelBefore(msg.sender, salt);
+        uint256 newMakerEpoch = salt + 1;                // makerEpoch is initialized to 0, so to cancelUpTo we need salt+1
+        require(newMakerEpoch > makerEpoch[msg.sender]); // epoch must be monotonically increasing
+        makerEpoch[msg.sender] = newMakerEpoch;
+        LogCancelUpTo(msg.sender, newMakerEpoch);
     }
 
     /// @dev Checks if rounding error > 0.1%.
