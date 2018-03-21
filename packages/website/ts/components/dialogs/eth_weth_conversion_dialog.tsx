@@ -104,6 +104,8 @@ export class EthWethConversionDialog extends React.Component<
                                 onChange={this._onValueChange.bind(this)}
                                 amount={this.state.value}
                                 onVisitBalancesPageClick={this.props.onCancelled}
+                                shouldShowErrs={true}
+                                shouldShowUnderline={true}
                             />
                         ) : (
                             <EthAmountInput

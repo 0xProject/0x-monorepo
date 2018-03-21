@@ -15,12 +15,16 @@ interface TokenAmountInputProps {
     token: Token;
     label?: string;
     amount?: BigNumber;
+    hintText?: string;
     shouldShowIncompleteErrs: boolean;
     shouldCheckBalance: boolean;
     shouldCheckAllowance: boolean;
     onChange: ValidatedBigNumberCallback;
     onVisitBalancesPageClick?: () => void;
     lastForceTokenStateRefetch: number;
+    shouldShowErrs?: boolean;
+    shouldShowUnderline?: boolean;
+    style?: React.CSSProperties;
 }
 
 interface TokenAmountInputState {
@@ -30,6 +34,10 @@ interface TokenAmountInputState {
 }
 
 export class TokenAmountInput extends React.Component<TokenAmountInputProps, TokenAmountInputState> {
+    public static defaultProps: Partial<TokenAmountInputProps> = {
+        shouldShowErrs: true,
+        shouldShowUnderline: true,
+    };
     private _isUnmounted: boolean;
     constructor(props: TokenAmountInputProps) {
         super(props);
@@ -64,8 +72,9 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             ? ZeroEx.toUnitAmount(this.props.amount, this.props.token.decimals)
             : undefined;
         const hasLabel = !_.isUndefined(this.props.label);
+        const style = !_.isUndefined(this.props.style) ? this.props.style : { height: hasLabel ? 84 : 62 };
         return (
-            <div className="flex overflow-hidden" style={{ height: hasLabel ? 84 : 62 }}>
+            <div className="flex overflow-hidden" style={style}>
                 <BalanceBoundedInput
                     label={this.props.label}
                     amount={amount}
@@ -76,6 +85,9 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     shouldShowIncompleteErrs={this.props.shouldShowIncompleteErrs}
                     onVisitBalancesPageClick={this.props.onVisitBalancesPageClick}
                     isDisabled={!this.state.isBalanceAndAllowanceLoaded}
+                    hintText={this.props.hintText}
+                    shouldShowErrs={this.props.shouldShowErrs}
+                    shouldShowUnderline={this.props.shouldShowUnderline}
                 />
                 <div style={{ paddingTop: hasLabel ? 39 : 14 }}>{this.props.token.symbol}</div>
             </div>

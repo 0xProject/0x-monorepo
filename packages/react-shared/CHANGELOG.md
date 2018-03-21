@@ -4,3 +4,4 @@
 
     * Added new colors (#468)
     * Fix section and menuItem text display to replace dashes with spaces.
+    * Reorganized colors and added new ones
