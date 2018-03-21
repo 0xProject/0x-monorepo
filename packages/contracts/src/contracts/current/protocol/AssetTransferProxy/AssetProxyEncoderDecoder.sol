@@ -25,11 +25,8 @@ contract AssetProxyEncoderDecoder is
 {
     // Supported asset proxies
     enum AssetProxyId {
-        ERC20,
-        ERC721,
-        ENS,
-        OWNABLE,
-        ACCEPT_OWNERSHIP
+        INVALID,
+        ERC20
     }
 
     /// @dev Encodes ERC20 order metadata into a byte array for the ERC20 asset proxy.

@@ -28,6 +28,11 @@ export interface BatchCancelOrders {
     takerTokenCancelAmounts: BigNumber[];
 }
 
+export enum AssetProxyId {
+    INVALID,
+    ERC20,
+}
+
 export interface DefaultOrderParams {
     exchangeAddress: string;
     makerAddress: string;
@@ -38,8 +43,8 @@ export interface DefaultOrderParams {
     takerTokenAmount: BigNumber;
     makerFeeAmount: BigNumber;
     takerFeeAmount: BigNumber;
-    makerAssetProxyId: number;
-    takerAssetProxyId: number;
+    makerAssetProxyId: AssetProxyId;
+    takerAssetProxyId: AssetProxyId;
 }
 
 export interface TransactionDataParams {
@@ -128,8 +133,8 @@ export interface OrderStruct {
     takerFeeAmount: BigNumber;
     expirationTimeSeconds: BigNumber;
     salt: BigNumber;
-    makerAssetProxyId: number;
-    takerAssetProxyId: number;
+    makerAssetProxyId: AssetProxyId;
+    takerAssetProxyId: AssetProxyId;
 }
 
 export interface UnsignedOrder extends OrderStruct {
