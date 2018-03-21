@@ -44,7 +44,8 @@ export class LedgerSubprovider extends Subprovider {
         }
     }
     /**
-     * Instantiates a LedgerSubprovider
+     * Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
+     * TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.
      * @param config Several available configurations
      * @return LedgerSubprovider instance
      */

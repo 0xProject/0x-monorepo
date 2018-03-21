@@ -14,6 +14,7 @@ import { Translate } from 'ts/utils/translate';
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/subproviders/introduction');
 const InstallationMarkdown = require('md/docs/subproviders/installation');
+const LedgerNodeHidMarkdown = require('md/docs/subproviders/ledger_node_hid');
 /* tslint:enable:no-var-requires */
 
 const docSections = {
@@ -21,6 +22,7 @@ const docSections = {
     installation: 'installation',
     subprovider: 'subprovider',
     ledgerSubprovider: 'ledgerSubprovider',
+    ledgerNodeHid: 'ledger-node-hid-issue',
     factoryMethods: 'factory-methods',
     emptyWalletSubprovider: 'emptyWalletSubprovider',
     fakeGasEstimateSubprovider: 'fakeGasEstimateSubprovider',
@@ -41,6 +43,7 @@ const docsInfoConfig: DocsInfoConfig = {
         install: [docSections.installation],
         subprovider: [docSections.subprovider],
         ['ledger-subprovider']: [docSections.ledgerSubprovider],
+        ['ledger-node-hid-issue']: [docSections.ledgerNodeHid],
         ['factory-methods']: [docSections.factoryMethods],
         ['emptyWallet-subprovider']: [docSections.emptyWalletSubprovider],
         ['fakeGasEstimate-subprovider']: [docSections.fakeGasEstimateSubprovider],
@@ -53,6 +56,7 @@ const docsInfoConfig: DocsInfoConfig = {
     sectionNameToMarkdown: {
         [docSections.introduction]: IntroMarkdown,
         [docSections.installation]: InstallationMarkdown,
+        [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
     },
     sectionNameToModulePath: {
         [docSections.subprovider]: ['"subproviders/src/subproviders/subprovider"'],

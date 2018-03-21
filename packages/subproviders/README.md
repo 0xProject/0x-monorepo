@@ -4,6 +4,8 @@ A few useful web3 subproviders including a LedgerSubprovider useful for adding L
 
 We have written up a [Wiki](https://0xproject.com/wiki#Web3-Provider-Examples) article detailing some use cases of this subprovider package.
 
+### Read the [Documentation](0xproject.com/docs/subproviders).
+
 ## Installation
 
 ```
@@ -17,60 +19,6 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
     "./node_modules/web3-typescript-typings/index.d.ts",
 ]
 ```
-
-## Usage
-
-Simply import the subprovider you are interested in using:
-
-```javascript
-import {
-    ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
-    LedgerSubprovider,
-} from '@0xproject/subproviders';
-
-const ledgerSubprovider = new LedgerSubprovider({
-    networkId,
-    ledgerEthereumClientFactoryAsync,
-});
-
-const accounts = await ledgerSubprovider.getAccountsAsync();
-```
-
-### Subproviders
-
-#### Ledger Nano S subprovider
-
-A subprovider that enables your dApp to send signing requests to a user's Ledger Nano S hardware wallet. These can be requests to sign transactions or messages.
-
-Ledger Nano (and this library) by default uses a derivation path of `44'/60'/0'`. This is different to TestRPC which by default uses `m/44'/60'/0'/0`. This is a configuration option in the Ledger Subprovider package.
-
-##### Ledger Nano S + Node-hid (usb)
-
-By default, node-hid transport support is an optional dependency. This is due to the requirement of native usb developer packages on the host system. If these aren't installed the entire `npm install` fails. We also no longer export node-hid transport client factories. To re-create this see our integration tests or follow the example below:
-
-```typescript
-import Eth from '@ledgerhq/hw-app-eth';
-import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
-async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumClient> {
-    const ledgerConnection = await TransportNodeHid.create();
-    const ledgerEthClient = new Eth(ledgerConnection);
-    return ledgerEthClient;
-}
-
-// Create a LedgerSubprovider with the node-hid transport
-ledgerSubprovider = new LedgerSubprovider({
-    networkId,
-    ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
-});
-```
-
-#### Redundant RPC subprovider
-
-A subprovider which attempts to send an RPC call to a list of RPC endpoints sequentially, until one of them returns a successful response.
-
-#### Injected Web3 subprovider
-
-A subprovider that relays all signing related requests to a particular provider (in our case the provider injected onto the web page), while sending all other requests to a different provider (perhaps your own backing Ethereum node or Infura).
 
 ## Contributing
 
