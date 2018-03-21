@@ -1,5 +1,6 @@
 import { ZeroEx } from '0x.js';
 import {
+    colors,
     constants as sharedConstants,
     EtherscanLinkSuffixes,
     Styles,
@@ -59,16 +60,16 @@ interface AccessoryItemConfig {
 const styles: Styles = {
     wallet: {
         width: 346,
-        backgroundColor: '#ffffff',
+        backgroundColor: colors.white,
         borderBottomRightRadius: 10,
         borderBottomLeftRadius: 10,
         borderTopRightRadius: 10,
         borderTopLeftRadius: 10,
-        boxShadow: '0px 4px 6px rgba(56, 59, 137, 0.2)',
+        boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
         overflow: 'hidden',
     },
     list: {
-        padding: '0px 0px 0px 0px',
+        padding: 0,
     },
     tokenItemInnerDiv: {
         paddingLeft: 60,
@@ -80,12 +81,12 @@ const styles: Styles = {
         paddingLeft: 24,
     },
     borderedItem: {
-        borderBottomColor: '#f5f5f6',
+        borderBottomColor: colors.walletBorder,
         borderBottomStyle: 'solid',
         borderWidth: 1,
     },
     tokenItem: {
-        backgroundColor: '#fbfbfc',
+        backgroundColor: colors.walletDefaultItemBackground,
         paddingTop: 8,
         paddingBottom: 8,
     },
@@ -98,7 +99,7 @@ const styles: Styles = {
     },
     amountLabel: {
         fontWeight: 'bold',
-        color: 'black',
+        color: colors.black,
     },
 };
 
