@@ -16,7 +16,7 @@
         "./src/**/*",
         "./test/**/*",
         "./migrations/**/*",
-        "node_modules/ethers-typescript-typings/index.d.ts",
+        "../../node_modules/ethers-typescript-typings/index.d.ts",
         "../../node_modules/types-bn/index.d.ts",
         "../../node_modules/types-ethereumjs-util/index.d.ts",
         "../../node_modules/web3-typescript-typings/index.d.ts",

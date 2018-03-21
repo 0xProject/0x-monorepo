@@ -46,10 +46,13 @@
         "build": "tsc && yarn run copy_artifacts",
         "test": "node scripts/test.js --env=jsdom",
         "copy_artifacts": "copyfiles './src/artifacts/**/*' ./lib",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
-        "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 3 ../contracts/artifacts/$i.json ../trade-widget/src/artifacts; done;",
+        "generate_contract_wrappers":
+            "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
+        "update_contracts":
+            "for i in ${npm_package_config_artifacts}; do copyfiles -u 3 ../contracts/artifacts/$i.json ../trade-widget/src/artifacts; done;",
         "styleguide": "styleguidist server",
-        "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
+        "compile":
+            "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
         "migrate": "yarn build && yarn compile && node ./lib/migrations/index.js",
         "styleguide:build": "styleguidist build"
     },
@@ -58,16 +61,16 @@
         "artifacts": "Forwarder"
     },
     "devDependencies": {
-        "0x.js": "^0.32.4",
+        "0x.js": "^0.33.6",
         "@0xproject/abi-gen": "^0.2.7",
-        "@0xproject/base-contract": "^0.0.3",
-        "@0xproject/deployer": "^0.2.1",
-        "@0xproject/dev-utils": "^0.2.1",
-        "@0xproject/subproviders": "^0.5.0",
+        "@0xproject/base-contract": "^0.0.5",
+        "@0xproject/deployer": "^0.3.2",
+        "@0xproject/dev-utils": "^0.3.0",
+        "@0xproject/subproviders": "^0.8.2",
         "@0xproject/tslint-config": "^0.4.9",
-        "@0xproject/types": "^0.2.3",
-        "@0xproject/utils": "^0.3.4",
-        "@0xproject/web3-wrapper": "^0.2.1",
+        "@0xproject/types": "^0.4.1",
+        "@0xproject/utils": "^0.4.3",
+        "@0xproject/web3-wrapper": "^0.3.1",
         "@types/lodash": "^4.14.104",
         "@types/node": "^9.4.6",
         "@types/prop-types": "^15.5.2",
@@ -91,20 +94,13 @@
         "typescript": "^2.7.2",
         "web3": "^0.20.0",
         "web3-provider-engine": "^13.6.5",
-        "web3-typescript-typings": "^0.9.11",
+        "web3-typescript-typings": "^0.10.0",
         "webpack": "^3.11.0"
     },
     "jest": {
-        "collectCoverageFrom": [
-            "src/**/*.{js,jsx,ts,tsx}"
-        ],
-        "setupFiles": [
-            "<rootDir>/config/polyfills.js"
-        ],
-        "testMatch": [
-            "<rootDir>/src/**/__tests__/**/*.ts?(x)",
-            "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"
-        ],
+        "collectCoverageFrom": ["src/**/*.{js,jsx,ts,tsx}"],
+        "setupFiles": ["<rootDir>/config/polyfills.js"],
+        "testMatch": ["<rootDir>/src/**/__tests__/**/*.ts?(x)", "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"],
         "testEnvironment": "node",
         "testURL": "http://localhost",
         "transform": {
@@ -112,9 +108,7 @@
             "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
             "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
         },
-        "transformIgnorePatterns": [
-            "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$"
-        ],
+        "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$"],
         "moduleNameMapper": {
             "^react-native$": "react-native-web"
         },
@@ -138,9 +132,7 @@
         }
     },
     "babel": {
-        "presets": [
-            "react-app"
-        ]
+        "presets": ["react-app"]
     },
     "eslintConfig": {
         "extends": "react-app"
