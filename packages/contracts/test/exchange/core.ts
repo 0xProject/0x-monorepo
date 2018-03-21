@@ -742,7 +742,7 @@ describe('Exchange', () => {
         });
     });
 
-   describe('cancelOrdersBefore', () => {
+   describe('cancelOrdersUpTo', () => {
         it('should fail to set makerEpoch less than current makerEpoch', async () => {
             const makerEpoch = new BigNumber(1);
             await exWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
