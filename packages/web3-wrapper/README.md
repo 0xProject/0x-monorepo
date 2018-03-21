@@ -2,7 +2,7 @@
 
 Wrapped version of web3 with a nicer interface that is used across 0x projects and packages.
 
-### Read the [ Documentation](0xproject.com/docs/web3_wrapper).
+### Read the [Documentation](0xproject.com/docs/web3_wrapper).
 
 ## Installation
 
