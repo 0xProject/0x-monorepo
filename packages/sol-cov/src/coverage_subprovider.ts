@@ -12,12 +12,13 @@ interface MaybeFakeTxData extends Web3.TxData {
     isFakeTransaction?: boolean;
 }
 
+// Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
+// On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
+// That allows us to avoid influencing test behaviour.
+
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
  * It collects traces of all transactions that were sent and all calls that were executed through JSON RPC.
- * Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
- * On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
- * That allows us to avoid influencing test behaviour.
  */
 export class CoverageSubprovider extends Subprovider {
     // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
@@ -25,9 +26,9 @@ export class CoverageSubprovider extends Subprovider {
     private _coverageManager: CoverageManager;
     private _defaultFromAddress: string;
     /**
-     * Instantiates a CoverageSubprovider
+     * Instantiates a CoverageSubprovider instance
      * @param artifactsPath Path to the smart contract artifacts
-     * @param sourcePath Path to the smart contract source files
+     * @param sourcesPath Path to the smart contract source files
      * @param networkId network id
      * @param defaultFromAddress default from address to use when sending transactions
      */
@@ -42,6 +43,9 @@ export class CoverageSubprovider extends Subprovider {
             this._getContractCodeAsync.bind(this),
         );
     }
+    /**
+     * Write the test coverage results to a file in Istanbul format.
+     */
     public async writeCoverageAsync(): Promise<void> {
         await this._coverageManager.writeCoverageAsync();
     }
