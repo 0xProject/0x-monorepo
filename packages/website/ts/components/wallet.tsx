@@ -28,7 +28,7 @@ import { utils } from 'ts/utils/utils';
 export interface WalletProps {
     userAddress?: string;
     networkId?: number;
-    blockchain?: Blockchain;
+    blockchain: Blockchain;
     blockchainIsLoaded: boolean;
     blockchainErr: BlockchainErrs;
     dispatcher: Dispatcher;
