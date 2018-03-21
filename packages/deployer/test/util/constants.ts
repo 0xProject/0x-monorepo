@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 export const constants = {
     networkId: 0,
     jsonrpcUrl: 'http://localhost:8545',
-    optimizerEnabled: true,
+    optimizerEnabled: false,
     gasPrice: new BigNumber(20000000000),
     timeoutMs: 20000,
     zrxTokenAddress: '0xe41d2489571d322189246dafa5ebde1f4699f498',
