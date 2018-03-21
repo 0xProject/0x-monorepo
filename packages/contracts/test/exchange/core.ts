@@ -741,4 +741,75 @@ describe('Exchange', () => {
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
     });
+
+   describe('cancelOrdersUpTo', () => {
+        it('should fail to set makerEpoch less than current makerEpoch', async () => {
+            const makerEpoch = new BigNumber(1);
+            await exWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
+            const lesserMakerEpoch = new BigNumber(0);
+            return expect(
+                exWrapper.cancelOrdersUpToAsync(lesserMakerEpoch, makerAddress),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should fail to set makerEpoch equal to existing makerEpoch', async () => {
+            const makerEpoch = new BigNumber(1);
+            await exWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
+            return expect(
+                exWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should cancel only orders with a makerEpoch less than existing makerEpoch', async () => {
+            // Cancel all transactions with a makerEpoch less than 1
+            const makerEpoch = new BigNumber(1);
+            await exWrapper.cancelOrdersUpToAsync(makerEpoch, makerAddress);
+
+            // Create 3 orders with makerEpoch values: 0,1,2,3
+            // Since we cancelled with makerEpoch=1, orders with makerEpoch<=1 will not be processed
+            balances = await dmyBalances.getAsync();
+            const signedOrders = await Promise.all([
+                orderFactory.newSignedOrder({
+                    makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(9), 18),
+                    takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(9), 18),
+                    salt: new BigNumber(0)}),
+                orderFactory.newSignedOrder({
+                    makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(79), 18),
+                    takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(79), 18),
+                    salt: new BigNumber(1)}),
+                orderFactory.newSignedOrder({
+                    makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(979), 18),
+                    takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(979), 18),
+                    salt: new BigNumber(2)}),
+                orderFactory.newSignedOrder({
+                    makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(7979), 18),
+                    takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(7979), 18),
+                    salt: new BigNumber(3)}),
+            ]);
+            await exWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress);
+
+            const newBalances = await dmyBalances.getAsync();
+            const fillMakerTokenAmount = signedOrders[2].makerTokenAmount.add(signedOrders[3].makerTokenAmount);
+            const fillTakerTokenAmount = signedOrders[2].takerTokenAmount.add(signedOrders[3].takerTokenAmount);
+            const makerFeeAmount = signedOrders[2].makerFeeAmount.add(signedOrders[3].makerFeeAmount);
+            const takerFeeAmount = signedOrders[2].takerFeeAmount.add(signedOrders[3].takerFeeAmount);
+            expect(newBalances[makerAddress][signedOrders[3].makerTokenAddress]).to.be.bignumber.equal(
+                balances[makerAddress][signedOrders[3].makerTokenAddress].minus(fillMakerTokenAmount),
+            );
+            expect(newBalances[makerAddress][signedOrders[3].takerTokenAddress]).to.be.bignumber.equal(
+                balances[makerAddress][signedOrders[3].takerTokenAddress].add(fillTakerTokenAmount),
+            );
+            expect(newBalances[makerAddress][zrx.address]).to.be.bignumber.equal(balances[makerAddress][zrx.address].minus(makerFeeAmount));
+            expect(newBalances[takerAddress][signedOrders[3].takerTokenAddress]).to.be.bignumber.equal(
+                balances[takerAddress][signedOrders[3].takerTokenAddress].minus(fillTakerTokenAmount),
+            );
+            expect(newBalances[takerAddress][signedOrders[3].makerTokenAddress]).to.be.bignumber.equal(
+                balances[takerAddress][signedOrders[3].makerTokenAddress].add(fillMakerTokenAmount),
+            );
+            expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(balances[takerAddress][zrx.address].minus(takerFeeAmount));
+            expect(newBalances[feeRecipientAddress][zrx.address]).to.be.bignumber.equal(
+                balances[feeRecipientAddress][zrx.address].add(makerFeeAmount.add(takerFeeAmount)),
+            );
+        });
+    });
 }); // tslint:disable-line:max-file-line-count

@@ -28,6 +28,10 @@ export interface BatchCancelOrders {
     takerTokenCancelAmounts: BigNumber[];
 }
 
+export interface CancelOrdersBefore {
+    salt: BigNumber;
+}
+
 export interface DefaultOrderParams {
     exchangeAddress: string;
     makerAddress: string;
