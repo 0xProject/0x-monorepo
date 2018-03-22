@@ -1,4 +1,4 @@
-The following example shows you how to validate an 0x order using the `@0xproject/json-schemas` package.
+The following example shows you how to validate a 0x order using the `@0xproject/json-schemas` package.
 
 ```javascript
 import {SchemaValidator, ValidatorResult, schemas} from '@0xproject/json-schemas';

@@ -860,7 +860,7 @@ export class ExchangeWrapper extends ContractWrapper {
         return isRoundingError;
     }
     /**
-     * Checks if logs contain LogError, which is emmited by Exchange contract on transaction failure.
+     * Checks if logs contain LogError, which is emitted by Exchange contract on transaction failure.
      * @param   logs   Transaction logs as returned by `zeroEx.awaitTransactionMinedAsync`
      */
     public throwLogErrorsAsErrors(logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>): void {
