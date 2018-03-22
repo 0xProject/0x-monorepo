@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.21;
 
-contract Memory {
+contract LibBytes {
 
     /// @dev Reads an address from a position in a byte array.
     /// @param b Byte array containing an address.

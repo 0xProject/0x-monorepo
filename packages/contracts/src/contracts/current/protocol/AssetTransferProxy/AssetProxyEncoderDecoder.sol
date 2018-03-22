@@ -18,11 +18,11 @@
 
 pragma solidity ^0.4.21;
 
-import "../../utils/Memory/Memory.sol";
+import "./LibBytes.sol";
 import "./IAssetProxyEncoderDecoder.sol";
 
 contract AssetProxyEncoderDecoder is
-    Memory,
+    LibBytes,
     IAssetProxyEncoderDecoder
 {
 
