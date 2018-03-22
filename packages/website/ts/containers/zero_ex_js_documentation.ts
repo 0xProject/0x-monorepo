@@ -158,7 +158,6 @@ const docsInfoConfig: DocsInfoConfig = {
             'TransactionOpts',
             'ContractEventArg',
             'LogEvent',
-            'LogEntry',
             'DecodedLogEvent',
             'EventWatcherCallback',
             'OnOrderStateChangeCallback',
@@ -174,6 +173,7 @@ const docsInfoConfig: DocsInfoConfig = {
             DecodedLogEntryEvent: 'Web3',
             LogEntryEvent: 'Web3',
             CallData: 'Web3',
+            LogEntry: 'Web3',
         },
         typeNameToExternalLink: {
             Web3: constants.URL_WEB3_DOCS,
@@ -181,6 +181,7 @@ const docsInfoConfig: DocsInfoConfig = {
             BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
             DecodedLogEntryEvent: constants.URL_WEB3_DECODED_LOG_ENTRY_EVENT,
             LogEntryEvent: constants.URL_WEB3_LOG_ENTRY_EVENT,
+            LogEntry: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L366',
         },
         typeNameToDocSection: {
             ExchangeWrapper: 'exchange',
