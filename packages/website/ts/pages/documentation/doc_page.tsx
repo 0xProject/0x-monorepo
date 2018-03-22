@@ -69,7 +69,6 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     public componentWillUnmount() {
         this._isUnmounted = true;
     }
-
     public render() {
         const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
             ? {}
