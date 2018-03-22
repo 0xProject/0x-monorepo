@@ -7,7 +7,7 @@ Contains 0x-related json schemas
 ## Installation
 
 ```bash
-npm install @0xproject/json-schemas --save
+yarn add @0xproject/json-schemas
 ```
 
 **Import**

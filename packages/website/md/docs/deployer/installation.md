@@ -1,13 +1,13 @@
 #### CLI Installation
 
 ```bash
-npm install @0xproject/deployer -g
+yarn global add @0xproject/deployer
 ```
 
 #### API Installation
 
 ```bash
-npm install @0xproject/deployer --save
+yarn add @0xproject/deployer
 ```
 
 **Import**

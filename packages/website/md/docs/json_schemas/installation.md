@@ -1,7 +1,7 @@
 **Install**
 
 ```bash
-npm install @0xproject/json-schemas --save
+yarn add @0xproject/json-schemas
 ```
 
 **Import**
