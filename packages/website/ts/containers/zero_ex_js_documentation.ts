@@ -90,7 +90,14 @@ const docsInfoConfig: DocsInfoConfig = {
             '"0x.js/src/order_watcher/order_state_watcher"',
             '"src/order_watcher/order_state_watcher"',
         ],
-        [zeroExJsDocSections.types]: ['"0x.js/src/types"', '"src/types"', '"types/src/index"'],
+        [zeroExJsDocSections.types]: [
+            '"0x.js/src/types"',
+            '"src/types"',
+            '"types/src/index"',
+            '"0x.js/src/contract_wrappers/generated/ether_token"',
+            '"0x.js/src/contract_wrappers/generated/token"',
+            '"0x.js/src/contract_wrappers/generated/exchange"',
+        ],
     },
     menuSubsectionToVersionWhenIntroduced: {
         [zeroExJsDocSections.etherToken]: '0.7.1',

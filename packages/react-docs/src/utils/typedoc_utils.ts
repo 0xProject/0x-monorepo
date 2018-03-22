@@ -88,7 +88,7 @@ export const typeDocUtils = {
             const classChildren = _.filter(packageDefinitionWithMergedChildren.children, (child: TypeDocNode) => {
                 return child.kindString === KindString.Class;
             });
-            if (classChildren.length > 1) {
+            if (classChildren.length > 1 && sectionName !== 'types') {
                 throw new Error('`react-docs` only supports projects with 1 exported class per file');
             }
             const isClassExport = packageDefinitionWithMergedChildren.children[0].kindString === KindString.Class;
@@ -181,6 +181,12 @@ export const typeDocUtils = {
                             docSection.types.push(customType);
                         }
                     }
+                    break;
+
+                case KindString.Class:
+                    // We currently do not support more then a single class per file
+                    // except for the types section, where we ignore classes since we
+                    // only want to render type definitions.
                     break;
 
                 default:

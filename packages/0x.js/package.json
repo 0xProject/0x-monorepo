@@ -39,7 +39,7 @@
                 "packages/0x.js/_bundles/index.min.js"
             ],
             "docPublishConfigs": {
-                "extraFileIncludes": ["../types/src/index.ts"],
+                "extraFileIncludes": ["../types/src/index.ts", "./src/contract_wrappers/generated/ether_token.ts", "./src/contract_wrappers/generated/token.ts", "./src/contract_wrappers/generated/exchange.ts"],
                 "s3BucketPath": "s3://doc-jsons/0x.js/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/0x.js/"
             }
