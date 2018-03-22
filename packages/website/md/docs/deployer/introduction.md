@@ -4,14 +4,15 @@ It serves a similar purpose as parts of the [Truffle framework](http://trufflefr
 
 Deployer has the following advantages over Truffle:
 
-*   Deploy each smart contract with a specific version of Solidity
+*   Deploy each smart contract with a specific version of Solidity.
 *   Improved artifact files:
     *   Properly segregated artifacts to support storing different versions of smart contract deployed on different networks.
-    *   Storage of contructor args and contract source code
-*   An easy to maintain codebase: TypeScript + Single repo
-*   Allows you to specify the deployer RPC address
-*   Migrations that work with `async/await`
-*   Migrations that can be written synchronously in order to guarentee deterministic contract addresses
-*   No race conditions when running migrations.
+    *   Storage of constructor args, source maps and paths to all requisite source files.
+    *   An easy to maintain codebase: TypeScript + Single repo.
+    *   Allows you to specify the deployer RPC address.
+    *   Supports Solidity version ranges - contract compiled with latest Solidity version that satisfies the range.
+    *   Migrations that work with `async/await`.
+    *   Migrations that can be written synchronously in order to guarentee deterministic contract addresses.
+    *   No race conditions when running migrations.
 
 Deployer can be used as a command-line tool or as an imported module.
