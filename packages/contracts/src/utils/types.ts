@@ -30,6 +30,7 @@ export interface BatchCancelOrders {
 
 export enum AssetProxyId {
     INVALID,
+    ERC20_V1,
     ERC20,
 }
 
@@ -99,6 +100,7 @@ export enum ContractName {
     Arbitrage = 'Arbitrage',
     AssetTransferProxy = 'AssetTransferProxy',
     ERC20TransferProxy = 'ERC20TransferProxy',
+    ERC20TransferProxy_V1 = 'ERC20TransferProxy_v1',
 }
 
 export interface Artifact {

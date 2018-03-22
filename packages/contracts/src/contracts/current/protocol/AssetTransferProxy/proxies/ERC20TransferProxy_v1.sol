@@ -23,7 +23,7 @@ import "./AssetProxyEncoderDecoder.sol";
 import "../TokenTransferProxy/ITokenTransferProxy.sol";
 import "../../utils/Authorizable/Authorizable.sol";
 
-contract ERC20TransferProxy is
+contract ERC20TransferProxy_v1 is
     AssetProxyEncoderDecoder,
     Authorizable,
     IAssetProxy
@@ -32,7 +32,7 @@ contract ERC20TransferProxy is
 
     /// @dev Contract constructor.
     /// @param tokenTransferProxyContract erc20 token transfer proxy contract.
-    function ERC20TransferProxy(ITokenTransferProxy tokenTransferProxyContract)
+    function ERC20TransferProxy_v1(ITokenTransferProxy tokenTransferProxyContract)
         public
     {
         TRANSFER_PROXY = tokenTransferProxyContract;

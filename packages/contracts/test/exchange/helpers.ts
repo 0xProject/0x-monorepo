@@ -35,9 +35,10 @@ describe('Exchange', () => {
         const tokenRegistry = await deployer.deployAsync(ContractName.TokenRegistry);
         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const assetTransferProxy = await deployer.deployAsync(ContractName.AssetTransferProxy);
-        const erc20TransferProxy = await deployer.deployAsync(ContractName.ERC20TransferProxy, [
+        const erc20TransferProxyV1 = await deployer.deployAsync(ContractName.ERC20TransferProxy_V1, [
             tokenTransferProxy.address,
         ]);
+        const erc20TransferProxy = await deployer.deployAsync(ContractName.ERC20TransferProxy);
         const [rep, dgd, zrx] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
@@ -51,9 +52,11 @@ describe('Exchange', () => {
         const exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
         await assetTransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, { from: accounts[0] });
         await assetTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
+        await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetTransferProxy.address, { from: accounts[0] });
         await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetTransferProxy.address, { from: accounts[0] });
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxy.address, { from: accounts[0] });
+        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, { from: accounts[0] });
         const nilAddress = "0x0000000000000000000000000000000000000000";
+        await assetTransferProxy.registerAssetProxy.sendTransactionAsync(AssetProxyId.ERC20_V1, erc20TransferProxyV1.address, nilAddress, { from: assetProxyManagerAddress });
         await assetTransferProxy.registerAssetProxy.sendTransactionAsync(AssetProxyId.ERC20, erc20TransferProxy.address, nilAddress, { from: assetProxyManagerAddress });
         const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
