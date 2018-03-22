@@ -1,5 +1,5 @@
 BuyWidget example:
 
 ```jsx
-<BuyWidget/>
+<BuyWidget />
 ```

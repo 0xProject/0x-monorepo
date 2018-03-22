@@ -123,7 +123,14 @@ class Blockie extends React.Component<IdenticonPropTypes> {
             return data;
         }
 
-        function setCanvas(identicon: any, imageData: any, color: string, scale: number, bgcolor: string, spotcolor: string) {
+        function setCanvas(
+            identicon: any,
+            imageData: any,
+            color: string,
+            scale: number,
+            bgcolor: string,
+            spotcolor: string,
+        ) {
             const width = Math.sqrt(imageData.length);
             const size = width * scale;
 
@@ -172,7 +179,11 @@ class Blockie extends React.Component<IdenticonPropTypes> {
     render() {
         return (
             <canvas
-                style={{borderRadius: '15px', border: '2px solid rgba(230,230,230,0.8)', boxShadow: '1px 1px rgba(230,230,230,0.3)'}}
+                style={{
+                    borderRadius: '15px',
+                    border: '2px solid rgba(230,230,230,0.8)',
+                    boxShadow: '1px 1px rgba(230,230,230,0.3)',
+                }}
                 ref={identicon => {
                     this.identicon = identicon;
                 }}

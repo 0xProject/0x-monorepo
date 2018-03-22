@@ -1,5 +1,5 @@
 TokenSelector example:
 
 ```jsx
-<TokenSelector/>
+<TokenSelector />
 ```
