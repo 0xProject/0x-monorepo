@@ -26,7 +26,6 @@ import "./LibOrder.sol";
 import "./LibErrors.sol";
 import "./LibPartialAmount.sol";
 import "../../utils/SafeMath/SafeMath.sol";
-import "../AssetTransferProxy/AssetProxyEncoderDecoder.sol";
 
 /// @dev Provides MExchangeCore
 /// @dev Consumes MSettlement
@@ -38,8 +37,7 @@ contract MixinExchangeCore is
     MSignatureValidator,
     SafeMath,
     LibErrors,
-    LibPartialAmount,
-    AssetProxyEncoderDecoder
+    LibPartialAmount
 {
     // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
     mapping (bytes32 => uint256) public filled;
@@ -100,18 +98,6 @@ contract MixinExchangeCore is
             require(order.takerAddress == msg.sender);
         }
         require(takerTokenFillAmount > 0);
-
-        // Validate maker asset proxy
-        if (!isValidAssetProxyId(order.makerAssetProxyId)) {
-            LogError(uint8(Errors.UNKNOWN_MAKER_ASSET_PROXY_ID), orderHash);
-            return 0;
-        }
-
-        // Validate taker asset proxy
-        if (!isValidAssetProxyId(order.takerAssetProxyId)) {
-            LogError(uint8(Errors.UNKNOWN_TAKER_ASSET_PROXY_ID), orderHash);
-            return 0;
-        }
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
