@@ -6,7 +6,6 @@ $ 0x-deployer --help
 
 Commands:
   0x-deployer compile  compile contracts
-  0x-deployer migrate  compile and deploy contracts using migration scripts
   0x-deployer deploy   deploy a single contract with provided arguments
 
 Options:
