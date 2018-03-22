@@ -18,24 +18,22 @@
 
 pragma solidity ^0.4.21;
 
-import "./IAssetProxyEncoderDecoder.sol";
 import "./IAssetProxy.sol";
 import "../../utils/Authorizable/IAuthorizable.sol";
 
 contract IAssetTransferProxy is
-    IAuthorizable,
-    IAssetProxyEncoderDecoder
+    IAuthorizable
 {
     // Logs registration of new asset proxy
     event LogAssetProxyRegistration(
-        AssetProxyId id,
+        uint8 id,
         address newAssetClassAddress,
         address oldAssetClassAddress
     );
 
     // Logs deregistration of an existing asset proxy
     event LogAssetProxyDeregistration(
-        AssetProxyId id,
+        uint8 id,
         address assetClassAddress
     );
 
@@ -58,7 +56,7 @@ contract IAssetTransferProxy is
     /// @param newAssetProxyAddress Address of the asset proxy contract to register.
     /// @param currentAssetProxyAddress Address of existing asset proxy to overwrite.
     function registerAssetProxy(
-        AssetProxyId assetProxyId,
+        uint8 assetProxyId,
         address newAssetProxyAddress,
         address currentAssetProxyAddress)
         public;
@@ -66,12 +64,12 @@ contract IAssetTransferProxy is
     /// @dev Gets an asset proxy.
     /// @param assetProxyId Id of the asset proxy.
     /// @return The asset proxy registered to assetProxyId.
-    function getAssetProxy(AssetProxyId assetProxyId)
+    function getAssetProxy(uint8 assetProxyId)
         public view
         returns (IAssetProxy);
 
     /// @dev Deregisters an asset proxy.
     /// @param assetProxyId Id of the asset proxy to deregister.
-    function deregisterAssetProxy(AssetProxyId assetProxyId)
+    function deregisterAssetProxy(uint8 assetProxyId)
         public;
 }
