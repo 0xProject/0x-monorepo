@@ -46,19 +46,19 @@ const LazyConnectDocumentation = createLazyComponent('Documentation', async () =
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
 const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/web3_wrapper_documentation'),
+    System.import<any>(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
 );
 const LazyDeployerDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/deployer_documentation'),
+    System.import<any>(/* webpackChunkName: "deployerDocs" */ 'ts/containers/deployer_documentation'),
 );
 const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/json_schemas_documentation'),
+    System.import<any>(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
 );
 const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/sol_cov_documentation'),
+    System.import<any>(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
 );
 const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/subproviders_documentation'),
+    System.import<any>(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
 );
 
 analytics.init();
