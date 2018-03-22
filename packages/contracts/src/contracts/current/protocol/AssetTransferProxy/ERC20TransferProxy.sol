@@ -24,8 +24,8 @@ import "../TokenTransferProxy/ITokenTransferProxy.sol";
 import "../../utils/Authorizable/Authorizable.sol";
 
 contract ERC20TransferProxy is
-    Authorizable,
     AssetProxyEncoderDecoder,
+    Authorizable,
     IAssetProxy
 {
     ITokenTransferProxy TRANSFER_PROXY;

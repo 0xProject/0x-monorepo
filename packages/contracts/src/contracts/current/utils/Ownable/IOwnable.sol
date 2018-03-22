@@ -8,7 +8,6 @@ pragma solidity ^0.4.21;
  */
 
 contract IOwnable {
-
     function transferOwnership(address newOwner)
         public;
 }

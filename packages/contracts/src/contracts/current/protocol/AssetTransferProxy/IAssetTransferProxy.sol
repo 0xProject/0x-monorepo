@@ -18,13 +18,13 @@
 
 pragma solidity ^0.4.21;
 
-import "./AssetProxyEncoderDecoder.sol";
+import "./IAssetProxyEncoderDecoder.sol";
 import "./IAssetProxy.sol";
-import "../../utils/Authorizable/Authorizable.sol";
+import "../../utils/Authorizable/IAuthorizable.sol";
 
 contract IAssetTransferProxy is
-    Authorizable,
-    AssetProxyEncoderDecoder
+    IAuthorizable,
+    IAssetProxyEncoderDecoder
 {
     // Logs registration of new asset proxy
     event LogAssetProxyRegistration(

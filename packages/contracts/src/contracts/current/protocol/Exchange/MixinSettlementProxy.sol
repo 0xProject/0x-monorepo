@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "./mixins/MSettlement.sol";
 import "../../tokens/Token/IToken.sol";
 import "./LibPartialAmount.sol";
+import "../AssetTransferProxy/AssetProxyEncoderDecoder.sol";
 import "../AssetTransferProxy/IAssetTransferProxy.sol";
 
 /// @dev Provides MixinSettlement

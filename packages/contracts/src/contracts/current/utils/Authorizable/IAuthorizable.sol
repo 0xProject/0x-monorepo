@@ -18,18 +18,8 @@
 
 pragma solidity ^0.4.21;
 
-import "../Ownable/IOwnable.sol";
-
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
-contract IAuthorizable is IOwnable {
-
-    function authorized(address addr)
-        public view
-        returns (bool);
-
-    function authorities(uint256 index)
-        public view
-        returns (address);
+contract IAuthorizable {
 
     /// @dev Gets all authorized addresses.
     /// @return Array of authorized addresses.

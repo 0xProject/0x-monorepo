@@ -71,12 +71,15 @@ describe('Exchange', () => {
         rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
         dgd = new DummyTokenContract(web3Wrapper, dgdInstance.abi, dgdInstance.address);
         zrx = new DummyTokenContract(web3Wrapper, zrxInstance.abi, zrxInstance.address);
+console.log("Deploting Token Transfer Proxy");
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
         tokenTransferProxy = new TokenTransferProxyContract(
             web3Wrapper,
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
         );
+
+        console.log("Deploting ERC20 Transfer Proxy");
         const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20TransferProxy, [
             tokenTransferProxy.address,
         ]);
@@ -85,12 +88,16 @@ describe('Exchange', () => {
             erc20TransferProxyInstance.abi,
             erc20TransferProxyInstance.address,
         );
+
+        console.log("Deploting Asset Transfer Proxy");
         const assetTransferProxyInstance = await deployer.deployAsync(ContractName.AssetTransferProxy);
         assetTransferProxy = new AssetTransferProxyContract(
             web3Wrapper,
             assetTransferProxyInstance.abi,
             assetTransferProxyInstance.address,
         );
+
+        console.log("Deploting Exchange Contract");
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             assetTransferProxy.address,
