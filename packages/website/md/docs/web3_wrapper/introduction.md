@@ -1,0 +1,1 @@
+Welcome to the [Web3Wrapper](https://github.com/0xProject/0x-monorepo/tree/development/packages/web3-wrapper) documentation! Web3Wrapper is a convenience library that wraps Web3 v0.x, providing promise-based endpoints and a consistent API.

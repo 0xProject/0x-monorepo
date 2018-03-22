@@ -41,11 +41,11 @@ describe('ZeroEx library', () => {
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.be.undefined();
 
             // Check that all nested web3 wrapper instances return the updated provider
-            const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getCurrentProvider();
+            const nestedWeb3WrapperProvider = (zeroEx as any)._web3Wrapper.getProvider();
             expect(nestedWeb3WrapperProvider.zeroExTestId).to.be.a('number');
-            const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getCurrentProvider();
+            const exchangeWeb3WrapperProvider = (zeroEx.exchange as any)._web3Wrapper.getProvider();
             expect(exchangeWeb3WrapperProvider.zeroExTestId).to.be.a('number');
-            const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getCurrentProvider();
+            const tokenRegistryWeb3WrapperProvider = (zeroEx.tokenRegistry as any)._web3Wrapper.getProvider();
             expect(tokenRegistryWeb3WrapperProvider.zeroExTestId).to.be.a('number');
         });
     });

@@ -1,4 +1,4 @@
-import { Callback, NextCallback, Subprovider } from '@0xproject/subproviders';
+import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0xproject/subproviders';
 import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
@@ -12,18 +12,26 @@ interface MaybeFakeTxData extends Web3.TxData {
     isFakeTransaction?: boolean;
 }
 
-/*
- * This class implements the web3-provider-engine subprovider interface and collects traces of all transactions that were sent and all calls that were executed.
- * Because there is no notion of call trace in the rpc - we collect them in rather non-obvious/hacky way.
- * On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
- * That allows us to not influence the test behaviour.
- * Source: https://github.com/MetaMask/provider-engine/blob/master/subproviders/subprovider.js
+// Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
+// On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
+// That allows us to avoid influencing test behaviour.
+
+/**
+ * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+ * It collects traces of all transactions that were sent and all calls that were executed through JSON RPC.
  */
 export class CoverageSubprovider extends Subprovider {
     // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
     private _lock: Lock;
     private _coverageManager: CoverageManager;
     private _defaultFromAddress: string;
+    /**
+     * Instantiates a CoverageSubprovider instance
+     * @param artifactsPath Path to the smart contract artifacts
+     * @param sourcesPath Path to the smart contract source files
+     * @param networkId network id
+     * @param defaultFromAddress default from address to use when sending transactions
+     */
     constructor(artifactsPath: string, sourcesPath: string, networkId: number, defaultFromAddress: string) {
         super();
         this._lock = new Lock();
@@ -35,11 +43,22 @@ export class CoverageSubprovider extends Subprovider {
             this._getContractCodeAsync.bind(this),
         );
     }
-    public handleRequest(
-        payload: Web3.JSONRPCRequestPayload,
-        next: NextCallback,
-        end: (err: Error | null, result: any) => void,
-    ) {
+    /**
+     * Write the test coverage results to a file in Istanbul format.
+     */
+    public async writeCoverageAsync(): Promise<void> {
+        await this._coverageManager.writeCoverageAsync();
+    }
+    /**
+     * This method conforms to the web3-provider-engine interface.
+     * It is called internally by the ProviderEngine when it is this subproviders
+     * turn to handle a JSON RPC request.
+     * @param payload JSON RPC payload
+     * @param next Callback to call if this subprovider decides not to handle the request
+     * @param end Callback to call if subprovider handled the request and wants to pass back the request.
+     */
+    // tslint:disable-next-line:prefer-function-over-method
+    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
         switch (payload.method) {
             case 'eth_sendTransaction':
                 const txData = payload.params[0];
@@ -56,9 +75,6 @@ export class CoverageSubprovider extends Subprovider {
                 next();
                 return;
         }
-    }
-    public async writeCoverageAsync(): Promise<void> {
-        await this._coverageManager.writeCoverageAsync();
     }
     private async _onTransactionSentAsync(
         txData: MaybeFakeTxData,

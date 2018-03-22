@@ -260,7 +260,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const signature = await this._web3Wrapper.signTransactionAsync(normalizedSignerAddress, msgHashHex);
+        const signature = await this._web3Wrapper.signMessageAsync(normalizedSignerAddress, msgHashHex);
 
         // HACK: There is no consensus on whether the signatureHex string should be formatted as
         // v + r + s OR r + s + v, and different clients (even different versions of the same client)

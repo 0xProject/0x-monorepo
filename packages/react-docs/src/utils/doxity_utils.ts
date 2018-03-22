@@ -116,6 +116,7 @@ export const doxityUtils = {
                 methods,
                 properties,
                 types: [],
+                functions: [],
                 events,
             };
             docAgnosticFormat[contractName] = docSection;

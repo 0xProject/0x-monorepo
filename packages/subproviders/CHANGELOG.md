@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.8.1 - _TBD_
+
+    * Introduce `JSONRPCRequestPayloadWithMethod` type (#465)
+    * Export `ErrorCallback` type. (#465)
+
 ## v0.8.0 - _March 18, 2018_
 
     * Export `GanacheSubprovider` and `Subprovider` (#426)
