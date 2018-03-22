@@ -54,42 +54,36 @@ contract AssetProxyEncoderDecoder is
         return getAddress(assetMetadata, 1);
     }
 
-    /// @dev Encodes order's maker metadata into a byte array for the respective asset proxy.
-    /// @param makerAssetProxyId Id of the asset proxy.
-    /// @param makerTokenAddress Address of the asset.
-    /// @param orderHash Hash of order.
-    /// @return assetMetadata Byte array encoded for the respective asset proxy.
-    function encodeMakerMetadata(
-        uint8 makerAssetProxyId,
-        address makerTokenAddress,
-        bytes32 orderHash)
+    /// @dev Returns true if the input is a valid AssetProxyId.
+    /// @param assetProxyId Id of the asset proxy.
+    /// @return isValid True only if assetProxyId is a valid AssetProxyId.
+    function isValidAssetProxyId(uint8 assetProxyId)
         public pure
-        returns (bytes assetMetadata)
+        returns (bool isValid)
     {
-        if(AssetProxyId(makerAssetProxyId) == AssetProxyId.ERC20) {
-            return encodeERC20Metadata(makerTokenAddress);
+        isValid = false;
+        if (AssetProxyId(assetProxyId) == AssetProxyId.ERC20) {
+            isValid = true;
         }
 
-        // @TODO: Fix conflict importing LibErrors.sol.
-        // LogError(Errors.UNKNOWN_MAKER_ASSET_PROXY_ID, orderHash);
-        revert();
+        return isValid;
     }
 
-    /// @dev Encodes order's taker metadata into a byte array for the respective asset proxy.
-    /// @param takerAssetProxyId Id of the asset proxy.
-    /// @param takerTokenAddress Address of the asset.
-    /// @param orderHash Hash of order.
+    /// @dev Encodes an order's metadata into a byte array for the respective asset proxy.
+    /// @param assetProxyId Id of the asset proxy.
+    /// @param tokenAddress Address of the asset.
     /// @return assetMetadata Byte array encoded for the respective asset proxy.
-    function encodeTakerMetadata(uint8 takerAssetProxyId, address takerTokenAddress, bytes32 orderHash)
+    function encodeMetadata(
+        uint8 assetProxyId,
+        address tokenAddress)
         public pure
         returns (bytes assetMetadata)
     {
-        if(AssetProxyId(takerAssetProxyId) == AssetProxyId.ERC20) {
-            return encodeERC20Metadata(takerTokenAddress);
+        if (AssetProxyId(assetProxyId) == AssetProxyId.ERC20) {
+            return encodeERC20Metadata(tokenAddress);
         }
 
-        // @TODO: Fix conflict importing LibErrors.sol.
-        // LogError(Errors.UNKNOWN_TAKER_ASSET_PROXY_ID, orderHash);
+        // Unrecognized or invalid assetProxyId
         revert();
     }
 }
