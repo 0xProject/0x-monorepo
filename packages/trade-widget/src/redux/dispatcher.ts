@@ -3,14 +3,16 @@ import { BigNumber } from '@0xproject/utils';
 import { Dispatch } from 'redux';
 import thunk from 'redux-thunk';
 
-import { ActionTypes, AssetToken } from '../types';
+import { ActionTypes, AssetToken, LiquidityProvider, TokenPair } from '../types';
 
 import { State } from './reducer';
 
 export class Dispatcher {
     private _dispatch: Dispatch<State>;
-    constructor(dispatch: Dispatch<State>) {
+    private _liquidityProvider: LiquidityProvider;
+    constructor(dispatch: Dispatch<State>, liquidityProvider: LiquidityProvider) {
         this._dispatch = dispatch;
+        this._liquidityProvider = liquidityProvider;
     }
     public updateNetworkId(networkId: number) {
         this._dispatch({
@@ -47,6 +49,27 @@ export class Dispatcher {
             data: txHash,
             type: ActionTypes.TransactionSubmitted,
         });
+    }
+    public quoteRequested(amount: BigNumber, pair: TokenPair) {
+        const quoteRequestThunk = async (dispatch: Dispatch<State>, getState: () => State): Promise<void> => {
+            // tslint:disable-next-line:no-console
+            console.log('asking for a quote request', pair);
+            if (getState().isQuoting) {
+                return;
+            }
+            dispatch({
+                data: { amount, pair },
+                type: ActionTypes.QuoteRequested,
+            });
+
+            const quote = await this._liquidityProvider.requestQuoteAsync(amount, pair);
+            dispatch({
+                data: { quote },
+                type: ActionTypes.QuoteReceived,
+            });
+        };
+        // tslint:disable-next-line
+        this._dispatch(quoteRequestThunk);
     }
     public transactionMined(receipt: TransactionReceiptWithDecodedLogs) {
         this._dispatch({

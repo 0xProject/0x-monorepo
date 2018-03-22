@@ -50,15 +50,8 @@ const portalOrder = {
 };
 
 class FixedProvider implements LiquidityProvider {
-    private _orderUpdateCallback: OrderUpdateCallback;
-    constructor(orderUpdateCallback: OrderUpdateCallback) {
-        this._orderUpdateCallback = orderUpdateCallback;
-    }
-
-    public async start() {
-        const latestOrder = await this._fetchLatestOrderAsync();
-        this._orderUpdateCallback(latestOrder);
-    }
+    // tslint:disable-next-line:prefer-function-over-method no-empty
+    public async start() {}
 
     // tslint:disable-next-line:prefer-function-over-method no-empty
     public async stop() {}

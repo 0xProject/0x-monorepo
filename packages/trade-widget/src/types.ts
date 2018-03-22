@@ -38,6 +38,8 @@ export enum ActionTypes {
     UpdateUserTokenBalance = 'UPDATE_USER_TOKEN_BALANCE',
     TransactionSubmitted = 'TRANSACTION_SUBMITTED',
     TransactionMined = 'TRANSACTION_MINED',
+    QuoteRequested = 'QUOTE_REQUESTED',
+    QuoteReceived = 'QUOTE_RECEIVED',
 }
 export interface Action {
     type: ActionTypes;

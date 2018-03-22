@@ -51,14 +51,14 @@ const zeroEx = new ZeroEx(providerEngine, { networkId: TEST_NETWORK_ID });
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store: ReduxStore<State> = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
 
-const dispatcher = new Dispatcher(store.dispatch);
+const liquidityProvider = new FixedProvider();
+const dispatcher = new Dispatcher(store.dispatch, liquidityProvider);
 const blockchainSaga = new BlockchainSaga(dispatcher, store, web3Wrapper, zeroEx);
 
 class App extends React.Component {
     private _provider: FixedProvider;
     constructor(props: {}) {
         super(props);
-        this._provider = new FixedProvider(this._orderUpdatedAsync.bind(this));
     }
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
@@ -73,12 +73,7 @@ class App extends React.Component {
                                         <Label isSize={'small'}>0x TRADE WIDGET</Label>
                                     </CardHeaderTitle>
                                     <CardContent>
-                                        <BuyWidget
-                                            zeroEx={zeroEx}
-                                            web3Wrapper={web3Wrapper}
-                                            dispatcher={dispatcher}
-                                            requestQuote={this._provider.requestQuoteAsync.bind(this._provider)}
-                                        />
+                                        <BuyWidget zeroEx={zeroEx} web3Wrapper={web3Wrapper} dispatcher={dispatcher} />
                                     </CardContent>
                                 </Card>
                             </Column>

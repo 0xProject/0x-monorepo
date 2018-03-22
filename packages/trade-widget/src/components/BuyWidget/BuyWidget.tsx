@@ -48,8 +48,6 @@ import TokenSelector from '../TokenSelector';
 interface BuyWidgetProps {
     onTokenChange?: (token: string) => any;
     onAmountChange?: (amount: BigNumber) => any;
-    onTransactionSubmitted?: (txHash: string) => any;
-    requestQuote: QuoteRequest;
     address: string;
     networkId: number;
     weiBalances: AccountWeiBalances;
@@ -58,12 +56,11 @@ interface BuyWidgetProps {
     web3Wrapper: Web3Wrapper;
     zeroEx: ZeroEx;
     dispatcher: Dispatcher;
+    quote: Quote;
 }
 
 interface BuyWidgetState {
     amount?: BigNumber;
-    isLoading: boolean;
-    quote: Quote;
 }
 
 const ETH_DECIMAL_PLACES = 18;
@@ -73,21 +70,18 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
         super(props);
         this.state = {
             amount: new BigNumber(1),
-            isLoading: false,
-            quote: undefined,
         };
 
         this._handleAmountChange = this._handleAmountChange.bind(this);
         this._handleSubmitAsync = this._handleSubmitAsync.bind(this);
     }
 
-    public async componentWillReceiveProps(nextProps: BuyWidgetProps) {
+    public async componentDidUpdate() {
         await this._quoteSelectedTokenAsync();
     }
 
     render() {
-        const { isLoading } = this.state;
-        const { address, weiBalances, tokenBalances, selectedToken } = this.props;
+        const { address, weiBalances, tokenBalances, selectedToken, quote } = this.props;
         const tokenBalance = tokenBalances[address] ? tokenBalances[address][selectedToken] : new BigNumber(0);
         const weiBalance = weiBalances[address] || new BigNumber(0);
         return (
@@ -123,7 +117,12 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
                     <strong> ESTIMATED COST </strong>
                 </Field> */}
                 <Field style={{ marginTop: 20 }}>
-                    <Button isLoading={isLoading} isFullWidth={true} isColor="info" onClick={this._handleSubmitAsync}>
+                    <Button
+                        isLoading={_.isUndefined(quote)}
+                        isFullWidth={true}
+                        isColor="info"
+                        onClick={this._handleSubmitAsync}
+                    >
                         BUY TOKENS
                     </Button>
                 </Field>
@@ -139,8 +138,8 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
         this.setState((prev, props) => {
             return { ...prev, isLoading: true };
         });
-        const { address } = this.props;
-        const { amount, quote } = this.state;
+        const { address, quote } = this.props;
+        const { amount } = this.state;
         const txHash = await this._fillOrderAsync(address, amount, quote.orders[0]);
         this.setState((prev, props) => {
             return { ...prev, isLoading: false };
@@ -187,29 +186,12 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
     }
 
     private async _quoteSelectedTokenAsync() {
-        const oldQuote = this.state.quote;
         const { amount } = this.state;
-        const { selectedToken, requestQuote } = this.props;
-        // Avoid unncesscary quoting
-        if (
-            !_.isUndefined(oldQuote) &&
-            !_.isUndefined(amount) &&
-            oldQuote.pair.maker === selectedToken &&
-            oldQuote.amount.eq(amount)
-        ) {
-            return;
+        const { selectedToken, quote } = this.props;
+        if (_.isUndefined(quote) || quote.pair.maker !== selectedToken) {
+            const tokenPair: TokenPair = { maker: selectedToken, taker: AssetToken.WETH };
+            this.props.dispatcher.quoteRequested(amount, tokenPair);
         }
-
-        this.setState((prev, props) => {
-            return { ...prev, isLoading: true };
-        });
-        const tokenPair: TokenPair = { maker: selectedToken, taker: AssetToken.WETH };
-        const quote = await requestQuote(amount, tokenPair);
-        // tslint:disable-next-line:no-console
-        console.log('got quote', quote);
-        this.setState((prev, props) => {
-            return { ...prev, quote, isLoading: false };
-        });
     }
 }
 

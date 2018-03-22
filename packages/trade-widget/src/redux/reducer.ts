@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { combineReducers } from 'redux';
 
-import { AccountTokenBalances, AccountWeiBalances, Action, ActionTypes, AssetToken } from '../types';
+import { AccountTokenBalances, AccountWeiBalances, Action, ActionTypes, AssetToken, Quote } from '../types';
 
 export interface State {
     networkId: number;
@@ -11,6 +11,8 @@ export interface State {
     selectedToken: AssetToken;
     userTokenBalances: AccountTokenBalances;
     usersWeiBalance: AccountWeiBalances;
+    quote: Quote;
+    isQuoting: boolean;
     lastAction: Action;
 }
 const INITIAL_STATE: State = {
@@ -20,6 +22,8 @@ const INITIAL_STATE: State = {
     userTokenBalances: {},
     usersWeiBalance: {},
     lastAction: undefined,
+    quote: undefined,
+    isQuoting: false,
 };
 
 function lastActionReducer(state: State = INITIAL_STATE, action: Action) {
@@ -28,12 +32,8 @@ function lastActionReducer(state: State = INITIAL_STATE, action: Action) {
         lastAction: action,
     };
 }
-/**
- * Reducer
- */
-export function reducer(state: State = INITIAL_STATE, action: Action) {
-    // tslint:disable-next-line:no-parameter-reassignment
-    state = { ...state, lastAction: action };
+
+function appReducer(state: State = INITIAL_STATE, action: Action) {
     switch (action.type) {
         case ActionTypes.UpdateNetworkId: {
             return {
@@ -45,42 +45,62 @@ export function reducer(state: State = INITIAL_STATE, action: Action) {
             return {
                 ...state,
                 selectedToken: action.data,
+                quote: undefined as Quote,
             };
         }
         case ActionTypes.UpdateUserAddress: {
-            const userAddress = action.data;
-            const tokenBalances = state.userTokenBalances;
-            const usersWeiBalance = state.usersWeiBalance;
-            tokenBalances[userAddress] = tokenBalances[userAddress] || {};
-            usersWeiBalance[userAddress] = usersWeiBalance[userAddress] || new BigNumber(0);
+            const address = action.data;
             return {
                 ...state,
                 userAddress: action.data,
-                userTokenBalances: { ...tokenBalances },
-                usersWeiBalance: { ...usersWeiBalance },
+                userTokenBalances: {
+                    ...state.userTokenBalances,
+                    ...{ [address]: state.userTokenBalances[address] || {} },
+                },
+                usersWeiBalance: {
+                    ...state.usersWeiBalance,
+                    ...{ [address]: state.usersWeiBalance[address] || new BigNumber(0) },
+                },
             };
         }
         case ActionTypes.UpdateUserWeiBalance: {
             const { address, balance } = action.data;
-            const weiBalances = state.usersWeiBalance;
-            weiBalances[address] = balance;
             return {
                 ...state,
-                usersWeiBalance: { ...weiBalances },
+                usersWeiBalance: { ...state.usersWeiBalance, ...{ [address]: balance } },
             };
         }
         case ActionTypes.UpdateUserTokenBalance: {
             const { address, balance, token } = action.data;
-            const tokenBalances = state.userTokenBalances;
-            tokenBalances[address] = tokenBalances[address] || {};
-            tokenBalances[address][token] = balance;
-
             return {
                 ...state,
-                userTokenBalances: { ...tokenBalances },
+                userTokenBalances: {
+                    ...state.userTokenBalances,
+                    ...{ [address]: { ...state.userTokenBalances[address], ...{ [token]: balance } } },
+                },
+            };
+        }
+        case ActionTypes.QuoteRequested: {
+            return {
+                ...state,
+                isQuoting: true,
+            };
+        }
+        case ActionTypes.QuoteReceived: {
+            const { quote } = action.data;
+            return {
+                ...state,
+                isQuoting: false,
+                quote: { ...quote },
             };
         }
         default:
             return { ...state };
     }
+}
+/**
+ * Reducer
+ */
+export function reducer(state: State = INITIAL_STATE, action: Action) {
+    return lastActionReducer(appReducer(state, action), action);
 }
