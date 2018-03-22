@@ -40,8 +40,8 @@
             ],
             "docPublishConfigs": {
                 "extraFileIncludes": ["../types/src/index.ts"],
-                "s3BucketPath": "s3://doc-jsons/0xjs/",
-                "s3StagingBucketPath": "s3://staging-doc-jsons/0xjs/"
+                "s3BucketPath": "s3://doc-jsons/0x.js/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/0x.js/"
             }
         }
     },
