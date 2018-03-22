@@ -248,26 +248,26 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     {this._renderNetworkBadgesIfExists(sectionName)}
                 </div>
                 {docSection.comment && <Comment comment={docSection.comment} />}
-                {docSection.constructors.length > 0 &&
+                {!_.isEmpty(docSection.constructors) &&
                     this.props.docsInfo.isVisibleConstructor(sectionName) && (
                         <div>
                             <h2 style={headerStyle}>Constructor</h2>
                             {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
                         </div>
                     )}
-                {docSection.properties.length > 0 && (
+                {!_.isEmpty(docSection.properties) && (
                     <div>
                         <h2 style={headerStyle}>Properties</h2>
                         <div>{propertyDefs}</div>
                     </div>
                 )}
-                {docSection.methods.length > 0 && (
+                {!_.isEmpty(docSection.methods) && (
                     <div>
                         <h2 style={headerStyle}>Methods</h2>
                         <div>{methodDefs}</div>
                     </div>
                 )}
-                {docSection.functions.length > 0 && (
+                {!_.isEmpty(docSection.functions) && (
                     <div>
                         <h2 style={headerStyle}>Functions</h2>
                         <div>{functionDefs}</div>
