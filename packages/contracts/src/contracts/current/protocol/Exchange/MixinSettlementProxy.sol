@@ -33,6 +33,7 @@ contract MixinSettlementProxy is
 {
     IAssetTransferProxy TRANSFER_PROXY;
     IToken ZRX_TOKEN;
+    uint8 ZRX_TOKEN_PROXY_ID;
 
     function transferProxy()
         public view
@@ -48,13 +49,22 @@ contract MixinSettlementProxy is
         return ZRX_TOKEN;
     }
 
+    function zrxTokenProxyId()
+        external view
+        returns (uint8)
+    {
+        return ZRX_TOKEN_PROXY_ID;
+    }
+
     function MixinSettlementProxy(
         IAssetTransferProxy assetTransferProxyContract,
-        IToken zrxToken)
+        IToken zrxToken,
+        uint8 zrxTokenProxyId)
         public
     {
         ZRX_TOKEN = zrxToken;
         TRANSFER_PROXY = assetTransferProxyContract;
+        ZRX_TOKEN_PROXY_ID = zrxTokenProxyId;
     }
 
     function settleOrder(
@@ -91,10 +101,9 @@ contract MixinSettlementProxy is
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFeeAmount > 0) {
                 makerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFeeAmount);
-
                 require(
                     TRANSFER_PROXY.transferFrom(
-                        encodeERC20Metadata(ZRX_TOKEN),
+                        encodeMetadata(ZRX_TOKEN_PROXY_ID, ZRX_TOKEN),
                         order.makerAddress,
                         order.feeRecipientAddress,
                         makerFeeAmountPaid
@@ -105,7 +114,7 @@ contract MixinSettlementProxy is
                 takerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFeeAmount);
                 require(
                     TRANSFER_PROXY.transferFrom(
-                        encodeERC20Metadata(ZRX_TOKEN),
+                        encodeMetadata(ZRX_TOKEN_PROXY_ID, ZRX_TOKEN),
                         takerAddress,
                         order.feeRecipientAddress,
                         takerFeeAmountPaid

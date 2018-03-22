@@ -20,32 +20,6 @@ pragma solidity ^0.4.21;
 
 contract IAssetProxyEncoderDecoder {
 
-    // Supported asset proxies
-    enum AssetProxyId {
-        INVALID,
-        ERC20
-    }
-
-    /// @dev Encodes ERC20 order metadata into a byte array for the ERC20 asset proxy.
-    /// @param tokenAddress Address of ERC20 token.
-    /// @return assetMetadata Byte array encoded for the ERC20 asset proxy.
-    function encodeERC20Metadata(address tokenAddress)
-        public pure
-        returns (bytes assetMetadata);
-    /// @dev Decodes ERC20-encoded byte array for the ERC20 asset proxy.
-    /// @param assetMetadata Byte array encoded for the ERC20 asset proxy.
-    /// @return tokenAddress Address of ERC20 token.
-    function decodeERC20Metadata(bytes assetMetadata)
-        public pure
-        returns (address tokenAddress);
-
-    /// @dev Returns true if the input is a valid AssetProxyId.
-    /// @param assetProxyId Id of the asset proxy.
-    /// @return isValid True only if assetProxyId is a valid AssetProxyId.
-    function isValidAssetProxyId(uint8 assetProxyId)
-        public pure
-        returns (bool isValid);
-
     /// @dev Encodes an order's metadata into a byte array for the respective asset proxy.
     /// @param assetProxyId Id of the asset proxy.
     /// @param tokenAddress Address of the asset.
@@ -55,4 +29,11 @@ contract IAssetProxyEncoderDecoder {
         address tokenAddress)
         public pure
         returns (bytes assetMetadata);
+        
+    /// @dev Decodes ERC20-encoded byte array for the ERC20 asset proxy.
+    /// @param assetMetadata Byte array encoded for the ERC20 asset proxy.
+    /// @return tokenAddress Address of ERC20 token.
+    function decodeERC20Metadata(bytes assetMetadata)
+        public pure
+        returns (address tokenAddress);
 }

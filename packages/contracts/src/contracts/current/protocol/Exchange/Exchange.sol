@@ -36,11 +36,12 @@ contract Exchange is
 
     function Exchange(
         IToken _zrxToken,
+        uint8 _zrxTokenProxyId,
         IAssetTransferProxy _assetTransferProxy)
         public
         MixinExchangeCore()
         MixinSignatureValidator()
-        MixinSettlementProxy(_assetTransferProxy, _zrxToken)
+        MixinSettlementProxy(_assetTransferProxy, _zrxToken, _zrxTokenProxyId)
         MixinWrapperFunctions()
     {}
 }

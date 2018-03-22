@@ -21,10 +21,8 @@ pragma solidity ^0.4.21;
 import "./IAssetTransferProxy.sol";
 import "./IAssetProxy.sol";
 import "../../utils/Authorizable/Authorizable.sol";
-import "../Exchange/LibErrors.sol";
 
 contract AssetTransferProxy is
-    LibErrors,
     Authorizable,
     IAssetTransferProxy
 {
@@ -71,9 +69,7 @@ contract AssetTransferProxy is
         require(currentAssetProxyAddress == address(assetProxies[assetProxyId]));
 
         // Ensure this method is not used to deregister asset proxies
-        if (newAssetProxyAddress == address(0x0)) {
-            LogError(uint8(Errors.UNKNOWN_MAKER_ASSET_PROXY_ID));
-        }
+        require(newAssetProxyAddress != address(0x0));
 
         // Store asset proxy and log registration
         assetProxies[assetProxyId] = IAssetProxy(newAssetProxyAddress);

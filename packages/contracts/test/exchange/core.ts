@@ -96,6 +96,7 @@ describe('Exchange', () => {
 
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
+            AssetProxyId.ERC20,
             assetTransferProxy.address,
         ]);
         exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
