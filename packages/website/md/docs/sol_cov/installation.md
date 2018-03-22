@@ -1,7 +1,7 @@
 **Install**
 
 ```bash
-npm install @0xproject/sol-cov --save
+yarn add @0xproject/sol-cov
 ```
 
 **Import**
