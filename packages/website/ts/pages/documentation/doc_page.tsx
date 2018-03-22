@@ -16,7 +16,7 @@ import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
-const DEFAULT_ICON = 'zeroExJs.png';
+const DEFAULT_ICON = 'docs.png';
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
 const idToIcon: { [id: string]: string } = {
