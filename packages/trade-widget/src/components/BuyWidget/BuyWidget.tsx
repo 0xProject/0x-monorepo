@@ -118,7 +118,7 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
                 </Field> */}
                 <Field style={{ marginTop: 20 }}>
                     <Button
-                        isLoading={_.isUndefined(quote)}
+                        isLoading={!this._hasQuoteForSelectedToken()}
                         isFullWidth={true}
                         isColor="info"
                         onClick={this._handleSubmitAsync}
@@ -188,10 +188,18 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
     private async _quoteSelectedTokenAsync() {
         const { amount } = this.state;
         const { selectedToken, quote } = this.props;
-        if (_.isUndefined(quote) || quote.pair.maker !== selectedToken) {
+        if (!this._hasQuoteForSelectedToken()) {
             const tokenPair: TokenPair = { maker: selectedToken, taker: AssetToken.WETH };
             this.props.dispatcher.quoteRequested(amount, tokenPair);
         }
+    }
+
+    private _hasQuoteForSelectedToken() {
+        const { quote, selectedToken } = this.props;
+        if (_.isUndefined(quote) || quote.pair.maker !== selectedToken) {
+            return false;
+        }
+        return true;
     }
 }
 

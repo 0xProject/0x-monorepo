@@ -1,5 +1,7 @@
 import { SignedOrder } from '0x.js';
 import { BigNumber } from '@0xproject/utils';
+// tslint:disable-next-line:no-var-requires
+const delay = require('delay');
 
 import { LiquidityProvider, OrderUpdateCallback, Quote, TokenPair } from '../types';
 
@@ -50,12 +52,6 @@ const portalOrder = {
 };
 
 class FixedProvider implements LiquidityProvider {
-    // tslint:disable-next-line:prefer-function-over-method no-empty
-    public async start() {}
-
-    // tslint:disable-next-line:prefer-function-over-method no-empty
-    public async stop() {}
-
     public async requestQuoteAsync(amount: BigNumber, pair: TokenPair): Promise<Quote> {
         const latestOrder = await this._fetchLatestOrderAsync();
         return {
@@ -68,6 +64,7 @@ class FixedProvider implements LiquidityProvider {
 
     // tslint:disable-next-line:prefer-function-over-method
     private async _fetchLatestOrderAsync(): Promise<SignedOrder> {
+        await delay(1000);
         return convertPortalOrder(portalOrder);
     }
 }

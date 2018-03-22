@@ -49,8 +49,6 @@ export interface Action {
 export declare type OrderUpdateCallback = (order: SignedOrder) => any;
 export declare type QuoteRequest = (amount: BigNumber, pair: TokenPair) => Promise<Quote>;
 export interface LiquidityProvider {
-    start(): void;
-    stop(): void;
     requestQuoteAsync(amount: BigNumber, pair: TokenPair): Promise<Quote>;
 }
 
