@@ -18,9 +18,13 @@
 
 pragma solidity ^0.4.21;
 
-import { Ownable_v1 as Ownable } from "../../../previous/Ownable/Ownable_v1.sol";
+import "./IAuthorizable.sol";
+import "../Ownable/Ownable.sol";
 
-contract Authorizable is Ownable {
+contract Authorizable is
+    Ownable,
+    IAuthorizable
+{
 
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
@@ -40,9 +44,6 @@ contract Authorizable is Ownable {
 
     mapping (address => bool) public authorized;
     address[] public authorities;
-
-    event LogAuthorizedAddressAdded(address indexed target, address indexed caller);
-    event LogAuthorizedAddressRemoved(address indexed target, address indexed caller);
 
     /*
      * Public functions

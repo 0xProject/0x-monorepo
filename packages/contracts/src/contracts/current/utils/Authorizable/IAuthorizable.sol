@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.21;
 
-import { IOwnable_v1 as IOwnable } from "../../../previous/Ownable/IOwnable_v1.sol";
+import "../Ownable/IOwnable.sol";
 
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
 contract IAuthorizable is IOwnable {

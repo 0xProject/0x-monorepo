@@ -18,30 +18,18 @@
 
 pragma solidity ^0.4.21;
 
+import "./IAssetTransferProxy.sol";
 import "./AssetProxyEncoderDecoder.sol";
 import "./IAssetProxy.sol";
 import "../../utils/Authorizable/Authorizable.sol";
 
 contract AssetTransferProxy is
+    Authorizable,
     AssetProxyEncoderDecoder,
-    Authorizable
+    IAssetTransferProxy
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
-    mapping (uint8 => IAssetProxy) public assetProxies_;
-
-    // Logs registration of new asset proxy
-    event LogAssetProxyRegistration(
-        AssetProxyId id,
-        address assetClassAddress,
-        bool overwrite,
-        bool did_overwrite
-    );
-
-    // Logs unregistration of an existing asset proxy
-    event LogAssetProxyUnregistration(
-        AssetProxyId id,
-        address assetClassAddress
-    );
+    mapping (uint8 => IAssetProxy) public assetProxies;
 
     /// @dev Delegates transfer to the corresponding asset proxy.
     /// @param assetMetadata Byte array encoded for the respective asset proxy.
@@ -61,7 +49,7 @@ contract AssetTransferProxy is
         // Lookup asset proxy
         require(assetMetadata.length >= 1);
         uint8 id = uint8(assetMetadata[0]);
-        IAssetProxy assetProxy = assetProxies_[id];
+        IAssetProxy assetProxy = assetProxies[id];
         require(assetProxy != address(0x0));
 
         // Delegate transfer to asset proxy
@@ -70,12 +58,12 @@ contract AssetTransferProxy is
 
     /// @dev Registers a new asset proxy.
     /// @param assetProxyId Id of the asset proxy.
-    /// @param assetProxyAddress address of the asset proxy contract.
-    /// @param overwrite Any existing asset proxy registered with the same assetProxyId will be overwritten.
+    /// @param newAssetProxyAddress Address of the asset proxy contract to register.
+    /// @param currentAssetProxyAddress Address of existing asset proxy to overwrite.
     function registerAssetProxy(
         AssetProxyId assetProxyId,
-        address assetProxyAddress,
-        bool overwrite)
+        address newAssetProxyAddress,
+        address currentAssetProxyAddress)
         public
         onlyAuthorized
     {
@@ -83,13 +71,15 @@ contract AssetTransferProxy is
         require(uint256(assetProxyId) < 256);
         uint8 id = uint8(assetProxyId);
 
-        // Ensure an existing asset proxy is not unintentionally overwritten
-        bool will_overwrite = (assetProxies_[id] != address(0x0));
-        require(overwrite || !will_overwrite);
+        // Ensure any existing asset proxy is not unintentionally overwritten
+        require(currentAssetProxyAddress == address(assetProxies[id]));
+
+        // Ensure this method is not used to deregister asset proxies
+        require(newAssetProxyAddress != address(0x0));
 
         // Store asset proxy and log registration
-        assetProxies_[id] = IAssetProxy(assetProxyAddress);
-        emit LogAssetProxyRegistration(assetProxyId, assetProxyAddress, overwrite, will_overwrite);
+        assetProxies[id] = IAssetProxy(newAssetProxyAddress);
+        emit LogAssetProxyRegistration(assetProxyId, newAssetProxyAddress, currentAssetProxyAddress);
     }
 
     /// @dev Gets an asset proxy.
@@ -104,16 +94,16 @@ contract AssetTransferProxy is
         uint8 id = uint8(assetProxyId);
 
         // Ensure asset proxy exists
-        IAssetProxy assetProxy = assetProxies_[id];
+        IAssetProxy assetProxy = assetProxies[id];
         require(assetProxy != address(0x0));
 
         // Return asset proxy
         return assetProxy;
     }
 
-    /// @dev Unregisters an asset proxy.
-    /// @param assetProxyId Id of the asset proxy to unregister.
-    function unregisterAssetProxy(AssetProxyId assetProxyId)
+    /// @dev Deregisters an asset proxy.
+    /// @param assetProxyId Id of the asset proxy to deregister.
+    function deregisterAssetProxy(AssetProxyId assetProxyId)
         public
         onlyAuthorized
     {
@@ -122,11 +112,11 @@ contract AssetTransferProxy is
         uint8 id = uint8(assetProxyId);
 
         // Ensure asset proxy exists
-        IAssetProxy assetProxy = assetProxies_[id];
+        IAssetProxy assetProxy = assetProxies[id];
         require(assetProxy != address(0x0));
 
-        // Delete asset proxy and record unregistration
-        delete assetProxies_[id];
-        emit LogAssetProxyUnregistration(assetProxyId, assetProxy);
+        // Delete asset proxy and record deregistration
+        delete assetProxies[id];
+        emit LogAssetProxyDeregistration(assetProxyId, assetProxy);
     }
 }
