@@ -52,8 +52,6 @@ export class Dispatcher {
     }
     public quoteRequested(amount: BigNumber, pair: TokenPair) {
         const quoteRequestThunk = async (dispatch: Dispatch<State>, getState: () => State): Promise<void> => {
-            // tslint:disable-next-line:no-console
-            console.log('asking for a quote request', pair);
             if (getState().isQuoting) {
                 return;
             }

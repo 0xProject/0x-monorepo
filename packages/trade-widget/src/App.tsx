@@ -56,10 +56,6 @@ const dispatcher = new Dispatcher(store.dispatch, liquidityProvider);
 const blockchainSaga = new BlockchainSaga(dispatcher, store, web3Wrapper, zeroEx);
 
 class App extends React.Component {
-    private _provider: FixedProvider;
-    constructor(props: {}) {
-        super(props);
-    }
     // tslint:disable-next-line:prefer-function-over-method member-access
     render() {
         return (
@@ -82,10 +78,6 @@ class App extends React.Component {
                 </Container>
             </Provider>
         );
-    }
-    // tslint:disable-next-line:prefer-function-over-method
-    private async _orderUpdatedAsync(order: SignedOrder): Promise<void> {
-        // dispatcher.updateOrder(order);
     }
 }
 
