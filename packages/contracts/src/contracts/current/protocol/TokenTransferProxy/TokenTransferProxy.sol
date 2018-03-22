@@ -19,11 +19,15 @@
 pragma solidity ^0.4.21;
 
 import { Token_v1 as Token } from "../../../previous/Token/Token_v1.sol";
+import "./ITokenTransferProxy.sol";
 import "../../utils/Authorizable/Authorizable.sol";
 
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
-contract TokenTransferProxy is Authorizable {
+contract TokenTransferProxy is
+    Authorizable,
+    ITokenTransferProxy
+{
 
     /*
      * Public functions

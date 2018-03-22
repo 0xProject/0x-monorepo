@@ -18,24 +18,23 @@
 
 pragma solidity ^0.4.21;
 
-import "./AssetProxyEncoderDecoder.sol";
+import "./IAssetProxyEncoderDecoder.sol";
 import "./IAssetProxy.sol";
-import "../../utils/Authorizable/Authorizable.sol";
+import "../../utils/Authorizable/IAuthorizable.sol";
 
 contract IAssetTransferProxy is
-    AssetProxyEncoderDecoder,
-    Authorizable
+    IAuthorizable,
+    IAssetProxyEncoderDecoder
 {
     // Logs registration of new asset proxy
     event LogAssetProxyRegistration(
         AssetProxyId id,
-        address assetClassAddress,
-        bool overwrite,
-        bool did_overwrite
+        address newAssetClassAddress,
+        address oldAssetClassAddress
     );
 
-    // Logs unregistration of an existing asset proxy
-    event LogAssetProxyUnregistration(
+    // Logs deregistration of an existing asset proxy
+    event LogAssetProxyDeregistration(
         AssetProxyId id,
         address assetClassAddress
     );
@@ -56,12 +55,12 @@ contract IAssetTransferProxy is
 
     /// @dev Registers a new asset proxy.
     /// @param assetProxyId Id of the asset proxy.
-    /// @param assetProxyAddress address of the asset proxy contract.
-    /// @param overwrite Any existing asset proxy registered with the same assetProxyId will be overwritten.
+    /// @param newAssetProxyAddress Address of the asset proxy contract to register.
+    /// @param currentAssetProxyAddress Address of existing asset proxy to overwrite.
     function registerAssetProxy(
         AssetProxyId assetProxyId,
-        address assetProxyAddress,
-        bool overwrite)
+        address newAssetProxyAddress,
+        address currentAssetProxyAddress)
         public;
 
     /// @dev Gets an asset proxy.
@@ -71,8 +70,8 @@ contract IAssetTransferProxy is
         public view
         returns (IAssetProxy);
 
-    /// @dev Unregisters an asset proxy.
-    /// @param assetProxyId Id of the asset proxy to unregister.
-    function unregisterAssetProxy(AssetProxyId assetProxyId)
+    /// @dev Deregisters an asset proxy.
+    /// @param assetProxyId Id of the asset proxy to deregister.
+    function deregisterAssetProxy(AssetProxyId assetProxyId)
         public;
 }

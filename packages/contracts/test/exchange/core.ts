@@ -24,7 +24,7 @@ import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { LogDecoder } from '../../src/utils/log_decoder';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import { BalancesByOwner, ContractName, ExchangeContractErrs, SignatureType, SignedOrder } from '../../src/utils/types';
+import { BalancesByOwner, ContractName, ExchangeContractErrs, SignatureType, SignedOrder, AssetProxyId } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 import { web3, web3Wrapper } from '../utils/web3_wrapper';
@@ -77,6 +77,7 @@ describe('Exchange', () => {
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
         );
+
         const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20TransferProxy, [
             tokenTransferProxy.address,
         ]);
@@ -85,12 +86,14 @@ describe('Exchange', () => {
             erc20TransferProxyInstance.abi,
             erc20TransferProxyInstance.address,
         );
+
         const assetTransferProxyInstance = await deployer.deployAsync(ContractName.AssetTransferProxy);
         assetTransferProxy = new AssetTransferProxyContract(
             web3Wrapper,
             assetTransferProxyInstance.abi,
             assetTransferProxyInstance.address,
         );
+
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             assetTransferProxy.address,
@@ -100,7 +103,8 @@ describe('Exchange', () => {
         await assetTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetTransferProxy.address, { from: accounts[0] });
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxy.address, { from: accounts[0] });
-        await assetTransferProxy.registerAssetProxy.sendTransactionAsync(0, erc20TransferProxy.address, false, { from: assetProxyManagerAddress });
+        const nilAddress = "0x0000000000000000000000000000000000000000";
+        await assetTransferProxy.registerAssetProxy.sendTransactionAsync(AssetProxyId.ERC20, erc20TransferProxy.address, nilAddress, { from: assetProxyManagerAddress });
         zeroEx = new ZeroEx(web3.currentProvider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
@@ -117,8 +121,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetProxyId: 0,
-            takerAssetProxyId: 0,
+            makerAssetProxyId: AssetProxyId.ERC20,
+            takerAssetProxyId: AssetProxyId.ERC20,
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

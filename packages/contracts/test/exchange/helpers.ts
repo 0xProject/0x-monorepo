@@ -10,7 +10,7 @@ import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
 import { orderUtils } from '../../src/utils/order_utils';
-import { ContractName, SignedOrder } from '../../src/utils/types';
+import { ContractName, SignedOrder, AssetProxyId } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 import { web3, web3Wrapper } from '../utils/web3_wrapper';
@@ -52,7 +52,8 @@ describe('Exchange', () => {
         await assetTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
         await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetTransferProxy.address, { from: accounts[0] });
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxy.address, { from: accounts[0] });
-        await assetTransferProxy.registerAssetProxy.sendTransactionAsync(0, erc20TransferProxy.address, false, { from: assetProxyManagerAddress });
+        const nilAddress = "0x0000000000000000000000000000000000000000";
+        await assetTransferProxy.registerAssetProxy.sendTransactionAsync(AssetProxyId.ERC20, erc20TransferProxy.address, nilAddress, { from: assetProxyManagerAddress });
         const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
         exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
         const defaultOrderParams = {
@@ -65,8 +66,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetProxyId: 0,
-            takerAssetProxyId: 0,
+            makerAssetProxyId: AssetProxyId.ERC20,
+            takerAssetProxyId: AssetProxyId.ERC20,
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

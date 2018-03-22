@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "./mixins/MSettlement.sol";
 import "../../tokens/Token/IToken.sol";
 import "./LibPartialAmount.sol";
+import "../AssetTransferProxy/AssetProxyEncoderDecoder.sol";
 import "../AssetTransferProxy/IAssetTransferProxy.sol";
 
 /// @dev Provides MixinSettlement
@@ -72,7 +73,7 @@ contract MixinSettlementProxy is
 
         require(
             TRANSFER_PROXY.transferFrom(
-                encodeMakerMetadata(order.makerAssetProxyId, order.makerTokenAddress, orderHash),
+                encodeMetadata(order.makerAssetProxyId, order.makerTokenAddress),
                 order.makerAddress,
                 takerAddress,
                 makerTokenFilledAmount
@@ -81,7 +82,7 @@ contract MixinSettlementProxy is
 
         require(
             TRANSFER_PROXY.transferFrom(
-                encodeTakerMetadata(order.takerAssetProxyId, order.takerTokenAddress, orderHash),
+                encodeMetadata(order.takerAssetProxyId, order.takerTokenAddress),
                 takerAddress,
                 order.makerAddress,
                 takerTokenFilledAmount

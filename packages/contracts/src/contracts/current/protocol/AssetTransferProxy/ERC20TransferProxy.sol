@@ -18,13 +18,15 @@
 
 pragma solidity ^0.4.21;
 
+import "./IAssetProxy.sol";
 import "./AssetProxyEncoderDecoder.sol";
 import "../TokenTransferProxy/ITokenTransferProxy.sol";
-import {Authorizable as ERC20TransferProxyAuthorizable} from "../../utils/Authorizable/Authorizable.sol";
+import "../../utils/Authorizable/Authorizable.sol";
 
 contract ERC20TransferProxy is
     AssetProxyEncoderDecoder,
-    ERC20TransferProxyAuthorizable
+    Authorizable,
+    IAssetProxy
 {
     ITokenTransferProxy TRANSFER_PROXY;
 

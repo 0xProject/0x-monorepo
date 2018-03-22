@@ -18,9 +18,13 @@
 
 pragma solidity ^0.4.21;
 
-import { Ownable_v1 as Ownable } from "../../../previous/Ownable/Ownable_v1.sol";
+import "./IAuthorizable.sol";
+import "../Ownable/Ownable.sol";
 
-contract Authorizable is Ownable {
+contract Authorizable is
+    Ownable,
+    IAuthorizable
+{
 
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
@@ -41,9 +45,6 @@ contract Authorizable is Ownable {
     mapping (address => bool) public authorized;
     address[] public authorities;
 
-    event LogAuthorizedAddressAdded(address indexed target, address indexed caller);
-    event LogAuthorizedAddressRemoved(address indexed target, address indexed caller);
-
     /*
      * Public functions
      */
@@ -57,7 +58,7 @@ contract Authorizable is Ownable {
     {
         authorized[target] = true;
         authorities.push(target);
-        LogAuthorizedAddressAdded(target, msg.sender);
+        emit LogAuthorizedAddressAdded(target, msg.sender);
     }
 
     /// @dev Removes authorizion of an address.
@@ -75,7 +76,21 @@ contract Authorizable is Ownable {
                 break;
             }
         }
-        LogAuthorizedAddressRemoved(target, msg.sender);
+        emit LogAuthorizedAddressRemoved(target, msg.sender);
+    }
+
+    /// @dev Removes authorizion of an address.
+    /// @param target Address to remove authorization from.
+    /// @param index Index of target in authorities array.
+    function removeAuthorizedAddressAtIndex(address target, uint256 index)
+        public
+    {
+        require(index < authorities.length);
+        require(authorities[index] == target);
+        delete authorized[target];
+        authorities[index] = authorities[authorities.length - 1];
+        authorities.length -= 1;
+        emit LogAuthorizedAddressRemoved(target, msg.sender);
     }
 
     /*

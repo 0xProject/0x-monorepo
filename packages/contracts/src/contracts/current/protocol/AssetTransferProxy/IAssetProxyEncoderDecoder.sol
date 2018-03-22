@@ -18,52 +18,33 @@
 
 pragma solidity ^0.4.21;
 
-import "../../utils/Memory/Memory.sol";
-import "./IAssetProxyEncoderDecoder.sol";
+contract IAssetProxyEncoderDecoder {
 
-contract AssetProxyEncoderDecoder is
-    Memory,
-    IAssetProxyEncoderDecoder
-{
+    // Supported asset proxies
+    enum AssetProxyId {
+        INVALID,
+        ERC20
+    }
+
     /// @dev Encodes ERC20 order metadata into a byte array for the ERC20 asset proxy.
     /// @param tokenAddress Address of ERC20 token.
     /// @return assetMetadata Byte array encoded for the ERC20 asset proxy.
     function encodeERC20Metadata(address tokenAddress)
         public pure
-        returns (bytes assetMetadata)
-    {
-        assetMetadata = new bytes(21);
-        assetMetadata[0] = byte(uint8(AssetProxyId.ERC20));
-        writeAddress(tokenAddress, assetMetadata, 1);
-        return assetMetadata;
-    }
-
+        returns (bytes assetMetadata);
     /// @dev Decodes ERC20-encoded byte array for the ERC20 asset proxy.
     /// @param assetMetadata Byte array encoded for the ERC20 asset proxy.
     /// @return tokenAddress Address of ERC20 token.
     function decodeERC20Metadata(bytes assetMetadata)
         public pure
-        returns (address tokenAddress)
-    {
-        require(assetMetadata.length == 21);
-        require(assetMetadata[0] == byte(uint8(AssetProxyId.ERC20)));
-        return readAddress(assetMetadata, 1);
-    }
+        returns (address tokenAddress);
 
     /// @dev Returns true if the input is a valid AssetProxyId.
     /// @param assetProxyId Id of the asset proxy.
     /// @return isValid True only if assetProxyId is a valid AssetProxyId.
     function isValidAssetProxyId(uint8 assetProxyId)
         public pure
-        returns (bool isValid)
-    {
-        isValid = false;
-        if (AssetProxyId(assetProxyId) == AssetProxyId.ERC20) {
-            isValid = true;
-        }
-
-        return isValid;
-    }
+        returns (bool isValid);
 
     /// @dev Encodes an order's metadata into a byte array for the respective asset proxy.
     /// @param assetProxyId Id of the asset proxy.
@@ -73,13 +54,5 @@ contract AssetProxyEncoderDecoder is
         uint8 assetProxyId,
         address tokenAddress)
         public pure
-        returns (bytes assetMetadata)
-    {
-        if (AssetProxyId(assetProxyId) == AssetProxyId.ERC20) {
-            return encodeERC20Metadata(tokenAddress);
-        }
-
-        // Unrecognized or invalid assetProxyId
-        revert();
-    }
+        returns (bytes assetMetadata);
 }

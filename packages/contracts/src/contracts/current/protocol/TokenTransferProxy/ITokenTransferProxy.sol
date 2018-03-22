@@ -18,11 +18,9 @@
 
 pragma solidity ^0.4.21;
 
-import "../../utils/Authorizable/IAuthorizable.sol";
-
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>
-contract ITokenTransferProxy is IAuthorizable {
+contract ITokenTransferProxy {
 
     /// @dev Calls into ERC20 Token contract, invoking transferFrom.
     /// @param token Address of token to transfer.
