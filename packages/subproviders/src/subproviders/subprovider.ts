@@ -46,10 +46,10 @@ export class Subprovider {
     }
     /**
      * Set's the subprovider's engine to the ProviderEngine it is added to.
-     * This is only called within the ProviderEngine source code
+     * This is only called within the ProviderEngine source code, do not call
+     * directly.
      */
-    // tslint:disable-next-line:underscore-private-and-protected
-    private setEngine(engine: any): void {
+    public setEngine(engine: any): void {
         this._engine = engine;
     }
 }
