@@ -58,7 +58,7 @@ contract Authorizable is
     {
         authorized[target] = true;
         authorities.push(target);
-        LogAuthorizedAddressAdded(target, msg.sender);
+        emit LogAuthorizedAddressAdded(target, msg.sender);
     }
 
     /// @dev Removes authorizion of an address.
@@ -76,7 +76,21 @@ contract Authorizable is
                 break;
             }
         }
-        LogAuthorizedAddressRemoved(target, msg.sender);
+        emit LogAuthorizedAddressRemoved(target, msg.sender);
+    }
+
+    /// @dev Removes authorizion of an address.
+    /// @param target Address to remove authorization from.
+    /// @param index Index of target in authorities array.
+    function removeAuthorizedAddress(address target, uint256 index)
+        public
+    {
+        require(index < authorities.length);
+        require(authorities[index] == target);
+        delete authorized[target];
+        authorities[index] = authorities[authorities.length - 1];
+        authorities.length -= 1;
+        emit LogAuthorizedAddressRemoved(target, msg.sender);
     }
 
     /*
