@@ -281,6 +281,9 @@ export class ExchangeWrapper extends ContractWrapper {
                     zrxTokenAddress,
                 );
                 filledTakerTokenAmount = filledTakerTokenAmount.plus(singleFilledTakerTokenAmount);
+                if (filledTakerTokenAmount.eq(fillTakerTokenAmount)) {
+                    break;
+                }
             }
         }
 
