@@ -35,7 +35,7 @@ export const constants = {
     UNAVAILABLE_STATUS: 503,
     TAKER_FEE: new BigNumber(0),
     TESTNET_NAME: 'Kovan',
-    PROJECT_URL_ETHFINEX: 'https://www.bitfinex.com/ethfinex',
+    PROJECT_URL_ETHFINEX: 'https://www.ethfinex.com/',
     PROJECT_URL_AMADEUS: 'http://amadeusrelay.org',
     PROJECT_URL_DDEX: 'https://ddex.io',
     PROJECT_URL_DECENT_EX: 'https://decent.exchange',
