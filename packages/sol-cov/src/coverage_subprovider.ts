@@ -49,9 +49,16 @@ export class CoverageSubprovider extends Subprovider {
     public async writeCoverageAsync(): Promise<void> {
         await this._coverageManager.writeCoverageAsync();
     }
-    // This method must conform to the web3-provider-engine interface
-    // tslint:disable-next-line:prefer-function-over-method underscore-private-and-protected
-    private handleRequest(payload: Web3.JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
+    /**
+     * This method conforms to the web3-provider-engine interface.
+     * It is called internally by the ProviderEngine when it is this subproviders
+     * turn to handle a JSON RPC request.
+     * @param payload JSON RPC payload
+     * @param next Callback to call if this subprovider decides not to handle the request
+     * @param end Callback to call if subprovider handled the request and wants to pass back the request.
+     */
+    // tslint:disable-next-line:prefer-function-over-method
+    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
         switch (payload.method) {
             case 'eth_sendTransaction':
                 const txData = payload.params[0];

@@ -4,8 +4,6 @@
 
     * Introduce `JSONRPCRequestPayloadWithMethod` type (#465)
     * Export `ErrorCallback` type. (#465)
-    * Make `handleRequest` private in `LedgerSubprovider` since it should only be used
-    internally by the providerEngine. (#465)
 
 ## v0.8.0 - _March 18, 2018_
 
