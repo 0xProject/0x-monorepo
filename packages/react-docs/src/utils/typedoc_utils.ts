@@ -85,6 +85,16 @@ export const typeDocUtils = {
             let entities;
             let packageComment = '';
             // HACK: We assume 1 exported class per file
+            const numClassChildren = _.reduce(
+                packageDefinitionWithMergedChildren.children,
+                (sum: number, child: TypeDocNode) => {
+                    const nextSum = child.kindString === KindString.Class ? sum + 1 : sum;
+                    return nextSum;
+                },
+            );
+            if (numClassChildren > 1) {
+                throw new Error('`react-docs` only supports projects with 1 exported class per file');
+            }
             const isClassExport = packageDefinitionWithMergedChildren.children[0].kindString === KindString.Class;
             if (isClassExport) {
                 entities = packageDefinitionWithMergedChildren.children[0].children;
