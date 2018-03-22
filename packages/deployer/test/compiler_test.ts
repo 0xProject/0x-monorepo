@@ -10,7 +10,8 @@ import { constants } from './util/constants';
 
 const expect = chai.expect;
 
-describe('#Compiler', () => {
+describe('#Compiler', function() {
+    this.timeout(constants.timeoutMs);
     const artifactsDir = `${__dirname}/fixtures/artifacts`;
     const contractsDir = `${__dirname}/fixtures/contracts`;
     const exchangeArtifactPath = `${artifactsDir}/Exchange.json`;
@@ -22,8 +23,7 @@ describe('#Compiler', () => {
         specifiedContracts: new Set(constants.specifiedContracts),
     };
     const compiler = new Compiler(compilerOpts);
-    beforeEach(function(done: DoneCallback) {
-        this.timeout(constants.timeoutMs);
+    beforeEach((done: DoneCallback) => {
         (async () => {
             if (fsWrapper.doesPathExistSync(exchangeArtifactPath)) {
                 await fsWrapper.removeFileAsync(exchangeArtifactPath);
