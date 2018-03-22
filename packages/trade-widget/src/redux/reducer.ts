@@ -86,6 +86,12 @@ function appReducer(state: State = INITIAL_STATE, action: Action) {
                 isQuoting: true,
             };
         }
+        case ActionTypes.QuoteRequestFailed: {
+            return {
+                ...state,
+                isQuoting: false,
+            };
+        }
         case ActionTypes.QuoteReceived: {
             const { quote } = action.data;
             return {

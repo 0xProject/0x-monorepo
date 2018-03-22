@@ -60,11 +60,18 @@ export class Dispatcher {
                 type: ActionTypes.QuoteRequested,
             });
 
-            const quote = await this._liquidityProvider.requestQuoteAsync(amount, pair);
-            dispatch({
-                data: { quote },
-                type: ActionTypes.QuoteReceived,
-            });
+            try {
+                const quote = await this._liquidityProvider.requestQuoteAsync(amount, pair);
+                dispatch({
+                    data: { quote },
+                    type: ActionTypes.QuoteReceived,
+                });
+            } catch (err) {
+                dispatch({
+                    data: { amount, pair },
+                    type: ActionTypes.QuoteRequestFailed,
+                });
+            }
         };
         // tslint:disable-next-line
         this._dispatch(quoteRequestThunk);

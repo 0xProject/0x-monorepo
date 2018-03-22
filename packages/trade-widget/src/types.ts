@@ -40,6 +40,7 @@ export enum ActionTypes {
     TransactionMined = 'TRANSACTION_MINED',
     QuoteRequested = 'QUOTE_REQUESTED',
     QuoteReceived = 'QUOTE_RECEIVED',
+    QuoteRequestFailed = 'QUOTE_REQUEST_FAILED',
 }
 export interface Action {
     type: ActionTypes;
