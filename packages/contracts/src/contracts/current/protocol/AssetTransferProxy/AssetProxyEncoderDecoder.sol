@@ -34,7 +34,7 @@ contract AssetProxyEncoderDecoder is
     {
         assetMetadata = new bytes(21);
         assetMetadata[0] = byte(uint8(AssetProxyId.ERC20));
-        putAddress(tokenAddress, assetMetadata, 1);
+        writeAddress(tokenAddress, assetMetadata, 1);
         return assetMetadata;
     }
 
@@ -47,7 +47,7 @@ contract AssetProxyEncoderDecoder is
     {
         require(assetMetadata.length == 21);
         require(assetMetadata[0] == byte(uint8(AssetProxyId.ERC20)));
-        return getAddress(assetMetadata, 1);
+        return readAddress(assetMetadata, 1);
     }
 
     /// @dev Returns true if the input is a valid AssetProxyId.

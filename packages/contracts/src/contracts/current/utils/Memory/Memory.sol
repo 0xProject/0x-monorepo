@@ -20,11 +20,11 @@ pragma solidity ^0.4.21;
 
 contract Memory {
 
-    /// @dev Gets an address from a position in a byte array.
+    /// @dev Reads an address from a position in a byte array.
     /// @param b Byte array containing an address.
     /// @param index Index in byte array of address.
     /// @return address from byte array.
-    function getAddress(
+    function readAddress(
         bytes b,
         uint256 index)
         public pure
@@ -47,11 +47,11 @@ contract Memory {
         return result;
     }
 
-    /// @dev Puts an address into a specific position in a byte array.
+    /// @dev Writes an address into a specific position in a byte array.
     /// @param input Address to put into byte array.
     /// @param b Byte array to insert address into.
     /// @param index Index in byte array of address.
-    function putAddress(
+    function writeAddress(
         address input,
         bytes b,
         uint256 index)
