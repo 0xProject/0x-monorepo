@@ -8,8 +8,8 @@ Deployer has the following advantages over Truffle:
 *   Improved artifact files:
     *   Properly segregated artifacts to support storing different versions of smart contract deployed on different networks.
     *   Storage of contructor args and contract source code
-*   An easy to maintain codebase: TypeScript + Single package
-*   Allows you to specify the deployer address
+*   An easy to maintain codebase: TypeScript + Single repo
+*   Allows you to specify the deployer RPC address
 *   Migrations that work with `async/await`
 *   Migrations that can be written synchronously in order to guarentee deterministic contract addresses
 *   No race conditions when running migrations.
