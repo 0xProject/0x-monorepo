@@ -43,7 +43,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const { sectionName, markdownContent, headerSize, githubLink } = this.props as PropsWithDefaults;
 
         const id = utils.getIdFromName(sectionName);
-        const finalSectionName = sectionName.replace(/-/g, ' ');
+        const finalSectionName = utils.convertDashesToSpaces(sectionName);
         return (
             <div
                 className="md-px1 sm-px2 overflow-hidden"

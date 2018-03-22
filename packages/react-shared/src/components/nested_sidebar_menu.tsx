@@ -45,7 +45,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     };
     public render() {
         const navigation = _.map(this.props.topLevelMenu, (menuItems: string[], sectionName: string) => {
-            const finalSectionName = sectionName.replace(/-/g, ' ');
+            const finalSectionName = utils.convertDashesToSpaces(sectionName);
             if (this.props.shouldDisplaySectionHeaders) {
                 const id = utils.getIdFromName(sectionName);
                 return (
@@ -85,7 +85,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             : styles.menuItemWithoutHeaders;
         const menuItemInnerDivStyles = this.props.shouldDisplaySectionHeaders ? styles.menuItemInnerDivWithHeaders : {};
         const menuItems = _.map(menuItemNames, menuItemName => {
-            const finalMenuItemName = menuItemName.replace(/-/g, ' ');
+            const finalMenuItemName = utils.convertDashesToSpaces(menuItemName);
             const id = utils.getIdFromName(menuItemName);
             return (
                 <div key={menuItemName}>

@@ -30,6 +30,9 @@ export const utils = {
         const id = name.replace(/ /g, '-');
         return id;
     },
+    convertDashesToSpaces(text: string) {
+        return text.replace(/-/g, ' ');
+    },
     getEtherScanLinkIfExists(
         addressOrTxHash: string,
         networkId: number,
