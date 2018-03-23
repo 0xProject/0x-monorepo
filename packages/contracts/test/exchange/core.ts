@@ -601,7 +601,7 @@ describe('Exchange', () => {
             expect(res.logs).to.have.length(1);
             const log = logDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<LogErrorContractEventArgs>;
             const errCode = log.args.errorId;
-            expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
+            expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED);
         });
     });
 
@@ -663,7 +663,7 @@ describe('Exchange', () => {
             expect(res.logs).to.have.length(1);
             const log = logDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<LogErrorContractEventArgs>;
             const errCode = log.args.errorId;
-            expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED_OR_CANCELLED);
+            expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_CANCELLED);
         });
 
         it('should log error if order is expired', async () => {

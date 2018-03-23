@@ -94,7 +94,7 @@ contract MixinExchangeCore is
 
         // Check if order has been cancelled
         if (cancelled[orderHash]) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
+            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
             return 0;
         }
 
@@ -182,7 +182,7 @@ contract MixinExchangeCore is
         }
 
         if (cancelled[orderHash]) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
+            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
             return false;
         }
 
