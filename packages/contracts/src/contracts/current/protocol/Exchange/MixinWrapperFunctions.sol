@@ -262,17 +262,11 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of orders.
-    /// @param takerTokenCancelAmounts Array of desired amounts of takerToken to cancel in orders.
-    function batchCancelOrders(
-        Order[] orders,
-        uint256[] takerTokenCancelAmounts)
+    function batchCancelOrders(Order[] orders)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            cancelOrder(
-                orders[i],
-                takerTokenCancelAmounts[i]
-            );
+            cancelOrder(orders[i]);
         }
     }
     

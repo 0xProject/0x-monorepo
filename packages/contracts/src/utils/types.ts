@@ -25,7 +25,6 @@ export interface MarketFillOrders {
 
 export interface BatchCancelOrders {
     orders: OrderStruct[];
-    takerTokenCancelAmounts: BigNumber[];
 }
 
 export interface CancelOrdersBefore {
