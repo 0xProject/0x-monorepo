@@ -10,6 +10,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import { List, ListItem } from 'material-ui/List';
+import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 import NavigationArrowUpward from 'material-ui/svg-icons/navigation/arrow-upward';
 import Close from 'material-ui/svg-icons/navigation/close';
@@ -21,9 +22,19 @@ import { Blockchain } from 'ts/blockchain';
 import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
 import { Identicon } from 'ts/components/ui/identicon';
 import { TokenIcon } from 'ts/components/ui/token_icon';
+import { WalletDisconnectedItem } from 'ts/components/wallet/wallet_disconnected_item';
 import { WrapEtherItem } from 'ts/components/wallet/wrap_ether_item';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { BalanceErrs, BlockchainErrs, Side, Token, TokenByAddress, TokenState, TokenStateByAddress } from 'ts/types';
+import {
+    BalanceErrs,
+    BlockchainErrs,
+    ProviderType,
+    Side,
+    Token,
+    TokenByAddress,
+    TokenState,
+    TokenStateByAddress,
+} from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 import { styles as walletItemStyles } from 'ts/utils/wallet_item_styles';
@@ -39,6 +50,9 @@ export interface WalletProps {
     trackedTokens: Token[];
     userEtherBalanceInWei: BigNumber;
     lastForceTokenStateRefetch: number;
+    injectedProviderName: string;
+    providerType: ProviderType;
+    onToggleLedgerDialog: () => void;
 }
 
 interface WalletState {
@@ -163,18 +177,42 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return <div style={styles.wallet}>{isReadyToRender && this._renderRows()}</div>;
     }
     private _renderRows() {
+        const isAddressAvailable = !_.isEmpty(this.props.userAddress);
         return (
             <List style={styles.list}>
-                {_.concat(
-                    this._renderHeaderRows(),
-                    this._renderEthRows(),
-                    this._renderTokenRows(),
-                    this._renderFooterRows(),
-                )}
+                {isAddressAvailable
+                    ? _.concat(
+                          this._renderConnectedHeaderRows(),
+                          this._renderEthRows(),
+                          this._renderTokenRows(),
+                          this._renderFooterRows(),
+                      )
+                    : _.concat(this._renderDisconnectedHeaderRows(), this._renderDisconnectedRows())}
             </List>
         );
     }
-    private _renderHeaderRows() {
+    private _renderDisconnectedHeaderRows() {
+        const userAddress = this.props.userAddress;
+        const primaryText = 'wallet';
+        return (
+            <ListItem
+                primaryText={primaryText.toUpperCase()}
+                leftIcon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
+                style={styles.paddedItem}
+                innerDivStyle={styles.headerItemInnerDiv}
+            />
+        );
+    }
+    private _renderDisconnectedRows() {
+        return (
+            <WalletDisconnectedItem
+                providerType={this.props.providerType}
+                injectedProviderName={this.props.injectedProviderName}
+                onToggleLedgerDialog={this.props.onToggleLedgerDialog}
+            />
+        );
+    }
+    private _renderConnectedHeaderRows() {
         const userAddress = this.props.userAddress;
         const primaryText = utils.getAddressBeginAndEnd(userAddress);
         return (
