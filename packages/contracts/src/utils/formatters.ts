@@ -55,10 +55,9 @@ export const formatters = {
         });
         return marketFillOrders;
     },
-    createBatchCancel(signedOrders: SignedOrder[], takerTokenCancelAmounts: BigNumber[] = []) {
+    createBatchCancel(signedOrders: SignedOrder[]) {
         const batchCancel: BatchCancelOrders = {
             orders: [],
-            takerTokenCancelAmounts,
         };
         _.forEach(signedOrders, signedOrder => {
             batchCancel.orders.push({
@@ -74,9 +73,6 @@ export const formatters = {
                 expirationTimeSeconds: signedOrder.expirationTimeSeconds,
                 salt: signedOrder.salt,
             });
-            if (takerTokenCancelAmounts.length < signedOrders.length) {
-                batchCancel.takerTokenCancelAmounts.push(signedOrder.takerTokenAmount);
-            }
         });
         return batchCancel;
     },
