@@ -724,9 +724,7 @@ describe('Exchange', () => {
         describe('batchCancelOrders', () => {
             it('should be able to cancel multiple signedOrders', async () => {
                 const takerTokenCancelAmounts = _.map(signedOrders, signedOrder => signedOrder.takerTokenAmount);
-                await exWrapper.batchCancelOrdersAsync(signedOrders, makerAddress, {
-                    takerTokenCancelAmounts,
-                });
+                await exWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
 
                 await exWrapper.batchFillOrdersAsync(signedOrders, takerAddress, {
                     takerTokenFillAmounts: takerTokenCancelAmounts,
