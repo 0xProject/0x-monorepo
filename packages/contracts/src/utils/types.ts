@@ -28,6 +28,10 @@ export interface BatchCancelOrders {
     takerTokenCancelAmounts: BigNumber[];
 }
 
+export interface CancelOrdersBefore {
+    salt: BigNumber;
+}
+
 export enum AssetProxyId {
     INVALID,
     ERC20_V1,

@@ -43,6 +43,10 @@ contract MixinExchangeCore is
     mapping (bytes32 => uint256) public filled;
     mapping (bytes32 => uint256) public cancelled;
 
+    // Mapping of makerAddress => lowest salt an order can have in order to be fillable
+    // Orders with a salt less than their maker's epoch are considered cancelled
+    mapping (address => uint256) public makerEpoch;
+
     event LogFill(
         address indexed makerAddress,
         address takerAddress,
@@ -64,6 +68,11 @@ contract MixinExchangeCore is
         uint256 makerTokenCancelledAmount,
         uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
+    );
+
+    event LogCancelUpTo(
+        address indexed maker,
+        uint256 makerEpoch
     );
 
     /*
@@ -116,6 +125,12 @@ contract MixinExchangeCore is
         // Validate fill order rounding
         if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
+            return 0;
+        }
+
+        // Validate order is not cancelled
+        if (order.salt < makerEpoch[order.makerAddress]) {
+            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
             return 0;
         }
 
@@ -185,6 +200,16 @@ contract MixinExchangeCore is
             orderHash
         );
         return takerTokenCancelledAmount;
+    }
+
+    /// @param salt Orders created with a salt less or equal to this value will be cancelled.
+    function cancelOrdersUpTo(uint256 salt)
+        external
+    {
+        uint256 newMakerEpoch = salt + 1;                // makerEpoch is initialized to 0, so to cancelUpTo we need salt+1
+        require(newMakerEpoch > makerEpoch[msg.sender]); // epoch must be monotonically increasing
+        makerEpoch[msg.sender] = newMakerEpoch;
+        LogCancelUpTo(msg.sender, newMakerEpoch);
     }
 
     /// @dev Checks if rounding error > 0.1%.
