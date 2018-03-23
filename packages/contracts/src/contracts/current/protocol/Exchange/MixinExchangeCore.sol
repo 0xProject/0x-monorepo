@@ -73,7 +73,7 @@ contract MixinExchangeCore is
         bytes32 indexed orderHash
     );
 
-    event LogCancelUpTo(
+    event CancelUpTo(
         address indexed maker,
         uint256 makerEpoch
     );
@@ -139,7 +139,7 @@ contract MixinExchangeCore is
 
         // Validate order is not cancelled
         if (order.salt < makerEpoch[order.makerAddress]) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
+            emit ExchangeError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
             return 0;
         }
 
@@ -232,7 +232,7 @@ contract MixinExchangeCore is
         uint256 newMakerEpoch = salt + 1;                // makerEpoch is initialized to 0, so to cancelUpTo we need salt+1
         require(newMakerEpoch > makerEpoch[msg.sender]); // epoch must be monotonically increasing
         makerEpoch[msg.sender] = newMakerEpoch;
-        LogCancelUpTo(msg.sender, newMakerEpoch);
+        emit CancelUpTo(msg.sender, newMakerEpoch);
     }
 
     /// @dev Checks if rounding error > 0.1%.
