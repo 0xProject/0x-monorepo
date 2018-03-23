@@ -33,6 +33,10 @@ import { utils } from './utils/utils';
 
 const ALL_CONTRACTS_IDENTIFIER = '*';
 
+/**
+ * The Compiler facilitates compiling Solidity smart contracts and saves the results
+ * to artifact files.
+ */
 export class Compiler {
     private _contractsDir: string;
     private _networkId: number;
@@ -96,7 +100,7 @@ export class Compiler {
         this._specifiedContracts = opts.specifiedContracts;
     }
     /**
-     * Compiles selected Solidity files and writes JSON artifacts to artifactsDir.
+     * Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
      */
     public async compileAsync(): Promise<void> {
         await createArtifactsDirIfDoesNotExistAsync(this._artifactsDir);

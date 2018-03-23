@@ -96,5 +96,5 @@
         "jsx-wrap-multiline": false,
         "jsx-no-bind": false
     },
-    "rulesDirectory": "lib"
+    "rulesDirectory": "lib/rules"
 }

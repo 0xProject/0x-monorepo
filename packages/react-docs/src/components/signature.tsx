@@ -3,28 +3,33 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { DocsInfo } from '../docs_info';
-import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptMethod } from '../types';
+import { Parameter, Type as TypeDef, TypeDefinitionByName, TypeParameter } from '../types';
 import { constants } from '../utils/constants';
 
 import { Type } from './type';
 
-export interface MethodSignatureProps {
-    method: TypescriptMethod | SolidityMethod;
+export interface SignatureProps {
+    name: string;
+    returnType: TypeDef;
+    parameters: Parameter[];
     sectionName: string;
     shouldHideMethodName?: boolean;
     shouldUseArrowSyntax?: boolean;
     typeDefinitionByName?: TypeDefinitionByName;
+    typeParameter?: TypeParameter;
+    callPath?: string;
     docsInfo: DocsInfo;
 }
 
 const defaultProps = {
     shouldHideMethodName: false,
     shouldUseArrowSyntax: false,
+    callPath: '',
 };
 
-export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSignatureProps) => {
+export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
     const sectionName = constants.TYPES_SECTION_NAME;
-    const parameters = renderParameters(props.method, props.docsInfo, sectionName, props.typeDefinitionByName);
+    const parameters = renderParameters(props.parameters, props.docsInfo, sectionName, props.typeDefinitionByName);
     const paramStringArray: any[] = [];
     // HACK: For now we don't put params on newlines if there are less then 2 of them.
     // Ideally we would check the character length of the resulting method signature and
@@ -51,21 +56,21 @@ export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSi
     if (!hasMoreThenTwoParams) {
         paramStringArray.pop();
     }
-    const methodName = props.shouldHideMethodName ? '' : props.method.name;
-    const typeParameterIfExists = _.isUndefined((props.method as TypescriptMethod).typeParameter)
+    const methodName = props.shouldHideMethodName ? '' : props.name;
+    const typeParameterIfExists = _.isUndefined(props.typeParameter)
         ? undefined
-        : renderTypeParameter(props.method, props.docsInfo, sectionName, props.typeDefinitionByName);
+        : renderTypeParameter(props.typeParameter, props.docsInfo, sectionName, props.typeDefinitionByName);
     return (
         <span style={{ fontSize: 15 }}>
-            {props.method.callPath}
+            {props.callPath}
             {methodName}
             {typeParameterIfExists}({hasMoreThenTwoParams && <br />}
             {paramStringArray})
-            {props.method.returnType && (
+            {props.returnType && (
                 <span>
                     {props.shouldUseArrowSyntax ? ' => ' : ': '}{' '}
                     <Type
-                        type={props.method.returnType}
+                        type={props.returnType}
                         sectionName={sectionName}
                         typeDefinitionByName={props.typeDefinitionByName}
                         docsInfo={props.docsInfo}
@@ -76,15 +81,14 @@ export const MethodSignature: React.SFC<MethodSignatureProps> = (props: MethodSi
     );
 };
 
-MethodSignature.defaultProps = defaultProps;
+Signature.defaultProps = defaultProps;
 
 function renderParameters(
-    method: TypescriptMethod | SolidityMethod,
+    parameters: Parameter[],
     docsInfo: DocsInfo,
     sectionName: string,
     typeDefinitionByName?: TypeDefinitionByName,
 ) {
-    const parameters = method.parameters;
     const params = _.map(parameters, (p: Parameter) => {
         const isOptional = p.isOptional;
         const type = (
@@ -106,12 +110,11 @@ function renderParameters(
 }
 
 function renderTypeParameter(
-    method: TypescriptMethod,
+    typeParameter: TypeParameter,
     docsInfo: DocsInfo,
     sectionName: string,
     typeDefinitionByName?: TypeDefinitionByName,
 ) {
-    const typeParameter = method.typeParameter;
     const typeParam = (
         <span>
             {`<${typeParameter.name} extends `}

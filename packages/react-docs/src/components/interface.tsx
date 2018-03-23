@@ -4,7 +4,7 @@ import * as React from 'react';
 import { DocsInfo } from '../docs_info';
 import { CustomType, TypeDocTypes } from '../types';
 
-import { MethodSignature } from './method_signature';
+import { Signature } from './signature';
 import { Type } from './type';
 
 export interface InterfaceProps {
@@ -22,8 +22,12 @@ export function Interface(props: InterfaceProps) {
                 {property.type.typeDocType !== TypeDocTypes.Reflection ? (
                     <Type type={property.type} sectionName={props.sectionName} docsInfo={props.docsInfo} />
                 ) : (
-                    <MethodSignature
-                        method={property.type.method}
+                    <Signature
+                        name={property.type.method.name}
+                        returnType={property.type.method.returnType}
+                        parameters={property.type.method.parameters}
+                        typeParameter={property.type.method.typeParameter}
+                        callPath={property.type.method.callPath}
                         sectionName={props.sectionName}
                         shouldHideMethodName={true}
                         shouldUseArrowSyntax={true}

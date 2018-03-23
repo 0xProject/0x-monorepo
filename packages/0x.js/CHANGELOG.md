@@ -3,6 +3,7 @@
 ## v0.34.0 - _TBD_
 
     * Update Kovan EtherToken artifact address to match TokenRegistry.
+    * Fix the bug causing `zeroEx.exchange.fillOrdersUpToAsync` validation to fail if there were some extra orders passed (#470)
 
 ## v0.33.2 - _March 18, 2018_
 

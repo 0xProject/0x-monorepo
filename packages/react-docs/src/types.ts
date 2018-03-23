@@ -42,6 +42,7 @@ export interface TypeDocFlags {
     isStatic?: boolean;
     isOptional?: boolean;
     isPublic?: boolean;
+    isExported?: boolean;
 }
 
 export interface TypeDocGroup {
@@ -96,6 +97,7 @@ export enum KindString {
     Variable = 'Variable',
     Function = 'Function',
     Enumeration = 'Enumeration',
+    Class = 'Class',
 }
 
 export interface DocAgnosticFormat {
@@ -108,12 +110,18 @@ export interface DocSection {
     methods: Array<TypescriptMethod | SolidityMethod>;
     properties: Property[];
     types: CustomType[];
+    functions?: TypescriptFunction[];
     events?: Event[];
 }
 
 export interface TypescriptMethod extends BaseMethod {
     source?: Source;
     isStatic?: boolean;
+    typeParameter?: TypeParameter;
+}
+
+export interface TypescriptFunction extends BaseFunction {
+    source?: Source;
     typeParameter?: TypeParameter;
 }
 
@@ -200,6 +208,14 @@ export interface BaseMethod {
     name: string;
     returnComment?: string | undefined;
     callPath: string;
+    parameters: Parameter[];
+    returnType: Type;
+    comment?: string;
+}
+
+export interface BaseFunction {
+    name: string;
+    returnComment?: string | undefined;
     parameters: Parameter[];
     returnType: Type;
     comment?: string;

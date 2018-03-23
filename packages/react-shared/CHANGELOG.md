@@ -1,3 +1,6 @@
 # CHANGELOG
 
-## v0.0.1 - _March 8, 2018_
+## v0.1.0 - _TBD, 2018_
+
+    * Added new colors (#468)
+    * Fix section and menuItem text display to replace dashes with spaces.

@@ -45,7 +45,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     };
     public render() {
         const navigation = _.map(this.props.topLevelMenu, (menuItems: string[], sectionName: string) => {
-            const finalSectionName = sectionName.replace(/-/g, ' ');
+            const finalSectionName = utils.convertDashesToSpaces(sectionName);
             if (this.props.shouldDisplaySectionHeaders) {
                 const id = utils.getIdFromName(sectionName);
                 return (
@@ -85,6 +85,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             : styles.menuItemWithoutHeaders;
         const menuItemInnerDivStyles = this.props.shouldDisplaySectionHeaders ? styles.menuItemInnerDivWithHeaders : {};
         const menuItems = _.map(menuItemNames, menuItemName => {
+            const finalMenuItemName = utils.convertDashesToSpaces(menuItemName);
             const id = utils.getIdFromName(menuItemName);
             return (
                 <div key={menuItemName}>
@@ -96,11 +97,11 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                         containerId={constants.DOCS_CONTAINER_ID}
                     >
                         <MenuItem
-                            onTouchTap={this._onMenuItemClick.bind(this, menuItemName)}
+                            onTouchTap={this._onMenuItemClick.bind(this, finalMenuItemName)}
                             style={menuItemStyles}
                             innerDivStyle={menuItemInnerDivStyles}
                         >
-                            <span style={{ textTransform: 'capitalize' }}>{menuItemName}</span>
+                            <span style={{ textTransform: 'capitalize' }}>{finalMenuItemName}</span>
                         </MenuItem>
                     </ScrollLink>
                     {this._renderMenuItemSubsections(menuItemName)}
@@ -122,7 +123,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                     const name = `${menuItemName}-${entityName}`;
                     const id = utils.getIdFromName(name);
                     return (
-                        <li key={`menuItem-${entityName}`}>
+                        <li key={`menuSubsectionItem-${name}`}>
                             <ScrollLink
                                 to={id}
                                 offset={0}

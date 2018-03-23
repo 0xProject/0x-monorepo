@@ -45,6 +45,21 @@ const LazySmartContractsDocumentation = createLazyComponent('Documentation', asy
 const LazyConnectDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
+const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
+);
+const LazyDeployerDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "deployerDocs" */ 'ts/containers/deployer_documentation'),
+);
+const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
+);
+const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
+);
+const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
+);
 
 analytics.init();
 // tslint:disable-next-line:no-floating-promises
@@ -65,6 +80,20 @@ render(
                             <Route path={`${WebsitePaths.Wiki}`} component={Wiki as any} />
                             <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
                             <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
+                            <Route path={`${WebsitePaths.Deployer}/:version?`} component={LazyDeployerDocumentation} />
+                            <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
+                            <Route
+                                path={`${WebsitePaths.JSONSchemas}/:version?`}
+                                component={LazyJSONSchemasDocumentation}
+                            />
+                            <Route
+                                path={`${WebsitePaths.Subproviders}/:version?`}
+                                component={LazySubprovidersDocumentation}
+                            />
+                            <Route
+                                path={`${WebsitePaths.Web3Wrapper}/:version?`}
+                                component={LazyWeb3WrapperDocumentation}
+                            />
                             <Route
                                 path={`${WebsitePaths.SmartContracts}/:version?`}
                                 component={LazySmartContractsDocumentation}

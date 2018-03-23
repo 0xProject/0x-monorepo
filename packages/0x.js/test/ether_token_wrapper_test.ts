@@ -137,7 +137,7 @@ describe('EtherTokenWrapper', () => {
             gasCost = expectedETHBalance.minus(postETHBalance);
             expect(gasCost).to.be.bignumber.lte(MAX_REASONABLE_GAS_COST_IN_WEI);
         });
-        it('should throw if user has insufficient WETH balance for withdrawl', async () => {
+        it('should throw if user has insufficient WETH balance for withdrawal', async () => {
             const preWETHBalance = await zeroEx.token.getBalanceAsync(wethContractAddress, addressWithETH);
             expect(preWETHBalance).to.be.bignumber.equal(0);
 

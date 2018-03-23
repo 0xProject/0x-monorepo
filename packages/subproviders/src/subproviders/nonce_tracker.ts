@@ -10,13 +10,13 @@ import { Callback, ErrorCallback, NextCallback, NonceSubproviderErrors } from '.
 
 import { Subprovider } from './subprovider';
 
-// We do not export this since this is not our error, and we do not throw this error
 const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
-/*
-    This class is heavily inspiried by the Web3ProviderEngine NonceSubprovider
-    We have added the additional feature of clearing any nonce balues when an error message
-    describes a nonce value being too low.
-*/
+
+/**
+ * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+ * It is heavily inspired by the [NonceSubprovider](https://github.com/MetaMask/provider-engine/blob/master/subproviders/nonce-tracker.js).
+ * We added the additional feature of clearing the cached nonce value when a `nonce value too low` error occurs.
+ */
 export class NonceTrackerSubprovider extends Subprovider {
     private _nonceCache: { [address: string]: string } = {};
     private static _reconstructTransaction(payload: Web3.JSONRPCRequestPayload): EthereumTx {
@@ -46,7 +46,14 @@ export class NonceTrackerSubprovider extends Subprovider {
                 throw new Error(NonceSubproviderErrors.CannotDetermineAddressFromPayload);
         }
     }
-    // Required to implement this public interface which doesn't conform to our linting rule.
+    /**
+     * This method conforms to the web3-provider-engine interface.
+     * It is called internally by the ProviderEngine when it is this subproviders
+     * turn to handle a JSON RPC request.
+     * @param payload JSON RPC payload
+     * @param next Callback to call if this subprovider decides not to handle the request
+     * @param end Callback to call if subprovider handled the request and wants to pass back the request.
+     */
     // tslint:disable-next-line:async-suffix
     public async handleRequest(
         payload: Web3.JSONRPCRequestPayload,
