@@ -544,6 +544,22 @@ export class Blockchain {
             ? {}
             : trackedTokenStorage.getTrackedTokensByAddress(this._userAddressIfExists, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
+        const tokenRegistryTokenSymbols = _.map(tokenRegistryTokens, t => t.symbol);
+        const defaultTrackedTokensInRegistry = _.intersection(
+            tokenRegistryTokenSymbols,
+            configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
+        );
+        if (defaultTrackedTokensInRegistry.length !== configs.DEFAULT_TRACKED_TOKEN_SYMBOLS.length) {
+            this._dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
+            this._dispatcher.encounteredBlockchainError(BlockchainErrs.DefaultTokensNotInTokenRegistry);
+            const err = new Error(
+                `Default tracked tokens (${JSON.stringify(
+                    configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
+                )}) not found in tokenRegistry: ${JSON.stringify(tokenRegistryTokens)}`,
+            );
+            await errorReporter.reportAsync(err);
+            return;
+        }
         if (_.isEmpty(trackedTokensByAddress)) {
             _.each(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
                 const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
