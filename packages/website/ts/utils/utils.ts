@@ -219,7 +219,8 @@ export const utils = {
             [ExchangeContractErrs.OrderFillAmountZero]: "Order fill amount can't be 0",
             [ExchangeContractErrs.OrderRemainingFillAmountZero]:
                 'This order has already been completely filled or cancelled',
-            [ExchangeContractErrs.OrderFillRoundingError]: 'Rounding error will occur when filling this order',
+            [ExchangeContractErrs.OrderFillRoundingError]:
+                'Rounding error will occur when filling this order. Please try filling a different amount.',
             [ExchangeContractErrs.InsufficientTakerBalance]:
                 'Taker no longer has a sufficient balance to complete this order',
             [ExchangeContractErrs.InsufficientTakerAllowance]:
