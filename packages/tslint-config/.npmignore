@@ -4,3 +4,4 @@ node_modules/
 /scripts/
 /rules/
 tsconfig.json
+/lib/monorepo_scripts/
