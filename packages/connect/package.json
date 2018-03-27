@@ -53,6 +53,7 @@
         "@0xproject/json-schemas": "^0.7.17",
         "@0xproject/types": "^0.4.1",
         "@0xproject/utils": "^0.4.3",
+        "@0xproject/typescript-typings": "^0.0.1",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",
         "query-string": "^5.0.1",
@@ -69,8 +70,6 @@
         "async-child-process": "^1.1.1",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-as-promised-typescript-typings": "^0.0.12",
-        "chai-typescript-typings": "^0.0.6",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "fetch-mock": "^5.13.1",
@@ -80,8 +79,7 @@
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typedoc": "~0.8.0",
-        "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.10.2"
+        "typescript": "2.7.1"
     },
     "publishConfig": {
         "access": "public"

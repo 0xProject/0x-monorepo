@@ -12,14 +12,22 @@ yarn add @0xproject/json-schemas
 
 **Import**
 
-```javascript
-import { schemas } from '@0xproject/json-schemas';
+```typescript
+import { SchemaValidator, ValidatorResult, schemas } from '@0xproject/json-schemas';
 ```
 
 or
 
 ```javascript
 var schemas = require('@0xproject/json-schemas').schemas;
+```
+
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
 ```
 
 ## Contributing

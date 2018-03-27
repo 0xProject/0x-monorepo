@@ -25,6 +25,8 @@
         "@0xproject/tslint-config": "0.4.8",
         "@types/glob": "^5.0.33",
         "@types/node": "^8.0.53",
+        "@types/rimraf": "^2.0.2",
+        "lerna-get-packages": "^1.0.0",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "2.7.1"
@@ -35,7 +37,9 @@
         "es6-promisify": "^5.0.0",
         "glob": "^7.1.2",
         "lodash": "^4.17.4",
+        "promisify-child-process": "^1.0.5",
         "publish-release": "0xproject/publish-release",
+        "rimraf": "^2.6.2",
         "semver-sort": "^0.0.4"
     },
     "publishConfig": {
