@@ -8,3 +8,4 @@ test/
 /contract_templates/
 /generated_docs/
 /scripts/
+/lib/src/monorepo_scripts/
