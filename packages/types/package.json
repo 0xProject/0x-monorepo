@@ -28,9 +28,9 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "@0xproject/typescript-typings": "^0.0.1",
         "bignumber.js": "~4.1.0",
-        "web3": "^0.20.0",
-        "web3-typescript-typings": "^0.10.2"
+        "web3": "^0.20.0"
     },
     "publishConfig": {
         "access": "public"

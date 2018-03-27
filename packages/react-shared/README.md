@@ -8,6 +8,14 @@ Contains React components & frontend types/utils shared between 0x projects.
 yarn add @0xproject/react-shared
 ```
 
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
+```
+
 ## Contributing
 
 We strongly encourage that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.

@@ -32,7 +32,6 @@
         "@types/mocha": "^2.2.42",
         "@types/valid-url": "^1.0.2",
         "chai": "^4.0.1",
-        "chai-typescript-typings": "^0.0.6",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "mocha": "^4.0.1",
@@ -45,6 +44,7 @@
     "dependencies": {
         "@0xproject/json-schemas": "^0.7.17",
         "@0xproject/utils": "^0.4.3",
+        "@0xproject/typescript-typings": "^0.0.1",
         "lodash": "^4.17.4",
         "valid-url": "^1.0.9"
     },

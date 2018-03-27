@@ -1,3 +1,5 @@
+declare module 'dirty-chai';
+
 // tslint:disable:completed-docs
 declare module 'solc' {
     import * as Web3 from 'web3';

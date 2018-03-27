@@ -39,6 +39,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
+        "@0xproject/typescript-typings": "^0.0.1",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
     },
@@ -50,7 +51,6 @@
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
-        "chai-typescript-typings": "^0.0.6",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "lodash.foreach": "^4.5.0",
