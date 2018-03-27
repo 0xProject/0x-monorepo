@@ -35,7 +35,6 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn lerna:exec 'yarn pack --filename package.tgz'
       - run: yarn test:installation
   test-0xjs:
     docker:

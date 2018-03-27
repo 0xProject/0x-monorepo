@@ -34,6 +34,7 @@ import { utils } from './utils';
         fs.writeFileSync(indexFilePath, `import * as Package from '${packageName}'`);
         const tsConfig = {
             compilerOptions: {
+                typeRoots: ['node_modules/@0xproject/typescript-typings/types', 'node_modules/@types'],
                 module: 'commonjs',
                 target: 'es5',
                 lib: ['es2017', 'dom'],
