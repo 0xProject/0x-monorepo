@@ -1,0 +1,34 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "lib": ["es2017", "dom"],
+        "sourceMap": true,
+        "noImplicitReturns": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "./lib/",
+        "jsx": "react",
+        "baseUrl": "./",
+        "allowJs": true,
+        "strictNullChecks": false,
+        "noImplicitThis": false,
+        "declaration": false,
+        "paths": {
+            "*": ["node_modules/@types/*", "*"]
+        },
+        "pretty": true,
+        "strict": true
+    },
+    "include": [
+        "./src/ts/**/*",
+        "./test/**/*",
+        "./src/migrations/**/*",
+        "../../node_modules/0x.js/lib/src/index.d.ts",
+        "../../node_modules/ethers-typescript-typings/index.d.ts",
+        "../../node_modules/types-bn/index.d.ts",
+        "../../node_modules/types-ethereumjs-util/index.d.ts",
+        "../../node_modules/web3-typescript-typings/index.d.ts",
+        "./node_modules/chai-typescript-typings/index.d.ts",
+        "./node_modules/chai-as-promised-typescript-typings/index.d.ts"
+    ]
+}
