@@ -1,5 +1,5 @@
+import { AbiDefinition, ContractAbi } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import * as Web3 from 'web3';
 
 export interface BalancesByOwner {
     [ownerAddress: string]: {
@@ -51,7 +51,7 @@ export interface DefaultOrderParams {
 
 export interface TransactionDataParams {
     name: string;
-    abi: Web3.AbiDefinition[];
+    abi: AbiDefinition[];
     args: any[];
 }
 
@@ -105,7 +105,7 @@ export interface Artifact {
     contract_name: ContractName;
     networks: {
         [networkId: number]: {
-            abi: Web3.ContractAbi;
+            abi: ContractAbi;
             solc_version: string;
             keccak256: string;
             optimizer_enabled: number;

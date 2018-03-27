@@ -13,15 +13,6 @@
     lodash "^4.17.4"
     tslint-react "^3.2.0"
 
-"@0xproject/utils@^0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.3.4.tgz#263ac7a5ef0b4c65ce893d3e6d1e9b1c2cf75b0b"
-  dependencies:
-    bignumber.js "~4.1.0"
-    js-sha3 "^0.7.0"
-    lodash "^4.17.4"
-    web3 "^0.20.0"
-
 "@ledgerhq/hw-app-eth@^4.3.0":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-4.7.3.tgz#d352e19658ae296532e522c53c8ec2a1a77b64e5"
@@ -12462,12 +12453,6 @@ web3-shh@1.0.0-beta.33:
 web3-typescript-typings@^0.10.2:
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.10.2.tgz#a9903815d2a8a0dbd73fd5db374070de0bd30497"
-  dependencies:
-    bignumber.js "~4.1.0"
-
-web3-typescript-typings@^0.9.11:
-  version "0.9.11"
-  resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.9.11.tgz#2f5464e572843b0853f47a1a0801029d6dfb5793"
   dependencies:
     bignumber.js "~4.1.0"
 

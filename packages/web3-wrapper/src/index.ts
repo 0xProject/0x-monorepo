@@ -1,4 +1,16 @@
-import { RawLogEntry, TransactionReceipt, TxData } from '@0xproject/types';
+import {
+    BlockParam,
+    BlockWithoutTransactionData,
+    CallData,
+    ContractAbi,
+    FilterObject,
+    JSONRPCRequestPayload,
+    JSONRPCResponsePayload,
+    LogEntry,
+    RawLogEntry,
+    TransactionReceipt,
+    TxData,
+} from '@0xproject/types';
 import { BigNumber, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -157,8 +169,8 @@ export class Web3Wrapper {
      * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
      * @returns The requested block without transaction data
      */
-    public async getBlockAsync(blockParam: string | Web3.BlockParam): Promise<Web3.BlockWithoutTransactionData> {
-        const block = await promisify<Web3.BlockWithoutTransactionData>(this._web3.eth.getBlock)(blockParam);
+    public async getBlockAsync(blockParam: string | BlockParam): Promise<BlockWithoutTransactionData> {
+        const block = await promisify<BlockWithoutTransactionData>(this._web3.eth.getBlock)(blockParam);
         return block;
     }
     /**
@@ -166,7 +178,7 @@ export class Web3Wrapper {
      * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
      * @returns The block's timestamp
      */
-    public async getBlockTimestampAsync(blockParam: string | Web3.BlockParam): Promise<number> {
+    public async getBlockTimestampAsync(blockParam: string | BlockParam): Promise<number> {
         const { timestamp } = await this.getBlockAsync(blockParam);
         return timestamp;
     }
@@ -214,7 +226,7 @@ export class Web3Wrapper {
      * @param filter Parameters by which to filter which logs to retrieve
      * @returns The corresponding log entries
      */
-    public async getLogsAsync(filter: Web3.FilterObject): Promise<Web3.LogEntry[]> {
+    public async getLogsAsync(filter: FilterObject): Promise<LogEntry[]> {
         let fromBlock = filter.fromBlock;
         if (_.isNumber(fromBlock)) {
             fromBlock = this._web3.toHex(fromBlock);
@@ -243,7 +255,7 @@ export class Web3Wrapper {
      * @param abi Smart contract ABI
      * @returns Web3 contract factory which can create Web3 Contract instances from the supplied ABI
      */
-    public getContractFromAbi(abi: Web3.ContractAbi): Web3.Contract<any> {
+    public getContractFromAbi(abi: ContractAbi): Web3.Contract<any> {
         const web3Contract = this._web3.eth.contract(abi);
         return web3Contract;
     }
@@ -252,7 +264,7 @@ export class Web3Wrapper {
      * @param txData Transaction data
      * @returns Estimated gas cost
      */
-    public async estimateGasAsync(txData: Partial<Web3.TxData>): Promise<number> {
+    public async estimateGasAsync(txData: Partial<TxData>): Promise<number> {
         const gas = await promisify<number>(this._web3.eth.estimateGas)(txData);
         return gas;
     }
@@ -262,7 +274,7 @@ export class Web3Wrapper {
      * @param defaultBlock Block height at which to make the call. Defaults to `latest`
      * @returns The raw call result
      */
-    public async callAsync(callData: Web3.CallData, defaultBlock?: Web3.BlockParam): Promise<string> {
+    public async callAsync(callData: CallData, defaultBlock?: BlockParam): Promise<string> {
         const rawCallResult = await promisify<string>(this._web3.eth.call)(callData, defaultBlock);
         return rawCallResult;
     }
@@ -271,13 +283,13 @@ export class Web3Wrapper {
      * @param txData Transaction data
      * @returns Transaction hash
      */
-    public async sendTransactionAsync(txData: Web3.TxData): Promise<string> {
+    public async sendTransactionAsync(txData: TxData): Promise<string> {
         const txHash = await promisify<string>(this._web3.eth.sendTransaction)(txData);
         return txHash;
     }
-    private async _sendRawPayloadAsync<A>(payload: Partial<Web3.JSONRPCRequestPayload>): Promise<A> {
+    private async _sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._web3.currentProvider.sendAsync.bind(this._web3.currentProvider);
-        const response = await promisify<Web3.JSONRPCResponsePayload>(sendAsync)(payload);
+        const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payload);
         const result = response.result;
         return result;
     }
@@ -295,7 +307,7 @@ export class Web3Wrapper {
             return status;
         }
     }
-    private _formatLog(rawLog: RawLogEntry): Web3.LogEntry {
+    private _formatLog(rawLog: RawLogEntry): LogEntry {
         const formattedLog = {
             ...rawLog,
             logIndex: this._hexToDecimal(rawLog.logIndex),

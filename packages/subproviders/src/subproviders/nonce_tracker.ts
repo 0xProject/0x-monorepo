@@ -1,9 +1,8 @@
 import * as _ from 'lodash';
 
-import { BlockParamLiteral } from '@0xproject/types';
+import { BlockParamLiteral, JSONRPCRequestPayload } from '@0xproject/types';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
-import * as Web3 from 'web3';
 import providerEngineUtils = require('web3-provider-engine/util/rpc-cache-utils');
 
 import { Callback, ErrorCallback, NextCallback, NonceSubproviderErrors } from '../types';
@@ -19,7 +18,7 @@ const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
  */
 export class NonceTrackerSubprovider extends Subprovider {
     private _nonceCache: { [address: string]: string } = {};
-    private static _reconstructTransaction(payload: Web3.JSONRPCRequestPayload): EthereumTx {
+    private static _reconstructTransaction(payload: JSONRPCRequestPayload): EthereumTx {
         const raw = payload.params[0];
         if (_.isUndefined(raw)) {
             throw new Error(NonceSubproviderErrors.EmptyParametersFound);
@@ -28,7 +27,7 @@ export class NonceTrackerSubprovider extends Subprovider {
         const transaction = new EthereumTx(rawData);
         return transaction;
     }
-    private static _determineAddress(payload: Web3.JSONRPCRequestPayload): string {
+    private static _determineAddress(payload: JSONRPCRequestPayload): string {
         let address: string;
         switch (payload.method) {
             case 'eth_getTransactionCount':
@@ -55,11 +54,7 @@ export class NonceTrackerSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:async-suffix
-    public async handleRequest(
-        payload: Web3.JSONRPCRequestPayload,
-        next: NextCallback,
-        end: ErrorCallback,
-    ): Promise<void> {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback): Promise<void> {
         switch (payload.method) {
             case 'eth_getTransactionCount':
                 const requestDefaultBlock = providerEngineUtils.blockTagForPayload(payload);
@@ -92,7 +87,7 @@ export class NonceTrackerSubprovider extends Subprovider {
                 return next();
         }
     }
-    private _handleSuccessfulTransaction(payload: Web3.JSONRPCRequestPayload): void {
+    private _handleSuccessfulTransaction(payload: JSONRPCRequestPayload): void {
         const address = NonceTrackerSubprovider._determineAddress(payload);
         const transaction = NonceTrackerSubprovider._reconstructTransaction(payload);
         // Increment the nonce from the previous successfully submitted transaction
@@ -105,7 +100,7 @@ export class NonceTrackerSubprovider extends Subprovider {
         const nextPrefixedHexNonce = `0x${nextHexNonce}`;
         this._nonceCache[address] = nextPrefixedHexNonce;
     }
-    private _handleSendTransactionError(payload: Web3.JSONRPCRequestPayload, err: Error): void {
+    private _handleSendTransactionError(payload: JSONRPCRequestPayload, err: Error): void {
         const address = NonceTrackerSubprovider._determineAddress(payload);
         if (this._nonceCache[address] && _.includes(err.message, NONCE_TOO_LOW_ERROR_MESSAGE)) {
             delete this._nonceCache[address];

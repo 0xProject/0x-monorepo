@@ -1,3 +1,4 @@
+import { JSONRPCResponsePayload } from '@0xproject/types';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import Web3 = require('web3');
@@ -26,7 +27,7 @@ describe('RedundantRpcSubprovider', () => {
             params: [],
             id: 1,
         };
-        const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+        const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
             expect(err).to.be.a('null');
             expect(response.result.length).to.be.equal(10);
             done();
@@ -46,7 +47,7 @@ describe('RedundantRpcSubprovider', () => {
             params: [],
             id: 1,
         };
-        const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+        const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
             expect(err).to.be.a('null');
             expect(response.result.length).to.be.equal(10);
             done();

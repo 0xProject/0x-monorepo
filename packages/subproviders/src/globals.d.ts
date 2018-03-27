@@ -73,11 +73,11 @@ declare module 'web3-provider-engine/subproviders/subprovider' {
     export = Subprovider;
 }
 declare module 'web3-provider-engine/subproviders/rpc' {
-    import * as Web3 from 'web3';
+    import { JSONRPCRequestPayload } from '@0xproject/types';
     class RpcSubprovider {
         constructor(options: { rpcUrl: string });
         public handleRequest(
-            payload: Web3.JSONRPCRequestPayload,
+            payload: JSONRPCRequestPayload,
             next: () => void,
             end: (err: Error | null, data?: any) => void,
         ): void;
@@ -102,11 +102,11 @@ declare module 'web3-provider-engine/util/rpc-cache-utils' {
     export = ProviderEngineRpcUtils;
 }
 declare module 'web3-provider-engine/subproviders/fixture' {
-    import * as Web3 from 'web3';
+    import { JSONRPCRequestPayload } from '@0xproject/types';
     class FixtureSubprovider {
         constructor(staticResponses: any);
         public handleRequest(
-            payload: Web3.JSONRPCRequestPayload,
+            payload: JSONRPCRequestPayload,
             next: () => void,
             end: (err: Error | null, data?: any) => void,
         ): void;

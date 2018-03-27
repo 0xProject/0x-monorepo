@@ -1,14 +1,14 @@
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0xproject/subproviders';
+import { BlockParam, CallData, JSONRPCRequestPayload, TransactionTrace, TxData } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
-import * as Web3 from 'web3';
 
 import { constants } from './constants';
 import { CoverageManager } from './coverage_manager';
 import { TraceInfoExistingContract, TraceInfoNewContract } from './types';
 
-interface MaybeFakeTxData extends Web3.TxData {
+interface MaybeFakeTxData extends TxData {
     isFakeTransaction?: boolean;
 }
 
@@ -58,7 +58,7 @@ export class CoverageSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method
-    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
+    public handleRequest(payload: JSONRPCRequestPayload, next: NextCallback, end: ErrorCallback) {
         switch (payload.method) {
             case 'eth_sendTransaction':
                 const txData = payload.params[0];
@@ -110,8 +110,8 @@ export class CoverageSubprovider extends Subprovider {
         cb();
     }
     private async _onCallExecutedAsync(
-        callData: Partial<Web3.CallData>,
-        blockNumber: Web3.BlockParam,
+        callData: Partial<CallData>,
+        blockNumber: BlockParam,
         err: Error | null,
         callResult: string,
         cb: Callback,
@@ -125,7 +125,7 @@ export class CoverageSubprovider extends Subprovider {
             params: [txHash, { disableMemory: true, disableStack: true, disableStorage: true }], // TODO For now testrpc just ignores those parameters https://github.com/trufflesuite/ganache-cli/issues/489
         };
         const jsonRPCResponsePayload = await this.emitPayloadAsync(payload);
-        const trace: Web3.TransactionTrace = jsonRPCResponsePayload.result;
+        const trace: TransactionTrace = jsonRPCResponsePayload.result;
         const coveredPcs = _.map(trace.structLogs, log => log.pc);
         if (address === constants.NEW_CONTRACT) {
             const traceInfo: TraceInfoNewContract = {
@@ -147,7 +147,7 @@ export class CoverageSubprovider extends Subprovider {
             this._coverageManager.appendTraceInfo(traceInfo);
         }
     }
-    private async _recordCallTraceAsync(callData: Partial<Web3.CallData>, blockNumber: Web3.BlockParam): Promise<void> {
+    private async _recordCallTraceAsync(callData: Partial<CallData>, blockNumber: BlockParam): Promise<void> {
         // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();

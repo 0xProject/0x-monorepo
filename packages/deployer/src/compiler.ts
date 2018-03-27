@@ -1,3 +1,4 @@
+import { ContractAbi } from '@0xproject/types';
 import { logUtils, promisify } from '@0xproject/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
@@ -7,7 +8,6 @@ import * as path from 'path';
 import * as requireFromString from 'require-from-string';
 import * as semver from 'semver';
 import solc = require('solc');
-import * as Web3 from 'web3';
 
 import { binPaths } from './solc/bin_paths';
 import {
@@ -189,7 +189,7 @@ export class Compiler {
                 `Contract ${contractName} not found in ${fileName}. Please make sure your contract has the same name as it's file name`,
             );
         }
-        const abi: Web3.ContractAbi = JSON.parse(compiled.contracts[contractIdentifier].interface);
+        const abi: ContractAbi = JSON.parse(compiled.contracts[contractIdentifier].interface);
         const bytecode = `0x${compiled.contracts[contractIdentifier].bytecode}`;
         const runtimeBytecode = `0x${compiled.contracts[contractIdentifier].runtimeBytecode}`;
         const sourceMap = compiled.contracts[contractIdentifier].srcmap;

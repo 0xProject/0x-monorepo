@@ -1,6 +1,6 @@
+import { JSONRPCRequestPayload } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { Callback } from '../types';
@@ -16,7 +16,7 @@ export class RedundantRPCSubprovider extends Subprovider {
     private _rpcs: RpcSubprovider[];
     private static async _firstSuccessAsync(
         rpcs: RpcSubprovider[],
-        payload: Web3.JSONRPCRequestPayload,
+        payload: JSONRPCRequestPayload,
         next: Callback,
     ): Promise<any> {
         let lastErr: Error | undefined;
@@ -55,7 +55,7 @@ export class RedundantRPCSubprovider extends Subprovider {
      */
     // tslint:disable-next-line:async-suffix
     public async handleRequest(
-        payload: Web3.JSONRPCRequestPayload,
+        payload: JSONRPCRequestPayload,
         next: Callback,
         end: (err: Error | null, data?: any) => void,
     ): Promise<void> {

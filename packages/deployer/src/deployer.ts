@@ -1,4 +1,4 @@
-import { AbiType, TxData } from '@0xproject/types';
+import { AbiType, ConstructorAbi, ContractAbi, TxData } from '@0xproject/types';
 import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -71,7 +71,7 @@ export class Deployer {
             gas,
         };
         const abi = contractNetworkDataIfExists.abi;
-        const constructorAbi = _.find(abi, { type: AbiType.Constructor }) as Web3.ConstructorAbi;
+        const constructorAbi = _.find(abi, { type: AbiType.Constructor }) as ConstructorAbi;
         const constructorArgs = _.isUndefined(constructorAbi) ? [] : constructorAbi.inputs;
         if (constructorArgs.length !== args.length) {
             const constructorSignature = `constructor(${_.map(constructorArgs, arg => `${arg.type} ${arg.name}`).join(
@@ -107,7 +107,7 @@ export class Deployer {
      * @param txData Tx options used for deployment.
      * @return Promise that resolves to a web3 contract instance.
      */
-    private async _deployFromAbiAsync(abi: Web3.ContractAbi, args: any[], txData: Web3.TxData): Promise<any> {
+    private async _deployFromAbiAsync(abi: ContractAbi, args: any[], txData: TxData): Promise<any> {
         const contract: Web3.Contract<Web3.ContractInstance> = this.web3Wrapper.getContractFromAbi(abi);
         const deployPromise = new Promise((resolve, reject) => {
             /**
