@@ -55,59 +55,18 @@ contract MixinSettlementProxy is
         ZRX_TOKEN = zrxToken;
         TRANSFER_PROXY = proxyContract;
     }
-
-    function settleOrder(
-        Order order,
-        address takerAddress,
-        uint256 takerTokenFilledAmount)
+    
+    function transfer(address token, address from, address to, uint256 amount)
         internal
-        returns (
-            uint256 makerTokenFilledAmount,
-            uint256 makerFeeAmountPaid,
-            uint256 takerFeeAmountPaid
-        )
     {
-        makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
-        require(
-            TRANSFER_PROXY.transferFrom(
-                order.makerTokenAddress,
-                order.makerAddress,
-                takerAddress,
-                makerTokenFilledAmount
-            )
-        );
-        require(
-            TRANSFER_PROXY.transferFrom(
-                order.takerTokenAddress,
-                takerAddress,
-                order.makerAddress,
-                takerTokenFilledAmount
-            )
-        );
-        if (order.feeRecipientAddress != address(0)) {
-            if (order.makerFeeAmount > 0) {
-                makerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFeeAmount);
-                require(
-                    TRANSFER_PROXY.transferFrom(
-                        ZRX_TOKEN,
-                        order.makerAddress,
-                        order.feeRecipientAddress,
-                        makerFeeAmountPaid
-                    )
-                );
-            }
-            if (order.takerFeeAmount > 0) {
-                takerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFeeAmount);
-                require(
-                    TRANSFER_PROXY.transferFrom(
-                        ZRX_TOKEN,
-                        takerAddress,
-                        order.feeRecipientAddress,
-                        takerFeeAmountPaid
-                    )
-                );
-            }
+        if(amount > 0) {
+            TRANSFER_PROXY.transferFrom(token, from, to, amount);
         }
-        return (makerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
+    }
+    
+    function transferFee(address from, address to, uint256 amount)
+        internal
+    {
+        transfer(ZRX_TOKEN, from, to, amount);
     }
 }

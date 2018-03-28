@@ -22,16 +22,10 @@ pragma experimental ABIEncoderV2;
 import "../LibOrder.sol";
 
 contract MSettlement is LibOrder {
+    
+    function transfer(address token, address from, address to, uint256 amount)
+        internal;
 
-    function settleOrder(
-        Order order,
-        address taker,
-        uint256 takerTokenFilledAmount)
-        internal
-        returns (
-            uint256 makerTokenFilledAmount,
-            uint256 makerFeeAmountPaid,
-            uint256 takerFeeAmountPaid
-        );
-
+    function transferFee(address from, address to, uint256 amount)
+        internal;
 }

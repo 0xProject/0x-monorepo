@@ -23,11 +23,12 @@ contract LibErrors {
 
     // Error Codes
     enum Errors {
-        ORDER_EXPIRED,                    // Order has already expired
-        ORDER_FULLY_FILLED,               // Order has already been fully filled
-        ORDER_CANCELLED,                  // Order has already been cancelled
-        ROUNDING_ERROR_TOO_LARGE,         // Rounding error too large
-        INSUFFICIENT_BALANCE_OR_ALLOWANCE // Insufficient balance or allowance for token transfer
+        ORDER_EXPIRED,                     // Order has already expired
+        ORDER_FULLY_FILLED,                // Order has already been fully filled
+        ORDER_CANCELLED,                   // Order has already been cancelled
+        ROUNDING_ERROR_TOO_LARGE,          // Rounding error too large
+        INSUFFICIENT_BALANCE_OR_ALLOWANCE, // Insufficient balance or allowance for token transfer
+        ORDER_OK                           // Order is correct and fillable
     }
 
     event LogError(uint8 indexed errorId, bytes32 indexed orderHash);

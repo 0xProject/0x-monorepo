@@ -76,77 +76,132 @@ contract MixinExchangeCore is
     /*
     * Core exchange functions
     */
-
-    /// @dev Fills the input order.
-    /// @param order Order struct containing order specifications.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
-    /// @param signature Proof of signing order by maker.
-    /// @return Total amount of takerToken filled in trade.
-    function fillOrder(
-        Order order,
-        uint256 takerTokenFillAmount,
+    
+    function orderStatus(
+        Order memory order,
         bytes signature)
         public
-        returns (uint256 takerTokenFilledAmount)
+        view
+        returns (
+            uint8 status,
+            bytes32 orderHash,
+            uint256 filledAmount)
     {
-        // Compute the order hash
-        bytes32 orderHash = getOrderHash(order);
-
-        // Check if order has been cancelled
-        if (cancelled[orderHash]) {
-            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
-            return 0;
-        }
-
+        // Compute the order hash and fetch filled amount
+        orderHash = getOrderHash(order);
+        filledAmount = filled[orderHash];
+        
         // Validate order and maker only if first time seen
-        // TODO: Read filled and cancelled only once
-        if (filled[orderHash] == 0) {
-            require(order.makerTokenAmount > 0);
-            require(order.takerTokenAmount > 0);
+        if (filledAmount == 0) {
+            // TODO: Do other validations of the order here
+            
+            // TODO: Turn this into an error code too?
             require(isValidSignature(orderHash, order.makerAddress, signature));
         }
-
-        // Validate taker
-        if (order.takerAddress != address(0)) {
-            require(order.takerAddress == msg.sender);
-        }
-        require(takerTokenFillAmount > 0);
-
+        
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
-            LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
-            return 0;
+            status = uint8(Errors.ORDER_EXPIRED);
+            return;
         }
-
+        
         // Validate order availability
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, filled[orderHash]);
-        if (remainingTakerTokenAmount == 0) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
-            return 0;
+        if (filledAmount >= order.takerTokenAmount) {
+            status = uint8(Errors.ORDER_FULLY_FILLED);
+            return;
         }
-
+        
+        // Check if order has been cancelled
+        if (cancelled[orderHash]) {
+            status = uint8(Errors.ORDER_CANCELLED);
+            return;
+        }
+        
+        // Validate order is not cancelled
+        if (makerEpoch[order.makerAddress] > order.salt) {
+            status = uint8(Errors.ORDER_CANCELLED);
+            return;
+        }
+        
+        // Order is OK
+        status = uint8(Errors.ORDER_OK);
+        return;
+    }
+    
+    function getFillAmounts(
+        Order memory order,
+        uint256 filledAmount,
+        uint256 takerTokenFillAmount,
+        address taker)
+        public
+        pure
+        returns (
+            uint8 status,
+            uint256 makerTokenFilledAmount,
+            uint256 takerTokenFilledAmount,
+            uint256 makerFeeAmountPaid,
+            uint256 takerFeeAmountPaid)
+    {
         // Validate fill order rounding
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, filledAmount);
         takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
         if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
-            LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
-            return 0;
+            status = uint8(Errors.ROUNDING_ERROR_TOO_LARGE);
+            return;
         }
-
-        // Validate order is not cancelled
-        if (order.salt < makerEpoch[order.makerAddress]) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
-            return 0;
+        
+        // Validate taker
+        if (order.takerAddress != address(0)) {
+            require(order.takerAddress == taker);
+            // OR
+            /*
+            if(order.takerAddress != msg.sender) {
+                status = uint8(Errors.INVALID_TAKER);
+                return;
+            }
+            */
         }
-
+        
+        // TODO: All three are multiplied by the same fraction. I wonder if this
+        // alllows for some optimization.
+        makerTokenFilledAmount = getPartialAmount(
+            takerTokenFilledAmount,
+            order.takerTokenAmount,
+            order.makerTokenAmount);
+        if(order.feeRecipientAddress != address(0x0)) {
+            makerFeeAmountPaid = getPartialAmount(
+                takerTokenFilledAmount,
+                order.takerTokenAmount,
+                order.makerFeeAmount);
+            takerFeeAmountPaid = getPartialAmount(
+                takerTokenFilledAmount,
+                order.takerTokenAmount,
+                order.takerFeeAmount);
+        } else {
+            // TODO: Do we need this case? Why not allow feeRecipient to be 0?
+            // ZRX token does not have a problem with that.
+            makerFeeAmountPaid = 0;
+            takerFeeAmountPaid = 0;
+        }
+        
+        status = uint8(Errors.ORDER_OK);
+        return;
+    }
+    
+    function updateState(
+        Order memory order,
+        bytes32 orderHash,
+        uint256 makerTokenFilledAmount,
+        uint256 takerTokenFilledAmount,
+        uint256 makerFeeAmountPaid,
+        uint256 takerFeeAmountPaid)
+        private
+    {
         // Update state
         filled[orderHash] = safeAdd(filled[orderHash], takerTokenFilledAmount);
-
-        // Settle order
-        var (makerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid) =
-            settleOrder(order, msg.sender, takerTokenFilledAmount);
-
+        
         // Log order
-        LogFill(
+        emit LogFill(
             order.makerAddress,
             msg.sender,
             order.feeRecipientAddress,
@@ -158,13 +213,86 @@ contract MixinExchangeCore is
             takerFeeAmountPaid,
             orderHash
         );
-        return takerTokenFilledAmount;
     }
-
+    
+    /// @dev Fills the input order.
+    /// @param order Order struct containing order specifications.
+    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param signature Proof of signing order by maker.
+    /// @return Total amount of takerToken filled in trade.
+    function fillOrder(
+        Order memory order,
+        uint256 takerTokenFillAmount,
+        bytes signature)
+        public
+        returns (uint256 takerTokenFilledAmount)
+    {
+        // TODO: Do we need these?
+        require(order.makerTokenAmount > 0);
+        require(order.takerTokenAmount > 0);
+        require(takerTokenFillAmount > 0);
+        
+        bytes32 orderHash;
+        uint8 status;
+        uint256 filledAmount;
+        
+        (status, orderHash, filledAmount) = orderStatus(order, signature);
+        if(status != uint8(Errors.ORDER_OK)) {
+            emit LogError(uint8(status), orderHash);
+            return 0;
+        }
+        
+        uint256 makerTokenFilledAmount;
+        uint256 makerFeeAmountPaid;
+        uint256 takerFeeAmountPaid;
+        (   status,
+            makerTokenFilledAmount,
+            takerTokenFilledAmount,
+            makerFeeAmountPaid,
+            takerFeeAmountPaid
+        ) = getFillAmounts(
+            order,
+            filledAmount,
+            takerTokenFillAmount,
+            msg.sender);
+        if(status != uint8(Errors.ORDER_OK)) {
+            emit LogError(uint8(status), orderHash);
+            return 0;
+        }
+        
+        updateState(
+            order,
+            orderHash,
+            makerTokenFilledAmount,
+            takerTokenFilledAmount,
+            makerFeeAmountPaid,
+            takerFeeAmountPaid);
+        
+        // Transfer tokens
+        transfer(
+            order.makerTokenAddress,
+            order.makerAddress,
+            msg.sender,
+            makerTokenFilledAmount);
+        transfer(
+            order.takerTokenAddress,
+            msg.sender,
+            order.makerAddress,
+            takerTokenFilledAmount);
+        transferFee(
+            order.makerAddress,
+            order.feeRecipientAddress,
+            makerFeeAmountPaid);
+        transferFee(
+            msg.sender,
+            order.feeRecipientAddress,
+            takerFeeAmountPaid);
+    }
+    
     /// @dev After calling, the order can not be filled anymore.
     /// @param order Order struct containing order specifications.
     /// @return True if the order state changed to cancelled. False if the transaction was already cancelled or expired.
-    function cancelOrder(Order order)
+    function cancelOrder(Order memory order)
         public
         returns (bool)
     {
