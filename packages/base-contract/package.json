@@ -2,13 +2,18 @@
     "name": "@0xproject/base-contract",
     "version": "0.0.6",
     "description": "0x Base TS contract",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
-        "lint": "tslint --project . 'src/**/*.ts'"
+        "test": "run-s clean build run_mocha",
+        "test:circleci": "yarn test:coverage",
+        "run_mocha": "mocha lib/test/**/*_test.js --bail --exit",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "lint": "tslint --project ."
     },
     "license": "Apache-2.0",
     "repository": {
@@ -26,10 +31,13 @@
         "copyfiles": "^1.2.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
+        "chai": "^4.0.1",
+        "mocha": "^4.0.1",
         "tslint": "5.8.0",
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "@0xproject/utils": "^0.4.3",
         "@0xproject/types": "^0.4.2",
         "@0xproject/typescript-typings": "^0.0.2",
         "@0xproject/web3-wrapper": "^0.4.0",

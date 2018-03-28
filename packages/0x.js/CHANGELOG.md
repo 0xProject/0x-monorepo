@@ -8,6 +8,7 @@ CHANGELOG
 ## v0.34.0 - _April 2, 2018_
 
     * Fix the bug causing `zeroEx.exchange.fillOrdersUpToAsync` validation to fail if there were some extra orders passed (#470)
+    * Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3_wrapper' `Web3WrapperErrors.TransactionMiningTimeout` (#485)
     * Remove automatic instantiation of `zeroEx.orderStateWatcher` (#488)
     * Add `zeroEx.createOrderStateWatcher` to allow creating arbitrary number of OrderStateWatchers (#488)
     * Added `stateLayer` setting to `OrderStateWatcherConfig` so OrderStateWatcher can be set to monitor different blockchain state layers (#488)

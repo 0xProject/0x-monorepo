@@ -8,9 +8,9 @@ public {{this.name}} = {
         txData: Partial<TxData> = {},
     {{/this.payable}}
     ): Promise<string> {
-        const self = this as {{contractName}}Contract;
+        const self = this as any as {{contractName}}Contract;
         const inputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).inputs;
-        [{{> params inputs=inputs}}] = BaseContract._transformABIData(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
+        [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
         const encodedData = self._ethersInterface.functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data
@@ -31,9 +31,9 @@ public {{this.name}} = {
     {{> typed_params inputs=inputs}}
         txData: Partial<TxData> = {},
     ): Promise<number> {
-        const self = this as {{contractName}}Contract;
+        const self = this as any as {{contractName}}Contract;
         const inputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).inputs;
-        [{{> params inputs=inputs}}] = BaseContract._transformABIData(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(this));
+        [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(this));
         const encodedData = self._ethersInterface.functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data
@@ -49,9 +49,9 @@ public {{this.name}} = {
     getABIEncodedTransactionData(
     {{> typed_params inputs=inputs}}
     ): string {
-        const self = this as {{contractName}}Contract;
+        const self = this as any as {{contractName}}Contract;
         const inputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).inputs;
-        [{{> params inputs=inputs}}] = BaseContract._transformABIData(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
+        [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
         const abiEncodedTransactionData = self._ethersInterface.functions.{{this.name}}(
             {{> params inputs=inputs}}
         ).data

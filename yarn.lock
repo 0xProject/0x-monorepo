@@ -1781,7 +1781,7 @@ bn.js@4.11.7:
   version "4.11.7"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.7.tgz#ddb048e50d9482790094c13eb3fcfc833ce7ab46"
 
-bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.10.0, bn.js@^4.11.0, bn.js@^4.11.3, bn.js@^4.11.6, bn.js@^4.11.7, bn.js@^4.11.8, bn.js@^4.4.0, bn.js@^4.8.0:
+bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.10.0, bn.js@^4.11.0, bn.js@^4.11.3, bn.js@^4.11.6, bn.js@^4.11.8, bn.js@^4.4.0, bn.js@^4.8.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
 
@@ -2018,7 +2018,7 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-buffer@^5.0.5, buffer@^5.0.6:
+buffer@^5.0.5:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.1.0.tgz#c913e43678c7cb7c8bd16afbcddb6c5505e8f9fe"
   dependencies:
@@ -10563,7 +10563,7 @@ solidity-coverage@^0.4.10:
     solidity-parser-sc "0.4.6"
     web3 "^0.18.4"
 
-solidity-parser-antlr@^0.2.7:
+solidity-parser-antlr@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/solidity-parser-antlr/-/solidity-parser-antlr-0.2.8.tgz#8eb8547a88dfeaf6cf4c7811e3824084214244d4"
 
@@ -11685,21 +11685,6 @@ types-bn@^0.0.1:
   resolved "https://registry.yarnpkg.com/types-bn/-/types-bn-0.0.1.tgz#4253c7c7251b14e1d77cdca6f58800e5e2b82c4b"
   dependencies:
     bn.js "4.11.7"
-
-"types-bn@https://github.com/machinomy/types-bn.git":
-  version "0.0.1"
-  resolved "https://github.com/machinomy/types-bn.git#08ede69e138640d332b0dae0dc2e2fffee5f7160"
-  dependencies:
-    bn.js "4.11.7"
-
-types-ethereumjs-util@0xProject/types-ethereumjs-util:
-  version "0.0.7"
-  resolved "https://codeload.github.com/0xProject/types-ethereumjs-util/tar.gz/72722fc605bfa7f87ec4a959956b387320479ffc"
-  dependencies:
-    bn.js "^4.11.7"
-    buffer "^5.0.6"
-    rlp "^2.0.0"
-    types-bn "https://github.com/machinomy/types-bn.git"
 
 typescript@2.4.1:
   version "2.4.1"

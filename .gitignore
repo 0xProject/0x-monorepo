@@ -85,3 +85,5 @@ packages/deployer/solc_bin/
 
 # Monorepo scripts
 packages/*/scripts/
+
+packages/metacoin/src/contract_wrappers

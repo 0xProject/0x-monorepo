@@ -21,8 +21,8 @@ export class EtherTokenWrapper extends ContractWrapper {
         [address: string]: EtherTokenContract;
     } = {};
     private _tokenWrapper: TokenWrapper;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder: AbiDecoder, tokenWrapper: TokenWrapper) {
-        super(web3Wrapper, networkId, abiDecoder);
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, tokenWrapper: TokenWrapper) {
+        super(web3Wrapper, networkId);
         this._tokenWrapper = tokenWrapper;
     }
     /**

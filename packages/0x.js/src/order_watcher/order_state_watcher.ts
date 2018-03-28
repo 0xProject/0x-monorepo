@@ -69,7 +69,6 @@ export class OrderStateWatcher {
     private _callbackIfExists?: OnOrderStateChangeCallback;
     private _eventWatcher: EventWatcher;
     private _web3Wrapper: Web3Wrapper;
-    private _abiDecoder: AbiDecoder;
     private _expirationWatcher: ExpirationWatcher;
     private _orderStateUtils: OrderStateUtils;
     private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
@@ -78,12 +77,10 @@ export class OrderStateWatcher {
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
     constructor(
         web3Wrapper: Web3Wrapper,
-        abiDecoder: AbiDecoder,
         token: TokenWrapper,
         exchange: ExchangeWrapper,
         config?: OrderStateWatcherConfig,
     ) {
-        this._abiDecoder = abiDecoder;
         this._web3Wrapper = web3Wrapper;
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
         const stateLayer =
@@ -230,7 +227,7 @@ export class OrderStateWatcher {
             return;
         }
         const log = logIfExists as LogEvent; // At this moment we are sure that no error occured and log is defined.
-        const maybeDecodedLog = this._abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
+        const maybeDecodedLog = this._web3Wrapper.abiDecoder.tryToDecodeLogOrNoop<ContractEventArgs>(log);
         const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
         if (!isLogDecoded) {
             return; // noop

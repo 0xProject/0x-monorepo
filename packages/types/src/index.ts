@@ -45,7 +45,7 @@ export interface EventAbi {
 export interface DataItem {
     name: string;
     type: string;
-    components: DataItem[];
+    components?: DataItem[];
 }
 
 export type OpCode = string;

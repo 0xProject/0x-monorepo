@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.3.5",
+        "changes": [
+            {
+                "note": "Don't try to write contract artifact if the error occured",
+                "pr": 485
+            }
+        ]
+    },
+    {
         "version": "0.3.4",
         "changes": [
             {
@@ -7,7 +16,8 @@
                 "pr": 491
             }
         ],
-        "timestamp": 1522658513
+        "timestamp": 1522658513,
+        "isPublished": true
     },
     {
         "version": "0.3.1",

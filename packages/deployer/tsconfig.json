@@ -4,10 +4,5 @@
         "outDir": "lib",
         "strictFunctionTypes": false
     },
-    "include": [
-        "./src/**/*",
-        "./test/**/*",
-        "../../node_modules/types-bn/index.d.ts",
-        "../../node_modules/types-ethereumjs-util/index.d.ts"
-    ]
+    "include": ["./src/**/*", "./test/**/*"]
 }
