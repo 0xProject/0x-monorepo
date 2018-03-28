@@ -302,6 +302,249 @@ contract MixinExchangeCore is
             takerFeeAmountPaid);
     }
     
+    // Match two complementary orders that overlap.
+    // The taker will end up with the maximum amount of left.makerToken
+    // Any right.makerToken that taker would gain because of rounding are
+    // transfered to right.
+    function matchedOrders(
+        Order memory left,
+        Order memory right,
+        bytes leftSignature,
+        bytes rightSignature)
+        public
+        returns (
+            uint256 leftTakerTokenFilledAmount,
+            uint256 rightTakerTokenFilledAmount)
+    {
+        require(left.makerTokenAddress == right.takerTokenAddress);
+        require(left.takerTokenAddress == right.makerTokenAddress);
+        
+        // Make sure there is a positive spread
+        // TODO: Explain
+        // TODO: SafeMath
+        require(
+            left.makerTokenAmount * right.makerTokenAmount >=
+            left.takerTokenAmount * right.takerTokenAmount);
+        
+        // Get left status
+        uint8 status;
+        bytes32 leftOrderHash;
+        uint256 leftFilledAmount;
+        (   status,
+            leftOrderHash,
+            leftFilledAmount
+        ) = orderStatus(left, leftSignature);
+        if(status != uint8(Errors.SUCCESS)) {
+            emit LogError(uint8(status), leftOrderHash);
+            revert 0;
+        }
+        
+        // Get right status
+        bytes32 rightOrderHash;
+        uint256 rightFilledAmount;
+        (   status,
+            rightOrderHash,
+            rightFilledAmount
+        ) = orderStatus(left, leftSignature);
+        if(status != uint8(Errors.SUCCESS)) {
+            emit LogError(uint8(status), rightOrderHash);
+            return (0, 0);
+        }
+        
+        // The goal is for taker to obtain the maximum number of left maker
+        // token.
+        
+        // The constraint can be either on the left or on the right. We need to
+        // determine where it is.
+        
+        uint256 leftRemaining = safeSub(
+            left.takerTokenAmount, leftFilledAmount);
+        uint256 rightRemaining = safeSub(
+            right.takerTokenAmount, rightFilledAmount);
+        
+        uint256 leftMakerTokenFilledAmount;
+        uint256 leftMakerFeeAmountPaid;
+        uint256 leftTakerFeeAmountPaid;
+        uint256 rightMakerTokenFilledAmount;
+        uint256 rightMakerFeeAmountPaid;
+        uint256 rightTakerFeeAmountPaid;
+        
+        // TODO: SafeMath
+        if(right.makerTokenAmount * rightRemaining <
+            right.takerTokenAmount * leftRemaining)
+        {
+            // leftRemaining is the constraint: maximally fill left
+            (   status,
+                leftMakerTokenFilledAmount,
+                leftTakerTokenFilledAmount,
+                leftMakerFeeAmountPaid,
+                leftTakerFeeAmountPaid
+            ) = getFillAmounts(
+                left,
+                leftFilledAmount,
+                leftRemaining,
+                msg.sender);
+            if(status != uint8(Errors.SUCCESS)) {
+                emit LogError(uint8(status), leftOrderHash);
+                return (0, 0);
+            }
+            
+            // Compute how much we should fill right to satisfy
+            // leftTakerTokenFilledAmount
+            // TODO: Check if rounding is in the correct direction.
+            uint256 rightFill = getPartialAmount(
+                right.makerTokenAmount,
+                right.takerTokenAmount,
+                leftMakerTokenFilledAmount);
+            
+            // Compute right fill amounts
+            (   status,
+                rightMakerTokenFilledAmount,
+                rightTakerTokenFilledAmount,
+                rightMakerFeeAmountPaid,
+                rightTakerFeeAmountPaid
+            ) = getFillAmounts(
+                right,
+                rightFilledAmount,
+                rightFill,
+                msg.sender);
+            if(status != uint8(Errors.SUCCESS)) {
+                emit LogError(uint8(status), rightOrderHash);
+                return (0, 0);
+            }
+            
+            // Unfortunately, this is no longer exact and taker may end up
+            // with some left.takerTokens. This will be a rounding error amount.
+            // We should probably not bother and just give them to the makers.
+            assert(rightMakerTokenFilledAmount >= leftTakerTokenFilledAmount);
+            
+            // TODO: Make sure the difference is neglible
+            
+        } else {
+            // rightRemaining is the constraint: maximally fill right
+            (   status,
+                rightMakerTokenFilledAmount,
+                rightTakerTokenFilledAmount,
+                rightMakerFeeAmountPaid,
+                rightTakerFeeAmountPaid
+            ) = getFillAmounts(
+                right,
+                rightFilledAmount,
+                rightRemaining,
+                msg.sender);
+            if(status != uint8(Errors.SUCCESS)) {
+                emit LogError(uint8(status), rightOrderHash);
+                return (0, 0);
+            }
+            
+            // We now have rightMakerTokens to fill left with
+            assert(rightMakerTokenFilledAmount <= leftRemaining);
+            
+            // Fill left with all the right.makerToken we received
+            (   status,
+                leftMakerTokenFilledAmount,
+                leftTakerTokenFilledAmount,
+                leftMakerFeeAmountPaid,
+                leftTakerFeeAmountPaid
+            ) = getFillAmounts(
+                left,
+                leftFilledAmount,
+                rightMakerTokenFilledAmount,
+                msg.sender);
+            if(status != uint8(Errors.SUCCESS)) {
+                emit LogError(uint8(status), leftOrderHash);
+                return (0, 0);
+            }
+            
+            // Taker should not have leftTakerTokens left, this case is exact
+            assert(rightMakerTokenFilledAmount == leftTakerTokenFilledAmount);
+        }
+        
+        ////////////////////// C O M M I T ////////////////////
+        
+        // Update state
+        updateState(
+            left,
+            leftOrderHash,
+            leftMakerTokenFilledAmount,
+            leftTakerTokenFilledAmount,
+            leftMakerFeeAmountPaid,
+            leftTakerFeeAmountPaid
+        );
+        updateState(
+            right,
+            rightOrderHash,
+            rightMakerTokenFilledAmount,
+            rightTakerTokenFilledAmount,
+            rightMakerFeeAmountPaid,
+            rightTakerFeeAmountPaid
+        );
+        
+        // Transfer tokens
+        // Optimized for:
+        // * left.feeRecipient =?= right.feeRecipient
+        // Not optimized for:
+        // * {left, right}.{makerToken, takerToken} == ZRX
+        // * {left, right}.maker, taker == {left, right}.feeRecipient
+        
+        // left.makerToken == right.takerToken
+        // Taker should be left with a positive balance (the spread)
+        transfer(
+            left.makerTokenAddress,
+            left.makerAddress,
+            msg.sender,
+            leftMakerTokenFilledAmount);
+        transfer(
+            left.makerTokenAddress,
+            msg.sender,
+            right.makerAddress,
+            rightTakerTokenFilledAmount);
+        
+        // right.makerToken == left.takerToken
+        // leftTakerTokenFilledAmount ~ rightMakerTokenFilledAmount
+        // The difference (a rounding error) goes to right, not to taker.
+        assert(rightMakerTokenFilledAmount >= leftTakerTokenFilledAmount);
+        transfer(
+            right.makerTokenAddress,
+            right.makerAddress,
+            left.makerAddress,
+            rightMakerTokenFilledAmount);
+        
+        // Maker fees
+        transferFee(
+            left.makerAddress,
+            left.feeRecipientAddress,
+            leftMakerFeeAmountPaid);
+        transferFee(
+            right.makerAddress,
+            right.feeRecipientAddress,
+            rightMakerFeeAmountPaid);
+        
+        // Taker fees
+        // If we assume distinct(left, right, taker) and 
+        // distinct(makerToken, takerToken, zrx) then the only remaining
+        // opportunity for optimization is when both feeRecipientAddress' are
+        // the same.
+        if(left.feeRecipientAddress == right.feeRecipientAddress) {
+            transferFee(
+                msg.sender,
+                left.feeRecipientAddress,
+                safeAdd(
+                    leftTakerFeeAmountPaid,
+                    rightTakerFeeAmountPaid)
+                );
+        } else {
+            transferFee(
+                msg.sender,
+                left.feeRecipientAddress,
+                leftTakerFeeAmountPaid);
+            transferFee(
+                msg.sender,
+                right.feeRecipientAddress,
+                rightTakerFeeAmountPaid);
+        }
+    }
+    
     /// @dev After calling, the order can not be filled anymore.
     /// @param order Order struct containing order specifications.
     /// @return True if the order state changed to cancelled. False if the transaction was already cancelled or expired.

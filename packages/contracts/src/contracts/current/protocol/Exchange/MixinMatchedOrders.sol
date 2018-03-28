@@ -20,103 +20,20 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MExchangeCore.sol";
+import "./mixins/MSettlement.sol";
+import "./LibErrors.sol";
+import "./LibPartialAmount.sol";
 import "../../utils/SafeMath/SafeMath.sol";
 
-contract MixinWrapperFunctions {
-    
-    using LibBalances for LibBalances.Balance[256];
-    
-    function batchedOrders(
-        Order[] memory orders,
-        bytes[] memory signatures,
-        uint256[] fillAmounts,
-        uint8[] balanceIndices)
-        returns ()
-    {
-        Balance[256] balances;
-        for(uint i = 0; i < balanceIndices.length; ++i) {
-            require(balanceIndices[i] < balances.length);
-        }
-        
-        // Update internal balances
-        while() {
-            Order memory order = order[oi];
-            
-            // TODO
-            uint256 makerTokenFilledAmount;
-            uint256 takerTokenFilledAmount;
-            uint256 makerFeeAmountPaid;
-            uint256 takerFeeAmountPaid;
-            
-            // Make sure none of the balance additions will overflow.
-            // NOTE: We realy need only 2**256 / orders.length for this.
-            //       (and half that for the ZRX token)
-            require(makerTokenFilledAmount < 2**128);
-            require(takerTokenFilledAmount < 2**128);
-            require(makerFeePaid < 2**128);
-            require(takerFeePaid < 2**128);
-            
-            // transfer(makerToken, maker, taker, makerTokenFilledAmount)
-            // 0 -> 1
-            balances.add(
-                balanceIndices[bi + 0],
-                order.makerToken,
-                order.makerAddress,
-                - makerTokenFilledAmount);
-            balances.add(
-                balanceIndices[bi + 1],
-                order.makerToken,
-                order.takerAddress,
-                + makerTokenFilledAmount);
-            
-            // transfer(takerToken, taker, maker, takerTokenFilledAmount)
-            // 2 -> 3
-            balances.add(
-                balanceIndices[bi + 2],
-                order.takerToken,
-                order.takerAddress,
-                - takerTokenFilledAmount);
-            balances.add(
-                balanceIndices[bi + 3],
-                order.takerToken,
-                order.makerAddress,
-                + takerTokenFilledAmount);
-            
-            // transfer(ZRX, maker, feeRecipient, makerFeeAmountPaid)
-            // transfer(ZRX, taker, feeRecipient, takerFeeAmountPaid)
-            // 4 -> 6 <- 5
-            balances.add(
-                balanceIndices[bi + 4],
-                ZRX_TOKEN,
-                order.makerAddress,
-                - makerFeeAmountPaid);
-            balances.add(
-                balanceIndices[bi + 5],
-                ZRX_TOKEN,
-                order.makerAddress,
-                - takerFeeAmountPaid);
-            balances.add(
-                balanceIndices[bi + 6],
-                ZRX_TOKEN,
-                order.takerAddress,
-                makerFeeAmountPaid + takerFeeAmountPaid);
-            
-            bi += 7;
-        }
-        
-        // Settle balances
-        balances.settle(
-            
-        );
-    }
-    
-    // Same as batchfill, but all orders are scaled according to the smallest
-    // fillable amount.
-    function proportionalFill() {
-        
-    }
-    
-    // Match to complementary orders that overlap.
+contract MixinMatchedOrders is
+    SafeMath,
+    LibErrors,
+    LibOrder,
+    LibPartialAmount,
+    MExchangeCore,
+    MSettlement
+{
+    // Match two complementary orders that overlap.
     // The taker will end up with the maximum amount of left.makerToken
     // Any right.makerToken that taker would gain because of rounding are
     // transfered to right.
@@ -127,8 +44,8 @@ contract MixinWrapperFunctions {
         bytes rightSignature)
         public
         returns (
-            uint256 leftFilledAmount,
-            uint256 rightFilledAmount)
+            uint256 leftTakerTokenFilledAmount,
+            uint256 rightTakerTokenFilledAmount)
     {
         require(left.makerTokenAddress == right.takerTokenAmount);
         require(left.takerTokenAddress == right.makerTokenAmount);
@@ -143,7 +60,7 @@ contract MixinWrapperFunctions {
         
         // Get left status
         uint8 status;
-        bytes32 leftOrderHash;ex
+        bytes32 leftOrderHash;
         uint256 leftFilledAmount;
         (   leftOrderHash,
             status,
@@ -157,12 +74,12 @@ contract MixinWrapperFunctions {
         // Get right status
         bytes32 rightOrderHash;
         uint256 rightFilledAmount;
-        (   leftOrderHash,
+        (   rightOrderHash,
             status,
             rightFilledAmount
         ) = orderStatus(left, leftSignature);
         if(status != uint8(Errors.SUCCESS)) {
-            emit LogError(uint8(status), leftOrderHash);
+            emit LogError(uint8(status), rightOrderHash);
             return 0;
         }
         
@@ -196,11 +113,11 @@ contract MixinWrapperFunctions {
                 leftTakerFeeAmountPaid
             ) = getFillAmounts(
                 left,
+                leftFilledAmount,
                 leftRemaining,
-                takerTokenFillAmount,
                 msg.sender);
             if(status != uint8(Errors.SUCCESS)) {
-                emit LogError(uint8(status), orderHash);
+                emit LogError(uint8(status), leftOrderHash);
                 return 0;
             }
             
@@ -220,11 +137,11 @@ contract MixinWrapperFunctions {
                 rightTakerFeeAmountPaid
             ) = getFillAmounts(
                 right,
+                rightFilledAmount,
                 rightFill,
-                takerTokenFillAmount,
                 msg.sender);
             if(status != uint8(Errors.SUCCESS)) {
-                emit LogError(uint8(status), orderHash);
+                emit LogError(uint8(status), rightOrderHash);
                 return 0;
             }
             
@@ -244,16 +161,16 @@ contract MixinWrapperFunctions {
                 rightTakerFeeAmountPaid
             ) = getFillAmounts(
                 right,
+                rightFilledAmount,
                 rightRemaining,
-                takerTokenFillAmount,
                 msg.sender);
             if(status != uint8(Errors.SUCCESS)) {
-                emit LogError(uint8(status), orderHash);
+                emit LogError(uint8(status), rightOrderHash);
                 return 0;
             }
             
             // We now have rightMakerTokens to fill left with
-            assert(rightMakerTokenFilledAmount <= remaingLeft);
+            assert(rightMakerTokenFilledAmount <= leftRemaining);
             
             // Fill left with all the right.makerToken we received
             (   status,
@@ -263,15 +180,15 @@ contract MixinWrapperFunctions {
                 leftTakerFeeAmountPaid
             ) = getFillAmounts(
                 left,
+                leftFilledAmount,
                 rightMakerTokenFilledAmount,
-                takerTokenFillAmount,
                 msg.sender);
             if(status != uint8(Errors.SUCCESS)) {
-                emit LogError(uint8(status), orderHash);
+                emit LogError(uint8(status), leftOrderHash);
                 return 0;
             }
             
-            // Taker should not have leftTakerTokens left
+            // Taker should not have leftTakerTokens left, this case is exact
             assert(rightMakerTokenFilledAmount == leftTakerTokenFilledAmount);
         }
         
@@ -303,22 +220,22 @@ contract MixinWrapperFunctions {
         // left.makerToken == right.takerToken
         // Taker should be left with a positive balance (the spread)
         transfer(
-            left.makerToken
+            left.makerToken,
             left.makerAddress,
             taker,
             leftMakerTokenFilledAmount);
         transfer(
-            left.makerToken
+            left.makerToken,
             taker,
             right.makerAddress,
             rightTakerTokenFilledAmount);
         
         // right.makerToken == left.takerToken
         // leftTakerTokenFilledAmount ~ rightMakerTokenFilledAmount
-        // The change goes to right, not to taker.
+        // The difference (a rounding error) goes to right, not to taker.
         assert(rightMakerTokenFilledAmount >= leftTakerTokenFilledAmount);
         transfer(
-            right.makerToken
+            right.makerToken,
             right.makerAddress,
             left.makerAddress,
             rightMakerTokenFilledAmount);
@@ -344,7 +261,7 @@ contract MixinWrapperFunctions {
                 left.feeRecipientAddress,
                 safeAdd(
                     leftTakerFeeAmountPaid,
-                    rightTakerFeeAmountPaid,
+                    rightTakerFeeAmountPaid)
                 );
         } else {
             transferFee(
