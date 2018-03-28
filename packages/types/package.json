@@ -22,15 +22,14 @@
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^0.1.14",
         "@0xproject/tslint-config": "^0.4.12",
+        "@types/node": "^8.0.53",
         "copyfiles": "^1.2.0",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/typescript-typings": "^0.0.1",
-        "bignumber.js": "~4.1.0",
-        "web3": "^0.20.0"
+        "bignumber.js": "~4.1.0"
     },
     "publishConfig": {
         "access": "public"

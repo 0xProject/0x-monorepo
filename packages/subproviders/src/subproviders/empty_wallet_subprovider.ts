@@ -1,4 +1,4 @@
-import * as Web3 from 'web3';
+import { JSONRPCRequestPayload } from '@0xproject/types';
 
 import { Callback, ErrorCallback } from '../types';
 
@@ -18,7 +18,7 @@ export class EmptyWalletSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method
-    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    public handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         switch (payload.method) {
             case 'eth_accounts':
                 end(null, []);

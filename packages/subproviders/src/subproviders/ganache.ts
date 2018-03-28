@@ -1,3 +1,4 @@
+import { JSONRPCRequestPayload } from '@0xproject/types';
 import * as Ganache from 'ganache-core';
 import * as Web3 from 'web3';
 
@@ -28,7 +29,7 @@ export class GanacheSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method
-    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    public handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         this._ganacheProvider.sendAsync(payload, (err: Error | null, result: any) => {
             end(err, result && result.result);
         });

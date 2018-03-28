@@ -1,3 +1,4 @@
+import { JSONRPCRequestPayload } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
@@ -30,7 +31,7 @@ export class InjectedWeb3Subprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method
-    public handleRequest(payload: Web3.JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    public handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         switch (payload.method) {
             case 'web3_clientVersion':
                 this._injectedWeb3.version.getNode(end);

@@ -3,7 +3,10 @@ import { BigNumber } from '@0xproject/utils';
 import {
     BlockParam,
     BlockParamLiteral,
+    ContractAbi,
     ContractEventArg,
+    FilterObject,
+    LogEntryEvent,
     LogWithDecodedArgs,
     Order,
     SignedOrder,
@@ -48,7 +51,7 @@ export type OrderAddresses = [string, string, string, string, string];
 
 export type OrderValues = [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
-export type LogEvent = Web3.LogEntryEvent;
+export type LogEvent = LogEntryEvent;
 export interface DecodedLogEvent<ArgsType> {
     isRemoved: boolean;
     log: LogWithDecodedArgs<ArgsType>;
@@ -197,7 +200,7 @@ export type ArtifactContractName = 'ZRX' | 'TokenTransferProxy' | 'TokenRegistry
 
 export interface Artifact {
     contract_name: ArtifactContractName;
-    abi: Web3.ContractAbi;
+    abi: ContractAbi;
     networks: {
         [networkId: number]: {
             address: string;
@@ -222,7 +225,7 @@ export interface ValidateOrderFillableOpts {
  * flag when  running Parity).
  */
 export interface MethodOpts {
-    defaultBlock?: Web3.BlockParam;
+    defaultBlock?: BlockParam;
 }
 
 /*
@@ -241,8 +244,6 @@ export interface TransactionOpts {
 export interface OrderTransactionOpts extends TransactionOpts {
     shouldValidate?: boolean;
 }
-
-export type FilterObject = Web3.FilterObject;
 
 export enum TradeSide {
     Maker = 'maker',

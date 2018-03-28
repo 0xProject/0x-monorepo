@@ -1,4 +1,4 @@
-import { TxData } from '@0xproject/types';
+import { ContractAbi, TxData } from '@0xproject/types';
 import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
@@ -23,7 +23,7 @@ export interface ContractNetworkData {
     optimizer_enabled: boolean;
     keccak256: string;
     source_tree_hash: string;
-    abi: Web3.ContractAbi;
+    abi: ContractAbi;
     bytecode: string;
     runtime_bytecode: string;
     address?: string;
