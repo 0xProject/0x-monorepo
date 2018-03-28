@@ -25,7 +25,6 @@ export interface MarketFillOrders {
 
 export interface BatchCancelOrders {
     orders: OrderStruct[];
-    takerTokenCancelAmounts: BigNumber[];
 }
 
 export interface CancelOrdersBefore {
@@ -76,7 +75,8 @@ export interface TokenInfoByNetwork {
 
 export enum ExchangeContractErrs {
     ERROR_ORDER_EXPIRED,
-    ERROR_ORDER_FULLY_FILLED_OR_CANCELLED,
+    ERROR_ORDER_FULLY_FILLED,
+    ERROR_ORDER_CANCELLED,
     ERROR_ROUNDING_ERROR_TOO_LARGE,
     ERROR_INSUFFICIENT_BALANCE_OR_ALLOWANCE,
 }

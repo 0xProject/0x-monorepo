@@ -41,7 +41,7 @@ contract MixinExchangeCore is
 {
     // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
     mapping (bytes32 => uint256) public filled;
-    mapping (bytes32 => uint256) public cancelled;
+    mapping (bytes32 => bool) public cancelled;
 
     // Mapping of makerAddress => lowest salt an order can have in order to be fillable
     // Orders with a salt less than their maker's epoch are considered cancelled
@@ -65,8 +65,6 @@ contract MixinExchangeCore is
         address indexed feeRecipientAddress,
         address makerTokenAddress,
         address takerTokenAddress,
-        uint256 makerTokenCancelledAmount,
-        uint256 takerTokenCancelledAmount,
         bytes32 indexed orderHash
     );
 
@@ -94,9 +92,15 @@ contract MixinExchangeCore is
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
 
+        // Check if order has been cancelled
+        if (cancelled[orderHash]) {
+            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
+            return 0;
+        }
+
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
-        if (filled[orderHash] == 0 && cancelled[orderHash] == 0) {
+        if (filled[orderHash] == 0) {
             require(order.makerTokenAmount > 0);
             require(order.takerTokenAmount > 0);
             require(isValidSignature(orderHash, order.makerAddress, signature));
@@ -115,14 +119,14 @@ contract MixinExchangeCore is
         }
 
         // Validate order availability
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderHash));
-        takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
-        if (takerTokenFilledAmount == 0) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
+        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, filled[orderHash]);
+        if (remainingTakerTokenAmount == 0) {
+            LogError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
             return 0;
         }
 
         // Validate fill order rounding
+        takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
         if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
             return 0;
@@ -157,15 +161,12 @@ contract MixinExchangeCore is
         return takerTokenFilledAmount;
     }
 
-    /// @dev Cancels the input order.
+    /// @dev After calling, the order can not be filled anymore.
     /// @param order Order struct containing order specifications.
-    /// @param takerTokenCancelAmount Desired amount of takerToken to cancel in order.
-    /// @return Amount of takerToken cancelled.
-    function cancelOrder(
-        Order order,
-        uint256 takerTokenCancelAmount)
+    /// @return True if the order state changed to cancelled. False if the transaction was already cancelled or expired.
+    function cancelOrder(Order order)
         public
-        returns (uint256 takerTokenCancelledAmount)
+        returns (bool)
     {
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
@@ -173,33 +174,28 @@ contract MixinExchangeCore is
         // Validate the order
         require(order.makerTokenAmount > 0);
         require(order.takerTokenAmount > 0);
-        require(takerTokenCancelAmount > 0);
         require(order.makerAddress == msg.sender);
 
         if (block.timestamp >= order.expirationTimeSeconds) {
             LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
-            return 0;
+            return false;
         }
 
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderHash));
-        takerTokenCancelledAmount = min256(takerTokenCancelAmount, remainingTakerTokenAmount);
-        if (takerTokenCancelledAmount == 0) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
-            return 0;
+        if (cancelled[orderHash]) {
+            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
+            return false;
         }
 
-        cancelled[orderHash] = safeAdd(cancelled[orderHash], takerTokenCancelledAmount);
+        cancelled[orderHash] = true;
 
         LogCancel(
             order.makerAddress,
             order.feeRecipientAddress,
             order.makerTokenAddress,
             order.takerTokenAddress,
-            getPartialAmount(takerTokenCancelledAmount, order.takerTokenAmount, order.makerTokenAmount),
-            takerTokenCancelledAmount,
             orderHash
         );
-        return takerTokenCancelledAmount;
+        return true;
     }
 
     /// @param salt Orders created with a salt less or equal to this value will be cancelled.
@@ -232,16 +228,5 @@ contract MixinExchangeCore is
         );
         isError = errPercentageTimes1000000 > 1000;
         return isError;
-    }
-
-    /// @dev Calculates the sum of values already filled and cancelled for a given order.
-    /// @param orderHash The Keccak-256 hash of the given order.
-    /// @return Sum of values already filled and cancelled.
-    function getUnavailableTakerTokenAmount(bytes32 orderHash)
-        public view
-        returns (uint256 unavailableTakerTokenAmount)
-    {
-        unavailableTakerTokenAmount = safeAdd(filled[orderHash], cancelled[orderHash]);
-        return unavailableTakerTokenAmount;
     }
 }
