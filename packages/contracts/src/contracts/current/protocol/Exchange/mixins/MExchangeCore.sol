@@ -34,6 +34,6 @@ contract MExchangeCore is LibOrder {
         public
         returns (bool);
 
- function cancelOrdersUpTo(uint256 salt)
+    function cancelOrdersUpTo(uint256 salt)
         external;
 }
