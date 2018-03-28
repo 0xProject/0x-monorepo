@@ -5,8 +5,11 @@
   "main": "lib/index.js",
   "scripts": {
     "build:webpack": "NODE_ENV=production webpack",
-    "build": "tsc && yarn run copy_artifacts",
-    "clean": "shx rm -f src/public/bundle*",
+    "copy_artifacts": "copyfiles -u 2 './src/ts/artifacts/**/*' ./lib/trade-widget/src/ts",
+    "build": "tsc && run-s update_contracts copy_artifacts",
+    "test": "run-s clean build run_mocha",
+    "run_mocha": "mocha 'lib/trade-widget/test/**/*.js' --timeout 100000 --bail --exit",
+    "clean": "shx rm -rf lib/* src/public/bundle*",
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
     "dev": "webpack-dev-server --open",
     "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/ts/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
@@ -18,7 +21,7 @@
   },
   "config": {
     "contracts": "Forwarder",
-    "artifacts": "Forwarder"
+    "artifacts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy"
   },
   "author": "Jacob Evans",
   "license": "MIT",
@@ -44,9 +47,15 @@
     "@types/react-tap-event-plugin": "0.0.30",
     "@types/yargs": "^11.0.0",
     "awesome-typescript-loader": "^3.4.1",
+    "chai": "^4.0.1",
+    "chai-as-promised": "^7.1.0",
+    "chai-as-promised-typescript-typings": "^0.0.10",
+    "chai-bignumber": "^2.0.1",
+    "chai-typescript-typings": "^0.0.4",
     "copyfiles": "^1.2.0",
     "css-loader": "^0.28.9",
     "delay": "^2.0.0",
+    "dirty-chai": "^2.0.1",
     "ethers-contracts": "^2.2.1",
     "ethers-typescript-typings": "^0.0.4",
     "json-loader": "^0.5.7",

@@ -28,7 +28,7 @@ import * as ReactDOM from 'react-dom';
 import * as Web3 from 'web3';
 import * as Web3ProviderEngine from 'web3-provider-engine';
 
-import { ForwarderWrapper } from '../../../contract_wrappers/forwarder_wrapper';
+import { convertSignedOrderV1ToSignedOrderV2, ForwarderWrapper } from '../../../contract_wrappers/forwarder_wrapper';
 import { artifacts } from '../../artifacts';
 
 import { Dispatcher } from '../../redux/dispatcher';
@@ -70,7 +70,6 @@ interface BuyWidgetState {
 
 const ETH_DECIMAL_PLACES = 18;
 class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
-    private _forwarder: ForwarderWrapper;
     constructor(props: any) {
         super(props);
         this.state = {
@@ -218,19 +217,25 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
         fillAmount: BigNumber,
         signedOrder: SignedOrder,
     ): Promise<string> {
-        const txHash = await this._getForwarder().fillOrderAsync(signedOrder, fillAmount, takerAddress);
+        const forwarder = await this._getForwarderAsync();
+        const txHash = await forwarder.fillOrderAsync(
+            convertSignedOrderV1ToSignedOrderV2(signedOrder),
+            fillAmount,
+            takerAddress,
+        );
         this.props.dispatcher.transactionSubmitted(txHash);
         const receipt = await this.props.zeroEx.awaitTransactionMinedAsync(txHash);
         this.props.dispatcher.transactionMined(receipt);
         return txHash;
     }
 
-    private _getForwarder(): ForwarderWrapper {
-        const artifactJSONs = _.values(artifacts);
-        const abiArrays = _.map(artifactJSONs, artifact => artifact.networks[this.props.networkId].abi);
-        const abiDecoder = new AbiDecoder(abiArrays);
-        this._forwarder = new ForwarderWrapper(this.props.web3Wrapper, this.props.networkId, abiDecoder);
-        return this._forwarder;
+    private async _getForwarderAsync(): Promise<ForwarderWrapper> {
+        const forwarderContract = await ForwarderWrapper.getForwarderContractAsync(
+            this.props.web3Wrapper,
+            this.props.networkId,
+        );
+        const forwarder = new ForwarderWrapper(forwarderContract);
+        return forwarder;
     }
 
     private async _quoteSelectedTokenAsync() {
