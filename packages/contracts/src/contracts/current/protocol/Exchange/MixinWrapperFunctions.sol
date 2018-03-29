@@ -20,42 +20,46 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./mixins/MExchangeCore.sol";
+import "./LibPartialAmount.sol";
 import "../../utils/SafeMath/SafeMath.sol";
 
 /// @dev Consumes MExchangeCore
 contract MixinWrapperFunctions is
     MExchangeCore,
-    SafeMath
+    SafeMath,
+    LibPartialAmount
 {
+    /// @dev Fills the input order. Reverts if exact takerSellAmount not filled.
     /// @param order Order struct containing order specifications.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param takerSellAmount Desired amount of takerToken to fill.
     /// @param signature Maker's signature of the order.
     function fillOrKillOrder(
-        Order order,
-        uint256 takerTokenFillAmount,
-        bytes signature)
+        Order memory order,
+        uint256 takerSellAmount,
+        bytes memory signature)
         public
     {
         require(
             fillOrder(
                 order,
-                takerTokenFillAmount,
+                takerSellAmount,
                 signature
-            ) == takerTokenFillAmount
+            ) == takerSellAmount
         );
     }
 
-    /// @dev Fills an order with specified parameters and ECDSA signature. Returns false if the transaction would otherwise revert.
+    /// @dev Fills an order with specified parameters and ECDSA signature.
+    ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param takerSellAmount Desired amount of takerToken to fill.
     /// @param signature Maker's signature of the order.
     /// @return Total amount of takerToken filled in trade.
     function fillOrderNoThrow(
-        Order order,
-        uint256 takerTokenFillAmount,
-        bytes signature)
+        Order memory order,
+        uint256 takerSellAmount,
+        bytes memory signature)
         public
-        returns (uint256 takerTokenFilledAmount)
+        returns (uint256 takerAmountSold)
     {
         // We need to call MExchangeCore.fillOrder using a delegatecall in
         // assembly so that we can intercept a call that throws. For this, we
@@ -101,8 +105,8 @@ contract MixinWrapperFunctions is
             mstore(add(start, 292), mload(add(order, 288))) // expirationTimeSeconds
             mstore(add(start, 324), mload(add(order, 320))) // salt
 
-            // Write takerTokenFillAmount
-            mstore(add(start, 356), takerTokenFillAmount)
+            // Write takerSellAmount
+            mstore(add(start, 356), takerSellAmount)
 
             // Write signature offset
             mstore(add(start, 388), 416)
@@ -133,30 +137,30 @@ contract MixinWrapperFunctions is
             )
             switch success
             case 0 {
-                takerTokenFilledAmount := 0
+                takerAmountSold := 0
             }
             case 1 {
-                takerTokenFilledAmount := mload(start)
+                takerAmountSold := mload(start)
             }
 
         }
-        return takerTokenFilledAmount;
+        return takerAmountSold;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder in a single transaction.
     /// @param orders Array of orders.
-    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param takerSellAmounts Array of desired amounts of takerToken to fill in orders.
     /// @param signatures Maker's signatures of the orders.
     function batchFillOrders(
-        Order[] orders,
-        uint256[] takerTokenFillAmounts,
-        bytes[] signatures)
+        Order[] memory orders,
+        uint256[] memory takerSellAmounts,
+        bytes[] memory signatures)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
             fillOrder(
                 orders[i],
-                takerTokenFillAmounts[i],
+                takerSellAmounts[i],
                 signatures[i]
             );
         }
@@ -164,18 +168,18 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously executes multiple calls of fillOrKill in a single transaction.
     /// @param orders Array of orders.
-    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param takerSellAmounts Array of desired amounts of takerToken to fill in orders.
     /// @param signatures Maker's signatures of the orders.
     function batchFillOrKillOrders(
-        Order[] orders,
-        uint256[] takerTokenFillAmounts,
-        bytes[] signatures)
+        Order[] memory orders,
+        uint256[] memory takerSellAmounts,
+        bytes[] memory signatures)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
             fillOrKillOrder(
                 orders[i],
-                takerTokenFillAmounts[i],
+                takerSellAmounts[i],
                 signatures[i]
             );
         }
@@ -183,86 +187,168 @@ contract MixinWrapperFunctions is
 
     /// @dev Fills an order with specified parameters and ECDSA signature. Returns false if the transaction would otherwise revert.
     /// @param orders Array of orders.
-    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to fill in orders.
+    /// @param takerSellAmounts Array of desired amounts of takerToken to fill in orders.
     /// @param signatures Maker's signatures of the orders.
     function batchFillOrdersNoThrow(
-        Order[] orders,
-        uint256[] takerTokenFillAmounts,
-        bytes[] signatures)
+        Order[] memory orders,
+        uint256[] memory takerSellAmounts,
+        bytes[] memory signatures)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
             fillOrderNoThrow(
                 orders[i],
-                takerTokenFillAmounts[i],
+                takerSellAmounts[i],
                 signatures[i]
             );
         }
     }
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total takerTokenFillAmount filled.
+    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is sold by taker.
     /// @param orders Array of orders.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param takerSellAmount Desired amount of takerToken to sell.
     /// @param signatures Maker's signatures of the orders.
-    /// @return Total amount of takerTokenFillAmount filled in orders.
-    function marketFillOrders(
-        Order[] orders,
-        uint256 takerTokenFillAmount,
-        bytes[] signatures)
+    /// @return Total amount of tokens sold by taker in orders.
+    function marketSellOrders(
+        Order[] memory orders,
+        uint256 takerSellAmount,
+        bytes[] memory signatures)
         public
-        returns (uint256 totalTakerTokenFilledAmount)
+        returns (uint256 takerAmountSold)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount);
-            totalTakerTokenFilledAmount = safeAdd(
-                totalTakerTokenFilledAmount,
+            uint256 remainingTakerSellAmount = safeSub(takerSellAmount, takerAmountSold);
+            takerAmountSold = safeAdd(
+                takerAmountSold,
                 fillOrder(
                     orders[i],
-                    remainingTakerTokenFillAmount,
+                    remainingTakerSellAmount,
                     signatures[i]
                 )
             );
-            if (totalTakerTokenFilledAmount == takerTokenFillAmount) {
+            if (takerAmountSold == takerSellAmount) {
                 break;
             }
         }
-        return totalTakerTokenFilledAmount;
+        return takerAmountSold;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total takerTokenFillAmount filled.
+    /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total amount is sold by taker.
+    ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of orders.
-    /// @param takerTokenFillAmount Desired total amount of takerToken to fill in orders.
+    /// @param takerSellAmount Desired amount of takerToken to sell.
     /// @param signatures Maker's signatures of the orders.
-    /// @return Total amount of takerTokenFillAmount filled in orders.
-    function marketFillOrdersNoThrow(
-        Order[] orders,
-        uint256 takerTokenFillAmount,
-        bytes[] signatures)
+    /// @return Total amount of tokens sold by taker in orders.
+    function marketSellOrdersNoThrow(
+        Order[] memory orders,
+        uint256 takerSellAmount,
+        bytes[] memory signatures)
         public
-        returns (uint256 totalTakerTokenFilledAmount)
+        returns (uint256 takerAmountSold)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount);
-            totalTakerTokenFilledAmount = safeAdd(
-                totalTakerTokenFilledAmount,
+            uint256 remainingTakerSellAmount = safeSub(takerSellAmount, takerAmountSold);
+            takerAmountSold = safeAdd(
+                takerAmountSold,
                 fillOrderNoThrow(
                     orders[i],
-                    remainingTakerTokenFillAmount,
+                    remainingTakerSellAmount,
                     signatures[i]
                 )
             );
-            if (totalTakerTokenFilledAmount == takerTokenFillAmount) {
+            if (takerAmountSold == takerSellAmount) {
                 break;
             }
         }
-        return totalTakerTokenFilledAmount;
+        return takerAmountSold;
+    }
+
+    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
+    /// @param orders Array of orders.
+    /// @param takerBuyAmount Desired amount of makerToken to buy.
+    /// @param signatures Maker's signatures of the orders.
+    /// @return Total amount of takerTokenFillAmount filled in orders.
+    function marketBuyOrders(
+        Order[] memory orders,
+        uint256 takerBuyAmount,
+        bytes[] memory signatures)
+        public
+        returns (uint256 takerAmountBought)
+    {
+        for (uint256 i = 0; i < orders.length; i++) {
+            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, takerAmountBought);
+            uint256 takerSellAmount = getPartialAmount(
+                orders[i].makerBuyAmount,
+                orders[i].makerSellAmount,
+                remainingTakerBuyAmount
+            );
+            uint256 takerAmountSold = fillOrder(
+                    orders[i],
+                    takerSellAmount,
+                    signatures[i]
+            );
+            takerAmountBought = safeAdd(
+                takerAmountBought,
+                getPartialAmount(
+                    orders[i].makerSellAmount,
+                    orders[i].makerBuyAmount,
+                    takerAmountSold
+                )
+            );
+            if (takerAmountBought == takerBuyAmount) {
+                break;
+            }
+        }
+        return takerAmountBought;
+    }
+
+    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
+    ///      Returns false if the transaction would otherwise revert.
+    /// @param orders Array of orders.
+    /// @param takerBuyAmount Desired amount of makerToken to fill.
+    /// @param signatures Maker's signatures of the orders.
+    /// @return Total amount of takerTokenFillAmount filled in orders.
+    function marketBuyOrdersNoThrow(
+        Order[] memory orders,
+        uint256 takerBuyAmount,
+        bytes[] memory signatures)
+        public
+        returns (uint256 takerAmountBought)
+    {
+        for (uint256 i = 0; i < orders.length; i++) {
+            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, takerAmountBought);
+            uint256 takerSellAmount = getPartialAmount(
+                orders[i].makerBuyAmount,
+                orders[i].makerSellAmount,
+                remainingTakerBuyAmount
+            );
+            uint256 takerAmountSold = fillOrderNoThrow(
+                    orders[i],
+                    takerSellAmount,
+                    signatures[i]
+            );
+            takerAmountBought = safeAdd(
+                takerAmountBought,
+                getPartialAmount(
+                    orders[i].makerSellAmount,
+                    orders[i].makerBuyAmount,
+                    takerAmountSold
+                )
+            );
+            if (takerAmountBought == takerBuyAmount) {
+                break;
+            }
+        }
+        return takerAmountBought;
     }
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of orders.
-    function batchCancelOrders(Order[] orders)
+    function batchCancelOrders(Order[] memory orders)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
