@@ -1,4 +1,4 @@
-import { constants as sharedConstants } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants, Styles } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Toggle from 'material-ui/Toggle';
@@ -30,6 +30,31 @@ interface AllowanceToggleState {
     prevAllowance: BigNumber;
 }
 
+const styles: Styles = {
+    baseThumbStyle: {
+        height: 10,
+        width: 10,
+        top: 6,
+        backgroundColor: colors.white,
+        boxShadow: `0px 0px 0px ${colors.allowanceToggleShadow}`,
+    },
+    offThumbStyle: {
+        left: 4,
+    },
+    onThumbStyle: {
+        left: 25,
+    },
+    baseTrackStyle: {
+        width: 25,
+    },
+    offTrackStyle: {
+        backgroundColor: colors.allowanceToggleOffTrack,
+    },
+    onTrackStyle: {
+        backgroundColor: colors.allowanceToggleOnTrack,
+    },
+};
+
 export class AllowanceToggle extends React.Component<AllowanceToggleProps, AllowanceToggleState> {
     constructor(props: AllowanceToggleProps) {
         super(props);
@@ -54,6 +79,10 @@ export class AllowanceToggle extends React.Component<AllowanceToggleProps, Allow
                         disabled={this.state.isSpinnerVisible || this.props.isDisabled}
                         toggled={this._isAllowanceSet()}
                         onToggle={this._onToggleAllowanceAsync.bind(this)}
+                        thumbStyle={{ ...styles.baseThumbStyle, ...styles.offThumbStyle }}
+                        thumbSwitchedStyle={{ ...styles.baseThumbStyle, ...styles.onThumbStyle }}
+                        trackStyle={{ ...styles.baseTrackStyle, ...styles.offTrackStyle }}
+                        trackSwitchedStyle={{ ...styles.baseTrackStyle, ...styles.onTrackStyle }}
                     />
                 </div>
                 {this.state.isSpinnerVisible && (
