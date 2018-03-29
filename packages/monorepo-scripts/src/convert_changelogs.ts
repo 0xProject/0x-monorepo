@@ -28,7 +28,10 @@ const MONOREPO_ROOT_PATH = path.join(__dirname, '../../..');
         };
         for (const line of lines) {
             if (_.startsWith(line, '## ')) {
-                const version = line.substr(4).split(' - ')[0];
+                let version = line.substr(4).split(' - ')[0];
+                if (version === '0.x.x') {
+                    version = utils.getNextPatchVersion(lernaPackage.package.version);
+                }
                 const dateStr = line.split('_')[1];
                 let date;
                 if (!_.includes(dateStr, 'TBD')) {
