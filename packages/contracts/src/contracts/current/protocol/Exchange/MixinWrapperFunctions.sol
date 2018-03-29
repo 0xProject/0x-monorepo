@@ -278,7 +278,7 @@ contract MixinWrapperFunctions is
         returns (uint256 takerAmountBought)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            require(orders[i].makerTokenAddress == orders[0].makerTokenAddress);
             uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, takerAmountBought);
             uint256 takerSellAmount = getPartialAmount(
                 orders[i].makerBuyAmount,
@@ -319,7 +319,7 @@ contract MixinWrapperFunctions is
         returns (uint256 takerAmountBought)
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            require(orders[i].makerTokenAddress == orders[0].makerTokenAddress);
             uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, takerAmountBought);
             uint256 takerSellAmount = getPartialAmount(
                 orders[i].makerBuyAmount,
