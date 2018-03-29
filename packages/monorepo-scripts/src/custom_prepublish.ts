@@ -79,8 +79,6 @@ async function getPublicLernaUpdatedPackagesAsync(): Promise<UpdatedPackage[]> {
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string) {
-    console.log('currentVersion', currentVersion);
-    console.log('proposedNextVersion', proposedNextVersion);
     if (proposedNextVersion === currentVersion) {
         return utils.getNextPatchVersion(currentVersion);
     }
