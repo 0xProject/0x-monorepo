@@ -39,8 +39,10 @@ contract MixinExchangeCore is
     LibErrors,
     LibPartialAmount
 {
-    // Mappings of orderHash => amounts of takerTokenAmount filled or cancelled.
+    // Mapping of orderHash => amount of takerToken already bought by maker
     mapping (bytes32 => uint256) public filled;
+
+    // Mapping of orderHash => cancelled
     mapping (bytes32 => bool) public cancelled;
 
     // Mapping of makerAddress => lowest salt an order can have in order to be fillable
@@ -53,10 +55,10 @@ contract MixinExchangeCore is
         address indexed feeRecipientAddress,
         address makerTokenAddress,
         address takerTokenAddress,
-        uint256 makerTokenFilledAmount,
-        uint256 takerTokenFilledAmount,
-        uint256 makerFeeAmountPaid,
-        uint256 takerFeeAmountPaid,
+        uint256 makerAmountSold,
+        uint256 makerAmountBought,
+        uint256 makerFeePaid,
+        uint256 takerFeePaid,
         bytes32 indexed orderHash
     );
 
@@ -69,7 +71,7 @@ contract MixinExchangeCore is
     );
 
     event LogCancelUpTo(
-        address indexed maker,
+        address indexed makerAddress,
         uint256 makerEpoch
     );
 
@@ -79,15 +81,15 @@ contract MixinExchangeCore is
 
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
+    /// @param takerSellAmount Desired amount of takerToken to sell.
     /// @param signature Proof of signing order by maker.
     /// @return Total amount of takerToken filled in trade.
     function fillOrder(
-        Order order,
-        uint256 takerTokenFillAmount,
-        bytes signature)
+        Order memory order,
+        uint256 takerSellAmount,
+        bytes memory signature)
         public
-        returns (uint256 takerTokenFilledAmount)
+        returns (uint256 takerAmountSold)
     {
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
@@ -101,8 +103,6 @@ contract MixinExchangeCore is
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
         if (filled[orderHash] == 0) {
-            require(order.makerTokenAmount > 0);
-            require(order.takerTokenAmount > 0);
             require(isValidSignature(orderHash, order.makerAddress, signature));
         }
 
@@ -110,7 +110,6 @@ contract MixinExchangeCore is
         if (order.takerAddress != address(0)) {
             require(order.takerAddress == msg.sender);
         }
-        require(takerTokenFillAmount > 0);
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
@@ -119,15 +118,15 @@ contract MixinExchangeCore is
         }
 
         // Validate order availability
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, filled[orderHash]);
-        if (remainingTakerTokenAmount == 0) {
+        uint256 remainingMakerBuyAmount = safeSub(order.makerBuyAmount, filled[orderHash]);
+        if (remainingMakerBuyAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
             return 0;
         }
 
         // Validate fill order rounding
-        takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
-        if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
+        takerAmountSold = min256(takerSellAmount, remainingMakerBuyAmount);
+        if (isRoundingError(takerAmountSold, order.makerBuyAmount, order.makerSellAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
             return 0;
         }
@@ -139,11 +138,11 @@ contract MixinExchangeCore is
         }
 
         // Update state
-        filled[orderHash] = safeAdd(filled[orderHash], takerTokenFilledAmount);
+        filled[orderHash] = safeAdd(filled[orderHash], takerAmountSold);
 
         // Settle order
-        var (makerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid) =
-            settleOrder(order, msg.sender, takerTokenFilledAmount);
+        var (makerAmountSold, makerFeePaid, takerFeePaid) =
+            settleOrder(order, msg.sender, takerAmountSold);
 
         // Log order
         LogFill(
@@ -152,19 +151,19 @@ contract MixinExchangeCore is
             order.feeRecipientAddress,
             order.makerTokenAddress,
             order.takerTokenAddress,
-            makerTokenFilledAmount,
-            takerTokenFilledAmount,
-            makerFeeAmountPaid,
-            takerFeeAmountPaid,
+            makerAmountSold,
+            takerAmountSold,
+            makerFeePaid,
+            takerFeePaid,
             orderHash
         );
-        return takerTokenFilledAmount;
+        return takerAmountSold;
     }
 
     /// @dev After calling, the order can not be filled anymore.
     /// @param order Order struct containing order specifications.
     /// @return True if the order state changed to cancelled. False if the transaction was already cancelled or expired.
-    function cancelOrder(Order order)
+    function cancelOrder(Order memory order)
         public
         returns (bool)
     {
@@ -172,8 +171,6 @@ contract MixinExchangeCore is
         bytes32 orderHash = getOrderHash(order);
 
         // Validate the order
-        require(order.makerTokenAmount > 0);
-        require(order.takerTokenAmount > 0);
         require(order.makerAddress == msg.sender);
 
         if (block.timestamp >= order.expirationTimeSeconds) {

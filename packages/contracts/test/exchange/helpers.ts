@@ -52,10 +52,10 @@ describe('Exchange', () => {
             feeRecipientAddress,
             makerTokenAddress: rep.address,
             takerTokenAddress: dgd.address,
-            makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-            takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
-            makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            makerSellAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
+            makerBuyAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
+            makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
