@@ -24,14 +24,14 @@ import "../LibOrder.sol";
 contract MSettlement is LibOrder {
 
     function settleOrder(
-        Order order,
-        address taker,
-        uint256 takerTokenFilledAmount)
+        Order memory order,
+        address takerAddress,
+        uint256 takerAmountSold)
         internal
         returns (
-            uint256 makerTokenFilledAmount,
-            uint256 makerFeeAmountPaid,
-            uint256 takerFeeAmountPaid
+            uint256 makerAmountSold,
+            uint256 makerFeePaid,
+            uint256 takerFeePaid
         );
 
 }

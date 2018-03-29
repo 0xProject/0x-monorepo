@@ -39,7 +39,7 @@ contract MixinSignatureValidator is
     function isValidSignature(
         bytes32 hash,
         address signer,
-        bytes signature)
+        bytes memory signature)
         public view
         returns (bool isValid)
     {
@@ -145,7 +145,7 @@ contract MixinSignatureValidator is
         revert();
     }
 
-    function get32(bytes b, uint256 index)
+    function get32(bytes memory b, uint256 index)
         private pure
         returns (bytes32 result)
     {
