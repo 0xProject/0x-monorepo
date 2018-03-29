@@ -116,7 +116,8 @@
 		"version": "0.31.0",
 		"changes": [
 			{
-				"note": "Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the"
+				"note": "Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the caller can decide on whether to add the personalMessage prefix before relaying the request to the signer. Parity Signer, Ledger and TestRPC add the prefix themselves, Metamask expects it to have already been added.",
+				"pr": "349"
 			}
 		],
 		"timestamp": 1517266800,
