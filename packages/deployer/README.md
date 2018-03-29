@@ -18,6 +18,14 @@ yarn global add @0xproject/deployer
 yarn add @0xproject/deployer
 ```
 
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
+```
+
 **Import**
 
 ```typescript

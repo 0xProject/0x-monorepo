@@ -27,6 +27,15 @@ jobs:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
+  test-installation:
+    docker:
+      - image: circleci/node:6.12
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn test:installation
   test-0xjs:
     docker:
       - image: circleci/node:6.12
@@ -174,6 +183,9 @@ workflows:
   main:
     jobs:
       - build
+      - test-installation:
+          requires:
+            - build
       - test-0xjs:
           requires:
             - build

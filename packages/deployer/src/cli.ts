@@ -10,6 +10,7 @@ import * as yargs from 'yargs';
 
 import { commands } from './commands';
 import { constants } from './utils/constants';
+import { consoleReporter } from './utils/error_reporter';
 import { CliOptions, CompilerOptions, DeployerOptions } from './utils/types';
 
 const DEFAULT_OPTIMIZER_ENABLED = false;
@@ -24,11 +25,11 @@ const DEFAULT_CONTRACTS_LIST = '*';
  * Compiles all contracts with options passed in through CLI.
  * @param argv Instance of process.argv provided by yargs.
  */
-async function onCompileCommand(argv: CliOptions): Promise<void> {
+async function onCompileCommandAsync(argv: CliOptions): Promise<void> {
     const opts: CompilerOptions = {
         contractsDir: argv.contractsDir,
         networkId: argv.networkId,
-        optimizerEnabled: argv.shouldOptimize ? 1 : 0,
+        optimizerEnabled: argv.shouldOptimize,
         artifactsDir: argv.artifactsDir,
         specifiedContracts: getContractsSetFromList(argv.contracts),
     };
@@ -38,7 +39,7 @@ async function onCompileCommand(argv: CliOptions): Promise<void> {
  * Deploys a single contract with provided name and args.
  * @param argv Instance of process.argv provided by yargs.
  */
-async function onDeployCommand(argv: CliOptions): Promise<void> {
+async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
     const url = argv.jsonrpcUrl;
     const web3Provider = new Web3.providers.HttpProvider(url);
     const web3Wrapper = new Web3Wrapper(web3Provider);
@@ -46,7 +47,7 @@ async function onDeployCommand(argv: CliOptions): Promise<void> {
     const compilerOpts: CompilerOptions = {
         contractsDir: argv.contractsDir,
         networkId,
-        optimizerEnabled: argv.shouldOptimize ? 1 : 0,
+        optimizerEnabled: argv.shouldOptimize,
         artifactsDir: argv.artifactsDir,
         specifiedContracts: getContractsSetFromList(argv.contracts),
     };
@@ -62,9 +63,9 @@ async function onDeployCommand(argv: CliOptions): Promise<void> {
         networkId,
         defaults,
     };
-    const deployerArgsString = argv.args;
+    const deployerArgsString = argv.args as string;
     const deployerArgs = deployerArgsString.split(',');
-    await commands.deployAsync(argv.contract, deployerArgs, deployerOpts);
+    await commands.deployAsync(argv.contract as string, deployerArgs, deployerOpts);
 }
 /**
  * Creates a set of contracts to compile.
@@ -142,7 +143,12 @@ function deployCommandBuilder(yargsInstance: any) {
             default: DEFAULT_CONTRACTS_LIST,
             description: 'comma separated list of contracts to compile',
         })
-        .command('compile', 'compile contracts', identityCommandBuilder, onCompileCommand)
-        .command('deploy', 'deploy a single contract with provided arguments', deployCommandBuilder, onDeployCommand)
+        .command('compile', 'compile contracts', identityCommandBuilder, consoleReporter(onCompileCommandAsync))
+        .command(
+            'deploy',
+            'deploy a single contract with provided arguments',
+            deployCommandBuilder,
+            consoleReporter(onDeployCommandAsync),
+        )
         .help().argv;
 })();

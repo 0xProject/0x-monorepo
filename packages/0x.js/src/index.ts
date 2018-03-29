@@ -16,7 +16,6 @@ export {
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
-    FilterObject,
     LogEvent,
     DecodedLogEvent,
     EventWatcherCallback,
@@ -28,6 +27,7 @@ export {
 
 export {
     BlockParamLiteral,
+    FilterObject,
     BlockParam,
     ContractEventArg,
     LogWithDecodedArgs,

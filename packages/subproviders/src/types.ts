@@ -1,8 +1,5 @@
-import { ECSignature } from '@0xproject/types';
+import { ECSignature, JSONRPCRequestPayload } from '@0xproject/types';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
-
-export { ECSignature } from '@0xproject/types';
 
 export interface LedgerCommunicationClient {
     close: () => Promise<void>;
@@ -116,6 +113,6 @@ export type Callback = () => void;
 export type OnNextCompleted = (err: Error | null, result: any, cb: Callback) => void;
 export type NextCallback = (callback?: OnNextCompleted) => void;
 
-export interface JSONRPCRequestPayloadWithMethod extends Web3.JSONRPCRequestPayload {
+export interface JSONRPCRequestPayloadWithMethod extends JSONRPCRequestPayload {
     method: string;
 }

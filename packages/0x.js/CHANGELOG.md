@@ -2,7 +2,6 @@
 
 ## v0.34.0 - _TBD_
 
-    * Update Kovan EtherToken artifact address to match TokenRegistry.
     * Fix the bug causing `zeroEx.exchange.fillOrdersUpToAsync` validation to fail if there were some extra orders passed (#470)
 
 ## v0.33.2 - _March 18, 2018_
@@ -42,10 +41,7 @@
 
 ## v0.31.0 - _January 30, 2018_
 
-    * Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the
-    caller can decide on whether to add the personalMessage prefix before relaying the request
-    to the signer. Parity Signer, Ledger and TestRPC add the prefix themselves, Metamask expects
-    it to have already been added. (#349)
+    * Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the caller can decide on whether to add the personalMessage prefix before relaying the request to the signer. Parity Signer, Ledger and TestRPC add the prefix themselves, Metamask expects it to have already been added. (#349)
 
 ## v0.30.2 - _January 29, 2018_
 
@@ -238,11 +234,11 @@
     * Added `zeroEx.token.setUnlimitedAllowanceAsync` (#137)
     * Added `zeroEx.token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS` (#137)
 
-## v0.10.4 - _Aug 24, 2017_
+## v0.10.4 - _August 24, 2017_
 
     * Fixed a bug where checksummed addresses were being pulled from artifacts and not lower-cased. (#135)
 
-## v0.10.1 - _Aug 24, 2017_
+## v0.10.1 - _August 24, 2017_
 
     * Added `zeroEx.exchange.validateFillOrderThrowIfInvalidAsync` (#128)
     * Added `zeroEx.exchange.validateFillOrKillOrderThrowIfInvalidAsync` (#128)
@@ -257,20 +253,20 @@
     * Added clear error message when checksummed address is passed to a public method (#124)
     * Fixes the description of `shouldThrowOnInsufficientBalanceOrAllowance` in docs (#127)
 
-## v0.9.3 - _Aug 22, 2017_
+## v0.9.3 - _August 22, 2017_
 
     * Update contract artifacts to include latest Kovan and Mainnet deploys (#118)
 
-## v0.9.2 - _Aug 21, 2017_
+## v0.9.2 - _August 21, 2017_
 
     * *This version was unpublished because of a publishing issue.*
     * Update contract artifacts to include latest Kovan and Mainnet deploys (#118)
 
-## v0.9.1 - _Aug. 16, 2017_
+## v0.9.1 - _August 16, 2017_
 
     * Fixed the bug causing `zeroEx.token.getBalanceAsync()` to fail if no addresses available (#120)
 
-## v0.9.0 - _Jul. 26, 2017_
+## v0.9.0 - _July 26, 2017_
 
     * Migrated to the new version of smart contracts (#101)
     * Removed the ability to call methods on multiple authorized Exchange smart contracts (#106)
@@ -281,7 +277,7 @@
     * Updated to typescript v2.4 (#104)
     * Fixed an issue with incorrect balance/allowance validation when ZRX is one of the tokens traded (#109)
 
-## v0.8.0 - _Jul. 4, 2017_
+## v0.8.0 - _July 4, 2017_
 
     * Added the ability to call methods on different authorized versions of the Exchange smart contract (#82)
     * Updated contract artifacts to reflect latest changes to the smart contracts (0xproject/contracts#59)
@@ -294,35 +290,35 @@
         * `zeroEx.tokenRegistry.invalidateContractInstance`
     * Fixed the bug where `zeroEx.setProviderAsync` didn't invalidate etherToken contract's instance
 
-## v0.7.1 - _Jun. 26, 2017_
+## v0.7.1 - _June 26, 2017_
 
     * Added the ability to convert Ether to wrapped Ether tokens and back via `zeroEx.etherToken.depostAsync` and `zeroEx.etherToken.withdrawAsync` (#81)
 
-## v0.7.0 - _Jun. 22, 2017_
+## v0.7.0 - _June 22, 2017_
 
     * Added Kovan smart contract artifacts (#78)
     * Started returning fillAmount from `fillOrderAsync` and `fillUpToAsync` (#72)
     * Started returning cancelledAmount from `cancelOrderAsync` (#72)
     * Renamed type `LogCancelArgs` to `LogCancelContractEventArgs` and `LogFillArgs` to `LogFillContractEventArgs`
 
-## v0.6.2 - _Jun. 21, 2017_
+## v0.6.2 - _June 21, 2017_
 
     * Reduced bundle size
     * Improved documentation
 
-## v0.6.1 - _Jun. 19, 2017_
+## v0.6.1 - _June 19, 2017_
 
     * Improved documentation
 
-## v0.6.0 - _Jun. 19, 2017_
+## v0.6.0 - _June 19, 2017_
 
     * Made `ZeroEx` class accept `Web3Provider` instance instead of `Web3` instance
     * Added types for contract event arguments
 
-## v0.5.2 - _Jun. 15, 2017_
+## v0.5.2 - _June 15, 2017_
 
     * Fixed the bug in `postpublish` script that caused that only unminified UMD bundle was uploaded to release page
 
-## v0.5.1 - _Jun. 15, 2017_
+## v0.5.1 - _June 15, 2017_
 
     * Added `postpublish` script to publish to Github Releases with assets.

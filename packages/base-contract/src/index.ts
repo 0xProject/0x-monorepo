@@ -1,16 +1,15 @@
-import { TxData, TxDataPayable } from '@0xproject/types';
+import { ContractAbi, DataItem, TxData, TxDataPayable } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethersContracts from 'ethers-contracts';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 export class BaseContract {
     protected _ethersInterface: ethersContracts.Interface;
     protected _web3Wrapper: Web3Wrapper;
-    public abi: Web3.ContractAbi;
+    public abi: ContractAbi;
     public address: string;
     protected static _transformABIData(
-        abis: Web3.DataItem[],
+        abis: DataItem[],
         values: any[],
         transformation: (type: string, value: any) => any,
     ): any {
@@ -46,20 +45,20 @@ export class BaseContract {
         // 2. Global config passed in at library instantiation
         // 3. Gas estimate calculation + safety margin
         const removeUndefinedProperties = _.pickBy;
-        const txDataWithDefaults = {
+        const txDataWithDefaults = ({
             to: this.address,
             ...removeUndefinedProperties(this._web3Wrapper.getContractDefaults()),
             ...removeUndefinedProperties(txData as any),
             // HACK: TS can't prove that T is spreadable.
             // Awaiting https://github.com/Microsoft/TypeScript/pull/13288 to be merged
-        };
+        } as any) as TxData;
         if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
             const estimatedGas = await estimateGasAsync(txData);
             txDataWithDefaults.gas = estimatedGas;
         }
         return txDataWithDefaults;
     }
-    constructor(web3Wrapper: Web3Wrapper, abi: Web3.ContractAbi, address: string) {
+    constructor(web3Wrapper: Web3Wrapper, abi: ContractAbi, address: string) {
         this._web3Wrapper = web3Wrapper;
         this.abi = abi;
         this.address = address;

@@ -216,7 +216,7 @@ describe('ZeroEx library', () => {
                 s: '0x050aa3cc1f2c435e67e114cdce54b9527b4f50548342401bc5d2b77adbdacb02',
             };
             stubs = [
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync').returns(Promise.resolve(signature)),
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'signMessageAsync').returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 
@@ -237,7 +237,7 @@ describe('ZeroEx library', () => {
                 s: '0x2dea66f25a608bbae457e020fb6decb763deb8b7192abab624997242da248960',
             };
             stubs = [
-                Sinon.stub((zeroEx as any)._web3Wrapper, 'signTransactionAsync').returns(Promise.resolve(signature)),
+                Sinon.stub((zeroEx as any)._web3Wrapper, 'signMessageAsync').returns(Promise.resolve(signature)),
                 Sinon.stub(ZeroEx, 'isValidSignature').returns(true),
             ];
 

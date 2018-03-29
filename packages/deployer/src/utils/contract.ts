@@ -1,4 +1,5 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
+import { ContractAbi, EventAbi, FunctionAbi, MethodAbi, TxData } from '@0xproject/types';
 import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
@@ -7,14 +8,14 @@ import { AbiType } from './types';
 
 export class Contract implements Web3.ContractInstance {
     public address: string;
-    public abi: Web3.ContractAbi;
+    public abi: ContractAbi;
     private _contract: Web3.ContractInstance;
-    private _defaults: Partial<Web3.TxData>;
+    private _defaults: Partial<TxData>;
     private _validator: SchemaValidator;
     // This class instance is going to be populated with functions and events depending on the ABI
     // and we don't know their types in advance
     [name: string]: any;
-    constructor(web3ContractInstance: Web3.ContractInstance, defaults: Partial<Web3.TxData>) {
+    constructor(web3ContractInstance: Web3.ContractInstance, defaults: Partial<TxData>) {
         this._contract = web3ContractInstance;
         this.address = web3ContractInstance.address;
         this.abi = web3ContractInstance.abi;
@@ -24,8 +25,8 @@ export class Contract implements Web3.ContractInstance {
         this._validator = new SchemaValidator();
     }
     private _populateFunctions(): void {
-        const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Function) as Web3.FunctionAbi[];
-        _.forEach(functionsAbi, (functionAbi: Web3.MethodAbi) => {
+        const functionsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Function) as FunctionAbi[];
+        _.forEach(functionsAbi, (functionAbi: MethodAbi) => {
             if (functionAbi.constant) {
                 const cbStyleCallFunction = this._contract[functionAbi.name].call;
                 this[functionAbi.name] = promisify(cbStyleCallFunction, this._contract);
@@ -42,8 +43,8 @@ export class Contract implements Web3.ContractInstance {
         });
     }
     private _populateEvents(): void {
-        const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Event) as Web3.EventAbi[];
-        _.forEach(eventsAbi, (eventAbi: Web3.EventAbi) => {
+        const eventsAbi = _.filter(this.abi, abiPart => abiPart.type === AbiType.Event) as EventAbi[];
+        _.forEach(eventsAbi, (eventAbi: EventAbi) => {
             this[eventAbi.name] = this._contract[eventAbi.name];
         });
     }
@@ -51,7 +52,7 @@ export class Contract implements Web3.ContractInstance {
         const promisifiedWithDefaultParams = async (...args: any[]) => {
             const promise = new Promise((resolve, reject) => {
                 const lastArg = args[args.length - 1];
-                let txData: Partial<Web3.TxData> = {};
+                let txData: Partial<TxData> = {};
                 if (this._isTxData(lastArg)) {
                     txData = args.pop();
                 }

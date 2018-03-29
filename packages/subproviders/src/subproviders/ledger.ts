@@ -1,11 +1,11 @@
 import { assert } from '@0xproject/assert';
+import { JSONRPCRequestPayload } from '@0xproject/types';
 import { addressUtils } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
-import * as Web3 from 'web3';
 
 import {
     Callback,
@@ -208,7 +208,7 @@ export class LedgerSubprovider extends Subprovider {
      */
     // tslint:disable-next-line:async-suffix
     public async handleRequest(
-        payload: Web3.JSONRPCRequestPayload,
+        payload: JSONRPCRequestPayload,
         next: Callback,
         end: (err: Error | null, result?: any) => void,
     ) {

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from '@0xproject/types';
 import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as fs from 'fs';
@@ -10,7 +11,6 @@ import * as mkdirp from 'mkdirp';
 import * as yargs from 'yargs';
 
 import toSnakeCase = require('to-snake-case');
-import * as Web3 from 'web3';
 
 import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
@@ -120,12 +120,12 @@ for (const abiFileName of abiFileNames) {
         process.exit(1);
     }
 
-    let ctor = ABI.find((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as Web3.ConstructorAbi;
+    let ctor = ABI.find((abi: AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as ConstructorAbi;
     if (_.isUndefined(ctor)) {
         ctor = utils.getEmptyConstructor(); // The constructor exists, but it's implicit in JSON's ABI definition
     }
 
-    const methodAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_METHOD) as Web3.MethodAbi[];
+    const methodAbis = ABI.filter((abi: AbiDefinition) => abi.type === ABI_TYPE_METHOD) as MethodAbi[];
     const methodsData = _.map(methodAbis, methodAbi => {
         _.map(methodAbi.inputs, (input, i: number) => {
             if (_.isEmpty(input.name)) {
@@ -142,7 +142,7 @@ for (const abiFileName of abiFileNames) {
         return methodData;
     });
 
-    const eventAbis = ABI.filter((abi: Web3.AbiDefinition) => abi.type === ABI_TYPE_EVENT) as Web3.EventAbi[];
+    const eventAbis = ABI.filter((abi: AbiDefinition) => abi.type === ABI_TYPE_EVENT) as EventAbi[];
 
     const contextData = {
         contractName: namedContent.name,

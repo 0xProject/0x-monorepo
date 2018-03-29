@@ -1,5 +1,6 @@
 import Eth from '@ledgerhq/hw-app-eth';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+export { ECSignature } from '@0xproject/types';
 
 import { LedgerEthereumClient } from './types';
 
@@ -15,7 +16,6 @@ export {
     Callback,
     ErrorCallback,
     NextCallback,
-    ECSignature,
     LedgerWalletSubprovider,
     LedgerCommunicationClient,
     NonceSubproviderErrors,

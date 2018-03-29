@@ -1,4 +1,5 @@
 import { web3Factory } from '@0xproject/dev-utils';
+import { LogEntry } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -21,7 +22,7 @@ describe('EventWatcher', () => {
     let stubs: Sinon.SinonStub[] = [];
     let eventWatcher: EventWatcher;
     let web3Wrapper: Web3Wrapper;
-    const logA: Web3.LogEntry = {
+    const logA: LogEntry = {
         address: '0x71d271f8b14adef568f8f28f1587ce7271ac4ca5',
         blockHash: null,
         blockNumber: null,
@@ -31,7 +32,7 @@ describe('EventWatcher', () => {
         transactionHash: '0x004881d38cd4a8f72f1a0d68c8b9b8124504706041ff37019c1d1ed6bfda8e17',
         transactionIndex: 0,
     };
-    const logB: Web3.LogEntry = {
+    const logB: LogEntry = {
         address: '0x8d12a197cb00d4747a1fe03395095ce2a5cc6819',
         blockHash: null,
         blockNumber: null,
@@ -41,7 +42,7 @@ describe('EventWatcher', () => {
         transactionHash: '0x01ef3c048b18d9b09ea195b4ed94cf8dd5f3d857a1905ff886b152cfb1166f25',
         transactionIndex: 0,
     };
-    const logC: Web3.LogEntry = {
+    const logC: LogEntry = {
         address: '0x1d271f8b174adef58f1587ce68f8f27271ac4ca5',
         blockHash: null,
         blockNumber: null,
@@ -64,7 +65,7 @@ describe('EventWatcher', () => {
         eventWatcher.unsubscribe();
     });
     it('correctly emits initial log events', (done: DoneCallback) => {
-        const logs: Web3.LogEntry[] = [logA, logB];
+        const logs: LogEntry[] = [logA, logB];
         const expectedLogEvents = [
             {
                 removed: false,
@@ -89,8 +90,8 @@ describe('EventWatcher', () => {
         eventWatcher.subscribe(callback);
     });
     it('correctly computes the difference and emits only changes', (done: DoneCallback) => {
-        const initialLogs: Web3.LogEntry[] = [logA, logB];
-        const changedLogs: Web3.LogEntry[] = [logA, logC];
+        const initialLogs: LogEntry[] = [logA, logB];
+        const changedLogs: LogEntry[] = [logA, logC];
         const expectedLogEvents = [
             {
                 removed: false,

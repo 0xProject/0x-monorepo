@@ -1,20 +1,22 @@
-## chai-as-promised-typescript-typings
+## @0xproject/typescript-typings
 
-Fork of type definitions for chai-as-promised that includes changes made by dirty-chai
+Type repository for external packages used by 0x. This is like our small version of [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)
 
 ## Installation
 
 ```bash
-yarn add -D chai-as-promised-typescript-typings
+yarn add -D @0xproject/typescript-typings
 ```
 
 ## Usage
 
-Add the following line within an `include` section of your `tsconfig.json`
+Add the following line within an `compilerOptions` section of your `tsconfig.json`
 
 ```json
-"./node_modules/chai-as-promised-typescript-typings/index.d.ts"
+"typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"]
 ```
+
+This will allow the TS compiler to first look into that repo and then fallback to DT types.
 
 ## Contributing
 

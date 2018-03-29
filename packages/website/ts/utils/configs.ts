@@ -65,12 +65,6 @@ export const configs = {
     GOOGLE_ANALYTICS_ID: 'UA-98720122-1',
     LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE: '2017-11-22',
     LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2017-12-19',
-    // NEW_WRAPPED_ETHERS is temporary until we remove the SHOULD_DEPRECATE_OLD_WETH_TOKEN flag
-    // and add the new WETHs to the tokenRegistry
-    NEW_WRAPPED_ETHERS: {
-        1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-        42: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
-    } as { [networkId: string]: string },
     OUTDATED_WRAPPED_ETHERS: [
         {
             42: {
@@ -96,7 +90,6 @@ export const configs = {
         [3]: [`https://ropsten.infura.io/${INFURA_API_KEY}`],
         [4]: [`https://rinkeby.infura.io/${INFURA_API_KEY}`],
     } as PublicNodeUrlsByNetworkId,
-    SHOULD_DEPRECATE_OLD_WETH_TOKEN: true,
     SYMBOLS_OF_MINTABLE_KOVAN_TOKENS: ['MKR', 'MLN', 'GNT', 'DGD', 'REP'],
     SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS: [
         'TKN0',

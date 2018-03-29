@@ -223,6 +223,7 @@ export enum AlertTypes {
 export enum BlockchainErrs {
     AContractNotDeployedOnNetwork = 'A_CONTRACT_NOT_DEPLOYED_ON_NETWORK',
     DisconnectedFromEthereumNode = 'DISCONNECTED_FROM_ETHEREUM_NODE',
+    DefaultTokensNotInTokenRegistry = 'DEFAULT_TOKENS_NOT_IN_TOKEN_REGISTRY',
     NoError = 'NO_ERROR',
 }
 

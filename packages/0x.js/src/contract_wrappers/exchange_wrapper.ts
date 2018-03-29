@@ -3,6 +3,7 @@ import {
     BlockParamLiteral,
     DecodedLogArgs,
     ECSignature,
+    LogEntry,
     LogWithDecodedArgs,
     Order,
     SignedOrder,
@@ -10,7 +11,6 @@ import {
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 import { artifacts } from '../artifacts';
 import {
@@ -863,7 +863,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * Checks if logs contain LogError, which is emitted by Exchange contract on transaction failure.
      * @param   logs   Transaction logs as returned by `zeroEx.awaitTransactionMinedAsync`
      */
-    public throwLogErrorsAsErrors(logs: Array<LogWithDecodedArgs<DecodedLogArgs> | Web3.LogEntry>): void {
+    public throwLogErrorsAsErrors(logs: Array<LogWithDecodedArgs<DecodedLogArgs> | LogEntry>): void {
         const errLog = _.find(logs, {
             event: ExchangeEvents.LogError,
         });

@@ -33,6 +33,14 @@ This package exposes both a single `Documentation` react component that will ren
 
 Currently this package still has some external dependencies outside of the `Documentation` component, so please start your project off by copying the [react-docs-example](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs-example) directory and modifying it there. If you need changes in the [react-docs](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs) package, fork the 0x monorepo, make the required changes and submit a PR. Until we merge it, you can have your project depend on your own custom fork.
 
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
+```
+
 ## Future improvements
 
 Feel free to contribute to these improvements!
