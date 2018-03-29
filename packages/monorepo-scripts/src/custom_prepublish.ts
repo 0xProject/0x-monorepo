@@ -65,6 +65,8 @@ const TODAYS_TIMESTAMP = moment().unix();
         fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
         // Generate updated CHANGELOG.md
         const changelogMd = generateChangelogMd(changelogs);
+        const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
+        fs.writeFileSync(changelogMdPath, changelogMd);
     });
 })().catch(err => {
     utils.log(err);
@@ -111,5 +113,30 @@ function shouldAddNewChangelogEntry(changelogs: Changelog[]): boolean {
 }
 
 function generateChangelogMd(changelogs: Changelog[]): string {
-    return '';
+    let changelogMd = `<!--
+This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+Edit the package's CHANGELOG.json file only.
+-->
+
+CHANGELOG
+    `;
+
+    _.each(changelogs, changelog => {
+        const date = moment(changelog.timestamp, 'X').format('MMMM D, YYYY');
+        const title = `\n## v${changelog.version} - _${date}_\n\n`;
+        changelogMd += title;
+
+        let changes = '';
+        _.each(changelog.changes, change => {
+            let line = `    * ${change.note}`;
+            if (!_.isUndefined(change.pr)) {
+                line += ` (#${change.pr})`;
+            }
+            line += '\n';
+            changes += line;
+        });
+        changelogMd += `${changes}`;
+    });
+
+    return changelogMd;
 }
