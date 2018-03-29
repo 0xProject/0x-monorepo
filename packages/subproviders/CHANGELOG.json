@@ -1,0 +1,132 @@
+[
+	{
+		"version": "0.8.1",
+		"changes": [
+			{
+				"note": "Introduce `JSONRPCRequestPayloadWithMethod` type",
+				"pr": "465"
+			},
+			{
+				"note": "Export `ErrorCallback` type.",
+				"pr": "465"
+			}
+		]
+	},
+	{
+		"version": "0.8.0",
+		"changes": [
+			{
+				"note": "Export `GanacheSubprovider` and `Subprovider`",
+				"pr": "426"
+			},
+			{
+				"note": "Make all subproviders to derive from `Subprovider`",
+				"pr": "426"
+			},
+			{
+				"note": "Add types for `NextCallback`, `OnNextCompleted`",
+				"pr": "426"
+			},
+			{
+				"note": "Ignore `ganache-core` dependency when using package in a browser environment."
+			}
+		],
+		"timestamp": 1521327600,
+		"isPublished": true
+	},
+	{
+		"version": "0.7.0",
+		"changes": [
+			{
+				"note": "Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros.",
+				"pr": "437"
+			}
+		],
+		"timestamp": 1520463600,
+		"isPublished": true
+	},
+	{
+		"version": "0.6.0",
+		"changes": [
+			{
+				"note": "Move web3 types from being a devDep to a dep since one cannot use this package without it",
+				"pr": "429"
+			},
+			{
+				"note": "Add `numberOfAccounts` param to `LedgerSubprovider` method `getAccountsAsync`",
+				"pr": "432"
+			}
+		],
+		"timestamp": 1520118000,
+		"isPublished": true
+	},
+	{
+		"version": "0.5.0",
+		"changes": [
+			{
+				"note": "Add EmptyWalletSubprovider and FakeGasEstimateSubprovider",
+				"pr": "392"
+			}
+		],
+		"timestamp": 1518735600,
+		"isPublished": true
+	},
+	{
+		"version": "0.4.1",
+		"changes": [
+			{
+				"note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+				"pr": "389"
+			}
+		],
+		"timestamp": 1518130800,
+		"isPublished": true
+	},
+	{
+		"version": "0.4.0",
+		"changes": [
+			{
+				"note": "Added NonceTrackerSubprovider",
+				"pr": "355"
+			},
+			{
+				"note": "InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object",
+				"pr": "363"
+			}
+		],
+		"timestamp": 1517958000,
+		"isPublished": true
+	},
+	{
+		"version": "0.3.6",
+		"changes": [
+			{
+				"note": "Return a transaction hash from `_sendTransactionAsync`",
+				"pr": "303"
+			}
+		],
+		"timestamp": 1517094000,
+		"isPublished": true
+	},
+	{
+		"version": "0.3.0",
+		"changes": [
+			{
+				"note": "Allow LedgerSubprovider to handle `eth_sign` in addition to `personal_sign` RPC requests"
+			}
+		],
+		"timestamp": 1514415600,
+		"isPublished": true
+	},
+	{
+		"version": "0.2.0",
+		"changes": [
+			{
+				"note": "Improve the performance of address fetching",
+				"pr": "271"
+			}
+		],
+		"timestamp": 1513724400,
+		"isPublished": true
+	}
+]

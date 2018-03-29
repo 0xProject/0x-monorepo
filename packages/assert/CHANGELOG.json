@@ -1,0 +1,52 @@
+[
+	{
+		"version": "0.2.0",
+		"changes": [
+			{
+				"note": "Rename `isHttpUrl` to `isWebUri`",
+				"pr": "412"
+			}
+		],
+		"timestamp": 1520463600,
+		"isPublished": true
+	},
+	{
+		"version": "0.1.0",
+		"changes": [
+			{
+				"note": "Remove isETHAddressHex checksum address check and assume address will be lowercased ",
+				"pr": "373"
+			},
+			{
+				"note": "Add an optional parameter `subSchemas` to `doesConformToSchema` method",
+				"pr": "385"
+			}
+		],
+		"timestamp": 1520118000,
+		"isPublished": true
+	},
+	{
+		"version": "0.0.18",
+		"changes": [
+			{
+				"note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+				"pr": "389"
+			}
+		],
+		"timestamp": 1486594800,
+		"isPublished": true
+	},
+	{
+		"version": "0.0.4",
+		"changes": [
+			{
+				"note": "Re-publish Assert previously published under NPM package @0xproject/0x-assert"
+			},
+			{
+				"note": "Added assertion isValidBaseUnitAmount which checks both that the value is a valid bigNumber and that it does not contain decimals."
+			}
+		],
+		"timestamp": 1510614000,
+		"isPublished": true
+	}
+]

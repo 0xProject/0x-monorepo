@@ -1,0 +1,71 @@
+[
+	{
+		"version": "0.4.9",
+		"changes": [
+			{
+				"note": "Move devDeps to deps to fix missed dependency issue in published package."
+			}
+		],
+		"timestamp": 1518130800,
+		"isPublished": true
+	},
+	{
+		"version": "0.4.8",
+		"changes": [
+			{
+				"note": "Fix publish issue where custom TSLint rules were not being included",
+				"pr": "389"
+			}
+		],
+		"timestamp": 1518130800,
+		"isPublished": true
+	},
+	{
+		"version": "0.4.7",
+		"changes": [
+			{
+				"note": "Modified custom 'underscore-privates' rule, changing it to 'underscore-private-and-protected' requiring underscores to be prepended to both private and protected variable names",
+				"pr": "354"
+			}
+		],
+		"timestamp": 1517958000,
+		"isPublished": true
+	},
+	{
+		"version": "0.4.0",
+		"changes": [
+			{
+				"note": "Added custom 'underscore-privates' rule, requiring underscores to be prepended to private variable names"
+			},
+			{
+				"note": "Because our tools can be used in both a TS and JS environment, we want to make the private methods of any public facing interface show up at the bottom of auto-complete lists. Additionally, we wanted to remain consistent with respect to our usage of underscores in order to enforce this rule with a linter rule, rather then manual code reviews."
+			}
+		],
+		"timestamp": 1514415600,
+		"isPublished": true
+	},
+	{
+		"version": "0.3.0",
+		"changes": [
+			{
+				"note": "Added rules for unused imports, variables and Async suffixes",
+				"pr": "265"
+			}
+		],
+		"timestamp": 1513724400,
+		"isPublished": true
+	},
+	{
+		"version": "0.1.0",
+		"changes": [
+			{
+				"note": "Re-published TsLintConfig previously published under NPM package `tslint-config-0xproject`"
+			},
+			{
+				"note": "Updated to TSLint v5.8.0, requiring several rule additions to keep our conventions aligned."
+			}
+		],
+		"timestamp": 1510614000,
+		"isPublished": true
+	}
+]
