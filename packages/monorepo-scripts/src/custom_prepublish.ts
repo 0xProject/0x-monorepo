@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
+import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { Changelog, Changes, UpdatedPackage } from './types';
@@ -22,7 +23,9 @@ const TODAYS_TIMESTAMP = moment().unix();
     const relevantLernaPackages = _.filter(allLernaPackages, pkg => {
         return _.includes(updatedPackageNames, pkg.package.name);
     });
+    const packageToVersionChange: { [name: string]: string } = {};
     _.each(relevantLernaPackages, lernaPackage => {
+        const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
         const changelogJSON = getChangelogJSONOrCreateIfMissing(lernaPackage.package.name, changelogJSONPath);
         let changelogs: Changelog[];
@@ -49,6 +52,7 @@ const TODAYS_TIMESTAMP = moment().unix();
                 ],
             };
             changelogs = [newChangelogEntry, ...changelogs];
+            packageToVersionChange[packageName] = semverDiff(currentVersion, nextPatchVersion);
         } else {
             // Update existing entry with timestamp
             const lastEntry = changelogs[0];
@@ -59,6 +63,7 @@ const TODAYS_TIMESTAMP = moment().unix();
             const proposedNextVersion = lastEntry.version;
             lastEntry.version = updateVersionNumberIfNeeded(currentVersion, proposedNextVersion);
             changelogs[0] = lastEntry;
+            packageToVersionChange[packageName] = semverDiff(currentVersion, lastEntry.version);
         }
 
         // Save updated CHANGELOG.json
@@ -67,6 +72,11 @@ const TODAYS_TIMESTAMP = moment().unix();
         const changelogMd = generateChangelogMd(changelogs);
         const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
         fs.writeFileSync(changelogMdPath, changelogMd);
+    });
+    utils.log(`All CHANGELOGS successfully updated. Please commit and push these changes to development.`);
+    utils.log(`New package versions are:`);
+    _.each(packageToVersionChange, (versionChange: string, pkgName: string) => {
+        utils.log(`${pkgName}: ${versionChange}`);
     });
 })().catch(err => {
     utils.log(err);
