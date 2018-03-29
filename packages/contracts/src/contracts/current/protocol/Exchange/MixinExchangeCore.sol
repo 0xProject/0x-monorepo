@@ -89,15 +89,21 @@ contract MixinExchangeCore is
         uint256 takerSellAmount,
         bytes memory signature)
         public
-        returns (uint256 takerAmountSold)
+        returns (FillResults memory fillResults)
     {
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
 
-        // Check if order has been cancelled
+        // Check if order has been cancelled by salt value
+        if (order.salt < makerEpoch[order.makerAddress]) {
+            emit ExchangeError(uint8(Errors.ORDER_CANCELLED), orderHash);
+            return fillResults;
+        }
+
+        // Check if order has been cancelled by orderHash
         if (cancelled[orderHash]) {
             LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
-            return 0;
+            return fillResults;
         }
 
         // Validate order and maker only if first time seen
@@ -114,35 +120,30 @@ contract MixinExchangeCore is
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
             LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
-            return 0;
+            return fillResults;
         }
 
         // Validate order availability
         uint256 remainingMakerBuyAmount = safeSub(order.makerBuyAmount, filled[orderHash]);
         if (remainingMakerBuyAmount == 0) {
             LogError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
-            return 0;
+            return fillResults;
         }
 
         // Validate fill order rounding
-        takerAmountSold = min256(takerSellAmount, remainingMakerBuyAmount);
-        if (isRoundingError(takerAmountSold, order.makerBuyAmount, order.makerSellAmount)) {
+        fillResults.takerAmountSold = min256(takerSellAmount, remainingMakerBuyAmount);
+        if (isRoundingError(fillResults.takerAmountSold, order.makerBuyAmount, order.makerSellAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
-            return 0;
-        }
-
-        // Validate order is not cancelled
-        if (order.salt < makerEpoch[order.makerAddress]) {
-            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
-            return 0;
+            fillResults.takerAmountSold = 0;
+            return fillResults;
         }
 
         // Update state
-        filled[orderHash] = safeAdd(filled[orderHash], takerAmountSold);
+        filled[orderHash] = safeAdd(filled[orderHash], fillResults.takerAmountSold);
 
         // Settle order
-        var (makerAmountSold, makerFeePaid, takerFeePaid) =
-            settleOrder(order, msg.sender, takerAmountSold);
+        (fillResults.makerAmountSold, fillResults.makerFeePaid, fillResults.takerFeePaid) =
+            settleOrder(order, msg.sender, fillResults.takerAmountSold);
 
         // Log order
         LogFill(
@@ -151,13 +152,13 @@ contract MixinExchangeCore is
             order.feeRecipientAddress,
             order.makerTokenAddress,
             order.takerTokenAddress,
-            makerAmountSold,
-            takerAmountSold,
-            makerFeePaid,
-            takerFeePaid,
+            fillResults.makerAmountSold,
+            fillResults.takerAmountSold,
+            fillResults.makerFeePaid,
+            fillResults.takerFeePaid,
             orderHash
         );
-        return takerAmountSold;
+        return fillResults;
     }
 
     /// @dev After calling, the order can not be filled anymore.
