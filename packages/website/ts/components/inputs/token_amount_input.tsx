@@ -33,6 +33,9 @@ interface TokenAmountInputState {
     isBalanceAndAllowanceLoaded: boolean;
 }
 
+const HEIGHT_WITH_LABEL = 84;
+const HEIGHT_WITHOUT_LABEL = 62;
+
 export class TokenAmountInput extends React.Component<TokenAmountInputProps, TokenAmountInputState> {
     public static defaultProps: Partial<TokenAmountInputProps> = {
         shouldShowErrs: true,
@@ -72,7 +75,9 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             ? ZeroEx.toUnitAmount(this.props.amount, this.props.token.decimals)
             : undefined;
         const hasLabel = !_.isUndefined(this.props.label);
-        const style = !_.isUndefined(this.props.style) ? this.props.style : { height: hasLabel ? 84 : 62 };
+        const style = !_.isUndefined(this.props.style)
+            ? this.props.style
+            : { height: hasLabel ? HEIGHT_WITH_LABEL : HEIGHT_WITHOUT_LABEL };
         return (
             <div className="flex overflow-hidden" style={style}>
                 <BalanceBoundedInput

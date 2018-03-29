@@ -78,7 +78,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                 <EthAmountInput
                                     balance={etherBalanceInEth}
                                     amount={this.state.currentInputAmount}
-                                    hintText={'0.00'}
+                                    hintText="0.00"
                                     onChange={this._onValueChange.bind(this)}
                                     shouldCheckBalance={true}
                                     shouldShowIncompleteErrs={false}
@@ -98,9 +98,8 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                                     shouldCheckAllowance={false}
                                     onChange={this._onValueChange.bind(this)}
                                     amount={this.state.currentInputAmount}
-                                    hintText={'0.00'}
-                                    onVisitBalancesPageClick={_.noop}
-                                    shouldShowErrs={false}
+                                    hintText="0.00"
+                                    shouldShowErrs={false} // TODO: error handling
                                     shouldShowUnderline={false}
                                     style={styles.ethAmountInput}
                                 />
