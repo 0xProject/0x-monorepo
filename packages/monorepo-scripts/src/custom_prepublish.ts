@@ -5,17 +5,22 @@ import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as path from 'path';
-import { exec as execAsync } from 'promisify-child-process';
+import { exec as execAsync, spawn } from 'promisify-child-process';
 import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
-import { Changelog, Changes, UpdatedPackage } from './types';
+import { Changelog, Changes, SemVerIndex, UpdatedPackage } from './types';
 import { utils } from './utils';
 
 const IS_DRY_RUN = true;
 const MONOREPO_ROOT_PATH = path.join(__dirname, '../../..');
 const TODAYS_TIMESTAMP = moment().unix();
 const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
+const semverNameToIndex: { [semver: string]: number } = {
+    patch: SemVerIndex.Patch,
+    minor: SemVerIndex.Minor,
+    major: SemVerIndex.Major,
+};
 
 (async () => {
     const updatedPublicPackages = await getPublicLernaUpdatedPackagesAsync();
@@ -25,6 +30,9 @@ const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
     const relevantLernaPackages = _.filter(allLernaPackages, pkg => {
         return _.includes(updatedPackageNames, pkg.package.name);
     });
+    const relevantPackageNames = _.map(relevantLernaPackages, pkg => pkg.package.name);
+    utils.log(`Will update CHANGELOGs and publish: \n${relevantPackageNames.join('\n')}\n`);
+
     const packageToVersionChange: { [name: string]: string } = {};
     _.each(relevantLernaPackages, lernaPackage => {
         const packageName = lernaPackage.package.name;
@@ -70,25 +78,50 @@ const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
 
         // Save updated CHANGELOG.json
         fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
+        utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
         const changelogMd = generateChangelogMd(changelogs);
         const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
         fs.writeFileSync(changelogMdPath, changelogMd);
+        utils.log(`${packageName}: Updated CHANGELOG.md`);
     });
 
     if (!IS_DRY_RUN) {
         await execAsync(`git add . --all`, { cwd: MONOREPO_ROOT_PATH });
         await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: MONOREPO_ROOT_PATH });
         await execAsync(`git push`, { cwd: MONOREPO_ROOT_PATH });
+        utils.log(`Pushed CHANGELOG updates to Github`);
     }
 
-    // _.each(packageToVersionChange, (versionChange: string, pkgName: string) => {
-    //     utils.log(`${pkgName}: ${versionChange}`);
-    // });
+    await lernaPublishAsync(packageToVersionChange);
 })().catch(err => {
     utils.log(err);
     process.exit(1);
 });
+
+async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }) {
+    // HACK: Lerna publish does not provide a way to specify multiple package versions as
+    // flags so instead we need to interact with their interactive prompt interface.
+    const child = spawn('lerna', ['publish'], { cwd: MONOREPO_ROOT_PATH });
+    child.stdout.on('data', (data: Buffer) => {
+        const output = data.toString('utf8');
+        const isVersionPrompt = _.includes(output, 'Select a new version');
+        if (isVersionPrompt) {
+            const outputStripLeft = output.split('new version for ')[1];
+            const packageName = outputStripLeft.split(' ')[0];
+            let versionChange = packageToVersionChange[packageName];
+            const isPrivatePackage = _.isUndefined(versionChange);
+            if (isPrivatePackage) {
+                versionChange = 'patch'; // Always patch updates to private packages.
+            }
+            child.stdin.write(`${semverNameToIndex[versionChange]}\n`);
+        }
+        const isFinalPrompt = _.includes(output, 'Are you sure you want to publish the above changes?');
+        if (isFinalPrompt && !IS_DRY_RUN) {
+            child.stdin.write(`y\n`);
+        }
+    });
+}
 
 async function getPublicLernaUpdatedPackagesAsync(): Promise<UpdatedPackage[]> {
     const result = await execAsync(`${LERNA_EXECUTABLE} updated --json`, { cwd: MONOREPO_ROOT_PATH });

@@ -15,3 +15,10 @@ export interface Changelog {
     changes: Changes[];
     isPublished?: boolean;
 }
+
+export enum SemVerIndex {
+    Invalid,
+    Patch,
+    Minor,
+    Major,
+}
