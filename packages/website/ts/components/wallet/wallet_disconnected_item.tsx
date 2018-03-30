@@ -20,7 +20,12 @@ const styles: Styles = {
         height: 80,
     },
     hrefAdjustment: {
-        paddingTop: 20, // For some reason when we set the href prop of a FlatButton material-ui reduces the top padding
+        paddingTop: 20, // HACK: For some reason when we set the href prop of a FlatButton material-ui reduces the top padding
+    },
+    otherWalletText: {
+        fontSize: 14,
+        color: colors.grey500,
+        textDecoration: 'underline',
     },
 };
 
@@ -42,15 +47,12 @@ export const WalletDisconnectedItem: React.StatelessComponent<WalletDisconnected
                         <ProviderButton isExternallyInjectedProvider={isExternallyInjectedProvider} />
                         <div className="flex flex-center py2" style={{ paddingBottom: BUTTON_BOTTOM_PADDING }}>
                             <div className="mx-auto">
-                                <img src="/images/ledger_icon.png" style={{ width: LEDGER_ICON_WIDTH }} />
-                                <a
-                                    className="px1"
-                                    href="javascript:;"
-                                    onClick={props.onToggleLedgerDialog}
-                                    style={{ fontSize: 14, color: colors.grey500 }}
-                                >
-                                    use other wallet
-                                </a>
+                                <div onClick={props.onToggleLedgerDialog} style={{ cursor: 'pointer' }}>
+                                    <img src="/images/ledger_icon.png" style={{ width: LEDGER_ICON_WIDTH }} />
+                                    <span className="px1" style={styles.otherWalletText}>
+                                        user other wallet
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
