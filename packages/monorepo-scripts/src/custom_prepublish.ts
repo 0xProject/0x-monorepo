@@ -12,8 +12,10 @@ import semverSort = require('semver-sort');
 import { Changelog, Changes, UpdatedPackage } from './types';
 import { utils } from './utils';
 
+const IS_DRY_RUN = true;
 const MONOREPO_ROOT_PATH = path.join(__dirname, '../../..');
 const TODAYS_TIMESTAMP = moment().unix();
+const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
 
 (async () => {
     const updatedPublicPackages = await getPublicLernaUpdatedPackagesAsync();
@@ -73,18 +75,23 @@ const TODAYS_TIMESTAMP = moment().unix();
         const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
         fs.writeFileSync(changelogMdPath, changelogMd);
     });
-    utils.log(`All CHANGELOGS successfully updated. Please commit and push these changes to development.`);
-    utils.log(`New package versions are:`);
-    _.each(packageToVersionChange, (versionChange: string, pkgName: string) => {
-        utils.log(`${pkgName}: ${versionChange}`);
-    });
+
+    if (!IS_DRY_RUN) {
+        await execAsync(`git add . --all`, { cwd: MONOREPO_ROOT_PATH });
+        await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: MONOREPO_ROOT_PATH });
+        await execAsync(`git push`, { cwd: MONOREPO_ROOT_PATH });
+    }
+
+    // _.each(packageToVersionChange, (versionChange: string, pkgName: string) => {
+    //     utils.log(`${pkgName}: ${versionChange}`);
+    // });
 })().catch(err => {
     utils.log(err);
     process.exit(1);
 });
 
 async function getPublicLernaUpdatedPackagesAsync(): Promise<UpdatedPackage[]> {
-    const result = await execAsync(`./node_modules/lerna/bin/lerna.js updated --json`, { cwd: MONOREPO_ROOT_PATH });
+    const result = await execAsync(`${LERNA_EXECUTABLE} updated --json`, { cwd: MONOREPO_ROOT_PATH });
     const updatedPackages = JSON.parse(result.stdout);
     const updatedPublicPackages = _.filter(updatedPackages, updatedPackage => !updatedPackage.private);
     return updatedPublicPackages;
