@@ -31,8 +31,8 @@ contract MixinWrapperFunctions is
 {
     /// @dev Fills the input order. Reverts if exact takerSellAmount not filled.
     /// @param order Order struct containing order specifications.
-    /// @param takerSellAmount Desired amount of takerToken to fill.
-    /// @param signature Maker's signature of the order.
+    /// @param takerSellAmount Desired amount of takerToken to sell.
+    /// @param signature Proof that order has been created by maker.
     function fillOrKillOrder(
         Order memory order,
         uint256 takerSellAmount,
@@ -52,8 +52,8 @@ contract MixinWrapperFunctions is
     /// @dev Fills an order with specified parameters and ECDSA signature.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
-    /// @param takerSellAmount Desired amount of takerToken to fill.
-    /// @param signature Maker's signature of the order.
+    /// @param takerSellAmount Desired amount of takerToken to sell.
+    /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function fillOrderNoThrow(
         Order memory order,
@@ -154,10 +154,10 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder in a single transaction.
-    /// @param orders Array of orders.
-    /// @param takerSellAmounts Array of desired amounts of takerToken to fill in orders.
-    /// @param signatures Maker's signatures of the orders.
+    /// @dev Synchronously executes multiple calls of fillOrder.
+    /// @param orders Array of order specifications.
+    /// @param takerSellAmounts Array of desired amounts of takerToken to sell in orders.
+    /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrders(
         Order[] memory orders,
         uint256[] memory takerSellAmounts,
@@ -173,10 +173,10 @@ contract MixinWrapperFunctions is
         }
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrKill in a single transaction.
-    /// @param orders Array of orders.
-    /// @param takerSellAmounts Array of desired amounts of takerToken to fill in orders.
-    /// @param signatures Maker's signatures of the orders.
+    /// @dev Synchronously executes multiple calls of fillOrKill.
+    /// @param orders Array of order specifications.
+    /// @param takerSellAmounts Array of desired amounts of takerToken to sell in orders.
+    /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrKillOrders(
         Order[] memory orders,
         uint256[] memory takerSellAmounts,
@@ -192,10 +192,11 @@ contract MixinWrapperFunctions is
         }
     }
 
-    /// @dev Fills an order with specified parameters and ECDSA signature. Returns false if the transaction would otherwise revert.
-    /// @param orders Array of orders.
-    /// @param takerSellAmounts Array of desired amounts of takerToken to fill in orders.
-    /// @param signatures Maker's signatures of the orders.
+    /// @dev Fills an order with specified parameters and ECDSA signature.
+    ///      Returns false if the transaction would otherwise revert.
+    /// @param orders Array of order specifications.
+    /// @param takerSellAmounts Array of desired amounts of takerToken to sell in orders.
+    /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrdersNoThrow(
         Order[] memory orders,
         uint256[] memory takerSellAmounts,
@@ -211,11 +212,11 @@ contract MixinWrapperFunctions is
         }
     }
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is sold by taker.
-    /// @param orders Array of orders.
+    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerToken is sold by taker.
+    /// @param orders Array of order specifications.
     /// @param takerSellAmount Desired amount of takerToken to sell.
-    /// @param signatures Maker's signatures of the orders.
-    /// @return Total amount of tokens sold by taker in orders.
+    /// @param signatures Proofs that orders have been created by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
     function marketSellOrders(
         Order[] memory orders,
         uint256 takerSellAmount,
@@ -242,12 +243,12 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total amount is sold by taker.
+    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerToken is sold by taker.
     ///      Returns false if the transaction would otherwise revert.
-    /// @param orders Array of orders.
+    /// @param orders Array of order specifications.
     /// @param takerSellAmount Desired amount of takerToken to sell.
-    /// @param signatures Maker's signatures of the orders.
-    /// @return Total amount of tokens sold by taker in orders.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
     function marketSellOrdersNoThrow(
         Order[] memory orders,
         uint256 takerSellAmount,
@@ -274,11 +275,11 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
-    /// @param orders Array of orders.
+    /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerToken is bought by taker.
+    /// @param orders Array of order specifications.
     /// @param takerBuyAmount Desired amount of makerToken to buy.
-    /// @param signatures Maker's signatures of the orders.
-    /// @return Total amount of takerTokenFillAmount filled in orders.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
     function marketBuyOrders(
         Order[] memory orders,
         uint256 takerBuyAmount,
@@ -312,10 +313,10 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
     ///      Returns false if the transaction would otherwise revert.
-    /// @param orders Array of orders.
-    /// @param takerBuyAmount Desired amount of makerToken to fill.
-    /// @param signatures Maker's signatures of the orders.
-    /// @return Total amount of takerTokenFillAmount filled in orders.
+    /// @param orders Array of order specifications.
+    /// @param takerBuyAmount Desired amount of makerToken to buy.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
     function marketBuyOrdersNoThrow(
         Order[] memory orders,
         uint256 takerBuyAmount,
@@ -348,7 +349,7 @@ contract MixinWrapperFunctions is
     }
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
-    /// @param orders Array of orders.
+    /// @param orders Array of order specifications.
     function batchCancelOrders(Order[] memory orders)
         public
     {
