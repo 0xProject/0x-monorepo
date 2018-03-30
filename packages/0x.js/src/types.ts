@@ -175,6 +175,7 @@ export interface OrderStateWatcherConfig {
     eventPollingIntervalMs?: number;
     expirationMarginMs?: number;
     cleanupJobIntervalMs?: number;
+    stateLayer: BlockParamLiteral;
 }
 
 /*

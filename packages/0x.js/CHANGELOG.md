@@ -3,6 +3,9 @@
 ## v0.34.0 - _TBD_
 
     * Fix the bug causing `zeroEx.exchange.fillOrdersUpToAsync` validation to fail if there were some extra orders passed (#470)
+    * Remove automatic instantiation of `zeroEx.orderStateWatcher`
+    * Add `zeroEx.createOrderStateWatcher` to allow creating arbitrary number of OrderStateWatchers
+    * Added `stateLayer` setting to `OrderStateWatcherConfig` so OrderStateWatcher can be set to monitor different blockchain state layers
 
 ## v0.33.2 - _March 18, 2018_
 
