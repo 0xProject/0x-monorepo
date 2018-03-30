@@ -122,14 +122,16 @@ export const postpublishUtils = {
     },
     adjustFileIncludePaths(fileIncludes: string[], cwd: string): string[] {
         const fileIncludesAdjusted = _.map(fileIncludes, fileInclude => {
-            let path = _.startsWith(fileInclude, './') ? `${cwd}/${fileInclude.substr(2)}` : `${cwd}/${fileInclude}`;
+            let includePath = _.startsWith(fileInclude, './')
+                ? `${cwd}/${fileInclude.substr(2)}`
+                : `${cwd}/${fileInclude}`;
 
             // HACK: tsconfig.json needs wildcard directory endings as `/**/*`
             // but TypeDoc needs it as `/**` in order to pick up files at the root
-            if (_.endsWith(path, '/**/*')) {
-                path = path.slice(0, -2);
+            if (_.endsWith(includePath, '/**/*')) {
+                includePath = includePath.slice(0, -2);
             }
-            return path;
+            return includePath;
         });
         return fileIncludesAdjusted;
     },
