@@ -9,10 +9,10 @@ import * as Web3 from 'web3';
 
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
 import {
+    CancelContractEventArgs,
     ExchangeContract,
-    LogCancelContractEventArgs,
-    LogErrorContractEventArgs,
-    LogFillContractEventArgs,
+    ExchangeErrorContractEventArgs,
+    FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import { Balances } from '../../src/utils/balances';
@@ -394,8 +394,8 @@ describe('Exchange', () => {
             const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
                 takerSellAmount: signedOrder.makerBuyAmount,
             });
-            const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
-            expect(log.args.makerAmountBought).to.be.bignumber.equal(signedOrder.makerBuyAmount.minus(takerSellAmount));
+            const log = res.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
+            expect(log.args.takerAmountSold).to.be.bignumber.equal(signedOrder.makerBuyAmount.minus(takerSellAmount));
             const newBalances = await dmyBalances.getAsync();
 
             expect(newBalances[makerAddress][signedOrder.makerTokenAddress]).to.be.bignumber.equal(
@@ -428,7 +428,7 @@ describe('Exchange', () => {
             });
             expect(res.logs).to.have.length(1);
 
-            const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
             const logArgs = log.args;
             const expectedFilledMakerTokenAmount = signedOrder.makerSellAmount.div(divisor);
             const expectedFilledTakerTokenAmount = signedOrder.makerBuyAmount.div(divisor);
@@ -441,7 +441,7 @@ describe('Exchange', () => {
             expect(signedOrder.makerTokenAddress).to.be.equal(logArgs.makerTokenAddress);
             expect(signedOrder.takerTokenAddress).to.be.equal(logArgs.takerTokenAddress);
             expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerAmountSold);
-            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.makerAmountBought);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerAmountSold);
             expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
             expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
             expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
@@ -457,7 +457,7 @@ describe('Exchange', () => {
             });
             expect(res.logs).to.have.length(1);
 
-            const log = res.logs[0] as LogWithDecodedArgs<LogFillContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<FillContractEventArgs>;
             const logArgs = log.args;
             const expectedFilledMakerTokenAmount = signedOrder.makerSellAmount.div(divisor);
             const expectedFilledTakerTokenAmount = signedOrder.makerBuyAmount.div(divisor);
@@ -470,7 +470,7 @@ describe('Exchange', () => {
             expect(signedOrder.makerTokenAddress).to.be.equal(logArgs.makerTokenAddress);
             expect(signedOrder.takerTokenAddress).to.be.equal(logArgs.takerTokenAddress);
             expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerAmountSold);
-            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.makerAmountBought);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerAmountSold);
             expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeePaid);
             expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeePaid);
             expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
@@ -552,7 +552,7 @@ describe('Exchange', () => {
 
             const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress);
             expect(res.logs).to.have.length(1);
-            const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<ExchangeErrorContractEventArgs>;
             const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
@@ -563,7 +563,7 @@ describe('Exchange', () => {
 
             const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress);
             expect(res.logs).to.have.length(1);
-            const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<ExchangeErrorContractEventArgs>;
             const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_FULLY_FILLED);
         });
@@ -594,7 +594,7 @@ describe('Exchange', () => {
             const res = await exWrapper.cancelOrderAsync(signedOrder, makerAddress);
             expect(res.logs).to.have.length(1);
 
-            const log = res.logs[0] as LogWithDecodedArgs<LogCancelContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<CancelContractEventArgs>;
             const logArgs = log.args;
 
             expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
@@ -609,7 +609,7 @@ describe('Exchange', () => {
 
             const res = await exWrapper.cancelOrderAsync(signedOrder, makerAddress);
             expect(res.logs).to.have.length(1);
-            const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<ExchangeErrorContractEventArgs>;
             const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_CANCELLED);
         });
@@ -621,7 +621,7 @@ describe('Exchange', () => {
 
             const res = await exWrapper.cancelOrderAsync(signedOrder, makerAddress);
             expect(res.logs).to.have.length(1);
-            const log = res.logs[0] as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const log = res.logs[0] as LogWithDecodedArgs<ExchangeErrorContractEventArgs>;
             const errCode = log.args.errorId;
             expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_EXPIRED);
         });
