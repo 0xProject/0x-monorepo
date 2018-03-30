@@ -469,8 +469,8 @@ describe('Exchange', () => {
             const logArgs = log.args;
             const expectedFilledMakerTokenAmount = signedOrder.makerTokenAmount.div(divisor);
             const expectedFilledTakerTokenAmount = signedOrder.takerTokenAmount.div(divisor);
-            const expectedFeeMPaid = new BigNumber(0);
-            const expectedFeeTPaid = new BigNumber(0);
+            const expectedFeeMPaid = signedOrder.makerFeeAmount.div(divisor);
+            const expectedFeeTPaid = signedOrder.takerFeeAmount.div(divisor);
             const tokensHashBuff = crypto.solSHA3([signedOrder.makerTokenAddress, signedOrder.takerTokenAddress]);
             const expectedTokens = ethUtil.bufferToHex(tokensHashBuff);
 
@@ -495,7 +495,7 @@ describe('Exchange', () => {
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
-        it('should throw if signature is invalid', async () => {
+        it('should log an error event if signature is invalid', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(10), 18),
             });
@@ -506,33 +506,75 @@ describe('Exchange', () => {
             const invalidSigBuff = Buffer.concat([ethUtil.toBuffer(signatureTypeAndV), invalidR, invalidS]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
-            return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
+            
+            const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress);
+            expect(res.logs).to.have.length(1);
+            
+            const log = logDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const errCode = log.args.errorId;
+            expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_SIGNATURE_INVALID);
         });
 
-        it('should throw if makerTokenAmount is 0', async () => {
+        it('should log an error event if makerTokenAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: new BigNumber(0),
             });
-
-            return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
+            
+            const divisor = 2;
+            const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
+                takerTokenFillAmount: signedOrder.takerTokenAmount.div(divisor),
+            });
+            expect(res.logs).to.have.length(1);
+            
+            const log = logDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const errCode = log.args.errorId;
+            expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_INVALID);
         });
 
-        it('should throw if takerTokenAmount is 0', async () => {
+        it('should log an error event if takerTokenAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 takerTokenAmount: new BigNumber(0),
             });
-
-            return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
+            
+            const divisor = 2;
+            const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
+                takerTokenFillAmount: signedOrder.takerTokenAmount.div(divisor),
+            });
+            expect(res.logs).to.have.length(1);
+            
+            const log = logDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<LogErrorContractEventArgs>;
+            const errCode = log.args.errorId;
+            expect(errCode).to.be.equal(ExchangeContractErrs.ERROR_ORDER_INVALID);
         });
 
-        it('should throw if takerTokenFillAmount is 0', async () => {
+        it('should succeed if takerTokenFillAmount is 0', async () => {
             signedOrder = orderFactory.newSignedOrder();
 
-            return expect(
-                exWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                    takerTokenFillAmount: new BigNumber(0),
-                }),
-            ).to.be.rejectedWith(constants.REVERT);
+            const res = await exWrapper.fillOrderAsync(signedOrder, takerAddress, {
+                takerTokenFillAmount: new BigNumber(0),
+            });
+            expect(res.logs).to.have.length(1);
+
+            const log = logDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<LogFillContractEventArgs>;
+            const logArgs = log.args;
+            const expectedFilledMakerTokenAmount = new BigNumber(0);
+            const expectedFilledTakerTokenAmount = new BigNumber(0);
+            const expectedFeeMPaid = new BigNumber(0);
+            const expectedFeeTPaid = new BigNumber(0)
+            const tokensHashBuff = crypto.solSHA3([signedOrder.makerTokenAddress, signedOrder.takerTokenAddress]);
+            const expectedTokens = ethUtil.bufferToHex(tokensHashBuff);
+
+            expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
+            expect(takerAddress).to.be.equal(logArgs.takerAddress);
+            expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
+            expect(signedOrder.makerTokenAddress).to.be.equal(logArgs.makerTokenAddress);
+            expect(signedOrder.takerTokenAddress).to.be.equal(logArgs.takerTokenAddress);
+            expect(expectedFilledMakerTokenAmount).to.be.bignumber.equal(logArgs.makerTokenFilledAmount);
+            expect(expectedFilledTakerTokenAmount).to.be.bignumber.equal(logArgs.takerTokenFilledAmount);
+            expect(expectedFeeMPaid).to.be.bignumber.equal(logArgs.makerFeeAmountPaid);
+            expect(expectedFeeTPaid).to.be.bignumber.equal(logArgs.takerFeeAmountPaid);
+            expect(orderUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
+
         });
 
         it('should throw if maker balances are too low to fill order', async () => {
