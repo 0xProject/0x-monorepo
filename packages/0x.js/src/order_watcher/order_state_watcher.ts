@@ -76,7 +76,6 @@ export class OrderStateWatcher {
     private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
     private _cleanupJobInterval: number;
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
-    private _stateLayer: BlockParamLiteral;
     constructor(
         web3Wrapper: Web3Wrapper,
         abiDecoder: AbiDecoder,
@@ -87,13 +86,13 @@ export class OrderStateWatcher {
         this._abiDecoder = abiDecoder;
         this._web3Wrapper = web3Wrapper;
         const pollingIntervalIfExistsMs = _.isUndefined(config) ? undefined : config.eventPollingIntervalMs;
-        this._stateLayer = _.isUndefined(config) || _.isUndefined(config.stateLayer)
-            ? BlockParamLiteral.Pending
+        const stateLayer = _.isUndefined(config) || _.isUndefined(config.stateLayer)
+            ? BlockParamLiteral.Latest
             : config.stateLayer;
-        this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs, this._stateLayer);
+        this._eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalIfExistsMs, stateLayer);
         this._balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
             token,
-            this._stateLayer,
+            stateLayer,
         );
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(exchange);
         this._orderStateUtils = new OrderStateUtils(
