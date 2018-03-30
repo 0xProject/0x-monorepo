@@ -165,11 +165,11 @@ export type Web3Provider = Web3.Provider;
 
 /*
  * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
- * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Defaults: 200
+ * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Default: 200
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
- * of an orders expiration. Defaults: 0
+ * of an orders expiration. Default: 0
  * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Defaults: 1h
- * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Defaults: pending
+ * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default: latest
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;
