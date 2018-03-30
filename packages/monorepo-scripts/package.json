@@ -7,7 +7,7 @@
     "scripts": {
         "build:watch": "tsc -w",
         "deps_versions": "node ./lib/deps_versions.js",
-        "publish:prepublish": "yarn build; node ./lib/custom_prepublish.js",
+        "publish": "yarn build; node ./lib/publish.js",
         "convert_changelogs": "yarn build; node ./lib/convert_changelogs.js",
         "lint": "tslint --project . 'src/**/*.ts'",
         "clean": "shx rm -rf lib",
