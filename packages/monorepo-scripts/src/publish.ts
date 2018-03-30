@@ -102,7 +102,9 @@ const semverNameToIndex: { [semver: string]: number } = {
 async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }) {
     // HACK: Lerna publish does not provide a way to specify multiple package versions as
     // flags so instead we need to interact with their interactive prompt interface.
-    const child = spawn('lerna', ['publish'], { cwd: constants.monorepoRootPath });
+    const child = spawn('lerna', ['publish', '--registry=https://registry.npmjs.org/'], {
+        cwd: constants.monorepoRootPath,
+    });
     child.stdout.on('data', (data: Buffer) => {
         const output = data.toString('utf8');
         const isVersionPrompt = _.includes(output, 'Select a new version');

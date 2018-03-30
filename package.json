@@ -11,8 +11,8 @@
         "test:installation": "node ./packages/monorepo-scripts/lib/test_installation.js",
         "lerna:run": "lerna run",
         "lerna:rebuild": "lerna run clean; lerna run build;",
-        "lerna:publish":
-            "yarn install; lerna run clean; lerna run build; lerna publish --registry=https://registry.npmjs.org/"
+        "publish":
+            "yarn install; yarn lerna:rebuild; node ./packages/monorepo-scripts/lib/publish.js"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
