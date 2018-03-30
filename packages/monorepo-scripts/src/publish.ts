@@ -9,11 +9,11 @@ import { exec as execAsync, spawn } from 'promisify-child-process';
 import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
+import { constants } from './constants';
 import { Changelog, Changes, SemVerIndex, UpdatedPackage } from './types';
 import { utils } from './utils';
 
 const IS_DRY_RUN = true;
-const MONOREPO_ROOT_PATH = path.join(__dirname, '../../..');
 const TODAYS_TIMESTAMP = moment().unix();
 const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
 const semverNameToIndex: { [semver: string]: number } = {
@@ -26,7 +26,7 @@ const semverNameToIndex: { [semver: string]: number } = {
     const updatedPublicPackages = await getPublicLernaUpdatedPackagesAsync();
     const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 
-    const allLernaPackages = lernaGetPackages(MONOREPO_ROOT_PATH);
+    const allLernaPackages = lernaGetPackages(constants.monorepoRootPath);
     const relevantLernaPackages = _.filter(allLernaPackages, pkg => {
         return _.includes(updatedPackageNames, pkg.package.name);
     });
@@ -87,9 +87,9 @@ const semverNameToIndex: { [semver: string]: number } = {
     });
 
     if (!IS_DRY_RUN) {
-        await execAsync(`git add . --all`, { cwd: MONOREPO_ROOT_PATH });
-        await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: MONOREPO_ROOT_PATH });
-        await execAsync(`git push`, { cwd: MONOREPO_ROOT_PATH });
+        await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });
+        await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: constants.monorepoRootPath });
+        await execAsync(`git push`, { cwd: constants.monorepoRootPath });
         utils.log(`Pushed CHANGELOG updates to Github`);
     }
 
@@ -102,7 +102,7 @@ const semverNameToIndex: { [semver: string]: number } = {
 async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }) {
     // HACK: Lerna publish does not provide a way to specify multiple package versions as
     // flags so instead we need to interact with their interactive prompt interface.
-    const child = spawn('lerna', ['publish'], { cwd: MONOREPO_ROOT_PATH });
+    const child = spawn('lerna', ['publish'], { cwd: constants.monorepoRootPath });
     child.stdout.on('data', (data: Buffer) => {
         const output = data.toString('utf8');
         const isVersionPrompt = _.includes(output, 'Select a new version');
@@ -124,7 +124,7 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
 }
 
 async function getPublicLernaUpdatedPackagesAsync(): Promise<UpdatedPackage[]> {
-    const result = await execAsync(`${LERNA_EXECUTABLE} updated --json`, { cwd: MONOREPO_ROOT_PATH });
+    const result = await execAsync(`${LERNA_EXECUTABLE} updated --json`, { cwd: constants.monorepoRootPath });
     const updatedPackages = JSON.parse(result.stdout);
     const updatedPublicPackages = _.filter(updatedPackages, updatedPackage => !updatedPackage.private);
     return updatedPublicPackages;
