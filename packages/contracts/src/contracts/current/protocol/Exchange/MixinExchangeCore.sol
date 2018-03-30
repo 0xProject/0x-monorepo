@@ -91,12 +91,33 @@ contract MixinExchangeCore is
         orderHash = getOrderHash(order);
         filledAmount = filled[orderHash];
         
-        // Validate order and maker only if first time seen
+        // Validations on order only if first time seen
         if (filledAmount == 0) {
-            // TODO: Do other validations of the order here
             
-            // TODO: Turn this into an error code too?
-            require(isValidSignature(orderHash, order.makerAddress, signature));
+            // If order.takerTokenAmount is zero, then the order will always
+            // be considered filled because:
+            //    0 == takerTokenAmount == filledAmount
+            // Instead of distinguishing between unfilled and filled zero taker
+            // amount orders, we choose not to support them.
+            if(order.takerTokenAmount == 0) {
+                status = uint8(Errors.ORDER_INVALID);
+                return;
+            }
+            
+            // If order.makerTokenAmount is zero, we also reject the order.
+            // While the Exchange contract handles them correctly, they create
+            // edge cases in the supporting infrastructure because they have
+            // an 'infinite' price when computed by a simple division.
+            if(order.makerTokenAmount == 0) {
+                status = uint8(Errors.ORDER_INVALID);
+                return;
+            }
+            
+            // Maker signature needs to be valid
+            if(!isValidSignature(orderHash, order.makerAddress, signature)) {
+                status = uint8(Errors.ORDER_SIGNATURE_INVALID);
+                return;
+            }
         }
         
         // Validate order expiration
@@ -124,7 +145,7 @@ contract MixinExchangeCore is
         }
         
         // Order is OK
-        status = uint8(Errors.ORDER_OK);
+        status = uint8(Errors.SUCCESS);
         return;
     }
     
@@ -142,49 +163,44 @@ contract MixinExchangeCore is
             uint256 makerFeeAmountPaid,
             uint256 takerFeeAmountPaid)
     {
+        // Validate taker
+        if (order.takerAddress != address(0)) {
+            require(order.takerAddress == taker);
+        }
+        
+        // Compute takerTokenFilledAmount
+        uint256 remainingTakerTokenAmount = safeSub(
+            order.takerTokenAmount, filledAmount);
+        takerTokenFilledAmount = min256(
+            takerTokenFillAmount, remainingTakerTokenAmount);
+        
         // Validate fill order rounding
-        uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, filledAmount);
-        takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
-        if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
+        if (isRoundingError(
+            takerTokenFilledAmount,
+            order.takerTokenAmount,
+            order.makerTokenAmount))
+        {
             status = uint8(Errors.ROUNDING_ERROR_TOO_LARGE);
             return;
         }
         
-        // Validate taker
-        if (order.takerAddress != address(0)) {
-            require(order.takerAddress == taker);
-            // OR
-            /*
-            if(order.takerAddress != msg.sender) {
-                status = uint8(Errors.INVALID_TAKER);
-                return;
-            }
-            */
-        }
-        
-        // TODO: All three are multiplied by the same fraction. I wonder if this
-        // alllows for some optimization.
+        // Compute proportional transfer amounts
+        // TODO: All three are multiplied by the same fraction. This can
+        // potentially be optimized.
         makerTokenFilledAmount = getPartialAmount(
             takerTokenFilledAmount,
             order.takerTokenAmount,
             order.makerTokenAmount);
-        if(order.feeRecipientAddress != address(0x0)) {
-            makerFeeAmountPaid = getPartialAmount(
-                takerTokenFilledAmount,
-                order.takerTokenAmount,
-                order.makerFeeAmount);
-            takerFeeAmountPaid = getPartialAmount(
-                takerTokenFilledAmount,
-                order.takerTokenAmount,
-                order.takerFeeAmount);
-        } else {
-            // TODO: Do we need this case? Why not allow feeRecipient to be 0?
-            // ZRX token does not have a problem with that.
-            makerFeeAmountPaid = 0;
-            takerFeeAmountPaid = 0;
-        }
+        makerFeeAmountPaid = getPartialAmount(
+            takerTokenFilledAmount,
+            order.takerTokenAmount,
+            order.makerFeeAmount);
+        takerFeeAmountPaid = getPartialAmount(
+            takerTokenFilledAmount,
+            order.takerTokenAmount,
+            order.takerFeeAmount);
         
-        status = uint8(Errors.ORDER_OK);
+        status = uint8(Errors.SUCCESS);
         return;
     }
     
@@ -227,21 +243,17 @@ contract MixinExchangeCore is
         public
         returns (uint256 takerTokenFilledAmount)
     {
-        // TODO: Do we need these?
-        require(order.makerTokenAmount > 0);
-        require(order.takerTokenAmount > 0);
-        require(takerTokenFillAmount > 0);
-        
+        // Fetch current order status
         bytes32 orderHash;
         uint8 status;
         uint256 filledAmount;
-        
         (status, orderHash, filledAmount) = orderStatus(order, signature);
-        if(status != uint8(Errors.ORDER_OK)) {
+        if(status != uint8(Errors.SUCCESS)) {
             emit LogError(uint8(status), orderHash);
             return 0;
         }
         
+        // Compute proportional fill amounts
         uint256 makerTokenFilledAmount;
         uint256 makerFeeAmountPaid;
         uint256 takerFeeAmountPaid;
@@ -255,11 +267,12 @@ contract MixinExchangeCore is
             filledAmount,
             takerTokenFillAmount,
             msg.sender);
-        if(status != uint8(Errors.ORDER_OK)) {
+        if(status != uint8(Errors.SUCCESS)) {
             emit LogError(uint8(status), orderHash);
             return 0;
         }
         
+        // Update exchange internal state
         updateState(
             order,
             orderHash,
