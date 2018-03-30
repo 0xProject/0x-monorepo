@@ -139,7 +139,12 @@ CHANGELOG
     `;
 
     _.each(changelogs, changelog => {
-        const date = moment(changelog.timestamp, 'X').format('MMMM D, YYYY');
+        if (_.isUndefined(changelog.timestamp)) {
+            throw new Error(
+                'All CHANGELOG.json entries must be updated to include a timestamp before generating their MD version',
+            );
+        }
+        const date = moment(`${changelog.timestamp}`, 'X').format('MMMM D, YYYY');
         const title = `\n## v${changelog.version} - _${date}_\n\n`;
         changelogMd += title;
 
