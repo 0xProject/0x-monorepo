@@ -305,6 +305,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         trackedTokens={trackedTokens}
                         userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                         lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                        injectedProviderName={this.props.injectedProviderName}
+                        providerType={this.props.providerType}
+                        onToggleLedgerDialog={this.onToggleLedgerDialog.bind(this)}
                     />
                 </div>
             </div>
