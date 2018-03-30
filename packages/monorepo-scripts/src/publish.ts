@@ -13,7 +13,7 @@ import { constants } from './constants';
 import { Changelog, Changes, SemVerIndex, UpdatedPackage } from './types';
 import { utils } from './utils';
 
-const IS_DRY_RUN = true;
+const IS_DRY_RUN = false;
 const TODAYS_TIMESTAMP = moment().unix();
 const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
 const semverNameToIndex: { [semver: string]: number } = {
