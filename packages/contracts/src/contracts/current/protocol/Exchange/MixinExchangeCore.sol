@@ -49,20 +49,20 @@ contract MixinExchangeCore is
     // Orders with a salt less than their maker's epoch are considered cancelled
     mapping (address => uint256) public makerEpoch;
 
-    event LogFill(
+    event Fill(
         address indexed makerAddress,
         address takerAddress,
         address indexed feeRecipientAddress,
         address makerTokenAddress,
         address takerTokenAddress,
         uint256 makerAmountSold,
-        uint256 makerAmountBought,
+        uint256 takerAmountSold,
         uint256 makerFeePaid,
         uint256 takerFeePaid,
         bytes32 indexed orderHash
     );
 
-    event LogCancel(
+    event Cancel(
         address indexed makerAddress,
         address indexed feeRecipientAddress,
         address makerTokenAddress,
@@ -70,7 +70,7 @@ contract MixinExchangeCore is
         bytes32 indexed orderHash
     );
 
-    event LogCancelUpTo(
+    event CancelUpTo(
         address indexed makerAddress,
         uint256 makerEpoch
     );
@@ -82,8 +82,8 @@ contract MixinExchangeCore is
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
     /// @param takerSellAmount Desired amount of takerToken to sell.
-    /// @param signature Proof of signing order by maker.
-    /// @return Total amount of takerToken filled in trade.
+    /// @param signature Proof that order has been created by maker.
+    /// @return Amounts filled and fees paid by maker and taker.
     function fillOrder(
         Order memory order,
         uint256 takerSellAmount,
@@ -102,7 +102,7 @@ contract MixinExchangeCore is
 
         // Check if order has been cancelled by orderHash
         if (cancelled[orderHash]) {
-            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
+            emit ExchangeError(uint8(Errors.ORDER_CANCELLED), orderHash);
             return fillResults;
         }
 
@@ -119,21 +119,21 @@ contract MixinExchangeCore is
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
-            LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
+            emit ExchangeError(uint8(Errors.ORDER_EXPIRED), orderHash);
             return fillResults;
         }
 
         // Validate order availability
         uint256 remainingMakerBuyAmount = safeSub(order.makerBuyAmount, filled[orderHash]);
         if (remainingMakerBuyAmount == 0) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
+            emit ExchangeError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
             return fillResults;
         }
 
         // Validate fill order rounding
         fillResults.takerAmountSold = min256(takerSellAmount, remainingMakerBuyAmount);
         if (isRoundingError(fillResults.takerAmountSold, order.makerBuyAmount, order.makerSellAmount)) {
-            LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
+            emit ExchangeError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
             fillResults.takerAmountSold = 0;
             return fillResults;
         }
@@ -146,7 +146,7 @@ contract MixinExchangeCore is
             settleOrder(order, msg.sender, fillResults.takerAmountSold);
 
         // Log order
-        LogFill(
+        emit Fill(
             order.makerAddress,
             msg.sender,
             order.feeRecipientAddress,
@@ -163,7 +163,8 @@ contract MixinExchangeCore is
 
     /// @dev After calling, the order can not be filled anymore.
     /// @param order Order struct containing order specifications.
-    /// @return True if the order state changed to cancelled. False if the transaction was already cancelled or expired.
+    /// @return True if the order state changed to cancelled.
+    ///         False if the transaction was already cancelled or expired.
     function cancelOrder(Order memory order)
         public
         returns (bool)
@@ -175,18 +176,18 @@ contract MixinExchangeCore is
         require(order.makerAddress == msg.sender);
 
         if (block.timestamp >= order.expirationTimeSeconds) {
-            LogError(uint8(Errors.ORDER_EXPIRED), orderHash);
+            emit ExchangeError(uint8(Errors.ORDER_EXPIRED), orderHash);
             return false;
         }
 
         if (cancelled[orderHash]) {
-            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
+            emit ExchangeError(uint8(Errors.ORDER_CANCELLED), orderHash);
             return false;
         }
 
         cancelled[orderHash] = true;
 
-        LogCancel(
+        emit Cancel(
             order.makerAddress,
             order.feeRecipientAddress,
             order.makerTokenAddress,
@@ -203,7 +204,7 @@ contract MixinExchangeCore is
         uint256 newMakerEpoch = salt + 1;                // makerEpoch is initialized to 0, so to cancelUpTo we need salt+1
         require(newMakerEpoch > makerEpoch[msg.sender]); // epoch must be monotonically increasing
         makerEpoch[msg.sender] = newMakerEpoch;
-        LogCancelUpTo(msg.sender, newMakerEpoch);
+        emit CancelUpTo(msg.sender, newMakerEpoch);
     }
 
     /// @dev Checks if rounding error > 0.1%.
