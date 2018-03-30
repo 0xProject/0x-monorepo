@@ -93,6 +93,11 @@ const semverNameToIndex: { [semver: string]: number } = {
         utils.log(`Pushed CHANGELOG updates to Github`);
     }
 
+    utils.log('Version updates to apply:');
+    _.each(packageToVersionChange, (versionChange: string, packageName: string) => {
+        utils.log(`${packageName} -> ${versionChange}`);
+    });
+    utils.log(`Calling 'lerna publish'...`);
     await lernaPublishAsync(packageToVersionChange);
 })().catch(err => {
     utils.log(err);
@@ -121,6 +126,10 @@ async function lernaPublishAsync(packageToVersionChange: { [name: string]: strin
         const isFinalPrompt = _.includes(output, 'Are you sure you want to publish the above changes?');
         if (isFinalPrompt && !IS_DRY_RUN) {
             child.stdin.write(`y\n`);
+        } else if (isFinalPrompt && IS_DRY_RUN) {
+            utils.log(
+                `Submitted all versions to Lerna but since this is a dry run, did not confirm. You need to CTRL-C to exit.`,
+            );
         }
     });
 }

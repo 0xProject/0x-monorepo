@@ -11,7 +11,7 @@
         "test:installation": "node ./packages/monorepo-scripts/lib/test_installation.js",
         "lerna:run": "lerna run",
         "lerna:rebuild": "lerna run clean; lerna run build;",
-        "publish":
+        "lerna:publish":
             "yarn install; yarn lerna:rebuild; node ./packages/monorepo-scripts/lib/publish.js"
     },
     "config": {
