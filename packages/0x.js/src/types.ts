@@ -169,6 +169,7 @@ export type Web3Provider = Web3.Provider;
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
  * of an orders expiration. Defaults: 0
  * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Defaults: 1h
+ * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Defaults: pending
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;

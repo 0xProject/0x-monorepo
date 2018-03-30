@@ -326,6 +326,7 @@ export class ZeroEx {
     }
     /**
      * Instantiates and returns a new OrderStateWatcher instance.
+     * Defaults to watching the pending state.
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js OrderStateWatcher class.
      */
