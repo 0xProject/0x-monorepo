@@ -26,7 +26,7 @@ const HEADER_PRAGMA = '##';
             throw new Error(`${lernaPackage.package.name} should have CHANGELOG.md b/c it's public. Add one.`);
         }
 
-        const lines = (changelogMdIfExists as string).split('\n');
+        const lines = changelogMdIfExists.split('\n');
         const changelogs: Changelog[] = [];
         let changelog: Changelog = {
             version: '',
