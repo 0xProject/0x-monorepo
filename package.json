@@ -12,7 +12,7 @@
         "lerna:run": "lerna run",
         "lerna:rebuild": "lerna run clean; lerna run build;",
         "lerna:publish":
-            "yarn install; yarn lerna:rebuild; node ./packages/monorepo-scripts/lib/publish.js"
+            "yarn install; yarn lerna:rebuild; IS_DRY_RUN=false node ./packages/monorepo-scripts/lib/publish.js"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
