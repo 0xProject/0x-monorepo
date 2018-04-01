@@ -15,7 +15,7 @@ import { OrderStateWatcher } from './order_watcher/order_state_watcher';
 import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
 import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
 import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
-import { OrderStateWatcherConfig, ZeroExConfig, ZeroExError } from './types';
+import { OrderStateWatcherConfig, Web3Provider, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
@@ -331,13 +331,7 @@ export class ZeroEx {
      * @return  An instance of the 0x.js OrderStateWatcher class.
      */
     public createOrderStateWatcher(config?: OrderStateWatcherConfig) {
-        return new OrderStateWatcher(
-            this._web3Wrapper,
-            this._abiDecoder,
-            this.token,
-            this.exchange,
-            config,
-        );
+        return new OrderStateWatcher(this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config);
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
