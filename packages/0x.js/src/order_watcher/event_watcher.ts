@@ -23,7 +23,11 @@ export class EventWatcher {
     private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: LogEntry[] = [];
     private _stateLayer: BlockParamLiteral;
-    constructor(web3Wrapper: Web3Wrapper, pollingIntervalIfExistsMs: undefined | number, stateLayer: BlockParamLiteral = BlockParamLiteral.Latest) {
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        pollingIntervalIfExistsMs: undefined | number,
+        stateLayer: BlockParamLiteral = BlockParamLiteral.Latest,
+    ) {
         this._web3Wrapper = web3Wrapper;
         this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)

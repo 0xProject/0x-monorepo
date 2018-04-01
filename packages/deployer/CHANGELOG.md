@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.3.2 - _TBD_
+
+    * Create solc_bin directory if does not exist before attempting to compile (#491)
+
 ## v0.3.1 - _March 18, 2018_
 
     * Add TS types for `yargs`
