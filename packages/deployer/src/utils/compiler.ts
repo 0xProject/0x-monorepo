@@ -34,13 +34,13 @@ export async function getContractArtifactIfExistsAsync(
 }
 
 /**
- * Creates the artifacts directory if it does not already exist.
- * @param artifactsDir Path to the artifacts directory.
+ * Creates a directory if it does not already exist.
+ * @param artifactsDir Path to the directory.
  */
-export async function createArtifactsDirIfDoesNotExistAsync(artifactsDir: string): Promise<void> {
-    if (!fsWrapper.doesPathExistSync(artifactsDir)) {
-        logUtils.log('Creating artifacts directory...');
-        await fsWrapper.mkdirAsync(artifactsDir);
+export async function createDirIfDoesNotExistAsync(dirPath: string): Promise<void> {
+    if (!fsWrapper.doesPathExistSync(dirPath)) {
+        logUtils.log(`Creating directory at ${dirPath}...`);
+        await fsWrapper.mkdirAsync(dirPath);
     }
 }
 

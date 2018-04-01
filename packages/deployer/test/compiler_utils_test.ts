@@ -3,7 +3,7 @@ import * as dirtyChai from 'dirty-chai';
 import 'mocha';
 
 import {
-    createArtifactsDirIfDoesNotExistAsync,
+    createDirIfDoesNotExistAsync,
     getNormalizedErrMsg,
     parseDependencies,
     parseSolidityVersionRange,
@@ -21,11 +21,11 @@ describe('Compiler utils', () => {
             expect(normalizedErrMsg).to.be.equal('Token.sol:6:46: Warning: Unused local variable');
         });
     });
-    describe('#createArtifactsDirIfDoesNotExistAsync', () => {
+    describe('#createDirIfDoesNotExistAsync', () => {
         it('creates artifacts dir', async () => {
             const artifactsDir = `${__dirname}/artifacts`;
             expect(fsWrapper.doesPathExistSync(artifactsDir)).to.be.false();
-            await createArtifactsDirIfDoesNotExistAsync(artifactsDir);
+            await createDirIfDoesNotExistAsync(artifactsDir);
             expect(fsWrapper.doesPathExistSync(artifactsDir)).to.be.true();
             fsWrapper.rmdirSync(artifactsDir);
             expect(fsWrapper.doesPathExistSync(artifactsDir)).to.be.false();
