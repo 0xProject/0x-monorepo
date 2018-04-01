@@ -22,8 +22,10 @@ export class EventWatcher {
     private _pollingIntervalMs: number;
     private _intervalIdIfExists?: NodeJS.Timer;
     private _lastEvents: LogEntry[] = [];
-    constructor(web3Wrapper: Web3Wrapper, pollingIntervalIfExistsMs: undefined | number) {
+    private _stateLayer: BlockParamLiteral;
+    constructor(web3Wrapper: Web3Wrapper, pollingIntervalIfExistsMs: undefined | number, stateLayer: BlockParamLiteral = BlockParamLiteral.Latest) {
         this._web3Wrapper = web3Wrapper;
+        this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
             ? DEFAULT_EVENT_POLLING_INTERVAL_MS
             : pollingIntervalIfExistsMs;
@@ -69,8 +71,8 @@ export class EventWatcher {
     }
     private async _getEventsAsync(): Promise<LogEntry[]> {
         const eventFilter = {
-            fromBlock: BlockParamLiteral.Pending,
-            toBlock: BlockParamLiteral.Pending,
+            fromBlock: this._stateLayer,
+            toBlock: this._stateLayer,
         };
         const events = await this._web3Wrapper.getLogsAsync(eventFilter);
         return events;

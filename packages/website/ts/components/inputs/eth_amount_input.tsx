@@ -10,22 +10,31 @@ interface EthAmountInputProps {
     label?: string;
     balance: BigNumber;
     amount?: BigNumber;
+    hintText?: string;
     onChange: ValidatedBigNumberCallback;
     shouldShowIncompleteErrs: boolean;
     onVisitBalancesPageClick?: () => void;
     shouldCheckBalance: boolean;
     shouldHideVisitBalancesLink?: boolean;
+    shouldShowErrs?: boolean;
+    shouldShowUnderline?: boolean;
+    style?: React.CSSProperties;
 }
 
 interface EthAmountInputState {}
 
 export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmountInputState> {
+    public static defaultProps: Partial<EthAmountInputProps> = {
+        shouldShowErrs: true,
+        shouldShowUnderline: true,
+        style: { height: 63 },
+    };
     public render() {
         const amount = this.props.amount
             ? ZeroEx.toUnitAmount(this.props.amount, constants.DECIMAL_PLACES_ETH)
             : undefined;
         return (
-            <div className="flex overflow-hidden" style={{ height: 63 }}>
+            <div className="flex overflow-hidden" style={this.props.style}>
                 <BalanceBoundedInput
                     label={this.props.label}
                     balance={this.props.balance}
@@ -35,6 +44,9 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
                     shouldShowIncompleteErrs={this.props.shouldShowIncompleteErrs}
                     onVisitBalancesPageClick={this.props.onVisitBalancesPageClick}
                     shouldHideVisitBalancesLink={this.props.shouldHideVisitBalancesLink}
+                    hintText={this.props.hintText}
+                    shouldShowErrs={this.props.shouldShowErrs}
+                    shouldShowUnderline={this.props.shouldShowUnderline}
                 />
                 <div style={{ paddingTop: _.isUndefined(this.props.label) ? 15 : 40 }}>ETH</div>
             </div>

@@ -19,7 +19,7 @@ import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
 import { FlashMessage } from 'ts/components/ui/flash_message';
-import { Wallet } from 'ts/components/wallet';
+import { Wallet } from 'ts/components/wallet/wallet';
 import { GenerateOrderForm } from 'ts/containers/generate_order_form';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -305,6 +305,9 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         trackedTokens={trackedTokens}
                         userEtherBalanceInWei={this.props.userEtherBalanceInWei}
                         lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                        injectedProviderName={this.props.injectedProviderName}
+                        providerType={this.props.providerType}
+                        onToggleLedgerDialog={this.onToggleLedgerDialog.bind(this)}
                     />
                 </div>
             </div>
