@@ -27,14 +27,14 @@ const semverNameToIndex: { [semver: string]: number } = {
     const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 
     const allLernaPackages = lernaGetPackages(constants.monorepoRootPath);
-    const relevantLernaPackages = _.filter(allLernaPackages, pkg => {
+    const updatedPublicLernaPackages = _.filter(allLernaPackages, pkg => {
         return _.includes(updatedPackageNames, pkg.package.name);
     });
-    const relevantPackageNames = _.map(relevantLernaPackages, pkg => pkg.package.name);
+    const relevantPackageNames = _.map(updatedPublicLernaPackages, pkg => pkg.package.name);
     utils.log(`Will update CHANGELOGs and publish: \n${relevantPackageNames.join('\n')}\n`);
 
     const packageToVersionChange: { [name: string]: string } = {};
-    _.each(relevantLernaPackages, lernaPackage => {
+    _.each(updatedPublicLernaPackages, lernaPackage => {
         const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
         const changelogJSON = getChangelogJSONOrCreateIfMissing(lernaPackage.package.name, changelogJSONPath);
