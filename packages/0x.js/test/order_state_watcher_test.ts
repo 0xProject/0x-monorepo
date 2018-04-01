@@ -15,9 +15,7 @@ import {
     ZeroEx,
     ZeroExError,
 } from '../src';
-import {
-    OrderStateWatcher,
-} from '../src/order_watcher/order_state_watcher';
+import { OrderStateWatcher } from '../src/order_watcher/order_state_watcher';
 import { DoneCallback } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';

@@ -11,7 +11,7 @@ import solc = require('solc');
 
 import { binPaths } from './solc/bin_paths';
 import {
-    createArtifactsDirIfDoesNotExistAsync,
+    createDirIfDoesNotExistAsync,
     findImportIfExist,
     getContractArtifactIfExistsAsync,
     getNormalizedErrMsg,
@@ -32,6 +32,7 @@ import {
 import { utils } from './utils/utils';
 
 const ALL_CONTRACTS_IDENTIFIER = '*';
+const SOLC_BIN_DIR = path.join(__dirname, '..', '..', 'solc_bin');
 
 /**
  * The Compiler facilitates compiling Solidity smart contracts and saves the results
@@ -103,7 +104,8 @@ export class Compiler {
      * Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
      */
     public async compileAsync(): Promise<void> {
-        await createArtifactsDirIfDoesNotExistAsync(this._artifactsDir);
+        await createDirIfDoesNotExistAsync(this._artifactsDir);
+        await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
         this._contractSources = await Compiler._getContractSourcesAsync(this._contractsDir);
         _.forIn(this._contractSources, this._setContractSpecificSourceData.bind(this));
         const fileNames = this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)
@@ -147,7 +149,7 @@ export class Compiler {
             contractSpecificSourceData.solcVersionRange,
         );
         const fullSolcVersion = binPaths[solcVersion];
-        const compilerBinFilename = path.join(__dirname, '../../solc_bin', fullSolcVersion);
+        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
         let solcjs: string;
         const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
         if (isCompilerAvailableLocally) {
