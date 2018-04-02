@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "0.7.17",
+    "version": "0.7.18",
     "description": "0x-related json schemas",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -22,7 +22,9 @@
         "postpublish": {
             "assets": [],
             "docPublishConfigs": {
-                "extraFileIncludes": ["../types/src/index.ts"],
+                "extraFileIncludes": [
+                    "../types/src/index.ts"
+                ],
                 "s3BucketPath": "s3://doc-jsons/json-schemas/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/json-schemas/"
             }
@@ -39,14 +41,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
-        "@0xproject/typescript-typings": "^0.0.1",
+        "@0xproject/typescript-typings": "^0.0.2",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.14",
-        "@0xproject/tslint-config": "^0.4.12",
-        "@0xproject/utils": "^0.4.3",
+        "@0xproject/monorepo-scripts": "^0.1.15",
+        "@0xproject/tslint-config": "^0.4.13",
+        "@0xproject/utils": "^0.4.4",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",

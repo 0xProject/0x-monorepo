@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/subproviders",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
@@ -26,17 +26,19 @@
         "postpublish": {
             "assets": [],
             "docPublishConfigs": {
-                "extraFileIncludes": ["../types/src/index.ts"],
+                "extraFileIncludes": [
+                    "../types/src/index.ts"
+                ],
                 "s3BucketPath": "s3://doc-jsons/subproviders/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/subproviders/"
             }
         }
     },
     "dependencies": {
-        "@0xproject/assert": "^0.2.3",
-        "@0xproject/types": "^0.4.1",
-        "@0xproject/utils": "^0.4.3",
-        "@0xproject/typescript-typings": "^0.0.1",
+        "@0xproject/assert": "^0.2.4",
+        "@0xproject/types": "^0.4.2",
+        "@0xproject/typescript-typings": "^0.0.2",
+        "@0xproject/utils": "^0.4.4",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "^4.3.0",
         "bn.js": "^4.11.8",
@@ -51,9 +53,9 @@
         "web3-provider-engine": "^13.0.1"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.14",
-        "@0xproject/tslint-config": "^0.4.12",
-        "@0xproject/utils": "^0.4.3",
+        "@0xproject/monorepo-scripts": "^0.1.15",
+        "@0xproject/tslint-config": "^0.4.13",
+        "@0xproject/utils": "^0.4.4",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
@@ -66,9 +68,9 @@
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
+        "typedoc": "0xProject/typedoc",
         "types-bn": "^0.0.1",
         "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
-        "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1",
         "webpack": "^3.1.0"
     },

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/dev-utils",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "0x dev TS utils",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -25,8 +25,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/dev-utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.14",
-        "@0xproject/tslint-config": "^0.4.12",
+        "@0xproject/monorepo-scripts": "^0.1.15",
+        "@0xproject/tslint-config": "^0.4.13",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
@@ -41,12 +41,12 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/sol-cov": "^0.0.4",
-        "@0xproject/subproviders": "^0.8.2",
-        "@0xproject/types": "^0.4.1",
-        "@0xproject/utils": "^0.4.3",
-        "@0xproject/web3-wrapper": "^0.3.1",
-        "@0xproject/typescript-typings": "^0.0.1",
+        "@0xproject/sol-cov": "^0.0.5",
+        "@0xproject/subproviders": "^0.8.3",
+        "@0xproject/types": "^0.4.2",
+        "@0xproject/typescript-typings": "^0.0.2",
+        "@0xproject/utils": "^0.4.4",
+        "@0xproject/web3-wrapper": "^0.4.0",
         "ethereumjs-util": "^5.1.2",
         "lodash": "^4.17.4",
         "request-promise-native": "^1.0.5",

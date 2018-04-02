@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Generate coverage reports for Solidity code",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -22,7 +22,9 @@
         "postpublish": {
             "assets": [],
             "docPublishConfigs": {
-                "extraFileIncludes": ["../subproviders/src/types.ts"],
+                "extraFileIncludes": [
+                    "../subproviders/src/types.ts"
+                ],
                 "s3BucketPath": "s3://doc-jsons/sol-cov/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/sol-cov/"
             }
@@ -38,10 +40,10 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/subproviders": "^0.8.2",
-        "@0xproject/utils": "^0.4.3",
-        "@0xproject/typescript-typings": "^0.0.1",
-        "@0xproject/types": "^0.4.1",
+        "@0xproject/subproviders": "^0.8.3",
+        "@0xproject/types": "^0.4.2",
+        "@0xproject/typescript-typings": "^0.0.2",
+        "@0xproject/utils": "^0.4.4",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",
@@ -52,8 +54,8 @@
         "solidity-parser-sc": "^0.4.4"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.14",
-        "@0xproject/tslint-config": "^0.4.12",
+        "@0xproject/monorepo-scripts": "^0.1.15",
+        "@0xproject/tslint-config": "^0.4.13",
         "@types/istanbul": "^0.4.29",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
