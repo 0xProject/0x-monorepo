@@ -119,7 +119,7 @@ export const postpublishUtils = {
         if (_.isUndefined(latestLog.isPublished)) {
             let notes = '';
             _.each(latestLog.changes, change => {
-                notes = `* ${change.note}`;
+                notes += `* ${change.note}`;
                 if (change.pr) {
                     notes += ` (${change.pr})`;
                 }
