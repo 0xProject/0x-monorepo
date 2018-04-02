@@ -134,7 +134,7 @@ contract MixinExchangeCore is
 
         // Validate order is not cancelled
         if (order.salt < makerEpoch[order.makerAddress]) {
-            LogError(uint8(Errors.ORDER_FULLY_FILLED_OR_CANCELLED), orderHash);
+            LogError(uint8(Errors.ORDER_CANCELLED), orderHash);
             return 0;
         }
 
