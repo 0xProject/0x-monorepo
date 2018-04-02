@@ -737,5 +737,43 @@ describe('Exchange', () => {
                 expect(balances).to.be.deep.equal(newBalances);
             });
         });
+        describe('marketFillOrdersQuote', () => {
+            it('matches the amounts from quoting to filling', async () => {
+                const takerTokenFillAmount = signedOrders[0].takerTokenAmount.plus(
+                    signedOrders[1].takerTokenAmount.div(2),
+                );
+                const [
+                    totalMakerTokenFilledAmountQuote,
+                    totalTakerTokenFilledAmountQuote,
+                    totalMakerFeeAmountPaidQuote,
+                    totalTakerFeeAmountPaidQuote,
+                ] = await exWrapper.marketFillOrdersQuoteAsync(signedOrders, {
+                    takerTokenFillAmount,
+                });
+                await exWrapper.marketFillOrdersAsync(signedOrders, takerAddress, {
+                    takerTokenFillAmount,
+                });
+
+                const newBalances = await dmyBalances.getAsync();
+
+                const makerTokenFillAmount = signedOrders[0].makerTokenAmount.add(
+                    signedOrders[1].makerTokenAmount.dividedToIntegerBy(2),
+                );
+                const makerFee = signedOrders[0].makerFeeAmount.add(
+                    signedOrders[1].makerFeeAmount.dividedToIntegerBy(2),
+                );
+                const takerFee = signedOrders[0].takerFeeAmount.add(
+                    signedOrders[1].takerFeeAmount.dividedToIntegerBy(2),
+                );
+                expect(newBalances[makerAddress][signedOrders[0].takerTokenAddress]).to.be.bignumber.equal(
+                    balances[makerAddress][signedOrders[0].takerTokenAddress].add(takerTokenFillAmount),
+                );
+                expect(takerTokenFillAmount.equals(totalTakerTokenFilledAmountQuote)).to.be.true();
+                expect(newBalances[takerAddress][zrx.address]).to.be.bignumber.equal(
+                    balances[takerAddress][zrx.address].minus(takerFee),
+                );
+                expect(takerFee.equals(totalTakerFeeAmountPaidQuote)).to.be.true();
+            });
+        });
     });
 }); // tslint:disable-line:max-file-line-count
