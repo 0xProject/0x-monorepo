@@ -1,0 +1,121 @@
+[
+    {
+        "version": "0.6.4",
+        "changes": [
+            {
+                "note": "Consolidate `Order`, `SignedOrder`, and `ECSignature` into the `@0xproject/types` package",
+                "pr": 456
+            }
+        ],
+        "timestamp": 1521298800,
+        "isPublished": true
+    },
+    {
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Fix JSON parse empty response",
+                "pr": 407
+            }
+        ],
+        "timestamp": 1518706800,
+        "isPublished": true
+    },
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Add pagination options to HttpClient methods",
+                "pr": 393
+            },
+            {
+                "note": "Add heartbeat configuration to WebSocketOrderbookChannel constructor",
+                "pr": 406
+            }
+        ],
+        "timestamp": 1518706800,
+        "isPublished": true
+    },
+    {
+        "version": "0.5.7",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000,
+        "isPublished": true
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Sanitize api endpoint url and remove trailing slashes",
+                "pr": 318
+            },
+            {
+                "note": "Improve error message text in HttpClient",
+                "pr": 318
+            },
+            {
+                "note": "Stop appending '/v0' to api endpoint url in HttpClient",
+                "pr": 318
+            }
+        ],
+        "timestamp": 1516114800,
+        "isPublished": true
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Prevent getFeesAsync method on HttpClient from mutating input",
+                "pr": 296
+            }
+        ],
+        "timestamp": 1515596400,
+        "isPublished": true
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Expose WebSocketOrderbookChannel and associated types to public interface",
+                "pr": 251
+            },
+            {
+                "note": "Remove tokenA and tokenB fields from OrdersRequest",
+                "pr": 256
+            }
+        ],
+        "timestamp": 1512658800,
+        "isPublished": true
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Add SignedOrder and TokenTradeInfo to the public interface"
+            },
+            {
+                "note": "Add ECSignature and Order to the public interface"
+            },
+            {
+                "note": "Remove dependency on 0x.js"
+            }
+        ],
+        "timestamp": 1511881200,
+        "isPublished": true
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Provide a HttpClient class for interacting with standard relayer api compliant HTTP urls"
+            }
+        ],
+        "timestamp": 1511276400,
+        "isPublished": true
+    }
+]

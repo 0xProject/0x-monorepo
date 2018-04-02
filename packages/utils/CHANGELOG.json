@@ -1,0 +1,77 @@
+[
+    {
+        "version": "0.4.3",
+        "changes": [
+            {
+                "note":
+                    "Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface."
+            }
+        ],
+        "timestamp": 1521298800,
+        "isPublished": true
+    },
+    {
+        "version": "0.4.2",
+        "changes": [
+            {
+                "note": "Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package",
+                "pr": 452
+            }
+        ],
+        "timestamp": 1521298800,
+        "isPublished": true
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Use `ethers-contracts` as a backend to decode event args",
+                "pr": 413
+            },
+            {
+                "note": "Move web3 types from devDep to dep since required when using this package",
+                "pr": 429
+            }
+        ],
+        "timestamp": 1520089200,
+        "isPublished": true
+    },
+    {
+        "version": "0.3.2",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000,
+        "isPublished": true
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note":
+                    "Fix a bug related to event signature collisions (argument indexes aren't included in event signatures) in the abi_decoder. The decoder used to throw on unknown events with identical signatures as a known event (except indexes).",
+                "pr": 366
+            }
+        ],
+        "timestamp": 1517756400,
+        "isPublished": true
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Add `onError` parameter to `intervalUtils.setAsyncExcludingInterval`",
+                "pr": 312
+            },
+            {
+                "note": "Add `intervalUtils.setInterval`",
+                "pr": 312
+            }
+        ],
+        "timestamp": 1516114800,
+        "isPublished": true
+    }
+]
