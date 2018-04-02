@@ -1,5 +1,22 @@
 [
     {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Add tests for traversing ABI tree",
+                "pr": 485
+            },
+            {
+                "note": "Fix ABI tuples traversing",
+                "pr": 485
+            },
+            {
+                "note": "Fix ABI arrays traversing",
+                "pr": 485
+            }
+        ]
+    },
+    {
         "timestamp": 1522658513,
         "version": "0.0.6",
         "changes": [

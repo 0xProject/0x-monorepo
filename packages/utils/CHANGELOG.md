@@ -9,10 +9,6 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.5.0 - _TBD, 2018_
-
-    * Make `AbiDecoder.addABI` public (#485)
-
 ## v0.4.3 - _March 18, 2018_
 
     * Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface.

@@ -9,10 +9,6 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.5.0 - _TBD, 2018_
-
-    * Make `DataItem.components` optional (#485)
-
 ## v0.4.0 - _March 18, 2018_
 
     * Remove `JSONRPCPayload` (#426)

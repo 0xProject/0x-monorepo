@@ -8,9 +8,6 @@ CHANGELOG
 ## v0.4.0 - _April 2, 2018_
 
     * Rename `signTransactionAsync` to `signMessageAsync` for clarity (#465)
-    * Add `web3Wrapper.awaitTransactionMinedAsync` (#485)
-    * Add a public field `abiDecoder: AbiDecoder` which allows you to add your ABIs that are later used to decode logs (#485)
-    * Export enum `Web3WrapperErrors` with a single value so far: `TransactionMiningTimeout` (#485)
 
 ## v0.3.0 - _March 18, 2018_
 
