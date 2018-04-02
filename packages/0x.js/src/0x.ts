@@ -299,7 +299,7 @@ export class ZeroEx {
      * @return  An instance of the 0x.js OrderStateWatcher class.
      */
     public createOrderStateWatcher(config?: OrderStateWatcherConfig) {
-        return new OrderStateWatcher(this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config);
+        return new OrderStateWatcher(this._web3Wrapper, this.token, this.exchange, config);
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
