@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { exec as execAsync, spawn } from 'promisify-child-process';
 
 export const utils = {
     log(...args: any[]): void {
@@ -10,5 +11,10 @@ export const utils = {
         const newPatch = patch + 1;
         const newPatchVersion = `${versionSegments[0]}.${versionSegments[1]}.${newPatch}`;
         return newPatchVersion;
+    },
+    async prettifyAsync(filePath: string, cwd: string) {
+        await execAsync(`prettier --write ${filePath} --config .prettierrc`, {
+            cwd,
+        });
     },
 };

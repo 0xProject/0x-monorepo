@@ -78,14 +78,13 @@ const semverNameToIndex: { [semver: string]: number } = {
 
         // Save updated CHANGELOG.json
         fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs));
-        await execAsync(`prettier --write ${changelogJSONPath} --config .prettierrc`, {
-            cwd: constants.monorepoRootPath,
-        });
+        await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
         const changelogMd = generateChangelogMd(changelogs);
         const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
         fs.writeFileSync(changelogMdPath, changelogMd);
+        await utils.prettifyAsync(changelogMdPath, constants.monorepoRootPath);
         utils.log(`${packageName}: Updated CHANGELOG.md`);
     }
 

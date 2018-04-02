@@ -77,12 +77,10 @@ const HEADER_PRAGMA = '##';
                 changelog.changes.push(changes);
             }
         }
-        const changelogJson = JSON.stringify(changelogs);
-        const changelogJsonPath = `${lernaPackage.location}/CHANGELOG.json`;
-        fs.writeFileSync(changelogJsonPath, changelogJson);
-        await execAsync(`prettier --write ${changelogJsonPath} --config .prettierrc`, {
-            cwd: constants.monorepoRootPath,
-        });
+        const changelogJSONPath = JSON.stringify(changelogs);
+        const changelogJSONPathPath = `${lernaPackage.location}/CHANGELOG.json`;
+        fs.writeFileSync(changelogJSONPathPath, changelogJSONPath);
+        await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
     }
 })().catch(err => {
     utils.log(err.stdout);
