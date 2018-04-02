@@ -14,6 +14,7 @@ contract Forwarder is SafeMath, LibOrder {
     Token zrxToken;
 
     uint256 constant MAX_UINT = 2 ** 256 - 1;
+    uint16 constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
 
     function Forwarder(
         Exchange _exchange,
@@ -36,26 +37,31 @@ contract Forwarder is SafeMath, LibOrder {
     }
 
     function fillOrder(
-        Order order,
-        bytes signature)
+        Order[] orders,
+        bytes[] signatures)
         payable
         public
         returns (uint256 takerTokenFilledAmount)
     {
         assert(msg.value > 0);
-        assert(order.takerTokenAddress == address(etherToken));
+        // market fill Quote ensures ALL of the orders are the same
+        assert(orders[0].takerTokenAddress == address(etherToken));
+
+        // TODO when market Fill Orders returns maker and taker amount tuple, remove this
+        uint256 balanceOfMakerTokenBefore = Token(orders[0].makerTokenAddress).balanceOf.gas(EXTERNAL_QUERY_GAS_LIMIT)(address(this));
 
         etherToken.deposit.value(msg.value)();
         // Perform exchange and require the fill amount exactly equals the amount sent in
-        require(
-            Exchange(exchange).fillOrder(
-                order,
-                msg.value,
-                signature
-        ) == msg.value);
+        // var (totalMakerTokenFilledAmount,
+        //     totalTakerTokenFilledAmount,
+        //     totalMakerFeeAmountPaid,
+        //     totalTakerFeeAmountPaid) = 
+        Exchange(exchange).marketFillOrdersQuote(orders, msg.value, signatures);
+        require(Exchange(exchange).marketFillOrders(orders, msg.value, signatures) == msg.value);
+        uint256 balanceOfMakerTokenAfter = Token(orders[0].makerTokenAddress).balanceOf.gas(EXTERNAL_QUERY_GAS_LIMIT)(address(this));
+        uint256 makerTokenFillAmount = safeSub(balanceOfMakerTokenAfter, balanceOfMakerTokenBefore);
 
-        uint256 makerTokenFilledAmount = getPartialAmount(order.makerTokenAmount, order.takerTokenAmount, msg.value);    // makerTokenAmount * takerTokenFillAmount / takerTokenAmount
-        transferToken(order.makerTokenAddress, msg.sender, makerTokenFilledAmount);
+        transferToken(orders[0].makerTokenAddress, msg.sender, makerTokenFillAmount);
         return msg.value;
     }
 
