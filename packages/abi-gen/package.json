@@ -8,7 +8,8 @@
         "build:watch": "tsc -w",
         "lint": "tslint --project . 'src/**/*.ts'",
         "clean": "shx rm -rf lib scripts",
-        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts"
+        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "bin": {
         "abi-gen": "lib/index.js"

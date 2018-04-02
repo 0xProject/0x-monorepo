@@ -4,7 +4,8 @@
     "description": "0x project typescript type definitions",
     "scripts": {
         "build": "tsc && copyfiles -u 1 './lib/**/*' ./scripts",
-        "clean": "shx rm -rf scripts"
+        "clean": "shx rm -rf scripts",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "repository": {
         "type": "git",

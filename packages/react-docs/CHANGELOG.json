@@ -22,7 +22,8 @@
                 "pr": 465
             }
         ],
-        "timestamp": 1522658513
+        "timestamp": 1522658513,
+        "isPublished": true
     },
     {
         "version": "0.0.3",

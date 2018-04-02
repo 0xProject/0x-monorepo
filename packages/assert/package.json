@@ -14,7 +14,8 @@
         "test": "run-s clean build run_mocha",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "test:circleci": "yarn test:coverage"
+        "test:circleci": "yarn test:coverage",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "license": "Apache-2.0",
     "repository": {
