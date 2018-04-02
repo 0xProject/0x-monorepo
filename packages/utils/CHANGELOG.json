@@ -10,7 +10,8 @@
             {
                 "note": "Dependencies updated"
             }
-        ]
+        ],
+        "isPublished": true
     },
     {
         "version": "0.4.3",

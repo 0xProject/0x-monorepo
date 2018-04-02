@@ -6,7 +6,8 @@
             {
                 "note": "Dependencies updated"
             }
-        ]
+        ],
+        "isPublished": true
     },
     {
         "version": "0.3.1",
