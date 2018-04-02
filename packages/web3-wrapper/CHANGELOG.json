@@ -6,7 +6,8 @@
                 "note": "Rename `signTransactionAsync` to `signMessageAsync` for clarity",
                 "pr": 465
             }
-        ]
+        ],
+        "timestamp": 1522658513
     },
     {
         "version": "0.3.0",

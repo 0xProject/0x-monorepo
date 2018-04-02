@@ -1,6 +1,11 @@
-# CHANGELOG
+<!--
+This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+Edit the package's CHANGELOG.json file only.
+-->
 
-## v0.0.4 - _TBD_
+CHANGELOG
+
+## v0.0.5 - _April 2, 2018_
 
     * Handle `reflection` type rendering so that anonymous function type declarations render properly (#465)
     * Rename `MethodSignature` to `Signature` and change it's props so that it can be used to render method and function signatures. (#465)

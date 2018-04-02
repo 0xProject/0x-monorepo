@@ -1,6 +1,11 @@
-# CHANGELOG
+<!--
+This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+Edit the package's CHANGELOG.json file only.
+-->
 
-## v0.3.2 - _TBD_
+CHANGELOG
+
+## v0.3.4 - _April 2, 2018_
 
     * Create solc_bin directory if does not exist before attempting to compile (#491)
 

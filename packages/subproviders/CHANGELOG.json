@@ -1,6 +1,6 @@
 [
     {
-        "version": "0.8.1",
+        "version": "0.8.3",
         "changes": [
             {
                 "note": "Introduce `JSONRPCRequestPayloadWithMethod` type",
@@ -10,7 +10,8 @@
                 "note": "Export `ErrorCallback` type.",
                 "pr": 465
             }
-        ]
+        ],
+        "timestamp": 1522658513
     },
     {
         "version": "0.8.0",

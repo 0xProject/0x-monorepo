@@ -1,12 +1,13 @@
 [
     {
-        "version": "0.0.3",
+        "version": "0.0.6",
         "changes": [
             {
                 "note": "Added postman collection unit tests",
                 "pr": 451
             }
-        ]
+        ],
+        "timestamp": 1522658513
     },
     {
         "version": "0.0.2",

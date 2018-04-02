@@ -1,6 +1,6 @@
 [
     {
-        "version": "0.0.4",
+        "version": "0.0.5",
         "changes": [
             {
                 "note":
@@ -21,7 +21,8 @@
                 "note": "Add support for documenting exported functions.",
                 "pr": 465
             }
-        ]
+        ],
+        "timestamp": 1522658513
     },
     {
         "version": "0.0.3",

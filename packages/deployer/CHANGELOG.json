@@ -1,12 +1,13 @@
 [
     {
-        "version": "0.3.2",
+        "version": "0.3.4",
         "changes": [
             {
                 "note": "Create solc_bin directory if does not exist before attempting to compile",
                 "pr": 491
             }
-        ]
+        ],
+        "timestamp": 1522658513
     },
     {
         "version": "0.3.1",

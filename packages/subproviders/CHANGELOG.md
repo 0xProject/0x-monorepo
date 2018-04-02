@@ -1,6 +1,11 @@
-# CHANGELOG
+<!--
+This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+Edit the package's CHANGELOG.json file only.
+-->
 
-## v0.8.1 - _TBD_
+CHANGELOG
+
+## v0.8.3 - _April 2, 2018_
 
     * Introduce `JSONRPCRequestPayloadWithMethod` type (#465)
     * Export `ErrorCallback` type. (#465)

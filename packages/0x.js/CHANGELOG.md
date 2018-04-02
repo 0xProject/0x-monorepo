@@ -1,6 +1,11 @@
-# CHANGELOG
+<!--
+This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+Edit the package's CHANGELOG.json file only.
+-->
 
-## v0.34.0 - _TBD_
+CHANGELOG
+
+## v0.34.0 - _April 2, 2018_
 
     * Fix the bug causing `zeroEx.exchange.fillOrdersUpToAsync` validation to fail if there were some extra orders passed (#470)
     * Remove automatic instantiation of `zeroEx.orderStateWatcher` (#488)
@@ -160,16 +165,16 @@
 ## v0.21.0 - _October 10, 2017_
 
     * Complete rewrite of subscription logic (#182)
-        * Subscriptions no longer return historical logs. If you want them - use `getLogsAsync`
-        * Subscriptions now use [ethereumjs-blockstream](https://github.com/ethereumjs/ethereumjs-blockstream) under the hood
-            * Subscriptions correctly handle block re-orgs (forks)
-            * Subscriptions correctly backfill logs (connection problems)
-            * They no longer setup filters on the underlying nodes, so you can use them with infura without a filter Subprovider
-        * Removed `ContractEventEmitter` and added `LogEvent`
-        * Renamed `zeroEx.token.subscribeAsync` to `zeroEx.token.subscribe`
-        * Added `zeroEx.token.unsubscribe` and `zeroEx.exchange.unsubscribe`
-        * Renamed `zeroEx.exchange.stopWatchingAllEventsAsync` to `zeroEx.exhange.unsubscribeAll`
-        * Renamed `zeroEx.token.stopWatchingAllEventsAsync` to `zeroEx.token.unsubscribeAll`
+    * Subscriptions no longer return historical logs. If you want them - use `getLogsAsync`
+    * Subscriptions now use [ethereumjs-blockstream](https://github.com/ethereumjs/ethereumjs-blockstream) under the hood
+    * Subscriptions correctly handle block re-orgs (forks)
+    * Subscriptions correctly backfill logs (connection problems)
+    * They no longer setup filters on the underlying nodes, so you can use them with infura without a filter Subprovider
+    * Removed `ContractEventEmitter` and added `LogEvent`
+    * Renamed `zeroEx.token.subscribeAsync` to `zeroEx.token.subscribe`
+    * Added `zeroEx.token.unsubscribe` and `zeroEx.exchange.unsubscribe`
+    * Renamed `zeroEx.exchange.stopWatchingAllEventsAsync` to `zeroEx.exhange.unsubscribeAll`
+    * Renamed `zeroEx.token.stopWatchingAllEventsAsync` to `zeroEx.token.unsubscribeAll`
     * Fixed the batch fills validation by emulating all balance & proxy allowance changes (#185)
 
 ## v0.20.0 - _October 5, 2017_
@@ -195,9 +200,9 @@
 ## v0.16.0 - _September 20, 2017_
 
     * Added the ability to specify custom contract addresses to be used with 0x.js (#165)
-        * ZeroExConfig.exchangeContractAddress
-        * ZeroExConfig.tokenRegistryContractAddress
-        * ZeroExConfig.etherTokenContractAddress
+    * ZeroExConfig.exchangeContractAddress
+    * ZeroExConfig.tokenRegistryContractAddress
+    * ZeroExConfig.etherTokenContractAddress
     * Added `zeroEx.tokenRegistry.getContractAddressAsync` (#165)
 
 ## v0.15.0 - _September 8, 2017_
@@ -287,10 +292,10 @@
     * Added `zeroEx.proxy.isAuthorizedAsync` and `zeroEx.proxy.getAuthorizedAddressesAsync` (#89)
     * Added `zeroEx.token.subscribeAsync` (#90)
     * Made contract invalidation functions private (#90)
-        * `zeroEx.token.invalidateContractInstancesAsync`
-        * `zeroEx.exchange.invalidateContractInstancesAsync`
-        * `zeroEx.proxy.invalidateContractInstance`
-        * `zeroEx.tokenRegistry.invalidateContractInstance`
+    * `zeroEx.token.invalidateContractInstancesAsync`
+    * `zeroEx.exchange.invalidateContractInstancesAsync`
+    * `zeroEx.proxy.invalidateContractInstance`
+    * `zeroEx.tokenRegistry.invalidateContractInstance`
     * Fixed the bug where `zeroEx.setProviderAsync` didn't invalidate etherToken contract's instance
 
 ## v0.7.1 - _June 26, 2017_

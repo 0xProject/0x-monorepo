@@ -20,7 +20,8 @@
                     "Added `stateLayer` setting to `OrderStateWatcherConfig` so OrderStateWatcher can be set to monitor different blockchain state layers",
                 "pr": 488
             }
-        ]
+        ],
+        "timestamp": 1522658513
     },
     {
         "version": "0.33.2",
