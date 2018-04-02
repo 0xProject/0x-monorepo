@@ -112,7 +112,13 @@ export const postpublishUtils = {
         this.updateChangelogIsPublished(packageName);
     },
     getReleaseNotes(packageName: string) {
-        const changelogJSONPath = path.join(constants.monorepoRootPath, 'packages', packageName, 'CHANGELOG.json');
+        const packageNameWithNamespace = packageName.replace('@0xproject/', '');
+        const changelogJSONPath = path.join(
+            constants.monorepoRootPath,
+            'packages',
+            packageNameWithNamespace,
+            'CHANGELOG.json',
+        );
         const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
         const changelogs = JSON.parse(changelogJSON);
         const latestLog = changelogs[0];
@@ -130,7 +136,13 @@ export const postpublishUtils = {
         return 'N/A';
     },
     updateChangelogIsPublished(packageName: string) {
-        const changelogJSONPath = path.join(constants.monorepoRootPath, 'packages', packageName, 'CHANGELOG.json');
+        const packageNameWithNamespace = packageName.replace('@0xproject/', '');
+        const changelogJSONPath = path.join(
+            constants.monorepoRootPath,
+            'packages',
+            packageNameWithNamespace,
+            'CHANGELOG.json',
+        );
         const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
         const changelogs = JSON.parse(changelogJSON);
         const latestLog = changelogs[0];
