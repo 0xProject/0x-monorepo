@@ -1,9 +1,12 @@
 import { execAsync } from 'async-child-process';
 import * as promisify from 'es6-promisify';
+import * as fs from 'fs';
 import * as _ from 'lodash';
+import * as path from 'path';
 import * as publishRelease from 'publish-release';
 import semverSort = require('semver-sort');
 
+import { constants } from './constants';
 import { utils } from './utils';
 
 const publishReleaseAsync = promisify(publishRelease);
@@ -88,23 +91,52 @@ export const postpublishUtils = {
         );
     },
     async publishReleaseNotesAsync(cwd: string, packageName: string, version: string, assets: string[]): Promise<void> {
+        const notes = this.getReleaseNotes(packageName);
         const releaseName = this.getReleaseName(packageName, version);
         const tag = this.getTag(packageName, version);
-        utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
         const finalAssets = this.adjustAssetPaths(cwd, assets);
+        utils.log('POSTPUBLISH: Releasing ', releaseName, '...');
         const result = await publishReleaseAsync({
             token: githubPersonalAccessToken,
             owner: '0xProject',
             repo: '0x-monorepo',
             tag,
             name: releaseName,
-            notes: 'N/A',
+            notes,
             draft: false,
             prerelease: false,
             reuseRelease: true,
             reuseDraftOnly: false,
             assets,
         });
+        this.updateChangelogIsPublished(packageName);
+    },
+    getReleaseNotes(packageName: string) {
+        const changelogJSONPath = path.join(constants.monorepoRootPath, 'packages', packageName, 'CHANGELOG.json');
+        const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
+        const changelogs = JSON.parse(changelogJSON);
+        const latestLog = changelogs[0];
+        if (_.isUndefined(latestLog.isPublished)) {
+            let notes = '';
+            _.each(latestLog.changes, change => {
+                notes = `* ${change.note}`;
+                if (change.pr) {
+                    notes += ` (${change.pr})`;
+                }
+                notes += `\n`;
+            });
+            return notes;
+        }
+        return 'N/A';
+    },
+    updateChangelogIsPublished(packageName: string) {
+        const changelogJSONPath = path.join(constants.monorepoRootPath, 'packages', packageName, 'CHANGELOG.json');
+        const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
+        const changelogs = JSON.parse(changelogJSON);
+        const latestLog = changelogs[0];
+        latestLog.isPublished = true;
+        changelogs[0] = latestLog;
+        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
     },
     getTag(packageName: string, version: string) {
         return `${packageName}@${version}`;
@@ -122,14 +154,16 @@ export const postpublishUtils = {
     },
     adjustFileIncludePaths(fileIncludes: string[], cwd: string): string[] {
         const fileIncludesAdjusted = _.map(fileIncludes, fileInclude => {
-            let path = _.startsWith(fileInclude, './') ? `${cwd}/${fileInclude.substr(2)}` : `${cwd}/${fileInclude}`;
+            let includePath = _.startsWith(fileInclude, './')
+                ? `${cwd}/${fileInclude.substr(2)}`
+                : `${cwd}/${fileInclude}`;
 
             // HACK: tsconfig.json needs wildcard directory endings as `/**/*`
             // but TypeDoc needs it as `/**` in order to pick up files at the root
-            if (_.endsWith(path, '/**/*')) {
-                path = path.slice(0, -2);
+            if (_.endsWith(includePath, '/**/*')) {
+                includePath = includePath.slice(0, -2);
             }
-            return path;
+            return includePath;
         });
         return fileIncludesAdjusted;
     },

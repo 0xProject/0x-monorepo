@@ -1,6 +1,7 @@
 declare module 'async-child-process';
 declare module 'publish-release';
 declare module 'es6-promisify';
+declare module 'semver-diff';
 
 // semver-sort declarations
 declare module 'semver-sort' {
@@ -11,6 +12,7 @@ declare interface LernaPackage {
     location: string;
     package: {
         private?: boolean;
+        version: string;
         name: string;
         main?: string;
         config?: {
