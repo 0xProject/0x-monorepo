@@ -264,16 +264,14 @@ contract MixinWrapperFunctions is
                 orders[i].makerTokenAmount,
                 remainingTakerBuyAmount
             );
-            takerTokenFilledAmount = safeAdd(
-                takerTokenFilledAmount,
+            uint256 takerTokenFillAmount = 
                 fillOrder(
                     orders[i],
                     remainingTakerSellAmount,
                     signatures[i]
-                )
-            );
+                );
             makerTokenFilledAmount = safeAdd(makerTokenFilledAmount, remainingTakerSellAmount);
-            takerTokenFilledAmount = safeAdd(takerTokenFilledAmount, takerTokenFilledAmount);
+            takerTokenFilledAmount = safeAdd(takerTokenFilledAmount, takerTokenFillAmount);
             if (takerTokenFilledAmount == takerBuyAmount) {
                 break;
             }

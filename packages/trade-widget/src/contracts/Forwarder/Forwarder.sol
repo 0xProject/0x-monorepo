@@ -78,7 +78,9 @@ contract Forwarder is SafeMath, LibOrder {
             wethBalance = safeSub(wethBalance, feeTokensResult.takerAmountSold);
         }
 
-        // uint256 wethBalance = Token(orders[0].takerTokenAddress).balanceOf(address(this));
+        // require(wethBalance == Token(orders[0].takerTokenAddress).balanceOf(address(this)));
+        // wethBalance = Token(orders[0].takerTokenAddress).balanceOf(address(this));
+        // uint256 tokenBalance = Token(orders[0].makerTokenAddress).balanceOf(address(this));
         // TODO check some % threshold for an ok order, say atleast 98% of msg.value was filled
         FillResults memory requestedTokensResult = marketSellOrders(orders, wethBalance, signatures);
         totalFillResult.takerAmountSold = requestedTokensResult.takerAmountSold;
@@ -86,7 +88,6 @@ contract Forwarder is SafeMath, LibOrder {
         totalFillResult.makerFeePaid = requestedTokensResult.makerFeePaid;
         totalFillResult.takerFeePaid = safeAdd(totalFillResult.takerFeePaid, requestedTokensResult.takerFeePaid);
 
-        // uint256 tokenBalance = Token(orders[0].makerTokenAddress).balanceOf(address(this));
         // transferToken(orders[0].makerTokenAddress, msg.sender, tokenBalance);
         transferToken(orders[0].makerTokenAddress, msg.sender, totalFillResult.makerAmountSold);
         return totalFillResult;
