@@ -79,11 +79,10 @@ packages/contracts/src/artifacts
 # generated contract wrappers
 packages/0x.js/src/contract_wrappers/generated/
 packages/contracts/src/contract_wrappers/generated/
+packages/metacoin/src/contract_wrappers
 
 # solc-bin in deployer
 packages/deployer/solc_bin/
 
 # Monorepo scripts
 packages/*/scripts/
-
-packages/metacoin/src/contract_wrappers
