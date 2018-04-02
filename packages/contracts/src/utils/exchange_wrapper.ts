@@ -167,14 +167,8 @@ export class ExchangeWrapper {
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-    public async cancelOrdersUpToAsync(
-        salt: BigNumber,
-        from: string,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.cancelOrdersUpTo.sendTransactionAsync(
-            salt,
-            { from },
-        );
+    public async cancelOrdersUpToAsync(salt: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._exchange.cancelOrdersUpTo.sendTransactionAsync(salt, { from });
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
@@ -213,6 +207,28 @@ export class ExchangeWrapper {
     public async getFilledTakerTokenAmountAsync(orderHashHex: string): Promise<BigNumber> {
         const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
         return filledAmount;
+    }
+    public async marketFillOrdersQuoteAsync(
+        orders: SignedOrder[],
+        opts: { takerTokenFillAmount: BigNumber },
+    ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber]> {
+        const params = formatters.createMarketFillOrders(orders, opts.takerTokenFillAmount);
+        const [
+            totalMakerTokenFilledAmount,
+            totalTakerTokenFilledAmount,
+            totalMakerFeeAmountPaid,
+            totalTakerFeeAmountPaid,
+        ] = await this._exchange.marketFillOrdersQuote.callAsync(
+            params.orders,
+            params.takerTokenFillAmount,
+            params.signatures,
+        );
+        return [
+            totalMakerTokenFilledAmount,
+            totalTakerTokenFilledAmount,
+            totalMakerFeeAmountPaid,
+            totalTakerFeeAmountPaid,
+        ];
     }
     private async _getTxWithDecodedExchangeLogsAsync(txHash: string) {
         const tx = await this._zeroEx.awaitTransactionMinedAsync(txHash);
