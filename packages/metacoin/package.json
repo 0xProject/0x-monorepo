@@ -19,16 +19,8 @@
         "test:circleci": "yarn test:coverage",
         "compile": "node ../deployer/lib/src/cli.js compile --contracts Metacoin --contracts-dir contracts --artifacts-dir artifacts"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/0xProject/0x-monorepo.git"
-    },
     "author": "",
     "license": "Apache-2.0",
-    "bugs": {
-        "url": "https://github.com/0xProject/0x-monorepo/issues"
-    },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/metacoin/README.md",
     "dependencies": {
         "@0xproject/abi-gen": "^0.2.7",
         "@0xproject/base-contract": "^0.0.5",
@@ -53,8 +45,5 @@
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.1",
         "typescript": "2.7.1"
-    },
-    "publishConfig": {
-        "access": "private"
     }
 }
