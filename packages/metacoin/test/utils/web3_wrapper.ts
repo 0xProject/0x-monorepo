@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import ProviderEngine = require('web3-provider-engine');
 
+import { config } from './config';
 import { coverage } from './coverage';
 
 export const web3Provider = new ProviderEngine();
@@ -16,13 +17,12 @@ web3Provider.addProvider(
     new GanacheSubprovider({
         logger: {
             log: (arg: any) => {
-                fs.appendFileSync('ganache.log', `${arg}\n`);
+                fs.appendFileSync(config.ganacheLogFile, `${arg}\n`);
             },
         },
         verbose: env.parseBoolean(EnvVars.SolidityCoverage),
-        port: 8545,
-        networkId: 50,
-        mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
+        networkId: config.networkId,
+        mnemonic: config.mnemonic,
     }),
 );
 web3Provider.start();
