@@ -77,7 +77,7 @@ const semverNameToIndex: { [semver: string]: number } = {
         }
 
         // Save updated CHANGELOG.json
-        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs));
+        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, 4));
         await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
@@ -162,7 +162,7 @@ function getChangelogJSONOrCreateIfMissing(packageName: string, changelogPath: s
         return changelogJSON;
     } catch (err) {
         // If none exists, create new, empty one.
-        const emptyChangelogJSON = JSON.stringify([]);
+        const emptyChangelogJSON = JSON.stringify([], null, 4);
         fs.writeFileSync(changelogPath, emptyChangelogJSON);
         return emptyChangelogJSON;
     }

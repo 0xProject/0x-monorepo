@@ -77,7 +77,7 @@ const HEADER_PRAGMA = '##';
                 changelog.changes.push(changes);
             }
         }
-        const changelogJSONPath = JSON.stringify(changelogs);
+        const changelogJSONPath = JSON.stringify(changelogs, null, 4);
         const changelogJSONPathPath = `${lernaPackage.location}/CHANGELOG.json`;
         fs.writeFileSync(changelogJSONPathPath, changelogJSONPath);
         await utils.prettifyAsync(changelogJSONPath, constants.monorepoRootPath);
