@@ -95,14 +95,14 @@ yarn install
 Build all packages. You need to do this before working on any given package. Although these packages
 as independent, when run from within the monorepo, they are internally symlinked, to make development
 easier. You can change several packages and run the changes without publishing them first to NPM. When
-running `rebuild`, Lerna will figure out the dependency order of all the packages, and built them in
+running `rebuild`, Lerna will figure out the dependency order of all the packages, and build them in
 this order.
 
 ```bash
 yarn lerna:rebuild
 ```
 
-Continuously rebuild on change
+Or continuously rebuild on change:
 
 ```bash
 yarn dev
