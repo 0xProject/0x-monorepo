@@ -6,22 +6,22 @@
   "scripts": {
     "build:webpack": "NODE_ENV=production webpack",
     "copy_artifacts": "copyfiles -u 2 './src/ts/artifacts/**/*' ./lib/trade-widget/src/ts",
-    "build": "tsc && run-s update_contracts copy_artifacts",
+    "build": "run-s compile update_contracts copy_artifacts generate_contract_wrappers && tsc",
     "test": "run-s clean build run_mocha",
     "run_mocha": "mocha 'lib/trade-widget/test/**/*.js' --timeout 100000 --bail --exit",
     "clean": "shx rm -rf lib/* src/public/bundle*",
     "lint": "tslint --project . 'src/ts/**/*.ts' 'src/ts/**/*.tsx'",
     "dev": "webpack-dev-server --open",
     "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/ts/artifacts/@(Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated",
-    "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 3 ../contracts/artifacts/$i.json ../trade-widget/src/artifacts/; done;",
+    "update_contracts": "for i in ${npm_package_config_artifacts}; do echo $i.json && copyfiles -u 4 ../contracts/src/artifacts/$i.json ./src/ts/artifacts/; done;",
     "styleguide": "styleguidist server",
-    "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
+    "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/ts/artifacts",
     "migrate": "yarn build && yarn compile && node ./lib/migrations/index.js",
     "styleguide:build": "styleguidist build"
   },
   "config": {
     "contracts": "Forwarder",
-    "artifacts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy"
+    "artifacts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy"
   },
   "author": "Jacob Evans",
   "license": "MIT",

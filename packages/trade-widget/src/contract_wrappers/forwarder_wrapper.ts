@@ -5,6 +5,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
+import { formatters } from '../../../contracts/src/utils/formatters';
 import { orderUtils } from '../../../contracts/src/utils/order_utils';
 import {
     DefaultOrderParams,
@@ -57,10 +58,8 @@ export function convertSignature(signedOrder: SignedOrderV1): string {
 export class ForwarderWrapper {
     private _forwarderContract: ForwarderContract;
     // TODO remove this
-    public static async getForwarderContractAsync(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-    ): Promise<ForwarderContract> {
+    public static async getForwarderContractAsync(web3Wrapper: Web3Wrapper): Promise<ForwarderContract> {
+        const networkId = await web3Wrapper.getNetworkIdAsync();
         const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
             artifacts.Forwarder,
             web3Wrapper,
@@ -73,12 +72,11 @@ export class ForwarderWrapper {
         artifact: Artifact,
         web3Wrapper: Web3Wrapper,
         networkId: number,
-        addressIfExists?: string,
     ): Promise<[Web3.ContractAbi, string]> {
         const contractAddress = this._getContractAddress(artifact, networkId);
         const doesContractExist = await web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
         if (!doesContractExist) {
-            throw new Error('Forwarder Contract NOT FOUND');
+            throw new Error(`Forwarder Contract ${contractAddress} Not Found on network ${networkId}`);
         }
         const abiAndAddress: [Web3.ContractAbi, string] = [artifact.networks[networkId].abi, contractAddress];
         return abiAndAddress;
@@ -99,12 +97,7 @@ export class ForwarderWrapper {
     constructor(contractInstance: ForwarderContract) {
         this._forwarderContract = contractInstance;
     }
-    public async fillOrderAsync(
-        signedOrder: SignedOrder,
-        fillAmountBaseUnits: BigNumber,
-        from: string,
-        orderTransactionOpts: OrderTransactionOpts = {},
-    ): Promise<string> {
+    public async fillOrderAsync(orders: SignedOrder[], fillAmountBaseUnits: BigNumber, from: string): Promise<string> {
         // TODO remove fixed gas and gas price
         const txOpts = {
             from,
@@ -112,10 +105,10 @@ export class ForwarderWrapper {
             gasPrice: new BigNumber(1000000000),
             value: fillAmountBaseUnits,
         };
-        const params = orderUtils.createFill(signedOrder, fillAmountBaseUnits);
+        const params = formatters.createMarketFillOrders(orders, fillAmountBaseUnits);
         const txHash: string = await this._forwarderContract.fillOrder.sendTransactionAsync(
-            params.order,
-            params.signature,
+            params.orders,
+            params.signatures,
             txOpts,
         );
         return txHash;

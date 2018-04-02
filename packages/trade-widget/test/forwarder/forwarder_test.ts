@@ -138,7 +138,9 @@ describe('Forwarder', () => {
 
         it('should fill the order', async () => {
             const fillAmount = signedOrder.takerTokenAmount.div(2);
-            await forwarderWrapper.fillOrderAsync(signedOrder, fillAmount, takerAddress);
+            const txHash = await forwarderWrapper.fillOrderAsync([signedOrder], fillAmount, takerAddress);
+            // tslint:disable-next-line:no-console
+            console.log(txHash);
             const newBalances = await dmyBalances.getAsync();
             const makerBalanceBefore = balances[makerAddress][signedOrder.makerTokenAddress];
             const makerBalanceAfter = newBalances[makerAddress][signedOrder.makerTokenAddress];

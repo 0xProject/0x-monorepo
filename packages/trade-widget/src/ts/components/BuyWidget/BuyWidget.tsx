@@ -219,7 +219,7 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
     ): Promise<string> {
         const forwarder = await this._getForwarderAsync();
         const txHash = await forwarder.fillOrderAsync(
-            convertSignedOrderV1ToSignedOrderV2(signedOrder),
+            [convertSignedOrderV1ToSignedOrderV2(signedOrder)],
             fillAmount,
             takerAddress,
         );
@@ -230,10 +230,7 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
     }
 
     private async _getForwarderAsync(): Promise<ForwarderWrapper> {
-        const forwarderContract = await ForwarderWrapper.getForwarderContractAsync(
-            this.props.web3Wrapper,
-            this.props.networkId,
-        );
+        const forwarderContract = await ForwarderWrapper.getForwarderContractAsync(this.props.web3Wrapper);
         const forwarder = new ForwarderWrapper(forwarderContract);
         return forwarder;
     }
