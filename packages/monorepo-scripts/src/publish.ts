@@ -13,7 +13,7 @@ import { constants } from './constants';
 import { Changelog, Changes, SemVerIndex, UpdatedPackage } from './types';
 import { utils } from './utils';
 
-const IS_DRY_RUN = process.env.IS_DRY_RUN === 'false';
+const IS_DRY_RUN = process.env.IS_DRY_RUN === 'true';
 const TODAYS_TIMESTAMP = moment().unix();
 const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
 const semverNameToIndex: { [semver: string]: number } = {
@@ -30,11 +30,11 @@ const semverNameToIndex: { [semver: string]: number } = {
     const updatedPublicLernaPackages = _.filter(allLernaPackages, pkg => {
         return _.includes(updatedPackageNames, pkg.package.name);
     });
-    const relevantPackageNames = _.map(updatedPublicLernaPackages, pkg => pkg.package.name);
-    utils.log(`Will update CHANGELOGs and publish: \n${relevantPackageNames.join('\n')}\n`);
+    const updatedPublicLernaPackageNames = _.map(updatedPublicLernaPackages, pkg => pkg.package.name);
+    utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicLernaPackageNames.join('\n')}\n`);
 
     const packageToVersionChange: { [name: string]: string } = {};
-    _.each(updatedPublicLernaPackages, lernaPackage => {
+    for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
         const changelogJSON = getChangelogJSONOrCreateIfMissing(lernaPackage.package.name, changelogJSONPath);
@@ -77,14 +77,17 @@ const semverNameToIndex: { [semver: string]: number } = {
         }
 
         // Save updated CHANGELOG.json
-        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
+        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs));
+        await execAsync(`prettier --write ${changelogJSONPath} --config .prettierrc`, {
+            cwd: constants.monorepoRootPath,
+        });
         utils.log(`${packageName}: Updated CHANGELOG.json`);
         // Generate updated CHANGELOG.md
         const changelogMd = generateChangelogMd(changelogs);
         const changelogMdPath = path.join(lernaPackage.location, 'CHANGELOG.md');
         fs.writeFileSync(changelogMdPath, changelogMd);
         utils.log(`${packageName}: Updated CHANGELOG.md`);
-    });
+    }
 
     if (!IS_DRY_RUN) {
         await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });

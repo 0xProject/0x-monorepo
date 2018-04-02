@@ -10,6 +10,7 @@ import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as path from 'path';
+import { exec as execAsync } from 'promisify-child-process';
 
 import { constants } from './constants';
 import { Changelog, Changes, UpdatedPackage } from './types';
@@ -20,7 +21,7 @@ const HEADER_PRAGMA = '##';
 (async () => {
     const allLernaPackages = lernaGetPackages(constants.monorepoRootPath);
     const publicLernaPackages = _.filter(allLernaPackages, pkg => !pkg.package.private);
-    _.each(publicLernaPackages, lernaPackage => {
+    for (const lernaPackage of publicLernaPackages) {
         const changelogMdIfExists = getChangelogMdIfExists(lernaPackage.package.name, lernaPackage.location);
         if (_.isUndefined(changelogMdIfExists)) {
             throw new Error(`${lernaPackage.package.name} should have CHANGELOG.md b/c it's public. Add one.`);
@@ -76,9 +77,13 @@ const HEADER_PRAGMA = '##';
                 changelog.changes.push(changes);
             }
         }
-        const changelogJson = JSON.stringify(changelogs, null, '\t');
-        fs.writeFileSync(`${lernaPackage.location}/CHANGELOG.json`, changelogJson);
-    });
+        const changelogJson = JSON.stringify(changelogs);
+        const changelogJsonPath = `${lernaPackage.location}/CHANGELOG.json`;
+        fs.writeFileSync(changelogJsonPath, changelogJson);
+        await execAsync(`prettier --write ${changelogJsonPath} --config .prettierrc`, {
+            cwd: constants.monorepoRootPath,
+        });
+    }
 })().catch(err => {
     utils.log(err.stdout);
     process.exit(1);

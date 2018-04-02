@@ -19,7 +19,7 @@
         "lerna:publish": "run-s lerna:install lerna:rebuild script:publish",
         "lerna:publish:dry": "run-s lerna:install lerna:rebuild script:publish:dry",
         "script:publish": "node ./packages/monorepo-scripts/lib/publish.js",
-        "script:publish:dry": "IS_DRY_RUN=false yarn script:publish"
+        "script:publish:dry": "IS_DRY_RUN=true yarn script:publish"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"

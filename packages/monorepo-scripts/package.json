@@ -9,10 +9,10 @@
         "lint": "tslint --project . 'src/**/*.ts'",
         "clean": "shx rm -rf lib",
         "build": "tsc",
-        "publish": "run-s build script:publish",
+        "test:publish": "run-s build script:publish",
         "convert_changelogs": "run-s build script:convert_changelogs",
         "script:deps_versions": "node ./lib/deps_versions.js",
-        "script:publish": "node ./lib/publish.js",
+        "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
         "script:convert_changelogs": "node ./lib/convert_changelogs.js"
     },
     "repository": {
