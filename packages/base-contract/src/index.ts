@@ -1,40 +1,31 @@
 import { ContractAbi, DataItem, TxData, TxDataPayable } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethersContracts from 'ethers-contracts';
 import * as _ from 'lodash';
+
+import { formatABIDataItem } from './utils';
 
 export class BaseContract {
     protected _ethersInterface: ethersContracts.Interface;
     protected _web3Wrapper: Web3Wrapper;
     public abi: ContractAbi;
     public address: string;
-    protected static _transformABIData(
+    protected static _formatABIDataItemList(
         abis: DataItem[],
         values: any[],
-        transformation: (type: string, value: any) => any,
+        formatter: (type: string, value: any) => any,
     ): any {
-        return _.map(values, (value: any, i: number) =>
-            BaseContract._transformTypedData(abis[i].type, value, transformation),
-        );
+        return _.map(values, (value: any, i: number) => formatABIDataItem(abis[i], value, formatter));
     }
     protected static _lowercaseAddress(type: string, value: string): string {
         return type === 'address' ? value.toLowerCase() : value;
     }
-    protected static _bigNumberToString(type: string, value: string): string {
-        return _.isObject(value) && (value as any).isBigNumber ? value.toString() : value;
+    protected static _bigNumberToString(type: string, value: any): any {
+        return _.isObject(value) && value.isBigNumber ? value.toString() : value;
     }
-    private static _transformTypedData(
-        type: string,
-        values: any,
-        transformation: (type: string, value: any) => any,
-    ): any {
-        const trailingArrayRegex = /\[\d*\]$/;
-        if (type.match(trailingArrayRegex)) {
-            const arrayItemType = type.replace(trailingArrayRegex, '');
-            return _.map(values, value => this._transformTypedData(arrayItemType, value, transformation));
-        } else {
-            return transformation(type, values);
-        }
+    protected static _bnToBigNumber(type: string, value: any): any {
+        return _.isObject(value) && value._bn ? new BigNumber(value.toString()) : value;
     }
     protected async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
         txData: T,

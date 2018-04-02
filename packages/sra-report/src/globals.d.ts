@@ -1,5 +1,3 @@
-declare module 'dirty-chai';
-
 declare module 'newman' {
     export interface NewmanRunSummary {
         run: NewmanRun;

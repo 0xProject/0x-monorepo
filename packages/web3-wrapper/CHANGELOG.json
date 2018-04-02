@@ -1,5 +1,23 @@
 [
     {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Add `web3Wrapper.awaitTransactionMinedAsync`",
+                "pr": 485
+            },
+            {
+                "note":
+                    "Add a public field `abiDecoder: AbiDecoder` which allows you to add your ABIs that are later used to decode logs",
+                "pr": 485
+            },
+            {
+                "note": "Export enum `Web3WrapperErrors` with a single value so far: `TransactionMiningTimeout`",
+                "pr": 485
+            }
+        ]
+    },
+    {
         "version": "0.4.0",
         "changes": [
             {

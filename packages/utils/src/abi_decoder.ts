@@ -27,7 +27,7 @@ export class AbiDecoder {
         return `0x${formatted}`;
     }
     constructor(abiArrays: AbiDefinition[][]) {
-        _.forEach(abiArrays, this._addABI.bind(this));
+        _.forEach(abiArrays, this.addABI.bind(this));
     }
     // This method can only decode logs from the 0x & ERC20 smart contracts
     public tryToDecodeLogOrNoop<ArgsType>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
@@ -73,7 +73,7 @@ export class AbiDecoder {
             };
         }
     }
-    private _addABI(abiArray: AbiDefinition[]): void {
+    public addABI(abiArray: AbiDefinition[]): void {
         if (_.isUndefined(abiArray)) {
             return;
         }

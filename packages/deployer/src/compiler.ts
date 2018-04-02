@@ -45,7 +45,6 @@ export class Compiler {
     private _artifactsDir: string;
     // This get's set in the beggining of `compileAsync` function. It's not called from a constructor, but it's the only public method of that class and could as well be.
     private _contractSources!: ContractSources;
-    private _solcErrors: Set<string> = new Set();
     private _specifiedContracts: Set<string> = new Set();
     private _contractSourceData: ContractSourceData = {};
     /**
@@ -114,9 +113,6 @@ export class Compiler {
         for (const fileName of fileNames) {
             await this._compileContractAsync(fileName);
         }
-        this._solcErrors.forEach(errMsg => {
-            logUtils.log(errMsg);
-        });
     }
     /**
      * Compiles contract and saves artifact to artifactsDir.
@@ -179,10 +175,23 @@ export class Compiler {
         );
 
         if (!_.isUndefined(compiled.errors)) {
-            _.forEach(compiled.errors, errMsg => {
-                const normalizedErrMsg = getNormalizedErrMsg(errMsg);
-                this._solcErrors.add(normalizedErrMsg);
-            });
+            const SOLIDITY_WARNING_PREFIX = 'Warning';
+            const isError = (errorOrWarning: string) => !errorOrWarning.includes(SOLIDITY_WARNING_PREFIX);
+            const isWarning = (errorOrWarning: string) => errorOrWarning.includes(SOLIDITY_WARNING_PREFIX);
+            const errors = _.filter(compiled.errors, isError);
+            const warnings = _.filter(compiled.errors, isWarning);
+            if (!_.isEmpty(errors)) {
+                errors.forEach(errMsg => {
+                    const normalizedErrMsg = getNormalizedErrMsg(errMsg);
+                    logUtils.log(normalizedErrMsg);
+                });
+                process.exit(1);
+            } else {
+                warnings.forEach(errMsg => {
+                    const normalizedErrMsg = getNormalizedErrMsg(errMsg);
+                    logUtils.log(normalizedErrMsg);
+                });
+            }
         }
         const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
         const contractIdentifier = `${fileName}:${contractName}`;

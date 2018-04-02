@@ -6,12 +6,61 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
+"@0xproject/base-contract@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@0xproject/base-contract/-/base-contract-0.0.5.tgz#40260ddfd03add0101dc60aacd12c3bbf4462477"
+  dependencies:
+    "@0xproject/types" "^0.4.1"
+    "@0xproject/web3-wrapper" "^0.3.1"
+    ethers-contracts "^2.2.1"
+    ethers-typescript-typings "^0.0.4"
+    lodash "^4.17.4"
+    web3 "^0.20.0"
+    web3-typescript-typings "^0.10.2"
+
+"@0xproject/sol-cov@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@0xproject/sol-cov/-/sol-cov-0.0.4.tgz#4f54e8b3c18af7a9425c33df75da376fb5dff4c1"
+  dependencies:
+    "@0xproject/subproviders" "^0.8.2"
+    "@0xproject/utils" "^0.3.4"
+    ethereumjs-util "^5.1.1"
+    glob "^7.1.2"
+    istanbul "^0.4.5"
+    lodash "^4.17.4"
+    semaphore-async-await "^1.5.1"
+    solidity-coverage "^0.4.10"
+    solidity-parser-antlr "^0.2.7"
+    solidity-parser-sc "^0.4.4"
+    web3 "^0.20.0"
+
 "@0xproject/tslint-config@0.4.8":
   version "0.4.8"
   resolved "https://registry.yarnpkg.com/@0xproject/tslint-config/-/tslint-config-0.4.8.tgz#5a3dfb1fc94e17752184137b452c5b0b3287d822"
   dependencies:
     lodash "^4.17.4"
     tslint-react "^3.2.0"
+
+"@0xproject/utils@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.3.4.tgz#263ac7a5ef0b4c65ce893d3e6d1e9b1c2cf75b0b"
+  dependencies:
+    bignumber.js "~4.1.0"
+    js-sha3 "^0.7.0"
+    lodash "^4.17.4"
+    web3 "^0.20.0"
+
+"@0xproject/web3-wrapper@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@0xproject/web3-wrapper/-/web3-wrapper-0.3.1.tgz#19a4cb659ed63ce2123dd71abc6457b81ebe9ad6"
+  dependencies:
+    "@0xproject/types" "^0.4.1"
+    "@0xproject/utils" "^0.4.3"
+    ethers-contracts "^2.2.1"
+    ethers-typescript-typings "^0.0.4"
+    lodash "^4.17.4"
+    web3 "^0.20.0"
+    web3-typescript-typings "^0.10.2"
 
 "@ledgerhq/hw-app-eth@^4.3.0":
   version "4.7.3"
@@ -1781,7 +1830,7 @@ bn.js@4.11.7:
   version "4.11.7"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.7.tgz#ddb048e50d9482790094c13eb3fcfc833ce7ab46"
 
-bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.10.0, bn.js@^4.11.0, bn.js@^4.11.3, bn.js@^4.11.6, bn.js@^4.11.7, bn.js@^4.11.8, bn.js@^4.4.0, bn.js@^4.8.0:
+bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.10.0, bn.js@^4.11.0, bn.js@^4.11.3, bn.js@^4.11.6, bn.js@^4.11.8, bn.js@^4.4.0, bn.js@^4.8.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
 
@@ -2018,7 +2067,7 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-buffer@^5.0.5, buffer@^5.0.6:
+buffer@^5.0.5:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.1.0.tgz#c913e43678c7cb7c8bd16afbcddb6c5505e8f9fe"
   dependencies:
@@ -4084,6 +4133,10 @@ ethers-contracts@^2.2.1:
   resolved "https://registry.yarnpkg.com/ethers-contracts/-/ethers-contracts-2.2.1.tgz#e2bf5dd5e157313ba454b50c646c8472fcd0a8b3"
   dependencies:
     ethers-utils "^2.1.0"
+
+ethers-typescript-typings@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/ethers-typescript-typings/-/ethers-typescript-typings-0.0.4.tgz#60b6f9d838504e13755d2d5bbd2e920051cdd401"
 
 ethers-utils@^2.1.0:
   version "2.1.11"
@@ -10563,7 +10616,7 @@ solidity-coverage@^0.4.10:
     solidity-parser-sc "0.4.6"
     web3 "^0.18.4"
 
-solidity-parser-antlr@^0.2.7:
+solidity-parser-antlr@^0.2.7, solidity-parser-antlr@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/solidity-parser-antlr/-/solidity-parser-antlr-0.2.8.tgz#8eb8547a88dfeaf6cf4c7811e3824084214244d4"
 
@@ -11685,21 +11738,6 @@ types-bn@^0.0.1:
   resolved "https://registry.yarnpkg.com/types-bn/-/types-bn-0.0.1.tgz#4253c7c7251b14e1d77cdca6f58800e5e2b82c4b"
   dependencies:
     bn.js "4.11.7"
-
-"types-bn@https://github.com/machinomy/types-bn.git":
-  version "0.0.1"
-  resolved "https://github.com/machinomy/types-bn.git#08ede69e138640d332b0dae0dc2e2fffee5f7160"
-  dependencies:
-    bn.js "4.11.7"
-
-types-ethereumjs-util@0xProject/types-ethereumjs-util:
-  version "0.0.7"
-  resolved "https://codeload.github.com/0xProject/types-ethereumjs-util/tar.gz/72722fc605bfa7f87ec4a959956b387320479ffc"
-  dependencies:
-    bn.js "^4.11.7"
-    buffer "^5.0.6"
-    rlp "^2.0.0"
-    types-bn "https://github.com/machinomy/types-bn.git"
 
 typescript@2.4.1:
   version "2.4.1"

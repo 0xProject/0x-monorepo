@@ -70,8 +70,6 @@
         "shx": "^0.2.2",
         "tslint": "5.8.0",
         "typedoc": "0xProject/typedoc",
-        "types-bn": "^0.0.1",
-        "types-ethereumjs-util": "0xProject/types-ethereumjs-util",
         "typescript": "2.7.1",
         "webpack": "^3.1.0"
     },

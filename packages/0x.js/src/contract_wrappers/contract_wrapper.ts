@@ -32,7 +32,6 @@ const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
 export class ContractWrapper {
     protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
-    private _abiDecoder?: AbiDecoder;
     private _blockAndLogStreamerIfExists?: BlockAndLogStreamer;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private _filters: { [filterToken: string]: FilterObject };
@@ -41,10 +40,9 @@ export class ContractWrapper {
     };
     private _onLogAddedSubscriptionToken: string | undefined;
     private _onLogRemovedSubscriptionToken: string | undefined;
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, abiDecoder?: AbiDecoder) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number) {
         this._web3Wrapper = web3Wrapper;
         this._networkId = networkId;
-        this._abiDecoder = abiDecoder;
         this._filters = {};
         this._filterCallbacks = {};
         this._blockAndLogStreamerIfExists = undefined;
@@ -102,10 +100,10 @@ export class ContractWrapper {
     protected _tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
         log: LogEntry,
     ): LogWithDecodedArgs<ArgsType> | RawLog {
-        if (_.isUndefined(this._abiDecoder)) {
+        if (_.isUndefined(this._web3Wrapper.abiDecoder)) {
             throw new Error(InternalZeroExError.NoAbiDecoder);
         }
-        const logWithDecodedArgs = this._abiDecoder.tryToDecodeLogOrNoop(log);
+        const logWithDecodedArgs = this._web3Wrapper.abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
     protected async _getContractAbiAndAddressFromArtifactsAsync(

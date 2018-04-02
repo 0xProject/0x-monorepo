@@ -87,12 +87,11 @@ export class ExchangeWrapper extends ContractWrapper {
     constructor(
         web3Wrapper: Web3Wrapper,
         networkId: number,
-        abiDecoder: AbiDecoder,
         tokenWrapper: TokenWrapper,
         contractAddressIfExists?: string,
         zrxContractAddressIfExists?: string,
     ) {
-        super(web3Wrapper, networkId, abiDecoder);
+        super(web3Wrapper, networkId);
         this._tokenWrapper = tokenWrapper;
         this._orderValidationUtils = new OrderValidationUtils(this);
         this._contractAddressIfExists = contractAddressIfExists;

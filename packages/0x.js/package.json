@@ -91,7 +91,6 @@
         "truffle-hdwallet-provider": "^0.0.3",
         "tslint": "5.8.0",
         "typedoc": "0xProject/typedoc",
-        "types-bn": "^0.0.1",
         "typescript": "2.7.1",
         "web3-provider-engine": "^13.0.1",
         "webpack": "^3.1.0"

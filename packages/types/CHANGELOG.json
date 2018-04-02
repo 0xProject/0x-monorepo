@@ -1,5 +1,9 @@
 [
     {
+        "version": "0.5.0",
+        "changes": [{ "note": "Make `DataItem.components` optional", "pr": 485 }]
+    },
+    {
         "timestamp": 1522658513,
         "version": "0.4.2",
         "changes": [

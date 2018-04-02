@@ -1,4 +1,3 @@
-declare module 'dirty-chai';
 declare module 'es6-promisify';
 
 // tslint:disable:max-classes-per-file
@@ -7,19 +6,6 @@ declare module 'es6-promisify';
 // tslint:disable:completed-docs
 
 // Ethereumjs-tx declarations
-declare module 'ethereumjs-tx' {
-    class EthereumTx {
-        public raw: Buffer[];
-        public r: Buffer;
-        public s: Buffer;
-        public v: Buffer;
-        public nonce: Buffer;
-        public serialize(): Buffer;
-        public getSenderAddress(): Buffer;
-        constructor(txParams: any);
-    }
-    export = EthereumTx;
-}
 
 // Ledgerco declarations
 interface ECSignatureString {
@@ -83,17 +69,6 @@ declare module 'web3-provider-engine/subproviders/rpc' {
         ): void;
     }
     export = RpcSubprovider;
-}
-declare module 'web3-provider-engine' {
-    class Web3ProviderEngine {
-        public on(event: string, handler: () => void): void;
-        public send(payload: any): void;
-        public sendAsync(payload: any, callback: (error: any, response: any) => void): void;
-        public addProvider(provider: any): void;
-        public start(): void;
-        public stop(): void;
-    }
-    export = Web3ProviderEngine;
 }
 declare module 'web3-provider-engine/util/rpc-cache-utils' {
     class ProviderEngineRpcUtils {

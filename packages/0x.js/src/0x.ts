@@ -58,7 +58,6 @@ export class ZeroEx {
      */
     public proxy: TokenTransferProxyWrapper;
     private _web3Wrapper: Web3Wrapper;
-    private _abiDecoder: AbiDecoder;
     /**
      * Verifies that the elliptic curve signature `signature` was generated
      * by signing `data` with the private key corresponding to the `signerAddress` address.
@@ -167,21 +166,22 @@ export class ZeroEx {
         ]);
         const artifactJSONs = _.values(artifacts);
         const abiArrays = _.map(artifactJSONs, artifact => artifact.abi);
-        this._abiDecoder = new AbiDecoder(abiArrays);
         const defaults = {
             gasPrice: config.gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
+        _.forEach(abiArrays, abi => {
+            this._web3Wrapper.abiDecoder.addABI(abi);
+        });
         this.proxy = new TokenTransferProxyWrapper(
             this._web3Wrapper,
             config.networkId,
             config.tokenTransferProxyContractAddress,
         );
-        this.token = new TokenWrapper(this._web3Wrapper, config.networkId, this._abiDecoder, this.proxy);
+        this.token = new TokenWrapper(this._web3Wrapper, config.networkId, this.proxy);
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             config.networkId,
-            this._abiDecoder,
             this.token,
             config.exchangeContractAddress,
             config.zrxContractAddress,
@@ -191,7 +191,7 @@ export class ZeroEx {
             config.networkId,
             config.tokenRegistryContractAddress,
         );
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this._abiDecoder, this.token);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this.token);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -285,44 +285,12 @@ export class ZeroEx {
         pollingIntervalMs = 1000,
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        let timeoutExceeded = false;
-        if (timeoutMs) {
-            setTimeout(() => (timeoutExceeded = true), timeoutMs);
-        }
-
-        const txReceiptPromise = new Promise(
-            (resolve: (receipt: TransactionReceiptWithDecodedLogs) => void, reject) => {
-                const intervalId = intervalUtils.setAsyncExcludingInterval(
-                    async () => {
-                        if (timeoutExceeded) {
-                            intervalUtils.clearAsyncExcludingInterval(intervalId);
-                            return reject(ZeroExError.TransactionMiningTimeout);
-                        }
-
-                        const transactionReceipt = await this._web3Wrapper.getTransactionReceiptAsync(txHash);
-                        if (!_.isNull(transactionReceipt)) {
-                            intervalUtils.clearAsyncExcludingInterval(intervalId);
-                            const logsWithDecodedArgs = _.map(
-                                transactionReceipt.logs,
-                                this._abiDecoder.tryToDecodeLogOrNoop.bind(this._abiDecoder),
-                            );
-                            const transactionReceiptWithDecodedLogArgs: TransactionReceiptWithDecodedLogs = {
-                                ...transactionReceipt,
-                                logs: logsWithDecodedArgs,
-                            };
-                            resolve(transactionReceiptWithDecodedLogArgs);
-                        }
-                    },
-                    pollingIntervalMs,
-                    (err: Error) => {
-                        intervalUtils.clearAsyncExcludingInterval(intervalId);
-                        reject(err);
-                    },
-                );
-            },
+        const transactionReceiptWithDecodedLogs = await this._web3Wrapper.awaitTransactionMinedAsync(
+            txHash,
+            pollingIntervalMs,
+            timeoutMs,
         );
-        const txReceipt = await txReceiptPromise;
-        return txReceipt;
+        return transactionReceiptWithDecodedLogs;
     }
     /**
      * Instantiates and returns a new OrderStateWatcher instance.
@@ -331,7 +299,7 @@ export class ZeroEx {
      * @return  An instance of the 0x.js OrderStateWatcher class.
      */
     public createOrderStateWatcher(config?: OrderStateWatcherConfig) {
-        return new OrderStateWatcher(this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config);
+        return new OrderStateWatcher(this._web3Wrapper, this.token, this.exchange, config);
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from
