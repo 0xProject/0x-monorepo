@@ -1,7 +1,13 @@
 [
     {
         "version": "0.5.0",
-        "changes": [{ "note": "Make `AbiDecoder.addABI` public", "pr": 485 }]
+        "changes": [
+            {
+                "note": "Make `AbiDecoder.addABI` public",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
     },
     {
         "timestamp": 1522658513,

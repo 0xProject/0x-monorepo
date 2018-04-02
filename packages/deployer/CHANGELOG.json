@@ -6,7 +6,8 @@
                 "note": "Don't try to write contract artifact if an error occured",
                 "pr": 485
             }
-        ]
+        ],
+        "timestamp": 1522673609
     },
     {
         "version": "0.3.4",

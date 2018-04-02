@@ -14,7 +14,8 @@
                 "note": "Fix ABI arrays traversing",
                 "pr": 485
             }
-        ]
+        ],
+        "timestamp": 1522673609
     },
     {
         "timestamp": 1522658513,
