@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/deployer",
-    "version": "0.3.4",
+    "version": "0.3.5",
     "description": "Smart contract deployer of 0x protocol",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -47,8 +47,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/deployer/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.15",
-        "@0xproject/tslint-config": "^0.4.13",
+        "@0xproject/monorepo-scripts": "^0.1.16",
+        "@0xproject/tslint-config": "^0.4.14",
         "@types/require-from-string": "^1.2.0",
         "@types/semver": "^5.5.0",
         "@types/yargs": "^11.0.0",
@@ -66,11 +66,11 @@
         "web3-typescript-typings": "^0.10.2"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.7.18",
-        "@0xproject/types": "^0.4.2",
-        "@0xproject/typescript-typings": "^0.0.2",
-        "@0xproject/utils": "^0.4.4",
-        "@0xproject/web3-wrapper": "^0.4.0",
+        "@0xproject/json-schemas": "^0.7.19",
+        "@0xproject/types": "^0.5.0",
+        "@0xproject/typescript-typings": "^0.0.3",
+        "@0xproject/utils": "^0.5.0",
+        "@0xproject/web3-wrapper": "^0.5.0",
         "ethereumjs-util": "^5.1.1",
         "isomorphic-fetch": "^2.2.1",
         "lodash": "^4.17.4",

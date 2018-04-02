@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "contracts",
-    "version": "2.1.20",
+    "version": "2.1.21",
     "description": "Smart contract components of 0x protocol",
     "main": "index.js",
     "directories": {
@@ -41,8 +41,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts/README.md",
     "devDependencies": {
-        "@0xproject/dev-utils": "^0.3.3",
-        "@0xproject/tslint-config": "^0.4.13",
+        "@0xproject/dev-utils": "^0.3.4",
+        "@0xproject/tslint-config": "^0.4.14",
         "@types/bluebird": "^3.5.3",
         "@types/lodash": "4.14.104",
         "@types/node": "^8.0.53",
@@ -63,13 +63,13 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "0x.js": "^0.34.0",
-        "@0xproject/deployer": "^0.3.4",
-        "@0xproject/json-schemas": "^0.7.18",
-        "@0xproject/types": "^0.4.2",
-        "@0xproject/typescript-typings": "^0.0.2",
-        "@0xproject/utils": "^0.4.4",
-        "@0xproject/web3-wrapper": "^0.4.0",
+        "0x.js": "^0.35.0",
+        "@0xproject/deployer": "^0.3.5",
+        "@0xproject/json-schemas": "^0.7.19",
+        "@0xproject/types": "^0.5.0",
+        "@0xproject/typescript-typings": "^0.0.3",
+        "@0xproject/utils": "^0.5.0",
+        "@0xproject/web3-wrapper": "^0.5.0",
         "bluebird": "^3.5.0",
         "bn.js": "^4.11.8",
         "ethereumjs-abi": "^0.6.4",
