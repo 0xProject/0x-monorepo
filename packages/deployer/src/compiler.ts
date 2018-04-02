@@ -179,7 +179,8 @@ export class Compiler {
         );
 
         if (!_.isUndefined(compiled.errors)) {
-            const isError = (errorOrWarning: string) => !errorOrWarning.includes('Warning');
+            const SOLIDITY_WARNING_PREFIX = 'Warning';
+            const isError = (errorOrWarning: string) => !errorOrWarning.includes(SOLIDITY_WARNING_PREFIX);
             const errors = _.filter(compiled.errors, isError);
             _.forEach(compiled.errors, errMsg => {
                 const normalizedErrMsg = getNormalizedErrMsg(errMsg);
