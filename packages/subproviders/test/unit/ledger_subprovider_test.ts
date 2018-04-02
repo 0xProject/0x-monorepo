@@ -1,3 +1,4 @@
+import { JSONRPCResponsePayload } from '@0xproject/types';
 import * as chai from 'chai';
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -112,7 +113,7 @@ describe('LedgerSubprovider', () => {
                     params: [],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result.length).to.be.equal(10);
                     expect(response.result[0]).to.be.equal(FAKE_ADDRESS);
@@ -128,7 +129,7 @@ describe('LedgerSubprovider', () => {
                     params: ['0x0000000000000000000000000000000000000000', messageHex],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result).to.be.equal(
                         '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
@@ -145,7 +146,7 @@ describe('LedgerSubprovider', () => {
                     params: [messageHex, '0x0000000000000000000000000000000000000000'],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result).to.be.equal(
                         '0xa6cc284bff14b42bdf5e9286730c152be91719d478605ec46b3bebcd0ae491480652a1a7b742ceb0213d1e744316e285f41f878d8af0b8e632cbca4c279132d001',
@@ -168,7 +169,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result.raw.length).to.be.equal(192);
                     expect(response.result.raw.substr(0, 2)).to.be.equal('0x');
@@ -186,7 +187,7 @@ describe('LedgerSubprovider', () => {
                     params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -201,7 +202,7 @@ describe('LedgerSubprovider', () => {
                     params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -219,7 +220,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();
@@ -238,7 +239,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();

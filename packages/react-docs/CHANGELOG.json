@@ -1,0 +1,53 @@
+[
+    {
+        "version": "0.0.5",
+        "changes": [
+            {
+                "note":
+                    "Handle `reflection` type rendering so that anonymous function type declarations render properly",
+                "pr": 465
+            },
+            {
+                "note":
+                    "Rename `MethodSignature` to `Signature` and change it's props so that it can be used to render method and function signatures.",
+                "pr": 465
+            },
+            {
+                "note":
+                    "Rename `MethodBlock` to `SignatureBlock` since it is not used to render method and function signature blocks.",
+                "pr": 465
+            },
+            {
+                "note": "Add support for documenting exported functions.",
+                "pr": 465
+            }
+        ],
+        "timestamp": 1522658513,
+        "isPublished": true
+    },
+    {
+        "version": "0.0.3",
+        "changes": [
+            {
+                "note":
+                    "Move TS typings from devDependencies to dependencies since they are needed by the package user."
+            }
+        ],
+        "timestamp": 1521298800,
+        "isPublished": true
+    },
+    {
+        "version": "0.0.2",
+        "changes": [
+            {
+                "note": "Move example out into a separate sub-package"
+            },
+            {
+                "note": "Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package",
+                "pr": 452
+            }
+        ],
+        "timestamp": 1521298800,
+        "isPublished": true
+    }
+]

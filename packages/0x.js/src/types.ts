@@ -3,7 +3,10 @@ import { BigNumber } from '@0xproject/utils';
 import {
     BlockParam,
     BlockParamLiteral,
+    ContractAbi,
     ContractEventArg,
+    FilterObject,
+    LogEntryEvent,
     LogWithDecodedArgs,
     Order,
     SignedOrder,
@@ -48,7 +51,7 @@ export type OrderAddresses = [string, string, string, string, string];
 
 export type OrderValues = [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
-export type LogEvent = Web3.LogEntryEvent;
+export type LogEvent = LogEntryEvent;
 export interface DecodedLogEvent<ArgsType> {
     isRemoved: boolean;
     log: LogWithDecodedArgs<ArgsType>;
@@ -162,16 +165,18 @@ export type Web3Provider = Web3.Provider;
 
 /*
  * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
- * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Defaults: 200
+ * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Default: 200
  * expirationMarginMs: Amount of time before order expiry that you'd like to be notified
- * of an orders expiration. Defaults: 0
+ * of an orders expiration. Default: 0
  * cleanupJobIntervalMs: How often to run a cleanup job which revalidates all the orders. Defaults: 1h
+ * stateLayer: Optional blockchain state layer OrderWatcher will monitor for new events. Default: latest
  */
 export interface OrderStateWatcherConfig {
     orderExpirationCheckingIntervalMs?: number;
     eventPollingIntervalMs?: number;
     expirationMarginMs?: number;
     cleanupJobIntervalMs?: number;
+    stateLayer: BlockParamLiteral;
 }
 
 /*
@@ -197,7 +202,7 @@ export type ArtifactContractName = 'ZRX' | 'TokenTransferProxy' | 'TokenRegistry
 
 export interface Artifact {
     contract_name: ArtifactContractName;
-    abi: Web3.ContractAbi;
+    abi: ContractAbi;
     networks: {
         [networkId: number]: {
             address: string;
@@ -222,7 +227,7 @@ export interface ValidateOrderFillableOpts {
  * flag when  running Parity).
  */
 export interface MethodOpts {
-    defaultBlock?: Web3.BlockParam;
+    defaultBlock?: BlockParam;
 }
 
 /*
@@ -241,8 +246,6 @@ export interface TransactionOpts {
 export interface OrderTransactionOpts extends TransactionOpts {
     shouldValidate?: boolean;
 }
-
-export type FilterObject = Web3.FilterObject;
 
 export enum TradeSide {
     Maker = 'maker',

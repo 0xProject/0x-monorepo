@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/web3-wrapper",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "description": "Wraps around web3 and gives a nicer interface",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -8,7 +8,22 @@
         "build:watch": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
-        "lint": "tslint --project . 'src/**/*.ts'"
+        "lint": "tslint --project . 'src/**/*.ts'",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
+        "docs:stage": "yarn build && node ./scripts/stage_docs.js",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+    },
+    "config": {
+        "postpublish": {
+            "docPublishConfigs": {
+                "extraFileIncludes": [
+                    "../types/src/index.ts"
+                ],
+                "s3BucketPath": "s3://doc-jsons/web3-wrapper/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/web3-wrapper/"
+            }
+        }
     },
     "license": "Apache-2.0",
     "repository": {
@@ -20,23 +35,23 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/web3-wrapper/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.14",
-        "@0xproject/tslint-config": "^0.4.12",
-        "@types/lodash": "^4.14.86",
+        "@0xproject/monorepo-scripts": "^0.1.15",
+        "@0xproject/tslint-config": "^0.4.13",
+        "@types/lodash": "4.14.104",
         "copyfiles": "^1.2.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.8.0",
+        "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/types": "^0.4.1",
-        "@0xproject/utils": "^0.4.3",
+        "@0xproject/types": "^0.4.2",
+        "@0xproject/typescript-typings": "^0.0.2",
+        "@0xproject/utils": "^0.4.4",
         "ethers-contracts": "^2.2.1",
-        "ethers-typescript-typings": "^0.0.4",
         "lodash": "^4.17.4",
-        "web3": "^0.20.0",
-        "web3-typescript-typings": "^0.10.2"
+        "web3": "^0.20.0"
     },
     "publishConfig": {
         "access": "public"

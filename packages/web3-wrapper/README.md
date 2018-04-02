@@ -1,6 +1,8 @@
 ## @0xproject/web3-wrapper
 
-Wrapped version of web3 with a nicer interface that is used across 0x projects and packages
+Wrapped version of web3 with a nicer interface that is used across 0x projects and packages.
+
+### Read the [Documentation](0xproject.com/docs/web3_wrapper).
 
 ## Installation
 
@@ -10,20 +12,10 @@ yarn add @0xproject/web3-wrapper
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
-```
-"include": [
-    "./node_modules/web3-typescript-typings/index.d.ts",
-]
-```
-
-## Usage
-
-```typescript
-import {Web3Wrapper} from '@0xproject/web3-wrapper';
-
-const web3 = ...;
-const web3Wrapper = new Web3Wrapper(web3.currentProvider);
-const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
 ```
 
 ## Contributing

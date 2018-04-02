@@ -1,13 +1,14 @@
 {
     "name": "@0xproject/tslint-config",
-    "version": "0.4.12",
+    "version": "0.4.13",
     "description": "Lint rules related to 0xProject for TSLint",
     "main": "tslint.json",
     "scripts": {
         "build:watch": "tsc -w",
         "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts",
-        "lint": "tslint --project . 'rules/**/*.ts'"
+        "lint": "tslint --project . 'rules/**/*.ts'",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "repository": {
         "type": "git",
@@ -30,8 +31,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/tslint-config/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.14",
-        "@types/lodash": "^4.14.86",
+        "@0xproject/monorepo-scripts": "^0.1.15",
+        "@types/lodash": "4.14.104",
         "copyfiles": "^1.2.0",
         "shx": "^0.2.2",
         "typescript": "2.7.1"

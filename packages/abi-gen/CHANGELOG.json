@@ -1,0 +1,90 @@
+[
+    {
+        "timestamp": 1522658513,
+        "version": "0.2.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "isPublished": true
+    },
+    {
+        "version": "0.2.5",
+        "changes": [
+            {
+                "note": "Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package",
+                "pr": 452
+            }
+        ],
+        "timestamp": 1521298800,
+        "isPublished": true
+    },
+    {
+        "version": "0.2.4",
+        "changes": [
+            {
+                "note":
+                    "Add a `backend` parameter that allows you to specify the Ethereum library you use in your templates (`web3` or `ethers`). Ethers auto-converts small ints to numbers whereas Web3 doesn't. Defaults to `web3`",
+                "pr": 413
+            },
+            {
+                "note":
+                    "Add support for [tuple types](https://solidity.readthedocs.io/en/develop/abi-spec.html#handling-tuple-types)",
+                "pr": 413
+            },
+            {
+                "note": "Add `hasReturnValue` to context data",
+                "pr": 413
+            }
+        ],
+        "timestamp": 1520089200,
+        "isPublished": true
+    },
+    {
+        "version": "0.2.1",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000,
+        "isPublished": true
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Added CLI options for explicit specifying location of partials and main template",
+                "pr": 346
+            },
+            {
+                "note":
+                    "Added CLI option to specify networkId, adding support for the JSON artifact format found in @0xproject/contracts",
+                "pr": 388
+            }
+        ],
+        "timestamp": 1517929200,
+        "isPublished": true
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Fixed array typings with union types",
+                "pr": 295
+            },
+            {
+                "note": "Add event ABIs to context data passed to templates",
+                "pr": 302
+            },
+            {
+                "note": "Add constructor ABIs to context data passed to templates",
+                "pr": 304
+            }
+        ],
+        "timestamp": 1515596400,
+        "isPublished": true
+    }
+]

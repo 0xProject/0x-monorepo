@@ -151,13 +151,6 @@ export class Blockchain {
     }
     public async isAddressInTokenRegistryAsync(tokenAddress: string): Promise<boolean> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
-        // HACK: temporarily whitelist the new WETH token address `as if` they were
-        // already in the tokenRegistry.
-        // TODO: Remove this hack once we've updated the TokenRegistries
-        // Airtable task: https://airtable.com/tblFe0Q9JuKJPYbTn/viwsOG2Y97qdIeCIO/recv3VGmIorFzHBVz
-        if (configs.SHOULD_DEPRECATE_OLD_WETH_TOKEN && tokenAddress === configs.NEW_WRAPPED_ETHERS[this.networkId]) {
-            return true;
-        }
         const tokenIfExists = await this._zeroEx.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
         return !_.isUndefined(tokenIfExists);
     }
@@ -544,6 +537,22 @@ export class Blockchain {
             ? {}
             : trackedTokenStorage.getTrackedTokensByAddress(this._userAddressIfExists, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
+        const tokenRegistryTokenSymbols = _.map(tokenRegistryTokens, t => t.symbol);
+        const defaultTrackedTokensInRegistry = _.intersection(
+            tokenRegistryTokenSymbols,
+            configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
+        );
+        if (defaultTrackedTokensInRegistry.length !== configs.DEFAULT_TRACKED_TOKEN_SYMBOLS.length) {
+            this._dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
+            this._dispatcher.encounteredBlockchainError(BlockchainErrs.DefaultTokensNotInTokenRegistry);
+            const err = new Error(
+                `Default tracked tokens (${JSON.stringify(
+                    configs.DEFAULT_TRACKED_TOKEN_SYMBOLS,
+                )}) not found in tokenRegistry: ${JSON.stringify(tokenRegistryTokens)}`,
+            );
+            await errorReporter.reportAsync(err);
+            return;
+        }
         if (_.isEmpty(trackedTokensByAddress)) {
             _.each(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, symbol => {
                 const token = _.find(tokenRegistryTokens, t => t.symbol === symbol);
@@ -728,22 +737,9 @@ export class Blockchain {
             // HACK: For now we have a hard-coded list of iconUrls for the dummyTokens
             // TODO: Refactor this out and pull the iconUrl directly from the TokenRegistry
             const iconUrl = configs.ICON_URL_BY_SYMBOL[t.symbol];
-            // HACK: Temporarily we hijack the WETH addresses fetched from the tokenRegistry
-            // so that we can take our time with actually updating it. This ensures that when
-            // we deploy the new WETH page, everyone will re-fill their trackedTokens with the
-            // new canonical WETH.
-            // TODO: Remove this hack once we've updated the TokenRegistries
-            // Airtable task: https://airtable.com/tblFe0Q9JuKJPYbTn/viwsOG2Y97qdIeCIO/recv3VGmIorFzHBVz
-            let address = t.address;
-            if (configs.SHOULD_DEPRECATE_OLD_WETH_TOKEN && t.symbol === 'WETH') {
-                const newEtherTokenAddressIfExists = configs.NEW_WRAPPED_ETHERS[this.networkId];
-                if (!_.isUndefined(newEtherTokenAddressIfExists)) {
-                    address = newEtherTokenAddressIfExists;
-                }
-            }
             const token: Token = {
                 iconUrl,
-                address,
+                address: t.address,
                 name: t.name,
                 symbol: t.symbol,
                 decimals: t.decimals,

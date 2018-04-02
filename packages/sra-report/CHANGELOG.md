@@ -1,6 +1,11 @@
-# CHANGELOG
+<!--
+This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+Edit the package's CHANGELOG.json file only.
+-->
 
-## v0.0.3 - _TBD, 2018_
+CHANGELOG
+
+## v0.0.6 - _April 2, 2018_
 
     * Added postman collection unit tests (#451)
 

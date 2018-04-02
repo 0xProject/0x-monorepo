@@ -37,6 +37,7 @@ import {
     ScreenWidths,
     Token,
     TokenByAddress,
+    TokenStateByAddress,
     TokenVisibility,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
@@ -60,14 +61,6 @@ const styles: Styles = {
         backgroundColor: colors.grey50,
     },
 };
-
-interface TokenStateByAddress {
-    [address: string]: {
-        balance: BigNumber;
-        allowance: BigNumber;
-        isLoaded: boolean;
-    };
-}
 
 interface TokenBalancesProps {
     blockchain: Blockchain;

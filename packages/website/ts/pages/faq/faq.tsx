@@ -238,8 +238,8 @@ const sections: FAQSection[] = [
                 answer: <div>1,000,000,000 ZRX. Fixed supply.</div>,
             },
             {
-                prompt: 'When is the Token Launch? will there be a pre-sale?',
-                answer: <div>The token launch will be on August 15th, 2017. There will not be a pre-sale.</div>,
+                prompt: 'When was the token launch? Was there a pre-sale?',
+                answer: <div>The token launch was on August 15th, 2017. There was no pre-sale.</div>,
             },
             {
                 prompt: 'What will the token launch proceeds be used for?',

@@ -1,3 +1,4 @@
+import { JSONRPCResponsePayload } from '@0xproject/types';
 import Eth from '@ledgerhq/hw-app-eth';
 // HACK: This depdency is optional and tslint skips optional depdencies
 // tslint:disable-next-line:no-implicit-dependencies
@@ -97,7 +98,7 @@ describe('LedgerSubprovider', () => {
                 params: [],
                 id: 1,
             };
-            const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+            const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                 expect(err).to.be.a('null');
                 expect(response.result.length).to.be.equal(10);
                 done();
@@ -115,7 +116,7 @@ describe('LedgerSubprovider', () => {
                     params: [signer, messageHex],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result.length).to.be.equal(132);
                     expect(response.result.substr(0, 2)).to.be.equal('0x');
@@ -135,7 +136,7 @@ describe('LedgerSubprovider', () => {
                     params: [messageHex, signer],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result.length).to.be.equal(132);
                     expect(response.result.substr(0, 2)).to.be.equal('0x');
@@ -155,7 +156,7 @@ describe('LedgerSubprovider', () => {
                 params: [tx],
                 id: 1,
             };
-            const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+            const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                 expect(err).to.be.a('null');
                 expect(response.result.raw.length).to.be.equal(206);
                 expect(response.result.raw.substr(0, 2)).to.be.equal('0x');
@@ -193,7 +194,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: Web3.JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     const result = response.result;
                     expect(result.length).to.be.equal(66);

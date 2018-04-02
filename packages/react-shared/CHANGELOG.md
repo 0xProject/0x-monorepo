@@ -1,3 +1,12 @@
-# CHANGELOG
+<!--
+This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+Edit the package's CHANGELOG.json file only.
+-->
 
-## v0.0.1 - _March 8, 2018_
+CHANGELOG
+
+## v0.1.0 - _April 2, 2018_
+
+    * Added new colors (#468)
+    * Fix section and menuItem text display to replace dashes with spaces.
+    * Reorganized colors and added new ones

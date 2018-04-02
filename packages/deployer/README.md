@@ -2,66 +2,42 @@
 
 This repository contains a CLI tool that facilitates compiling and deployment of smart contracts.
 
+### Read the [Documentation](0xproject.com/docs/deployer).
+
 ## Installation
+
+#### CLI Installation
+
+```bash
+yarn global add @0xproject/deployer
+```
+
+#### API Installation
 
 ```bash
 yarn add @0xproject/deployer
 ```
 
-## Usage
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
-### CLI Usage
-
-```bash
-node ./node_modules/@0xproject/deployer/lib/cli.js --help
-cli.js [command]
-
-Commands:
-  cli.js compile  compile contracts
-  cli.js deploy   deploy a single contract with provided arguments
-
-Options:
-  --version          Show version number                               [boolean]
-  --contracts-dir    path of contracts directory to compile
-              [string] [default: "/Users/leonidlogvinov/Dev/0x/contracts"]
-  --network-id       mainnet=1, kovan=42, testrpc=50      [number] [default: 50]
-  --should-optimize  enable optimizer                 [boolean] [default: false]
-  --artifacts-dir    path to write contracts artifacts to
-       [string] [default: "/Users/leonidlogvinov/Dev/0x/build/artifacts/"]
-  --jsonrpc-port     port connected to JSON RPC         [number] [default: 8545]
-  --gas-price        gasPrice to be used for transactions
-                                                [string] [default: "2000000000"]
-  --account          account to use for deploying contracts             [string]
-  --help             Show help                                         [boolean]
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
 ```
 
-### API Usage
-
-## Migrations
-
-You might want to write a migration scripts (similar to `truffle migrate`), that deploys multiple contracts and configures them. Below you'll find a simple example of such a script to help you get started.
+**Import**
 
 ```typescript
-import { Deployer } from '@0xproject/deployer';
-import * as path from 'path';
-
-const deployerOpts = {
-    artifactsDir: path.resolve('src', 'artifacts'),
-    jsonrpcUrl: 'http://localhost:8545',
-    networkId: 50,
-    defaults: {
-        gas: 1000000,
-    },
-};
-
-const deployer = new Deployer(deployerOpts);
-
-(async () => {
-    const etherToken = await deployer.deployAndSaveAsync('WETH9');
-})().catch(console.log);
+import { Deployer, Compiler } from '@0xproject/deployer';
 ```
 
-A more sophisticated example can be found [here](https://github.com/0xProject/0x-monorepo/tree/development/packages/contracts/migrations)
+or
+
+```javascript
+var Deployer = require('@0xproject/deployer').Deployer;
+var Compiler = require('@0xproject/deployer').Compiler;
+```
 
 ## Contributing
 

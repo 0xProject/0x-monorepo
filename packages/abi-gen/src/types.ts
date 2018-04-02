@@ -1,4 +1,4 @@
-import * as Web3 from 'web3';
+import { EventAbi, MethodAbi } from '@0xproject/types';
 
 export enum ParamKind {
     Input = 'input',
@@ -17,7 +17,7 @@ export enum ContractsBackend {
     Ethers = 'ethers',
 }
 
-export interface Method extends Web3.MethodAbi {
+export interface Method extends MethodAbi {
     singleReturnValue: boolean;
     hasReturnValue: boolean;
 }
@@ -25,5 +25,5 @@ export interface Method extends Web3.MethodAbi {
 export interface ContextData {
     contractName: string;
     methods: Method[];
-    events: Web3.EventAbi[];
+    events: EventAbi[];
 }

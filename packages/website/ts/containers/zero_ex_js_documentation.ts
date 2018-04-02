@@ -90,7 +90,14 @@ const docsInfoConfig: DocsInfoConfig = {
             '"0x.js/src/order_watcher/order_state_watcher"',
             '"src/order_watcher/order_state_watcher"',
         ],
-        [zeroExJsDocSections.types]: ['"0x.js/src/types"', '"src/types"', '"types/src/index"'],
+        [zeroExJsDocSections.types]: [
+            '"0x.js/src/types"',
+            '"src/types"',
+            '"types/src/index"',
+            '"0x.js/src/contract_wrappers/generated/ether_token"',
+            '"0x.js/src/contract_wrappers/generated/token"',
+            '"0x.js/src/contract_wrappers/generated/exchange"',
+        ],
     },
     menuSubsectionToVersionWhenIntroduced: {
         [zeroExJsDocSections.etherToken]: '0.7.1',
@@ -151,7 +158,6 @@ const docsInfoConfig: DocsInfoConfig = {
             'TransactionOpts',
             'ContractEventArg',
             'LogEvent',
-            'LogEntry',
             'DecodedLogEvent',
             'EventWatcherCallback',
             'OnOrderStateChangeCallback',
@@ -167,6 +173,7 @@ const docsInfoConfig: DocsInfoConfig = {
             DecodedLogEntryEvent: 'Web3',
             LogEntryEvent: 'Web3',
             CallData: 'Web3',
+            LogEntry: 'Web3',
         },
         typeNameToExternalLink: {
             Web3: constants.URL_WEB3_DOCS,
@@ -174,6 +181,7 @@ const docsInfoConfig: DocsInfoConfig = {
             BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
             DecodedLogEntryEvent: constants.URL_WEB3_DECODED_LOG_ENTRY_EVENT,
             LogEntryEvent: constants.URL_WEB3_LOG_ENTRY_EVENT,
+            LogEntry: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L366',
         },
         typeNameToDocSection: {
             ExchangeWrapper: 'exchange',

@@ -8,20 +8,20 @@ Standard type and schema assertions to be used across all 0x projects and packag
 yarn add @0xproject/assert
 ```
 
-If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
-
-```
-"include": [
-    "./node_modules/web3-typescript-typings/index.d.ts",
-]
-```
-
 ## Usage
 
 ```typescript
 import { assert } from '@0xproject/assert';
 
 assert.isValidBaseUnitAmount('baseUnitAmount', baseUnitAmount);
+```
+
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
+
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
 ```
 
 ## Contributing

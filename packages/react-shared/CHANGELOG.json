@@ -1,0 +1,19 @@
+[
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Added new colors",
+                "pr": 468
+            },
+            {
+                "note": "Fix section and menuItem text display to replace dashes with spaces."
+            },
+            {
+                "note": "Reorganized colors and added new ones"
+            }
+        ],
+        "timestamp": 1522658513,
+        "isPublished": true
+    }
+]

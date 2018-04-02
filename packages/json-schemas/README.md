@@ -2,25 +2,32 @@
 
 Contains 0x-related json schemas
 
+### Read the [Documentation](0xproject.com/docs/json-schemas).
+
 ## Installation
 
 ```bash
 yarn add @0xproject/json-schemas
 ```
 
-## Usage
+**Import**
+
+```typescript
+import { SchemaValidator, ValidatorResult, schemas } from '@0xproject/json-schemas';
+```
+
+or
 
 ```javascript
-import {SchemaValidator, ValidatorResult, schemas} from '@0xproject/json-schemas';
+var schemas = require('@0xproject/json-schemas').schemas;
+```
 
-const {orderSchema} = schemas;
-const validator = new SchemaValidator();
+If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
-const order = {
-    ...
-};
-const validatorResult: ValidatorResult = validator.validate(order, orderSchema); // Contains all errors
-const isValid: boolean = validator.isValid(order, orderSchema); // Only returns boolean
+```json
+"compilerOptions": {
+    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+}
 ```
 
 ## Contributing

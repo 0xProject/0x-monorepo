@@ -1,4 +1,13 @@
-# CHANGELOG
+<!--
+This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+Edit the package's CHANGELOG.json file only.
+-->
+
+CHANGELOG
+
+## v0.7.18 - _April 2, 2018_
+
+    * Dependencies updated
 
 ## v0.7.13 - _February 9, 2018_
 

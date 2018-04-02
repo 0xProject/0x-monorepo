@@ -12,6 +12,7 @@ interface BalanceBoundedInputProps {
     label?: string;
     balance: BigNumber;
     amount?: BigNumber;
+    hintText?: string;
     onChange: ValidatedBigNumberCallback;
     shouldShowIncompleteErrs?: boolean;
     shouldCheckBalance: boolean;
@@ -19,6 +20,8 @@ interface BalanceBoundedInputProps {
     onVisitBalancesPageClick?: () => void;
     shouldHideVisitBalancesLink?: boolean;
     isDisabled?: boolean;
+    shouldShowErrs?: boolean;
+    shouldShowUnderline?: boolean;
 }
 
 interface BalanceBoundedInputState {
@@ -31,6 +34,9 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         shouldShowIncompleteErrs: false,
         shouldHideVisitBalancesLink: false,
         isDisabled: false,
+        shouldShowErrs: true,
+        hintText: 'amount',
+        shouldShowUnderline: true,
     };
     constructor(props: BalanceBoundedInputProps) {
         super(props);
@@ -71,9 +77,12 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         }
     }
     public render() {
-        let errorText = this.state.errMsg;
-        if (this.props.shouldShowIncompleteErrs && this.state.amountString === '') {
-            errorText = 'This field is required';
+        let errorText;
+        if (this.props.shouldShowErrs) {
+            errorText =
+                this.props.shouldShowIncompleteErrs && this.state.amountString === ''
+                    ? 'This field is required'
+                    : this.state.errMsg;
         }
         let label: React.ReactNode | string = '';
         if (!_.isUndefined(this.props.label)) {
@@ -87,9 +96,10 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
                 floatingLabelStyle={{ color: colors.grey, width: 206 }}
                 errorText={errorText}
                 value={this.state.amountString}
-                hintText={<span style={{ textTransform: 'capitalize' }}>amount</span>}
+                hintText={<span style={{ textTransform: 'capitalize' }}>{this.props.hintText}</span>}
                 onChange={this._onValueChange.bind(this)}
                 underlineStyle={{ width: 'calc(100% + 50px)' }}
+                underlineShow={this.props.shouldShowUnderline}
                 disabled={this.props.isDisabled}
             />
         );

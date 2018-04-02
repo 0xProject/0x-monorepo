@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/assert",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "description": "Provides a standard way of performing type and schema validation across 0x projects",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -14,7 +14,8 @@
         "test": "run-s clean build run_mocha",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "test:circleci": "yarn test:coverage"
+        "test:circleci": "yarn test:coverage",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "license": "Apache-2.0",
     "repository": {
@@ -26,13 +27,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/assert/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.14",
-        "@0xproject/tslint-config": "^0.4.12",
-        "@types/lodash": "^4.14.86",
+        "@0xproject/monorepo-scripts": "^0.1.15",
+        "@0xproject/tslint-config": "^0.4.13",
+        "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/valid-url": "^1.0.2",
         "chai": "^4.0.1",
-        "chai-typescript-typings": "^0.0.6",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "mocha": "^4.0.1",
@@ -43,8 +43,9 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^0.7.17",
-        "@0xproject/utils": "^0.4.3",
+        "@0xproject/json-schemas": "^0.7.18",
+        "@0xproject/typescript-typings": "^0.0.2",
+        "@0xproject/utils": "^0.4.4",
         "lodash": "^4.17.4",
         "valid-url": "^1.0.9"
     },

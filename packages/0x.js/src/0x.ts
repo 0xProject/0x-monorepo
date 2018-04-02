@@ -15,7 +15,7 @@ import { OrderStateWatcher } from './order_watcher/order_state_watcher';
 import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
 import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
 import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
-import { Web3Provider, ZeroExConfig, ZeroExError } from './types';
+import { OrderStateWatcherConfig, Web3Provider, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
@@ -57,11 +57,6 @@ export class ZeroEx {
      * tokenTransferProxy smart contract.
      */
     public proxy: TokenTransferProxyWrapper;
-    /**
-     * An instance of the OrderStateWatcher class containing methods for watching a set of orders for relevant
-     * blockchain state changes.
-     */
-    public orderStateWatcher: OrderStateWatcher;
     private _web3Wrapper: Web3Wrapper;
     private _abiDecoder: AbiDecoder;
     /**
@@ -83,7 +78,7 @@ export class ZeroEx {
     }
     /**
      * Generates a pseudo-random 256-bit salt.
-     * The salt can be included in an 0x order, ensuring that the order generates a unique orderHash
+     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
      * and will not collide with other outstanding orders that are identical in all other parameters.
      * @return  A pseudo-random 256-bit number that can be used as a salt.
      */
@@ -197,13 +192,6 @@ export class ZeroEx {
             config.tokenRegistryContractAddress,
         );
         this.etherToken = new EtherTokenWrapper(this._web3Wrapper, config.networkId, this._abiDecoder, this.token);
-        this.orderStateWatcher = new OrderStateWatcher(
-            this._web3Wrapper,
-            this._abiDecoder,
-            this.token,
-            this.exchange,
-            config.orderWatcherConfig,
-        );
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -260,7 +248,7 @@ export class ZeroEx {
             msgHashHex = ethUtil.bufferToHex(msgHashBuff);
         }
 
-        const signature = await this._web3Wrapper.signTransactionAsync(normalizedSignerAddress, msgHashHex);
+        const signature = await this._web3Wrapper.signMessageAsync(normalizedSignerAddress, msgHashHex);
 
         // HACK: There is no consensus on whether the signatureHex string should be formatted as
         // v + r + s OR r + s + v, and different clients (even different versions of the same client)
@@ -335,6 +323,15 @@ export class ZeroEx {
         );
         const txReceipt = await txReceiptPromise;
         return txReceipt;
+    }
+    /**
+     * Instantiates and returns a new OrderStateWatcher instance.
+     * Defaults to watching the pending state.
+     * @param   config      The configuration object. Look up the type for the description.
+     * @return  An instance of the 0x.js OrderStateWatcher class.
+     */
+    public createOrderStateWatcher(config?: OrderStateWatcherConfig) {
+        return new OrderStateWatcher(this._web3Wrapper, this._abiDecoder, this.token, this.exchange, config);
     }
     /*
      * HACK: `TokenWrapper` needs a token transfer proxy address. `TokenTransferProxy` address is fetched from

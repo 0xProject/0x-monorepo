@@ -1,0 +1,21 @@
+[
+    {
+        "timestamp": 1522658513,
+        "version": "0.1.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.1.13",
+        "changes": [
+            {
+                "note": "Add postpublish utils"
+            }
+        ],
+        "timestamp": 1521298800,
+        "isPublished": true
+    }
+]

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Generate coverage reports for Solidity code",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -13,7 +13,23 @@
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha lib/test/**/*_test.js",
         "clean": "shx rm -rf lib scripts",
-        "build": "copyfiles 'test/fixtures/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts"
+        "build": "copyfiles 'test/fixtures/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
+        "docs:stage": "yarn build && node ./scripts/stage_docs.js",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+    },
+    "config": {
+        "postpublish": {
+            "assets": [],
+            "docPublishConfigs": {
+                "extraFileIncludes": [
+                    "../subproviders/src/types.ts"
+                ],
+                "s3BucketPath": "s3://doc-jsons/sol-cov/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/sol-cov/"
+            }
+        }
     },
     "repository": {
         "type": "git",
@@ -25,8 +41,10 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/subproviders": "^0.8.2",
-        "@0xproject/utils": "^0.3.4",
+        "@0xproject/subproviders": "^0.8.3",
+        "@0xproject/types": "^0.4.2",
+        "@0xproject/typescript-typings": "^0.0.2",
+        "@0xproject/utils": "^0.4.4",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",
@@ -34,17 +52,15 @@
         "semaphore-async-await": "^1.5.1",
         "solidity-coverage": "^0.4.10",
         "solidity-parser-antlr": "^0.2.7",
-        "solidity-parser-sc": "^0.4.4",
-        "web3": "^0.20.0"
+        "solidity-parser-sc": "^0.4.4"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^0.1.14",
-        "@0xproject/tslint-config": "^0.4.12",
+        "@0xproject/monorepo-scripts": "^0.1.15",
+        "@0xproject/tslint-config": "^0.4.13",
         "@types/istanbul": "^0.4.29",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
         "chai": "^4.0.1",
-        "chai-typescript-typings": "^0.0.6",
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "mocha": "^4.0.1",
@@ -53,8 +69,8 @@
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
         "tslint": "5.8.0",
-        "typescript": "2.7.1",
-        "web3-typescript-typings": "^0.9.11"
+        "typedoc": "0xProject/typedoc",
+        "typescript": "2.7.1"
     },
     "publishConfig": {
         "access": "public"
