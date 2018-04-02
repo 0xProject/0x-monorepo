@@ -154,14 +154,8 @@ export class ExchangeWrapper {
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
-    public async cancelOrdersUpToAsync(
-        salt: BigNumber,
-        from: string,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.cancelOrdersUpTo.sendTransactionAsync(
-            salt,
-            { from },
-        );
+    public async cancelOrdersUpToAsync(salt: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._exchange.cancelOrdersUpTo.sendTransactionAsync(salt, { from });
         const tx = await this._getTxWithDecodedExchangeLogsAsync(txHash);
         return tx;
     }
