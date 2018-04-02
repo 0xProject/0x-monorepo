@@ -210,24 +210,75 @@ contract MixinWrapperFunctions is
         uint256 takerTokenFillAmount,
         bytes[] signatures)
         public
-        returns (uint256 totalTakerTokenFilledAmount)
+        // returns (uint256 totalTakerTokenFilledAmount)
+        returns (
+            uint256 makerTokenFilledAmount,
+            uint256 takerTokenFilledAmount,
+            uint256 makerFeeAmountPaid,
+            uint256 takerFeeAmountPaid
+        )
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount);
-            totalTakerTokenFilledAmount = safeAdd(
-                totalTakerTokenFilledAmount,
+            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, takerTokenFilledAmount);
+            takerTokenFilledAmount = safeAdd(
+                takerTokenFilledAmount,
                 fillOrder(
                     orders[i],
                     remainingTakerTokenFillAmount,
                     signatures[i]
                 )
             );
-            if (totalTakerTokenFilledAmount == takerTokenFillAmount) {
+            uint256 takerTokenSellAmount = getPartialAmount(
+                remainingTakerTokenFillAmount,
+                orders[i].takerTokenAmount,
+                orders[i].makerTokenAmount
+            );
+            makerTokenFilledAmount = safeAdd(makerTokenFilledAmount, takerTokenSellAmount);
+            takerTokenFilledAmount = safeAdd(takerTokenFilledAmount, takerTokenFilledAmount);
+            if (takerTokenFilledAmount == takerTokenFillAmount) {
                 break;
             }
         }
-        return totalTakerTokenFilledAmount;
+        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
+    }
+
+    function marketBuyOrders(
+        Order[] orders,
+        uint256 takerBuyAmount,
+        bytes[] signatures)
+        public
+        // returns (uint256 totalTakerTokenFilledAmount)
+        returns (
+            uint256 makerTokenFilledAmount,
+            uint256 takerTokenFilledAmount,
+            uint256 makerFeeAmountPaid,
+            uint256 takerFeeAmountPaid
+        )
+    {
+        for (uint256 i = 0; i < orders.length; i++) {
+            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, takerTokenFilledAmount);
+            uint256 remainingTakerSellAmount = getPartialAmount(
+                orders[i].takerTokenAmount,
+                orders[i].makerTokenAmount,
+                remainingTakerBuyAmount
+            );
+            takerTokenFilledAmount = safeAdd(
+                takerTokenFilledAmount,
+                fillOrder(
+                    orders[i],
+                    remainingTakerSellAmount,
+                    signatures[i]
+                )
+            );
+            makerTokenFilledAmount = safeAdd(makerTokenFilledAmount, remainingTakerSellAmount);
+            takerTokenFilledAmount = safeAdd(takerTokenFilledAmount, takerTokenFilledAmount);
+            if (takerTokenFilledAmount == takerBuyAmount) {
+                break;
+            }
+        }
+        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
     }
 
     /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total takerTokenFillAmount filled.
@@ -275,5 +326,12 @@ contract MixinWrapperFunctions is
             );
         }
     }
-    
+
+    function getPartialAmount(uint256 numerator, uint256 denominator, uint256 target)
+    public pure
+    returns (uint256 partialAmount)
+    {
+        partialAmount = safeDiv(safeMul(numerator, target), denominator);
+        return partialAmount;
+    }
 }

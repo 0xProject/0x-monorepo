@@ -46,7 +46,12 @@ contract MixinExchangeQuote is
     // Orders with a salt less than their maker's epoch are considered cancelled
     mapping (address => uint256) public makerEpoch;
 
-  
+    struct FillResults {
+        uint256 makerAmountSold;
+        uint256 takerAmountSold;
+        uint256 makerFeePaid;
+        uint256 takerFeePaid;
+    }
 
     /// @dev Calculates the outcome of a fillOrder without performing any state changes
     /// @param order Order struct containing order specifications.
@@ -58,12 +63,7 @@ contract MixinExchangeQuote is
         uint256 takerTokenFillAmount,
         bytes signature)
         public
-        returns (
-            uint256 makerTokenFilledAmount,
-            uint256 takerTokenFilledAmount,
-            uint256 makerFeeAmountPaid,
-            uint256 takerFeeAmountPaid
-        )
+        returns (FillResults memory fillResults)
     {
         // Compute the order hash
         bytes32 orderHash = getOrderHash(order);
@@ -84,87 +84,109 @@ contract MixinExchangeQuote is
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
-            return (0,0,0,0);
+            return fillResults;
         }
 
         // Validate order availability
         uint256 remainingTakerTokenAmount = safeSub(order.takerTokenAmount, getUnavailableTakerTokenAmount(orderHash));
-        takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenAmount);
-        if (takerTokenFilledAmount == 0) {
-            return (0,0,0,0);
+        fillResults.takerAmountSold = min256(takerTokenFillAmount, remainingTakerTokenAmount);
+        if (fillResults.takerAmountSold == 0) {
+            return fillResults;
         }
 
         // Validate fill order rounding
-        if (isRoundingError(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
-            return (0,0,0,0);
+        if (isRoundingError(fillResults.takerAmountSold, order.takerTokenAmount, order.makerTokenAmount)) {
+            return fillResults;
         }
 
         // Validate order is not cancelled
         if (order.salt < makerEpoch[order.makerAddress]) {
-            return (0,0,0,0);
+            return fillResults;
         }
 
-        makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
+        fillResults.makerAmountSold = getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.makerTokenAmount);
 
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFeeAmount > 0) {
-                makerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFeeAmount);
+                fillResults.makerFeePaid = getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.makerFeeAmount);
             }
             if (order.takerFeeAmount > 0) {
-                takerFeeAmountPaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFeeAmount);
+                fillResults.takerFeePaid = getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.takerFeeAmount);
             }
         }
 
-        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
+        return fillResults;
     }
-
-    /// @dev Calculates the outcome of a marketFillOrder without performing any state changes
-    ///      Since no state changes are made (and therefor cannot be checked), the caller must guarantee
-    ///      that all orders must be unique
-    /// @param orders Orders struct containing order specifications.
-    /// @param takerTokenFillAmount Desired amount of takerToken to fill.
-    /// @param signatures Proof of signing order by maker.
-    /// @return  totalMakerTokenFilledAmount, totalTakerTokenFilledAmount, totalMakerFeeAmountPaid, totalTakerFeeAmountPaid
-    function marketFillOrdersQuote(
+    function marketSellOrdersQuote(
         Order[] orders,
-        uint256 takerTokenFillAmount,
+        uint256 takerSellAmount,
         bytes[] signatures)
         public
         returns (
-            uint256 totalMakerTokenFilledAmount,
-            uint256 totalTakerTokenFilledAmount,
-            uint256 totalMakerFeeAmountPaid,
-            uint256 totalTakerFeeAmountPaid
+            uint256 makerTokenFilledAmount,
+            uint256 takerTokenFilledAmount,
+            uint256 makerFeeAmountPaid,
+            uint256 takerFeeAmountPaid
         )
     {
-        totalMakerTokenFilledAmount = 0;
-        totalTakerTokenFilledAmount = 0;
-        totalMakerFeeAmountPaid = 0;
-        totalTakerFeeAmountPaid = 0;
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount);
-            var (makerTokenFilledAmount,
-                 takerTokenFilledAmount,
-                 makerFeeAmountPaid,
-                 takerFeeAmountPaid) =
+            uint256 remainingTakerTokenFillAmount = safeSub(takerSellAmount, takerTokenFilledAmount);
+            FillResults memory quoteFillResult = 
             fillOrderQuote(
                 orders[i],
                 remainingTakerTokenFillAmount,
-                // totalMakerTokenFilledAmount,
-                // takerTokenFillAmount,
                 signatures[i]);
 
-            totalMakerTokenFilledAmount = safeAdd(totalMakerTokenFilledAmount, makerTokenFilledAmount);
-            totalTakerTokenFilledAmount = safeAdd(totalTakerTokenFilledAmount, takerTokenFilledAmount);
-            totalMakerFeeAmountPaid = safeAdd(totalMakerFeeAmountPaid, makerFeeAmountPaid);
-            totalTakerFeeAmountPaid = safeAdd(totalTakerFeeAmountPaid, takerFeeAmountPaid);
+            makerTokenFilledAmount = safeAdd(makerTokenFilledAmount, quoteFillResult.makerAmountSold);
+            takerTokenFilledAmount = safeAdd(takerTokenFilledAmount, quoteFillResult.takerAmountSold);
+            makerFeeAmountPaid = safeAdd(makerFeeAmountPaid, quoteFillResult.makerFeePaid);
+            takerFeeAmountPaid = safeAdd(takerFeeAmountPaid, quoteFillResult.takerFeePaid);
 
-            if (totalTakerTokenFilledAmount == takerTokenFillAmount) {
+            if (takerTokenFilledAmount == takerSellAmount) {
                 break;
             }
         }
-        return (totalMakerTokenFilledAmount, totalTakerTokenFilledAmount, totalMakerFeeAmountPaid, totalTakerFeeAmountPaid);
+        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
+    }
+
+
+    function marketBuyOrdersQuote(
+        Order[] orders,
+        uint256 takerBuyAmount,
+        bytes[] signatures)
+        public
+        returns (
+            uint256 makerTokenFilledAmount,
+            uint256 takerTokenFilledAmount,
+            uint256 makerFeeAmountPaid,
+            uint256 takerFeeAmountPaid
+        )
+    {
+        for (uint256 i = 0; i < orders.length; i++) {
+            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
+            uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, takerTokenFilledAmount);
+            uint256 remainingTakerSellAmount = getPartialAmount(
+                remainingTakerBuyAmount,
+                orders[i].takerTokenAmount,
+                orders[i].makerTokenAmount
+            );
+            FillResults memory quoteFillResult = 
+                fillOrderQuote(
+                    orders[i],
+                    remainingTakerSellAmount,
+                    signatures[i]
+                );
+
+            makerTokenFilledAmount = safeAdd(makerTokenFilledAmount, quoteFillResult.makerAmountSold);
+            takerTokenFilledAmount = safeAdd(takerTokenFilledAmount, quoteFillResult.takerAmountSold);
+            makerFeeAmountPaid = safeAdd(makerFeeAmountPaid, quoteFillResult.makerFeePaid);
+            takerFeeAmountPaid = safeAdd(takerFeeAmountPaid, quoteFillResult.takerFeePaid);
+            if (takerTokenFilledAmount == takerBuyAmount) {
+                break;
+            }
+        }
+        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
     }
 
     /// @dev Checks if rounding error > 0.1%.

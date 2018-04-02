@@ -97,7 +97,12 @@ export class ForwarderWrapper {
     constructor(contractInstance: ForwarderContract) {
         this._forwarderContract = contractInstance;
     }
-    public async fillOrderAsync(orders: SignedOrder[], fillAmountBaseUnits: BigNumber, from: string): Promise<string> {
+    public async fillOrdersAsync(
+        orders: SignedOrder[],
+        feeOrders: SignedOrder[],
+        fillAmountBaseUnits: BigNumber,
+        from: string,
+    ): Promise<string> {
         // TODO remove fixed gas and gas price
         const txOpts = {
             from,
@@ -106,11 +111,38 @@ export class ForwarderWrapper {
             value: fillAmountBaseUnits,
         };
         const params = formatters.createMarketFillOrders(orders, fillAmountBaseUnits);
-        const txHash: string = await this._forwarderContract.fillOrder.sendTransactionAsync(
+        const feeParams = formatters.createMarketFillOrders(feeOrders, new BigNumber(0));
+        const txHash: string = await this._forwarderContract.fillOrders.sendTransactionAsync(
             params.orders,
             params.signatures,
+            feeParams.orders,
+            feeParams.signatures,
             txOpts,
         );
         return txHash;
+    }
+    public async marketSellOrdersQuoteAsync(
+        orders: SignedOrder[],
+        takerTokenFillAmount: BigNumber,
+    ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber]> {
+        const params = formatters.createMarketFillOrders(orders, takerTokenFillAmount);
+        const quote = await this._forwarderContract.marketSellOrdersQuoteMe.callAsync(
+            params.orders,
+            params.takerTokenFillAmount,
+            params.signatures,
+        );
+        return quote;
+    }
+    public async marketBuyOrdersQuoteAsync(
+        orders: SignedOrder[],
+        takerTokenFillAmount: BigNumber,
+    ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber]> {
+        const params = formatters.createMarketFillOrders(orders, takerTokenFillAmount);
+        const quote = await this._forwarderContract.marketBuyOrdersQuoteMe.callAsync(
+            params.orders,
+            params.takerTokenFillAmount,
+            params.signatures,
+        );
+        return quote;
     }
 }

@@ -218,8 +218,9 @@ class BuyWidget extends React.Component<BuyWidgetProps, BuyWidgetState> {
         signedOrder: SignedOrder,
     ): Promise<string> {
         const forwarder = await this._getForwarderAsync();
-        const txHash = await forwarder.fillOrderAsync(
+        const txHash = await forwarder.fillOrdersAsync(
             [convertSignedOrderV1ToSignedOrderV2(signedOrder)],
+            [],
             fillAmount,
             takerAddress,
         );
