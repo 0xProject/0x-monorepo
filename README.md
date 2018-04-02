@@ -56,6 +56,11 @@ Dedicated documentation pages:
 *   [0x.js Library](https://0xproject.com/docs/0xjs)
 *   [0x Connect](https://0xproject.com/docs/connect)
 *   [Smart contracts](https://0xproject.com/docs/contracts)
+*   [Subproviders](https://0xproject.com/docs/subproviders)
+*   [Deployer](https://0xproject.com/docs/deployer)
+*   [Web3-wrapper](https://0xproject.com/docs/web3-wrapper)
+*   [JSON-schemas](https://0xproject.com/docs/json-schemas)
+*   [Sol-cov](https://0xproject.com/docs/sol-cov)
 *   [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/blob/master/README.md)
 
 Most of the packages require additional typings for external dependencies.
