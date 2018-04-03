@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.0.6",
@@ -17,8 +16,7 @@
                 "pr": 451
             }
         ],
-        "timestamp": 1522658513,
-        "isPublished": true
+        "timestamp": 1522658513
     },
     {
         "version": "0.0.2",
@@ -28,13 +26,11 @@
                 "pr": 452
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.0.1",
         "changes": [],
-        "timestamp": 1520434800,
-        "isPublished": true
+        "timestamp": 1520434800
     }
 ]

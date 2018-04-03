@@ -7,8 +7,7 @@
                 "pr": 485
             }
         ],
-        "timestamp": 1522673609,
-        "isPublished": true
+        "timestamp": 1522673609
     },
     {
         "timestamp": 1522658513,
@@ -17,8 +16,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.4.3",
@@ -28,8 +26,7 @@
                     "Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface."
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.4.2",
@@ -39,8 +36,7 @@
                 "pr": 452
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.4.0",
@@ -54,8 +50,7 @@
                 "pr": 429
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.3.2",
@@ -65,8 +60,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.3.0",
@@ -77,8 +71,7 @@
                 "pr": 366
             }
         ],
-        "timestamp": 1517756400,
-        "isPublished": true
+        "timestamp": 1517756400
     },
     {
         "version": "0.2.0",
@@ -92,7 +85,6 @@
                 "pr": 312
             }
         ],
-        "timestamp": 1516114800,
-        "isPublished": true
+        "timestamp": 1516114800
     }
 ]

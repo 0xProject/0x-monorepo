@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "timestamp": 1522658513,
@@ -16,8 +15,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.4.9",
@@ -26,8 +24,7 @@
                 "note": "Move devDeps to deps to fix missed dependency issue in published package."
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.4.8",
@@ -37,8 +34,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.4.7",
@@ -49,8 +45,7 @@
                 "pr": 354
             }
         ],
-        "timestamp": 1517929200,
-        "isPublished": true
+        "timestamp": 1517929200
     },
     {
         "version": "0.4.0",
@@ -64,8 +59,7 @@
                     "Because our tools can be used in both a TS and JS environment, we want to make the private methods of any public facing interface show up at the bottom of auto-complete lists. Additionally, we wanted to remain consistent with respect to our usage of underscores in order to enforce this rule with a linter rule, rather then manual code reviews."
             }
         ],
-        "timestamp": 1514386800,
-        "isPublished": true
+        "timestamp": 1514386800
     },
     {
         "version": "0.3.0",
@@ -75,8 +69,7 @@
                 "pr": 265
             }
         ],
-        "timestamp": 1513695600,
-        "isPublished": true
+        "timestamp": 1513695600
     },
     {
         "version": "0.1.0",
@@ -88,7 +81,6 @@
                 "note": "Updated to TSLint v5.8.0, requiring several rule additions to keep our conventions aligned."
             }
         ],
-        "timestamp": 1510585200,
-        "isPublished": true
+        "timestamp": 1510585200
     }
 ]

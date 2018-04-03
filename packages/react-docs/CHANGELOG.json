@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.0.5",
@@ -32,8 +31,7 @@
                 "pr": 465
             }
         ],
-        "timestamp": 1522658513,
-        "isPublished": true
+        "timestamp": 1522658513
     },
     {
         "version": "0.0.3",
@@ -43,8 +41,7 @@
                     "Move TS typings from devDependencies to dependencies since they are needed by the package user."
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.0.2",
@@ -57,7 +54,6 @@
                 "pr": 452
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     }
 ]
