@@ -1,29 +1,17 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
-// import "../../../../contracts/src/contracts/current/protocol/Exchange/Exchange.sol";
-import "../current/protocol/Exchange/Exchange.sol";
-import "../../../../contracts/src/contracts/current/protocol/TokenTransferProxy/TokenTransferProxy.sol";
-import { WETH9 as EtherToken } from  "../../../../contracts/src/contracts/current/tokens/WETH9/WETH9.sol";
+import "./MixinERC721Receiver.sol";
+import "./MixinForwarderCore.sol";
+import "./MixinForwarderQuote.sol";
+import "./MixinForwarderExchange.sol";
 
-contract Forwarder is SafeMath, LibOrder {
-
-    Exchange exchange;
-    TokenTransferProxy tokenProxy;
-    EtherToken etherToken;
-    Token zrxToken;
-
-    uint16  constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
-    uint16  constant public MAX_FEE = 1000; // 10%
-
-    uint16  constant ALLOWABLE_EXCHANGE_PERC = 9800; // 98%
-    uint256 constant MAX_UINT = 2 ** 256 - 1;
-    struct FillResults {
-        uint256 makerAmountSold;
-        uint256 takerAmountSold;
-        uint256 makerFeePaid;
-        uint256 takerFeePaid;
-    }
+contract Forwarder is
+    MixinForwarderCore,
+    MixinForwarderQuote,
+    MixinForwarderExchange,
+    MixinERC721Receiver
+{
 
     function Forwarder(
         Exchange _exchange,
@@ -56,6 +44,7 @@ contract Forwarder is SafeMath, LibOrder {
     {
         require(msg.value > 0);
         require(orders[0].takerTokenAddress == address(etherToken));
+
         etherToken.deposit.value(msg.value)();
         return fillTokenOrders(orders, signatures, feeOrders, feeSignatures, msg.value);
     }
@@ -83,8 +72,28 @@ contract Forwarder is SafeMath, LibOrder {
             // Transfer the fee to the fee recipient
             feeRecipient.transfer(feeRecipientFeeAmount);
         }
+
         etherToken.deposit.value(remainingEthAmount)();
         return fillTokenOrders(orders, signatures, feeOrders, feeSignatures, remainingEthAmount);
+    }
+
+    function fillTokenFeeAbstraction(
+        Order[] feeOrders,
+        bytes[] feeSignatures,
+        uint256 feeAmount)
+        private
+        returns (FillResults memory totalFillResult)
+    {
+        require(feeOrders[0].makerTokenAddress == address(zrxToken));
+
+        // Quote the fees
+        FillResults memory feeQuote =
+            marketBuyOrdersQuote(feeOrders, feeAmount, feeSignatures);
+        // Buy enough ZRX to cover the future market sell
+        return marketBuyOrders(
+                feeOrders,
+                safeAdd(feeAmount, feeQuote.takerFeePaid), // fees for fees
+                feeSignatures);
     }
 
     function fillTokenOrders(
@@ -93,34 +102,31 @@ contract Forwarder is SafeMath, LibOrder {
         Order[] feeOrders,
         bytes[] feeSignatures,
         uint256 sellTokenAmount)
-        public
+        private
         returns (FillResults totalFillResult)
     {
         uint256 takerTokenBalance = sellTokenAmount;
-        FillResults memory requestedTokensQuoteResult = 
-            marketSellOrdersQuote(orders, sellTokenAmount, signatures);
-        if (requestedTokensQuoteResult.takerFeePaid > 0) {
-            // Fees are required for these orders
-            FillResults memory feeTokensQuoteResult =
-                marketBuyOrdersQuote(
-                    feeOrders,
-                    requestedTokensQuoteResult.takerFeePaid,
-                    feeSignatures);
 
-            FillResults memory feeTokensResult = 
-                marketBuyOrders(
-                feeOrders,
-                safeAdd(
-                    requestedTokensQuoteResult.takerFeePaid,
-                    feeTokensQuoteResult.takerFeePaid),
-                feeSignatures);
+        FillResults memory tokensSellQuote = 
+            marketSellOrdersQuote(orders, sellTokenAmount, signatures);
+
+        if (tokensSellQuote.takerFeePaid > 0) {
+            // Fees are required for these orders
+            // Buy enough ZRX to cover the future market sell
+            FillResults memory feeTokensResult =
+                fillTokenFeeAbstraction(feeOrders, feeSignatures, tokensSellQuote.takerFeePaid);
             takerTokenBalance = safeSub(takerTokenBalance, feeTokensResult.takerAmountSold);
+            totalFillResult.takerFeePaid = feeTokensResult.takerFeePaid;
         }
 
+        // Make our market sell to buy the requested tokens with the remaining balance
         FillResults memory requestedTokensResult = marketSellOrders(orders, takerTokenBalance, signatures);
+
+        // Update our return FillResult with the market sell
         totalFillResult.takerAmountSold = requestedTokensResult.takerAmountSold;
         totalFillResult.makerAmountSold = requestedTokensResult.makerAmountSold;
         totalFillResult.makerFeePaid = requestedTokensResult.makerFeePaid;
+        // Add the fees incase fees for ZRX was spent
         totalFillResult.takerFeePaid = safeAdd(totalFillResult.takerFeePaid, requestedTokensResult.takerFeePaid);
 
         // Ensure the token abstraction was fair 
@@ -131,97 +137,12 @@ contract Forwarder is SafeMath, LibOrder {
         return totalFillResult;
     }
 
-    // There are issues in solidity when referencing another contracts structure in return types
-    // Here we map to our structure of FillResults temporarily
-    // this is using an old/temporary implementation of market sell and buy which returns more data.
-    function marketSellOrders(
-        Order[] orders,
-        uint256 takerTokenFillAmount,
-        bytes[] signatures)
-        public
-        returns (FillResults memory fillResult)
-    {
-        var (makerTokenFilledAmount,
-            takerTokenFilledAmount,
-            makerFeeAmountPaid,
-            takerFeeAmountPaid) = 
-        Exchange(exchange).marketFillOrders(orders, takerTokenFillAmount, signatures);
-        fillResult.makerAmountSold = makerTokenFilledAmount;
-        fillResult.takerAmountSold = takerTokenFilledAmount;
-        fillResult.makerFeePaid = makerFeeAmountPaid;
-        fillResult.takerFeePaid = takerFeeAmountPaid;
-        return fillResult;
-    }
-
-    function marketBuyOrders(
-        Order[] orders,
-        uint256 takerTokenFillAmount,
-        bytes[] signatures)
-        public
-        returns (FillResults memory fillResult)
-    {
-        var (makerTokenFilledAmount,
-            takerTokenFilledAmount,
-            makerFeeAmountPaid,
-            takerFeeAmountPaid) = 
-        Exchange(exchange).marketBuyOrders(orders, takerTokenFillAmount, signatures);
-        fillResult.makerAmountSold = makerTokenFilledAmount;
-        fillResult.takerAmountSold = takerTokenFilledAmount;
-        fillResult.makerFeePaid = makerFeeAmountPaid;
-        fillResult.takerFeePaid = takerFeeAmountPaid;
-        return fillResult;
-    }
-
-    function marketSellOrdersQuote(
-        Order[] orders,
-        uint256 takerTokenFillAmount,
-        bytes[] signatures)
-        internal
-        returns (FillResults memory fillResult)
-    {
-        var (makerTokenFilledAmount,
-            takerTokenFilledAmount,
-            makerFeeAmountPaid,
-            takerFeeAmountPaid) = 
-        Exchange(exchange).marketSellOrdersQuote(orders, takerTokenFillAmount, signatures);
-        fillResult.makerAmountSold = makerTokenFilledAmount;
-        fillResult.takerAmountSold = takerTokenFilledAmount;
-        fillResult.makerFeePaid = makerFeeAmountPaid;
-        fillResult.takerFeePaid = takerFeeAmountPaid;
-        return fillResult;
-    }
-
-    function marketBuyOrdersQuote(
-        Order[] orders,
-        uint256 takerBuyAmount,
-        bytes[] signatures)
-        internal
-        returns (FillResults memory fillResult)
-    {
-        var (makerTokenFilledAmount,
-            takerTokenFilledAmount,
-            makerFeeAmountPaid,
-            takerFeeAmountPaid) = 
-        Exchange(exchange).marketBuyOrdersQuote(orders, takerBuyAmount, signatures);
-        fillResult.makerAmountSold = makerTokenFilledAmount;
-        fillResult.takerAmountSold = takerTokenFilledAmount;
-        fillResult.makerFeePaid = makerFeeAmountPaid;
-        fillResult.takerFeePaid = takerFeeAmountPaid;
-        return fillResult;
-    }
-
-    function transferToken(address token, address account, uint amount)
+    function transferToken(
+        address token,
+        address account,
+        uint amount)
         internal
     {
         require(Token(token).transfer(account, amount));
-    }
-
-    function isAcceptableThreshold(uint256 requestedTokenAmount, uint256 soldTokenAmount)
-        public
-        constant
-        returns (bool)
-    {
-        uint256 exchangedProportion = safeDiv(safeMul(requestedTokenAmount, ALLOWABLE_EXCHANGE_PERC), 10000);
-        return soldTokenAmount >= exchangedProportion;
     }
 }
