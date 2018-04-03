@@ -92,7 +92,6 @@ describe('Forwarder', () => {
             makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), DECIMALS_DEFAULT),
             makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
-            // takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
@@ -154,73 +153,86 @@ describe('Forwarder', () => {
             expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(new BigNumber(0));
         });
 
-        it.only('should fill the order and perform fee abstraction', async () => {
+        it('should fill the order and perform fee abstraction', async () => {
             const orderWithFees = orderFactory.newSignedOrder({
                 takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const feeOrder = orderFactory.newSignedOrder({
                 makerTokenAddress: zrx.address,
-                makerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(2000), DECIMALS_DEFAULT),
+                takerFeeAmount: ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
 
             const fillAmount = signedOrder.takerTokenAmount.div(2);
-            // tslint:disable:no-console
-            console.log('filling amount', ZeroEx.toUnitAmount(fillAmount, 18).toString());
             const quote = await forwarderWrapper.marketSellOrdersQuoteAsync([orderWithFees], fillAmount);
             const feeAmount = quote[3];
             const feeQuote = await forwarderWrapper.marketBuyOrdersQuoteAsync([feeOrder], feeAmount);
-            console.log(
-                'sell quote',
-                _.map(quote, q => ZeroEx.toUnitAmount(new BigNumber(q.toString()), DECIMALS_DEFAULT).toString()),
-            );
-            console.log(
-                'buy zrx quote',
-                _.map(feeQuote, q => ZeroEx.toUnitAmount(new BigNumber(q.toString()), DECIMALS_DEFAULT).toString()),
-            );
             const txHash = await forwarderWrapper.fillOrdersAsync(
                 [orderWithFees],
                 [feeOrder],
                 fillAmount,
                 takerAddress,
             );
-            console.log(txHash);
+            const newBalances = await dmyBalances.getAsync();
+            const takerBalanceAfter = newBalances[takerAddress][signedOrder.makerTokenAddress];
+            const takerBuyAmount = newBalances[takerAddress][rep.address];
+
+            const acceptPerc = 98;
+            const acceptableThreshold = fillAmount.times(acceptPerc).dividedBy(100);
+            const withinThreshold = takerBalanceAfter.greaterThanOrEqualTo(acceptableThreshold);
+            expect(withinThreshold).to.be.true();
+            expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(new BigNumber(0));
+        });
+    });
+    describe('fillOrderFee', () => {
+        beforeEach(async () => {
+            balances = await dmyBalances.getAsync();
+            signedOrder = orderFactory.newSignedOrder();
+        });
+
+        it('should fill the order and send fee to fee recipient', async () => {
+            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
+            const fillAmount = signedOrder.takerTokenAmount.div(2);
+            const feeProportion = 150; // 1.5%
+            const txHash = await forwarderWrapper.fillOrdersFeeAsync(
+                [signedOrder],
+                [],
+                fillAmount,
+                feeProportion,
+                feeRecipientAddress,
+                takerAddress,
+            );
             const newBalances = await dmyBalances.getAsync();
             const makerBalanceBefore = balances[makerAddress][signedOrder.makerTokenAddress];
             const makerBalanceAfter = newBalances[makerAddress][signedOrder.makerTokenAddress];
             const takerBalanceAfter = newBalances[takerAddress][signedOrder.makerTokenAddress];
-            const decimals = 18;
-            console.log(
-                'forwarder rep balance',
-                ZeroEx.toUnitAmount(newBalances[forwarderContract.address][rep.address], decimals).toString(),
-            );
-            console.log(
-                'forwarder weth balance',
-                ZeroEx.toUnitAmount(newBalances[forwarderContract.address][weth.address], decimals).toString(),
-            );
-            console.log(
-                'forwarder zrx balance',
-                ZeroEx.toUnitAmount(newBalances[forwarderContract.address][zrx.address], decimals).toString(),
-            );
+            const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
+            const takerBoughtAmount = newBalances[takerAddress][rep.address].minus(balances[takerAddress][rep.address]);
 
-            console.log(
-                'taker rep balance',
-                ZeroEx.toUnitAmount(newBalances[takerAddress][rep.address], decimals).toString(),
+            expect(makerBalanceAfter).to.be.bignumber.equal(makerBalanceBefore.minus(takerBoughtAmount));
+            expect(afterEthBalance).to.be.bignumber.equal(
+                initEthBalance.plus(fillAmount.times(feeProportion).dividedBy(10000)),
             );
-            console.log(
-                'taker weth balance',
-                ZeroEx.toUnitAmount(newBalances[takerAddress][weth.address], decimals).toString(),
-            );
-            console.log(
-                'taker zrx balance',
-                ZeroEx.toUnitAmount(newBalances[takerAddress][zrx.address], decimals).toString(),
-            );
-            const makerTokenFillAmount = fillAmount
-                .times(signedOrder.makerTokenAmount)
-                .dividedToIntegerBy(signedOrder.takerTokenAmount);
-
-            expect(makerBalanceAfter).to.be.bignumber.equal(makerBalanceBefore.minus(makerTokenFillAmount));
-            expect(takerBalanceAfter).to.be.bignumber.equal(makerTokenFillAmount);
             expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(new BigNumber(0));
+        });
+        it('should fail if the fee is set too high', async () => {
+            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
+            const fillAmount = signedOrder.takerTokenAmount.div(2);
+            const feeProportion = 1500; // 15.0%
+
+            try {
+                const txHash = await forwarderWrapper.fillOrdersFeeAsync(
+                    [signedOrder],
+                    [],
+                    fillAmount,
+                    feeProportion,
+                    feeRecipientAddress,
+                    takerAddress,
+                );
+                expect.fail(); // Never reached
+            } catch (err) {
+                const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
+                expect(afterEthBalance).to.be.bignumber.equal(initEthBalance);
+            }
         });
     });
 });

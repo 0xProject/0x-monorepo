@@ -14,7 +14,9 @@ contract Forwarder is SafeMath, LibOrder {
     Token zrxToken;
 
     uint256 constant MAX_UINT = 2 ** 256 - 1;
-    uint16 constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
+    uint256 constant SAFE_EXCHANGE_PERC = 98; // 98%
+    uint16  constant MAX_FEE = 1000; // 10%
+    uint16  constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
     struct FillResults {
         uint256 makerAmountSold;
         uint256 takerAmountSold;
@@ -51,14 +53,51 @@ contract Forwarder is SafeMath, LibOrder {
         public
         returns (FillResults totalFillResult)
     {
-        assert(msg.value > 0);
-        // market fill ensures ALL of the orders are the same
-        assert(orders[0].takerTokenAddress == address(etherToken));
-
+        require(msg.value > 0);
+        require(orders[0].takerTokenAddress == address(etherToken));
         etherToken.deposit.value(msg.value)();
-        uint256 wethBalance = msg.value;
+        return fillTokenOrders(orders, signatures, feeOrders, feeSignatures, msg.value);
+    }
+
+    function fillOrdersFee(
+        Order[] orders,
+        bytes[] signatures,
+        Order[] feeOrders,
+        bytes[] feeSignatures,
+        uint16  feeProportion,
+        address feeRecipient)
+        payable
+        public
+        returns (FillResults totalFillResult)
+    {
+        require(msg.value > 0);
+        require(orders[0].takerTokenAddress == address(etherToken));
+        require(feeProportion <= MAX_FEE);
+
+        uint256 remainingEthAmount = msg.value;
+        if (feeProportion > 0 && feeRecipient != address(0x0)) {
+            // 1.5% is 150, allowing for 2 decimal precision, i.e 0.05% is 5
+            uint256 feeRecipientFeeAmount = safeDiv(safeMul(msg.value, feeProportion), 10000);
+            remainingEthAmount = safeSub(msg.value, feeRecipientFeeAmount);
+            // Transfer the fee to the fee recipient
+            feeRecipient.transfer(feeRecipientFeeAmount);
+        }
+        etherToken.deposit.value(remainingEthAmount)();
+        return fillTokenOrders(orders, signatures, feeOrders, feeSignatures, remainingEthAmount);
+    }
+
+    function fillTokenOrders(
+        Order[] orders,
+        bytes[] signatures,
+        Order[] feeOrders,
+        bytes[] feeSignatures,
+        uint256 sellTokenAmount)
+        public
+        returns (FillResults totalFillResult)
+    {
+        uint256 takerTokenBalance = sellTokenAmount;
         FillResults memory requestedTokensQuoteResult = 
-            marketSellOrdersQuote(orders, msg.value, signatures);
+            marketSellOrdersQuote(orders, sellTokenAmount, signatures);
         if (requestedTokensQuoteResult.takerFeePaid > 0) {
             // Fees are required for these orders
             FillResults memory feeTokensQuoteResult =
@@ -70,29 +109,27 @@ contract Forwarder is SafeMath, LibOrder {
             FillResults memory feeTokensResult = 
                 marketBuyOrders(
                 feeOrders,
-                requestedTokensQuoteResult.takerFeePaid,
-                // safeAdd(
-                //     requestedTokensQuoteResult.takerFeePaid,
-                //     feeTokensQuoteResult.takerFeePaid),
+                safeAdd(
+                    requestedTokensQuoteResult.takerFeePaid,
+                    feeTokensQuoteResult.takerFeePaid),
                 feeSignatures);
-            wethBalance = safeSub(wethBalance, feeTokensResult.takerAmountSold);
+            takerTokenBalance = safeSub(takerTokenBalance, feeTokensResult.takerAmountSold);
         }
 
-        // require(wethBalance == Token(orders[0].takerTokenAddress).balanceOf(address(this)));
-        // wethBalance = Token(orders[0].takerTokenAddress).balanceOf(address(this));
-        // uint256 tokenBalance = Token(orders[0].makerTokenAddress).balanceOf(address(this));
-        // TODO check some % threshold for an ok order, say atleast 98% of msg.value was filled
-        FillResults memory requestedTokensResult = marketSellOrders(orders, wethBalance, signatures);
+        FillResults memory requestedTokensResult = marketSellOrders(orders, takerTokenBalance, signatures);
         totalFillResult.takerAmountSold = requestedTokensResult.takerAmountSold;
         totalFillResult.makerAmountSold = requestedTokensResult.makerAmountSold;
         totalFillResult.makerFeePaid = requestedTokensResult.makerFeePaid;
         totalFillResult.takerFeePaid = safeAdd(totalFillResult.takerFeePaid, requestedTokensResult.takerFeePaid);
+        // Ensure the token abstraction was fair 
+        require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerAmountSold));
 
-        // transferToken(orders[0].makerTokenAddress, msg.sender, tokenBalance);
         transferToken(orders[0].makerTokenAddress, msg.sender, totalFillResult.makerAmountSold);
         return totalFillResult;
     }
 
+    // There are issues in solidity when referencing another contracts structure in return types
+    // Here we map to our structure of FillResults temporarily
     function marketSellOrders(
         Order[] orders,
         uint256 takerTokenFillAmount,
@@ -135,7 +172,7 @@ contract Forwarder is SafeMath, LibOrder {
         Order[] orders,
         uint256 takerTokenFillAmount,
         bytes[] signatures)
-        public
+        internal
         returns (FillResults memory fillResult)
     {
         var (makerTokenFilledAmount,
@@ -154,7 +191,7 @@ contract Forwarder is SafeMath, LibOrder {
         Order[] orders,
         uint256 takerBuyAmount,
         bytes[] signatures)
-        public
+        internal
         returns (FillResults memory fillResult)
     {
         var (makerTokenFilledAmount,
@@ -169,7 +206,8 @@ contract Forwarder is SafeMath, LibOrder {
         return fillResult;
     }
 
-    function marketBuyOrdersQuoteMe(
+    // TODO for information pruposes, remove when we can handle structure return types
+    function marketBuyOrdersQuoteExternal(
         Order[] orders,
         uint256 takerBuyAmount,
         bytes[] signatures)
@@ -193,7 +231,7 @@ contract Forwarder is SafeMath, LibOrder {
         return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
     }
 
-    function marketSellOrdersQuoteMe(
+    function marketSellOrdersQuoteExternal(
         Order[] orders,
         uint256 takerBuyAmount,
         bytes[] signatures)
@@ -229,5 +267,14 @@ contract Forwarder is SafeMath, LibOrder {
         internal
     {
         require(Token(token).transfer(account, amount));
+    }
+
+    function isAcceptableThreshold(uint256 requestedTokenAmount, uint256 soldTokenAmount)
+        public
+        constant
+        returns (bool)
+    {
+        uint256 exchangedProportion = safeDiv(safeMul(requestedTokenAmount, SAFE_EXCHANGE_PERC), 100);
+        return soldTokenAmount >= exchangedProportion;
     }
 }

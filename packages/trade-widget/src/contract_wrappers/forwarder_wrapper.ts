@@ -100,17 +100,14 @@ export class ForwarderWrapper {
     public async fillOrdersAsync(
         orders: SignedOrder[],
         feeOrders: SignedOrder[],
-        fillAmountBaseUnits: BigNumber,
+        fillAmountWei: BigNumber,
         from: string,
     ): Promise<string> {
-        // TODO remove fixed gas and gas price
         const txOpts = {
             from,
-            gas: 900000,
-            gasPrice: new BigNumber(1000000000),
-            value: fillAmountBaseUnits,
+            value: fillAmountWei,
         };
-        const params = formatters.createMarketFillOrders(orders, fillAmountBaseUnits);
+        const params = formatters.createMarketFillOrders(orders, fillAmountWei);
         const feeParams = formatters.createMarketFillOrders(feeOrders, new BigNumber(0));
         const txHash: string = await this._forwarderContract.fillOrders.sendTransactionAsync(
             params.orders,
@@ -121,12 +118,37 @@ export class ForwarderWrapper {
         );
         return txHash;
     }
+    public async fillOrdersFeeAsync(
+        orders: SignedOrder[],
+        feeOrders: SignedOrder[],
+        fillAmountWei: BigNumber,
+        feeProportion: number,
+        feeRecipient: string,
+        from: string,
+    ): Promise<string> {
+        const txOpts = {
+            from,
+            value: fillAmountWei,
+        };
+        const params = formatters.createMarketFillOrders(orders, fillAmountWei);
+        const feeParams = formatters.createMarketFillOrders(feeOrders, new BigNumber(0));
+        const txHash: string = await this._forwarderContract.fillOrdersFee.sendTransactionAsync(
+            params.orders,
+            params.signatures,
+            feeParams.orders,
+            feeParams.signatures,
+            feeProportion,
+            feeRecipient,
+            txOpts,
+        );
+        return txHash;
+    }
     public async marketSellOrdersQuoteAsync(
         orders: SignedOrder[],
         takerTokenFillAmount: BigNumber,
     ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber]> {
         const params = formatters.createMarketFillOrders(orders, takerTokenFillAmount);
-        const quote = await this._forwarderContract.marketSellOrdersQuoteMe.callAsync(
+        const quote = await this._forwarderContract.marketSellOrdersQuoteExternal.callAsync(
             params.orders,
             params.takerTokenFillAmount,
             params.signatures,
@@ -138,7 +160,7 @@ export class ForwarderWrapper {
         takerTokenFillAmount: BigNumber,
     ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber]> {
         const params = formatters.createMarketFillOrders(orders, takerTokenFillAmount);
-        const quote = await this._forwarderContract.marketBuyOrdersQuoteMe.callAsync(
+        const quote = await this._forwarderContract.marketBuyOrdersQuoteExternal.callAsync(
             params.orders,
             params.takerTokenFillAmount,
             params.signatures,
