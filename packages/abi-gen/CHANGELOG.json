@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "timestamp": 1522658513,
@@ -16,8 +15,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.2.5",
@@ -27,8 +25,7 @@
                 "pr": 452
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.2.4",
@@ -48,8 +45,7 @@
                 "pr": 413
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.2.1",
@@ -59,8 +55,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.2.0",
@@ -75,8 +70,7 @@
                 "pr": 388
             }
         ],
-        "timestamp": 1517929200,
-        "isPublished": true
+        "timestamp": 1517929200
     },
     {
         "version": "0.1.0",
@@ -94,7 +88,6 @@
                 "pr": 304
             }
         ],
-        "timestamp": 1515596400,
-        "isPublished": true
+        "timestamp": 1515596400
     }
 ]

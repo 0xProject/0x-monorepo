@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "timestamp": 1522658513,
@@ -16,8 +15,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.3.1",
@@ -29,8 +27,7 @@
                 "note": "Move `@0xproject/web3_wrapper` to dependencies from devDependencies."
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.3.0",
@@ -48,8 +45,7 @@
                 "pr": 426
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.2.0",
@@ -59,8 +55,7 @@
                 "pr": 392
             }
         ],
-        "timestamp": 1518706800,
-        "isPublished": true
+        "timestamp": 1518706800
     },
     {
         "version": "0.0.12",
@@ -70,8 +65,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.0.11",
@@ -81,7 +75,6 @@
                 "pr": 352
             }
         ],
-        "timestamp": 1517929200,
-        "isPublished": true
+        "timestamp": 1517929200
     }
 ]

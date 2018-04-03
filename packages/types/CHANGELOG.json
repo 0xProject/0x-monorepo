@@ -7,8 +7,7 @@
                 "pr": 485
             }
         ],
-        "timestamp": 1522673609,
-        "isPublished": true
+        "timestamp": 1522673609
     },
     {
         "timestamp": 1522658513,
@@ -17,8 +16,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.4.0",
@@ -32,8 +30,7 @@
                 "pr": 456
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.3.1",
@@ -42,8 +39,7 @@
                 "note": "Added `RawLogEntry` type."
             }
         ],
-        "timestamp": 1520434800,
-        "isPublished": true
+        "timestamp": 1520434800
     },
     {
         "version": "0.3.0",
@@ -61,8 +57,7 @@
                 "pr": 429
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.2.1",
@@ -72,8 +67,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.2.0",
@@ -83,7 +77,6 @@
                 "pr": 355
             }
         ],
-        "timestamp": 1517929200,
-        "isPublished": true
+        "timestamp": 1517929200
     }
 ]
