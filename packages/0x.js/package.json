@@ -67,6 +67,7 @@
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
+        "@types/request": "2.47.0",
         "@types/sinon": "^2.2.2",
         "@types/uuid": "^3.4.2",
         "awesome-typescript-loader": "^3.1.3",
