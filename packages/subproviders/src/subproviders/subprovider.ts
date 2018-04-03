@@ -40,7 +40,7 @@ export class Subprovider {
      */
     public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayloadWithMethod>): Promise<JSONRPCResponsePayload> {
         const finalPayload = Subprovider._createFinalPayload(payload);
-        const response = await promisify(this._engine.sendAsync, this._engine)(finalPayload);
+        const response: any = await promisify(this._engine.sendAsync, this._engine)(finalPayload);
         return response;
     }
     /**
