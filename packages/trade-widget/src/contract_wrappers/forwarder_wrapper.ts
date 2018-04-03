@@ -143,28 +143,4 @@ export class ForwarderWrapper {
         );
         return txHash;
     }
-    public async marketSellOrdersQuoteAsync(
-        orders: SignedOrder[],
-        takerTokenFillAmount: BigNumber,
-    ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber]> {
-        const params = formatters.createMarketFillOrders(orders, takerTokenFillAmount);
-        const quote = await this._forwarderContract.marketSellOrdersQuoteExternal.callAsync(
-            params.orders,
-            params.takerTokenFillAmount,
-            params.signatures,
-        );
-        return quote;
-    }
-    public async marketBuyOrdersQuoteAsync(
-        orders: SignedOrder[],
-        takerTokenFillAmount: BigNumber,
-    ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber]> {
-        const params = formatters.createMarketFillOrders(orders, takerTokenFillAmount);
-        const quote = await this._forwarderContract.marketBuyOrdersQuoteExternal.callAsync(
-            params.orders,
-            params.takerTokenFillAmount,
-            params.signatures,
-        );
-        return quote;
-    }
 }

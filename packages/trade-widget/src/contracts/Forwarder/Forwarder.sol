@@ -13,10 +13,11 @@ contract Forwarder is SafeMath, LibOrder {
     EtherToken etherToken;
     Token zrxToken;
 
-    uint256 constant MAX_UINT = 2 ** 256 - 1;
-    uint256 constant SAFE_EXCHANGE_PERC = 98; // 98%
-    uint16  constant MAX_FEE = 1000; // 10%
     uint16  constant public EXTERNAL_QUERY_GAS_LIMIT = 4999;    // Changes to state require at least 5000 gas
+    uint16  constant public MAX_FEE = 1000; // 10%
+
+    uint16  constant ALLOWABLE_EXCHANGE_PERC = 9800; // 98%
+    uint256 constant MAX_UINT = 2 ** 256 - 1;
     struct FillResults {
         uint256 makerAmountSold;
         uint256 takerAmountSold;
@@ -121,15 +122,18 @@ contract Forwarder is SafeMath, LibOrder {
         totalFillResult.makerAmountSold = requestedTokensResult.makerAmountSold;
         totalFillResult.makerFeePaid = requestedTokensResult.makerFeePaid;
         totalFillResult.takerFeePaid = safeAdd(totalFillResult.takerFeePaid, requestedTokensResult.takerFeePaid);
+
         // Ensure the token abstraction was fair 
         require(isAcceptableThreshold(sellTokenAmount, requestedTokensResult.takerAmountSold));
 
+        // Transfer all tokens to msg.sender
         transferToken(orders[0].makerTokenAddress, msg.sender, totalFillResult.makerAmountSold);
         return totalFillResult;
     }
 
     // There are issues in solidity when referencing another contracts structure in return types
     // Here we map to our structure of FillResults temporarily
+    // this is using an old/temporary implementation of market sell and buy which returns more data.
     function marketSellOrders(
         Order[] orders,
         uint256 takerTokenFillAmount,
@@ -206,63 +210,6 @@ contract Forwarder is SafeMath, LibOrder {
         return fillResult;
     }
 
-    // TODO for information pruposes, remove when we can handle structure return types
-    function marketBuyOrdersQuoteExternal(
-        Order[] orders,
-        uint256 takerBuyAmount,
-        bytes[] signatures)
-        public
-        returns (
-            uint256 makerTokenFilledAmount,
-            uint256 takerTokenFilledAmount,
-            uint256 makerFeeAmountPaid,
-            uint256 takerFeeAmountPaid
-        )
-    {
-        var (makerTokenFilledAmountQuote,
-            takerTokenFilledAmountQuote,
-            makerFeeAmountPaidQuote,
-            takerFeeAmountPaidQuote) = 
-        Exchange(exchange).marketBuyOrdersQuote(orders, takerBuyAmount, signatures);
-        makerTokenFilledAmount = makerTokenFilledAmountQuote;
-        takerTokenFilledAmount = takerTokenFilledAmountQuote;
-        makerFeeAmountPaid = makerFeeAmountPaidQuote;
-        takerFeeAmountPaid = takerFeeAmountPaidQuote;
-        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
-    }
-
-    function marketSellOrdersQuoteExternal(
-        Order[] orders,
-        uint256 takerBuyAmount,
-        bytes[] signatures)
-        public
-        returns (
-            uint256 makerTokenFilledAmount,
-            uint256 takerTokenFilledAmount,
-            uint256 makerFeeAmountPaid,
-            uint256 takerFeeAmountPaid
-        )
-    {
-        var (makerTokenFilledAmountQuote,
-            takerTokenFilledAmountQuote,
-            makerFeeAmountPaidQuote,
-            takerFeeAmountPaidQuote) = 
-        Exchange(exchange).marketSellOrdersQuote(orders, takerBuyAmount, signatures);
-        makerTokenFilledAmount = makerTokenFilledAmountQuote;
-        takerTokenFilledAmount = takerTokenFilledAmountQuote;
-        makerFeeAmountPaid = makerFeeAmountPaidQuote;
-        takerFeeAmountPaid = takerFeeAmountPaidQuote;
-        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
-    }
-
-    function getPartialAmount(uint256 numerator, uint256 denominator, uint256 target)
-        internal
-        view
-        returns (uint256)
-    {
-        return safeDiv(safeMul(numerator, target), denominator);
-    }
-
     function transferToken(address token, address account, uint amount)
         internal
     {
@@ -274,7 +221,7 @@ contract Forwarder is SafeMath, LibOrder {
         constant
         returns (bool)
     {
-        uint256 exchangedProportion = safeDiv(safeMul(requestedTokenAmount, SAFE_EXCHANGE_PERC), 100);
+        uint256 exchangedProportion = safeDiv(safeMul(requestedTokenAmount, ALLOWABLE_EXCHANGE_PERC), 10000);
         return soldTokenAmount >= exchangedProportion;
     }
 }

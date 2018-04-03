@@ -127,16 +127,13 @@ describe('Forwarder', () => {
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
+        balances = await dmyBalances.getAsync();
+        signedOrder = orderFactory.newSignedOrder();
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('fillOrder', () => {
-        beforeEach(async () => {
-            balances = await dmyBalances.getAsync();
-            signedOrder = orderFactory.newSignedOrder();
-        });
-
         it('should fill the order', async () => {
             const fillAmount = signedOrder.takerTokenAmount.div(2);
             const txHash = await forwarderWrapper.fillOrdersAsync([signedOrder], [], fillAmount, takerAddress);
@@ -163,9 +160,6 @@ describe('Forwarder', () => {
             });
 
             const fillAmount = signedOrder.takerTokenAmount.div(2);
-            const quote = await forwarderWrapper.marketSellOrdersQuoteAsync([orderWithFees], fillAmount);
-            const feeAmount = quote[3];
-            const feeQuote = await forwarderWrapper.marketBuyOrdersQuoteAsync([feeOrder], feeAmount);
             const txHash = await forwarderWrapper.fillOrdersAsync(
                 [orderWithFees],
                 [feeOrder],
@@ -174,7 +168,6 @@ describe('Forwarder', () => {
             );
             const newBalances = await dmyBalances.getAsync();
             const takerBalanceAfter = newBalances[takerAddress][signedOrder.makerTokenAddress];
-            const takerBuyAmount = newBalances[takerAddress][rep.address];
 
             const acceptPerc = 98;
             const acceptableThreshold = fillAmount.times(acceptPerc).dividedBy(100);
@@ -184,11 +177,6 @@ describe('Forwarder', () => {
         });
     });
     describe('fillOrderFee', () => {
-        beforeEach(async () => {
-            balances = await dmyBalances.getAsync();
-            signedOrder = orderFactory.newSignedOrder();
-        });
-
         it('should fill the order and send fee to fee recipient', async () => {
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
             const fillAmount = signedOrder.takerTokenAmount.div(2);
@@ -206,7 +194,7 @@ describe('Forwarder', () => {
             const makerBalanceAfter = newBalances[makerAddress][signedOrder.makerTokenAddress];
             const takerBalanceAfter = newBalances[takerAddress][signedOrder.makerTokenAddress];
             const afterEthBalance = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
-            const takerBoughtAmount = newBalances[takerAddress][rep.address].minus(balances[takerAddress][rep.address]);
+            const takerBoughtAmount = takerBalanceAfter.minus(balances[takerAddress][signedOrder.makerTokenAddress]);
 
             expect(makerBalanceAfter).to.be.bignumber.equal(makerBalanceBefore.minus(takerBoughtAmount));
             expect(afterEthBalance).to.be.bignumber.equal(
