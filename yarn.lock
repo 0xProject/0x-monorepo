@@ -15,32 +15,6 @@
     tslint-eslint-rules "^4.1.1"
     tslint-react "^3.2.0"
 
-"@0xproject/types@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.4.2.tgz#83d6ebef60f41e6209acb2656b1d68ff79367ca5"
-  dependencies:
-    bignumber.js "~4.1.0"
-
-"@0xproject/typescript-typings@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@0xproject/typescript-typings/-/typescript-typings-0.0.2.tgz#b549ea3c81ce2d81b99f05583bdf7c411a3ca90c"
-  dependencies:
-    "@0xproject/types" "^0.4.2"
-    bignumber.js "~4.1.0"
-
-"@0xproject/utils@0.4.4":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.4.4.tgz#bce4f7a5a46570a69911f4a4ade5d49016330087"
-  dependencies:
-    "@0xproject/types" "^0.4.2"
-    "@0xproject/typescript-typings" "^0.0.2"
-    "@types/node" "^8.0.53"
-    bignumber.js "~4.1.0"
-    ethers-contracts "^2.2.1"
-    js-sha3 "^0.7.0"
-    lodash "^4.17.4"
-    web3 "^0.20.0"
-
 "@ledgerhq/hw-app-eth@^4.3.0":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-4.7.3.tgz#d352e19658ae296532e522c53c8ec2a1a77b64e5"
