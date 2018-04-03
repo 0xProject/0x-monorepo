@@ -1,5 +1,5 @@
+import { promisify } from '@0xproject/utils';
 import { execAsync } from 'async-child-process';
-import * as promisify from 'es6-promisify';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';

@@ -1,6 +1,5 @@
 declare module 'async-child-process';
 declare module 'publish-release';
-declare module 'es6-promisify';
 declare module 'semver-diff';
 
 // semver-sort declarations

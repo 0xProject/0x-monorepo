@@ -1,5 +1,5 @@
 import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
-import promisify = require('es6-promisify');
+import { promisify } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 import { JSONRPCRequestPayloadWithMethod } from '../types';

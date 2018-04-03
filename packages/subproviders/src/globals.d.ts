@@ -1,5 +1,3 @@
-declare module 'es6-promisify';
-
 // tslint:disable:max-classes-per-file
 // tslint:disable:class-name
 // tslint:disable:async-suffix
