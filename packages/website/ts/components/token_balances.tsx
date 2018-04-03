@@ -8,7 +8,6 @@ import {
     utils as sharedUtils,
 } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
-import DharmaLoanFrame from 'dharma-loan-frame';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -79,7 +78,6 @@ interface TokenBalancesProps {
 interface TokenBalancesState {
     errorType: BalanceErrs;
     isBalanceSpinnerVisible: boolean;
-    isDharmaDialogVisible: boolean;
     isZRXSpinnerVisible: boolean;
     isTokenPickerOpen: boolean;
     isAddingToken: boolean;
@@ -96,7 +94,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             errorType: undefined,
             isBalanceSpinnerVisible: false,
             isZRXSpinnerVisible: false,
-            isDharmaDialogVisible: DharmaLoanFrame.isAuthTokenPresent(),
             isTokenPickerOpen: false,
             isAddingToken: false,
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
@@ -168,20 +165,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 onTouchTap={this._onErrorDialogToggle.bind(this, false)}
             />,
         ];
-        const dharmaDialogActions = [
-            <FlatButton
-                key="dharmaCloseBtn"
-                label="Close"
-                primary={true}
-                onTouchTap={this._onDharmaDialogToggle.bind(this, false)}
-            />,
-        ];
         const isTestNetwork = utils.isTestNetwork(this.props.networkId);
         const isKovanTestNetwork = this.props.networkId === constants.NETWORK_ID_KOVAN;
-        const dharmaButtonColumnStyle = {
-            paddingLeft: 3,
-            display: isKovanTestNetwork ? 'table-cell' : 'none',
-        };
         const stubColumnStyle = {
             display: isTestNetwork ? 'none' : 'table-cell',
         };
@@ -190,11 +175,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             allTokenRowHeight < MAX_TOKEN_TABLE_HEIGHT ? allTokenRowHeight : MAX_TOKEN_TABLE_HEIGHT;
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const tokenColSpan = isSmallScreen ? TOKEN_COL_SPAN_SM : TOKEN_COL_SPAN_LG;
-        const dharmaLoanExplanation =
-            'If you need access to larger amounts of ether,<br> \
-                                     you can request a loan from the Dharma Loan<br> \
-                                     network.  Your loan should be funded in 5<br>  \
-                                     minutes or less.';
         const allowanceExplanation =
             '0x smart contracts require access to your<br> \
                                   token balances in order to execute trades.<br> \
@@ -226,12 +206,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                     {isSmallScreen ? 'Faucet' : 'Request from faucet'}
                                 </TableHeaderColumn>
                             )}
-                            {isKovanTestNetwork && (
-                                <TableHeaderColumn style={dharmaButtonColumnStyle}>
-                                    {isSmallScreen ? 'Loan' : 'Request Dharma loan'}
-                                    <HelpTooltip style={{ paddingLeft: 4 }} explanation={dharmaLoanExplanation} />
-                                </TableHeaderColumn>
-                            )}
                         </TableRow>
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
@@ -255,15 +229,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                         labelLoading="Sending..."
                                         labelComplete="Sent!"
                                         onClickAsyncFn={this._faucetRequestAsync.bind(this, true)}
-                                    />
-                                </TableRowColumn>
-                            )}
-                            {isKovanTestNetwork && (
-                                <TableRowColumn style={dharmaButtonColumnStyle}>
-                                    <RaisedButton
-                                        label="Request"
-                                        style={{ width: '100%' }}
-                                        onTouchTap={this._onDharmaDialogToggle.bind(this)}
                                     />
                                 </TableRowColumn>
                             )}
@@ -314,17 +279,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     onRequestClose={this._onErrorDialogToggle.bind(this, false)}
                 >
                     {this._renderErrorDialogBody()}
-                </Dialog>
-                <Dialog
-                    title="Request Dharma Loan"
-                    titleStyle={{ fontWeight: 100, backgroundColor: colors.white }}
-                    bodyStyle={{ backgroundColor: colors.dharmaDarkGrey }}
-                    actionsContainerStyle={{ backgroundColor: colors.white }}
-                    autoScrollBodyContent={true}
-                    actions={dharmaDialogActions}
-                    open={this.state.isDharmaDialogVisible}
-                >
-                    {this._renderDharmaLoanFrame()}
                 </Dialog>
                 <AssetPicker
                     userAddress={this.props.userAddress}
@@ -545,24 +499,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 throw utils.spawnSwitchErr('errorType', this.state.errorType);
         }
     }
-    private _renderDharmaLoanFrame() {
-        if (sharedUtils.isUserOnMobile()) {
-            return (
-                <h4 style={{ textAlign: 'center' }}>
-                    We apologize -- Dharma loan requests are not available on mobile yet. Please try again through your
-                    desktop browser.
-                </h4>
-            );
-        } else {
-            return (
-                <DharmaLoanFrame
-                    partner="0x"
-                    env={utils.getCurrentEnvironment()}
-                    screenWidth={this.props.screenWidth}
-                />
-            );
-        }
-    }
     private _onErrorOccurred(errorType: BalanceErrs) {
         this.setState({
             errorType,
@@ -644,11 +580,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     private _onErrorDialogToggle(isOpen: boolean) {
         this.setState({
             errorType: undefined,
-        });
-    }
-    private _onDharmaDialogToggle() {
-        this.setState({
-            isDharmaDialogVisible: !this.state.isDharmaDialogVisible,
         });
     }
     private _onAddTokenClicked() {
