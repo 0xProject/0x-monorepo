@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "timestamp": 1522658513,
@@ -16,8 +15,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.2.0",
@@ -27,8 +25,7 @@
                 "pr": 412
             }
         ],
-        "timestamp": 1520434800,
-        "isPublished": true
+        "timestamp": 1520434800
     },
     {
         "version": "0.1.0",
@@ -42,8 +39,7 @@
                 "pr": 385
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.0.18",
@@ -53,8 +49,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1486566000,
-        "isPublished": true
+        "timestamp": 1486566000
     },
     {
         "version": "0.0.4",
@@ -67,7 +62,6 @@
                     "Added assertion isValidBaseUnitAmount which checks both that the value is a valid bigNumber and that it does not contain decimals."
             }
         ],
-        "timestamp": 1510585200,
-        "isPublished": true
+        "timestamp": 1510585200
     }
 ]

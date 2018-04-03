@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.8.3",
@@ -21,8 +20,7 @@
                 "pr": 465
             }
         ],
-        "timestamp": 1522658513,
-        "isPublished": true
+        "timestamp": 1522658513
     },
     {
         "version": "0.8.0",
@@ -43,8 +41,7 @@
                 "note": "Ignore `ganache-core` dependency when using package in a browser environment."
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.7.0",
@@ -55,8 +52,7 @@
                 "pr": 437
             }
         ],
-        "timestamp": 1520434800,
-        "isPublished": true
+        "timestamp": 1520434800
     },
     {
         "version": "0.6.0",
@@ -70,8 +66,7 @@
                 "pr": 432
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.5.0",
@@ -81,8 +76,7 @@
                 "pr": 392
             }
         ],
-        "timestamp": 1518706800,
-        "isPublished": true
+        "timestamp": 1518706800
     },
     {
         "version": "0.4.1",
@@ -92,8 +86,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.4.0",
@@ -108,8 +101,7 @@
                 "pr": 363
             }
         ],
-        "timestamp": 1517929200,
-        "isPublished": true
+        "timestamp": 1517929200
     },
     {
         "version": "0.3.6",
@@ -119,8 +111,7 @@
                 "pr": 303
             }
         ],
-        "timestamp": 1517065200,
-        "isPublished": true
+        "timestamp": 1517065200
     },
     {
         "version": "0.3.0",
@@ -129,8 +120,7 @@
                 "note": "Allow LedgerSubprovider to handle `eth_sign` in addition to `personal_sign` RPC requests"
             }
         ],
-        "timestamp": 1514386800,
-        "isPublished": true
+        "timestamp": 1514386800
     },
     {
         "version": "0.2.0",
@@ -140,7 +130,6 @@
                 "pr": 271
             }
         ],
-        "timestamp": 1513695600,
-        "isPublished": true
+        "timestamp": 1513695600
     }
 ]

@@ -10,11 +10,9 @@
         "clean": "shx rm -rf lib",
         "build": "tsc",
         "test:publish": "run-s build script:publish",
-        "convert_changelogs": "run-s build script:convert_changelogs",
         "find_unused_deps": "run-s build script:find_unused_deps",
         "script:deps_versions": "node ./lib/deps_versions.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
-        "script:convert_changelogs": "node ./lib/convert_changelogs.js",
         "script:find_unused_deps": "node ./lib/find_unused_dependencies.js"
     },
     "repository": {

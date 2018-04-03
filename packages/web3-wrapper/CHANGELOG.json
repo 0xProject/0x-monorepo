@@ -16,8 +16,7 @@
                 "pr": 485
             }
         ],
-        "timestamp": 1522673609,
-        "isPublished": true
+        "timestamp": 1522673609
     },
     {
         "version": "0.4.0",
@@ -27,8 +26,7 @@
                 "pr": 465
             }
         ],
-        "timestamp": 1522658513,
-        "isPublished": true
+        "timestamp": 1522658513
     },
     {
         "version": "0.3.0",
@@ -47,8 +45,7 @@
                 "pr": 444
             }
         ],
-        "timestamp": 1521298800,
-        "isPublished": true
+        "timestamp": 1521298800
     },
     {
         "version": "0.2.0",
@@ -70,8 +67,7 @@
                 "pr": 413
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     },
     {
         "version": "0.1.12",
@@ -81,7 +77,6 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     }
 ]

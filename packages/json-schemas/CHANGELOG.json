@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "timestamp": 1522658513,
@@ -16,8 +15,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.7.13",
@@ -27,8 +25,7 @@
                 "pr": 389
             }
         ],
-        "timestamp": 1518102000,
-        "isPublished": true
+        "timestamp": 1518102000
     },
     {
         "version": "0.7.0",
@@ -38,8 +35,7 @@
                 "pr": 272
             }
         ],
-        "timestamp": 1513695600,
-        "isPublished": true
+        "timestamp": 1513695600
     },
     {
         "version": "0.6.7",
@@ -48,7 +44,6 @@
                 "note": "Re-publish JSON-schema previously published under NPM package 0x-json-schemas"
             }
         ],
-        "timestamp": 1510585200,
-        "isPublished": true
+        "timestamp": 1510585200
     }
 ]

@@ -24,8 +24,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.0.2",
@@ -34,7 +33,6 @@
                 "note": "Initial release"
             }
         ],
-        "timestamp": 1520089200,
-        "isPublished": true
+        "timestamp": 1520089200
     }
 ]

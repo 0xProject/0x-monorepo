@@ -6,8 +6,7 @@
             {
                 "note": "Dependencies updated"
             }
-        ],
-        "isPublished": true
+        ]
     },
     {
         "version": "0.1.0",
@@ -23,7 +22,6 @@
                 "note": "Reorganized colors and added new ones"
             }
         ],
-        "timestamp": 1522658513,
-        "isPublished": true
+        "timestamp": 1522658513
     }
 ]
