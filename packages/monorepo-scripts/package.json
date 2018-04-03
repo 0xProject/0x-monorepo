@@ -11,9 +11,11 @@
         "build": "tsc",
         "test:publish": "run-s build script:publish",
         "convert_changelogs": "run-s build script:convert_changelogs",
+        "find_unused_deps": "run-s build script:find_unused_deps",
         "script:deps_versions": "node ./lib/deps_versions.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
-        "script:convert_changelogs": "node ./lib/convert_changelogs.js"
+        "script:convert_changelogs": "node ./lib/convert_changelogs.js",
+        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js"
     },
     "repository": {
         "type": "git",
@@ -30,6 +32,7 @@
         "@types/glob": "^5.0.33",
         "@types/node": "^8.0.53",
         "@types/rimraf": "^2.0.2",
+        "depcheck": "^0.6.9",
         "lerna-get-packages": "^1.0.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
@@ -37,6 +40,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",
         "chalk": "^2.3.0",
         "es6-promisify": "^5.0.0",
