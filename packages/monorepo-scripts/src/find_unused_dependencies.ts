@@ -9,6 +9,7 @@ import { exec as execAsync } from 'promisify-child-process';
 import { constants } from './constants';
 import { utils } from './utils';
 
+// For some reason, `depcheck` hangs on some packages. Add them here.
 const IGNORE_PACKAGES = ['@0xproject/deployer'];
 
 (async () => {
