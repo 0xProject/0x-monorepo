@@ -48,7 +48,7 @@ const semverNameToIndex: { [semver: string]: number } = {
         }
 
         const currentVersion = lernaPackage.package.version;
-        const shouldAddNewEntry = shouldAddNewChangelogEntry(changelogs);
+        const shouldAddNewEntry = shouldAddNewChangelogEntry(currentVersion, changelogs);
         if (shouldAddNewEntry) {
             // Create a new entry for a patch version with generic changelog entry.
             const nextPatchVersion = utils.getNextPatchVersion(currentVersion);
@@ -174,12 +174,13 @@ function getChangelogJSONOrCreateIfMissing(packageName: string, changelogPath: s
     }
 }
 
-function shouldAddNewChangelogEntry(changelogs: Changelog[]): boolean {
+function shouldAddNewChangelogEntry(currentVersion: string, changelogs: Changelog[]): boolean {
     if (_.isEmpty(changelogs)) {
         return true;
     }
     const lastEntry = changelogs[0];
-    return !!lastEntry.isPublished;
+    const lastEntryCurrentVersion = lastEntry.version === currentVersion;
+    return lastEntryCurrentVersion;
 }
 
 function generateChangelogMd(changelogs: Changelog[]): string {

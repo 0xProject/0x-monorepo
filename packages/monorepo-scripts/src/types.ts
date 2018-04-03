@@ -13,7 +13,6 @@ export interface Changelog {
     timestamp?: number;
     version: string;
     changes: Changes[];
-    isPublished?: boolean;
 }
 
 export enum SemVerIndex {

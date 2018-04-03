@@ -91,7 +91,7 @@ export const postpublishUtils = {
         );
     },
     async publishReleaseNotesAsync(cwd: string, packageName: string, version: string, assets: string[]): Promise<void> {
-        const notes = this.getReleaseNotes(packageName);
+        const notes = this.getReleaseNotes(packageName, version);
         const releaseName = this.getReleaseName(packageName, version);
         const tag = this.getTag(packageName, version);
         const finalAssets = this.adjustAssetPaths(cwd, assets);
@@ -109,9 +109,8 @@ export const postpublishUtils = {
             reuseDraftOnly: false,
             assets,
         });
-        this.updateChangelogIsPublished(packageName);
     },
-    getReleaseNotes(packageName: string) {
+    getReleaseNotes(packageName: string, version: string) {
         const packageNameWithNamespace = packageName.replace('@0xproject/', '');
         const changelogJSONPath = path.join(
             constants.monorepoRootPath,
@@ -122,33 +121,20 @@ export const postpublishUtils = {
         const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
         const changelogs = JSON.parse(changelogJSON);
         const latestLog = changelogs[0];
-        if (_.isUndefined(latestLog.isPublished)) {
-            let notes = '';
-            _.each(latestLog.changes, change => {
-                notes += `* ${change.note}`;
-                if (change.pr) {
-                    notes += ` (${change.pr})`;
-                }
-                notes += `\n`;
-            });
-            return notes;
+        // We sanity check that the version for the changelog notes we are about to publish to Github
+        // correspond to the new version of the package.
+        if (version !== latestLog.version) {
+            throw new Error('Expected CHANGELOG.json latest entry version to coincide with published version.');
         }
-        return 'N/A';
-    },
-    updateChangelogIsPublished(packageName: string) {
-        const packageNameWithNamespace = packageName.replace('@0xproject/', '');
-        const changelogJSONPath = path.join(
-            constants.monorepoRootPath,
-            'packages',
-            packageNameWithNamespace,
-            'CHANGELOG.json',
-        );
-        const changelogJSON = fs.readFileSync(changelogJSONPath, 'utf-8');
-        const changelogs = JSON.parse(changelogJSON);
-        const latestLog = changelogs[0];
-        latestLog.isPublished = true;
-        changelogs[0] = latestLog;
-        fs.writeFileSync(changelogJSONPath, JSON.stringify(changelogs, null, '\t'));
+        let notes = '';
+        _.each(latestLog.changes, change => {
+            notes += `* ${change.note}`;
+            if (change.pr) {
+                notes += ` (${change.pr})`;
+            }
+            notes += `\n`;
+        });
+        return notes;
     },
     getTag(packageName: string, version: string) {
         return `${packageName}@${version}`;
