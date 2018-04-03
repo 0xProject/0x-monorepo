@@ -44,11 +44,8 @@
         "@0xproject/subproviders": "^0.8.4",
         "@0xproject/types": "^0.5.0",
         "@0xproject/typescript-typings": "^0.0.3",
-        "@0xproject/utils": "^0.5.0",
         "@0xproject/web3-wrapper": "^0.5.0",
-        "ethereumjs-util": "^5.1.2",
         "lodash": "^4.17.4",
-        "request-promise-native": "^1.0.5",
         "web3": "^0.20.0",
         "web3-provider-engine": "^13.0.1"
     },

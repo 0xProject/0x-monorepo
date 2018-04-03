@@ -1,12 +1,9 @@
 declare module 'react-tooltip';
-declare module 'react-router-hash-link';
 declare module 'truffle-contract';
 declare module 'keccak';
 declare module 'whatwg-fetch';
-declare module 'react-html5video';
 declare module 'web3-provider-engine/subproviders/filters';
 declare module 'thenby';
-declare module 'react-recaptcha';
 declare module 'react-document-title';
 declare module 'react-ga';
 

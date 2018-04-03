@@ -60,15 +60,14 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0xproject/abi-gen": "^0.2.9",
         "@0xproject/dev-utils": "^0.3.4",
         "@0xproject/monorepo-scripts": "^0.1.16",
         "@0xproject/tslint-config": "^0.4.14",
         "@types/bintrees": "^1.0.2",
-        "@types/jsonschema": "^1.1.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
+        "@types/request": "2.47.0",
         "@types/sinon": "^2.2.2",
         "@types/uuid": "^3.4.2",
         "awesome-typescript-loader": "^3.1.3",
@@ -84,7 +83,6 @@
         "opn-cli": "^3.1.0",
         "prettier": "^1.11.1",
         "request": "^2.81.0",
-        "request-promise-native": "^1.0.5",
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
         "source-map-support": "^0.5.0",
@@ -92,7 +90,6 @@
         "tslint": "5.8.0",
         "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1",
-        "web3-provider-engine": "^13.0.1",
         "webpack": "^3.1.0"
     },
     "dependencies": {

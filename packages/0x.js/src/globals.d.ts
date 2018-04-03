@@ -1,5 +1,4 @@
 declare module 'web3_beta';
-declare module 'request-promise-native';
 
 // semver-sort declarations
 declare module 'semver-sort' {

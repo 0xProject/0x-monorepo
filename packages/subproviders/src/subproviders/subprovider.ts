@@ -1,5 +1,5 @@
 import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
-import promisify = require('es6-promisify');
+import { promisify } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
 import { JSONRPCRequestPayloadWithMethod } from '../types';
@@ -40,7 +40,7 @@ export class Subprovider {
      */
     public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayloadWithMethod>): Promise<JSONRPCResponsePayload> {
         const finalPayload = Subprovider._createFinalPayload(payload);
-        const response = await promisify(this._engine.sendAsync, this._engine)(finalPayload);
+        const response = await promisify<JSONRPCResponsePayload>(this._engine.sendAsync, this._engine)(finalPayload);
         return response;
     }
     /**

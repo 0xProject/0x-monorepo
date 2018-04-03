@@ -1,6 +1,5 @@
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0xproject/subproviders';
 import { BlockParam, CallData, JSONRPCRequestPayload, TransactionTrace, TxData } from '@0xproject/types';
-import { promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 

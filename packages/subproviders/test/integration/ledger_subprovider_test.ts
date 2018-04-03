@@ -1,10 +1,10 @@
 import { JSONRPCResponsePayload } from '@0xproject/types';
+import { promisify } from '@0xproject/utils';
 import Eth from '@ledgerhq/hw-app-eth';
 // HACK: This depdency is optional and tslint skips optional depdencies
 // tslint:disable-next-line:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
-import promisify = require('es6-promisify');
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
 import Web3 = require('web3');

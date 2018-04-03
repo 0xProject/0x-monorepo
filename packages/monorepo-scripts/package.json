@@ -10,8 +10,10 @@
         "clean": "shx rm -rf lib",
         "build": "tsc",
         "test:publish": "run-s build script:publish",
+        "find_unused_deps": "run-s build script:find_unused_deps",
         "script:deps_versions": "node ./lib/deps_versions.js",
-        "script:publish": "IS_DRY_RUN=true node ./lib/publish.js"
+        "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
+        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js"
     },
     "repository": {
         "type": "git",
@@ -24,10 +26,11 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/monorepo-scripts/README.md",
     "comment": "// We purposefully use an older version of tslint-config here to avoid creating an import cycle",
     "devDependencies": {
-        "@0xproject/tslint-config": "0.4.8",
+        "@0xproject/tslint-config": "0.4.13",
         "@types/glob": "^5.0.33",
         "@types/node": "^8.0.53",
         "@types/rimraf": "^2.0.2",
+        "depcheck": "^0.6.9",
         "lerna-get-packages": "^1.0.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
@@ -35,6 +38,7 @@
         "typescript": "2.7.1"
     },
     "dependencies": {
+        "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",
         "chalk": "^2.3.0",
         "es6-promisify": "^5.0.0",
