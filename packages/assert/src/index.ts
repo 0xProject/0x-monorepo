@@ -61,7 +61,7 @@ export const assert = {
     },
     isWeb3Provider(variableName: string, value: any): void {
         const isWeb3Provider = _.isFunction(value.send) || _.isFunction(value.sendAsync);
-        this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Web3.Provider', value));
+        this.assert(isWeb3Provider, this.typeAssertionMessage(variableName, 'Provider', value));
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
         const schemaValidator = new SchemaValidator();

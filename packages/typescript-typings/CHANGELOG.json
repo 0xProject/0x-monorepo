@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Add types for more packages",
+                "pr": 501
+            }
+        ]
+    },
+    {
         "timestamp": 1522673609,
         "version": "0.0.3",
         "changes": [

@@ -1,4 +1,4 @@
-import { JSONRPCRequestPayload } from '@0xproject/types';
+import { JSONRPCRequestPayload, Provider } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
@@ -18,7 +18,7 @@ export class InjectedWeb3Subprovider extends Subprovider {
      * Instantiates a new InjectedWeb3Subprovider
      * @param provider Web3 provider that should handle  all user account related requests
      */
-    constructor(provider: Web3.Provider) {
+    constructor(provider: Provider) {
         super();
         this._injectedWeb3 = new Web3(provider);
     }

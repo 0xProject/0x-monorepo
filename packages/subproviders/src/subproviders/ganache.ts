@@ -1,6 +1,5 @@
-import { JSONRPCRequestPayload } from '@0xproject/types';
+import { JSONRPCRequestPayload, Provider } from '@0xproject/types';
 import * as Ganache from 'ganache-core';
-import * as Web3 from 'web3';
 
 import { Callback, ErrorCallback } from '../types';
 
@@ -11,7 +10,7 @@ import { Subprovider } from './subprovider';
  * It intercepts all JSON RPC requests and relays them to an in-process ganache instance.
  */
 export class GanacheSubprovider extends Subprovider {
-    private _ganacheProvider: Web3.Provider;
+    private _ganacheProvider: Provider;
     /**
      * Instantiates a GanacheSubprovider
      * @param opts The desired opts with which to instantiate the Ganache provider

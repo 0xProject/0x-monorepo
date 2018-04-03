@@ -7,12 +7,13 @@ import {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     LogEntry,
+    Provider,
     RawLogEntry,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     TxData,
 } from '@0xproject/types';
-import { AbiDecoder, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
@@ -31,13 +32,61 @@ export class Web3Wrapper {
     private _defaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
     /**
+     * Check if an address is a valid Ethereum address
+     * @param address Address to check
+     * @returns Whether the address is a valid Ethereum address
+     */
+    public static isAddress(address: string): boolean {
+        return addressUtils.isAddress(address);
+    }
+    /**
+     * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
+     * E.g: If a currency has 18 decimal places, 1e18 or one quintillion of the currency is equivalent
+     * to 1 unit.
+     * @param   amount      The amount in baseUnits that you would like converted to units.
+     * @param   decimals    The number of decimal places the unit amount has.
+     * @return  The amount in units.
+     */
+    public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
+        const aUnit = new BigNumber(10).pow(decimals);
+        const unit = amount.div(aUnit);
+        return unit;
+    }
+    /**
+     * A baseUnit is defined as the smallest denomination of a token. An amount expressed in baseUnits
+     * is the amount expressed in the smallest denomination.
+     * E.g: 1 unit of a token with 18 decimal places is expressed in baseUnits as 1000000000000000000
+     * @param   amount      The amount of units that you would like converted to baseUnits.
+     * @param   decimals    The number of decimal places the unit amount has.
+     * @return  The amount in baseUnits.
+     */
+    public static toBaseUnitAmount(amount: BigNumber, decimals: number): BigNumber {
+        const unit = new BigNumber(10).pow(decimals);
+        const baseUnitAmount = amount.times(unit);
+        const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
+        if (hasDecimals) {
+            throw new Error(`Invalid unit amount: ${amount.toString()} - Too many decimal places`);
+        }
+        return baseUnitAmount;
+    }
+    /**
+     * Convert an Ether amount from ETH to Wei
+     * @param ethAmount Amount of Ether to convert to wei
+     * @returns Amount in wei
+     */
+    public static toWei(ethAmount: BigNumber): BigNumber {
+        const ETH_DECIMALS = 18;
+        const balanceWei = Web3Wrapper.toBaseUnitAmount(ethAmount, ETH_DECIMALS);
+        return balanceWei;
+    }
+    /**
      * Instantiates a new Web3Wrapper.
      * @param   provider    The Web3 provider instance you would like the Web3Wrapper to use for interacting with
      *                      the backing Ethereum node.
      * @param   defaults    Override TxData defaults sent with RPC requests to the backing Ethereum node.
      * @return  An instance of the Web3Wrapper class.
      */
-    constructor(provider: Web3.Provider, defaults?: Partial<TxData>) {
+    constructor(provider: Provider, defaults?: Partial<TxData>) {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
@@ -61,23 +110,15 @@ export class Web3Wrapper {
      * Retrieve the Web3 provider
      * @return  Web3 provider instance
      */
-    public getProvider(): Web3.Provider {
+    public getProvider(): Provider {
         return this._web3.currentProvider;
     }
     /**
      * Update the used Web3 provider
      * @param provider The new Web3 provider to be set
      */
-    public setProvider(provider: Web3.Provider) {
+    public setProvider(provider: Provider) {
         this._web3.setProvider(provider);
-    }
-    /**
-     * Check if an address is a valid Ethereum address
-     * @param address Address to check
-     * @returns Whether the address is a valid Ethereum address
-     */
-    public isAddress(address: string): boolean {
-        return this._web3.isAddress(address);
     }
     /**
      * Check whether an address is available through the backing provider. This can be
@@ -96,7 +137,7 @@ export class Web3Wrapper {
      * @returns Ethereum node's version string
      */
     public async getNodeVersionAsync(): Promise<string> {
-        const nodeVersion = await promisify<string>(this._web3.version.getNode)();
+        const nodeVersion = await this._sendRawPayloadAsync<string>({ method: 'web3_clientVersion' });
         return nodeVersion;
     }
     /**
@@ -104,7 +145,7 @@ export class Web3Wrapper {
      * @returns The network id
      */
     public async getNetworkIdAsync(): Promise<number> {
-        const networkIdStr = await promisify<string>(this._web3.version.getNetwork)();
+        const networkIdStr = await this._sendRawPayloadAsync<string>({ method: 'net_version' });
         const networkId = _.parseInt(networkIdStr);
         return networkId;
     }
@@ -119,15 +160,6 @@ export class Web3Wrapper {
             transactionReceipt.status = this._normalizeTxReceiptStatus(transactionReceipt.status);
         }
         return transactionReceipt;
-    }
-    /**
-     * Convert an Ether amount from ETH to Wei
-     * @param ethAmount Amount of Ether to convert to wei
-     * @returns Amount in wei
-     */
-    public toWei(ethAmount: BigNumber): BigNumber {
-        const balanceWei = this._web3.toWei(ethAmount, 'ether');
-        return balanceWei;
     }
     /**
      * Retrieves an accounts Ether balance in wei

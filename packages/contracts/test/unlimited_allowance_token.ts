@@ -11,7 +11,7 @@ import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -23,7 +23,7 @@ describe('UnlimitedAllowanceToken', () => {
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
-    const zeroEx = new ZeroEx(web3.currentProvider, config);
+    const zeroEx = new ZeroEx(provider, config);
 
     const MAX_MINT_VALUE = new BigNumber(100000000000000000000);
     let tokenAddress: string;
@@ -34,7 +34,7 @@ describe('UnlimitedAllowanceToken', () => {
         owner = accounts[0];
         spender = accounts[1];
         const tokenInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        token = new DummyTokenContract(web3Wrapper, tokenInstance.abi, tokenInstance.address);
+        token = new DummyTokenContract(tokenInstance.abi, tokenInstance.address, provider);
         await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner });
         tokenAddress = token.address;
     });

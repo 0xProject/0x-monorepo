@@ -63,7 +63,12 @@ export class TokenTransferProxyWrapper extends ContractWrapper {
             artifacts.TokenTransferProxyArtifact,
             this._contractAddressIfExists,
         );
-        const contractInstance = new TokenTransferProxyContract(this._web3Wrapper, abi, address);
+        const contractInstance = new TokenTransferProxyContract(
+            abi,
+            address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
         this._tokenTransferProxyContractIfExists = contractInstance;
         return this._tokenTransferProxyContractIfExists;
     }

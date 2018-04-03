@@ -23,6 +23,7 @@ import {
     LedgerWalletSubprovider,
     RedundantRPCSubprovider,
 } from '@0xproject/subproviders';
+import { Provider } from '@0xproject/types';
 import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -73,11 +74,11 @@ export class Blockchain {
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
     private _userAddressIfExists: string;
-    private _cachedProvider: Web3.Provider;
+    private _cachedProvider: Provider;
     private _cachedProviderNetworkId: number;
     private _ledgerSubprovider: LedgerWalletSubprovider;
     private _defaultGasPrice: BigNumber;
-    private static _getNameGivenProvider(provider: Web3.Provider): string {
+    private static _getNameGivenProvider(provider: Provider): string {
         const providerType = utils.getProviderType(provider);
         const providerNameIfExists = providerToName[providerType];
         if (_.isUndefined(providerNameIfExists)) {
@@ -377,7 +378,7 @@ export class Blockchain {
     }
     public isValidAddress(address: string): boolean {
         const lowercaseAddress = address.toLowerCase();
-        return this._web3Wrapper.isAddress(lowercaseAddress);
+        return Web3Wrapper.isAddress(lowercaseAddress);
     }
     public async pollTokenBalanceAsync(token: Token) {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);

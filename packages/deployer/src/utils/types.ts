@@ -1,4 +1,4 @@
-import { ContractAbi, TxData } from '@0xproject/types';
+import { ContractAbi, Provider, TxData } from '@0xproject/types';
 import * as Web3 from 'web3';
 import * as yargs from 'yargs';
 
@@ -65,7 +65,7 @@ export interface BaseDeployerOptions {
 }
 
 export interface ProviderDeployerOptions extends BaseDeployerOptions {
-    web3Provider: Web3.Provider;
+    provider: Provider;
 }
 
 export interface UrlDeployerOptions extends BaseDeployerOptions {

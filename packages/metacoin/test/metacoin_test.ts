@@ -8,7 +8,7 @@ import { MetacoinContract, TransferContractEventArgs } from '../src/contract_wra
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
-import { web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const { expect } = chai;
@@ -21,7 +21,7 @@ describe('Metacoin', () => {
     before(async () => {
         const metacoinInstance = await deployer.deployAsync('Metacoin');
         web3Wrapper.abiDecoder.addABI(metacoinInstance.abi);
-        metacoin = new MetacoinContract(web3Wrapper, metacoinInstance.abi, metacoinInstance.address);
+        metacoin = new MetacoinContract(metacoinInstance.abi, metacoinInstance.address, provider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
