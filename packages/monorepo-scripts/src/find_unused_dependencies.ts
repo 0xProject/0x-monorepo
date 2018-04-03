@@ -23,7 +23,7 @@ const IGNORE_PACKAGES = ['@0xproject/deployer'];
         utils.log(`Checking ${lernaPackage.package.name} for unused deps. This might take a while...`);
 
         const configs = {};
-        const result: any = await depcheckAsync(lernaPackage.location, configs);
+        const result = await depcheckAsync(lernaPackage.location, configs);
         if (!_.isEmpty(result.dependencies)) {
             _.each(result.dependencies, dep => {
                 utils.log(dep);
@@ -36,8 +36,8 @@ const IGNORE_PACKAGES = ['@0xproject/deployer'];
     process.exit(1);
 });
 
-async function depcheckAsync(path: string, opts: any) {
-    return new Promise<void>((resolve, reject) => {
+async function depcheckAsync(path: string, opts: any): Promise<depcheck.Results> {
+    return new Promise<depcheck.Results>((resolve, reject) => {
         depcheck(path, opts, (unused: any) => {
             resolve(unused);
         });
