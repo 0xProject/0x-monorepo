@@ -13,12 +13,12 @@ import { DoneCallback } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { reportNodeCallbackErrors } from './utils/report_callback_errors';
+import { web3 } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
 describe('EventWatcher', () => {
-    let web3: Web3;
     let stubs: Sinon.SinonStub[] = [];
     let eventWatcher: EventWatcher;
     let web3Wrapper: Web3Wrapper;
@@ -53,7 +53,6 @@ describe('EventWatcher', () => {
         transactionIndex: 0,
     };
     before(async () => {
-        web3 = web3Factory.create();
         const pollingIntervalMs = 10;
         web3Wrapper = new Web3Wrapper(web3.currentProvider);
         eventWatcher = new EventWatcher(web3Wrapper, pollingIntervalMs);

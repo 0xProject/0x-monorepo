@@ -1,9 +1,11 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { EmptyWalletSubprovider } from '@0xproject/subproviders';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import 'mocha';
 import * as Web3 from 'web3';
+import Web3ProviderEngine = require('web3-provider-engine');
 
 import {
     ApprovalContractEventArgs,
@@ -191,7 +193,8 @@ describe('TokenWrapper', () => {
             let zeroExWithoutAccounts: ZeroEx;
             before(async () => {
                 const hasAddresses = false;
-                const web3WithoutAccounts = web3Factory.create({ hasAddresses });
+                const emptyWalletProvider = addEmptyWalletSubprovider(web3.currentProvider);
+                const web3WithoutAccounts = new Web3(emptyWalletProvider);
                 zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should return balance even when called with Web3 provider instance without addresses', async () => {
@@ -303,7 +306,8 @@ describe('TokenWrapper', () => {
             let zeroExWithoutAccounts: ZeroEx;
             before(async () => {
                 const hasAddresses = false;
-                const web3WithoutAccounts = web3Factory.create({ hasAddresses });
+                const emptyWalletProvider = addEmptyWalletSubprovider(web3.currentProvider);
+                const web3WithoutAccounts = new Web3(emptyWalletProvider);
                 zeroExWithoutAccounts = new ZeroEx(web3WithoutAccounts.currentProvider, config);
             });
             it('should get the proxy allowance', async () => {
@@ -424,7 +428,7 @@ describe('TokenWrapper', () => {
                 );
                 zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled);
                 const callbackToBeCalled = reportNodeCallbackErrors(done)();
-                const newProvider = web3Factory.getRpcProvider();
+                const newProvider = web3.currentProvider;
                 zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
                 zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackToBeCalled);
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
@@ -515,3 +519,14 @@ describe('TokenWrapper', () => {
     });
 });
 // tslint:disable:max-file-line-count
+
+function addEmptyWalletSubprovider(provider: Web3.Provider): Web3.Provider {
+    const providerEngine = new Web3ProviderEngine();
+    providerEngine.addProvider(new EmptyWalletSubprovider());
+    const currentSubproviders = (provider as any)._providers;
+    for (const subprovider of currentSubproviders) {
+        providerEngine.addProvider(subprovider);
+    }
+    providerEngine.start();
+    return providerEngine;
+}

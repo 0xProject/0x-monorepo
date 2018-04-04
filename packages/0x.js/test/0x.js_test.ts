@@ -1,16 +1,30 @@
+import { Deployer } from '@0xproject/deployer';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
+import * as path from 'path';
 import * as Sinon from 'sinon';
 
 import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx } from '../src';
 
+import { runMigrationsAsync } from './migrations/migrate';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { TokenUtils } from './utils/token_utils';
 import { web3, web3Wrapper } from './utils/web3_wrapper';
+
+const artifactsDir = path.resolve('test', 'artifacts');
+const deployerOpts = {
+    artifactsDir,
+    web3Provider: web3.currentProvider,
+    networkId: constants.TESTRPC_NETWORK_ID,
+    defaults: {
+        gas: devConstants.GAS_ESTIMATE,
+    },
+};
+const deployer = new Deployer(deployerOpts);
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -19,10 +33,14 @@ const expect = chai.expect;
 const SHOULD_ADD_PERSONAL_MESSAGE_PREFIX = false;
 
 describe('ZeroEx library', () => {
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
-    const zeroEx = new ZeroEx(web3.currentProvider, config);
+    let zeroEx: ZeroEx;
+    before(async () => {
+        await runMigrationsAsync(deployer);
+        const config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+        };
+        zeroEx = new ZeroEx(web3.currentProvider, config);
+    });
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             // Instantiate the contract instances with the current provider
@@ -31,7 +49,7 @@ describe('ZeroEx library', () => {
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.not.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.not.be.undefined();
 
-            const newProvider = web3Factory.getRpcProvider();
+            const newProvider = web3.currentProvider;
             // Add property to newProvider so that we can differentiate it from old provider
             (newProvider as any).zeroExTestId = 1;
             zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);

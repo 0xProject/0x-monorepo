@@ -977,7 +977,7 @@ describe('ExchangeWrapper', () => {
                 );
                 zeroEx.exchange.subscribe(ExchangeEvents.LogFill, indexFilterValues, callbackNeverToBeCalled);
 
-                const newProvider = web3Factory.getRpcProvider();
+                const newProvider = web3.currentProvider;
                 zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
 
                 const callback = reportNodeCallbackErrors(done)(

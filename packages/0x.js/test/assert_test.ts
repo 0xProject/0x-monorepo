@@ -6,11 +6,11 @@ import { ZeroEx } from '../src';
 import { assert } from '../src/utils/assert';
 
 import { constants } from './utils/constants';
+import { web3 } from './utils/web3_wrapper';
 
 const expect = chai.expect;
 
 describe('Assertion library', () => {
-    const web3 = web3Factory.create();
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };

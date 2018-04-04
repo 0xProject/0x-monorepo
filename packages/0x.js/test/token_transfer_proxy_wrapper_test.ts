@@ -5,10 +5,10 @@ import { ZeroEx } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { web3 } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const web3 = web3Factory.create();
 
 describe('TokenTransferProxyWrapper', () => {
     let zeroEx: ZeroEx;
