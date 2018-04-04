@@ -47,6 +47,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/deployer/README.md",
     "devDependencies": {
+        "@0xproject/dev-utils": "^0.3.4",
         "@0xproject/monorepo-scripts": "^0.1.16",
         "@0xproject/tslint-config": "^0.4.14",
         "@types/require-from-string": "^1.2.0",

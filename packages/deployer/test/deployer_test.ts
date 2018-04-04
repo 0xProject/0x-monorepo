@@ -8,6 +8,7 @@ import { CompilerOptions, ContractArtifact, ContractNetworkData, DoneCallback } 
 
 import { constructor_args, exchange_binary } from './fixtures/exchange_bin';
 import { constants } from './util/constants';
+import { provider } from './util/provider';
 
 const expect = chai.expect;
 
@@ -26,7 +27,7 @@ describe('#Deployer', () => {
     const deployerOpts = {
         artifactsDir,
         networkId: constants.networkId,
-        jsonrpcUrl: constants.jsonrpcUrl,
+        web3Provider: provider,
         defaults: {
             gasPrice: constants.gasPrice,
         },
