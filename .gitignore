@@ -86,3 +86,6 @@ packages/deployer/solc_bin/
 
 # Monorepo scripts
 packages/*/scripts/
+
+# macOS fils
+.DS_Store
