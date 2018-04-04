@@ -1,20 +1,17 @@
 import { ExchangeEvents, ZeroEx } from '0x.js';
-import { Order, HttpClient, OrderbookResponse, TokenPairsItem, OrderbookRequest} from '@0xproject/connect';
+import { HttpClient, Order, OrderbookRequest, OrderbookResponse, TokenPairsItem } from '@0xproject/connect';
 import * as Airtable from 'airtable';
 import * as commandLineArgs from 'command-line-args';
 import * as _ from 'lodash';
 import * as querystring from 'querystring';
 import * as queue from 'queue';
 import * as request from 'request';
+import * as rpn from 'request-promise-native';
 import { postgresClient } from '../postgres.js';
 import { typeConverters } from '../utils.js';
 import { web3, zrx } from '../zrx.js';
 import { insertDataScripts } from './create_tables.js';
 import { dataFetchingQueries } from './query_data.js';
-import { error } from 'shelljs';
-import { historicalPrices } from '../models/historical_prices.js';
-import { HistoricalPriceResponse } from '../types';
-import * as rpn from 'request-promise-native';
 import { relayer } from '../models/relayer.js';
 import { HttpRequestOptions } from '../../../connect/lib/src/types.js';
 
@@ -37,7 +34,7 @@ const BASE_SYMBOL = 'USD'; // use USD as base currency against
 const API_HIST_LIMIT = 2000; //cryptocompare API limits histoday price query to 2000 days
 const SECONDS_PER_DAY = 86400;
 const PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/pricehistorical';
-const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday';
+// const HIST_PRICE_API_ENDPOINT = 'https://min-api.cryptocompare.com/data/histoday';
 
 const AIRTABLE_RELAYER_INFO = 'Relayer Info';
 
@@ -142,37 +139,37 @@ export const pullDataScripts = {
         }
         return fullOrderBook;
     },
-    async getHistoricalPrices(
-        fromSymbol: string,
-        toSymbol: string,
-        fromTimestamp: number,
-        toTimestamp: number,
-    ): Promise<HistoricalPriceResponse> {
-        const daysInQueryPeriod = Math.round((toTimestamp - fromTimestamp) / (SECONDS_PER_DAY));
-        if(fromSymbol === 'WETH') {
-            fromSymbol = 'ETH';
-        }
-        var parsedParams = {
-            fsym: fromSymbol,
-            tsym: toSymbol,
-            limit: Math.min(daysInQueryPeriod, API_HIST_LIMIT),
-            toTs: toTimestamp,
-        };
+    // async getHistoricalPrices(
+    //     fromSymbol: string,
+    //     toSymbol: string,
+    //     fromTimestamp: number,
+    //     toTimestamp: number,
+    // ): Promise<HistoricalPriceResponse> {
+    //     const daysInQueryPeriod = Math.round((toTimestamp - fromTimestamp) / (SECONDS_PER_DAY));
+    //     if(fromSymbol === 'WETH') {
+    //         fromSymbol = 'ETH';
+    //     }
+    //     var parsedParams = {
+    //         fsym: fromSymbol,
+    //         tsym: toSymbol,
+    //         limit: Math.min(daysInQueryPeriod, API_HIST_LIMIT),
+    //         toTs: toTimestamp,
+    //     };
 
-        var options = {
-            uri: HIST_PRICE_API_ENDPOINT,
-            qs: parsedParams,
-            json: false,
-        };
+    //     var options = {
+    //         uri: HIST_PRICE_API_ENDPOINT,
+    //         qs: parsedParams,
+    //         json: false,
+    //     };
 
-        try {
-            const response = await rpn(options);
-            return Promise.resolve(JSON.parse(response));
-        } catch (error) {
-            console.debug(error);
-            return Promise.reject(error);
-        }
-    },
+    //     try {
+    //         const response = await rpn(options);
+    //         return Promise.resolve(JSON.parse(response));
+    //     } catch (error) {
+    //         console.debug(error);
+    //         return Promise.reject(error);
+    //     }
+    // },
 };
 
 export const scrapeDataScripts = {
@@ -215,6 +212,8 @@ function _scrapeEventsToDB(fromBlock: number, toBlock: number): any {
                         parsedEvents[event.event_type].push(event);
                     }
                 }
+
+                console.log(fromBlock + " : " + toBlock + " " + parsedEvents[ExchangeEvents.LogFill].length);
 
                 for (const event_type in parsedEvents) {
                     if (parsedEvents[event_type].length > 0) {
@@ -345,37 +344,37 @@ function _scrapePriceToDB(timestamp: number, token: any, timeDelay?: number): an
     };
 }
 
-function _scrapeHistoricalPricesToDB(token: any, fromTimestamp: number, toTimestamp: number): any {
-    return (cb: () => void) => {
-        pullDataScripts
-            .getHistoricalPrices(token, BASE_SYMBOL, fromTimestamp, toTimestamp)
-            .then((data: any) => {
-                const parsedHistoricalPrices: any = [];
-                for (const historicalPrice of data['Data']) {
-                    const parsedHistoricalPrice = typeConverters.convertLogHistoricalPricesToHistoricalPricesObject(historicalPrice);
-                    parsedHistoricalPrice['token'] = token;
-                    parsedHistoricalPrice['base'] = BASE_SYMBOL;
-                    parsedHistoricalPrices.push(parsedHistoricalPrice);
-                }
-                if (parsedHistoricalPrices.length > 0) {
-                    insertDataScripts
-                        .insertMultipleRows(
-                            'historical_prices',
-                            parsedHistoricalPrices,
-                            Object.keys(parsedHistoricalPrices[0]),
-                        )
-                        .catch((error: any) => {
-                            console.error(error);
-                        });
-                }
-                cb();
-            })
-            .catch((error: any) => {
-                console.error(error);
-                cb();
-            });
-    };
-}
+// function _scrapeHistoricalPricesToDB(token: any, fromTimestamp: number, toTimestamp: number): any {
+//     return (cb: () => void) => {
+//         pullDataScripts
+//             .getHistoricalPrices(token, BASE_SYMBOL, fromTimestamp, toTimestamp)
+//             .then((data: any) => {
+//                 const parsedHistoricalPrices: any = [];
+//                 for (const historicalPrice of data['Data']) {
+//                     const parsedHistoricalPrice = typeConverters.convertLogHistoricalPricesToHistoricalPricesObject(historicalPrice);
+//                     parsedHistoricalPrice['token'] = token;
+//                     parsedHistoricalPrice['base'] = BASE_SYMBOL;
+//                     parsedHistoricalPrices.push(parsedHistoricalPrice);
+//                 }
+//                 if (parsedHistoricalPrices.length > 0) {
+//                     insertDataScripts
+//                         .insertMultipleRows(
+//                             'historical_prices',
+//                             parsedHistoricalPrices,
+//                             Object.keys(parsedHistoricalPrices[0]),
+//                         )
+//                         .catch((error: any) => {
+//                             console.error(error);
+//                         });
+//                 }
+//                 cb();
+//             })
+//             .catch((error: any) => {
+//                 console.error(error);
+//                 cb();
+//             });
+//     };
+// }
 
 function _scrapeOrderBookToDB(id: string, sraEndpoint: string): any {
     return (cb: () => void) => {
@@ -489,25 +488,25 @@ if (cli.type === 'events') {
         .catch((err: any) => {
             console.debug(err);
         });
-} else if (cli.type === 'historical_prices') {
-    if (cli.token && cli.from && cli.to) {
-        q.push(_scrapeHistoricalPricesToDB(cli.token, cli.from, cli.to));
-    }
-} else if (cli.type === 'all_historical_prices') {
-    if (cli.from && cli.to) {
-        postgresClient
-            .query(dataFetchingQueries.get_token_registry, [])
-            .then((result: any) => {
-                const curTokens: any = result.rows.map((a: any): any => a.symbol);
-                for (const curToken of curTokens) {
-                    console.debug('Historical data backfill: Pushing coin ' + curToken);
-                    q.push(_scrapeHistoricalPricesToDB(curToken, cli.from, cli.to));
-                }
-            })
-            .catch((err: any) => {
-                console.debug(err);
-            });
-    }
+// } else if (cli.type === 'historical_prices') {
+//     if (cli.token && cli.from && cli.to) {
+//         q.push(_scrapeHistoricalPricesToDB(cli.token, cli.from, cli.to));
+//     }
+// } else if (cli.type === 'all_historical_prices') {
+//     if (cli.from && cli.to) {
+//         postgresClient
+//             .query(dataFetchingQueries.get_token_registry, [])
+//             .then((result: any) => {
+//                 const curTokens: any = result.rows.map((a: any): any => a.symbol);
+//                 for (const curToken of curTokens) {
+//                     console.debug('Historical data backfill: Pushing coin ' + curToken);
+//                     q.push(_scrapeHistoricalPricesToDB(curToken, cli.from, cli.to));
+//                 }
+//             })
+//             .catch((err: any) => {
+//                 console.debug(err);
+//             });
+//     }
 } else if(cli.type === 'relayers') {
     q.push(_scrapeAllRelayersToDB());
 } else if(cli.type === 'orders') {

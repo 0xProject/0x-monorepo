@@ -49,7 +49,7 @@ export const dataFetchingQueries: any = {
         SELECT
             MAX(block_number)
         FROM
-            blocks`
+            events_raw`
     ,
     get_relayers: `
         SELECT
