@@ -4,8 +4,6 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
-import * as Web3 from 'web3';
-
 import * as _ from 'lodash';
 
 import { DummyTokenContract } from '../../../contracts/src/contract_wrappers/generated/dummy_token';
@@ -24,7 +22,7 @@ import { ForwarderWrapper } from '../../src/contract_wrappers/forwarder_wrapper'
 import { ForwarderContract } from '../../src/contract_wrappers/generated/forwarder';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
-import { web3, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -79,7 +77,7 @@ describe('Forwarder', () => {
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
             from: accounts[0],
         });
-        zeroEx = new ZeroEx(web3.currentProvider, {
+        zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchangeInstance.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
