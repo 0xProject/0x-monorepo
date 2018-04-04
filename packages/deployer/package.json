@@ -8,7 +8,7 @@
         "build:watch": "tsc -w",
         "build": "yarn clean && copyfiles 'test/fixtures/contracts/**/*' ./lib && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test": "run-s build run_mocha",
-        "run_mocha": "mocha lib/test/*_test.js",
+        "run_mocha": "mocha lib/test/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "compile": "npm run build; node lib/src/cli.js compile",

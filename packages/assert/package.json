@@ -9,7 +9,7 @@
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib test_temp scripts",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
-        "run_mocha": "mocha lib/test/**/*_test.js",
+        "run_mocha": "mocha lib/test/**/*_test.js --exit",
         "prepublishOnly": "run-p build",
         "test": "run-s clean build run_mocha",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
