@@ -3,10 +3,10 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { constants } from '../util/constants';
-import { ContractName } from '../util/types';
+import { constants } from '../utils/constants';
 
 import { tokenInfo } from './config/token_info';
+import { ContractName } from './types';
 
 /**
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
@@ -20,7 +20,7 @@ export const runMigrationsAsync = async (deployer: Deployer) => {
 
     const tokenTransferProxy = await deployer.deployAndSaveAsync(ContractName.TokenTransferProxy);
     const zrxToken = await deployer.deployAndSaveAsync(ContractName.ZRXToken);
-    const etherToken = await deployer.deployAndSaveAsync(ContractName.EtherToken);
+    const etherToken = await deployer.deployAndSaveAsync(ContractName.WETH9);
     const tokenReg = await deployer.deployAndSaveAsync(ContractName.TokenRegistry);
 
     const exchangeArgs = [zrxToken.address, tokenTransferProxy.address];

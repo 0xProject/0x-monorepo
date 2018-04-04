@@ -19,7 +19,6 @@
         "compile": "node ../deployer/lib/src/cli.js compile --contracts ${npm_package_config_contracts} --contracts-dir src/contracts --artifacts-dir src/artifacts",
         "clean": "shx rm -rf ./lib",
         "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
-        "migrate": "yarn build && yarn compile && node ./lib/migrations/index.js",
         "lint": "tslint --project . 'migrations/**/*.ts' 'test/**/*.ts' 'util/**/*.ts' 'deploy/**/*.ts'",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
