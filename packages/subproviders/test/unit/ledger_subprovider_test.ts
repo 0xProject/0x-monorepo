@@ -4,12 +4,12 @@ import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
 import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { LedgerSubprovider } from '../../src';
 import { DoneCallback, LedgerCommunicationClient, LedgerSubproviderErrors } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
+import { subprovider as ganacheSubprovider } from '../utils/subprovider';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -99,10 +99,7 @@ describe('LedgerSubprovider', () => {
         before(() => {
             provider = new Web3ProviderEngine();
             provider.addProvider(ledgerSubprovider);
-            const httpProvider = new RpcSubprovider({
-                rpcUrl: 'http://localhost:8545',
-            });
-            provider.addProvider(httpProvider);
+            provider.addProvider(ganacheSubprovider);
             provider.start();
         });
         describe('success cases', () => {

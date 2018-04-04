@@ -8,7 +8,7 @@ import { web3Factory } from '../src';
 const expect = chai.expect;
 
 describe('RPC tests', () => {
-    const web3Provider = web3Factory.getRpcProvider();
+    const web3Provider = web3Factory.getRpcProvider({ shouldUseInProcessGanache: true });
     const web3Wrapper = new Web3Wrapper(web3Provider);
     describe('#mineBlockAsync', () => {
         it('increases block number when called', async () => {

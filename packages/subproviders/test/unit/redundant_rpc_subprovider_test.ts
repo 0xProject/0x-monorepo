@@ -3,11 +3,13 @@ import * as chai from 'chai';
 import * as _ from 'lodash';
 import Web3 = require('web3');
 import Web3ProviderEngine = require('web3-provider-engine');
+import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { RedundantRPCSubprovider } from '../../src';
 import { DoneCallback } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
+import { subprovider as ganacheSubprovider } from '../utils/subprovider';
 
 const expect = chai.expect;
 chaiSetup.configure();
@@ -18,6 +20,8 @@ describe('RedundantRpcSubprovider', () => {
         provider = new Web3ProviderEngine();
         const endpoints = ['http://localhost:8545'];
         const redundantSubprovider = new RedundantRPCSubprovider(endpoints);
+        // Hack: Hot-swap rpc with ganacheSubprovider
+        (redundantSubprovider as any)._rpcs = [ganacheSubprovider];
         provider.addProvider(redundantSubprovider);
         provider.start();
 
@@ -38,6 +42,11 @@ describe('RedundantRpcSubprovider', () => {
         provider = new Web3ProviderEngine();
         const endpoints = ['http://does-not-exist:3000', 'http://localhost:8545'];
         const redundantSubprovider = new RedundantRPCSubprovider(endpoints);
+        // Hack: Hot-swap rpcs with [nonExistentSubprovider, ganacheSubprovider]
+        const nonExistentSubprovider = new RpcSubprovider({
+            rpcUrl: 'http://does-not-exist:3000',
+        });
+        (redundantSubprovider as any)._rpcs = [nonExistentSubprovider, ganacheSubprovider];
         provider.addProvider(redundantSubprovider);
         provider.start();
 
