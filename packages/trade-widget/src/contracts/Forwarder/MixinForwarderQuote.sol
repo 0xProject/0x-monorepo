@@ -1,7 +1,6 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
-import "../current/protocol/Exchange/Exchange.sol";
 import "./MixinForwarderCore.sol";
 
 contract MixinForwarderQuote is MixinForwarderCore {
@@ -14,10 +13,10 @@ contract MixinForwarderQuote is MixinForwarderCore {
         returns (FillResults memory fillResults)
     {
         // Compute the order hash
-        bytes32 orderHash = Exchange(exchange).getOrderHash(order);
-        uint256 remainingTakerTokenAmount =
-            safeSub(order.takerTokenAmount,
-                    Exchange(exchange).getUnavailableTakerTokenAmount(orderHash));
+        bytes32 orderHash = exchange.getOrderHash(order);
+        uint256 remainingTakerTokenAmount = safeSub(
+            order.takerTokenAmount,
+            exchange.getUnavailableTakerTokenAmount(orderHash));
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
@@ -41,14 +40,14 @@ contract MixinForwarderQuote is MixinForwarderCore {
         //     return fillResults;
         // }
 
-        fillResults.makerAmountSold = Exchange(exchange).getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.makerTokenAmount);
+        fillResults.makerAmountSold = exchange.getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.makerTokenAmount);
 
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFeeAmount > 0) {
-                fillResults.makerFeePaid = Exchange(exchange).getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.makerFeeAmount);
+                fillResults.makerFeePaid = exchange.getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.makerFeeAmount);
             }
             if (order.takerFeeAmount > 0) {
-                fillResults.takerFeePaid = Exchange(exchange).getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.takerFeeAmount);
+                fillResults.takerFeePaid = exchange.getPartialAmount(fillResults.takerAmountSold, order.takerTokenAmount, order.takerFeeAmount);
             }
         }
 
@@ -66,16 +65,15 @@ contract MixinForwarderQuote is MixinForwarderCore {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
             uint256 remainingTakerTokenFillAmount = safeSub(takerSellAmount, fillResult.takerAmountSold);
-            FillResults memory quoteFillResult = 
-            fillOrderQuote(
+            FillResults memory quoteFillResult = fillOrderQuote(
                 orders[i],
                 remainingTakerTokenFillAmount,
                 signatures[i]);
 
-            fillResult.makerAmountSold = safeAdd(quoteFillResult.makerAmountSold, quoteFillResult.makerAmountSold);
-            fillResult.takerAmountSold = safeAdd(quoteFillResult.takerAmountSold, quoteFillResult.takerAmountSold);
-            fillResult.makerFeePaid = safeAdd(quoteFillResult.makerFeePaid, quoteFillResult.makerFeePaid);
-            fillResult.takerFeePaid = safeAdd(quoteFillResult.takerFeePaid, quoteFillResult.takerFeePaid);
+            fillResult.makerAmountSold = safeAdd(fillResult.makerAmountSold, quoteFillResult.makerAmountSold);
+            fillResult.takerAmountSold = safeAdd(fillResult.takerAmountSold, quoteFillResult.takerAmountSold);
+            fillResult.makerFeePaid = safeAdd(fillResult.makerFeePaid, quoteFillResult.makerFeePaid);
+            fillResult.takerFeePaid = safeAdd(fillResult.takerFeePaid, quoteFillResult.takerFeePaid);
 
             if (fillResult.takerAmountSold == takerSellAmount) {
                 break;
@@ -95,21 +93,20 @@ contract MixinForwarderQuote is MixinForwarderCore {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
             uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, fillResult.takerAmountSold);
-            uint256 remainingTakerSellAmount = Exchange(exchange).getPartialAmount(
+            uint256 remainingTakerSellAmount = exchange.getPartialAmount(
                 remainingTakerBuyAmount,
                 orders[i].takerTokenAmount,
                 orders[i].makerTokenAmount
             );
-            FillResults memory quoteFillResult = 
-            fillOrderQuote(
+            FillResults memory quoteFillResult = fillOrderQuote(
                 orders[i],
                 remainingTakerSellAmount,
                 signatures[i]);
 
-            fillResult.makerAmountSold = safeAdd(quoteFillResult.makerAmountSold, quoteFillResult.makerAmountSold);
-            fillResult.takerAmountSold = safeAdd(quoteFillResult.takerAmountSold, quoteFillResult.takerAmountSold);
-            fillResult.makerFeePaid = safeAdd(quoteFillResult.makerFeePaid, quoteFillResult.makerFeePaid);
-            fillResult.takerFeePaid = safeAdd(quoteFillResult.takerFeePaid, quoteFillResult.takerFeePaid);
+            fillResult.makerAmountSold = safeAdd(fillResult.makerAmountSold, quoteFillResult.makerAmountSold);
+            fillResult.takerAmountSold = safeAdd(fillResult.takerAmountSold, quoteFillResult.takerAmountSold);
+            fillResult.makerFeePaid = safeAdd(fillResult.makerFeePaid, quoteFillResult.makerFeePaid);
+            fillResult.takerFeePaid = safeAdd(fillResult.takerFeePaid, quoteFillResult.takerFeePaid);
 
             if (fillResult.makerAmountSold == takerBuyAmount) {
                 break;

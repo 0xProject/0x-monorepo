@@ -210,73 +210,24 @@ contract MixinWrapperFunctions is
         uint256 takerTokenFillAmount,
         bytes[] signatures)
         public
-        // returns (uint256 totalTakerTokenFilledAmount)
-        returns (
-            uint256 makerTokenFilledAmount,
-            uint256 takerTokenFilledAmount,
-            uint256 makerFeeAmountPaid,
-            uint256 takerFeeAmountPaid
-        )
+        returns (uint256 totalTakerTokenFilledAmount)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, takerTokenFilledAmount);
-            takerTokenFilledAmount = safeAdd(
-                takerTokenFilledAmount,
+            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalTakerTokenFilledAmount);
+            totalTakerTokenFilledAmount = safeAdd(
+                totalTakerTokenFilledAmount,
                 fillOrder(
                     orders[i],
                     remainingTakerTokenFillAmount,
                     signatures[i]
                 )
             );
-            uint256 takerTokenSellAmount = getPartialAmount(
-                remainingTakerTokenFillAmount,
-                orders[i].takerTokenAmount,
-                orders[i].makerTokenAmount
-            );
-            makerTokenFilledAmount = safeAdd(makerTokenFilledAmount, takerTokenSellAmount);
-            takerTokenFilledAmount = safeAdd(takerTokenFilledAmount, takerTokenFilledAmount);
-            if (takerTokenFilledAmount == takerTokenFillAmount) {
+            if (totalTakerTokenFilledAmount == takerTokenFillAmount) {
                 break;
             }
         }
-        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
-    }
-
-    function marketBuyOrders(
-        Order[] orders,
-        uint256 takerBuyAmount,
-        bytes[] signatures)
-        public
-        // returns (uint256 totalTakerTokenFilledAmount)
-        returns (
-            uint256 makerTokenFilledAmount,
-            uint256 takerTokenFilledAmount,
-            uint256 makerFeeAmountPaid,
-            uint256 takerFeeAmountPaid
-        )
-    {
-        for (uint256 i = 0; i < orders.length; i++) {
-            require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, takerTokenFilledAmount);
-            uint256 remainingTakerSellAmount = getPartialAmount(
-                orders[i].takerTokenAmount,
-                orders[i].makerTokenAmount,
-                remainingTakerBuyAmount
-            );
-            uint256 takerTokenFillAmount = 
-                fillOrder(
-                    orders[i],
-                    remainingTakerSellAmount,
-                    signatures[i]
-                );
-            makerTokenFilledAmount = safeAdd(makerTokenFilledAmount, remainingTakerSellAmount);
-            takerTokenFilledAmount = safeAdd(takerTokenFilledAmount, takerTokenFillAmount);
-            if (takerTokenFilledAmount == takerBuyAmount) {
-                break;
-            }
-        }
-        return (makerTokenFilledAmount, takerTokenFilledAmount, makerFeeAmountPaid, takerFeeAmountPaid);
+        return totalTakerTokenFilledAmount;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrderNoThrow in a single transaction until total takerTokenFillAmount filled.
@@ -311,25 +262,12 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of orders.
-    /// @param takerTokenCancelAmounts Array of desired amounts of takerToken to cancel in orders.
-    function batchCancelOrders(
-        Order[] orders,
-        uint256[] takerTokenCancelAmounts)
+    function batchCancelOrders(Order[] orders)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            cancelOrder(
-                orders[i],
-                takerTokenCancelAmounts[i]
-            );
+            cancelOrder(orders[i]);
         }
     }
-
-    function getPartialAmount(uint256 numerator, uint256 denominator, uint256 target)
-    public pure
-    returns (uint256 partialAmount)
-    {
-        partialAmount = safeDiv(safeMul(numerator, target), denominator);
-        return partialAmount;
-    }
+    
 }

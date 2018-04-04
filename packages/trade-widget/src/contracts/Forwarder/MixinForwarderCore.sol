@@ -2,8 +2,9 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "../current/protocol/Exchange/Exchange.sol";
-import "../../../../contracts/src/contracts/current/protocol/TokenTransferProxy/TokenTransferProxy.sol";
-import { WETH9 as EtherToken } from  "../../../../contracts/src/contracts/current/tokens/WETH9/WETH9.sol";
+import "../current/protocol/TokenTransferProxy/TokenTransferProxy.sol";
+import "../current/utils/SafeMath/SafeMath.sol";
+import { WETH9 as EtherToken } from "../current/tokens/WETH9/WETH9.sol";
 
 contract MixinForwarderCore is
     LibOrder,

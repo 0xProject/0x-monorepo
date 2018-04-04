@@ -143,6 +143,6 @@ contract Forwarder is
         uint amount)
         internal
     {
-        require(Token(token).transfer(account, amount));
+        require(IToken(token).transfer(account, amount));
     }
 }
