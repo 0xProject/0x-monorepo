@@ -121,6 +121,10 @@ const ZRX_TOKEN_SYMBOL = 'ZRX';
 const ETHER_SYMBOL = 'ETH';
 const ICON_DIMENSION = 24;
 const TOKEN_AMOUNT_DISPLAY_PRECISION = 3;
+const HEADER_ITEM_KEY = 'HEADER';
+const FOOTER_ITEM_KEY = 'FOOTER';
+const DISCONNECTED_ITEM_KEY = 'DISCONNECTED';
+const ETHER_ITEM_KEY = 'ETHER';
 
 export class Wallet extends React.Component<WalletProps, WalletState> {
     private _isUnmounted: boolean;
@@ -196,6 +200,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const primaryText = 'wallet';
         return (
             <ListItem
+                key={HEADER_ITEM_KEY}
                 primaryText={primaryText.toUpperCase()}
                 leftIcon={<ActionAccountBalanceWallet color={colors.mediumBlue} />}
                 style={styles.paddedItem}
@@ -206,6 +211,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     private _renderDisconnectedRows() {
         return (
             <WalletDisconnectedItem
+                key={DISCONNECTED_ITEM_KEY}
                 providerType={this.props.providerType}
                 injectedProviderName={this.props.injectedProviderName}
                 onToggleLedgerDialog={this.props.onToggleLedgerDialog}
@@ -217,6 +223,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         const primaryText = utils.getAddressBeginAndEnd(userAddress);
         return (
             <ListItem
+                key={HEADER_ITEM_KEY}
                 primaryText={primaryText}
                 leftIcon={<Identicon address={userAddress} diameter={ICON_DIMENSION} />}
                 style={{ ...styles.paddedItem, ...styles.borderedItem }}
@@ -226,7 +233,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderFooterRows() {
         const primaryText = '+ other tokens';
-        return <ListItem primaryText={primaryText} innerDivStyle={styles.footerItemInnerDiv} />;
+        return <ListItem key={FOOTER_ITEM_KEY} primaryText={primaryText} innerDivStyle={styles.footerItemInnerDiv} />;
     }
     private _renderEthRows() {
         const primaryText = this._renderAmount(
@@ -245,7 +252,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
         const etherToken = this._getEthToken();
         return (
-            <div>
+            <div key={ETHER_ITEM_KEY}>
                 <ListItem
                     primaryText={primaryText}
                     leftIcon={<img style={{ width: ICON_DIMENSION, height: ICON_DIMENSION }} src={ETHER_ICON_PATH} />}
@@ -304,7 +311,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             : { ...styles.tokenItem, ...styles.borderedItem, ...styles.paddedItem };
         const etherToken = this._getEthToken();
         return (
-            <div>
+            <div key={token.address}>
                 <ListItem
                     primaryText={amount}
                     leftIcon={this._renderTokenIcon(token, tokenLink)}

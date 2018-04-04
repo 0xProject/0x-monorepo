@@ -111,7 +111,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
                 disableTouchRipple={true}
                 style={walletItemStyles.focusedItem}
                 innerDivStyle={styles.innerDiv}
-                leftIcon={this.state.isEthConversionHappening && this._renderIsEthConversionHappeningSpinner()}
+                leftIcon={this._renderIsEthConversionHappeningSpinner()}
                 rightAvatar={this._renderWrapEtherConfirmationButton()}
             />
         );
@@ -123,10 +123,12 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         });
     }
     private _renderIsEthConversionHappeningSpinner() {
-        return (
+        return this.state.isEthConversionHappening ? (
             <div className="pl1" style={{ paddingTop: 10 }}>
                 <i className="zmdi zmdi-spinner zmdi-hc-spin" />
             </div>
+        ) : (
+            undefined
         );
     }
     private _renderWrapEtherConfirmationButton() {
