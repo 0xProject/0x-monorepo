@@ -11,7 +11,7 @@ import * as yargs from 'yargs';
 import { commands } from './commands';
 import { constants } from './utils/constants';
 import { consoleReporter } from './utils/error_reporter';
-import { CliOptions, CompilerOptions, DeployerOptions } from './utils/types';
+import { CliOptions, CompilerOptions, ContractDirectory, DeployerOptions } from './utils/types';
 
 const DEFAULT_OPTIMIZER_ENABLED = false;
 const DEFAULT_CONTRACTS_DIR = path.resolve('src/contracts');
@@ -27,7 +27,7 @@ const DEFAULT_CONTRACTS_LIST = '*';
  */
 async function onCompileCommandAsync(argv: CliOptions): Promise<void> {
     const opts: CompilerOptions = {
-        contractsDir: argv.contractsDir,
+        contractDirs: getContractDirectoriesFromList(argv.contractDirs),
         networkId: argv.networkId,
         optimizerEnabled: argv.shouldOptimize,
         artifactsDir: argv.artifactsDir,
@@ -45,7 +45,7 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
     const web3Wrapper = new Web3Wrapper(web3Provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
     const compilerOpts: CompilerOptions = {
-        contractsDir: argv.contractsDir,
+        contractDirs: getContractDirectoriesFromList(argv.contractsDir),
         networkId,
         optimizerEnabled: argv.shouldOptimize,
         artifactsDir: argv.artifactsDir,
@@ -69,6 +69,29 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
 }
 /**
  * Creates a set of contracts to compile.
+ * @param contractDirectoriesList Comma separated list of contract directories
+ * @return Set of contract directories
+ */
+function getContractDirectoriesFromList(contractDirectoriesList: string): Set<ContractDirectory> {
+    const directories = new Set();
+    const possiblyNamespacedDirectories = contractDirectoriesList.split(',');
+    _.forEach(possiblyNamespacedDirectories, namespacedDirectory => {
+        const directoryComponents = namespacedDirectory.split(':');
+        if (directoryComponents.length === 1) {
+            const directory = { namespace: '', path: directoryComponents[0] };
+            directories.add(directory);
+        } else if (directoryComponents.length === 2) {
+            const directory = { namespace: directoryComponents[0], path: directoryComponents[1] };
+            directories.add(directory);
+        } else {
+            throw new Error(`Unable to parse contracts directory: '${namespacedDirectory}'`);
+        }
+    });
+
+    return directories;
+}
+/**
+ * Creates a set of contracts to compile.
  * @param contracts Comma separated list of contracts to compile
  */
 function getContractsSetFromList(contracts: string): Set<string> {
@@ -78,8 +101,7 @@ function getContractsSetFromList(contracts: string): Set<string> {
     }
     const contractsArray = contracts.split(',');
     _.forEach(contractsArray, contractName => {
-        const fileName = `${contractName}${constants.SOLIDITY_FILE_EXTENSION}`;
-        specifiedContracts.add(fileName);
+        specifiedContracts.add(contractName);
     });
     return specifiedContracts;
 }
@@ -104,10 +126,11 @@ function deployCommandBuilder(yargsInstance: any) {
 (() => {
     const identityCommandBuilder = _.identity;
     return yargs
-        .option('contracts-dir', {
+        .option('contract-dirs', {
             type: 'string',
             default: DEFAULT_CONTRACTS_DIR,
-            description: 'path of contracts directory to compile',
+            description:
+                "comma separated list of contract directories.\nTo avoid filename clashes, directories should be prefixed with a namespace as follows: 'namespace:/path/to/dir'.",
         })
         .option('network-id', {
             type: 'number',

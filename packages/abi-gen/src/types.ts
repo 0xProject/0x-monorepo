@@ -5,13 +5,6 @@ export enum ParamKind {
     Output = 'output',
 }
 
-export enum AbiType {
-    Function = 'function',
-    Constructor = 'constructor',
-    Event = 'event',
-    Fallback = 'fallback',
-}
-
 export enum ContractsBackend {
     Web3 = 'web3',
     Ethers = 'ethers',
@@ -20,6 +13,8 @@ export enum ContractsBackend {
 export interface Method extends MethodAbi {
     singleReturnValue: boolean;
     hasReturnValue: boolean;
+    tsName: string;
+    functionSignature: string;
 }
 
 export interface ContextData {

@@ -36,15 +36,67 @@ describe('Metacoin', () => {
         });
     });
     describe('#transfer', () => {
-        it(`should successfully transfer tokens`, async () => {
+        it(`should successfully transfer tokens (via transfer_1)`, async () => {
             const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
             const amount = INITIAL_BALANCE.div(2);
             const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
             expect(oldBalance).to.be.bignumber.equal(0);
-            const txHash = await metacoin.transfer.sendTransactionAsync(
+            const txHash = await metacoin.transfer_1.sendTransactionAsync(
                 {
                     to: ZERO_ADDRESS,
                     amount,
+                },
+                { from: devConstants.TESTRPC_FIRST_ADDRESS },
+            );
+            const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
+            expect(transferLogs.args).to.be.deep.equal({
+                _to: ZERO_ADDRESS,
+                _from: devConstants.TESTRPC_FIRST_ADDRESS,
+                _value: amount,
+            });
+            const newBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
+            expect(newBalance).to.be.bignumber.equal(amount);
+        });
+
+        it(`should successfully transfer tokens (via transfer_2)`, async () => {
+            const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+            const amount = INITIAL_BALANCE.div(2);
+            const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
+            expect(oldBalance).to.be.bignumber.equal(0);
+            const callback = 59;
+            const txHash = await metacoin.transfer_2.sendTransactionAsync(
+                {
+                    to: ZERO_ADDRESS,
+                    amount,
+                },
+                callback,
+                { from: devConstants.TESTRPC_FIRST_ADDRESS },
+            );
+            const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(txHash);
+            const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<TransferContractEventArgs>;
+            expect(transferLogs.args).to.be.deep.equal({
+                _to: ZERO_ADDRESS,
+                _from: devConstants.TESTRPC_FIRST_ADDRESS,
+                _value: amount,
+            });
+            const newBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
+            expect(newBalance).to.be.bignumber.equal(amount);
+        });
+
+        it(`should successfully transfer tokens (via transfer_3)`, async () => {
+            const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+            const amount = INITIAL_BALANCE.div(2);
+            const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
+            expect(oldBalance).to.be.bignumber.equal(0);
+            const callback = 59;
+            const txHash = await metacoin.transfer_3.sendTransactionAsync(
+                {
+                    transferData: {
+                        to: ZERO_ADDRESS,
+                        amount,
+                    },
+                    callback,
                 },
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
