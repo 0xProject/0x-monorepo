@@ -19,20 +19,6 @@ contract MixinForwarderQuote is MixinForwarderCore {
             safeSub(order.takerTokenAmount,
                     Exchange(exchange).getUnavailableTakerTokenAmount(orderHash));
 
-        // Validate order and maker only if first time seen
-        // TODO: Read filled and cancelled only once
-        if (safeSub(order.takerTokenAmount, remainingTakerTokenAmount) == 0) {
-            require(order.makerTokenAmount > 0);
-            require(order.takerTokenAmount > 0);
-            require(Exchange(exchange).isValidSignature(orderHash, order.makerAddress, signature));
-        }
-
-        // Validate taker
-        if (order.takerAddress != address(0)) {
-            require(order.takerAddress == msg.sender);
-        }
-        require(takerTokenFillAmount > 0);
-
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
             return fillResults;
@@ -148,43 +134,4 @@ contract MixinForwarderQuote is MixinForwarderCore {
         isError = errPercentageTimes1000000 > 1000;
         return isError;
     }
-        // function marketSellOrdersQuote(
-    //     Order[] orders,
-    //     uint256 takerTokenFillAmount,
-    //     bytes[] signatures)
-    //     internal
-    //     view
-    //     returns (FillResults memory fillResult)
-    // {
-    //     var (makerTokenFilledAmount,
-    //         takerTokenFilledAmount,
-    //         makerFeeAmountPaid,
-    //         takerFeeAmountPaid) = 
-    //     Exchange(exchange).marketSellOrdersQuote(orders, takerTokenFillAmount, signatures);
-    //     fillResult.makerAmountSold = makerTokenFilledAmount;
-    //     fillResult.takerAmountSold = takerTokenFilledAmount;
-    //     fillResult.makerFeePaid = makerFeeAmountPaid;
-    //     fillResult.takerFeePaid = takerFeeAmountPaid;
-    //     return fillResult;
-    // }
-
-    // function marketBuyOrdersQuote(
-    //     Order[] orders,
-    //     uint256 takerBuyAmount,
-    //     bytes[] signatures)
-    //     internal
-    //     view
-    //     returns (FillResults memory fillResult)
-    // {
-    //     var (makerTokenFilledAmount,
-    //         takerTokenFilledAmount,
-    //         makerFeeAmountPaid,
-    //         takerFeeAmountPaid) = 
-    //     Exchange(exchange).marketBuyOrdersQuote(orders, takerBuyAmount, signatures);
-    //     fillResult.makerAmountSold = makerTokenFilledAmount;
-    //     fillResult.takerAmountSold = takerTokenFilledAmount;
-    //     fillResult.makerFeePaid = makerFeeAmountPaid;
-    //     fillResult.takerFeePaid = takerFeeAmountPaid;
-    //     return fillResult;
-    // }
 }
