@@ -5,12 +5,11 @@
 // tslint:disable:no-consecutive-blank-lines
 // tslint:disable-next-line:no-unused-variable
 import { BaseContract } from '@0xproject/base-contract';
-import { TxData, TxDataPayable } from '@0xproject/types';
+import { BlockParam, BlockParamLiteral, CallData, ContractAbi, DataItem, MethodAbi, TxData, TxDataPayable } from '@0xproject/types';
 import { BigNumber, classUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethersContracts from 'ethers-contracts';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
 
 
 // tslint:disable:no-parameter-reassignment
@@ -20,34 +19,35 @@ export class ForwarderContract extends BaseContract {
             numerator: BigNumber,
             denominator: BigNumber,
             target: BigNumber,
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'isRoundingError'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'isRoundingError'}) as MethodAbi).inputs;
             [numerator,
         denominator,
         target,
-        ] = BaseContract._transformABIData(inputAbi, [numerator,
+        ] = BaseContract._formatABIDataItemList(inputAbi, [numerator,
         denominator,
         target,
-        ], BaseContract._bigNumberToString.bind(this));
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.isRoundingError(
                 numerator,
                 denominator,
                 target,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'isRoundingError'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'isRoundingError'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
@@ -55,31 +55,32 @@ export class ForwarderContract extends BaseContract {
         async callAsync(
             requestedTokenAmount: BigNumber,
             soldTokenAmount: BigNumber,
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'isAcceptableThreshold'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'isAcceptableThreshold'}) as MethodAbi).inputs;
             [requestedTokenAmount,
         soldTokenAmount,
-        ] = BaseContract._transformABIData(inputAbi, [requestedTokenAmount,
+        ] = BaseContract._formatABIDataItemList(inputAbi, [requestedTokenAmount,
         soldTokenAmount,
-        ], BaseContract._bigNumberToString.bind(this));
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.isAcceptableThreshold(
                 requestedTokenAmount,
                 soldTokenAmount,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'isAcceptableThreshold'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'isAcceptableThreshold'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
@@ -88,18 +89,18 @@ export class ForwarderContract extends BaseContract {
             orders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             takerTokenFillAmount: BigNumber,
             signatures: string[],
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<string> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'marketBuyOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'marketBuyOrders'}) as MethodAbi).inputs;
             [orders,
     takerTokenFillAmount,
     signatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     takerTokenFillAmount,
     signatures,
-    ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.marketBuyOrders(
+    ], BaseContract._bigNumberToString.bind(self));
+            const encodedData = self._ethersInterface.functions.marketBuyOrders(
                 orders,
                 takerTokenFillAmount,
                 signatures,
@@ -116,25 +117,25 @@ export class ForwarderContract extends BaseContract {
                     signatures,
                 ),
             );
-            const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             takerTokenFillAmount: BigNumber,
             signatures: string[],
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<number> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'marketBuyOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'marketBuyOrders'}) as MethodAbi).inputs;
             [orders,
     takerTokenFillAmount,
     signatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     takerTokenFillAmount,
     signatures,
     ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.marketBuyOrders(
+            const encodedData = self._ethersInterface.functions.marketBuyOrders(
                 orders,
                 takerTokenFillAmount,
                 signatures,
@@ -145,25 +146,24 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 }
             );
-            const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
             orders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             takerTokenFillAmount: BigNumber,
             signatures: string[],
-            txData: TxData = {},
         ): string {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'marketBuyOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'marketBuyOrders'}) as MethodAbi).inputs;
             [orders,
     takerTokenFillAmount,
     signatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     takerTokenFillAmount,
     signatures,
-    ], BaseContract._bigNumberToString.bind(this));
-            const abiEncodedTransactionData = this._ethersInterface.functions.marketBuyOrders(
+    ], BaseContract._bigNumberToString.bind(self));
+            const abiEncodedTransactionData = self._ethersInterface.functions.marketBuyOrders(
                 orders,
                 takerTokenFillAmount,
                 signatures,
@@ -174,34 +174,35 @@ export class ForwarderContract extends BaseContract {
             orders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             takerTokenFillAmount: BigNumber,
             signatures: string[],
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<{}
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'marketBuyOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'marketBuyOrders'}) as MethodAbi).inputs;
             [orders,
         takerTokenFillAmount,
         signatures,
-        ] = BaseContract._transformABIData(inputAbi, [orders,
+        ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
         takerTokenFillAmount,
         signatures,
-        ], BaseContract._bigNumberToString.bind(this));
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.marketBuyOrders(
                 orders,
                 takerTokenFillAmount,
                 signatures,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'marketBuyOrders'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'marketBuyOrders'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
@@ -211,20 +212,20 @@ export class ForwarderContract extends BaseContract {
             signatures: string[],
             feeOrders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             feeSignatures: string[],
-            txData: TxDataPayable = {},
+            txData: Partial<TxDataPayable> = {},
         ): Promise<string> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrders'}) as MethodAbi).inputs;
             [orders,
     signatures,
     feeOrders,
     feeSignatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     signatures,
     feeOrders,
     feeSignatures,
-    ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.fillOrders(
+    ], BaseContract._bigNumberToString.bind(self));
+            const encodedData = self._ethersInterface.functions.fillOrders(
                 orders,
                 signatures,
                 feeOrders,
@@ -243,7 +244,7 @@ export class ForwarderContract extends BaseContract {
                     feeSignatures,
                 ),
             );
-            const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -251,20 +252,20 @@ export class ForwarderContract extends BaseContract {
             signatures: string[],
             feeOrders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             feeSignatures: string[],
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<number> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrders'}) as MethodAbi).inputs;
             [orders,
     signatures,
     feeOrders,
     feeSignatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     signatures,
     feeOrders,
     feeSignatures,
     ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.fillOrders(
+            const encodedData = self._ethersInterface.functions.fillOrders(
                 orders,
                 signatures,
                 feeOrders,
@@ -276,7 +277,7 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 }
             );
-            const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -284,20 +285,19 @@ export class ForwarderContract extends BaseContract {
             signatures: string[],
             feeOrders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             feeSignatures: string[],
-            txData: TxData = {},
         ): string {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrders'}) as MethodAbi).inputs;
             [orders,
     signatures,
     feeOrders,
     feeSignatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     signatures,
     feeOrders,
     feeSignatures,
-    ], BaseContract._bigNumberToString.bind(this));
-            const abiEncodedTransactionData = this._ethersInterface.functions.fillOrders(
+    ], BaseContract._bigNumberToString.bind(self));
+            const abiEncodedTransactionData = self._ethersInterface.functions.fillOrders(
                 orders,
                 signatures,
                 feeOrders,
@@ -310,48 +310,49 @@ export class ForwarderContract extends BaseContract {
             signatures: string[],
             feeOrders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             feeSignatures: string[],
-            txData: TxDataPayable = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<{}
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrders'}) as MethodAbi).inputs;
             [orders,
         signatures,
         feeOrders,
         feeSignatures,
-        ] = BaseContract._transformABIData(inputAbi, [orders,
+        ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
         signatures,
         feeOrders,
         feeSignatures,
-        ], BaseContract._bigNumberToString.bind(this));
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.fillOrders(
                 orders,
                 signatures,
                 feeOrders,
                 feeSignatures,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'fillOrders'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'fillOrders'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
     public initialize = {
         async sendTransactionAsync(
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<string> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'initialize'}).inputs;
-            [] = BaseContract._transformABIData(inputAbi, [], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.initialize(
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'initialize'}) as MethodAbi).inputs;
+            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
+            const encodedData = self._ethersInterface.functions.initialize(
             ).data
             const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
@@ -362,16 +363,16 @@ export class ForwarderContract extends BaseContract {
                     self,
                 ),
             );
-            const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<number> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'initialize'}).inputs;
-            [] = BaseContract._transformABIData(inputAbi, [], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.initialize(
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'initialize'}) as MethodAbi).inputs;
+            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(this));
+            const encodedData = self._ethersInterface.functions.initialize(
             ).data
             const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
@@ -379,16 +380,15 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 }
             );
-            const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
-            txData: TxData = {},
         ): string {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'initialize'}).inputs;
-            [] = BaseContract._transformABIData(inputAbi, [], BaseContract._bigNumberToString.bind(this));
-            const abiEncodedTransactionData = this._ethersInterface.functions.initialize(
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'initialize'}) as MethodAbi).inputs;
+            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
+            const abiEncodedTransactionData = self._ethersInterface.functions.initialize(
             ).data
             return abiEncodedTransactionData;
         },
@@ -398,18 +398,18 @@ export class ForwarderContract extends BaseContract {
             orders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             takerTokenFillAmount: BigNumber,
             signatures: string[],
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<string> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'marketSellOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'marketSellOrders'}) as MethodAbi).inputs;
             [orders,
     takerTokenFillAmount,
     signatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     takerTokenFillAmount,
     signatures,
-    ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.marketSellOrders(
+    ], BaseContract._bigNumberToString.bind(self));
+            const encodedData = self._ethersInterface.functions.marketSellOrders(
                 orders,
                 takerTokenFillAmount,
                 signatures,
@@ -426,25 +426,25 @@ export class ForwarderContract extends BaseContract {
                     signatures,
                 ),
             );
-            const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             takerTokenFillAmount: BigNumber,
             signatures: string[],
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<number> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'marketSellOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'marketSellOrders'}) as MethodAbi).inputs;
             [orders,
     takerTokenFillAmount,
     signatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     takerTokenFillAmount,
     signatures,
     ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.marketSellOrders(
+            const encodedData = self._ethersInterface.functions.marketSellOrders(
                 orders,
                 takerTokenFillAmount,
                 signatures,
@@ -455,25 +455,24 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 }
             );
-            const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
             orders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             takerTokenFillAmount: BigNumber,
             signatures: string[],
-            txData: TxData = {},
         ): string {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'marketSellOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'marketSellOrders'}) as MethodAbi).inputs;
             [orders,
     takerTokenFillAmount,
     signatures,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     takerTokenFillAmount,
     signatures,
-    ], BaseContract._bigNumberToString.bind(this));
-            const abiEncodedTransactionData = this._ethersInterface.functions.marketSellOrders(
+    ], BaseContract._bigNumberToString.bind(self));
+            const abiEncodedTransactionData = self._ethersInterface.functions.marketSellOrders(
                 orders,
                 takerTokenFillAmount,
                 signatures,
@@ -484,62 +483,64 @@ export class ForwarderContract extends BaseContract {
             orders: Array<{makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber}>,
             takerTokenFillAmount: BigNumber,
             signatures: string[],
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<{}
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'marketSellOrders'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'marketSellOrders'}) as MethodAbi).inputs;
             [orders,
         takerTokenFillAmount,
         signatures,
-        ] = BaseContract._transformABIData(inputAbi, [orders,
+        ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
         takerTokenFillAmount,
         signatures,
-        ], BaseContract._bigNumberToString.bind(this));
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.marketSellOrders(
                 orders,
                 takerTokenFillAmount,
                 signatures,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'marketSellOrders'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'marketSellOrders'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
     public getOrderHash = {
         async callAsync(
             order: {makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber},
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<string
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'getOrderHash'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'getOrderHash'}) as MethodAbi).inputs;
             [order,
-        ] = BaseContract._transformABIData(inputAbi, [order,
-        ], BaseContract._bigNumberToString.bind(this));
+        ] = BaseContract._formatABIDataItemList(inputAbi, [order,
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.getOrderHash(
                 order,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'getOrderHash'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'getOrderHash'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
@@ -551,24 +552,24 @@ export class ForwarderContract extends BaseContract {
             feeSignatures: string[],
             feeProportion: number|BigNumber,
             feeRecipient: string,
-            txData: TxDataPayable = {},
+            txData: Partial<TxDataPayable> = {},
         ): Promise<string> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrdersFee'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrdersFee'}) as MethodAbi).inputs;
             [orders,
     signatures,
     feeOrders,
     feeSignatures,
     feeProportion,
     feeRecipient,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     signatures,
     feeOrders,
     feeSignatures,
     feeProportion,
     feeRecipient,
-    ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.fillOrdersFee(
+    ], BaseContract._bigNumberToString.bind(self));
+            const encodedData = self._ethersInterface.functions.fillOrdersFee(
                 orders,
                 signatures,
                 feeOrders,
@@ -591,7 +592,7 @@ export class ForwarderContract extends BaseContract {
                     feeRecipient,
                 ),
             );
-            const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -601,24 +602,24 @@ export class ForwarderContract extends BaseContract {
             feeSignatures: string[],
             feeProportion: number|BigNumber,
             feeRecipient: string,
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<number> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrdersFee'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrdersFee'}) as MethodAbi).inputs;
             [orders,
     signatures,
     feeOrders,
     feeSignatures,
     feeProportion,
     feeRecipient,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     signatures,
     feeOrders,
     feeSignatures,
     feeProportion,
     feeRecipient,
     ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.fillOrdersFee(
+            const encodedData = self._ethersInterface.functions.fillOrdersFee(
                 orders,
                 signatures,
                 feeOrders,
@@ -632,7 +633,7 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 }
             );
-            const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -642,24 +643,23 @@ export class ForwarderContract extends BaseContract {
             feeSignatures: string[],
             feeProportion: number|BigNumber,
             feeRecipient: string,
-            txData: TxData = {},
         ): string {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrdersFee'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrdersFee'}) as MethodAbi).inputs;
             [orders,
     signatures,
     feeOrders,
     feeSignatures,
     feeProportion,
     feeRecipient,
-    ] = BaseContract._transformABIData(inputAbi, [orders,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
     signatures,
     feeOrders,
     feeSignatures,
     feeProportion,
     feeRecipient,
-    ], BaseContract._bigNumberToString.bind(this));
-            const abiEncodedTransactionData = this._ethersInterface.functions.fillOrdersFee(
+    ], BaseContract._bigNumberToString.bind(self));
+            const abiEncodedTransactionData = self._ethersInterface.functions.fillOrdersFee(
                 orders,
                 signatures,
                 feeOrders,
@@ -676,25 +676,25 @@ export class ForwarderContract extends BaseContract {
             feeSignatures: string[],
             feeProportion: number|BigNumber,
             feeRecipient: string,
-            txData: TxDataPayable = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<{}
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrdersFee'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrdersFee'}) as MethodAbi).inputs;
             [orders,
         signatures,
         feeOrders,
         feeSignatures,
         feeProportion,
         feeRecipient,
-        ] = BaseContract._transformABIData(inputAbi, [orders,
+        ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
         signatures,
         feeOrders,
         feeSignatures,
         feeProportion,
         feeRecipient,
-        ], BaseContract._bigNumberToString.bind(this));
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.fillOrdersFee(
                 orders,
                 signatures,
@@ -703,16 +703,17 @@ export class ForwarderContract extends BaseContract {
                 feeProportion,
                 feeRecipient,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'fillOrdersFee'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'fillOrdersFee'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
@@ -721,18 +722,18 @@ export class ForwarderContract extends BaseContract {
             order: {makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber},
             takerTokenFillAmount: BigNumber,
             signature: string,
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<string> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrderQuote'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrderQuote'}) as MethodAbi).inputs;
             [order,
     takerTokenFillAmount,
     signature,
-    ] = BaseContract._transformABIData(inputAbi, [order,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [order,
     takerTokenFillAmount,
     signature,
-    ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.fillOrderQuote(
+    ], BaseContract._bigNumberToString.bind(self));
+            const encodedData = self._ethersInterface.functions.fillOrderQuote(
                 order,
                 takerTokenFillAmount,
                 signature,
@@ -749,25 +750,25 @@ export class ForwarderContract extends BaseContract {
                     signature,
                 ),
             );
-            const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
             order: {makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber},
             takerTokenFillAmount: BigNumber,
             signature: string,
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<number> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrderQuote'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrderQuote'}) as MethodAbi).inputs;
             [order,
     takerTokenFillAmount,
     signature,
-    ] = BaseContract._transformABIData(inputAbi, [order,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [order,
     takerTokenFillAmount,
     signature,
     ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.fillOrderQuote(
+            const encodedData = self._ethersInterface.functions.fillOrderQuote(
                 order,
                 takerTokenFillAmount,
                 signature,
@@ -778,25 +779,24 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 }
             );
-            const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
             order: {makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber},
             takerTokenFillAmount: BigNumber,
             signature: string,
-            txData: TxData = {},
         ): string {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrderQuote'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrderQuote'}) as MethodAbi).inputs;
             [order,
     takerTokenFillAmount,
     signature,
-    ] = BaseContract._transformABIData(inputAbi, [order,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [order,
     takerTokenFillAmount,
     signature,
-    ], BaseContract._bigNumberToString.bind(this));
-            const abiEncodedTransactionData = this._ethersInterface.functions.fillOrderQuote(
+    ], BaseContract._bigNumberToString.bind(self));
+            const abiEncodedTransactionData = self._ethersInterface.functions.fillOrderQuote(
                 order,
                 takerTokenFillAmount,
                 signature,
@@ -807,82 +807,85 @@ export class ForwarderContract extends BaseContract {
             order: {makerAddress: string,takerAddress: string,makerTokenAddress: string,takerTokenAddress: string,feeRecipientAddress: string,makerTokenAmount: BigNumber,takerTokenAmount: BigNumber,makerFeeAmount: BigNumber,takerFeeAmount: BigNumber,expirationTimeSeconds: BigNumber,salt: BigNumber},
             takerTokenFillAmount: BigNumber,
             signature: string,
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<{}
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'fillOrderQuote'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'fillOrderQuote'}) as MethodAbi).inputs;
             [order,
         takerTokenFillAmount,
         signature,
-        ] = BaseContract._transformABIData(inputAbi, [order,
+        ] = BaseContract._formatABIDataItemList(inputAbi, [order,
         takerTokenFillAmount,
         signature,
-        ], BaseContract._bigNumberToString.bind(this));
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.fillOrderQuote(
                 order,
                 takerTokenFillAmount,
                 signature,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'fillOrderQuote'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'fillOrderQuote'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
     public MAX_FEE = {
         async callAsync(
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'MAX_FEE'}).inputs;
-            [] = BaseContract._transformABIData(inputAbi, [], BaseContract._bigNumberToString.bind(this));
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'MAX_FEE'}) as MethodAbi).inputs;
+            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.MAX_FEE(
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'MAX_FEE'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'MAX_FEE'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
     public EXTERNAL_QUERY_GAS_LIMIT = {
         async callAsync(
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'EXTERNAL_QUERY_GAS_LIMIT'}).inputs;
-            [] = BaseContract._transformABIData(inputAbi, [], BaseContract._bigNumberToString.bind(this));
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'EXTERNAL_QUERY_GAS_LIMIT'}) as MethodAbi).inputs;
+            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.EXTERNAL_QUERY_GAS_LIMIT(
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'EXTERNAL_QUERY_GAS_LIMIT'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'EXTERNAL_QUERY_GAS_LIMIT'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
@@ -891,18 +894,18 @@ export class ForwarderContract extends BaseContract {
             index_0: string,
             index_1: BigNumber,
             index_2: string,
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<string> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'onERC721Received'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'onERC721Received'}) as MethodAbi).inputs;
             [index_0,
     index_1,
     index_2,
-    ] = BaseContract._transformABIData(inputAbi, [index_0,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [index_0,
     index_1,
     index_2,
-    ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.onERC721Received(
+    ], BaseContract._bigNumberToString.bind(self));
+            const encodedData = self._ethersInterface.functions.onERC721Received(
                 index_0,
                 index_1,
                 index_2,
@@ -919,25 +922,25 @@ export class ForwarderContract extends BaseContract {
                     index_2,
                 ),
             );
-            const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
             index_0: string,
             index_1: BigNumber,
             index_2: string,
-            txData: TxData = {},
+            txData: Partial<TxData> = {},
         ): Promise<number> {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'onERC721Received'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'onERC721Received'}) as MethodAbi).inputs;
             [index_0,
     index_1,
     index_2,
-    ] = BaseContract._transformABIData(inputAbi, [index_0,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [index_0,
     index_1,
     index_2,
     ], BaseContract._bigNumberToString.bind(this));
-            const encodedData = this._ethersInterface.functions.onERC721Received(
+            const encodedData = self._ethersInterface.functions.onERC721Received(
                 index_0,
                 index_1,
                 index_2,
@@ -948,25 +951,24 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 }
             );
-            const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
             index_0: string,
             index_1: BigNumber,
             index_2: string,
-            txData: TxData = {},
         ): string {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'onERC721Received'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'onERC721Received'}) as MethodAbi).inputs;
             [index_0,
     index_1,
     index_2,
-    ] = BaseContract._transformABIData(inputAbi, [index_0,
+    ] = BaseContract._formatABIDataItemList(inputAbi, [index_0,
     index_1,
     index_2,
-    ], BaseContract._bigNumberToString.bind(this));
-            const abiEncodedTransactionData = this._ethersInterface.functions.onERC721Received(
+    ], BaseContract._bigNumberToString.bind(self));
+            const abiEncodedTransactionData = self._ethersInterface.functions.onERC721Received(
                 index_0,
                 index_1,
                 index_2,
@@ -977,38 +979,39 @@ export class ForwarderContract extends BaseContract {
             index_0: string,
             index_1: BigNumber,
             index_2: string,
-            txData: TxData = {},
-            defaultBlock?: Web3.BlockParam,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
         ): Promise<string
         > {
-            const self = this as ForwarderContract;
-            const inputAbi = _.find(this.abi, {name: 'onERC721Received'}).inputs;
+            const self = this as any as ForwarderContract;
+            const inputAbi = (_.find(self.abi, {name: 'onERC721Received'}) as MethodAbi).inputs;
             [index_0,
         index_1,
         index_2,
-        ] = BaseContract._transformABIData(inputAbi, [index_0,
+        ] = BaseContract._formatABIDataItemList(inputAbi, [index_0,
         index_1,
         index_2,
-        ], BaseContract._bigNumberToString.bind(this));
+        ], BaseContract._bigNumberToString.bind(self));
             const encodedData = self._ethersInterface.functions.onERC721Received(
                 index_0,
                 index_1,
                 index_2,
             ).data;
-            const callData = await self._applyDefaultsToTxDataAsync(
+            const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
                 {
                     data: encodedData,
                 }
             )
-            const rawCallResult = await self._web3Wrapper.callAsync(callData, defaultBlock);
-            const outputAbi = _.find(this.abi, {name: 'onERC721Received'}).outputs as Web3.DataItem[];
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const outputAbi = (_.find(self.abi, {name: 'onERC721Received'}) as MethodAbi).outputs;
             const outputParamsTypes = _.map(outputAbi, 'type');
             let resultArray = ethersContracts.Interface.decodeParams(outputParamsTypes, rawCallResult) as any;
-            resultArray = BaseContract._transformABIData(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
+            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
             return resultArray[0];
         },
     };
-    constructor(web3Wrapper: Web3Wrapper, abi: Web3.ContractAbi, address: string) {
+    constructor(web3Wrapper: Web3Wrapper, abi: ContractAbi, address: string) {
         super(web3Wrapper, abi, address);
         classUtils.bindAll(this, ['_ethersInterface', 'address', 'abi', '_web3Wrapper']);
     }

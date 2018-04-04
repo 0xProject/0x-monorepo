@@ -24,7 +24,8 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, compose, createStore, Store as ReduxStore } from 'redux';
 import thunk from 'redux-thunk';
 import * as Web3 from 'web3';
-import * as Web3ProviderEngine from 'web3-provider-engine';
+// tslint:disable-next-line:no-var-requires
+const Web3ProviderEngine = require('web3-provider-engine');
 
 // import './App.css';
 import { BuyWidget } from './containers/buy_widget';
@@ -53,33 +54,6 @@ const store: ReduxStore<State> = createStore(reducer, composeEnhancers(applyMidd
 const liquidityProvider = new FixedProvider();
 const dispatcher = new Dispatcher(store.dispatch, liquidityProvider);
 const blockchainSaga = new BlockchainSaga(dispatcher, store, web3Wrapper, zeroEx);
-
-// class App extends React.Component {
-//     // tslint:disable-next-line:prefer-function-over-method member-access
-//     render() {
-//         return (
-//             <Provider store={store}>
-//                 <Container style={{ marginTop: 20, marginLeft: 20 }}>
-//                     <Content>
-//                         <Columns>
-//                             <Column isSize={{ mobile: 12, default: '1/4' }}>
-//                                 <Card>
-//                                     <CardHeaderTitle>
-//                                         <Label isSize={'small'}>0x TRADE WIDGET</Label>
-//                                     </CardHeaderTitle>
-//                                     <CardContent>
-//                                         <BuyWidget zeroEx={zeroEx} web3Wrapper={web3Wrapper} dispatcher={dispatcher} />
-//                                     </CardContent>
-//                                 </Card>
-//                             </Column>
-//                         </Columns>
-//                     </Content>
-//                 </Container>
-//             </Provider>,
-//            document.getElementById('app'),
-//         );
-//     }
-// }
 
 render(
     <Provider store={store}>

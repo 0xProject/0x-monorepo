@@ -26,7 +26,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Web3 from 'web3';
-import * as Web3ProviderEngine from 'web3-provider-engine';
+// tslint:disable-next-line:no-var-requires
+const Web3ProviderEngine = require('web3-provider-engine');
 
 import { convertSignedOrderV1ToSignedOrderV2, ForwarderWrapper } from '../../../contract_wrappers/forwarder_wrapper';
 import { artifacts } from '../../artifacts';

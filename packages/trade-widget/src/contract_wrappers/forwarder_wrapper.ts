@@ -1,4 +1,5 @@
 import { Order, OrderTransactionOpts, SignedOrder as SignedOrderV1 } from '0x.js';
+import { ContractAbi } from '@0xproject/types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
@@ -72,13 +73,13 @@ export class ForwarderWrapper {
         artifact: Artifact,
         web3Wrapper: Web3Wrapper,
         networkId: number,
-    ): Promise<[Web3.ContractAbi, string]> {
+    ): Promise<[ContractAbi, string]> {
         const contractAddress = this._getContractAddress(artifact, networkId);
         const doesContractExist = await web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
         if (!doesContractExist) {
             throw new Error(`Forwarder Contract ${contractAddress} Not Found on network ${networkId}`);
         }
-        const abiAndAddress: [Web3.ContractAbi, string] = [artifact.networks[networkId].abi, contractAddress];
+        const abiAndAddress: [ContractAbi, string] = [artifact.networks[networkId].abi, contractAddress];
         return abiAndAddress;
     }
     protected static _getContractAddress(artifact: Artifact, networkId: number, addressIfExists?: string): string {

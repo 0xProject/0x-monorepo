@@ -1,19 +1,26 @@
 import { Order, SignedOrder } from '0x.js';
+import { ContractAbi } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import * as Web3 from 'web3';
 
 export interface Styles {
     [name: string]: React.CSSProperties;
 }
 
-export type ArtifactContractName = 'Forwarder';
-
+export enum ContractName {
+  Forwarder = 'Forwarder',
+}
 export interface Artifact {
-    contract_name: ArtifactContractName;
+    contract_name: ContractName;
     networks: {
         [networkId: number]: {
+            abi: ContractAbi;
+            solc_version: string;
+            keccak256: string;
+            optimizer_enabled: number;
+            unlinked_binary: string;
+            updated_at: number;
             address: string;
-            abi: Web3.ContractAbi;
+            constructor_args: string;
         };
     };
 }

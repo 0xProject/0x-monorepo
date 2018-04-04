@@ -1,4 +1,5 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
@@ -23,12 +24,5 @@
         "./src/ts/**/*",
         "./test/**/*",
         "./src/migrations/**/*",
-        "../../node_modules/0x.js/lib/src/index.d.ts",
-        "../../node_modules/ethers-typescript-typings/index.d.ts",
-        "../../node_modules/types-bn/index.d.ts",
-        "../../node_modules/types-ethereumjs-util/index.d.ts",
-        "../../node_modules/web3-typescript-typings/index.d.ts",
-        "../../node_modules/chai-typescript-typings/index.d.ts",
-        "../../node_modules/chai-as-promised-typescript-typings/index.d.ts"
     ]
 }
