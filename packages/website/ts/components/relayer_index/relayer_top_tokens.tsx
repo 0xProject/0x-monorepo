@@ -1,0 +1,46 @@
+import { colors, EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0xproject/react-shared';
+import * as _ from 'lodash';
+import * as React from 'react';
+
+import { TokenIcon } from 'ts/components/ui/token_icon';
+import { Token } from 'ts/types';
+
+export interface TopTokensProps {
+    tokens: Token[];
+    networkId: number;
+}
+
+const styles: Styles = {
+    tokenLabel: {
+        textDecoration: 'none',
+        color: colors.mediumBlue,
+    },
+    followingTokenLabel: {
+        paddingLeft: 16,
+    },
+};
+
+export const TopTokens: React.StatelessComponent<TopTokensProps> = (props: TopTokensProps) => {
+    return (
+        <div className="flex">
+            {_.map(props.tokens, (token: Token, index: number) => {
+                const firstItemStyle = { ...styles.tokenLabel, ...styles.followingTokenLabel };
+                const style = index !== 0 ? firstItemStyle : styles.tokenLabel;
+                return (
+                    <a
+                        key={token.address}
+                        href={tokenLinkFromToken(token, props.networkId)}
+                        target="_blank"
+                        style={style}
+                    >
+                        {token.symbol}
+                    </a>
+                );
+            })}
+        </div>
+    );
+};
+
+function tokenLinkFromToken(token: Token, networkId: number) {
+    return sharedUtils.getEtherScanLinkIfExists(token.address, networkId, EtherscanLinkSuffixes.Address);
+}

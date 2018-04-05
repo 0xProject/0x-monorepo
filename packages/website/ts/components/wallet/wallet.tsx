@@ -71,7 +71,7 @@ interface AccessoryItemConfig {
 }
 
 const styles: Styles = {
-    wallet: {
+    root: {
         width: 346,
         backgroundColor: colors.white,
         borderBottomRightRadius: 10,
@@ -178,7 +178,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     public render() {
         const isReadyToRender = this.props.blockchainIsLoaded && this.props.blockchainErr === BlockchainErrs.NoError;
-        return <div style={styles.wallet}>{isReadyToRender && this._renderRows()}</div>;
+        return <div style={styles.root}>{isReadyToRender && this._renderRows()}</div>;
     }
     private _renderRows() {
         const isAddressAvailable = !_.isEmpty(this.props.userAddress);
