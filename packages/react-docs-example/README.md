@@ -20,10 +20,22 @@ Then install dependencies
 yarn install
 ```
 
-#### Start the dev server
+### Initial setup
+
+The **first** time you work with this package, you must build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
 
 ```bash
-yarn dev
+yarn lerna:rebuild
+```
+
+Note: If you move this package out of the monorepo, it will work without this step. Make sure you copy it out on the `master` branch since the `development` version might rely on not-yet published changes to other packages.
+
+### Run dev server
+
+The the `react-docs-example` root directory, run:
+
+```bash
+yarn run dev
 ```
 
 ### Deploy Example to S3 bucket
@@ -40,6 +52,12 @@ yarn deploy_example
 
 ```bash
 yarn build
+```
+
+### Clean
+
+```bash
+yarn clean
 ```
 
 ### Lint
