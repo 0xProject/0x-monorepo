@@ -237,5 +237,4 @@ contract MixinExchangeCore is
     {
         return filled[orderHash];
     }
-
 }
