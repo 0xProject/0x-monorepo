@@ -11,7 +11,6 @@ declare interface LernaPackage {
     };
 }
 declare function lernaGetPackages(path: string): LernaPackage[];
-// lerna-get-packages declarations
 declare module 'lerna-get-packages' {
     export = lernaGetPackages;
 }
