@@ -12,6 +12,7 @@ export { LedgerSubprovider } from './subproviders/ledger';
 export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
+export { PKWalletSubprovider } from './subproviders/pk_wallet_subprovider';
 export {
     Callback,
     ErrorCallback,

@@ -1,5 +1,15 @@
 [
     {
+        "timestamp": 1522904386,
+        "version": "0.8.5",
+        "changes": [
+            {
+                "note": "Add Prive Key Subprovider and refactor Provider Engine usage into Base Wallet Subprovider",
+                "pr": 506
+            }
+        ]
+    },
+    {
         "timestamp": 1522673609,
         "version": "0.8.4",
         "changes": [
