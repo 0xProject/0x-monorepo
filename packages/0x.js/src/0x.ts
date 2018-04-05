@@ -1,5 +1,5 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
-import { ECSignature, Order, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { ECSignature, Order, Provider, SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { AbiDecoder, BigNumber, intervalUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
@@ -15,7 +15,7 @@ import { OrderStateWatcher } from './order_watcher/order_state_watcher';
 import { zeroExConfigSchema } from './schemas/zero_ex_config_schema';
 import { zeroExPrivateNetworkConfigSchema } from './schemas/zero_ex_private_network_config_schema';
 import { zeroExPublicNetworkConfigSchema } from './schemas/zero_ex_public_network_config_schema';
-import { OrderStateWatcherConfig, Web3Provider, ZeroExConfig, ZeroExError } from './types';
+import { OrderStateWatcherConfig, ZeroExConfig, ZeroExError } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
 import { decorators } from './utils/decorators';
@@ -115,10 +115,8 @@ export class ZeroEx {
     public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
         assert.isValidBaseUnitAmount('amount', amount);
         assert.isNumber('decimals', decimals);
-
-        const aUnit = new BigNumber(10).pow(decimals);
-        const unit = amount.div(aUnit);
-        return unit;
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        return unitAmount;
     }
     /**
      * A baseUnit is defined as the smallest denomination of a token. An amount expressed in baseUnits
@@ -131,13 +129,7 @@ export class ZeroEx {
     public static toBaseUnitAmount(amount: BigNumber, decimals: number): BigNumber {
         assert.isBigNumber('amount', amount);
         assert.isNumber('decimals', decimals);
-
-        const unit = new BigNumber(10).pow(decimals);
-        const baseUnitAmount = amount.times(unit);
-        const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
-        if (hasDecimals) {
-            throw new Error(`Invalid unit amount: ${amount.toString()} - Too many decimal places`);
-        }
+        const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amount, decimals);
         return baseUnitAmount;
     }
     /**
@@ -153,12 +145,12 @@ export class ZeroEx {
     }
     /**
      * Instantiates a new ZeroEx instance that provides the public interface to the 0x.js library.
-     * @param   provider    The Web3.js Provider instance you would like the 0x.js library to use for interacting with
+     * @param   provider    The Provider instance you would like the 0x.js library to use for interacting with
      *                      the Ethereum network.
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the 0x.js ZeroEx class.
      */
-    constructor(provider: Web3Provider, config: ZeroExConfig) {
+    constructor(provider: Provider, config: ZeroExConfig) {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('config', config, zeroExConfigSchema, [
             zeroExPrivateNetworkConfigSchema,
@@ -199,7 +191,7 @@ export class ZeroEx {
      * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
      * @param   networkId   The id of the network your provider is connected to
      */
-    public setProvider(provider: Web3Provider, networkId: number): void {
+    public setProvider(provider: Provider, networkId: number): void {
         this._web3Wrapper.setProvider(provider);
         (this.exchange as any)._invalidateContractInstances();
         (this.exchange as any)._setNetworkId(networkId);
@@ -225,7 +217,7 @@ export class ZeroEx {
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
      * @param   orderHash       Hex encoded orderHash to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
-     *          must be available via the Web3.Provider supplied to 0x.js.
+     *          must be available via the Provider supplied to 0x.js.
      * @param   shouldAddPersonalMessagePrefix  Some signers add the personal message prefix `\x19Ethereum Signed Message`
      *          themselves (e.g Parity Signer, Ledger, TestRPC) and others expect it to already be done by the client
      *          (e.g Metamask). Depending on which signer this request is going to, decide on whether to add the prefix

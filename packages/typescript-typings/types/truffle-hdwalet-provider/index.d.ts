@@ -1,7 +1,6 @@
 declare module 'truffle-hdwallet-provider' {
-    import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
-    import * as Web3 from 'web3';
-    class HDWalletProvider implements Web3.Provider {
+    import { JSONRPCRequestPayload, JSONRPCResponsePayload, Provider } from '@0xproject/types';
+    class HDWalletProvider implements Provider {
         constructor(mnemonic: string, rpcUrl: string);
         public sendAsync(
             payload: JSONRPCRequestPayload,

@@ -14,7 +14,7 @@ import { ContractName } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -30,7 +30,7 @@ describe('TokenRegistry', () => {
         owner = accounts[0];
         notOwner = accounts[1];
         const tokenRegInstance = await deployer.deployAsync(ContractName.TokenRegistry);
-        tokenReg = new TokenRegistryContract(web3Wrapper, tokenRegInstance.abi, tokenRegInstance.address);
+        tokenReg = new TokenRegistryContract(tokenRegInstance.abi, tokenRegInstance.address, provider);
         tokenRegWrapper = new TokenRegWrapper(tokenReg);
     });
     beforeEach(async () => {

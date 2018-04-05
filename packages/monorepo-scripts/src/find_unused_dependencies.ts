@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as depcheck from 'depcheck';
+import * as depcheckAsync from 'depcheck';
 import * as fs from 'fs';
 import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
@@ -23,9 +23,9 @@ const IGNORE_PACKAGES = ['@0xproject/deployer'];
         utils.log(`Checking ${lernaPackage.package.name} for unused deps. This might take a while...`);
 
         const configs = {};
-        const result = await depcheckAsync(lernaPackage.location, configs);
-        if (!_.isEmpty(result.dependencies)) {
-            _.each(result.dependencies, dep => {
+        const { dependencies } = await depcheckAsync(lernaPackage.location, configs);
+        if (!_.isEmpty(dependencies)) {
+            _.each(dependencies, dep => {
                 utils.log(dep);
             });
         }
@@ -35,11 +35,3 @@ const IGNORE_PACKAGES = ['@0xproject/deployer'];
     utils.log(err);
     process.exit(1);
 });
-
-async function depcheckAsync(path: string, opts: any): Promise<depcheck.Results> {
-    return new Promise<depcheck.Results>((resolve, reject) => {
-        depcheck(path, opts, (unused: any) => {
-            resolve(unused);
-        });
-    });
-}

@@ -16,7 +16,7 @@ import { ContractName, SubmissionContractEventArgs, TransactionDataParams } from
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 const PROXY_ABI = artifacts.TokenTransferProxyArtifact.networks[constants.TESTRPC_NETWORK_ID].abi;
 const MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_AUTHORIZED_ADDRESS_ABI =
     artifacts.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressArtifact.networks[constants.TESTRPC_NETWORK_ID]
@@ -28,7 +28,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const abiDecoder = new AbiDecoder([MUTISIG_WALLET_WITH_TIME_LOCK_EXCEPT_REMOVE_AUTHORIZED_ADDRESS_ABI]);
 
 describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
-    const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
+    const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
     let owners: string[];
     const requiredApprovals = 2;
     const SECONDS_TIME_LOCKED = 1000000;
@@ -49,9 +49,9 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
         const initialOwner = accounts[0];
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
         tokenTransferProxy = new TokenTransferProxyContract(
-            web3Wrapper,
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
+            provider,
         );
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(authorizedAddress, {
             from: initialOwner,
@@ -61,9 +61,9 @@ describe('MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress', () => {
             [owners, requiredApprovals, SECONDS_TIME_LOCKED, tokenTransferProxy.address],
         );
         multiSig = new MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddressContract(
-            web3Wrapper,
             multiSigInstance.abi,
             multiSigInstance.address,
+            provider,
         );
         await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, {
             from: initialOwner,

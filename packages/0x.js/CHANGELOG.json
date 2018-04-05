@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.36.0",
+        "changes": [
+            {
+                "note": "Moved Web3.Provider to `@0xproject/types:Provider`",
+                "pr": 501
+            }
+        ]
+    },
+    {
         "version": "0.35.0",
         "changes": [
             {

@@ -154,14 +154,6 @@ export interface OrderFillRequest {
 export type AsyncMethod = (...args: any[]) => Promise<any>;
 export type SyncMethod = (...args: any[]) => any;
 
-/**
- * We re-export the `Web3.Provider` type specified in the Web3 Typescript typings
- * since it is the type of the `provider` argument to the `ZeroEx` constructor.
- * It is however a `Web3` library type, not a native `0x.js` type. To learn more
- * about providers, visit https://0xproject.com/wiki#Web3-Provider-Explained
- */
-export type Web3Provider = Web3.Provider;
-
 /*
  * orderExpirationCheckingIntervalMs: How often to check for expired orders. Default: 50
  * eventPollingIntervalMs: How often to poll the Ethereum node for new events. Default: 200

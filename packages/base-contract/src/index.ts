@@ -1,4 +1,4 @@
-import { ContractAbi, DataItem, TxData, TxDataPayable } from '@0xproject/types';
+import { ContractAbi, DataItem, Provider, TxData, TxDataPayable } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethersContracts from 'ethers-contracts';
@@ -49,8 +49,8 @@ export class BaseContract {
         }
         return txDataWithDefaults;
     }
-    constructor(web3Wrapper: Web3Wrapper, abi: ContractAbi, address: string) {
-        this._web3Wrapper = web3Wrapper;
+    constructor(abi: ContractAbi, address: string, provider: Provider, defaults?: Partial<TxData>) {
+        this._web3Wrapper = new Web3Wrapper(provider, defaults);
         this.abi = abi;
         this.address = address;
         this._ethersInterface = new ethersContracts.Interface(abi);

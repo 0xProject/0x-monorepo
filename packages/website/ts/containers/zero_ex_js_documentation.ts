@@ -121,6 +121,7 @@ const docsInfoConfig: DocsInfoConfig = {
             'ExchangeContractErrs',
             'ContractEvent',
             'Token',
+            'Provider',
             'ExchangeEvents',
             'IndexedFilterValues',
             'SubscriptionOpts',

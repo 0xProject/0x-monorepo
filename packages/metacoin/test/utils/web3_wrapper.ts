@@ -8,12 +8,12 @@ import ProviderEngine = require('web3-provider-engine');
 import { config } from './config';
 import { coverage } from './coverage';
 
-export const web3Provider = new ProviderEngine();
+export const provider = new ProviderEngine();
 const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
 if (isCoverageEnabled) {
-    web3Provider.addProvider(coverage.getCoverageSubproviderSingleton());
+    provider.addProvider(coverage.getCoverageSubproviderSingleton());
 }
-web3Provider.addProvider(
+provider.addProvider(
     new GanacheSubprovider({
         logger: {
             log: (arg: any) => {
@@ -25,6 +25,6 @@ web3Provider.addProvider(
         mnemonic: config.mnemonic,
     }),
 );
-web3Provider.start();
+provider.start();
 
-export const web3Wrapper = new Web3Wrapper(web3Provider);
+export const web3Wrapper = new Web3Wrapper(provider);

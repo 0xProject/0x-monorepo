@@ -6,6 +6,7 @@ declare module 'web3' {
         BlockWithoutTransactionData,
         BlockParam,
         CallData,
+        Provider,
         Unit,
         TxData,
         Transaction,
@@ -21,17 +22,17 @@ declare module 'web3' {
 
     class Web3 {
         public static providers: typeof providers;
-        public currentProvider: Web3.Provider;
+        public currentProvider: Provider;
 
         public eth: Web3.EthApi;
         public personal: Web3.PersonalApi | undefined;
         public version: Web3.VersionApi;
         public net: Web3.NetApi;
 
-        public constructor(provider?: Web3.Provider);
+        public constructor(provider?: Provider);
 
         public isConnected(): boolean;
-        public setProvider(provider: Web3.Provider): void;
+        public setProvider(provider: Provider): void;
         public reset(keepIsSyncing: boolean): void;
         public toHex(data: MixedData): string;
         public toAscii(hex: string): string;
@@ -49,7 +50,7 @@ declare module 'web3' {
     }
 
     namespace providers {
-        class HttpProvider implements Web3.Provider {
+        class HttpProvider implements Provider {
             constructor(url?: string, timeout?: number, username?: string, password?: string);
             public sendAsync(
                 payload: JSONRPCRequestPayload,
@@ -75,13 +76,6 @@ declare module 'web3' {
             get(callback: () => void): void;
             watch(callback: (err: Error, result: LogEntryEvent) => void): void;
             stopWatching(callback?: () => void): void;
-        }
-
-        interface Provider {
-            sendAsync(
-                payload: JSONRPCRequestPayload,
-                callback: (err: Error, result: JSONRPCResponsePayload) => void,
-            ): void;
         }
 
         interface Sha3Options {

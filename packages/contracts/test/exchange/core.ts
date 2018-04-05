@@ -22,7 +22,7 @@ import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
-import { web3, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -59,22 +59,22 @@ describe('Exchange', () => {
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
         ]);
-        rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
-        dgd = new DummyTokenContract(web3Wrapper, dgdInstance.abi, dgdInstance.address);
-        zrx = new DummyTokenContract(web3Wrapper, zrxInstance.abi, zrxInstance.address);
+        rep = new DummyTokenContract(repInstance.abi, repInstance.address, provider);
+        dgd = new DummyTokenContract(dgdInstance.abi, dgdInstance.address, provider);
+        zrx = new DummyTokenContract(zrxInstance.abi, zrxInstance.address, provider);
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
         tokenTransferProxy = new TokenTransferProxyContract(
-            web3Wrapper,
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
+            provider,
         );
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             tokenTransferProxy.address,
         ]);
-        exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
+        exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
-        zeroEx = new ZeroEx(web3.currentProvider, {
+        zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchange.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
