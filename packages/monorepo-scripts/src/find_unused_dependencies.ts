@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as depcheck from 'depcheck';
+import * as depcheckAsync from 'depcheck';
 import * as fs from 'fs';
 import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
@@ -35,11 +35,3 @@ const IGNORE_PACKAGES = ['@0xproject/deployer'];
     utils.log(err);
     process.exit(1);
 });
-
-async function depcheckAsync(path: string, opts: any): Promise<depcheck.Results> {
-    return new Promise<depcheck.Results>((resolve, reject) => {
-        depcheck(path, opts, (unused: any) => {
-            resolve(unused);
-        });
-    });
-}
