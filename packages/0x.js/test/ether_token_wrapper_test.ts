@@ -59,7 +59,7 @@ describe('EtherTokenWrapper', () => {
         userAddresses = await zeroEx.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
         wethContractAddress = zeroEx.etherToken.getContractAddressIfExists() as string;
-        depositWeiAmount = (zeroEx as any)._web3Wrapper.toWei(new BigNumber(5));
+        depositWeiAmount = Web3Wrapper.toWei(new BigNumber(5));
         decimalPlaces = 7;
         addressWithoutFunds = userAddresses[1];
     });
@@ -105,7 +105,7 @@ describe('EtherTokenWrapper', () => {
         it('should throw if user has insufficient ETH balance for deposit', async () => {
             const preETHBalance = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
 
-            const extraETHBalance = (zeroEx as any)._web3Wrapper.toWei(5, 'ether');
+            const extraETHBalance = Web3Wrapper.toWei(5, 'ether');
             const overETHBalanceinWei = preETHBalance.add(extraETHBalance);
 
             return expect(
