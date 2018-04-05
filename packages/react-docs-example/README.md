@@ -35,7 +35,7 @@ Note: If you move this package out of the monorepo, it will work without this st
 The the `react-docs-example` root directory, run:
 
 ```bash
-yarn run dev
+yarn dev
 ```
 
 ### Deploy Example to S3 bucket

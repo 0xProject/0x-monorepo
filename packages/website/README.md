@@ -41,7 +41,7 @@ yarn lerna:rebuild
 The the `website` root directory, run:
 
 ```bash
-yarn run dev
+yarn dev
 ```
 
 Visit [0xproject.localhost:3572](http://0xproject.localhost:3572) in your browser.

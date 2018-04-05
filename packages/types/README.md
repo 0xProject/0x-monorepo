@@ -26,7 +26,7 @@ import { TransactionReceipt, TxData, TxDataPayable } from '@0xproject/types';
 
 We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
 
-Please read our [contribution guidelines](./CONTRIBUTING.md) before getting started.
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
 ### Install dependencies
 
