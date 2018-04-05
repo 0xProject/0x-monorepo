@@ -127,9 +127,7 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
             <div className="pl1" style={{ paddingTop: 10 }}>
                 <i className="zmdi zmdi-spinner zmdi-hc-spin" />
             </div>
-        ) : (
-            undefined
-        );
+        ) : null;
     }
     private _renderWrapEtherConfirmationButton() {
         const isWrappingEth = this.props.direction === Side.Deposit;
