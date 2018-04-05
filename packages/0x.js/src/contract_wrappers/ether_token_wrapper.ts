@@ -191,7 +191,12 @@ export class EtherTokenWrapper extends ContractWrapper {
             artifacts.EtherTokenArtifact,
             etherTokenAddress,
         );
-        const contractInstance = new EtherTokenContract(this._web3Wrapper, abi, address);
+        const contractInstance = new EtherTokenContract(
+            abi,
+            address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
         etherTokenContract = contractInstance;
         this._etherTokenContractsByAddress[etherTokenAddress] = etherTokenContract;
         return etherTokenContract;

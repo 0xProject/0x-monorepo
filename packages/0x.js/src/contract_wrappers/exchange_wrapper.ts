@@ -170,7 +170,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   shouldThrowOnInsufficientBalanceOrAllowance Whether or not you wish for the contract call to throw
      *                                                      if upon execution the tokens cannot be transferred.
      * @param   takerAddress                                The user Ethereum address who would like to fill this order.
-     *                                                      Must be available via the supplied Web3.Provider
+     *                                                      Must be available via the supplied Provider
      *                                                      passed to 0x.js.
      * @param   orderTransactionOpts                        Optional arguments this method accepts.
      * @return  Transaction hash.
@@ -235,7 +235,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                                      If set to false, the call will continue to fill subsequent
      *                                                      signedOrders even when some cannot be filled.
      * @param   takerAddress                                The user Ethereum address who would like to fill these
-     *                                                      orders. Must be available via the supplied Web3.Provider
+     *                                                      orders. Must be available via the supplied Provider
      *                                                      passed to 0x.js.
      * @param   orderTransactionOpts                        Optional arguments this method accepts.
      * @return  Transaction hash.
@@ -335,7 +335,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                                          cannot be filled.
      * @param   takerAddress                                    The user Ethereum address who would like to fill
      *                                                          these orders. Must be available via the supplied
-     *                                                          Web3.Provider passed to 0x.js.
+     *                                                          Provider passed to 0x.js.
      * @param   orderTransactionOpts                            Optional arguments this method accepts.
      * @return  Transaction hash.
      */
@@ -416,7 +416,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  signedOrder you wish to fill.
      * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
-     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
+     *                                  Must be available via the supplied Provider passed to 0x.js.
      * @param   orderTransactionOpts    Optional arguments this method accepts.
      * @return  Transaction hash.
      */
@@ -470,7 +470,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * filled (each to the specified fillAmount) or aborted.
      * @param   orderFillRequests           An array of objects that conform to the OrderFillRequest interface.
      * @param   takerAddress                The user Ethereum address who would like to fill there orders.
-     *                                      Must be available via the supplied Web3.Provider passed to 0x.js.
+     *                                      Must be available via the supplied Provider passed to 0x.js.
      * @param   orderTransactionOpts        Optional arguments this method accepts.
      * @return  Transaction hash.
      */
@@ -765,7 +765,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  signedOrder you wish to fill.
      * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
-     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
+     *                                  Must be available via the supplied Provider passed to 0x.js.
      */
     public async validateFillOrderThrowIfInvalidAsync(
         signedOrder: SignedOrder,
@@ -812,7 +812,7 @@ export class ExchangeWrapper extends ContractWrapper {
      *                                  signedOrder you wish to fill.
      * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
-     *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
+     *                                  Must be available via the supplied Provider passed to 0x.js.
      */
     public async validateFillOrKillOrderThrowIfInvalidAsync(
         signedOrder: SignedOrder,
@@ -920,7 +920,12 @@ export class ExchangeWrapper extends ContractWrapper {
             artifacts.ExchangeArtifact,
             this._contractAddressIfExists,
         );
-        const contractInstance = new ExchangeContract(this._web3Wrapper, abi, address);
+        const contractInstance = new ExchangeContract(
+            abi,
+            address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
         this._exchangeContractIfExists = contractInstance;
         return this._exchangeContractIfExists;
     }

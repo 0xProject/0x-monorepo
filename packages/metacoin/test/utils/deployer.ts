@@ -6,7 +6,7 @@ import { config } from './config';
 import { web3Wrapper } from './web3_wrapper';
 
 const deployerOpts = {
-    web3Provider: web3Wrapper.getProvider(),
+    provider: web3Wrapper.getProvider(),
     artifactsDir: config.artifactsDir,
     networkId: config.networkId,
     defaults: {

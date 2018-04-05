@@ -1,4 +1,4 @@
-import { AbiType, ConstructorAbi, ContractAbi, TxData } from '@0xproject/types';
+import { AbiType, ConstructorAbi, ContractAbi, Provider, TxData } from '@0xproject/types';
 import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -38,15 +38,15 @@ export class Deployer {
         this._artifactsDir = opts.artifactsDir;
         this._networkId = opts.networkId;
         this._defaults = opts.defaults;
-        let web3Provider: Web3.Provider;
-        if (_.isUndefined((opts as ProviderDeployerOptions).web3Provider)) {
+        let web3Provider: Provider;
+        if (_.isUndefined((opts as ProviderDeployerOptions).provider)) {
             const jsonrpcUrl = (opts as UrlDeployerOptions).jsonrpcUrl;
             if (_.isUndefined(jsonrpcUrl)) {
                 throw new Error(`Deployer options don't contain web3Provider nor jsonrpcUrl. Please pass one of them`);
             }
             web3Provider = new Web3.providers.HttpProvider(jsonrpcUrl);
         } else {
-            web3Provider = (opts as ProviderDeployerOptions).web3Provider;
+            web3Provider = (opts as ProviderDeployerOptions).provider;
         }
         this.web3Wrapper = new Web3Wrapper(web3Provider, this._defaults);
     }

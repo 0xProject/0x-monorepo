@@ -15,13 +15,13 @@ import { ContractName, SubmissionContractEventArgs } from '../util/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { deployer } from './utils/deployer';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 const MULTI_SIG_ABI = artifacts.MultiSigWalletWithTimeLockArtifact.networks[constants.TESTRPC_NETWORK_ID].abi;
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-const zeroEx = new ZeroEx(web3.currentProvider, { networkId: constants.TESTRPC_NETWORK_ID });
+const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
 const abiDecoder = new AbiDecoder([MULTI_SIG_ABI]);
 
 describe('MultiSigWalletWithTimeLock', () => {
@@ -53,9 +53,9 @@ describe('MultiSigWalletWithTimeLock', () => {
                     0,
                 ]);
                 multiSig = new MultiSigWalletWithTimeLockContract(
-                    web3Wrapper,
                     multiSigInstance.abi,
                     multiSigInstance.address,
+                    provider,
                 );
                 multiSigWrapper = new MultiSigWrapper((multiSig as any) as MultiSigWalletContract);
 
@@ -150,9 +150,9 @@ describe('MultiSigWalletWithTimeLock', () => {
                     SECONDS_TIME_LOCKED,
                 ]);
                 multiSig = new MultiSigWalletWithTimeLockContract(
-                    web3Wrapper,
                     multiSigInstance.abi,
                     multiSigInstance.address,
+                    provider,
                 );
                 multiSigWrapper = new MultiSigWrapper((multiSig as any) as MultiSigWalletContract);
 

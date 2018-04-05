@@ -8,7 +8,7 @@ import { constants } from '../../util/constants';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
-import { web3, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -25,9 +25,9 @@ describe('TokenTransferProxy', () => {
         notOwner = accounts[1];
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
         tokenTransferProxy = new TokenTransferProxyContract(
-            web3Wrapper,
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
+            provider,
         );
     });
     beforeEach(async () => {

@@ -5,7 +5,7 @@
 // tslint:disable:no-consecutive-blank-lines
 // tslint:disable-next-line:no-unused-variable
 import { BaseContract } from '@0xproject/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, DataItem, MethodAbi, TxData, TxDataPayable } from '@0xproject/types';
+import { BlockParam, BlockParamLiteral, CallData, ContractAbi, DataItem, MethodAbi, Provider, TxData, TxDataPayable } from '@0xproject/types';
 import { BigNumber, classUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethersContracts from 'ethers-contracts';
@@ -39,8 +39,8 @@ export class {{contractName}}Contract extends BaseContract {
     {{> tx contractName=../contractName}}
     {{/this.constant}}
 {{/each}}
-    constructor(web3Wrapper: Web3Wrapper, abi: ContractAbi, address: string) {
-        super(web3Wrapper, abi, address);
+    constructor(abi: ContractAbi, address: string, provider: Provider, defaults?: Partial<TxData>) {
+        super(abi, address, provider, defaults);
         classUtils.bindAll(this, ['_ethersInterface', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

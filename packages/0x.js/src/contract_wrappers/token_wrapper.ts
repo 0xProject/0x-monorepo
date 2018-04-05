@@ -421,7 +421,12 @@ export class TokenWrapper extends ContractWrapper {
             artifacts.TokenArtifact,
             normalizedTokenAddress,
         );
-        const contractInstance = new TokenContract(this._web3Wrapper, abi, address);
+        const contractInstance = new TokenContract(
+            abi,
+            address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
         tokenContract = contractInstance;
         this._tokenContractsByAddress[normalizedTokenAddress] = tokenContract;
         return tokenContract;

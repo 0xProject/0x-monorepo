@@ -121,7 +121,12 @@ export class TokenRegistryWrapper extends ContractWrapper {
             artifacts.TokenRegistryArtifact,
             this._contractAddressIfExists,
         );
-        const contractInstance = new TokenRegistryContract(this._web3Wrapper, abi, address);
+        const contractInstance = new TokenRegistryContract(
+            abi,
+            address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
         this._tokenRegistryContractIfExists = contractInstance;
         return this._tokenRegistryContractIfExists;
     }

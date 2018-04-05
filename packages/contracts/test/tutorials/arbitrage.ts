@@ -17,7 +17,7 @@ import { OrderFactory } from '../../util/order_factory';
 import { BalancesByOwner, ContractName, ExchangeContractErrs } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
-import { web3, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -69,18 +69,18 @@ describe('Arbitrage', () => {
             edTakerFee,
             edFeeRebate,
         ]);
-        etherDelta = new EtherDeltaContract(web3Wrapper, etherDeltaInstance.abi, etherDeltaInstance.address);
+        etherDelta = new EtherDeltaContract(etherDeltaInstance.abi, etherDeltaInstance.address, provider);
         const tokenTransferProxy = await deployer.deployAsync(ContractName.TokenTransferProxy);
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             tokenTransferProxy.address,
         ]);
         await tokenTransferProxy.addAuthorizedAddress(exchangeInstance.address, { from: accounts[0] });
-        zeroEx = new ZeroEx(web3.currentProvider, {
+        zeroEx = new ZeroEx(provider, {
             exchangeContractAddress: exchangeInstance.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        const exchange = new ExchangeContract(web3Wrapper, exchangeInstance.abi, exchangeInstance.address);
+        const exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
         makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(1), 18);
@@ -102,7 +102,7 @@ describe('Arbitrage', () => {
             etherDelta.address,
             tokenTransferProxy.address,
         ]);
-        arbitrage = new ArbitrageContract(web3Wrapper, arbitrageInstance.abi, arbitrageInstance.address);
+        arbitrage = new ArbitrageContract(arbitrageInstance.abi, arbitrageInstance.address, provider);
         // Enable arbitrage and withdrawals of tokens
         await arbitrage.setAllowances.sendTransactionAsync(weth.address, { from: coinbase });
         await arbitrage.setAllowances.sendTransactionAsync(zrx.address, { from: coinbase });

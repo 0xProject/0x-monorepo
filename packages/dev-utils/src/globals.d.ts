@@ -1,5 +1,3 @@
-declare module 'web3-provider-engine/subproviders/rpc';
-
 declare module '*.json' {
     const json: any;
     /* tslint:disable */

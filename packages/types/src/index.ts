@@ -1,5 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 
+export interface Provider {
+    sendAsync(payload: JSONRPCRequestPayload, callback: (err: Error, result: JSONRPCResponsePayload) => void): void;
+}
+
 export type ContractAbi = AbiDefinition[];
 
 export type AbiDefinition = FunctionAbi | EventAbi;

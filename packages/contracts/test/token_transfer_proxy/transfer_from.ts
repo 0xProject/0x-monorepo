@@ -11,7 +11,7 @@ import { constants } from '../../util/constants';
 import { ContractName } from '../../util/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
-import { web3, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -33,12 +33,12 @@ describe('TokenTransferProxy', () => {
         owner = notAuthorized = accounts[0];
         const tokenTransferProxyInstance = await deployer.deployAsync(ContractName.TokenTransferProxy);
         tokenTransferProxy = new TokenTransferProxyContract(
-            web3Wrapper,
             tokenTransferProxyInstance.abi,
             tokenTransferProxyInstance.address,
+            provider,
         );
         const repInstance = await deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS);
-        rep = new DummyTokenContract(web3Wrapper, repInstance.abi, repInstance.address);
+        rep = new DummyTokenContract(repInstance.abi, repInstance.address, provider);
 
         dmyBalances = new Balances([rep], [accounts[0], accounts[1]]);
         await Promise.all([
