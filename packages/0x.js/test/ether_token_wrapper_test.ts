@@ -1,5 +1,6 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import 'mocha';
 import * as Web3 from 'web3';
@@ -105,7 +106,7 @@ describe('EtherTokenWrapper', () => {
         it('should throw if user has insufficient ETH balance for deposit', async () => {
             const preETHBalance = await (zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(addressWithETH);
 
-            const extraETHBalance = Web3Wrapper.toWei(5, 'ether');
+            const extraETHBalance = Web3Wrapper.toWei(new BigNumber(5));
             const overETHBalanceinWei = preETHBalance.add(extraETHBalance);
 
             return expect(

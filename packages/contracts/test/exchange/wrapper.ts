@@ -73,7 +73,6 @@ describe('Exchange', () => {
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             tokenTransferProxy.address,
-            provider,
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
