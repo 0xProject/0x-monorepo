@@ -15,9 +15,10 @@ import {
     LedgerSubproviderErrors,
     PartialTxParams,
     ResponseWithTxParams,
+    WalletSubproviderErrors,
 } from '../types';
 
-import { Subprovider } from './subprovider';
+import { BaseWalletSubprovider } from './base_wallet_subprovider';
 
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
@@ -29,7 +30,7 @@ const SHOULD_GET_CHAIN_CODE = true;
  * This subprovider intercepts all account related RPC requests (e.g message/transaction signing, etc...) and
  * re-routes them to a Ledger device plugged into the users computer.
  */
-export class LedgerSubprovider extends Subprovider {
+export class LedgerSubprovider extends BaseWalletSubprovider {
     private _nonceLock = new Lock();
     private _connectionLock = new Lock();
     private _networkId: number;
@@ -38,11 +39,6 @@ export class LedgerSubprovider extends Subprovider {
     private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
-    private static _validateSender(sender: string) {
-        if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
-            throw new Error(LedgerSubproviderErrors.SenderInvalidOrNotSupplied);
-        }
-    }
     /**
      * Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
      * TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.
@@ -133,6 +129,7 @@ export class LedgerSubprovider extends Subprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
+        LedgerSubprovider._validateTxParams(txParams);
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         const tx = new EthereumTx(txParams);
@@ -168,7 +165,7 @@ export class LedgerSubprovider extends Subprovider {
         }
     }
     /**
-     * Sign a personal Ethereum signed message. The signing address will be to one
+     * Sign a personal Ethereum signed message. The signing address will be the one
      * retrieved given a derivationPath and pathIndex set on the subprovider.
      * The Ledger adds the Ethereum signed message prefix on-device.  If you've added
      * the LedgerSubprovider to your app's provider, you can simply send an `eth_sign`
@@ -178,6 +175,10 @@ export class LedgerSubprovider extends Subprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string): Promise<string> {
+        if (_.isUndefined(data)) {
+            throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
+        }
+        assert.isHexString('data', data);
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
         try {
             const derivationPath = this._getDerivationPath();
@@ -196,82 +197,6 @@ export class LedgerSubprovider extends Subprovider {
         } catch (err) {
             await this._destroyLedgerClientAsync();
             throw err;
-        }
-    }
-    /**
-     * This method conforms to the web3-provider-engine interface.
-     * It is called internally by the ProviderEngine when it is this subproviders
-     * turn to handle a JSON RPC request.
-     * @param payload JSON RPC payload
-     * @param next Callback to call if this subprovider decides not to handle the request
-     * @param end Callback to call if subprovider handled the request and wants to pass back the request.
-     */
-    // tslint:disable-next-line:async-suffix
-    public async handleRequest(
-        payload: JSONRPCRequestPayload,
-        next: Callback,
-        end: (err: Error | null, result?: any) => void,
-    ) {
-        let accounts;
-        let txParams;
-        switch (payload.method) {
-            case 'eth_coinbase':
-                try {
-                    accounts = await this.getAccountsAsync();
-                    end(null, accounts[0]);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            case 'eth_accounts':
-                try {
-                    accounts = await this.getAccountsAsync();
-                    end(null, accounts);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            case 'eth_sendTransaction':
-                txParams = payload.params[0];
-                try {
-                    LedgerSubprovider._validateSender(txParams.from);
-                    const result = await this._sendTransactionAsync(txParams);
-                    end(null, result);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            case 'eth_signTransaction':
-                txParams = payload.params[0];
-                try {
-                    const result = await this._signTransactionWithoutSendingAsync(txParams);
-                    end(null, result);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            case 'eth_sign':
-            case 'personal_sign':
-                const data = payload.method === 'eth_sign' ? payload.params[1] : payload.params[0];
-                try {
-                    if (_.isUndefined(data)) {
-                        throw new Error(LedgerSubproviderErrors.DataMissingForSignPersonalMessage);
-                    }
-                    assert.isHexString('data', data);
-                    const ecSignatureHex = await this.signPersonalMessageAsync(data);
-                    end(null, ecSignatureHex);
-                } catch (err) {
-                    end(err);
-                }
-                return;
-
-            default:
-                next();
-                return;
         }
     }
     private _getDerivationPath() {
@@ -297,71 +222,5 @@ export class LedgerSubprovider extends Subprovider {
         await this._ledgerClientIfExists.transport.close();
         this._ledgerClientIfExists = undefined;
         this._connectionLock.release();
-    }
-    private async _sendTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        await this._nonceLock.acquire();
-        try {
-            // fill in the extras
-            const filledParams = await this._populateMissingTxParamsAsync(txParams);
-            // sign it
-            const signedTx = await this.signTransactionAsync(filledParams);
-            // emit a submit
-            const payload = {
-                method: 'eth_sendRawTransaction',
-                params: [signedTx],
-            };
-            const result = await this.emitPayloadAsync(payload);
-            this._nonceLock.release();
-            return result.result;
-        } catch (err) {
-            this._nonceLock.release();
-            throw err;
-        }
-    }
-    private async _signTransactionWithoutSendingAsync(txParams: PartialTxParams): Promise<ResponseWithTxParams> {
-        await this._nonceLock.acquire();
-        try {
-            // fill in the extras
-            const filledParams = await this._populateMissingTxParamsAsync(txParams);
-            // sign it
-            const signedTx = await this.signTransactionAsync(filledParams);
-
-            this._nonceLock.release();
-            const result = {
-                raw: signedTx,
-                tx: txParams,
-            };
-            return result;
-        } catch (err) {
-            this._nonceLock.release();
-            throw err;
-        }
-    }
-    private async _populateMissingTxParamsAsync(txParams: PartialTxParams): Promise<PartialTxParams> {
-        if (_.isUndefined(txParams.gasPrice)) {
-            const gasPriceResult = await this.emitPayloadAsync({
-                method: 'eth_gasPrice',
-                params: [],
-            });
-            const gasPrice = gasPriceResult.result.toString();
-            txParams.gasPrice = gasPrice;
-        }
-        if (_.isUndefined(txParams.nonce)) {
-            const nonceResult = await this.emitPayloadAsync({
-                method: 'eth_getTransactionCount',
-                params: [txParams.from, 'pending'],
-            });
-            const nonce = nonceResult.result;
-            txParams.nonce = nonce;
-        }
-        if (_.isUndefined(txParams.gas)) {
-            const gasResult = await this.emitPayloadAsync({
-                method: 'eth_estimateGas',
-                params: [txParams],
-            });
-            const gas = gasResult.result.toString();
-            txParams.gas = gas;
-        }
-        return txParams;
     }
 }

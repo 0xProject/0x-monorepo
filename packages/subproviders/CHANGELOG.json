@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.8.5",
+        "changes": [
+            {
+                "note": "Add private key subprovider and refactor shared functionality into a base wallet subprovider",
+                "pr": 506
+            }
+        ]
+    },
+    {
         "timestamp": 1522673609,
         "version": "0.8.4",
         "changes": [

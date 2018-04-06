@@ -95,11 +95,13 @@ export interface ResponseWithTxParams {
     tx: PartialTxParams;
 }
 
+export enum WalletSubproviderErrors {
+    DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
+    SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
+}
 export enum LedgerSubproviderErrors {
     TooOldLedgerFirmware = 'TOO_OLD_LEDGER_FIRMWARE',
     FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
-    DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
-    SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
     MultipleOpenConnectionsDisallowed = 'MULTIPLE_OPEN_CONNECTIONS_DISALLOWED',
 }
 
