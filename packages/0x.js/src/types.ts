@@ -10,6 +10,8 @@ import {
     LogWithDecodedArgs,
     Order,
     SignedOrder,
+    TransactionReceipt,
+    TransactionReceiptWithDecodedLogs
 } from '@0xproject/types';
 
 import * as Web3 from 'web3';
@@ -283,4 +285,8 @@ export interface OrderStateInvalid {
 export type OrderState = OrderStateValid | OrderStateInvalid;
 
 export type OnOrderStateChangeCallback = (err: Error | null, orderState?: OrderState) => void;
+
+export type OnTransactionSuccessCallback = (transactionReceipt?: TransactionReceiptWithDecodedLogs) => void;
+
+export type OnTransactionFailedCallback = (transactionReceipt?: TransactionReceipt) => void;
 // tslint:disable:max-file-line-count
