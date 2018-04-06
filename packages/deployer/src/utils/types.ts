@@ -75,11 +75,14 @@ export interface UrlDeployerOptions extends BaseDeployerOptions {
 export type DeployerOptions = UrlDeployerOptions | ProviderDeployerOptions;
 
 export interface ContractSources {
-    [key: string]: string;
+    [key: string]: {
+        source: string;
+        absoluteFilePath: string;
+    };
 }
 
 export interface ContractSourceData {
-    [key: string]: ContractSpecificSourceData;
+    [contractName: string]: ContractSpecificSourceData;
 }
 
 export interface ContractSpecificSourceData {
