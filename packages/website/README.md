@@ -28,19 +28,23 @@ Add the following to your `/etc/hosts` file:
 yarn install
 ```
 
-### Run dev server
+### Initial setup
+
+The **first** time you work with this package, you must build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
 
 ```bash
-yarn run dev
+yarn lerna:rebuild
+```
+
+### Run dev server
+
+The the `website` root directory, run:
+
+```bash
+yarn dev
 ```
 
 Visit [0xproject.localhost:3572](http://0xproject.localhost:3572) in your browser.
-
-### Build
-
-```bash
-yarn build
-```
 
 ### Clean
 
