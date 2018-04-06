@@ -95,6 +95,9 @@ export interface ResponseWithTxParams {
     tx: PartialTxParams;
 }
 
+export enum MnemonicSubproviderErrors {
+    AddressSearchExhausted = 'ADDRESS_SEARCH_EXHAUSTED',
+}
 export enum WalletSubproviderErrors {
     DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
     SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',

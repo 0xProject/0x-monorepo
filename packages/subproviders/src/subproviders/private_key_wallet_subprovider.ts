@@ -1,13 +1,11 @@
 import { assert } from '@0xproject/assert';
-import { JSONRPCRequestPayload } from '@0xproject/types';
 import EthereumTx = require('ethereumjs-tx');
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { Callback, ErrorCallback, PartialTxParams, ResponseWithTxParams, WalletSubproviderErrors } from '../types';
+import { PartialTxParams, WalletSubproviderErrors } from '../types';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
-import { Subprovider } from './subprovider';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.

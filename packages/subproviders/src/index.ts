@@ -13,6 +13,7 @@ export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
 export { PrivateKeyWalletSubprovider } from './subproviders/private_key_wallet_subprovider';
+export { MnemonicWalletSubprovider } from './subproviders/mnemonic_wallet_subprovider';
 export {
     Callback,
     ErrorCallback,

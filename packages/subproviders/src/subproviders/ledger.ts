@@ -1,5 +1,4 @@
 import { assert } from '@0xproject/assert';
-import { JSONRPCRequestPayload } from '@0xproject/types';
 import { addressUtils } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');

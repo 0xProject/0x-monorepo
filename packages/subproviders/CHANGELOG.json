@@ -5,6 +5,10 @@
             {
                 "note": "Add private key subprovider and refactor shared functionality into a base wallet subprovider",
                 "pr": 506
+            },
+            {
+                "note": "Add mnemonic wallet subprovider, deprecating our truffle-hdwallet-provider fork",
+                "pr": 507
             }
         ]
     },
