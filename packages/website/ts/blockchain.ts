@@ -21,7 +21,8 @@ import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
     LedgerWalletSubprovider,
-    RedundantRPCSubprovider,
+    RedundantSubprovider,
+    Subprovider,
 } from '@0xproject/subproviders';
 import { Provider } from '@0xproject/types';
 import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
@@ -54,6 +55,7 @@ import { utils } from 'ts/utils/utils';
 import Web3 = require('web3');
 import ProviderEngine = require('web3-provider-engine');
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
+import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import * as MintableArtifacts from '../contracts/Mintable.json';
 
@@ -98,7 +100,12 @@ export class Blockchain {
             provider = new ProviderEngine();
             provider.addProvider(new InjectedWeb3Subprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
-            provider.addProvider(new RedundantRPCSubprovider(publicNodeUrlsIfExistsForNetworkId));
+            const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
+                return new RpcSubprovider({
+                    rpcUrl: publicNodeUrl,
+                });
+            });
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
             provider.start();
         } else if (doesInjectedWeb3Exist) {
             // Since no public node for this network, all requests go to injectedWeb3 instance
@@ -110,7 +117,12 @@ export class Blockchain {
             provider = new ProviderEngine();
             provider.addProvider(new FilterSubprovider());
             const networkId = configs.IS_MAINNET_ENABLED ? constants.NETWORK_ID_MAINNET : constants.NETWORK_ID_KOVAN;
-            provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
+            const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
+                return new RpcSubprovider({
+                    rpcUrl: publicNodeUrl,
+                });
+            });
+            provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
             provider.start();
         }
 
@@ -201,7 +213,12 @@ export class Blockchain {
         this._ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
         provider.addProvider(this._ledgerSubprovider);
         provider.addProvider(new FilterSubprovider());
-        provider.addProvider(new RedundantRPCSubprovider(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId]));
+        const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
+            return new RpcSubprovider({
+                rpcUrl: publicNodeUrl,
+            });
+        });
+        provider.addProvider(new RedundantSubprovider(rpcSubproviders as Subprovider[]));
         provider.start();
         this.networkId = networkId;
         this._dispatcher.updateNetworkId(this.networkId);

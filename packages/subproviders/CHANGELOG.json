@@ -1,5 +1,15 @@
 [
     {
+        "version": "0.9.0",
+        "changes": [
+            {
+                "note":
+                    "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
+                "pr": 500
+            }
+        ]
+    },
+    {
         "timestamp": 1522673609,
         "version": "0.8.4",
         "changes": [
