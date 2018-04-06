@@ -11,19 +11,21 @@ import { Subprovider } from './subprovider';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
- * This subprovider intercepts all account related RPC requests (e.g message/transaction signing, etc...)
+ * This subprovider intercepts all account related RPC requests (e.g message/transaction signing, etc...) and handles
+ * all requests with the supplied Ethereum private key.
  */
-export class PKWalletSubprovider extends BaseWalletSubprovider {
+export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
     private _address: string;
     private _privateKeyBuffer: Buffer;
     constructor(privateKey: string) {
+        assert.isString('privateKey', privateKey);
         super();
         this._privateKeyBuffer = new Buffer(privateKey, 'hex');
         this._address = `0x${ethUtil.privateToAddress(this._privateKeyBuffer).toString('hex')}`;
     }
     /**
-     * Retrieve the account calcuated from the private key.
-     * This method is automatically called when issuing a `eth_accounts` JSON RPC request
+     * Retrieve the account associated with the supplied private key.
+     * This method is implicitly called when issuing a `eth_accounts` JSON RPC request
      * via your providerEngine instance.
      * @return An array of accounts
      */
@@ -39,6 +41,7 @@ export class PKWalletSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
+        PrivateKeyWalletSubprovider._validateTxParams(txParams);
         const tx = new EthereumTx(txParams);
         tx.sign(this._privateKeyBuffer);
         const rawTx = `0x${tx.serialize().toString('hex')}`;
@@ -62,7 +65,6 @@ export class PKWalletSubprovider extends BaseWalletSubprovider {
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
         const sig = ethUtil.ecsign(msgHashBuff, this._privateKeyBuffer);
         const rpcSig = ethUtil.toRpcSig(sig.v, sig.r, sig.s);
-
         return rpcSig;
     }
 }

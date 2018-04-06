@@ -1,13 +1,19 @@
+import { assert } from '@0xproject/assert';
 import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
 import { addressUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { Callback, PartialTxParams, ResponseWithTxParams, WalletSubproviderErrors } from '../types';
+import { Callback, ErrorCallback, PartialTxParams, ResponseWithTxParams, WalletSubproviderErrors } from '../types';
 
 import { Subprovider } from './subprovider';
 
 export abstract class BaseWalletSubprovider extends Subprovider {
-    protected static _validateSender(sender: string) {
+    protected static _validateTxParams(txParams: PartialTxParams) {
+        assert.isETHAddressHex('to', txParams.to);
+        assert.isHexString('nonce', txParams.nonce);
+        assert.isHexString('gas', txParams.gas);
+    }
+    private static _validateSender(sender: string) {
         if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
             throw new Error(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
         }
@@ -15,7 +21,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
 
     public abstract async getAccountsAsync(): Promise<string[]>;
     public abstract async signTransactionAsync(txParams: PartialTxParams): Promise<string>;
-    public abstract async signPersonalMessageAsync(dataIfExists: string): Promise<string>;
+    public abstract async signPersonalMessageAsync(data: string): Promise<string>;
 
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -26,11 +32,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:async-suffix
-    public async handleRequest(
-        payload: JSONRPCRequestPayload,
-        next: Callback,
-        end: (err: Error | null, result?: any) => void,
-    ) {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
         let accounts;
         let txParams;
         switch (payload.method) {
@@ -104,30 +106,31 @@ export abstract class BaseWalletSubprovider extends Subprovider {
         const result = await this.emitPayloadAsync(payload);
         return result;
     }
-    private async _populateMissingTxParamsAsync(txParams: PartialTxParams): Promise<PartialTxParams> {
-        if (_.isUndefined(txParams.gasPrice)) {
+    private async _populateMissingTxParamsAsync(partialTxParams: PartialTxParams): Promise<PartialTxParams> {
+        let txParams = partialTxParams;
+        if (_.isUndefined(partialTxParams.gasPrice)) {
             const gasPriceResult = await this.emitPayloadAsync({
                 method: 'eth_gasPrice',
                 params: [],
             });
             const gasPrice = gasPriceResult.result.toString();
-            txParams.gasPrice = gasPrice;
+            txParams = { ...txParams, gasPrice };
         }
-        if (_.isUndefined(txParams.nonce)) {
+        if (_.isUndefined(partialTxParams.nonce)) {
             const nonceResult = await this.emitPayloadAsync({
                 method: 'eth_getTransactionCount',
-                params: [txParams.from, 'pending'],
+                params: [partialTxParams.from, 'pending'],
             });
             const nonce = nonceResult.result;
-            txParams.nonce = nonce;
+            txParams = { ...txParams, nonce };
         }
-        if (_.isUndefined(txParams.gas)) {
+        if (_.isUndefined(partialTxParams.gas)) {
             const gasResult = await this.emitPayloadAsync({
                 method: 'eth_estimateGas',
-                params: [txParams],
+                params: [partialTxParams],
             });
             const gas = gasResult.result.toString();
-            txParams.gas = gas;
+            txParams = { ...txParams, gas };
         }
         return txParams;
     }

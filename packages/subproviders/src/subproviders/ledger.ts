@@ -129,6 +129,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
+        LedgerSubprovider._validateTxParams(txParams);
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         const tx = new EthereumTx(txParams);

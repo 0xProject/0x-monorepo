@@ -14,6 +14,7 @@ import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 import { LedgerSubprovider } from '../../src';
 import { DoneCallback, LedgerEthereumClient } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
+import { fixtureData } from '../utils/fixture_data';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
@@ -25,9 +26,6 @@ async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumC
     return ledgerEthClient;
 }
 
-const TESTRPC_DERIVATION_PATH = `m/44'/60'/0'/0`;
-const TEST_RPC_ACCOUNT_0 = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-
 describe('LedgerSubprovider', () => {
     let ledgerSubprovider: LedgerSubprovider;
     const networkId: number = 42;
@@ -35,7 +33,7 @@ describe('LedgerSubprovider', () => {
         ledgerSubprovider = new LedgerSubprovider({
             networkId,
             ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
-            derivationPath: TESTRPC_DERIVATION_PATH,
+            derivationPath: fixtureData.TESTRPC_DERIVATION_PATH,
         });
     });
     describe('direct method calls', () => {
@@ -46,7 +44,7 @@ describe('LedgerSubprovider', () => {
         });
         it('returns the expected first account from a ledger set up with the test mnemonic', async () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
-            expect(accounts[0]).to.be.equal(TEST_RPC_ACCOUNT_0);
+            expect(accounts[0]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_0);
         });
         it('returns requested number of accounts', async () => {
             const numberOfAccounts = 20;
@@ -55,12 +53,10 @@ describe('LedgerSubprovider', () => {
             expect(accounts.length).to.be.equal(numberOfAccounts);
         });
         it('signs a personal message', async () => {
-            const data = ethUtils.bufferToHex(ethUtils.toBuffer('hello world'));
+            const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
             const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(data);
             expect(ecSignatureHex.length).to.be.equal(132);
-            expect(ecSignatureHex).to.be.equal(
-                '0x1b0ec5e2908e993d0c8ab6b46da46be2688fdf03c7ea6686075de37392e50a7d7fcc531446699132fbda915bd989882e0064d417018773a315fb8d43ed063c9b00',
-            );
+            expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
         });
         it('signs a transaction', async () => {
             const tx = {
@@ -69,7 +65,7 @@ describe('LedgerSubprovider', () => {
                 to: '0x0000000000000000000000000000000000000000',
                 value: '0x00',
                 chainId: 3,
-                from: TEST_RPC_ACCOUNT_0,
+                from: fixtureData.TEST_RPC_ACCOUNT_0,
             };
             const txHex = await ledgerSubprovider.signTransactionAsync(tx);
             expect(txHex).to.be.equal(
@@ -173,7 +169,7 @@ describe('LedgerSubprovider', () => {
                 // Give first account on Ledger sufficient ETH to complete tx send
                 let tx = {
                     to: accounts[0],
-                    from: TEST_RPC_ACCOUNT_0,
+                    from: fixtureData.TEST_RPC_ACCOUNT_0,
                     value: '0x8ac7230489e80000', // 10 ETH
                 };
                 let payload = {
