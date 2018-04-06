@@ -21,7 +21,7 @@ const expect = chai.expect;
 describe('PrivateKeyWalletSubprovider', () => {
     let subprovider: PrivateKeyWalletSubprovider;
     before(async () => {
-        subprovider = new PrivateKeyWalletSubprovider(fixtureData.TEST_ACCOUNT_PRIVATE_KEY);
+        subprovider = new PrivateKeyWalletSubprovider(fixtureData.TEST_RPC_ACCOUNT_0_ACCOUNT_PRIVATE_KEY);
     });
     describe('direct method calls', () => {
         describe('success cases', () => {
@@ -36,19 +36,8 @@ describe('PrivateKeyWalletSubprovider', () => {
                 expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
             });
             it('signs a transaction', async () => {
-                const tx = {
-                    nonce: '0x00',
-                    gasPrice: '0x0',
-                    gas: '0x2710',
-                    to: '0x0000000000000000000000000000000000000000',
-                    value: '0x00',
-                    chainId: 3,
-                    from: fixtureData.TEST_RPC_ACCOUNT_0,
-                };
-                const txHex = await subprovider.signTransactionAsync(tx);
-                expect(txHex).to.be.equal(
-                    '0xf85f808082271094000000000000000000000000000000000000000080802aa018894834d89899f71f6d8e74e6992fea34914c3b6d8090495f738086ca18f15da056e3333ec6c7465512a49558a84b56ec358718feaf0b162bda9aa6c40824ede4',
-                );
+                const txHex = await subprovider.signTransactionAsync(fixtureData.TX_DATA);
+                expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
             });
         });
     });

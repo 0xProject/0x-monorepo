@@ -28,7 +28,7 @@ async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumC
 
 describe('LedgerSubprovider', () => {
     let ledgerSubprovider: LedgerSubprovider;
-    const networkId: number = 42;
+    const networkId: number = fixtureData.NETWORK_ID;
     before(async () => {
         ledgerSubprovider = new LedgerSubprovider({
             networkId,
@@ -59,18 +59,8 @@ describe('LedgerSubprovider', () => {
             expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
         });
         it('signs a transaction', async () => {
-            const tx = {
-                nonce: '0x00',
-                gas: '0x2710',
-                to: '0x0000000000000000000000000000000000000000',
-                value: '0x00',
-                chainId: 3,
-                from: fixtureData.TEST_RPC_ACCOUNT_0,
-            };
-            const txHex = await ledgerSubprovider.signTransactionAsync(tx);
-            expect(txHex).to.be.equal(
-                '0xf85f8080822710940000000000000000000000000000000000000000808078a0712854c73c69445cc1b22a7c3d7312ff9a97fe4ffba35fd636e8236b211b6e7ca0647cee031615e52d916c7c707025bc64ad525d8f1b9876c3435a863b42743178',
-            );
+            const txHex = await ledgerSubprovider.signTransactionAsync(fixtureData.TX_DATA);
+            expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
         });
     });
     describe('calls through a provider', () => {
@@ -144,20 +134,15 @@ describe('LedgerSubprovider', () => {
             })().catch(done);
         });
         it('signs a transaction', (done: DoneCallback) => {
-            const tx = {
-                to: '0xafa3f8684e54059998bc3a7b0d2b0da075154d66',
-                value: '0x00',
-            };
             const payload = {
                 jsonrpc: '2.0',
                 method: 'eth_signTransaction',
-                params: [tx],
+                params: [fixtureData.TX_DATA],
                 id: 1,
             };
             const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                 expect(err).to.be.a('null');
-                expect(response.result.raw.length).to.be.equal(206);
-                expect(response.result.raw.substr(0, 2)).to.be.equal('0x');
+                expect(response.result.raw).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
                 done();
             });
             ledgerProvider.sendAsync(payload, callback);
