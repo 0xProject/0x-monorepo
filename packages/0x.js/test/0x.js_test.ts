@@ -12,19 +12,9 @@ import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, Zero
 import { runMigrationsAsync } from './migrations/migrate';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { deployer } from './utils/deployer';
 import { TokenUtils } from './utils/token_utils';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
-
-const artifactsDir = path.resolve('test', 'artifacts');
-const deployerOpts = {
-    artifactsDir,
-    web3Provider: web3.currentProvider,
-    networkId: constants.TESTRPC_NETWORK_ID,
-    defaults: {
-        gas: devConstants.GAS_ESTIMATE,
-    },
-};
-const deployer = new Deployer(deployerOpts);
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -39,7 +29,7 @@ describe('ZeroEx library', () => {
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
         };
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        zeroEx = new ZeroEx(provider, config);
     });
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
@@ -49,7 +39,7 @@ describe('ZeroEx library', () => {
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.not.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.not.be.undefined();
 
-            const newProvider = web3.currentProvider;
+            const newProvider = provider;
             // Add property to newProvider so that we can differentiate it from old provider
             (newProvider as any).zeroExTestId = 1;
             zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
@@ -296,7 +286,7 @@ describe('ZeroEx library', () => {
                 exchangeContractAddress: ZeroEx.NULL_ADDRESS,
                 networkId: constants.TESTRPC_NETWORK_ID,
             };
-            const zeroExWithWrongExchangeAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
+            const zeroExWithWrongExchangeAddress = new ZeroEx(provider, zeroExConfig);
             expect(zeroExWithWrongExchangeAddress.exchange.getContractAddress()).to.be.equal(ZeroEx.NULL_ADDRESS);
         });
         it('allows to specify token registry token contract address', async () => {
@@ -304,7 +294,7 @@ describe('ZeroEx library', () => {
                 tokenRegistryContractAddress: ZeroEx.NULL_ADDRESS,
                 networkId: constants.TESTRPC_NETWORK_ID,
             };
-            const zeroExWithWrongTokenRegistryAddress = new ZeroEx(web3.currentProvider, zeroExConfig);
+            const zeroExWithWrongTokenRegistryAddress = new ZeroEx(provider, zeroExConfig);
             expect(zeroExWithWrongTokenRegistryAddress.tokenRegistry.getContractAddress()).to.be.equal(
                 ZeroEx.NULL_ADDRESS,
             );

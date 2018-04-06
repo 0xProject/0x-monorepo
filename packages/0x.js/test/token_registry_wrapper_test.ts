@@ -8,7 +8,7 @@ import { Token, ZeroEx } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { web3, web3Wrapper } from './utils/web3_wrapper';
+import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -31,7 +31,7 @@ describe('TokenRegistryWrapper', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        zeroEx = new ZeroEx(provider, config);
         tokens = await zeroEx.tokenRegistry.getTokensAsync();
         _.map(tokens, token => {
             tokenAddressBySymbol[token.symbol] = token.address;

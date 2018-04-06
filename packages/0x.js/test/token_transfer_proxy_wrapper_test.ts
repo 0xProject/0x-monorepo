@@ -1,11 +1,10 @@
-import { web3Factory } from '@0xproject/dev-utils';
 import * as chai from 'chai';
 
 import { ZeroEx } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { web3 } from './utils/web3_wrapper';
+import { provider } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -16,7 +15,7 @@ describe('TokenTransferProxyWrapper', () => {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
     before(async () => {
-        zeroEx = new ZeroEx(web3.currentProvider, config);
+        zeroEx = new ZeroEx(provider, config);
     });
     describe('#isAuthorizedAsync', () => {
         it('should return false if the address is not authorized', async () => {

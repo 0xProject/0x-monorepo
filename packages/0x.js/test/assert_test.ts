@@ -6,7 +6,7 @@ import { ZeroEx } from '../src';
 import { assert } from '../src/utils/assert';
 
 import { constants } from './utils/constants';
-import { web3 } from './utils/web3_wrapper';
+import { provider } from './utils/web3_wrapper';
 
 const expect = chai.expect;
 
@@ -14,7 +14,7 @@ describe('Assertion library', () => {
     const config = {
         networkId: constants.TESTRPC_NETWORK_ID,
     };
-    const zeroEx = new ZeroEx(web3.currentProvider, config);
+    const zeroEx = new ZeroEx(provider, config);
     describe('#isSenderAddressHexAsync', () => {
         it('throws when address is invalid', async () => {
             const address = '0xdeadbeef';
