@@ -10,15 +10,14 @@ import { ContractArtifact, ContractSources } from './types';
 /**
  * Gets contract data on network or returns if an artifact does not exist.
  * @param artifactsDir Path to the artifacts directory.
- * @param fileName Name of contract file.
+ * @param contractName Name of contract.
  * @return Contract data on network or undefined.
  */
 export async function getContractArtifactIfExistsAsync(
     artifactsDir: string,
-    fileName: string,
+    contractName: string,
 ): Promise<ContractArtifact | void> {
     let contractArtifact;
-    const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
     const currentArtifactPath = `${artifactsDir}/${contractName}.json`;
     try {
         const opts = {
@@ -28,7 +27,7 @@ export async function getContractArtifactIfExistsAsync(
         contractArtifact = JSON.parse(contractArtifactString);
         return contractArtifact;
     } catch (err) {
-        logUtils.log(`Artifact for ${fileName} does not exist`);
+        logUtils.log(`Artifact for ${contractName} does not exist`);
         return undefined;
     }
 }
@@ -95,8 +94,8 @@ export function parseDependencies(source: string): string[] {
             const dependencyMatch = line.match(DEPENDENCY_PATH_REGEX);
             if (!_.isNull(dependencyMatch)) {
                 const dependencyPath = dependencyMatch[1];
-                const basenName = path.basename(dependencyPath);
-                dependencies.push(basenName);
+                const contractName = path.basename(dependencyPath, constants.SOLIDITY_FILE_EXTENSION);
+                dependencies.push(contractName);
             }
         }
     });
@@ -105,16 +104,15 @@ export function parseDependencies(source: string): string[] {
 
 /**
  * Callback to resolve dependencies with `solc.compile`.
- * Throws error if contractSources not yet initialized.
  * @param  contractSources Source codes of contracts.
  * @param  importPath Path to an imported dependency.
  * @return Import contents object containing source code of dependency.
  */
 export function findImportIfExist(contractSources: ContractSources, importPath: string): solc.ImportContents {
-    const fileName = path.basename(importPath);
-    const source = contractSources[fileName];
+    const contractName = path.basename(importPath, constants.SOLIDITY_FILE_EXTENSION);
+    const source = contractSources[contractName].source;
     if (_.isUndefined(source)) {
-        throw new Error(`Contract source not found for ${fileName}`);
+        throw new Error(`Contract source not found for ${contractName}`);
     }
     const importContents: solc.ImportContents = {
         contents: source,

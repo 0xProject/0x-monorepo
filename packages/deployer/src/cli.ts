@@ -78,8 +78,7 @@ function getContractsSetFromList(contracts: string): Set<string> {
     }
     const contractsArray = contracts.split(',');
     _.forEach(contractsArray, contractName => {
-        const fileName = `${contractName}${constants.SOLIDITY_FILE_EXTENSION}`;
-        specifiedContracts.add(fileName);
+        specifiedContracts.add(contractName);
     });
     return specifiedContracts;
 }

@@ -1,5 +1,6 @@
 import { ContractAbi } from '@0xproject/types';
 import { logUtils, promisify } from '@0xproject/utils';
+import chalk from 'chalk';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import 'isomorphic-fetch';
@@ -62,14 +63,19 @@ export class Compiler {
         let sources: ContractSources = {};
         for (const fileName of dirContents) {
             const contentPath = `${dirPath}/${fileName}`;
+            const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
+            const absoluteFilePath = path.resolve(contentPath);
             if (path.extname(fileName) === constants.SOLIDITY_FILE_EXTENSION) {
                 try {
                     const opts = {
                         encoding: 'utf8',
                     };
                     const source = await fsWrapper.readFileAsync(contentPath, opts);
-                    sources[fileName] = source;
-                    logUtils.log(`Reading ${fileName} source...`);
+                    sources[contractName] = {
+                        source,
+                        absoluteFilePath,
+                    };
+                    logUtils.log(`Reading ${contractName} source...`);
                 } catch (err) {
                     logUtils.log(`Could not find file at ${contentPath}`);
                 }
@@ -106,24 +112,27 @@ export class Compiler {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
         this._contractSources = await Compiler._getContractSourcesAsync(this._contractsDir);
-        _.forIn(this._contractSources, this._setContractSpecificSourceData.bind(this));
-        const fileNames = this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)
+        for (const contractName of _.keys(this._contractSources)) {
+            const contractSource = this._contractSources[contractName];
+            this._setContractSpecificSourceData(contractSource.source, contractName);
+        }
+        const contractNames = this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)
             ? _.keys(this._contractSources)
             : Array.from(this._specifiedContracts.values());
-        for (const fileName of fileNames) {
-            await this._compileContractAsync(fileName);
+        for (const contractName of contractNames) {
+            await this._compileContractAsync(contractName);
         }
     }
     /**
      * Compiles contract and saves artifact to artifactsDir.
      * @param fileName Name of contract with '.sol' extension.
      */
-    private async _compileContractAsync(fileName: string): Promise<void> {
+    private async _compileContractAsync(contractName: string): Promise<void> {
         if (_.isUndefined(this._contractSources)) {
             throw new Error('Contract sources not yet initialized');
         }
-        const contractSpecificSourceData = this._contractSourceData[fileName];
-        const currentArtifactIfExists = await getContractArtifactIfExistsAsync(this._artifactsDir, fileName);
+        const contractSpecificSourceData = this._contractSourceData[contractName];
+        const currentArtifactIfExists = await getContractArtifactIfExistsAsync(this._artifactsDir, contractName);
         const sourceHash = `0x${contractSpecificSourceData.sourceHash.toString('hex')}`;
         const sourceTreeHash = `0x${contractSpecificSourceData.sourceTreeHash.toString('hex')}`;
 
@@ -162,49 +171,69 @@ export class Compiler {
         }
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
-        logUtils.log(`Compiling ${fileName} with Solidity v${solcVersion}...`);
-        const source = this._contractSources[fileName];
-        const input = {
-            [fileName]: source,
+        logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
+        const source = this._contractSources[contractName].source;
+        const absoluteFilePath = this._contractSources[contractName].absoluteFilePath;
+        const standardInput: solc.StandardInput = {
+            language: 'Solidity',
+            sources: {
+                [absoluteFilePath]: {
+                    urls: [`file://${absoluteFilePath}`],
+                },
+            },
+            settings: {
+                optimizer: {
+                    enabled: this._optimizerEnabled,
+                },
+                outputSelection: {
+                    '*': {
+                        '*': [
+                            'abi',
+                            'evm.bytecode.object',
+                            'evm.bytecode.sourceMap',
+                            'evm.deployedBytecode.object',
+                            'evm.deployedBytecode.sourceMap',
+                        ],
+                    },
+                },
+            },
         };
-        const sourcesToCompile = {
-            sources: input,
-        };
-        const compiled = solcInstance.compile(sourcesToCompile, Number(this._optimizerEnabled), importPath =>
-            findImportIfExist(this._contractSources, importPath),
+        const compiled: solc.StandardOutput = JSON.parse(
+            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath =>
+                findImportIfExist(this._contractSources, importPath),
+            ),
         );
 
         if (!_.isUndefined(compiled.errors)) {
-            const SOLIDITY_WARNING_PREFIX = 'Warning';
-            const isError = (errorOrWarning: string) => !errorOrWarning.includes(SOLIDITY_WARNING_PREFIX);
-            const isWarning = (errorOrWarning: string) => errorOrWarning.includes(SOLIDITY_WARNING_PREFIX);
+            const SOLIDITY_WARNING = 'warning';
+            const isError = (entry: any) => entry.severity !== SOLIDITY_WARNING;
+            const isWarning = (entry: any) => entry.severity === SOLIDITY_WARNING;
             const errors = _.filter(compiled.errors, isError);
             const warnings = _.filter(compiled.errors, isWarning);
             if (!_.isEmpty(errors)) {
-                errors.forEach(errMsg => {
-                    const normalizedErrMsg = getNormalizedErrMsg(errMsg);
-                    logUtils.log(normalizedErrMsg);
+                errors.forEach(error => {
+                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage);
+                    logUtils.log(chalk.red(normalizedErrMsg));
                 });
                 process.exit(1);
             } else {
-                warnings.forEach(errMsg => {
-                    const normalizedErrMsg = getNormalizedErrMsg(errMsg);
-                    logUtils.log(normalizedErrMsg);
+                warnings.forEach(warning => {
+                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage);
+                    logUtils.log(chalk.yellow(normalizedWarningMsg));
                 });
             }
         }
-        const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
-        const contractIdentifier = `${fileName}:${contractName}`;
-        if (_.isUndefined(compiled.contracts[contractIdentifier])) {
+        const compiledData = compiled.contracts[absoluteFilePath][contractName];
+        if (_.isUndefined(compiledData)) {
             throw new Error(
-                `Contract ${contractName} not found in ${fileName}. Please make sure your contract has the same name as it's file name`,
+                `Contract ${contractName} not found in ${absoluteFilePath}. Please make sure your contract has the same name as it's file name`,
             );
         }
-        const abi: ContractAbi = JSON.parse(compiled.contracts[contractIdentifier].interface);
-        const bytecode = `0x${compiled.contracts[contractIdentifier].bytecode}`;
-        const runtimeBytecode = `0x${compiled.contracts[contractIdentifier].runtimeBytecode}`;
-        const sourceMap = compiled.contracts[contractIdentifier].srcmap;
-        const sourceMapRuntime = compiled.contracts[contractIdentifier].srcmapRuntime;
+        const abi: ContractAbi = compiledData.abi;
+        const bytecode = `0x${compiledData.evm.bytecode.object}`;
+        const runtimeBytecode = `0x${compiledData.evm.deployedBytecode.object}`;
+        const sourceMap = compiledData.evm.bytecode.sourceMap;
+        const sourceMapRuntime = compiledData.evm.deployedBytecode.sourceMap;
         const sources = _.keys(compiled.sources);
         const updated_at = Date.now();
         const contractNetworkData: ContractNetworkData = {
@@ -243,22 +272,22 @@ export class Compiler {
         const artifactString = utils.stringifyWithFormatting(newArtifact);
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
-        logUtils.log(`${fileName} artifact saved!`);
+        logUtils.log(`${contractName} artifact saved!`);
     }
     /**
      * Gets contract dependendencies and keccak256 hash from source.
      * @param source Source code of contract.
      * @return Object with contract dependencies and keccak256 hash of source.
      */
-    private _setContractSpecificSourceData(source: string, fileName: string): void {
-        if (!_.isUndefined(this._contractSourceData[fileName])) {
+    private _setContractSpecificSourceData(source: string, contractName: string): void {
+        if (!_.isUndefined(this._contractSourceData[contractName])) {
             return;
         }
         const sourceHash = ethUtil.sha3(source);
         const solcVersionRange = parseSolidityVersionRange(source);
         const dependencies = parseDependencies(source);
-        const sourceTreeHash = this._getSourceTreeHash(fileName, sourceHash, dependencies);
-        this._contractSourceData[fileName] = {
+        const sourceTreeHash = this._getSourceTreeHash(sourceHash, dependencies);
+        this._contractSourceData[contractName] = {
             dependencies,
             solcVersionRange,
             sourceHash,
@@ -269,15 +298,15 @@ export class Compiler {
      * Gets the source tree hash for a file and its dependencies.
      * @param fileName Name of contract file.
      */
-    private _getSourceTreeHash(fileName: string, sourceHash: Buffer, dependencies: string[]): Buffer {
+    private _getSourceTreeHash(sourceHash: Buffer, dependencies: string[]): Buffer {
         if (dependencies.length === 0) {
             return sourceHash;
         } else {
             const dependencySourceTreeHashes = _.map(dependencies, dependency => {
-                const source = this._contractSources[dependency];
+                const source = this._contractSources[dependency].source;
                 this._setContractSpecificSourceData(source, dependency);
                 const sourceData = this._contractSourceData[dependency];
-                return this._getSourceTreeHash(dependency, sourceData.sourceHash, sourceData.dependencies);
+                return this._getSourceTreeHash(sourceData.sourceHash, sourceData.dependencies);
             });
             const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
             const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
