@@ -9,7 +9,7 @@ const logger = {
     },
 };
 
-export const subprovider = new GanacheSubprovider({
+export const ganacheSubprovider = new GanacheSubprovider({
     logger,
     verbose: false,
     port: configs.port,

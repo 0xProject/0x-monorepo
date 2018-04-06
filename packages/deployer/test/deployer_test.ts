@@ -27,7 +27,7 @@ describe('#Deployer', () => {
     const deployerOpts = {
         artifactsDir,
         networkId: constants.networkId,
-        web3Provider: provider,
+        provider,
         defaults: {
             gasPrice: constants.gasPrice,
         },

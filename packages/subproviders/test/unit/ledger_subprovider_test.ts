@@ -8,8 +8,8 @@ import Web3ProviderEngine = require('web3-provider-engine');
 import { LedgerSubprovider } from '../../src';
 import { DoneCallback, LedgerCommunicationClient, LedgerSubproviderErrors } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
+import { ganacheSubprovider } from '../utils/ganache_subprovider';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
-import { subprovider as ganacheSubprovider } from '../utils/subprovider';
 
 chaiSetup.configure();
 const expect = chai.expect;

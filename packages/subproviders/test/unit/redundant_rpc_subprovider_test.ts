@@ -8,8 +8,8 @@ import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 import { RedundantRPCSubprovider } from '../../src';
 import { DoneCallback } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
+import { ganacheSubprovider } from '../utils/ganache_subprovider';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
-import { subprovider as ganacheSubprovider } from '../utils/subprovider';
 
 const expect = chai.expect;
 chaiSetup.configure();

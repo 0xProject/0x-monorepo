@@ -41,8 +41,8 @@ async function onCompileCommandAsync(argv: CliOptions): Promise<void> {
  */
 async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
     const url = argv.jsonrpcUrl;
-    const web3Provider = new Web3.providers.HttpProvider(url);
-    const web3Wrapper = new Web3Wrapper(web3Provider);
+    const provider = new Web3.providers.HttpProvider(url);
+    const web3Wrapper = new Web3Wrapper(provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
     const compilerOpts: CompilerOptions = {
         contractsDir: argv.contractsDir,
