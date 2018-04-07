@@ -33,7 +33,6 @@ export class FillScenarios {
     }
     public async initTokenBalancesAsync() {
         const web3Wrapper = (this._zeroEx as any)._web3Wrapper as Web3Wrapper;
-        const networkId = await web3Wrapper.getNetworkIdAsync();
         for (const token of this._tokens) {
             if (token.symbol !== 'ZRX' && token.symbol !== 'WETH') {
                 const defaults = {};
