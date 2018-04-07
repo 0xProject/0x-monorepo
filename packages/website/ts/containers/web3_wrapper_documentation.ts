@@ -39,7 +39,7 @@ const docsInfoConfig: DocsInfoConfig = {
         [docSections.installation]: InstallationMarkdown,
     },
     sectionNameToModulePath: {
-        [docSections.web3Wrapper]: ['"web3-wrapper/src/index"'],
+        [docSections.web3Wrapper]: ['"web3-wrapper/src/web3_wrapper"'],
         [docSections.types]: ['"types/src/index"'],
     },
     menuSubsectionToVersionWhenIntroduced: {},
