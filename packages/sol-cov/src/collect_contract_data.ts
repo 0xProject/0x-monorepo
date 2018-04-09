@@ -17,11 +17,8 @@ export const collectContractsData = (artifactsPath: string, sourcesPath: string,
             return {};
         }
         const artifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
-        const sources = _.map(artifact.networks[networkId].sources, source => {
-            const includedFileName = glob.sync(`${sourcesPath}/**/${source}`, { absolute: true })[0];
-            return includedFileName;
-        });
-        const sourceCodes = _.map(sources, source => {
+        const sources = artifact.networks[networkId].sources;
+        const sourceCodes = _.map(sources, (source: string) => {
             const includedSourceCode = fs.readFileSync(source).toString();
             return includedSourceCode;
         });
