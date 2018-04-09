@@ -14,7 +14,8 @@ import {
     LogCancelContractEventArgs,
     LogFillContractEventArgs,
     OrderCancellationRequest,
-    OrderFillRequest, OrderState, OrderStateInvalid,
+    OrderFillRequest,
+    OrderState,
     SignedOrder,
     Token,
     ZeroEx,
@@ -1156,7 +1157,7 @@ describe('ExchangeWrapper', () => {
             expect(args.maker).to.be.equal(differentMakerAddress);
         });
     });
-    describe('#getOrderState', () => {
+    describe('#getOrderStateAsync', () => {
         let maker: string;
         let taker: string;
         let makerToken: Token;
