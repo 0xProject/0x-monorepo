@@ -50,11 +50,7 @@ describe('Compiler utils', () => {
             const exchangeSource = await fsWrapper.readFileAsync(`${__dirname}/fixtures/contracts/Exchange.sol`, {
                 encoding: 'utf8',
             });
-            expect(parseDependencies(exchangeSource)).to.be.deep.equal([
-                'TokenTransferProxy.sol',
-                'Token.sol',
-                'SafeMath.sol',
-            ]);
+            expect(parseDependencies(exchangeSource)).to.be.deep.equal(['TokenTransferProxy', 'Token', 'SafeMath']);
         });
         it('correctly parses TokenTransferProxy dependencies', async () => {
             const exchangeSource = await fsWrapper.readFileAsync(
@@ -63,7 +59,7 @@ describe('Compiler utils', () => {
                     encoding: 'utf8',
                 },
             );
-            expect(parseDependencies(exchangeSource)).to.be.deep.equal(['Token.sol', 'Ownable.sol']);
+            expect(parseDependencies(exchangeSource)).to.be.deep.equal(['Token', 'Ownable']);
         });
         // TODO: For now that doesn't work. This will work after we switch to a grammar-based parser
         it.skip('correctly parses commented out dependencies', async () => {

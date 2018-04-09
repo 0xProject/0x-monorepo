@@ -112,15 +112,16 @@ export class Compiler {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
         this._contractSources = await Compiler._getContractSourcesAsync(this._contractsDir);
-        for (const contractName of _.keys(this._contractSources)) {
+        const contractNames = _.keys(this._contractSources);
+        for (const contractName of contractNames) {
             const contractSource = this._contractSources[contractName];
             this._setContractSpecificSourceData(contractSource.source, contractName);
         }
-        const contractNames = this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)
+        const contractNamesToCompile = this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)
             ? _.keys(this._contractSources)
             : Array.from(this._specifiedContracts.values());
-        for (const contractName of contractNames) {
-            await this._compileContractAsync(contractName);
+        for (const contractNameToCompile of contractNamesToCompile) {
+            await this._compileContractAsync(contractNameToCompile);
         }
     }
     /**
@@ -172,8 +173,9 @@ export class Compiler {
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
         logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
-        const source = this._contractSources[contractName].source;
-        const absoluteFilePath = this._contractSources[contractName].absoluteFilePath;
+        const contractSource = this._contractSources[contractName];
+        const source = contractSource.source;
+        const absoluteFilePath = contractSource.absoluteFilePath;
         const standardInput: solc.StandardInput = {
             language: 'Solidity',
             sources: {
@@ -206,19 +208,17 @@ export class Compiler {
 
         if (!_.isUndefined(compiled.errors)) {
             const SOLIDITY_WARNING = 'warning';
-            const isError = (entry: any) => entry.severity !== SOLIDITY_WARNING;
-            const isWarning = (entry: any) => entry.severity === SOLIDITY_WARNING;
-            const errors = _.filter(compiled.errors, isError);
-            const warnings = _.filter(compiled.errors, isWarning);
+            const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
+            const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
             if (!_.isEmpty(errors)) {
                 errors.forEach(error => {
-                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage);
+                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
                     logUtils.log(chalk.red(normalizedErrMsg));
                 });
                 process.exit(1);
             } else {
                 warnings.forEach(warning => {
-                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage);
+                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
                     logUtils.log(chalk.yellow(normalizedWarningMsg));
                 });
             }
