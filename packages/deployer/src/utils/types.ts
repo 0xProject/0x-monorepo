@@ -21,7 +21,6 @@ export interface ContractNetworks {
 export interface ContractNetworkData {
     solc_version: string;
     optimizer_enabled: boolean;
-    keccak256: string;
     source_tree_hash: string;
     abi: ContractAbi;
     bytecode: string;
@@ -74,19 +73,11 @@ export interface UrlDeployerOptions extends BaseDeployerOptions {
 
 export type DeployerOptions = UrlDeployerOptions | ProviderDeployerOptions;
 
-export interface ContractSources {
-    [key: string]: {
-        source: string;
-        absoluteFilePath: string;
-    };
-}
-
 export interface ContractSourceData {
     [contractName: string]: ContractSpecificSourceData;
 }
 
 export interface ContractSpecificSourceData {
-    dependencies: string[];
     solcVersionRange: string;
     sourceHash: Buffer;
     sourceTreeHash: Buffer;

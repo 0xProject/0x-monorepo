@@ -1,3 +1,14 @@
+import {
+    ContractSource,
+    ContractSources,
+    EnumerableResolver,
+    FallthroughResolver,
+    FSResolver,
+    NameResolver,
+    NPMResolver,
+    Resolver,
+    URLResolver,
+} from '@0xproject/resolver';
 import { ContractAbi } from '@0xproject/types';
 import { logUtils, promisify } from '@0xproject/utils';
 import chalk from 'chalk';
@@ -13,7 +24,6 @@ import solc = require('solc');
 import { binPaths } from './solc/bin_paths';
 import {
     createDirIfDoesNotExistAsync,
-    findImportIfExist,
     getContractArtifactIfExistsAsync,
     getNormalizedErrMsg,
     parseDependencies,
@@ -27,7 +37,6 @@ import {
     ContractNetworkData,
     ContractNetworks,
     ContractSourceData,
-    ContractSources,
     ContractSpecificSourceData,
 } from './utils/types';
 import { utils } from './utils/utils';
@@ -40,59 +49,13 @@ const SOLC_BIN_DIR = path.join(__dirname, '..', '..', 'solc_bin');
  * to artifact files.
  */
 export class Compiler {
+    private _resolver: Resolver;
+    private _nameResolver: NameResolver;
     private _contractsDir: string;
     private _networkId: number;
     private _optimizerEnabled: boolean;
     private _artifactsDir: string;
-    // This get's set in the beggining of `compileAsync` function. It's not called from a constructor, but it's the only public method of that class and could as well be.
-    private _contractSources!: ContractSources;
     private _specifiedContracts: Set<string> = new Set();
-    private _contractSourceData: ContractSourceData = {};
-    /**
-     * Recursively retrieves Solidity source code from directory.
-     * @param  dirPath Directory to search.
-     * @return Mapping of contract fileName to contract source.
-     */
-    private static async _getContractSourcesAsync(dirPath: string): Promise<ContractSources> {
-        let dirContents: string[] = [];
-        try {
-            dirContents = await fsWrapper.readdirAsync(dirPath);
-        } catch (err) {
-            throw new Error(`No directory found at ${dirPath}`);
-        }
-        let sources: ContractSources = {};
-        for (const fileName of dirContents) {
-            const contentPath = `${dirPath}/${fileName}`;
-            const contractName = path.basename(fileName, constants.SOLIDITY_FILE_EXTENSION);
-            const absoluteFilePath = path.resolve(contentPath);
-            if (path.extname(fileName) === constants.SOLIDITY_FILE_EXTENSION) {
-                try {
-                    const opts = {
-                        encoding: 'utf8',
-                    };
-                    const source = await fsWrapper.readFileAsync(contentPath, opts);
-                    sources[contractName] = {
-                        source,
-                        absoluteFilePath,
-                    };
-                    logUtils.log(`Reading ${contractName} source...`);
-                } catch (err) {
-                    logUtils.log(`Could not find file at ${contentPath}`);
-                }
-            } else {
-                try {
-                    const nestedSources = await Compiler._getContractSourcesAsync(contentPath);
-                    sources = {
-                        ...sources,
-                        ...nestedSources,
-                    };
-                } catch (err) {
-                    logUtils.log(`${contentPath} is not a directory or ${constants.SOLIDITY_FILE_EXTENSION} file`);
-                }
-            }
-        }
-        return sources;
-    }
     /**
      * Instantiates a new instance of the Compiler class.
      * @param opts Options specifying directories, network, and optimization settings.
@@ -104,6 +67,13 @@ export class Compiler {
         this._optimizerEnabled = opts.optimizerEnabled;
         this._artifactsDir = opts.artifactsDir;
         this._specifiedContracts = opts.specifiedContracts;
+        this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
+        const resolver = new FallthroughResolver();
+        resolver.appendResolver(new URLResolver());
+        resolver.appendResolver(new NPMResolver(path.resolve('')));
+        resolver.appendResolver(new FSResolver());
+        resolver.appendResolver(this._nameResolver);
+        this._resolver = resolver;
     }
     /**
      * Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
@@ -111,15 +81,15 @@ export class Compiler {
     public async compileAsync(): Promise<void> {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
-        this._contractSources = await Compiler._getContractSourcesAsync(this._contractsDir);
-        const contractNames = _.keys(this._contractSources);
-        for (const contractName of contractNames) {
-            const contractSource = this._contractSources[contractName];
-            this._setContractSpecificSourceData(contractSource.source, contractName);
+        let contractNamesToCompile: string[] = [];
+        if (this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)) {
+            const allContracts = this._nameResolver.getAllContracts();
+            contractNamesToCompile = _.map(allContracts, contractSource =>
+                path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
+            );
+        } else {
+            contractNamesToCompile = Array.from(this._specifiedContracts.values());
         }
-        const contractNamesToCompile = this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)
-            ? _.keys(this._contractSources)
-            : Array.from(this._specifiedContracts.values());
         for (const contractNameToCompile of contractNamesToCompile) {
             await this._compileContractAsync(contractNameToCompile);
         }
@@ -129,13 +99,9 @@ export class Compiler {
      * @param fileName Name of contract with '.sol' extension.
      */
     private async _compileContractAsync(contractName: string): Promise<void> {
-        if (_.isUndefined(this._contractSources)) {
-            throw new Error('Contract sources not yet initialized');
-        }
-        const contractSpecificSourceData = this._contractSourceData[contractName];
+        const contractSource = this._resolver.resolve(contractName);
         const currentArtifactIfExists = await getContractArtifactIfExistsAsync(this._artifactsDir, contractName);
-        const sourceHash = `0x${contractSpecificSourceData.sourceHash.toString('hex')}`;
-        const sourceTreeHash = `0x${contractSpecificSourceData.sourceTreeHash.toString('hex')}`;
+        const sourceTreeHash = `0x${this._getSourceTreeHash(contractSource.path).toString('hex')}`;
 
         let shouldCompile = false;
         if (_.isUndefined(currentArtifactIfExists)) {
@@ -149,11 +115,9 @@ export class Compiler {
         if (!shouldCompile) {
             return;
         }
+        const solcVersionRange = parseSolidityVersionRange(contractSource.source);
         const availableCompilerVersions = _.keys(binPaths);
-        const solcVersion = semver.maxSatisfying(
-            availableCompilerVersions,
-            contractSpecificSourceData.solcVersionRange,
-        );
+        const solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
         const fullSolcVersion = binPaths[solcVersion];
         const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
         let solcjs: string;
@@ -173,9 +137,11 @@ export class Compiler {
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
 
         logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
-        const contractSource = this._contractSources[contractName];
+        if (_.isUndefined(contractSource)) {
+            throw new Error(`Failed to resolve ${contractName}`);
+        }
         const source = contractSource.source;
-        const absoluteFilePath = contractSource.absoluteFilePath;
+        const absoluteFilePath = contractSource.path;
         const standardInput: solc.StandardInput = {
             language: 'Solidity',
             sources: {
@@ -201,9 +167,10 @@ export class Compiler {
             },
         };
         const compiled: solc.StandardOutput = JSON.parse(
-            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath =>
-                findImportIfExist(this._contractSources, importPath),
-            ),
+            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath => {
+                const sourceCodeIfExists = this._resolver.resolve(importPath);
+                return { contents: sourceCodeIfExists.source };
+            }),
         );
 
         if (!_.isUndefined(compiled.errors)) {
@@ -234,11 +201,14 @@ export class Compiler {
         const runtimeBytecode = `0x${compiledData.evm.deployedBytecode.object}`;
         const sourceMap = compiledData.evm.bytecode.sourceMap;
         const sourceMapRuntime = compiledData.evm.deployedBytecode.sourceMap;
-        const sources = _.keys(compiled.sources);
+        const unresolvedSourcePaths = _.keys(compiled.sources);
+        const sources = _.map(
+            unresolvedSourcePaths,
+            unresolvedSourcePath => this._resolver.resolve(unresolvedSourcePath).path,
+        );
         const updated_at = Date.now();
         const contractNetworkData: ContractNetworkData = {
             solc_version: solcVersion,
-            keccak256: sourceHash,
             source_tree_hash: sourceTreeHash,
             optimizer_enabled: this._optimizerEnabled,
             abi,
@@ -275,39 +245,19 @@ export class Compiler {
         logUtils.log(`${contractName} artifact saved!`);
     }
     /**
-     * Gets contract dependendencies and keccak256 hash from source.
-     * @param source Source code of contract.
-     * @return Object with contract dependencies and keccak256 hash of source.
-     */
-    private _setContractSpecificSourceData(source: string, contractName: string): void {
-        if (!_.isUndefined(this._contractSourceData[contractName])) {
-            return;
-        }
-        const sourceHash = ethUtil.sha3(source);
-        const solcVersionRange = parseSolidityVersionRange(source);
-        const dependencies = parseDependencies(source);
-        const sourceTreeHash = this._getSourceTreeHash(sourceHash, dependencies);
-        this._contractSourceData[contractName] = {
-            dependencies,
-            solcVersionRange,
-            sourceHash,
-            sourceTreeHash,
-        };
-    }
-    /**
      * Gets the source tree hash for a file and its dependencies.
      * @param fileName Name of contract file.
      */
-    private _getSourceTreeHash(sourceHash: Buffer, dependencies: string[]): Buffer {
+    private _getSourceTreeHash(importPath: string): Buffer {
+        const contractSource = this._resolver.resolve(importPath);
+        const dependencies = parseDependencies(contractSource);
+        const sourceHash = ethUtil.sha3(contractSource.source);
         if (dependencies.length === 0) {
             return sourceHash;
         } else {
-            const dependencySourceTreeHashes = _.map(dependencies, dependency => {
-                const source = this._contractSources[dependency].source;
-                this._setContractSpecificSourceData(source, dependency);
-                const sourceData = this._contractSourceData[dependency];
-                return this._getSourceTreeHash(sourceData.sourceHash, sourceData.dependencies);
-            });
+            const dependencySourceTreeHashes = _.map(dependencies, (dependency: string) =>
+                this._getSourceTreeHash(dependency),
+            );
             const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
             const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
             return sourceTreeHash;

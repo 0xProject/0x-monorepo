@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity 0.4.14;
+pragma solidity ^0.4.14;
 
-import "./base/Token.sol";
-import "./base/Ownable.sol";
+import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
+import { ERC20 as Token } from "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 /// @title TokenTransferProxy - Transfers tokens on behalf of contracts that have been approved via decentralized governance.
 /// @author Amir Bandeali - <amir@0xProject.com>, Will Warren - <will@0xProject.com>

@@ -6,27 +6,17 @@ import * as path from 'path';
 import { ContractData } from './types';
 
 export const collectContractsData = (artifactsPath: string, sourcesPath: string, networkId: number) => {
-    const sourcesGlob = `${sourcesPath}/**/*.sol`;
-    const sourceFileNames = glob.sync(sourcesGlob, { absolute: true });
-    const contractsDataIfExists: Array<ContractData | {}> = _.map(sourceFileNames, sourceFileName => {
-        const baseName = path.basename(sourceFileName, '.sol');
-        const artifactFileName = path.join(artifactsPath, `${baseName}.json`);
-        if (!fs.existsSync(artifactFileName)) {
-            // If the contract isn't directly compiled, but is imported as the part of the other contract - we don't
-            // have an artifact for it and therefore can't do anything useful with it
-            return {};
-        }
+    const artifactsGlob = `${artifactsPath}/**/*.json`;
+    const artifactFileNames = glob.sync(artifactsGlob, { absolute: true });
+    const contractsDataIfExists: Array<ContractData | {}> = _.map(artifactFileNames, artifactFileName => {
         const artifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
         const sources = artifact.networks[networkId].sources;
-        const sourceCodes = _.map(sources, (source: string) => {
-            const includedSourceCode = fs.readFileSync(source).toString();
-            return includedSourceCode;
-        });
+        const contractName = artifact.contract_name;
+        const sourceCodes = _.map(sources, (source: string) => fs.readFileSync(source).toString());
         if (_.isUndefined(artifact.networks[networkId])) {
-            throw new Error(`No ${baseName} artifacts found for networkId ${networkId}`);
+            throw new Error(`No ${contractName} artifacts found for networkId ${networkId}`);
         }
         const contractData = {
-            baseName,
             sourceCodes,
             sources,
             sourceMap: artifact.networks[networkId].source_map,

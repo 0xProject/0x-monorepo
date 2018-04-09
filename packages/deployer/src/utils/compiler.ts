@@ -1,3 +1,4 @@
+import { ContractSource, ContractSources } from '@0xproject/resolver';
 import { logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -5,7 +6,7 @@ import * as solc from 'solc';
 
 import { constants } from './constants';
 import { fsWrapper } from './fs_wrapper';
-import { ContractArtifact, ContractSources } from './types';
+import { ContractArtifact } from './types';
 
 /**
  * Gets contract data on network or returns if an artifact does not exist.
@@ -83,8 +84,9 @@ export function getNormalizedErrMsg(errMsg: string): string {
  * @param  source Contract source code
  * @return List of dependendencies
  */
-export function parseDependencies(source: string): string[] {
+export function parseDependencies(contractSource: ContractSource): string[] {
     // TODO: Use a proper parser
+    const source = contractSource.source;
     const IMPORT_REGEX = /(import\s)/;
     const DEPENDENCY_PATH_REGEX = /"([^"]+)"/; // Source: https://github.com/BlockChainCompany/soljitsu/blob/master/lib/shared.js
     const dependencies: string[] = [];
@@ -93,29 +95,13 @@ export function parseDependencies(source: string): string[] {
         if (!_.isNull(line.match(IMPORT_REGEX))) {
             const dependencyMatch = line.match(DEPENDENCY_PATH_REGEX);
             if (!_.isNull(dependencyMatch)) {
-                const dependencyPath = dependencyMatch[1];
-                const contractName = path.basename(dependencyPath, constants.SOLIDITY_FILE_EXTENSION);
-                dependencies.push(contractName);
+                let dependencyPath = dependencyMatch[1];
+                if (dependencyPath.startsWith('.')) {
+                    dependencyPath = path.join(path.dirname(contractSource.path), dependencyPath);
+                }
+                dependencies.push(dependencyPath);
             }
         }
     });
     return dependencies;
-}
-
-/**
- * Callback to resolve dependencies with `solc.compile`.
- * @param  contractSources Source codes of contracts.
- * @param  importPath Path to an imported dependency.
- * @return Import contents object containing source code of dependency.
- */
-export function findImportIfExist(contractSources: ContractSources, importPath: string): solc.ImportContents {
-    const contractName = path.basename(importPath, constants.SOLIDITY_FILE_EXTENSION);
-    const source = contractSources[contractName].source;
-    if (_.isUndefined(source)) {
-        throw new Error(`Contract source not found for ${contractName}`);
-    }
-    const importContents: solc.ImportContents = {
-        contents: source,
-    };
-    return importContents;
 }
