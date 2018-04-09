@@ -5,27 +5,27 @@ import { orderUtils } from './order_utils';
 import { BatchCancelOrders, BatchFillOrders, MarketBuyOrders, MarketSellOrders, SignedOrder } from './types';
 
 export const formatters = {
-    createBatchFill(signedOrders: SignedOrder[], takerSellAmounts: BigNumber[] = []) {
+    createBatchFill(signedOrders: SignedOrder[], takerTokenFillAmounts: BigNumber[] = []) {
         const batchFill: BatchFillOrders = {
             orders: [],
             signatures: [],
-            takerSellAmounts,
+            takerTokenFillAmounts,
         };
         _.forEach(signedOrders, signedOrder => {
             const orderStruct = orderUtils.getOrderStruct(signedOrder);
             batchFill.orders.push(orderStruct);
             batchFill.signatures.push(signedOrder.signature);
-            if (takerSellAmounts.length < signedOrders.length) {
-                batchFill.takerSellAmounts.push(signedOrder.makerBuyAmount);
+            if (takerTokenFillAmounts.length < signedOrders.length) {
+                batchFill.takerTokenFillAmounts.push(signedOrder.takerTokenAmount);
             }
         });
         return batchFill;
     },
-    createMarketSellOrders(signedOrders: SignedOrder[], takerSellAmount: BigNumber) {
+    createMarketSellOrders(signedOrders: SignedOrder[], takerTokenFillAmount: BigNumber) {
         const marketSellOrders: MarketSellOrders = {
             orders: [],
             signatures: [],
-            takerSellAmount,
+            takerTokenFillAmount,
         };
         _.forEach(signedOrders, signedOrder => {
             const orderStruct = orderUtils.getOrderStruct(signedOrder);
@@ -34,11 +34,11 @@ export const formatters = {
         });
         return marketSellOrders;
     },
-    createMarketBuyOrders(signedOrders: SignedOrder[], takerBuyAmount: BigNumber) {
+    createMarketBuyOrders(signedOrders: SignedOrder[], makerTokenFillAmount: BigNumber) {
         const marketBuyOrders: MarketBuyOrders = {
             orders: [],
             signatures: [],
-            takerBuyAmount,
+            makerTokenFillAmount,
         };
         _.forEach(signedOrders, signedOrder => {
             const orderStruct = orderUtils.getOrderStruct(signedOrder);

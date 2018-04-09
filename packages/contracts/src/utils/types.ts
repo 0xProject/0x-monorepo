@@ -14,19 +14,19 @@ export interface SubmissionContractEventArgs {
 export interface BatchFillOrders {
     orders: OrderStruct[];
     signatures: string[];
-    takerSellAmounts: BigNumber[];
+    takerTokenFillAmounts: BigNumber[];
 }
 
 export interface MarketSellOrders {
     orders: OrderStruct[];
     signatures: string[];
-    takerSellAmount: BigNumber;
+    takerTokenFillAmount: BigNumber;
 }
 
 export interface MarketBuyOrders {
     orders: OrderStruct[];
     signatures: string[];
-    takerBuyAmount: BigNumber;
+    makerTokenFillAmount: BigNumber;
 }
 
 export interface BatchCancelOrders {
@@ -43,8 +43,8 @@ export interface DefaultOrderParams {
     feeRecipientAddress: string;
     makerTokenAddress: string;
     takerTokenAddress: string;
-    makerSellAmount: BigNumber;
-    makerBuyAmount: BigNumber;
+    makerTokenAmount: BigNumber;
+    takerTokenAmount: BigNumber;
     makerFee: BigNumber;
     takerFee: BigNumber;
 }
@@ -128,8 +128,8 @@ export interface OrderStruct {
     makerTokenAddress: string;
     takerTokenAddress: string;
     feeRecipientAddress: string;
-    makerSellAmount: BigNumber;
-    makerBuyAmount: BigNumber;
+    makerTokenAmount: BigNumber;
+    takerTokenAmount: BigNumber;
     makerFee: BigNumber;
     takerFee: BigNumber;
     expirationTimeSeconds: BigNumber;

@@ -29,35 +29,35 @@ contract MixinWrapperFunctions is
     SafeMath,
     LibPartialAmount
 {
-    /// @dev Fills the input order. Reverts if exact takerSellAmount not filled.
+    /// @dev Fills the input order. Reverts if exact takerTokenFillAmount not filled.
     /// @param order Order struct containing order specifications.
-    /// @param takerSellAmount Desired amount of takerToken to sell.
+    /// @param takerTokenFillAmount Desired amount of takerToken to sell.
     /// @param signature Proof that order has been created by maker.
     function fillOrKillOrder(
         Order memory order,
-        uint256 takerSellAmount,
+        uint256 takerTokenFillAmount,
         bytes memory signature)
         public
         returns (FillResults memory fillResults)
     {
         fillResults = fillOrder(
             order,
-            takerSellAmount,
+            takerTokenFillAmount,
             signature
         );
-        require(fillResults.takerAmountSold == takerSellAmount);
+        require(fillResults.takerTokenFilledAmount == takerTokenFillAmount);
         return fillResults;
     }
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
-    /// @param takerSellAmount Desired amount of takerToken to sell.
+    /// @param takerTokenFillAmount Desired amount of takerToken to sell.
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function fillOrderNoThrow(
         Order memory order,
-        uint256 takerSellAmount,
+        uint256 takerTokenFillAmount,
         bytes memory signature)
         public
         returns (FillResults memory fillResults)
@@ -106,8 +106,8 @@ contract MixinWrapperFunctions is
             mstore(add(start, 292), mload(add(order, 288))) // expirationTimeSeconds
             mstore(add(start, 324), mload(add(order, 320))) // salt
 
-            // Write takerSellAmount
-            mstore(add(start, 356), takerSellAmount)
+            // Write takerTokenFillAmount
+            mstore(add(start, 356), takerTokenFillAmount)
 
             // Write signature offset
             mstore(add(start, 388), 416)
@@ -156,18 +156,18 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously executes multiple calls of fillOrder.
     /// @param orders Array of order specifications.
-    /// @param takerSellAmounts Array of desired amounts of takerToken to sell in orders.
+    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrders(
         Order[] memory orders,
-        uint256[] memory takerSellAmounts,
+        uint256[] memory takerTokenFillAmounts,
         bytes[] memory signatures)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
             fillOrder(
                 orders[i],
-                takerSellAmounts[i],
+                takerTokenFillAmounts[i],
                 signatures[i]
             );
         }
@@ -175,18 +175,18 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
-    /// @param takerSellAmounts Array of desired amounts of takerToken to sell in orders.
+    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrKillOrders(
         Order[] memory orders,
-        uint256[] memory takerSellAmounts,
+        uint256[] memory takerTokenFillAmounts,
         bytes[] memory signatures)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
             fillOrKillOrder(
                 orders[i],
-                takerSellAmounts[i],
+                takerTokenFillAmounts[i],
                 signatures[i]
             );
         }
@@ -195,18 +195,18 @@ contract MixinWrapperFunctions is
     /// @dev Fills an order with specified parameters and ECDSA signature.
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
-    /// @param takerSellAmounts Array of desired amounts of takerToken to sell in orders.
+    /// @param takerTokenFillAmounts Array of desired amounts of takerToken to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrdersNoThrow(
         Order[] memory orders,
-        uint256[] memory takerSellAmounts,
+        uint256[] memory takerTokenFillAmounts,
         bytes[] memory signatures)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
             fillOrderNoThrow(
                 orders[i],
-                takerSellAmounts[i],
+                takerTokenFillAmounts[i],
                 signatures[i]
             );
         }
@@ -214,29 +214,29 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerToken is sold by taker.
     /// @param orders Array of order specifications.
-    /// @param takerSellAmount Desired amount of takerToken to sell.
+    /// @param takerTokenFillAmount Desired amount of takerToken to sell.
     /// @param signatures Proofs that orders have been created by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketSellOrders(
         Order[] memory orders,
-        uint256 takerSellAmount,
+        uint256 takerTokenFillAmount,
         bytes[] memory signatures)
         public
         returns (FillResults memory fillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerSellAmount = safeSub(takerSellAmount, fillResults.takerAmountSold);
+            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, fillResults.takerTokenFilledAmount);
             FillResults memory currentFillResults = fillOrder(
                 orders[i],
-                remainingTakerSellAmount,
+                remainingTakerTokenFillAmount,
                 signatures[i]
             );
-            fillResults.makerAmountSold = safeAdd(fillResults.makerAmountSold, currentFillResults.makerAmountSold);
-            fillResults.takerAmountSold = safeAdd(fillResults.takerAmountSold, currentFillResults.takerAmountSold);
+            fillResults.makerTokenFilledAmount = safeAdd(fillResults.makerTokenFilledAmount, currentFillResults.makerTokenFilledAmount);
+            fillResults.takerTokenFilledAmount = safeAdd(fillResults.takerTokenFilledAmount, currentFillResults.takerTokenFilledAmount);
             fillResults.makerFeePaid = safeAdd(fillResults.makerFeePaid, currentFillResults.makerFeePaid);
             fillResults.takerFeePaid = safeAdd(fillResults.takerFeePaid, currentFillResults.takerFeePaid);
-            if (fillResults.takerAmountSold == takerSellAmount) {
+            if (fillResults.takerTokenFilledAmount == takerTokenFillAmount) {
                 break;
             }
         }
@@ -246,29 +246,29 @@ contract MixinWrapperFunctions is
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerToken is sold by taker.
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
-    /// @param takerSellAmount Desired amount of takerToken to sell.
+    /// @param takerTokenFillAmount Desired amount of takerToken to sell.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketSellOrdersNoThrow(
         Order[] memory orders,
-        uint256 takerSellAmount,
+        uint256 takerTokenFillAmount,
         bytes[] memory signatures)
         public
         returns (FillResults memory fillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            uint256 remainingTakerSellAmount = safeSub(takerSellAmount, fillResults.takerAmountSold);
+            uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, fillResults.takerTokenFilledAmount);
             FillResults memory currentFillResults = fillOrderNoThrow(
                 orders[i],
-                remainingTakerSellAmount,
+                remainingTakerTokenFillAmount,
                 signatures[i]
             );
-            fillResults.makerAmountSold = safeAdd(fillResults.makerAmountSold, currentFillResults.makerAmountSold);
-            fillResults.takerAmountSold = safeAdd(fillResults.takerAmountSold, currentFillResults.takerAmountSold);
+            fillResults.makerTokenFilledAmount = safeAdd(fillResults.makerTokenFilledAmount, currentFillResults.makerTokenFilledAmount);
+            fillResults.takerTokenFilledAmount = safeAdd(fillResults.takerTokenFilledAmount, currentFillResults.takerTokenFilledAmount);
             fillResults.makerFeePaid = safeAdd(fillResults.makerFeePaid, currentFillResults.makerFeePaid);
             fillResults.takerFeePaid = safeAdd(fillResults.takerFeePaid, currentFillResults.takerFeePaid);
-            if (fillResults.takerAmountSold == takerSellAmount) {
+            if (fillResults.takerTokenFilledAmount == takerTokenFillAmount) {
                 break;
             }
         }
@@ -277,34 +277,34 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerToken is bought by taker.
     /// @param orders Array of order specifications.
-    /// @param takerBuyAmount Desired amount of makerToken to buy.
+    /// @param makerTokenFillAmount Desired amount of makerToken to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketBuyOrders(
         Order[] memory orders,
-        uint256 takerBuyAmount,
+        uint256 makerTokenFillAmount,
         bytes[] memory signatures)
         public
         returns (FillResults memory fillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].makerTokenAddress == orders[0].makerTokenAddress);
-            uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, fillResults.makerAmountSold);
-            uint256 remainingTakerSellAmount = getPartialAmount(
-                orders[i].makerBuyAmount,
-                orders[i].makerSellAmount,
-                remainingTakerBuyAmount
+            uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, fillResults.makerTokenFilledAmount);
+            uint256 remainingTakerTokenFillAmount = getPartialAmount(
+                orders[i].takerTokenAmount,
+                orders[i].makerTokenAmount,
+                remainingMakerTokenFillAmount
             );
             FillResults memory currentFillResults = fillOrder(
                 orders[i],
-                remainingTakerSellAmount,
+                remainingTakerTokenFillAmount,
                 signatures[i]
             );
-            fillResults.makerAmountSold = safeAdd(fillResults.makerAmountSold, currentFillResults.makerAmountSold);
-            fillResults.takerAmountSold = safeAdd(fillResults.takerAmountSold, currentFillResults.takerAmountSold);
+            fillResults.makerTokenFilledAmount = safeAdd(fillResults.makerTokenFilledAmount, currentFillResults.makerTokenFilledAmount);
+            fillResults.takerTokenFilledAmount = safeAdd(fillResults.takerTokenFilledAmount, currentFillResults.takerTokenFilledAmount);
             fillResults.makerFeePaid = safeAdd(fillResults.makerFeePaid, currentFillResults.makerFeePaid);
             fillResults.takerFeePaid = safeAdd(fillResults.takerFeePaid, currentFillResults.takerFeePaid);
-            if (fillResults.makerAmountSold == takerBuyAmount) {
+            if (fillResults.makerTokenFilledAmount == makerTokenFillAmount) {
                 break;
             }
         }
@@ -314,34 +314,34 @@ contract MixinWrapperFunctions is
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
-    /// @param takerBuyAmount Desired amount of makerToken to buy.
+    /// @param makerTokenFillAmount Desired amount of makerToken to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketBuyOrdersNoThrow(
         Order[] memory orders,
-        uint256 takerBuyAmount,
+        uint256 makerTokenFillAmount,
         bytes[] memory signatures)
         public
         returns (FillResults memory fillResults)
     {
         for (uint256 i = 0; i < orders.length; i++) {
             require(orders[i].makerTokenAddress == orders[0].makerTokenAddress);
-            uint256 remainingTakerBuyAmount = safeSub(takerBuyAmount, fillResults.makerAmountSold);
-            uint256 remainingTakerSellAmount = getPartialAmount(
-                orders[i].makerBuyAmount,
-                orders[i].makerSellAmount,
-                remainingTakerBuyAmount
+            uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, fillResults.makerTokenFilledAmount);
+            uint256 remainingTakerTokenFillAmount = getPartialAmount(
+                orders[i].takerTokenAmount,
+                orders[i].makerTokenAmount,
+                remainingMakerTokenFillAmount
             );
             FillResults memory currentFillResults = fillOrderNoThrow(
                 orders[i],
-                remainingTakerSellAmount,
+                remainingTakerTokenFillAmount,
                 signatures[i]
             );
-            fillResults.makerAmountSold = safeAdd(fillResults.makerAmountSold, currentFillResults.makerAmountSold);
-            fillResults.takerAmountSold = safeAdd(fillResults.takerAmountSold, currentFillResults.takerAmountSold);
+            fillResults.makerTokenFilledAmount = safeAdd(fillResults.makerTokenFilledAmount, currentFillResults.makerTokenFilledAmount);
+            fillResults.takerTokenFilledAmount = safeAdd(fillResults.takerTokenFilledAmount, currentFillResults.takerTokenFilledAmount);
             fillResults.makerFeePaid = safeAdd(fillResults.makerFeePaid, currentFillResults.makerFeePaid);
             fillResults.takerFeePaid = safeAdd(fillResults.takerFeePaid, currentFillResults.takerFeePaid);
-            if (fillResults.makerAmountSold == takerBuyAmount) {
+            if (fillResults.makerTokenFilledAmount == makerTokenFillAmount) {
                 break;
             }
         }
