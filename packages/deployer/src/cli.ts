@@ -45,7 +45,7 @@ async function onDeployCommandAsync(argv: CliOptions): Promise<void> {
     const web3Wrapper = new Web3Wrapper(web3Provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
     const compilerOpts: CompilerOptions = {
-        contractDirs: getContractDirectoriesFromList(argv.contractsDir),
+        contractDirs: getContractDirectoriesFromList(argv.contractDirs),
         networkId,
         optimizerEnabled: argv.shouldOptimize,
         artifactsDir: argv.artifactsDir,

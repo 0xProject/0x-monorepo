@@ -26,7 +26,7 @@ import {
     CompilerOptions,
     ContractArtifact,
     ContractDirectory,
-    ContractIds,
+    ContractIdToSourceFileId,
     ContractNetworkData,
     ContractNetworks,
     ContractSourceDataByFileId,
@@ -75,6 +75,9 @@ export class Compiler {
                         encoding: 'utf8',
                     };
                     const source = await fsWrapper.readFileAsync(contentPath, opts);
+                    if (!_.startsWith(contentPath, contractBaseDir)) {
+                        throw new Error(`Expected content path '${contentPath}' to begin with '${contractBaseDir}'`);
+                    }
                     const sourceFilePath = contentPath.slice(contractBaseDir.length);
                     sources[sourceFilePath] = source;
                     logUtils.log(`Reading ${sourceFilePath} source...`);
@@ -114,7 +117,7 @@ export class Compiler {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
         this._contractSources = {};
-        const contractIds: ContractIds = {};
+        const contractIdToSourceFileId: ContractIdToSourceFileId = {};
         const contractDirs = Array.from(this._contractDirs.values());
         for (const contractDir of contractDirs) {
             const sources = await Compiler._getContractSourcesAsync(contractDir.path, contractDir.path);
@@ -127,18 +130,20 @@ export class Compiler {
                 this._contractSources[sourceFileId] = source;
                 // Create a mapping between the contract id and its source file id
                 const contractId = constructContractId(contractDir.namespace, sourceFilePath);
-                if (!_.isUndefined(contractIds[contractId])) {
+                if (!_.isUndefined(contractIdToSourceFileId[contractId])) {
                     throw new Error(`Found duplicate contract with ID '${contractId}'`);
                 }
-                contractIds[contractId] = sourceFileId;
+                contractIdToSourceFileId[contractId] = sourceFileId;
             });
         }
         _.forIn(this._contractSources, this._setContractSpecificSourceData.bind(this));
         const specifiedContractIds = this._specifiedContracts.has(ALL_CONTRACTS_IDENTIFIER)
-            ? _.keys(contractIds)
+            ? _.keys(contractIdToSourceFileId)
             : Array.from(this._specifiedContracts.values());
         await Promise.all(
-            _.map(specifiedContractIds, async contractId => this._compileContractAsync(contractIds[contractId])),
+            _.map(specifiedContractIds, async contractId =>
+                this._compileContractAsync(contractIdToSourceFileId[contractId]),
+            ),
         );
     }
     /**

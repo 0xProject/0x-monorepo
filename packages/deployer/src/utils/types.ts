@@ -83,7 +83,7 @@ export interface ContractSources {
     [key: string]: string;
 }
 
-export interface ContractIds {
+export interface ContractIdToSourceFileId {
     [key: string]: string;
 }
 

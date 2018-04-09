@@ -125,7 +125,7 @@ for (const abiFileName of abiFileNames) {
     }
 
     const methodAbis = ABI.filter((abi: AbiDefinition) => abi.type === ABI_TYPE_METHOD) as MethodAbi[];
-    const methodAbisSanitized = abiUtils.renameOverloadedMethods(methodAbis) as MethodAbi[];
+    const sanitizedMethodAbis = abiUtils.renameOverloadedMethods(methodAbis) as MethodAbi[];
     const methodsData = _.map(methodAbis, (methodAbi, methodAbiIndex: number) => {
         _.forEach(methodAbi.inputs, (input, inputIndex: number) => {
             if (_.isEmpty(input.name)) {
@@ -138,7 +138,7 @@ for (const abiFileName of abiFileNames) {
             ...methodAbi,
             singleReturnValue: methodAbi.outputs.length === 1,
             hasReturnValue: methodAbi.outputs.length !== 0,
-            tsName: methodAbisSanitized[methodAbiIndex].name,
+            tsName: sanitizedMethodAbis[methodAbiIndex].name,
             functionSignature: abiUtils.getFunctionSignature(methodAbi),
         };
         return methodData;

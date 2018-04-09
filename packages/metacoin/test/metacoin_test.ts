@@ -36,12 +36,12 @@ describe('Metacoin', () => {
         });
     });
     describe('#transfer', () => {
-        it(`should successfully transfer tokens (via transfer_1)`, async () => {
+        it(`should successfully transfer tokens (via transfer1)`, async () => {
             const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
             const amount = INITIAL_BALANCE.div(2);
             const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
             expect(oldBalance).to.be.bignumber.equal(0);
-            const txHash = await metacoin.transfer_1.sendTransactionAsync(
+            const txHash = await metacoin.transfer1.sendTransactionAsync(
                 {
                     to: ZERO_ADDRESS,
                     amount,
@@ -59,13 +59,13 @@ describe('Metacoin', () => {
             expect(newBalance).to.be.bignumber.equal(amount);
         });
 
-        it(`should successfully transfer tokens (via transfer_2)`, async () => {
+        it(`should successfully transfer tokens (via transfer2)`, async () => {
             const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
             const amount = INITIAL_BALANCE.div(2);
             const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
             expect(oldBalance).to.be.bignumber.equal(0);
             const callback = 59;
-            const txHash = await metacoin.transfer_2.sendTransactionAsync(
+            const txHash = await metacoin.transfer2.sendTransactionAsync(
                 {
                     to: ZERO_ADDRESS,
                     amount,
@@ -84,13 +84,13 @@ describe('Metacoin', () => {
             expect(newBalance).to.be.bignumber.equal(amount);
         });
 
-        it(`should successfully transfer tokens (via transfer_3)`, async () => {
+        it(`should successfully transfer tokens (via transfer3)`, async () => {
             const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
             const amount = INITIAL_BALANCE.div(2);
             const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
             expect(oldBalance).to.be.bignumber.equal(0);
             const callback = 59;
-            const txHash = await metacoin.transfer_3.sendTransactionAsync(
+            const txHash = await metacoin.transfer3.sendTransactionAsync(
                 {
                     transferData: {
                         to: ZERO_ADDRESS,

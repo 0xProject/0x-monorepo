@@ -89,13 +89,10 @@ export class BaseContract {
         const methodAbis = this.abi.filter(
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Function,
         ) as MethodAbi[];
-        this._ethersInterfacesByFunctionSignature = _.transform(
-            methodAbis,
-            (result: EthersInterfaceByFunctionSignature, methodAbi) => {
-                const functionSignature = abiUtils.getFunctionSignature(methodAbi);
-                result[functionSignature] = new ethersContracts.Interface([methodAbi]);
-            },
-            {},
-        );
+        this._ethersInterfacesByFunctionSignature = {};
+        _.each(methodAbis, methodAbi => {
+            const functionSignature = abiUtils.getFunctionSignature(methodAbi);
+            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethersContracts.Interface([methodAbi]);
+        });
     }
 }
