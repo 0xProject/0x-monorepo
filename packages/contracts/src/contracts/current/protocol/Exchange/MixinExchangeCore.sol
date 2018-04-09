@@ -109,6 +109,8 @@ contract MixinExchangeCore is
         // Validate order and maker only if first time seen
         // TODO: Read filled and cancelled only once
         if (filled[orderHash] == 0) {
+            require(order.makerTokenAmount > 0);
+            require(order.takerTokenAmount > 0);
             require(isValidSignature(orderHash, order.makerAddress, signature));
         }
 
@@ -116,6 +118,7 @@ contract MixinExchangeCore is
         if (order.takerAddress != address(0)) {
             require(order.takerAddress == msg.sender);
         }
+        require(takerTokenFillAmount > 0);
 
         // Validate order expiration
         if (block.timestamp >= order.expirationTimeSeconds) {
@@ -124,14 +127,14 @@ contract MixinExchangeCore is
         }
 
         // Validate order availability
-        uint256 remainingMakerBuyAmount = safeSub(order.takerTokenAmount, filled[orderHash]);
-        if (remainingMakerBuyAmount == 0) {
+        uint256 remainingTakerTokenFillAmount = safeSub(order.takerTokenAmount, filled[orderHash]);
+        if (remainingTakerTokenFillAmount == 0) {
             emit ExchangeError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
             return fillResults;
         }
 
         // Validate fill order rounding
-        fillResults.takerTokenFilledAmount = min256(takerTokenFillAmount, remainingMakerBuyAmount);
+        fillResults.takerTokenFilledAmount = min256(takerTokenFillAmount, remainingTakerTokenFillAmount);
         if (isRoundingError(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             emit ExchangeError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
             fillResults.takerTokenFilledAmount = 0;
@@ -173,6 +176,8 @@ contract MixinExchangeCore is
         bytes32 orderHash = getOrderHash(order);
 
         // Validate the order
+        require(order.makerTokenAmount > 0);
+        require(order.takerTokenAmount > 0);
         require(order.makerAddress == msg.sender);
 
         if (block.timestamp >= order.expirationTimeSeconds) {
