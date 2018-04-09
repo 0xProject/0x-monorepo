@@ -1,24 +1,14 @@
-## Contracts
+## Migrations
 
-Smart contracts that implement the 0x protocol.
-
-## Usage
-
-*   [Docs](https://0xproject.com/docs/contracts)
-*   [Overview of 0x protocol architecture](https://0xproject.com/wiki#Architecture)
-*   [0x smart contract interactions](https://0xproject.com/wiki#Contract-Interactions)
-*   [Deployed smart contract addresses](https://0xproject.com/wiki#Deployed-Addresses)
-*   [0x protocol message format](https://0xproject.com/wiki#Message-Format)
+Migrate the 0x system of smart contracts on the network of your choice using these migrations.
 
 ## Contributing
 
-We strongly recommend that the community help us make improvements and determine the future direction of the protocol. To report bugs within this package, please create an issue in this repository.
-
-For proposals regarding the 0x protocol's smart contract architecture, message format, or additional functionality, go to the [0x Improvement Proposals (ZEIPs)](https://github.com/0xProject/ZEIPs) repository and follow the contribution guidelines provided therein.
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
-### Install Dependencies
+### Install dependencies
 
 If you don't have yarn workspaces enabled (Yarn < v1.0) - enable them:
 
@@ -70,8 +60,10 @@ yarn clean
 yarn lint
 ```
 
-### Run Tests
+### Migrate
+
+In order to migrate the 0x smart contracts to TestRPC/Ganache running at `http://localhost:8545`, run:
 
 ```bash
-yarn test
+yarn migrate
 ```

@@ -1,5 +1,9 @@
 import { Deployer } from '@0xproject/deployer';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+// HACK: This dependency is optional since it is only available when run from within
+// the monorepo. tslint doesn't handle optional dependencies
+// tslint:disable-next-line:no-implicit-dependencies
+import { runMigrationsAsync } from '@0xproject/migrations';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -9,7 +13,6 @@ import * as Sinon from 'sinon';
 
 import { ApprovalContractEventArgs, LogWithDecodedArgs, Order, TokenEvents, ZeroEx } from '../src';
 
-import { runMigrationsAsync } from './migrations/migrate';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { deployer } from './utils/deployer';

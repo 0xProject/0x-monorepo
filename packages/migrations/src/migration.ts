@@ -3,10 +3,10 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
-import { constants } from '../utils/constants';
+import { constants } from './utils/constants';
 
-import { tokenInfo } from './config/token_info';
 import { ContractName } from './types';
+import { tokenInfo } from './utils/token_info';
 
 /**
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
