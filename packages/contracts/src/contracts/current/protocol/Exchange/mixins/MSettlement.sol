@@ -26,10 +26,10 @@ contract MSettlement is LibOrder {
     function settleOrder(
         Order memory order,
         address takerAddress,
-        uint256 takerAmountSold)
+        uint256 takerTokenFilledAmount)
         internal
         returns (
-            uint256 makerAmountSold,
+            uint256 makerTokenFilledAmount,
             uint256 makerFeePaid,
             uint256 takerFeePaid
         );

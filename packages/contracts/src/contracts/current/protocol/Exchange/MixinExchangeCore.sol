@@ -55,8 +55,8 @@ contract MixinExchangeCore is
         address indexed feeRecipientAddress,
         address makerTokenAddress,
         address takerTokenAddress,
-        uint256 makerAmountSold,
-        uint256 takerAmountSold,
+        uint256 makerTokenFilledAmount,
+        uint256 takerTokenFilledAmount,
         uint256 makerFeePaid,
         uint256 takerFeePaid,
         bytes32 indexed orderHash
@@ -81,12 +81,12 @@ contract MixinExchangeCore is
 
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
-    /// @param takerSellAmount Desired amount of takerToken to sell.
+    /// @param takerTokenFillAmount Desired amount of takerToken to sell.
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function fillOrder(
         Order memory order,
-        uint256 takerSellAmount,
+        uint256 takerTokenFillAmount,
         bytes memory signature)
         public
         returns (FillResults memory fillResults)
@@ -124,26 +124,26 @@ contract MixinExchangeCore is
         }
 
         // Validate order availability
-        uint256 remainingMakerBuyAmount = safeSub(order.makerBuyAmount, filled[orderHash]);
+        uint256 remainingMakerBuyAmount = safeSub(order.takerTokenAmount, filled[orderHash]);
         if (remainingMakerBuyAmount == 0) {
             emit ExchangeError(uint8(Errors.ORDER_FULLY_FILLED), orderHash);
             return fillResults;
         }
 
         // Validate fill order rounding
-        fillResults.takerAmountSold = min256(takerSellAmount, remainingMakerBuyAmount);
-        if (isRoundingError(fillResults.takerAmountSold, order.makerBuyAmount, order.makerSellAmount)) {
+        fillResults.takerTokenFilledAmount = min256(takerTokenFillAmount, remainingMakerBuyAmount);
+        if (isRoundingError(fillResults.takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             emit ExchangeError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), orderHash);
-            fillResults.takerAmountSold = 0;
+            fillResults.takerTokenFilledAmount = 0;
             return fillResults;
         }
 
         // Update state
-        filled[orderHash] = safeAdd(filled[orderHash], fillResults.takerAmountSold);
+        filled[orderHash] = safeAdd(filled[orderHash], fillResults.takerTokenFilledAmount);
 
         // Settle order
-        (fillResults.makerAmountSold, fillResults.makerFeePaid, fillResults.takerFeePaid) =
-            settleOrder(order, msg.sender, fillResults.takerAmountSold);
+        (fillResults.makerTokenFilledAmount, fillResults.makerFeePaid, fillResults.takerFeePaid) =
+            settleOrder(order, msg.sender, fillResults.takerTokenFilledAmount);
 
         // Log order
         emit Fill(
@@ -152,8 +152,8 @@ contract MixinExchangeCore is
             order.feeRecipientAddress,
             order.makerTokenAddress,
             order.takerTokenAddress,
-            fillResults.makerAmountSold,
-            fillResults.takerAmountSold,
+            fillResults.makerTokenFilledAmount,
+            fillResults.takerTokenFilledAmount,
             fillResults.makerFeePaid,
             fillResults.takerFeePaid,
             orderHash

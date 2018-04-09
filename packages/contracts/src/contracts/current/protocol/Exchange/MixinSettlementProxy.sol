@@ -59,21 +59,21 @@ contract MixinSettlementProxy is
     function settleOrder(
         Order memory order,
         address takerAddress,
-        uint256 takerAmountSold)
+        uint256 takerTokenFilledAmount)
         internal
         returns (
-            uint256 makerAmountSold,
+            uint256 makerTokenFilledAmount,
             uint256 makerFeePaid,
             uint256 takerFeePaid
         )
     {
-        makerAmountSold = getPartialAmount(takerAmountSold, order.makerBuyAmount, order.makerSellAmount);
+        makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
         require(
             TRANSFER_PROXY.transferFrom(
                 order.makerTokenAddress,
                 order.makerAddress,
                 takerAddress,
-                makerAmountSold
+                makerTokenFilledAmount
             )
         );
         require(
@@ -81,12 +81,12 @@ contract MixinSettlementProxy is
                 order.takerTokenAddress,
                 takerAddress,
                 order.makerAddress,
-                takerAmountSold
+                takerTokenFilledAmount
             )
         );
         if (order.feeRecipientAddress != address(0)) {
             if (order.makerFee > 0) {
-                makerFeePaid = getPartialAmount(takerAmountSold, order.makerBuyAmount, order.makerFee);
+                makerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
                 require(
                     TRANSFER_PROXY.transferFrom(
                         ZRX_TOKEN,
@@ -97,7 +97,7 @@ contract MixinSettlementProxy is
                 );
             }
             if (order.takerFee > 0) {
-                takerFeePaid = getPartialAmount(takerAmountSold, order.makerBuyAmount, order.takerFee);
+                takerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
                 require(
                     TRANSFER_PROXY.transferFrom(
                         ZRX_TOKEN,
@@ -108,6 +108,6 @@ contract MixinSettlementProxy is
                 );
             }
         }
-        return (makerAmountSold, makerFeePaid, takerFeePaid);
+        return (makerTokenFilledAmount, makerFeePaid, takerFeePaid);
     }
 }

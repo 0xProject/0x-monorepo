@@ -28,8 +28,8 @@ contract LibOrder {
         "address makerTokenAddress",
         "address takerTokenAddress",
         "address feeRecipientAddress",
-        "uint256 makerSellAmount",
-        "uint256 makerBuyAmount",
+        "uint256 makerTokenAmount",
+        "uint256 takerTokenAmount",
         "uint256 makerFee",
         "uint256 takerFee",
         "uint256 expirationTimeSeconds",
@@ -42,8 +42,8 @@ contract LibOrder {
         address makerTokenAddress;
         address takerTokenAddress;
         address feeRecipientAddress;
-        uint256 makerSellAmount;
-        uint256 makerBuyAmount;
+        uint256 makerTokenAmount;
+        uint256 takerTokenAmount;
         uint256 makerFee;
         uint256 takerFee;
         uint256 expirationTimeSeconds;
@@ -68,8 +68,8 @@ contract LibOrder {
                 order.makerTokenAddress,
                 order.takerTokenAddress,
                 order.feeRecipientAddress,
-                order.makerSellAmount,
-                order.makerBuyAmount,
+                order.makerTokenAmount,
+                order.takerTokenAmount,
                 order.makerFee,
                 order.takerFee,
                 order.expirationTimeSeconds,
