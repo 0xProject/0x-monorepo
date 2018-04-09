@@ -501,6 +501,32 @@ describe('Exchange', () => {
             return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
+        it('should throw if makerTokenAmount is 0', async () => {
+            signedOrder = orderFactory.newSignedOrder({
+                makerTokenAmount: new BigNumber(0),
+            });
+
+            return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should throw if takerTokenAmount is 0', async () => {
+            signedOrder = orderFactory.newSignedOrder({
+                takerTokenAmount: new BigNumber(0),
+            });
+
+            return expect(exWrapper.fillOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should throw if takerTokenFillAmount is 0', async () => {
+            signedOrder = orderFactory.newSignedOrder();
+
+            return expect(
+                exWrapper.fillOrderAsync(signedOrder, takerAddress, {
+                    takerTokenFillAmount: new BigNumber(0),
+                }),
+            ).to.be.rejectedWith(constants.REVERT);
+        });
+
         it('should throw if maker balances are too low to fill order', async () => {
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100000), 18),
@@ -579,6 +605,22 @@ describe('Exchange', () => {
 
         it('should throw if not sent by maker', async () => {
             return expect(exWrapper.cancelOrderAsync(signedOrder, takerAddress)).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should throw if makerTokenAmount is 0', async () => {
+            signedOrder = orderFactory.newSignedOrder({
+                makerTokenAmount: new BigNumber(0),
+            });
+
+            return expect(exWrapper.cancelOrderAsync(signedOrder, makerAddress)).to.be.rejectedWith(constants.REVERT);
+        });
+
+        it('should throw if takerTokenAmount is 0', async () => {
+            signedOrder = orderFactory.newSignedOrder({
+                takerTokenAmount: new BigNumber(0),
+            });
+
+            return expect(exWrapper.cancelOrderAsync(signedOrder, makerAddress)).to.be.rejectedWith(constants.REVERT);
         });
 
         it('should be able to cancel a full order', async () => {
