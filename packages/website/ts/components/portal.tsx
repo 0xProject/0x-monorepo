@@ -15,6 +15,7 @@ import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { Footer } from 'ts/components/footer';
 import { PortalMenu } from 'ts/components/portal_menu';
+import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
@@ -155,6 +156,7 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
         const updateShouldBlockchainErrDialogBeOpen = this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen.bind(
             this.props.dispatcher,
         );
+        const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
         const portalStyle: React.CSSProperties = {
             minHeight: '100vh',
             display: 'flex',
@@ -204,10 +206,16 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                                     <div className="py2" style={{ backgroundColor: colors.grey50 }}>
                                         {this.props.blockchainIsLoaded ? (
                                             <Switch>
-                                                {configs.ENVIRONMENT === Environments.DEVELOPMENT && (
+                                                {isDevelopment && (
                                                     <Route
                                                         path={`${WebsitePaths.Portal}/wallet`}
                                                         render={this._renderWallet.bind(this)}
+                                                    />
+                                                )}
+                                                {isDevelopment && (
+                                                    <Route
+                                                        path={`${WebsitePaths.Portal}/relayers`}
+                                                        render={this._renderRelayers.bind(this)}
                                                     />
                                                 )}
                                                 <Route
@@ -309,6 +317,15 @@ export class Portal extends React.Component<PortalAllProps, PortalAllState> {
                         providerType={this.props.providerType}
                         onToggleLedgerDialog={this.onToggleLedgerDialog.bind(this)}
                     />
+                </div>
+            </div>
+        );
+    }
+    private _renderRelayers() {
+        return (
+            <div className="flex flex-center">
+                <div className="mx-auto" style={{ width: 800 }}>
+                    <RelayerIndex networkId={this.props.networkId} />
                 </div>
             </div>
         );

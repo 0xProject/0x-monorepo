@@ -490,4 +490,12 @@ export interface TokenState {
     allowance: BigNumber;
     isLoaded: boolean;
 }
+
+export interface RelayerInfo {
+    headerUrl: string;
+    id: string;
+    name: string;
+    marketShare: number;
+    topTokens: Token[];
+}
 // tslint:disable:max-file-line-count

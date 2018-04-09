@@ -6,6 +6,10 @@
                 "note":
                     "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
                 "pr": 500
+            },
+            {
+                "note": "Add private key subprovider and refactor shared functionality into a base wallet subprovider",
+                "pr": 506
             }
         ]
     },
