@@ -10,7 +10,7 @@ import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Changelog, Changes, SemVerIndex, UpdatedPackage } from './types';
+import { Changelog, Changes, PackageToVersionChange, SemVerIndex, UpdatedPackage } from './types';
 import { utils } from './utils';
 
 const IS_DRY_RUN = process.env.IS_DRY_RUN === 'true';
@@ -23,6 +23,39 @@ const semverNameToIndex: { [semver: string]: number } = {
 };
 
 (async () => {
+    // Fetch public, updated Lerna packages
+    const updatedPublicLernaPackages = await getUpdatedPublicLernaPackagesAsync();
+
+    // Update CHANGELOGs
+    const updatedPublicLernaPackageNames = _.map(updatedPublicLernaPackages, pkg => pkg.package.name);
+    utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicLernaPackageNames.join('\n')}\n`);
+    const packageToVersionChange = await updateChangeLogsAsync(updatedPublicLernaPackages);
+
+    // Push changelog changes to Github
+    if (!IS_DRY_RUN) {
+        await pushChangelogsToGithubAsync();
+    }
+
+    // Call LernaPublish
+    utils.log('Version updates to apply:');
+    _.each(packageToVersionChange, (versionChange: string, packageName: string) => {
+        utils.log(`${packageName} -> ${versionChange}`);
+    });
+    utils.log(`Calling 'lerna publish'...`);
+    await lernaPublishAsync(packageToVersionChange);
+})().catch(err => {
+    utils.log(err);
+    process.exit(1);
+});
+
+async function pushChangelogsToGithubAsync() {
+    await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });
+    await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: constants.monorepoRootPath });
+    await execAsync(`git push`, { cwd: constants.monorepoRootPath });
+    utils.log(`Pushed CHANGELOG updates to Github`);
+}
+
+async function getUpdatedPublicLernaPackagesAsync(): Promise<LernaPackage[]> {
     const updatedPublicPackages = await getPublicLernaUpdatedPackagesAsync();
     const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 
@@ -30,10 +63,11 @@ const semverNameToIndex: { [semver: string]: number } = {
     const updatedPublicLernaPackages = _.filter(allLernaPackages, pkg => {
         return _.includes(updatedPackageNames, pkg.package.name);
     });
-    const updatedPublicLernaPackageNames = _.map(updatedPublicLernaPackages, pkg => pkg.package.name);
-    utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicLernaPackageNames.join('\n')}\n`);
+    return updatedPublicLernaPackages;
+}
 
-    const packageToVersionChange: { [name: string]: string } = {};
+async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<PackageToVersionChange> {
+    const packageToVersionChange: PackageToVersionChange = {};
     for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
@@ -88,23 +122,8 @@ const semverNameToIndex: { [semver: string]: number } = {
         utils.log(`${packageName}: Updated CHANGELOG.md`);
     }
 
-    if (!IS_DRY_RUN) {
-        await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });
-        await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: constants.monorepoRootPath });
-        await execAsync(`git push`, { cwd: constants.monorepoRootPath });
-        utils.log(`Pushed CHANGELOG updates to Github`);
-    }
-
-    utils.log('Version updates to apply:');
-    _.each(packageToVersionChange, (versionChange: string, packageName: string) => {
-        utils.log(`${packageName} -> ${versionChange}`);
-    });
-    utils.log(`Calling 'lerna publish'...`);
-    await lernaPublishAsync(packageToVersionChange);
-})().catch(err => {
-    utils.log(err);
-    process.exit(1);
-});
+    return packageToVersionChange;
+}
 
 async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }) {
     // HACK: Lerna publish does not provide a way to specify multiple package versions via
