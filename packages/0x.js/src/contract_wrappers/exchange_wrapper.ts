@@ -13,35 +13,38 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
+import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
+import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
 import {
-    BlockRange,
-    EventCallback,
-    ExchangeContractErrCodes,
-    ExchangeContractErrs,
-    IndexedFilterValues,
-    MethodOpts,
-    OrderAddresses,
-    OrderCancellationRequest,
-    OrderFillRequest,
-    OrderTransactionOpts,
-    OrderValues,
-    ValidateOrderFillableOpts,
+BlockRange,
+EventCallback,
+ExchangeContractErrCodes,
+ExchangeContractErrs,
+IndexedFilterValues,
+MethodOpts,
+OrderAddresses,
+OrderCancellationRequest,
+OrderFillRequest,
+OrderState,
+OrderTransactionOpts,
+OrderValues,
+ValidateOrderFillableOpts,
 } from '../types';
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 import { ExchangeTransferSimulator } from '../utils/exchange_transfer_simulator';
+import { OrderStateUtils } from '../utils/order_state_utils';
 import { OrderValidationUtils } from '../utils/order_validation_utils';
 import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
 import {
-    ExchangeContract,
-    ExchangeContractEventArgs,
-    ExchangeEvents,
-    LogErrorContractEventArgs,
+ExchangeContract,
+ExchangeContractEventArgs,
+ExchangeEvents,
+LogErrorContractEventArgs,
 } from './generated/exchange';
 import { TokenWrapper } from './token_wrapper';
-
 const SHOULD_VALIDATE_BY_DEFAULT = true;
 
 interface ExchangeContractErrCodesToMsgs {
@@ -872,6 +875,22 @@ export class ExchangeWrapper extends ContractWrapper {
             const errMessage = this._exchangeContractErrCodesToMsg[errCode];
             throw new Error(errMessage);
         }
+    }
+    /**
+     * Gets the latest OrderState of a signedOrder
+     * @param   signedOrder   The signedOrder
+     */
+    public async getOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
+        const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
+            this._tokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(this);
+        const orderStateUtils = new OrderStateUtils(
+            balanceAndProxyAllowanceLazyStore,
+            orderFilledCancelledLazyStore,
+        );
+        return orderStateUtils.getOrderStateAsync(signedOrder);
     }
     /**
      * Returns the ZRX token address used by the exchange contract.
