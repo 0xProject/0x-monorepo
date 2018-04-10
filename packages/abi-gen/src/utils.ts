@@ -1,9 +1,9 @@
-import { ConstructorAbi, DataItem } from '@0xproject/types';
+import { AbiType, ConstructorAbi, DataItem } from '@0xproject/types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 
-import { AbiType, ContractsBackend, ParamKind } from './types';
+import { ContractsBackend, ParamKind } from './types';
 
 export const utils = {
     solTypeToTsType(paramKind: ParamKind, backend: ContractsBackend, solType: string, components?: DataItem[]): string {
