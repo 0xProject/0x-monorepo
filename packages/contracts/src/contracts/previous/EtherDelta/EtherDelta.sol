@@ -1,8 +1,8 @@
 pragma solidity ^0.4.19;
 
-import { SafeMath } from "../../utils/SafeMath/SafeMath.sol";
+import { SafeMath } from "../SafeMath/SafeMath_v1.sol";
 import { AccountLevels } from "./AccountLevels.sol";
-import { Token } from "../../tokens/Token/Token.sol";
+import { Token } from "../Token/Token_v1.sol";
 
 contract EtherDelta is SafeMath {
     address public admin; //the admin address
