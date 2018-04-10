@@ -5,12 +5,12 @@ import HDNode = require('hdkey');
 import * as _ from 'lodash';
 
 import { DerivedHDKey, PartialTxParams, WalletSubproviderErrors } from '../types';
-import { walletUtils } from '../walletUtils';
+import { walletUtils } from '../utils/wallet_utils';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 import { PrivateKeyWalletSubprovider } from './private_key_wallet_subprovider';
 
-const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
+const DEFAULT_DERIVATION_PATH = `44'/60'/0'/0`;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
 const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 
@@ -23,7 +23,6 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     private _addressSearchLimit: number;
     private _derivationPath: string;
     private _hdKey: HDNode;
-
     constructor(
         mnemonic: string,
         derivationPath: string = DEFAULT_DERIVATION_PATH,

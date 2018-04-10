@@ -28,9 +28,12 @@ describe('MnemonicWalletSubprovider', () => {
     });
     describe('direct method calls', () => {
         describe('success cases', () => {
-            it('returns the account', async () => {
+            it('returns the accounts', async () => {
                 const accounts = await subprovider.getAccountsAsync();
+                // tslint:disable-next-line:no-console
+                console.log(accounts);
                 expect(accounts[0]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_0);
+                expect(accounts[1]).to.be.equal(fixtureData.TEST_RPC_ACCOUNT_1);
                 expect(accounts.length).to.be.equal(10);
             });
             it('signs a personal message', async () => {

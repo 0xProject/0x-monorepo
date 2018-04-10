@@ -132,7 +132,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', messageHex],
+                    params: [FAKE_ADDRESS, messageHex],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -149,7 +149,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [messageHex, '0x0000000000000000000000000000000000000000'],
+                    params: [messageHex, FAKE_ADDRESS],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -190,7 +190,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
+                    params: [FAKE_ADDRESS, nonHexMessage],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -205,7 +205,7 @@ describe('LedgerSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
+                    params: [nonHexMessage, FAKE_ADDRESS],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {

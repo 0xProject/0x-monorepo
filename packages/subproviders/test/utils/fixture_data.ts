@@ -1,8 +1,10 @@
 const TEST_RPC_ACCOUNT_0 = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
+const TEST_RPC_ACCOUNT_1 = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb';
 const networkId = 42;
 export const fixtureData = {
     TEST_RPC_ACCOUNT_0,
     TEST_RPC_ACCOUNT_0_ACCOUNT_PRIVATE_KEY: 'F2F48EE19680706196E2E339E5DA3491186E0C4C5030670656B0E0164837257D',
+    TEST_RPC_ACCOUNT_1,
     TEST_RPC_MNEMONIC: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
     TEST_RPC_MNEMONIC_DERIVATION_PATH: `44'/60'/0'/0`,
     PERSONAL_MESSAGE_STRING: 'hello world',

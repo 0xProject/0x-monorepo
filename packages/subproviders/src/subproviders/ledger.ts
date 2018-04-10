@@ -8,6 +8,7 @@ import { Lock } from 'semaphore-async-await';
 
 import {
     Callback,
+    DerivedHDKey,
     LedgerEthereumClient,
     LedgerEthereumClientFactoryAsync,
     LedgerSubproviderConfigs,
@@ -16,6 +17,7 @@ import {
     ResponseWithTxParams,
     WalletSubproviderErrors,
 } from '../types';
+import { walletUtils } from '../utils/wallet_utils';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 
@@ -34,10 +36,11 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     private _connectionLock = new Lock();
     private _networkId: number;
     private _derivationPath: string;
-    private _derivationPathIndex: number;
     private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
+    private _addressSearchLimit: number;
+    private _hardenedKey: boolean = true;
     /**
      * Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
      * TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.
@@ -54,7 +57,11 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             !_.isUndefined(config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation)
                 ? config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation
                 : ASK_FOR_ON_DEVICE_CONFIRMATION;
-        this._derivationPathIndex = 0;
+        this._addressSearchLimit =
+            !_.isUndefined(config.accountFetchingConfigs) &&
+            !_.isUndefined(config.accountFetchingConfigs.numAddressesToReturn)
+                ? config.accountFetchingConfigs.numAddressesToReturn
+                : DEFAULT_NUM_ADDRESSES_TO_FETCH;
     }
     /**
      * Retrieve the set derivation path
@@ -71,15 +78,6 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         this._derivationPath = derivationPath;
     }
     /**
-     * Set the final derivation path index. If a user wishes to sign a message with the
-     * 6th address in a derivation path, before calling `signPersonalMessageAsync`, you must
-     * call this method with pathIndex `6`.
-     * @param pathIndex Desired derivation path index
-     */
-    public setPathIndex(pathIndex: number) {
-        this._derivationPathIndex = pathIndex;
-    }
-    /**
      * Retrieve a users Ledger accounts. The accounts are derived from the derivationPath,
      * master public key and chainCode. Because of this, you can request as many accounts
      * as you wish and it only requires a single request to the Ledger device. This method
@@ -89,34 +87,15 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * @return An array of accounts
      */
     public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
-        this._ledgerClientIfExists = await this._createLedgerClientAsync();
-
-        let ledgerResponse;
-        try {
-            ledgerResponse = await this._ledgerClientIfExists.getAddress(
-                this._derivationPath,
-                this._shouldAlwaysAskForConfirmation,
-                SHOULD_GET_CHAIN_CODE,
-            );
-        } finally {
-            await this._destroyLedgerClientAsync();
-        }
-
-        const hdKey = new HDNode();
-        hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
-        hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
-
-        const accounts: string[] = [];
-        for (let i = 0; i < numberOfAccounts; i++) {
-            const derivedHDNode = hdKey.derive(`m/${i + this._derivationPathIndex}`);
-            const derivedPublicKey = derivedHDNode.publicKey;
-            const shouldSanitizePublicKey = true;
-            const ethereumAddressUnprefixed = ethUtil
-                .publicToAddress(derivedPublicKey, shouldSanitizePublicKey)
-                .toString('hex');
-            const ethereumAddressPrefixed = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
-            accounts.push(ethereumAddressPrefixed.toLowerCase());
-        }
+        const initialHDKey = await this._initialHDKeyAsync();
+        const derivedKeys = walletUtils._calculateDerivedHDKeys(
+            initialHDKey,
+            this._derivationPath,
+            numberOfAccounts,
+            0,
+            true,
+        );
+        const accounts = _.map(derivedKeys, 'address');
         return accounts;
     }
     /**
@@ -129,6 +108,11 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         LedgerSubprovider._validateTxParams(txParams);
+        const initialHDKey = await this._initialHDKeyAsync();
+        const derivedKey = _.isUndefined(txParams.from)
+            ? walletUtils._firstDerivedKey(initialHDKey, this._derivationPath, this._hardenedKey)
+            : this._findDerivedKeyByPublicAddress(initialHDKey, txParams.from);
+
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
 
         const tx = new EthereumTx(txParams);
@@ -140,7 +124,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
 
         const txHex = tx.serialize().toString('hex');
         try {
-            const derivationPath = this._getDerivationPath();
+            const derivationPath = `${derivedKey.derivationPath}/${derivedKey.derivationIndex}`;
             const result = await this._ledgerClientIfExists.signTransaction(derivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
@@ -165,22 +149,28 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     }
     /**
      * Sign a personal Ethereum signed message. The signing address will be the one
-     * retrieved given a derivationPath and pathIndex set on the subprovider.
+     * either the provided address or the first address on the ledger device.
      * The Ledger adds the Ethereum signed message prefix on-device.  If you've added
      * the LedgerSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
      * @param data Message to sign
+     * @param address Address to sign with
      * @return Signature hex string (order: rsv)
      */
-    public async signPersonalMessageAsync(data: string): Promise<string> {
+    public async signPersonalMessageAsync(data: string, address?: string): Promise<string> {
         if (_.isUndefined(data)) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
         assert.isHexString('data', data);
+        const initialHDKey = await this._initialHDKeyAsync();
+        const derivedKey = _.isUndefined(address)
+            ? walletUtils._firstDerivedKey(initialHDKey, this._derivationPath, this._hardenedKey)
+            : this._findDerivedKeyByPublicAddress(initialHDKey, address);
+
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
         try {
-            const derivationPath = this._getDerivationPath();
+            const derivationPath = `${derivedKey.derivationPath}/${derivedKey.derivationIndex}`;
             const result = await this._ledgerClientIfExists.signPersonalMessage(
                 derivationPath,
                 ethUtil.stripHexPrefix(data),
@@ -197,10 +187,6 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             await this._destroyLedgerClientAsync();
             throw err;
         }
-    }
-    private _getDerivationPath() {
-        const derivationPath = `${this.getPath()}/${this._derivationPathIndex}`;
-        return derivationPath;
     }
     private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
         await this._connectionLock.acquire();
@@ -221,5 +207,36 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         await this._ledgerClientIfExists.transport.close();
         this._ledgerClientIfExists = undefined;
         this._connectionLock.release();
+    }
+    private async _initialHDKeyAsync(): Promise<HDNode> {
+        this._ledgerClientIfExists = await this._createLedgerClientAsync();
+
+        let ledgerResponse;
+        try {
+            ledgerResponse = await this._ledgerClientIfExists.getAddress(
+                this._derivationPath,
+                this._shouldAlwaysAskForConfirmation,
+                SHOULD_GET_CHAIN_CODE,
+            );
+        } finally {
+            await this._destroyLedgerClientAsync();
+        }
+        const hdKey = new HDNode();
+        hdKey.publicKey = new Buffer(ledgerResponse.publicKey, 'hex');
+        hdKey.chainCode = new Buffer(ledgerResponse.chainCode, 'hex');
+        return hdKey;
+    }
+    private _findDerivedKeyByPublicAddress(initalHDKey: HDNode, address: string): DerivedHDKey {
+        const matchedDerivedKey = walletUtils._findDerivedKeyByAddress(
+            address,
+            initalHDKey,
+            this._derivationPath,
+            this._addressSearchLimit,
+            this._hardenedKey,
+        );
+        if (_.isUndefined(matchedDerivedKey)) {
+            throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
+        }
+        return matchedDerivedKey;
     }
 }
