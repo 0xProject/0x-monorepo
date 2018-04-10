@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v0.36.0 - TBD
-
-    * Add `zeroEx.exchange.getOrderStateAsync` to allow obtaining current OrderState for a signedOrder
-
 ## v0.35.0 - _April 2, 2018_
 
     * Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3_wrapper' `Web3WrapperErrors.TransactionMiningTimeout` (#485)

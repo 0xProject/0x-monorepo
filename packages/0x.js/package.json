@@ -2,38 +2,43 @@
     "name": "0x.js",
     "version": "0.35.0",
     "description": "A javascript library for interacting with the 0x protocol",
-    "keywords": ["0x.js", "0xproject", "ethereum", "tokens", "exchange"],
+    "keywords": [
+        "0x.js",
+        "0xproject",
+        "ethereum",
+        "tokens",
+        "exchange"
+    ],
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build:watch": "tsc -w",
         "prebuild": "run-s clean generate_contract_wrappers",
         "build": "run-p build:umd:prod build:commonjs; exit 0;",
-        "generate_contract_wrappers":
-            "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test:circleci": "run-s test:coverage",
         "test": "run-s clean test:commonjs",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "update_contracts":
-            "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
+        "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
         "clean": "shx rm -rf _bundles lib test_temp scripts",
         "build:umd:prod": "NODE_ENV=production webpack",
-        "build:commonjs":
-            "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test:commonjs": "run-s build:commonjs run_mocha",
         "run_mocha": "mocha lib/test/**/*_test.js --timeout 10000 --bail --exit",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
         "docs:stage": "yarn build && node ./scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
-        "upload_docs_json":
-            "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
         "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
         "postpublish": {
-            "assets": ["packages/0x.js/_bundles/index.js", "packages/0x.js/_bundles/index.min.js"],
+            "assets": [
+                "packages/0x.js/_bundles/index.js",
+                "packages/0x.js/_bundles/index.min.js"
+            ],
             "docPublishConfigs": {
                 "extraFileIncludes": [
                     "../types/src/index.ts",

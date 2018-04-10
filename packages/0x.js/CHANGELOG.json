@@ -5,6 +5,10 @@
             {
                 "note": "Moved Web3.Provider to `@0xproject/types:Provider`",
                 "pr": 501
+            },
+            {
+                "note": "Add `zeroEx.exchange.getOrderStateAsync` to allow obtaining current OrderState for a signedOrder",
+                "pr": 510
             }
         ]
     },

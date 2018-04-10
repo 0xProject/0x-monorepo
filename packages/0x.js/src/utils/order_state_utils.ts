@@ -4,16 +4,16 @@ import * as _ from 'lodash';
 
 import { ZeroEx } from '../0x';
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
+import { BalanceAndAllowanceFetcher } from '../fetchers/balance_and_allowance_fetcher';
+import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
 import { RemainingFillableCalculator } from '../order_watcher/remaining_fillable_calculator';
-import { BalanceAndProxyAllowanceLazyStore } from '../stores/balance_proxy_allowance_lazy_store';
-import { OrderFilledCancelledLazyStore } from '../stores/order_filled_cancelled_lazy_store';
 import { ExchangeContractErrs, OrderRelevantState, OrderState, OrderStateInvalid, OrderStateValid } from '../types';
 
 const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
 
 export class OrderStateUtils {
-    private _balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore;
-    private _orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore;
+    private _balanceAndAllowanceFetcher: BalanceAndAllowanceFetcher;
+    private _orderFilledCancelledFetcher: OrderFilledCancelledFetcher;
     private static _validateIfOrderIsValid(signedOrder: SignedOrder, orderRelevantState: OrderRelevantState): void {
         const unavailableTakerTokenAmount = orderRelevantState.cancelledTakerTokenAmount.add(
             orderRelevantState.filledTakerTokenAmount,
@@ -49,11 +49,11 @@ export class OrderStateUtils {
         }
     }
     constructor(
-        balanceAndProxyAllowanceLazyStore: BalanceAndProxyAllowanceLazyStore,
-        orderFilledCancelledLazyStore: OrderFilledCancelledLazyStore,
+        balanceAndProxyAllowanceFetcher: BalanceAndAllowanceFetcher,
+        orderFilledCancelledFetcher: OrderFilledCancelledFetcher,
     ) {
-        this._balanceAndProxyAllowanceLazyStore = balanceAndProxyAllowanceLazyStore;
-        this._orderFilledCancelledLazyStore = orderFilledCancelledLazyStore;
+        this._balanceAndAllowanceFetcher = balanceAndProxyAllowanceFetcher;
+        this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
     }
     public async getOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
         const orderRelevantState = await this.getOrderRelevantStateAsync(signedOrder);
@@ -80,27 +80,27 @@ export class OrderStateUtils {
         // If we pass it from the instantiator - there is no opportunity to get it there
         // because JS doesn't support async constructors.
         // Moreover - it's cached under the hood so it's equivalent to an async constructor.
-        const exchange = (this._orderFilledCancelledLazyStore as any)._exchange as ExchangeWrapper;
+        const exchange = (this._orderFilledCancelledFetcher as any)._exchange as ExchangeWrapper;
         const zrxTokenAddress = exchange.getZRXTokenAddress();
         const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        const makerBalance = await this._balanceAndProxyAllowanceLazyStore.getBalanceAsync(
+        const makerBalance = await this._balanceAndAllowanceFetcher.getBalanceAsync(
             signedOrder.makerTokenAddress,
             signedOrder.maker,
         );
-        const makerProxyAllowance = await this._balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
+        const makerProxyAllowance = await this._balanceAndAllowanceFetcher.getProxyAllowanceAsync(
             signedOrder.makerTokenAddress,
             signedOrder.maker,
         );
-        const makerFeeBalance = await this._balanceAndProxyAllowanceLazyStore.getBalanceAsync(
+        const makerFeeBalance = await this._balanceAndAllowanceFetcher.getBalanceAsync(
             zrxTokenAddress,
             signedOrder.maker,
         );
-        const makerFeeProxyAllowance = await this._balanceAndProxyAllowanceLazyStore.getProxyAllowanceAsync(
+        const makerFeeProxyAllowance = await this._balanceAndAllowanceFetcher.getProxyAllowanceAsync(
             zrxTokenAddress,
             signedOrder.maker,
         );
-        const filledTakerTokenAmount = await this._orderFilledCancelledLazyStore.getFilledTakerAmountAsync(orderHash);
-        const cancelledTakerTokenAmount = await this._orderFilledCancelledLazyStore.getCancelledTakerAmountAsync(
+        const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
+        const cancelledTakerTokenAmount = await this._orderFilledCancelledFetcher.getCancelledTakerAmountAsync(
             orderHash,
         );
         const unavailableTakerTokenAmount = await exchange.getUnavailableTakerAmountAsync(orderHash);
