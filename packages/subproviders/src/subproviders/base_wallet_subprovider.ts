@@ -21,7 +21,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
 
     public abstract async getAccountsAsync(): Promise<string[]>;
     public abstract async signTransactionAsync(txParams: PartialTxParams): Promise<string>;
-    public abstract async signPersonalMessageAsync(data: string): Promise<string>;
+    public abstract async signPersonalMessageAsync(data: string, address?: string): Promise<string>;
 
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -85,8 +85,9 @@ export abstract class BaseWalletSubprovider extends Subprovider {
             case 'eth_sign':
             case 'personal_sign':
                 const data = payload.method === 'eth_sign' ? payload.params[1] : payload.params[0];
+                const address = payload.method === 'eth_sign' ? payload.params[0] : payload.params[1];
                 try {
-                    const ecSignatureHex = await this.signPersonalMessageAsync(data);
+                    const ecSignatureHex = await this.signPersonalMessageAsync(data, address);
                     end(null, ecSignatureHex);
                 } catch (err) {
                     end(err);

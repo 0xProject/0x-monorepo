@@ -4,14 +4,15 @@ import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
 import * as _ from 'lodash';
 
-import { MnemonicSubproviderErrors, PartialTxParams } from '../types';
+import { DerivedHDKey, PartialTxParams, WalletSubproviderErrors } from '../types';
+import { walletUtils } from '../walletUtils';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 import { PrivateKeyWalletSubprovider } from './private_key_wallet_subprovider';
 
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
-const DEFAULT_ADDRESS_SEARCH_LIMIT = 100;
+const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -19,15 +20,22 @@ const DEFAULT_ADDRESS_SEARCH_LIMIT = 100;
  * all requests with accounts derived from the supplied mnemonic.
  */
 export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
+    private _addressSearchLimit: number;
     private _derivationPath: string;
     private _hdKey: HDNode;
-    private _derivationPathIndex: number;
-    constructor(mnemonic: string, derivationPath: string = DEFAULT_DERIVATION_PATH) {
+
+    constructor(
+        mnemonic: string,
+        derivationPath: string = DEFAULT_DERIVATION_PATH,
+        addressSearchLimit: number = DEFAULT_ADDRESS_SEARCH_LIMIT,
+    ) {
         assert.isString('mnemonic', mnemonic);
+        assert.isString('derivationPath', derivationPath);
+        assert.isNumber('addressSearchLimit', addressSearchLimit);
         super();
         this._hdKey = HDNode.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
-        this._derivationPathIndex = 0;
         this._derivationPath = derivationPath;
+        this._addressSearchLimit = addressSearchLimit;
     }
     /**
      * Retrieve the set derivation path
@@ -44,32 +52,14 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         this._derivationPath = derivationPath;
     }
     /**
-     * Set the final derivation path index. If a user wishes to sign a message with the
-     * 6th address in a derivation path, before calling `signPersonalMessageAsync`, you must
-     * call this method with pathIndex `6`.
-     * @param pathIndex Desired derivation path index
-     */
-    public setPathIndex(pathIndex: number) {
-        this._derivationPathIndex = pathIndex;
-    }
-    /**
-     * Retrieve the account associated with the supplied private key.
+     * Retrieve the accounts associated with the mnemonic.
      * This method is implicitly called when issuing a `eth_accounts` JSON RPC request
      * via your providerEngine instance.
      * @return An array of accounts
      */
     public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
-        const accounts: string[] = [];
-        for (let i = 0; i < numberOfAccounts; i++) {
-            const derivedHDNode = this._hdKey.derive(`m/${this._derivationPath}/${i + this._derivationPathIndex}`);
-            const derivedPublicKey = derivedHDNode.publicKey;
-            const shouldSanitizePublicKey = true;
-            const ethereumAddressUnprefixed = ethUtil
-                .publicToAddress(derivedPublicKey, shouldSanitizePublicKey)
-                .toString('hex');
-            const ethereumAddressPrefixed = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
-            accounts.push(ethereumAddressPrefixed.toLowerCase());
-        }
+        const derivedKeys = walletUtils._calculateDerivedHDKeys(this._hdKey, this._derivationPath, numberOfAccounts);
+        const accounts = _.map(derivedKeys, 'address');
         return accounts;
     }
 
@@ -82,9 +72,10 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        const accounts = await this.getAccountsAsync();
-        const hdKey = this._findHDKeyByPublicAddress(txParams.from || accounts[0]);
-        const privateKeyWallet = new PrivateKeyWalletSubprovider(hdKey.privateKey.toString('hex'));
+        const derivedKey = _.isUndefined(txParams.from)
+            ? walletUtils._firstDerivedKey(this._hdKey, this._derivationPath)
+            : this._findDerivedKeyByPublicAddress(txParams.from);
+        const privateKeyWallet = new PrivateKeyWalletSubprovider(derivedKey.hdKey.privateKey.toString('hex'));
         const signedTx = privateKeyWallet.signTransactionAsync(txParams);
         return signedTx;
     }
@@ -95,29 +86,27 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
      * @param data Message to sign
+     * @param address Address to sign with
      * @return Signature hex string (order: rsv)
      */
-    public async signPersonalMessageAsync(data: string): Promise<string> {
-        const accounts = await this.getAccountsAsync();
-        const hdKey = this._findHDKeyByPublicAddress(accounts[0]);
-        const privateKeyWallet = new PrivateKeyWalletSubprovider(hdKey.privateKey.toString('hex'));
-        const sig = await privateKeyWallet.signPersonalMessageAsync(data);
+    public async signPersonalMessageAsync(data: string, address?: string): Promise<string> {
+        const derivedKey = _.isUndefined(address)
+            ? walletUtils._firstDerivedKey(this._hdKey, this._derivationPath)
+            : this._findDerivedKeyByPublicAddress(address);
+        const privateKeyWallet = new PrivateKeyWalletSubprovider(derivedKey.hdKey.privateKey.toString('hex'));
+        const sig = await privateKeyWallet.signPersonalMessageAsync(data, derivedKey.address);
         return sig;
     }
-
-    private _findHDKeyByPublicAddress(address: string, searchLimit: number = DEFAULT_ADDRESS_SEARCH_LIMIT): HDNode {
-        for (let i = 0; i < searchLimit; i++) {
-            const derivedHDNode = this._hdKey.derive(`m/${this._derivationPath}/${i + this._derivationPathIndex}`);
-            const derivedPublicKey = derivedHDNode.publicKey;
-            const shouldSanitizePublicKey = true;
-            const ethereumAddressUnprefixed = ethUtil
-                .publicToAddress(derivedPublicKey, shouldSanitizePublicKey)
-                .toString('hex');
-            const ethereumAddressPrefixed = ethUtil.addHexPrefix(ethereumAddressUnprefixed);
-            if (ethereumAddressPrefixed === address) {
-                return derivedHDNode;
-            }
+    private _findDerivedKeyByPublicAddress(address: string): DerivedHDKey {
+        const matchedDerivedKey = walletUtils._findDerivedKeyByAddress(
+            address,
+            this._hdKey,
+            this._derivationPath,
+            this._addressSearchLimit,
+        );
+        if (_.isUndefined(matchedDerivedKey)) {
+            throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
-        throw new Error(MnemonicSubproviderErrors.AddressSearchExhausted);
+        return matchedDerivedKey;
     }
 }

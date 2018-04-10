@@ -9,7 +9,6 @@ import {
     DoneCallback,
     LedgerCommunicationClient,
     LedgerSubproviderErrors,
-    MnemonicSubproviderErrors,
     WalletSubproviderErrors,
 } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
@@ -48,7 +47,7 @@ describe('MnemonicWalletSubprovider', () => {
             it('throws an error if account cannot be found', async () => {
                 const txData = { ...fixtureData.TX_DATA, from: '0x0' };
                 return expect(subprovider.signTransactionAsync(txData)).to.be.rejectedWith(
-                    MnemonicSubproviderErrors.AddressSearchExhausted,
+                    WalletSubproviderErrors.AddressNotFound,
                 );
             });
         });
@@ -83,7 +82,7 @@ describe('MnemonicWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', messageHex],
+                    params: [fixtureData.TEST_RPC_ACCOUNT_0, messageHex],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -98,7 +97,7 @@ describe('MnemonicWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [messageHex, '0x0000000000000000000000000000000000000000'],
+                    params: [messageHex, fixtureData.TEST_RPC_ACCOUNT_0],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -115,7 +114,7 @@ describe('MnemonicWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'eth_sign',
-                    params: ['0x0000000000000000000000000000000000000000', nonHexMessage],
+                    params: [fixtureData.TEST_RPC_ACCOUNT_0, nonHexMessage],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
@@ -130,12 +129,27 @@ describe('MnemonicWalletSubprovider', () => {
                 const payload = {
                     jsonrpc: '2.0',
                     method: 'personal_sign',
-                    params: [nonHexMessage, '0x0000000000000000000000000000000000000000'],
+                    params: [nonHexMessage, fixtureData.TEST_RPC_ACCOUNT_0],
                     id: 1,
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
+            it('should throw if `address` param not found when calling personal_sign', (done: DoneCallback) => {
+                const nonHexMessage = 'hello world';
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'personal_sign',
+                    params: [nonHexMessage, '0x0'],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                    expect(err).to.not.be.a('null');
+                    expect(err.message).to.be.equal(`${WalletSubproviderErrors.AddressNotFound}: 0x0`);
                     done();
                 });
                 provider.sendAsync(payload, callback);

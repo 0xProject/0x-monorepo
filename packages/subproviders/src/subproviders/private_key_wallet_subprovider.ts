@@ -52,11 +52,15 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
      * @param data Message to sign
+     * @param address Address to sign with
      * @return Signature hex string (order: rsv)
      */
-    public async signPersonalMessageAsync(dataIfExists: string): Promise<string> {
+    public async signPersonalMessageAsync(dataIfExists: string, address?: string): Promise<string> {
         if (_.isUndefined(dataIfExists)) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
+        }
+        if (!_.isUndefined(address) && address !== this._address) {
+            throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
         assert.isHexString('data', dataIfExists);
         const dataBuff = ethUtil.toBuffer(dataIfExists);

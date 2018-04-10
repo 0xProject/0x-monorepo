@@ -1,4 +1,5 @@
 import { ECSignature, JSONRPCRequestPayload } from '@0xproject/types';
+import HDNode = require('hdkey');
 import * as _ from 'lodash';
 
 export interface LedgerCommunicationClient {
@@ -95,10 +96,8 @@ export interface ResponseWithTxParams {
     tx: PartialTxParams;
 }
 
-export enum MnemonicSubproviderErrors {
-    AddressSearchExhausted = 'ADDRESS_SEARCH_EXHAUSTED',
-}
 export enum WalletSubproviderErrors {
+    AddressNotFound = 'ADDRESS_NOT_FOUND',
     DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
     SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
 }
@@ -111,6 +110,11 @@ export enum LedgerSubproviderErrors {
 export enum NonceSubproviderErrors {
     EmptyParametersFound = 'EMPTY_PARAMETERS_FOUND',
     CannotDetermineAddressFromPayload = 'CANNOT_DETERMINE_ADDRESS_FROM_PAYLOAD',
+}
+export interface DerivedHDKey {
+    address: string;
+    derivationPath: string;
+    hdKey: HDNode;
 }
 
 export type ErrorCallback = (err: Error | null, data?: any) => void;
