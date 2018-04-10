@@ -15,6 +15,11 @@ import { BaseWalletSubprovider } from './base_wallet_subprovider';
 export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
     private _address: string;
     private _privateKeyBuffer: Buffer;
+    /**
+     * Instantiates a PrivateKeyWalletSubprovider.
+     * @param privateKey The private key of the ethereum address
+     * @return PrivateKeyWalletSubprovider instance
+     */
     constructor(privateKey: string) {
         assert.isString('privateKey', privateKey);
         super();
@@ -40,6 +45,9 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         PrivateKeyWalletSubprovider._validateTxParams(txParams);
+        if (!_.isUndefined(txParams.from) && txParams.from !== this._address) {
+            throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${txParams.from}`);
+        }
         const tx = new EthereumTx(txParams);
         tx.sign(this._privateKeyBuffer);
         const rawTx = `0x${tx.serialize().toString('hex')}`;
@@ -47,8 +55,8 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
     }
     /**
      * Sign a personal Ethereum signed message. The signing address will be
-     * calculated from the private key.
-     * If you've added the PKWalletSubprovider to your app's provider, you can simply send an `eth_sign`
+     * calculated from the private key, if an address is provided it must match the address calculated from the private key.
+     * If you've added this Subprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
      * @param data Message to sign

@@ -23,6 +23,14 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     private _addressSearchLimit: number;
     private _derivationPath: string;
     private _hdKey: HDNode;
+    /**
+     * Instantiates a MnemonicWalletSubprovider. Defaults to derivationPath set to `44'/60'/0'/0`.
+     * This is the default in TestRPC/Ganache, this can be overridden if desired.
+     * @param mnemonic The mnemonic seed
+     * @param derivationPath The derivation path, defaults to `44'/60'/0'/0`
+     * @param addressSearchLimit The limit on address search attempts before raising `WalletSubproviderErrors.AddressNotFound`
+     * @return MnemonicWalletSubprovider instance
+     */
     constructor(
         mnemonic: string,
         derivationPath: string = DEFAULT_DERIVATION_PATH,
@@ -32,7 +40,8 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         assert.isString('derivationPath', derivationPath);
         assert.isNumber('addressSearchLimit', addressSearchLimit);
         super();
-        this._hdKey = HDNode.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
+        const seed = bip39.mnemonicToSeed(mnemonic);
+        this._hdKey = HDNode.fromMasterSeed(seed);
         this._derivationPath = derivationPath;
         this._addressSearchLimit = addressSearchLimit;
     }
@@ -54,6 +63,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * Retrieve the accounts associated with the mnemonic.
      * This method is implicitly called when issuing a `eth_accounts` JSON RPC request
      * via your providerEngine instance.
+     * @param numberOfAccounts Number of accounts to retrieve (default: 10)
      * @return An array of accounts
      */
     public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
@@ -79,9 +89,9 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         return signedTx;
     }
     /**
-     * Sign a personal Ethereum signed message. The signing address will be
-     * derived from the set path.
-     * If you've added the PKWalletSubprovider to your app's provider, you can simply send an `eth_sign`
+     * Sign a personal Ethereum signed message. The signing address used will be
+     * address provided or the first address derived from the set path.
+     * If you've added the MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
      * @param data Message to sign
