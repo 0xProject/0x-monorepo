@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from '@0xproject/types';
-import { abiUtils, logUtils } from '@0xproject/utils';
+import { logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import { sync as globSync } from 'glob';
@@ -12,7 +12,7 @@ import * as yargs from 'yargs';
 
 import toSnakeCase = require('to-snake-case');
 
-import { ContextData, ContractsBackend, Method, ParamKind } from './types';
+import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
 
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
@@ -83,6 +83,7 @@ function writeOutputFile(name: string, renderedTsCode: string): void {
 
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
+
 if (args.partials) {
     registerPartials(args.partials);
 }
@@ -125,12 +126,11 @@ for (const abiFileName of abiFileNames) {
     }
 
     const methodAbis = ABI.filter((abi: AbiDefinition) => abi.type === ABI_TYPE_METHOD) as MethodAbi[];
-    const sanitizedMethodAbis = abiUtils.renameOverloadedMethods(methodAbis) as MethodAbi[];
-    const methodsData = _.map(methodAbis, (methodAbi, methodAbiIndex: number) => {
-        _.forEach(methodAbi.inputs, (input, inputIndex: number) => {
+    const methodsData = _.map(methodAbis, methodAbi => {
+        _.map(methodAbi.inputs, (input, i: number) => {
             if (_.isEmpty(input.name)) {
                 // Auto-generated getters don't have parameter names
-                input.name = `index_${inputIndex}`;
+                input.name = `index_${i}`;
             }
         });
         // This will make templates simpler
@@ -138,8 +138,6 @@ for (const abiFileName of abiFileNames) {
             ...methodAbi,
             singleReturnValue: methodAbi.outputs.length === 1,
             hasReturnValue: methodAbi.outputs.length !== 0,
-            tsName: sanitizedMethodAbis[methodAbiIndex].name,
-            functionSignature: abiUtils.getFunctionSignature(methodAbi),
         };
         return methodData;
     });
