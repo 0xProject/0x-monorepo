@@ -7,25 +7,21 @@ import { DerivedHDKey, WalletSubproviderErrors } from '../types';
 const DEFAULT_ADDRESS_SEARCH_OFFSET = 0;
 const BATCH_SIZE = 10;
 
-// Derivation Paths
-// BIP44 m / purpose' / coin_type' / account' / change / address_index
-// m/44'/60'/0'/0
-// m/44'/60'/0'/0/0
-// m/44'/60'/0'/0/{account_index} - testrpc
-// m/44'/60'/0'  - ledger
-
 export const walletUtils = {
     _calculateDerivedHDKeys(
         initialHDKey: HDNode,
         derivationPath: string,
         searchLimit: number,
         offset: number = DEFAULT_ADDRESS_SEARCH_OFFSET,
-        hardened: boolean = false,
+        isChildKey: boolean = false,
     ): DerivedHDKey[] {
         const derivedKeys: DerivedHDKey[] = [];
         _.times(searchLimit, i => {
             const derivationIndex = offset + i;
-            const path = hardened ? `m/${derivationIndex}` : `m/${derivationPath}/${derivationIndex}`;
+            // Normally we need to set the full derivation path to walk the tree from the root
+            // as the initial key is at the root.
+            // But with ledger the initial key is a child so we walk the tree relative to that child
+            const path = isChildKey ? `m/${derivationIndex}` : `m/${derivationPath}/${derivationIndex}`;
             const hdKey = initialHDKey.derive(path);
             const derivedPublicKey = hdKey.publicKey;
             const shouldSanitizePublicKey = true;
@@ -49,7 +45,7 @@ export const walletUtils = {
         initialHDKey: HDNode,
         derivationPath: string,
         searchLimit: number,
-        hardened: boolean = false,
+        isChild: boolean = false,
     ): DerivedHDKey | undefined {
         let matchedKey: DerivedHDKey | undefined;
         for (let index = 0; index < searchLimit; index = index + BATCH_SIZE) {
@@ -58,7 +54,7 @@ export const walletUtils = {
                 derivationPath,
                 BATCH_SIZE,
                 index,
-                hardened,
+                isChild,
             );
             matchedKey = _.find(derivedKeys, derivedKey => derivedKey.address === address);
             if (matchedKey) {
@@ -68,8 +64,8 @@ export const walletUtils = {
         return matchedKey;
     },
 
-    _firstDerivedKey(initialHDKey: HDNode, derivationPath: string, hardened: boolean = false): DerivedHDKey {
-        const derivedKeys = walletUtils._calculateDerivedHDKeys(initialHDKey, derivationPath, 1, 0, hardened);
+    _firstDerivedKey(initialHDKey: HDNode, derivationPath: string, isChild: boolean = false): DerivedHDKey {
+        const derivedKeys = walletUtils._calculateDerivedHDKeys(initialHDKey, derivationPath, 1, 0, isChild);
         const firstDerivedKey = derivedKeys[0];
         return firstDerivedKey;
     },

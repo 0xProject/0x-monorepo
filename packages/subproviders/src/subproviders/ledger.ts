@@ -25,6 +25,7 @@ const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
 const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = true;
+const IS_CHILD_KEY = true;
 
 /**
  * Subprovider for interfacing with a user's [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s).
@@ -40,7 +41,6 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
     private _addressSearchLimit: number;
-    private _hardenedKey: boolean = true;
     /**
      * Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
      * TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.
@@ -110,7 +110,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         LedgerSubprovider._validateTxParams(txParams);
         const initialHDKey = await this._initialHDKeyAsync();
         const derivedKey = _.isUndefined(txParams.from)
-            ? walletUtils._firstDerivedKey(initialHDKey, this._derivationPath, this._hardenedKey)
+            ? walletUtils._firstDerivedKey(initialHDKey, this._derivationPath, IS_CHILD_KEY)
             : this._findDerivedKeyByPublicAddress(initialHDKey, txParams.from);
 
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
@@ -165,7 +165,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         assert.isHexString('data', data);
         const initialHDKey = await this._initialHDKeyAsync();
         const derivedKey = _.isUndefined(address)
-            ? walletUtils._firstDerivedKey(initialHDKey, this._derivationPath, this._hardenedKey)
+            ? walletUtils._firstDerivedKey(initialHDKey, this._derivationPath, IS_CHILD_KEY)
             : this._findDerivedKeyByPublicAddress(initialHDKey, address);
 
         this._ledgerClientIfExists = await this._createLedgerClientAsync();
@@ -232,7 +232,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             initalHDKey,
             this._derivationPath,
             this._addressSearchLimit,
-            this._hardenedKey,
+            IS_CHILD_KEY,
         );
         if (_.isUndefined(matchedDerivedKey)) {
             throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
