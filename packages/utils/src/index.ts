@@ -5,4 +5,3 @@ export { intervalUtils } from './interval_utils';
 export { BigNumber } from './configured_bignumber';
 export { AbiDecoder } from './abi_decoder';
 export { logUtils } from './log_utils';
-export { abiUtils } from './abi_utils';

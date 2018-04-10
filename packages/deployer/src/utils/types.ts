@@ -18,11 +18,6 @@ export interface ContractNetworks {
     [key: number]: ContractNetworkData;
 }
 
-export interface ContractDirectory {
-    path: string;
-    namespace: string;
-}
-
 export interface ContractNetworkData {
     solc_version: string;
     optimizer_enabled: boolean;
@@ -45,7 +40,7 @@ export interface SolcErrors {
 
 export interface CliOptions extends yargs.Arguments {
     artifactsDir: string;
-    contractDirs: string;
+    contractsDir: string;
     jsonrpcUrl: string;
     networkId: number;
     shouldOptimize: boolean;
@@ -56,7 +51,7 @@ export interface CliOptions extends yargs.Arguments {
 }
 
 export interface CompilerOptions {
-    contractDirs: Set<ContractDirectory>;
+    contractsDir: string;
     networkId: number;
     optimizerEnabled: boolean;
     artifactsDir: string;
@@ -83,11 +78,7 @@ export interface ContractSources {
     [key: string]: string;
 }
 
-export interface ContractIdToSourceFileId {
-    [key: string]: string;
-}
-
-export interface ContractSourceDataByFileId {
+export interface ContractSourceData {
     [key: string]: ContractSpecificSourceData;
 }
 
@@ -105,10 +96,6 @@ export interface Token {
     decimals: number;
     ipfsHash: string;
     swarmHash: string;
-}
-
-export interface FunctionNameToSeenCount {
-    [key: string]: number;
 }
 
 export type DoneCallback = (err?: Error) => void;

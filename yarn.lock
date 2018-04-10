@@ -6,41 +6,6 @@
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
 
-"@0xproject/dev-utils@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@0xproject/dev-utils/-/dev-utils-0.2.1.tgz#a54465376fd7c8cf58781b02b1790d74fb51e91b"
-  dependencies:
-    "@0xproject/subproviders" "^0.7.0"
-    "@0xproject/types" "^0.3.1"
-    "@0xproject/utils" "^0.4.1"
-    ethereumjs-util "^5.1.2"
-    lodash "^4.17.4"
-    request-promise-native "^1.0.5"
-    web3 "^0.20.0"
-    web3-provider-engine "^13.0.1"
-
-"@0xproject/subproviders@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@0xproject/subproviders/-/subproviders-0.7.0.tgz#ce3379a85649773e5c08f5fc3239e8ed07f13361"
-  dependencies:
-    "@0xproject/assert" "^0.2.0"
-    "@0xproject/types" "^0.3.1"
-    "@0xproject/utils" "^0.4.1"
-    "@ledgerhq/hw-app-eth" "^4.3.0"
-    "@ledgerhq/hw-transport-u2f" "^4.3.0"
-    bn.js "^4.11.8"
-    es6-promisify "^5.0.0"
-    ethereumjs-tx "^1.3.3"
-    ethereumjs-util "^5.1.1"
-    hdkey "^0.7.1"
-    lodash "^4.17.4"
-    semaphore-async-await "^1.5.1"
-    web3 "^0.20.0"
-    web3-provider-engine "^13.0.1"
-    web3-typescript-typings "^0.10.0"
-  optionalDependencies:
-    "@ledgerhq/hw-transport-node-hid" "^4.3.0"
-
 "@0xproject/tslint-config@0.4.13":
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/@0xproject/tslint-config/-/tslint-config-0.4.13.tgz#98c71c5ae5e80315a23eda0134cc9f6f4438cac2"
@@ -49,40 +14,6 @@
     tslint "5.8.0"
     tslint-eslint-rules "^4.1.1"
     tslint-react "^3.2.0"
-
-"@0xproject/types@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.3.1.tgz#9a75be6d3a2d41b7ecbd9105c3fdc09f3e3ec297"
-  dependencies:
-    bignumber.js "~4.1.0"
-    web3 "^0.20.0"
-    web3-typescript-typings "^0.10.0"
-
-"@0xproject/types@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.4.2.tgz#83d6ebef60f41e6209acb2656b1d68ff79367ca5"
-  dependencies:
-    bignumber.js "~4.1.0"
-
-"@0xproject/typescript-typings@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@0xproject/typescript-typings/-/typescript-typings-0.0.2.tgz#b549ea3c81ce2d81b99f05583bdf7c411a3ca90c"
-  dependencies:
-    "@0xproject/types" "^0.4.2"
-    bignumber.js "~4.1.0"
-
-"@0xproject/utils@^0.4.1":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.4.4.tgz#bce4f7a5a46570a69911f4a4ade5d49016330087"
-  dependencies:
-    "@0xproject/types" "^0.4.2"
-    "@0xproject/typescript-typings" "^0.0.2"
-    "@types/node" "^8.0.53"
-    bignumber.js "~4.1.0"
-    ethers-contracts "^2.2.1"
-    js-sha3 "^0.7.0"
-    lodash "^4.17.4"
-    web3 "^0.20.0"
 
 "@ledgerhq/hw-app-eth@^4.3.0":
   version "4.7.3"
@@ -3631,7 +3562,7 @@ ethereumjs-util@^4.0.1, ethereumjs-util@^4.3.0, ethereumjs-util@^4.4.0:
     rlp "^2.0.0"
     secp256k1 "^3.0.1"
 
-ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereumjs-util@^5.1.2, ethereumjs-util@^5.1.3, ethereumjs-util@^5.1.5:
+ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereumjs-util@^5.1.3, ethereumjs-util@^5.1.5:
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-5.1.5.tgz#2f02575852627d45622426f25ee4a0b5f377f27a"
   dependencies:
@@ -8939,20 +8870,6 @@ request-ip@~1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/request-ip/-/request-ip-1.2.3.tgz#66988f0e22406ec4af630d19b573fe4b447c3b49"
 
-request-promise-core@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/request-promise-core/-/request-promise-core-1.1.1.tgz#3eee00b2c5aa83239cfb04c5700da36f81cd08b6"
-  dependencies:
-    lodash "^4.13.1"
-
-request-promise-native@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/request-promise-native/-/request-promise-native-1.0.5.tgz#5281770f68e0c9719e5163fd3fab482215f4fda5"
-  dependencies:
-    request-promise-core "1.1.1"
-    stealthy-require "^1.1.0"
-    tough-cookie ">=2.3.3"
-
 request@2.81.0:
   version "2.81.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.81.0.tgz#c6928946a0e06c5f8d6f8a9333469ffda46298a0"
@@ -9834,10 +9751,6 @@ static-extend@^0.1.1:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.4.0.tgz#bb73d446da2796106efcc1b601a253d6c46bd087"
 
-stealthy-require@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
-
 stream-browserify@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/stream-browserify/-/stream-browserify-2.0.1.tgz#66266ee5f9bdb9940a4e4514cafb43bb71e5c9db"
@@ -10410,7 +10323,7 @@ touch@^3.1.0:
   dependencies:
     nopt "~1.0.10"
 
-tough-cookie@>=2.3.3, tough-cookie@~2.3.0, tough-cookie@~2.3.3:
+tough-cookie@~2.3.0, tough-cookie@~2.3.3:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.3.4.tgz#ec60cee38ac675063ffc97a5c18970578ee83655"
   dependencies:
@@ -11354,7 +11267,7 @@ web3-shh@1.0.0-beta.33:
     web3-core-subscriptions "1.0.0-beta.33"
     web3-net "1.0.0-beta.33"
 
-web3-typescript-typings@^0.10.0, web3-typescript-typings@^0.10.2:
+web3-typescript-typings@^0.10.2:
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/web3-typescript-typings/-/web3-typescript-typings-0.10.2.tgz#a9903815d2a8a0dbd73fd5db374070de0bd30497"
   dependencies:

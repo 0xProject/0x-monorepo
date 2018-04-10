@@ -11,11 +11,6 @@ contract Metacoin {
         uint256 amount;
     }
 
-    struct NestedTransferData {
-        TransferData transferData;
-        uint32 callback;
-    }
-
     function Metacoin() public {
         balances[msg.sender] = 10000;
     }
@@ -27,14 +22,4 @@ contract Metacoin {
         Transfer(msg.sender, transferData.to, transferData.amount);
         return true;
     }
-
-    function transfer(TransferData transferData, uint32 callback) public returns (int) {
-        transfer(transferData);
-        return callback;
-    }
-
-    function transfer(NestedTransferData nestedTransferData) public returns (int) {
-        return transfer(nestedTransferData.transferData, nestedTransferData.callback);
-    }
-
 }
