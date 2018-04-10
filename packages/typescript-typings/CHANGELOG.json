@@ -5,6 +5,10 @@
             {
                 "note": "Add types for more packages",
                 "pr": 501
+            },
+            {
+                "note": "Add types for `solc.compileStandardWrapper`",
+                "pr": 509
             }
         ]
     },
