@@ -1,8 +1,6 @@
-import { AbiDefinition, ContractAbi, DataItem } from '@0xproject/types';
+import { AbiDefinition, AbiType, ContractAbi, DataItem } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as web3Abi from 'web3-eth-abi';
-
-import { AbiType } from './types';
 
 export const encoder = {
     encodeConstructorArgsFromAbi(args: any[], abi: ContractAbi): string {
