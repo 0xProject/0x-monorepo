@@ -34,10 +34,13 @@ contract MixinWrapperFunctions is
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param defaultParamsId Id of the default order parameters to use.
     /// @param signature Proof that order has been created by maker.
+    /// @return Amounts filled and fees paid by maker and taker.
     function fillOrKillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,
+        uint256 defaultParamsId,
         bytes memory signature)
         public
         returns (FillResults memory fillResults)
@@ -45,6 +48,7 @@ contract MixinWrapperFunctions is
         fillResults = fillOrder(
             order,
             takerAssetFillAmount,
+            defaultParamsId,
             signature
         );
         require(fillResults.takerAssetFilledAmount == takerAssetFillAmount);
@@ -55,11 +59,13 @@ contract MixinWrapperFunctions is
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param defaultParamsId Id of the default order parameters to use.
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function fillOrderNoThrow(
         Order memory order,
         uint256 takerAssetFillAmount,
+        uint256 defaultParamsId,
         bytes memory signature)
         public
         returns (FillResults memory fillResults)
@@ -74,7 +80,8 @@ contract MixinWrapperFunctions is
         // | Params   |        | 3 * 32  | function parameters:                        |
         // |          | 0x00   |         |   1. offset to order (*)                    |
         // |          | 0x20   |         |   2. takerAssetFillAmount                   |
-        // |          | 0x40   |         |   3. offset to signature (*)                |
+        // |          | 0x40   |         |   3. defaultParamsId                        |
+        // |          | 0x60   |         |   4. offset to signature (*)                |
         // | Data     |        | 11 * 32 | order:                                      |
         // |          | 0x000  |         |   1.  makerAddress                          |
         // |          | 0x020  |         |   2.  takerAddress                          |
@@ -125,7 +132,7 @@ contract MixinWrapperFunctions is
             // This area is preallocated and written to later.
             // This is because we need to fill in offsets that have not yet been calculated.
             let paramsAreaStart := headerAreaEnd
-            let paramsAreaEnd := add(paramsAreaStart, 0x60)
+            let paramsAreaEnd := add(paramsAreaStart, 0x80)
             let paramsAreaOffset := paramsAreaStart
 
             /////// Setup Data Area ///////
@@ -203,6 +210,10 @@ contract MixinWrapperFunctions is
             mstore(paramsAreaOffset, takerAssetFillAmount)
             paramsAreaOffset := add(paramsAreaOffset, 0x20)
 
+            /////// Write defaultParamsId ///////
+            mstore(paramsAreaOffset, defaultParamsId)
+            paramsAreaOffset := add(paramsAreaOffset, 0x20)
+
             /////// Write signature ///////
             // Write offset to paramsArea
             mstore(paramsAreaOffset, sub(dataAreaEnd, paramsAreaStart))
@@ -253,10 +264,12 @@ contract MixinWrapperFunctions is
     /// @dev Synchronously executes multiple calls of fillOrder.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
+    /// @param defaultParamsIds Ids of the default order parameters to use.
     /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrders(
         Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
+        uint256[] memory defaultParamsIds,
         bytes[] memory signatures)
         public
     {
@@ -264,6 +277,7 @@ contract MixinWrapperFunctions is
             fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
+                defaultParamsIds[i],
                 signatures[i]
             );
         }
@@ -272,10 +286,12 @@ contract MixinWrapperFunctions is
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
+    /// @param defaultParamsIds Ids of the default order parameters to use.
     /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrKillOrders(
         Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
+        uint256[] memory defaultParamsIds,
         bytes[] memory signatures)
         public
     {
@@ -283,6 +299,7 @@ contract MixinWrapperFunctions is
             fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
+                defaultParamsIds[i],
                 signatures[i]
             );
         }
@@ -292,10 +309,12 @@ contract MixinWrapperFunctions is
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
+    /// @param defaultParamsIds Ids of the default order parameters to use.
     /// @param signatures Proofs that orders have been created by makers.
     function batchFillOrdersNoThrow(
         Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
+        uint256[] memory defaultParamsIds,
         bytes[] memory signatures)
         public
     {
@@ -303,6 +322,7 @@ contract MixinWrapperFunctions is
             fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
+                defaultParamsIds[i],
                 signatures[i]
             );
         }
@@ -311,11 +331,13 @@ contract MixinWrapperFunctions is
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param defaultParamsIds Ids of the default order parameters to use.
     /// @param signatures Proofs that orders have been created by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketSellOrders(
         Order[] memory orders,
         uint256 takerAssetFillAmount,
+        uint256[] memory defaultParamsIds,
         bytes[] memory signatures)
         public
         returns (FillResults memory totalFillResults)
@@ -332,6 +354,7 @@ contract MixinWrapperFunctions is
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 remainingTakerAssetFillAmount,
+                defaultParamsIds[i],
                 signatures[i]
             );
 
@@ -350,11 +373,13 @@ contract MixinWrapperFunctions is
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param defaultParamsIds Ids of the default order parameters to use.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketSellOrdersNoThrow(
         Order[] memory orders,
         uint256 takerAssetFillAmount,
+        uint256[] memory defaultParamsIds,
         bytes[] memory signatures)
         public
         returns (FillResults memory totalFillResults)
@@ -371,6 +396,7 @@ contract MixinWrapperFunctions is
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
+                defaultParamsIds[i],
                 signatures[i]
             );
 
@@ -388,11 +414,13 @@ contract MixinWrapperFunctions is
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
+    /// @param defaultParamsIds Ids of the default order parameters to use.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketBuyOrders(
         Order[] memory orders,
         uint256 makerAssetFillAmount,
+        uint256[] memory defaultParamsIds,
         bytes[] memory signatures)
         public
         returns (FillResults memory totalFillResults)
@@ -417,6 +445,7 @@ contract MixinWrapperFunctions is
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
                 remainingTakerAssetFillAmount,
+                defaultParamsIds[i],
                 signatures[i]
             );
 
@@ -435,11 +464,13 @@ contract MixinWrapperFunctions is
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
+    /// @param defaultParamsIds Ids of the default order parameters to use.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketBuyOrdersNoThrow(
         Order[] memory orders,
         uint256 makerAssetFillAmount,
+        uint256[] memory defaultParamsIds,
         bytes[] memory signatures)
         public
         returns (FillResults memory totalFillResults)
@@ -464,6 +495,7 @@ contract MixinWrapperFunctions is
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
+                defaultParamsIds[i],
                 signatures[i]
             );
 
@@ -480,11 +512,12 @@ contract MixinWrapperFunctions is
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of order specifications.
-    function batchCancelOrders(Order[] memory orders)
+    /// @param defaultParamsIds Ids of the default order parameters to use.
+    function batchCancelOrders(Order[] memory orders, uint256[] defaultParamsIds)
         public
     {
         for (uint256 i = 0; i < orders.length; i++) {
-            cancelOrder(orders[i]);
+            cancelOrder(orders[i], defaultParamsIds[i]);
         }
     }
 

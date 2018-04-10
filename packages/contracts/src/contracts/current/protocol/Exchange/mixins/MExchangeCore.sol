@@ -33,11 +33,12 @@ contract MExchangeCore is LibOrder {
     function fillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,
+        uint256 defaultParamsId,
         bytes memory signature)
         public
         returns (FillResults memory fillResults);
 
-    function cancelOrder(Order memory order)
+    function cancelOrder(Order memory order, uint256 defaultParamsId)
         public
         returns (bool);
 
