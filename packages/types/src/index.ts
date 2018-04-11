@@ -2,6 +2,10 @@ import { BigNumber } from 'bignumber.js';
 
 export type JSONRPCErrorCallback = (err: Error | null, result?: JSONRPCResponsePayload) => void;
 
+/**
+ * Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
+ * Read more about Providers in the 0x wiki.
+ */
 export interface Provider {
     sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
 }
