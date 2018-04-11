@@ -134,9 +134,9 @@ contract MixinWrapperFunctions is
 
             // Offset from the source data we're reading from
             let sourceOffset := order
-            // bytesLen and bytesLenPadded track the length of a dynamically-allocated bytes array.
-            let bytesLen := 0
-            let bytesLenPadded := 0
+            // arrayLenBytes and arrayLenWords track the length of a dynamically-allocated bytes array.
+            let arrayLenBytes := 0
+            let arrayLenWords := 0
 
             /////// Write order Struct ///////
             // Write memory location of Order, relative to the start of the
@@ -155,16 +155,16 @@ contract MixinWrapperFunctions is
             mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
             // Calculate length of <order.makerAssetProxyMetadata>
-            bytesLen := mload(sourceOffset)
+            arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
-            bytesLenPadded := div(add(bytesLen, 0x1F), 0x20)
+            arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
 
             // Write length of <order.makerAssetProxyMetadata>
-            mstore(dataAreaEnd, bytesLen)
+            mstore(dataAreaEnd, arrayLenBytes)
             dataAreaEnd := add(dataAreaEnd, 0x20)
 
             // Write contents of <order.makerAssetProxyMetadata>
-            for {let i := 0} lt(i, bytesLenPadded) {i := add(i, 1)} {
+            for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
                 mstore(dataAreaEnd, mload(sourceOffset))
                 dataAreaEnd := add(dataAreaEnd, 0x20)
                 sourceOffset := add(sourceOffset, 0x20)
@@ -174,16 +174,16 @@ contract MixinWrapperFunctions is
             mstore(add(dataAreaStart, mul(12, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
             // Calculate length of <order.takerAssetProxyMetadata>
-            bytesLen := mload(sourceOffset)
+            arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
-            bytesLenPadded := div(add(bytesLen, 0x1F), 0x20)
+            arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
 
             // Write length of <order.takerAssetProxyMetadata>
-            mstore(dataAreaEnd, bytesLen)
+            mstore(dataAreaEnd, arrayLenBytes)
             dataAreaEnd := add(dataAreaEnd, 0x20)
 
             // Write contents of  <order.takerAssetProxyMetadata>
-            for {let i := 0} lt(i, bytesLenPadded) {i := add(i, 1)} {
+            for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
                 mstore(dataAreaEnd, mload(sourceOffset))
                 dataAreaEnd := add(dataAreaEnd, 0x20)
                 sourceOffset := add(sourceOffset, 0x20)
@@ -199,16 +199,16 @@ contract MixinWrapperFunctions is
 
             // Calculate length of signature
             sourceOffset := signature
-            bytesLen := mload(sourceOffset)
+            arrayLenBytes := mload(sourceOffset)
             sourceOffset := add(sourceOffset, 0x20)
-            bytesLenPadded := div(add(bytesLen, 0x1F), 0x20)
+            arrayLenWords := div(add(arrayLenBytes, 0x1F), 0x20)
 
             // Write length of signature
-            mstore(dataAreaEnd, bytesLen)
+            mstore(dataAreaEnd, arrayLenBytes)
             dataAreaEnd := add(dataAreaEnd, 0x20)
 
             // Write contents of signature
-            for {let i := 0} lt(i, bytesLenPadded) {i := add(i, 1)} {
+            for {let i := 0} lt(i, arrayLenWords) {i := add(i, 1)} {
                 mstore(dataAreaEnd, mload(sourceOffset))
                 dataAreaEnd := add(dataAreaEnd, 0x20)
                 sourceOffset := add(sourceOffset, 0x20)
