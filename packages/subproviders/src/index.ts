@@ -18,7 +18,6 @@ export {
     Callback,
     ErrorCallback,
     NextCallback,
-    LedgerWalletSubprovider,
     LedgerCommunicationClient,
     NonceSubproviderErrors,
     LedgerSubproviderConfigs,

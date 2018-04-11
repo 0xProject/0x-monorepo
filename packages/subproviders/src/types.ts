@@ -69,12 +69,6 @@ export interface LedgerGetAddressResult {
     chainCode: string;
 }
 
-export interface LedgerWalletSubprovider {
-    getPath: () => string;
-    setPath: (path: string) => void;
-    setPathIndex: (pathIndex: number) => void;
-}
-
 export interface PartialTxParams {
     nonce: string;
     gasPrice?: string;
