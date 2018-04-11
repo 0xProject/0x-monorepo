@@ -516,10 +516,10 @@ describe('TokenWrapper', () => {
 });
 // tslint:disable:max-file-line-count
 
-function addEmptyWalletSubprovider(provider: Provider): Provider {
+function addEmptyWalletSubprovider(p: Provider): Provider {
     const providerEngine = new Web3ProviderEngine();
     providerEngine.addProvider(new EmptyWalletSubprovider());
-    const currentSubproviders = (provider as any)._providers;
+    const currentSubproviders = (p as any)._providers;
     for (const subprovider of currentSubproviders) {
         providerEngine.addProvider(subprovider);
     }
