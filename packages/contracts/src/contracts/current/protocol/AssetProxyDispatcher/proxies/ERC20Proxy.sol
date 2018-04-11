@@ -30,7 +30,7 @@ contract ERC20Proxy is
 {
 
     /// @dev Transfers ERC20 tokens.
-    /// @param assetMetadata Byte array encoded for the respective asset proxy.
+    /// @param assetMetadata ERC20-encoded byte array.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
@@ -47,10 +47,10 @@ contract ERC20Proxy is
         require(success == true);
     }
 
-    /// @dev Encodes ERC20 byte array for the ERC20 asset proxy.
+    /// @dev Encodes ERC20 byte array.
     /// @param assetProxyId Id of the asset proxy.
     /// @param tokenAddress Address of the asset.
-    /// @return assetMetadata Byte array encoded for the ERC20 asset proxy.
+    /// @return assetMetadata ERC20-encoded byte.
     function encodeMetadata(
         uint8 assetProxyId,
         address tokenAddress)
@@ -67,8 +67,8 @@ contract ERC20Proxy is
         return assetMetadata;
     }
 
-    /// @dev Decodes ERC20-encoded byte array for the ERC20 asset proxy.
-    /// @param assetMetadata Byte array encoded for the ERC20 asset proxy.
+    /// @dev Decodes ERC20-encoded byte array.
+    /// @param assetMetadata ERC20-encoded byte array.
     /// @return tokenAddress Address of ERC20 token.
     function decodeMetadata(bytes assetMetadata)
         public pure

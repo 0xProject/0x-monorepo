@@ -30,7 +30,7 @@ contract ERC721Proxy is
 {
 
     /// @dev Transfers ERC20 tokens.
-    /// @param assetMetadata Byte array encoded for the respective asset proxy.
+    /// @param assetMetadata ERC721-encoded byte array
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
@@ -42,7 +42,7 @@ contract ERC721Proxy is
         external
         onlyAuthorized
     {
-        // No work to do
+        // No work to do if amount is zero
         if (amount == 0) return;
 
         // Decode metadata
@@ -53,15 +53,15 @@ contract ERC721Proxy is
         // There exists only 1 of each token.
         require(amount == 1);
 
-        // Call ERC721 contract. Either succeeds or throws.
+        // Either succeeds or throws.
         ERC721Token(token).transferFrom(from, to, tokenId);
     }
 
-    /// @dev Encodes ERC721 byte array for the ERC20 asset proxy.
+    /// @dev Encodes ERC721 byte array.
     /// @param assetProxyId Id of the asset proxy.
     /// @param tokenAddress Address of the asset.
     /// @param tokenId Id of ERC721 token.
-    /// @return assetMetadata Byte array encoded for the ERC721 asset proxy.
+    /// @return assetMetadata ERC721-encoded byte array.
     function encodeMetadata(
         uint8 assetProxyId,
         address tokenAddress,
@@ -80,8 +80,8 @@ contract ERC721Proxy is
         return assetMetadata;
     }
 
-    /// @dev Decodes ERC721-encoded byte array for the ERC721 asset proxy.
-    /// @param assetMetadata Byte array encoded for the ERC721 asset proxy.
+    /// @dev Decodes ERC721-encoded byte array.
+    /// @param assetMetadata ERC721-encoded byte array.
     /// @return tokenAddress Address of ERC721 token.
     /// @return tokenId Id of ERC721 token.
     function decodeMetadata(bytes memory assetMetadata)
