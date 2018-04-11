@@ -42,7 +42,6 @@ describe('AssetProxyDispatcher', () => {
     let erc20TransferProxyV1: ERC20Proxy_v1Contract;
     let erc20TransferProxy: ERC20ProxyContract;
     let erc721TransferProxy: ERC721ProxyContract;
-    const nilAddress = '0x0000000000000000000000000000000000000000';
     const INITIAL_BALANCE = new BigNumber(10000);
 
     before(async () => {
@@ -129,7 +128,7 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
@@ -140,7 +139,7 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
             let proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
@@ -149,7 +148,7 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC721,
                 erc721TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
             proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC721);
@@ -160,7 +159,7 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
             let proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
@@ -190,18 +189,18 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20TransferProxy.address);
 
-            // The following transaction will throw because the currentAddress is no longer nilAddress
+            // The following transaction will throw because the currentAddress is no longer ZeroEx.NULL_ADDRESS
             return expect(
                 assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20TransferProxy.address,
-                    nilAddress,
+                    ZeroEx.NULL_ADDRESS,
                     { from: owner },
                 ),
             ).to.be.rejectedWith(constants.REVERT);
@@ -211,7 +210,7 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
@@ -220,12 +219,12 @@ describe('AssetProxyDispatcher', () => {
             // The following transaction will reset the proxy address
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 erc20TransferProxy.address,
                 { from: owner },
             );
             const newProxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
-            expect(newProxyAddress).to.be.equal(nilAddress);
+            expect(newProxyAddress).to.be.equal(ZeroEx.NULL_ADDRESS);
         });
 
         it('should throw if requesting address is not authorized', async () => {
@@ -233,7 +232,7 @@ describe('AssetProxyDispatcher', () => {
                 assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20TransferProxy.address,
-                    nilAddress,
+                    ZeroEx.NULL_ADDRESS,
                     { from: notOwner },
                 ),
             ).to.be.rejectedWith(constants.REVERT);
@@ -245,7 +244,7 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
@@ -254,7 +253,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should return NULL address if requesting non-existent proxy', async () => {
             const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
-            expect(proxyAddress).to.be.equal(nilAddress);
+            expect(proxyAddress).to.be.equal(ZeroEx.NULL_ADDRESS);
         });
     });
 
@@ -264,7 +263,7 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
 
@@ -315,7 +314,7 @@ describe('AssetProxyDispatcher', () => {
             await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
-                nilAddress,
+                ZeroEx.NULL_ADDRESS,
                 { from: owner },
             );
 

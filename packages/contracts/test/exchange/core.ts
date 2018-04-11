@@ -149,23 +149,22 @@ describe('Exchange', () => {
         await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, {
             from: accounts[0],
         });
-        const nilAddress = '0x0000000000000000000000000000000000000000';
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC20_V1,
             erc20TransferProxyV1.address,
-            nilAddress,
+            ZeroEx.NULL_ADDRESS,
             { from: accounts[0] },
         );
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC20,
             erc20TransferProxy.address,
-            nilAddress,
+            ZeroEx.NULL_ADDRESS,
             { from: accounts[0] },
         );
         await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC721,
             erc721TransferProxy.address,
-            nilAddress,
+            ZeroEx.NULL_ADDRESS,
             { from: accounts[0] },
         );
         zeroEx = new ZeroEx(provider, {
