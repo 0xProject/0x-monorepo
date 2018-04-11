@@ -20,11 +20,7 @@ import {
     FillContractEventArgs,
 } from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
-import {
-    encodeERC20ProxyData,
-    encodeERC20V1ProxyData,
-    encodeERC721ProxyData,
-} from '../../src/utils/asset_proxy_utils';
+import { encodeERC20ProxyData, encodeERC20V1ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
 import { crypto } from '../../src/utils/crypto';
@@ -248,38 +244,13 @@ describe('Exchange', () => {
                 { from: tokenOwner },
             ),
             ck.mint.sendTransactionAsync(
-                makerAddress,
+                takerAddress,
                 new BigNumber('0x3030303030303030303030303030303030303030303030303030303030303030'),
                 { from: tokenOwner },
             ),
             ck.mint.sendTransactionAsync(
-                makerAddress,
+                takerAddress,
                 new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040'),
-                { from: tokenOwner },
-            ),
-            ck.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x5050505050505050505050505050505050505050505050505050505050505050'),
-                { from: tokenOwner },
-            ),
-            ck.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x6060606060606060606060606060606060606060606060606060606060606060'),
-                { from: tokenOwner },
-            ),
-            ck.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x7070707070707070707070707070707070707070707070707070707070707070'),
-                { from: tokenOwner },
-            ),
-            ck.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x8080808080808080808080808080808080808080808080808080808080808080'),
-                { from: tokenOwner },
-            ),
-            ck.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090'),
                 { from: tokenOwner },
             ),
 
@@ -298,33 +269,13 @@ describe('Exchange', () => {
                 { from: tokenOwner },
             ),
             et.mint.sendTransactionAsync(
-                makerAddress,
+                takerAddress,
                 new BigNumber('0x3030303030303030303030303030303030303030303030303030303030303030'),
                 { from: tokenOwner },
             ),
             et.mint.sendTransactionAsync(
                 takerAddress,
-                new BigNumber('0x5050505050505050505050505050505050505050505050505050505050505050'),
-                { from: tokenOwner },
-            ),
-            et.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x6060606060606060606060606060606060606060606060606060606060606060'),
-                { from: tokenOwner },
-            ),
-            et.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x7070707070707070707070707070707070707070707070707070707070707070'),
-                { from: tokenOwner },
-            ),
-            et.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x8080808080808080808080808080808080808080808080808080808080808080'),
-                { from: tokenOwner },
-            ),
-            et.mint.sendTransactionAsync(
-                takerAddress,
-                new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090'),
+                new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040'),
                 { from: tokenOwner },
             ),
         ]);
@@ -960,7 +911,7 @@ describe('Exchange', () => {
         it('should successfully exchange a single token between the maker and taker (via fillOrder)', async () => {
             // Construct Exchange parameters
             const makerTokenId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
-            const takerTokenId = new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090');
+            const takerTokenId = new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040');
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAddress: ck.address,
                 takerTokenAddress: ck.address,
@@ -990,7 +941,7 @@ describe('Exchange', () => {
         it('should successfully exchange a single token between the maker and taker (via filleOrderNoThrow)', async () => {
             // Construct Exchange parameters
             const makerTokenId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
-            const takerTokenId = new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090');
+            const takerTokenId = new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040');
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAddress: ck.address,
                 takerTokenAddress: ck.address,
@@ -1019,8 +970,8 @@ describe('Exchange', () => {
 
         it('should throw when maker does not own the token with id makerTokenId', async () => {
             // Construct Exchange parameters
-            const makerTokenId = new BigNumber('0x5050505050505050505050505050505050505050505050505050505050505050');
-            const takerTokenId = new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090');
+            const makerTokenId = new BigNumber('0x3030303030303030303030303030303030303030303030303030303030303030');
+            const takerTokenId = new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040');
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAddress: ck.address,
                 takerTokenAddress: ck.address,
@@ -1072,7 +1023,7 @@ describe('Exchange', () => {
         it('should throw when makerTokenAmount is greater than 1', async () => {
             // Construct Exchange parameters
             const makerTokenId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
-            const takerTokenId = new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090');
+            const takerTokenId = new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040');
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAddress: ck.address,
                 takerTokenAddress: ck.address,
@@ -1098,7 +1049,7 @@ describe('Exchange', () => {
         it('should throw when takerTokenAmount is greater than 1', async () => {
             // Construct Exchange parameters
             const makerTokenId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
-            const takerTokenId = new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090');
+            const takerTokenId = new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040');
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAddress: ck.address,
                 takerTokenAddress: ck.address,
@@ -1124,7 +1075,7 @@ describe('Exchange', () => {
         it('should throw on partial fill', async () => {
             // Construct Exchange parameters
             const makerTokenId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
-            const takerTokenId = new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090');
+            const takerTokenId = new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040');
             signedOrder = orderFactory.newSignedOrder({
                 makerTokenAddress: ck.address,
                 takerTokenAddress: ck.address,
@@ -1193,7 +1144,7 @@ describe('Exchange', () => {
 
         it('should successfully fill order when makerToken is ERC20 and takerToken is ERC721', async () => {
             // Construct Exchange parameters
-            const takerTokenId = new BigNumber('0x9090909090909090909090909090909090909090909090909090909090909090');
+            const takerTokenId = new BigNumber('0x4040404040404040404040404040404040404040404040404040404040404040');
             signedOrder = orderFactory.newSignedOrder({
                 takerTokenAddress: ck.address,
                 makerTokenAddress: dgd.address,
