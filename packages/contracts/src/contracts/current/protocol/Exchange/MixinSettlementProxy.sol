@@ -78,13 +78,13 @@ contract MixinSettlementProxy is
     {
         makerTokenFilledAmount = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerTokenAmount);
         TRANSFER_PROXY.transferFrom(
-            order.makerAssetProxyData,
+            order.makerAssetData,
             order.makerAddress,
             takerAddress,
             makerTokenFilledAmount
         );
         TRANSFER_PROXY.transferFrom(
-            order.takerAssetProxyData,
+            order.takerAssetData,
             takerAddress,
             order.makerAddress,
             takerTokenFilledAmount
