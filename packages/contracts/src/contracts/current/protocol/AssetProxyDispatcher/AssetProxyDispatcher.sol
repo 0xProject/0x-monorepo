@@ -41,7 +41,7 @@ contract AssetProxyDispatcher is
         address from,
         address to,
         uint256 amount)
-        public
+        external
         onlyAuthorized
     {
         // Lookup asset proxy
@@ -62,7 +62,7 @@ contract AssetProxyDispatcher is
         uint8 assetProxyId,
         address newAssetProxyAddress,
         address currentAssetProxyAddress)
-        public
+        external
         onlyOwner
     {
         // Ensure any existing asset proxy is not unintentionally overwritten
@@ -77,7 +77,7 @@ contract AssetProxyDispatcher is
     /// @param assetProxyId Id of the asset proxy.
     /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
     function getAssetProxy(uint8 assetProxyId)
-        public view
+        external view
         returns (IAssetProxy)
     {
         IAssetProxy assetProxy = assetProxies[assetProxyId];
