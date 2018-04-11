@@ -43,7 +43,6 @@ describe('Asset Transfer Proxies', () => {
     let erc20TransferProxyV1: ERC20Proxy_v1Contract;
     let erc20TransferProxy: ERC20ProxyContract;
     let erc721TransferProxy: ERC721ProxyContract;
-    const nilAddress = '0x0000000000000000000000000000000000000000';
     const makerTokenId = new BigNumber('0x1010101010101010101010101010101010101010101010101010101010101010');
     const INITIAL_BALANCE = new BigNumber(10000);
 
