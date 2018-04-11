@@ -23,8 +23,7 @@ import "../../../utils/LibBytes/LibBytes.sol";
 import "../../../utils/Authorizable/Authorizable.sol";
 import "/zeppelin/contracts/token/ERC721/ERC721Token.sol";
 
-
-contract ERC721TransferProxy is
+contract ERC721Proxy is
     LibBytes,
     Authorizable,
     IAssetProxy
