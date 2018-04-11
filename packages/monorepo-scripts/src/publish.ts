@@ -1,18 +1,23 @@
 #!/usr/bin/env node
 
+import * as promisify from 'es6-promisify';
 import * as fs from 'fs';
 import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import opn = require('opn');
 import * as path from 'path';
 import { exec as execAsync, spawn } from 'promisify-child-process';
+import * as prompt from 'prompt';
 import semverDiff = require('semver-diff');
 import semverSort = require('semver-sort');
 
 import { constants } from './constants';
-import { Changelog, Changes, SemVerIndex, UpdatedPackage } from './types';
+import { Changelog, Changes, PackageToVersionChange, SemVerIndex, UpdatedPackage } from './types';
 import { utils } from './utils';
 
+const DOC_GEN_COMMAND = 'docs:json';
+const NPM_NAMESPACE = '@0xproject/';
 const IS_DRY_RUN = process.env.IS_DRY_RUN === 'true';
 const TODAYS_TIMESTAMP = moment().unix();
 const LERNA_EXECUTABLE = './node_modules/lerna/bin/lerna.js';
@@ -21,8 +26,95 @@ const semverNameToIndex: { [semver: string]: number } = {
     minor: SemVerIndex.Minor,
     major: SemVerIndex.Major,
 };
+const packageNameToWebsitePath: { [name: string]: string } = {
+    '0x.js': '0xjs',
+    'web3-wrapper': 'web3_wrapper',
+    contracts: 'contracts',
+    connect: 'connect',
+    'json-schemas': 'json-schemas',
+    deployer: 'deployer',
+    'sol-cov': 'sol-cov',
+    subproviders: 'subproviders',
+};
 
 (async () => {
+    // Fetch public, updated Lerna packages
+    const updatedPublicLernaPackages = await getUpdatedPublicLernaPackagesAsync();
+
+    await confirmDocPagesRenderAsync(updatedPublicLernaPackages);
+
+    // Update CHANGELOGs
+    const updatedPublicLernaPackageNames = _.map(updatedPublicLernaPackages, pkg => pkg.package.name);
+    utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicLernaPackageNames.join('\n')}\n`);
+    const packageToVersionChange = await updateChangeLogsAsync(updatedPublicLernaPackages);
+
+    // Push changelog changes to Github
+    if (!IS_DRY_RUN) {
+        await pushChangelogsToGithubAsync();
+    }
+
+    // Call LernaPublish
+    utils.log('Version updates to apply:');
+    _.each(packageToVersionChange, (versionChange: string, packageName: string) => {
+        utils.log(`${packageName} -> ${versionChange}`);
+    });
+    utils.log(`Calling 'lerna publish'...`);
+    await lernaPublishAsync(packageToVersionChange);
+})().catch(err => {
+    utils.log(err);
+    process.exit(1);
+});
+
+async function confirmDocPagesRenderAsync(packages: LernaPackage[]) {
+    // push docs to staging
+    utils.log("Upload all docJson's to S3 staging...");
+    await execAsync(`yarn lerna:stage_docs`, { cwd: constants.monorepoRootPath });
+
+    // deploy website to staging
+    utils.log('Deploy website to staging...');
+    const pathToWebsite = `${constants.monorepoRootPath}/packages/website`;
+    await execAsync(`yarn deploy_staging`, { cwd: pathToWebsite });
+
+    const packagesWithDocs = _.filter(packages, pkg => {
+        const scriptsIfExists = pkg.package.scripts;
+        if (_.isUndefined(scriptsIfExists)) {
+            throw new Error('Found a public package without any scripts in package.json');
+        }
+        return !_.isUndefined(scriptsIfExists[DOC_GEN_COMMAND]);
+    });
+    _.each(packagesWithDocs, pkg => {
+        const name = pkg.package.name;
+        const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0xproject/')[1] : name;
+        const docSegmentIfExists = packageNameToWebsitePath[nameWithoutPrefix];
+        if (_.isUndefined(docSegmentIfExists)) {
+            throw new Error(
+                `Found package '${name}' with doc commands but no corresponding docSegment in monorepo_scripts
+package.ts. Please add an entry for it and try again.`,
+            );
+        }
+        const link = `${constants.stagingWebsite}/docs/${docSegmentIfExists}`;
+        // tslint:disable-next-line:no-floating-promises
+        opn(link);
+    });
+
+    prompt.start();
+    const message = 'Do all the doc pages render properly? (yn)';
+    const result = await promisify(prompt.get)([message]);
+    const didConfirm = result[message] === 'y';
+    if (!didConfirm) {
+        utils.log('Publish process aborted.');
+        process.exit(0);
+    }
+}
+
+async function pushChangelogsToGithubAsync() {
+    await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });
+    await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: constants.monorepoRootPath });
+    await execAsync(`git push`, { cwd: constants.monorepoRootPath });
+    utils.log(`Pushed CHANGELOG updates to Github`);
+}
+
+async function getUpdatedPublicLernaPackagesAsync(): Promise<LernaPackage[]> {
     const updatedPublicPackages = await getPublicLernaUpdatedPackagesAsync();
     const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 
@@ -30,10 +122,11 @@ const semverNameToIndex: { [semver: string]: number } = {
     const updatedPublicLernaPackages = _.filter(allLernaPackages, pkg => {
         return _.includes(updatedPackageNames, pkg.package.name);
     });
-    const updatedPublicLernaPackageNames = _.map(updatedPublicLernaPackages, pkg => pkg.package.name);
-    utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicLernaPackageNames.join('\n')}\n`);
+    return updatedPublicLernaPackages;
+}
 
-    const packageToVersionChange: { [name: string]: string } = {};
+async function updateChangeLogsAsync(updatedPublicLernaPackages: LernaPackage[]): Promise<PackageToVersionChange> {
+    const packageToVersionChange: PackageToVersionChange = {};
     for (const lernaPackage of updatedPublicLernaPackages) {
         const packageName = lernaPackage.package.name;
         const changelogJSONPath = path.join(lernaPackage.location, 'CHANGELOG.json');
@@ -88,23 +181,8 @@ const semverNameToIndex: { [semver: string]: number } = {
         utils.log(`${packageName}: Updated CHANGELOG.md`);
     }
 
-    if (!IS_DRY_RUN) {
-        await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });
-        await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: constants.monorepoRootPath });
-        await execAsync(`git push`, { cwd: constants.monorepoRootPath });
-        utils.log(`Pushed CHANGELOG updates to Github`);
-    }
-
-    utils.log('Version updates to apply:');
-    _.each(packageToVersionChange, (versionChange: string, packageName: string) => {
-        utils.log(`${packageName} -> ${versionChange}`);
-    });
-    utils.log(`Calling 'lerna publish'...`);
-    await lernaPublishAsync(packageToVersionChange);
-})().catch(err => {
-    utils.log(err);
-    process.exit(1);
-});
+    return packageToVersionChange;
+}
 
 async function lernaPublishAsync(packageToVersionChange: { [name: string]: string }) {
     // HACK: Lerna publish does not provide a way to specify multiple package versions via

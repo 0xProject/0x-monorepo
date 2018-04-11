@@ -18,6 +18,7 @@
         "lerna:rebuild": "run-s lerna:clean lerna:build",
         "lerna:publish": "run-s lerna:install lerna:rebuild script:publish",
         "lerna:publish:dry": "run-s lerna:install lerna:rebuild script:publish:dry",
+        "lerna:stage_docs": "lerna run docs:stage",
         "script:publish": "node ./packages/monorepo-scripts/lib/publish.js",
         "script:publish:dry": "IS_DRY_RUN=true yarn script:publish"
     },
