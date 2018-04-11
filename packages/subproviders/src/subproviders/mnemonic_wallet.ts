@@ -8,7 +8,7 @@ import { DerivedHDKey, PartialTxParams, WalletSubproviderErrors } from '../types
 import { walletUtils } from '../utils/wallet_utils';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
-import { PrivateKeyWalletSubprovider } from './private_key_wallet_subprovider';
+import { PrivateKeyWalletSubprovider } from './private_key_wallet';
 
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'/0`;
 
