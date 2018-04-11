@@ -29,7 +29,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     /**
      * Instantiates a MnemonicWalletSubprovider. Defaults to baseDerivationPath set to `44'/60'/0'/0`.
      * This is the default in TestRPC/Ganache, it can be overridden if desired.
-     * @param config Several available configurations
+     * @param config Configuration for the mnemonic wallet, must contain the mnemonic
      * @return MnemonicWalletSubprovider instance
      */
     constructor(config: MnemonicWalletSubproviderConfigs) {
@@ -88,9 +88,9 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     }
 
     /**
-     * Signs a transaction with the from account specificed in txParams.
+     * Signs a transaction with the account specificed by the `from` field in txParams.
      * If you've added this Subprovider to your  app's provider, you can simply send
-     * an `eth_sendTransaction` JSON RPC request, and * this method will be called auto-magically.
+     * an `eth_sendTransaction` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
      * @param txParams Parameters of the transaction to sign
      * @return Signed transaction hex string
@@ -109,8 +109,8 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * If you've added the MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
-     * @param data Message to sign
-     * @param address Address to sign with
+     * @param data Hex string message to sign
+     * @param address Address of the account to sign with
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {

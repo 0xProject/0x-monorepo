@@ -79,7 +79,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     }
     /**
      * Retrieve a users Ledger accounts. The accounts are derived from the derivationPath,
-     * master public key and chainCode. Because of this, you can request as many accounts
+     * master public key and chain code. Because of this, you can request as many accounts
      * as you wish and it only requires a single request to the Ledger device. This method
      * is automatically called when issuing a `eth_accounts` JSON RPC request via your providerEngine
      * instance.
@@ -93,9 +93,9 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         return accounts;
     }
     /**
-     * Sign a transaction with the Ledger. If you've added the LedgerSubprovider to your
-     * app's provider, you can simply send an `eth_sendTransaction` JSON RPC request, and
-     * this method will be called auto-magically. If you are not using this via a ProviderEngine
+     * Signs a transaction on the Ledger with the account specificed by the `from` field in txParams.
+     * If you've added the LedgerSubprovider to your app's provider, you can simply send an `eth_sendTransaction`
+     * JSON RPC request, and this method will be called auto-magically. If you are not using this via a ProviderEngine
      * instance, you can call it directly.
      * @param txParams Parameters of the transaction to sign
      * @return Signed transaction hex string
@@ -149,8 +149,8 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * the LedgerSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
-     * @param data Message to sign
-     * @param address Address to sign with
+     * @param data Hex string message to sign
+     * @param address Address of the account to sign with
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {

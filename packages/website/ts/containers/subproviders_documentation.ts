@@ -30,6 +30,8 @@ const docSections = {
     redundantRPCSubprovider: 'redundantRPCSubprovider',
     ganacheSubprovider: 'ganacheSubprovider',
     nonceTrackerSubprovider: 'nonceTrackerSubprovider',
+    privateKeyWalletSubprovider: 'privateKeyWalletSubprovider',
+    mnemonicWalletSubprovider: 'mnemonicWalletSubprovider',
     types: docConstants.TYPES_SECTION_NAME,
 };
 
@@ -44,6 +46,8 @@ const docsInfoConfig: DocsInfoConfig = {
         subprovider: [docSections.subprovider],
         ['ledger-subprovider']: [docSections.ledgerSubprovider],
         ['ledger-node-hid-issue']: [docSections.ledgerNodeHid],
+        ['private-key-wallet-subprovider']: [docSections.privateKeyWalletSubprovider],
+        ['mnemonic-wallet-subprovider']: [docSections.mnemonicWalletSubprovider],
         ['factory-methods']: [docSections.factoryMethods],
         ['emptyWallet-subprovider']: [docSections.emptyWalletSubprovider],
         ['fakeGasEstimate-subprovider']: [docSections.fakeGasEstimateSubprovider],
@@ -61,6 +65,8 @@ const docsInfoConfig: DocsInfoConfig = {
     sectionNameToModulePath: {
         [docSections.subprovider]: ['"subproviders/src/subproviders/subprovider"'],
         [docSections.ledgerSubprovider]: ['"subproviders/src/subproviders/ledger"'],
+        [docSections.privateKeyWalletSubprovider]: ['"subproviders/src/subproviders/private_key_wallet"'],
+        [docSections.mnemonicWalletSubprovider]: ['"subproviders/src/subproviders/mnemonic_wallet"'],
         [docSections.factoryMethods]: ['"subproviders/src/index"'],
         [docSections.emptyWalletSubprovider]: ['"subproviders/src/subproviders/empty_wallet_subprovider"'],
         [docSections.fakeGasEstimateSubprovider]: ['"subproviders/src/subproviders/fake_gas_estimate_subprovider"'],
@@ -75,6 +81,8 @@ const docsInfoConfig: DocsInfoConfig = {
     visibleConstructors: [
         docSections.subprovider,
         docSections.ledgerSubprovider,
+        docSections.privateKeyWalletSubprovider,
+        docSections.mnemonicWalletSubprovider,
         docSections.emptyWalletSubprovider,
         docSections.fakeGasEstimateSubprovider,
         docSections.injectedWeb3Subprovider,
@@ -97,6 +105,7 @@ const docsInfoConfig: DocsInfoConfig = {
             'PartialTxParams',
             'LedgerEthereumClient',
             'LedgerSubproviderConfigs',
+            'MnemonicWalletSubproviderConfigs',
         ],
         typeNameToExternalLink: {
             Web3: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',

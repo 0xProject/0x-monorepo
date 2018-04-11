@@ -59,12 +59,12 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
     }
     /**
      * Sign a personal Ethereum signed message. The signing address will be calculated from the private key.
-     * if an address is provided it must match the address calculated from the private key.
+     * The address must be provided it must match the address calculated from the private key.
      * If you've added this Subprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
-     * @param data Message to sign
-     * @param address Address to sign with
+     * @param data Hex string message to sign
+     * @param address Address of the account to sign with
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
