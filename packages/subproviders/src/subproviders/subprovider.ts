@@ -2,13 +2,14 @@ import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types'
 import { promisify } from '@0xproject/utils';
 import * as Web3 from 'web3';
 
-import { JSONRPCRequestPayloadWithMethod } from '../types';
+import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../types';
 /**
  * A altered version of the base class Subprovider found in [web3-provider-engine](https://github.com/MetaMask/provider-engine).
  * This one has an async/await `emitPayloadAsync` and also defined types.
  */
-export class Subprovider {
-    private _engine: any;
+export abstract class Subprovider {
+    // tslint:disable-next-line:underscore-private-and-protected
+    private engine: any;
     // Ported from: https://github.com/MetaMask/provider-engine/blob/master/util/random-id.js
     private static _getRandomId() {
         const extraDigits = 3;
@@ -31,6 +32,13 @@ export class Subprovider {
         };
         return finalPayload;
     }
+    // tslint:disable-next-line:async-suffix
+    public abstract async handleRequest(
+        payload: JSONRPCRequestPayload,
+        next: Callback,
+        end: ErrorCallback,
+    ): Promise<void>;
+
     /**
      * Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
      * this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -40,7 +48,7 @@ export class Subprovider {
      */
     public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayloadWithMethod>): Promise<JSONRPCResponsePayload> {
         const finalPayload = Subprovider._createFinalPayload(payload);
-        const response = await promisify<JSONRPCResponsePayload>(this._engine.sendAsync, this._engine)(finalPayload);
+        const response = await promisify<JSONRPCResponsePayload>(this.engine.sendAsync, this.engine)(finalPayload);
         return response;
     }
     /**
@@ -49,6 +57,6 @@ export class Subprovider {
      * directly.
      */
     public setEngine(engine: any): void {
-        this._engine = engine;
+        this.engine = engine;
     }
 }

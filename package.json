@@ -13,6 +13,7 @@
         "test:installation": "node ./packages/monorepo-scripts/lib/test_installation.js",
         "lerna:install": "yarn install",
         "lerna:run": "lerna run",
+        "lerna:test": "lerna run test",
         "lerna:clean": "lerna run clean",
         "lerna:build": "lerna run build",
         "lerna:rebuild": "run-s lerna:clean lerna:build",

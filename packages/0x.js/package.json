@@ -15,16 +15,16 @@
         "build:watch": "tsc -w",
         "prebuild": "run-s clean generate_contract_wrappers",
         "build": "run-p build:umd:prod build:commonjs; exit 0;",
-        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
+        "generate_contract_wrappers": "node ../abi-gen/lib/index.js --abis 'src/compact_artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken|TokenRegistry|DummyToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers && prettier --write 'src/contract_wrappers/generated/**.ts'",
         "lint": "tslint --project . 'src/**/*.ts' 'test/**/*.ts'",
         "test:circleci": "run-s test:coverage",
         "test": "run-s clean test:commonjs",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "update_contracts": "for i in ${npm_package_config_artifacts}; do copyfiles -u 4 ../contracts/build/contracts/$i.json ../0x.js/src/artifacts; done;",
+        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/src/artifacts/$i.json test/artifacts; done;",
         "clean": "shx rm -rf _bundles lib test_temp scripts",
         "build:umd:prod": "NODE_ENV=production webpack",
-        "build:commonjs": "tsc && copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build:commonjs": "tsc && yarn update_artifacts && copyfiles -u 2 './src/compact_artifacts/**/*.json' ./lib/src/compact_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "test:commonjs": "run-s build:commonjs run_mocha",
         "run_mocha": "mocha lib/test/**/*_test.js --timeout 10000 --bail --exit",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
@@ -33,7 +33,8 @@
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
-        "artifacts": "TokenTransferProxy Exchange TokenRegistry Token EtherToken",
+        "compact_artifacts": "Exchange DummyToken ZRXToken Token EtherToken TokenTransferProxy TokenRegistry",
+        "contracts": "Exchange DummyToken ZRXToken Token WETH9 TokenTransferProxy MultiSigWallet MultiSigWalletWithTimeLock MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress MaliciousToken TokenRegistry Arbitrage EtherDelta AccountLevels",
         "postpublish": {
             "assets": [
                 "packages/0x.js/_bundles/index.js",
@@ -60,8 +61,10 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
+        "@0xproject/deployer": "^0.4.0",
         "@0xproject/dev-utils": "^0.3.5",
         "@0xproject/monorepo-scripts": "^0.1.17",
+        "@0xproject/subproviders": "^0.8.4",
         "@0xproject/tslint-config": "^0.4.15",
         "@types/bintrees": "^1.0.2",
         "@types/lodash": "4.14.104",
@@ -90,6 +93,7 @@
         "tslint": "5.8.0",
         "typedoc": "0xProject/typedoc",
         "typescript": "2.7.1",
+        "web3-provider-engine": "^13.0.1",
         "webpack": "^3.1.0"
     },
     "dependencies": {
@@ -110,6 +114,9 @@
         "lodash": "^4.17.4",
         "uuid": "^3.1.0",
         "web3": "^0.20.0"
+    },
+    "optionalDependencies": {
+        "@0xproject/migrations": "^0.0.1"
     },
     "publishConfig": {
         "access": "public"

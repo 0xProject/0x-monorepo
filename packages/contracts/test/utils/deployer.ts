@@ -8,7 +8,7 @@ import { web3 } from './web3_wrapper';
 
 const deployerOpts = {
     provider: web3.currentProvider,
-    artifactsDir: path.resolve('src', 'artifacts'),
+    artifactsDir: path.resolve('lib', 'src', 'artifacts'),
     networkId: constants.TESTRPC_NETWORK_ID,
     defaults: {
         gas: devConstants.GAS_ESTIMATE,

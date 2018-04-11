@@ -1,0 +1,1 @@
+export { runMigrationsAsync } from './migration';
