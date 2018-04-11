@@ -260,8 +260,7 @@ describe('EtherTokenWrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = reportNodeCallbackErrors(done)();
-                const newProvider = provider;
-                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+                zeroEx.setProvider(provider, constants.TESTRPC_NETWORK_ID);
                 await zeroEx.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
                 zeroEx.etherToken.subscribe(
                     etherTokenAddress,

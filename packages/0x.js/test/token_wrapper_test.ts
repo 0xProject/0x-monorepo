@@ -425,8 +425,7 @@ describe('TokenWrapper', () => {
                 );
                 zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackNeverToBeCalled);
                 const callbackToBeCalled = reportNodeCallbackErrors(done)();
-                const newProvider = provider;
-                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+                zeroEx.setProvider(provider, constants.TESTRPC_NETWORK_ID);
                 zeroEx.token.subscribe(tokenAddress, TokenEvents.Transfer, indexFilterValues, callbackToBeCalled);
                 await zeroEx.token.transferAsync(tokenAddress, coinbase, addressWithoutFunds, transferAmount);
             })().catch(done);

@@ -42,10 +42,9 @@ describe('ZeroEx library', () => {
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.not.be.undefined();
             expect((zeroEx.tokenRegistry as any)._tokenRegistryContractIfExists).to.not.be.undefined();
 
-            const newProvider = provider;
             // Add property to newProvider so that we can differentiate it from old provider
-            (newProvider as any).zeroExTestId = 1;
-            zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+            (provider as any).zeroExTestId = 1;
+            zeroEx.setProvider(provider, constants.TESTRPC_NETWORK_ID);
 
             // Check that contractInstances with old provider are removed after provider update
             expect((zeroEx.exchange as any)._exchangeContractIfExists).to.be.undefined();

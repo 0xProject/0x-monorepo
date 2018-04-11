@@ -976,8 +976,7 @@ describe('ExchangeWrapper', () => {
                 );
                 zeroEx.exchange.subscribe(ExchangeEvents.LogFill, indexFilterValues, callbackNeverToBeCalled);
 
-                const newProvider = provider;
-                zeroEx.setProvider(newProvider, constants.TESTRPC_NETWORK_ID);
+                zeroEx.setProvider(provider, constants.TESTRPC_NETWORK_ID);
 
                 const callback = reportNodeCallbackErrors(done)(
                     (logEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
