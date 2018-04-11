@@ -170,7 +170,7 @@ export class Deployer {
             const contractArtifact: ContractArtifact = require(artifactPath);
             return contractArtifact;
         } catch (err) {
-            throw new Error(`Artifact not found for contract: ${contractName}`);
+            throw new Error(`Artifact not found for contract: ${contractName} at ${artifactPath}`);
         }
     }
     /**
