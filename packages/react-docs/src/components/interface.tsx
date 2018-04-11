@@ -19,7 +19,7 @@ export function Interface(props: InterfaceProps) {
         return (
             <span key={`property-${property.name}-${property.type}-${type.name}`}>
                 {property.name}:{' '}
-                {property.type.typeDocType !== TypeDocTypes.Reflection ? (
+                {property.type && property.type.typeDocType !== TypeDocTypes.Reflection ? (
                     <Type type={property.type} sectionName={props.sectionName} docsInfo={props.docsInfo} />
                 ) : (
                     <Signature
@@ -27,7 +27,6 @@ export function Interface(props: InterfaceProps) {
                         returnType={property.type.method.returnType}
                         parameters={property.type.method.parameters}
                         typeParameter={property.type.method.typeParameter}
-                        callPath={property.type.method.callPath}
                         sectionName={props.sectionName}
                         shouldHideMethodName={true}
                         shouldUseArrowSyntax={true}

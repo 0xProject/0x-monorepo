@@ -24,7 +24,8 @@
             "assets": [],
             "docPublishConfigs": {
                 "extraFileIncludes": [
-                    "../subproviders/src/types.ts"
+                    "../subproviders/src/types.ts",
+                    "../types/src/index.ts"
                 ],
                 "s3BucketPath": "s3://doc-jsons/sol-cov/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/sol-cov/"

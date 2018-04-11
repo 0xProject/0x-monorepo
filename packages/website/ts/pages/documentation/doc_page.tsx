@@ -8,14 +8,14 @@ import semverSort = require('semver-sort');
 import { SidebarHeader } from 'ts/components/sidebar_header';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DocPackages, Environments } from 'ts/types';
+import { DocPackages } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
-const isDevelopment = configs.ENVIRONMENT === Environments.DEVELOPMENT;
+const isDevelopmentOrStaging = utils.isDevelopment() || utils.isStaging();
 const DEFAULT_ICON = 'docs.png';
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
@@ -106,7 +106,9 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
         const folderName = docIdToSubpackageName[this.props.docsInfo.id];
-        const docBucketRoot = isDevelopment ? constants.S3_STAGING_DOC_BUCKET_ROOT : constants.S3_DOC_BUCKET_ROOT;
+        const docBucketRoot = isDevelopmentOrStaging
+            ? constants.S3_STAGING_DOC_BUCKET_ROOT
+            : constants.S3_DOC_BUCKET_ROOT;
         const versionToFilePath = await docUtils.getVersionToFilePathAsync(docBucketRoot, folderName);
         const versions = _.keys(versionToFilePath);
         this.props.dispatcher.updateAvailableDocVersions(versions);
