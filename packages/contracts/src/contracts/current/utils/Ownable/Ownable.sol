@@ -7,7 +7,9 @@ pragma solidity ^0.4.21;
  * Provides onlyOwner modifier, which prevents function from running if it is called by anyone other than the owner.
  */
 
-contract Ownable {
+import "../Ownable/IOwnable.sol";
+
+contract Ownable is IOwnable {
     address public owner;
 
     function Ownable()

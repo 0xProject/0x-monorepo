@@ -26,8 +26,9 @@
         "test:circleci": "yarn test:coverage"
     },
     "config": {
-        "abis": "../migrations/src/artifacts/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken).json",
-        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry"
+        "abis": "../migrations/src/artifacts/@(DummyToken|TokenTransferProxy|Exchange|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|AssetProxyDispatcher|ERC20TransferProxy_v1|ERC20TransferProxy|ERC721TransferProxy|DummyERC721Token).json",
+        "contracts": "Exchange,DummyToken,ZRXToken,Token,WETH9,TokenTransferProxy,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,MaliciousToken,TokenRegistry,AssetProxyDispatcher,ERC20TransferProxy_v1,ERC20TransferProxy,ERC721TransferProxy,DummyERC721Token",
+        "dirs": "src/contracts,zeppelin:../../node_modules/zeppelin-solidity"
     },
     "repository": {
         "type": "git",
@@ -71,6 +72,7 @@
         "ethereumjs-util": "^5.1.1",
         "ethers-contracts": "^2.2.1",
         "lodash": "^4.17.4",
-        "web3": "^0.20.0"
+        "web3": "^0.20.0",
+        "zeppelin-solidity": "^1.8.0"
     }
 }
