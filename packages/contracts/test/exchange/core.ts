@@ -21,9 +21,9 @@ import {
 } from '../../src/contract_wrappers/generated/exchange';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import {
-    encodeERC20ProxyMetadata,
-    encodeERC20ProxyMetadata_V1,
-    encodeERC721ProxyMetadata,
+    encodeERC20ProxyData,
+    encodeERC20V1ProxyData,
+    encodeERC721ProxyData,
 } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
@@ -132,7 +132,7 @@ describe('Exchange', () => {
 
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
-            encodeERC20ProxyMetadata(zrx.address),
+            encodeERC20ProxyData(zrx.address),
             assetProxyDispatcher.address,
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
@@ -183,8 +183,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetData: encodeERC20ProxyMetadata(rep.address),
-            takerAssetData: encodeERC20ProxyMetadata(dgd.address),
+            makerAssetData: encodeERC20ProxyData(rep.address),
+            takerAssetData: encodeERC20ProxyData(dgd.address),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -966,8 +966,8 @@ describe('Exchange', () => {
                 takerTokenAddress: ck.address,
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyMetadata(ck.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyMetadata(ck.address, takerTokenId),
+                makerAssetData: encodeERC721ProxyData(ck.address, makerTokenId),
+                takerAssetData: encodeERC721ProxyData(ck.address, takerTokenId),
             });
 
             // Verify pre-conditions
@@ -996,8 +996,8 @@ describe('Exchange', () => {
                 takerTokenAddress: ck.address,
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyMetadata(ck.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyMetadata(ck.address, takerTokenId),
+                makerAssetData: encodeERC721ProxyData(ck.address, makerTokenId),
+                takerAssetData: encodeERC721ProxyData(ck.address, takerTokenId),
             });
 
             // Verify pre-conditions
@@ -1026,8 +1026,8 @@ describe('Exchange', () => {
                 takerTokenAddress: ck.address,
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyMetadata(ck.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyMetadata(ck.address, takerTokenId),
+                makerAssetData: encodeERC721ProxyData(ck.address, makerTokenId),
+                takerAssetData: encodeERC721ProxyData(ck.address, takerTokenId),
             });
 
             // Verify pre-conditions
@@ -1052,8 +1052,8 @@ describe('Exchange', () => {
                 takerTokenAddress: ck.address,
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyMetadata(ck.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyMetadata(ck.address, takerTokenId),
+                makerAssetData: encodeERC721ProxyData(ck.address, makerTokenId),
+                takerAssetData: encodeERC721ProxyData(ck.address, takerTokenId),
             });
 
             // Verify pre-conditions
@@ -1078,8 +1078,8 @@ describe('Exchange', () => {
                 takerTokenAddress: ck.address,
                 makerTokenAmount: new BigNumber(2),
                 takerTokenAmount: new BigNumber(1),
-                makerAssetData: encodeERC721ProxyMetadata(ck.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyMetadata(ck.address, takerTokenId),
+                makerAssetData: encodeERC721ProxyData(ck.address, makerTokenId),
+                takerAssetData: encodeERC721ProxyData(ck.address, takerTokenId),
             });
 
             // Verify pre-conditions
@@ -1104,8 +1104,8 @@ describe('Exchange', () => {
                 takerTokenAddress: ck.address,
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(500),
-                makerAssetData: encodeERC721ProxyMetadata(ck.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyMetadata(ck.address, takerTokenId),
+                makerAssetData: encodeERC721ProxyData(ck.address, makerTokenId),
+                takerAssetData: encodeERC721ProxyData(ck.address, takerTokenId),
             });
 
             // Verify pre-conditions
@@ -1130,8 +1130,8 @@ describe('Exchange', () => {
                 takerTokenAddress: ck.address,
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: new BigNumber(0),
-                makerAssetData: encodeERC721ProxyMetadata(ck.address, makerTokenId),
-                takerAssetData: encodeERC721ProxyMetadata(ck.address, takerTokenId),
+                makerAssetData: encodeERC721ProxyData(ck.address, makerTokenId),
+                takerAssetData: encodeERC721ProxyData(ck.address, takerTokenId),
             });
 
             // Verify pre-conditions
@@ -1155,8 +1155,8 @@ describe('Exchange', () => {
                 takerTokenAddress: dgd.address,
                 makerTokenAmount: new BigNumber(1),
                 takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                makerAssetData: encodeERC721ProxyMetadata(ck.address, makerTokenId),
-                takerAssetData: encodeERC20ProxyMetadata(dgd.address),
+                makerAssetData: encodeERC721ProxyData(ck.address, makerTokenId),
+                takerAssetData: encodeERC20ProxyData(dgd.address),
             });
 
             // Verify pre-conditions
@@ -1199,8 +1199,8 @@ describe('Exchange', () => {
                 makerTokenAddress: dgd.address,
                 takerTokenAmount: new BigNumber(1),
                 makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetData: encodeERC721ProxyMetadata(ck.address, takerTokenId),
-                makerAssetData: encodeERC20ProxyMetadata(dgd.address),
+                takerAssetData: encodeERC721ProxyData(ck.address, takerTokenId),
+                makerAssetData: encodeERC20ProxyData(dgd.address),
             });
 
             // Verify pre-conditions

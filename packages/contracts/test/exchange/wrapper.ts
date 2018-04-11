@@ -16,9 +16,9 @@ import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange
 import { TokenRegistryContract } from '../../src/contract_wrappers/generated/token_registry';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
 import {
-    encodeERC20ProxyMetadata,
-    encodeERC20ProxyMetadata_V1,
-    encodeERC721ProxyMetadata,
+    encodeERC20ProxyData,
+    encodeERC20V1ProxyData,
+    encodeERC721ProxyData,
 } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
@@ -100,7 +100,7 @@ describe('Exchange', () => {
         );
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
-            encodeERC20ProxyMetadata(zrx.address),
+            encodeERC20ProxyData(zrx.address),
             assetProxyDispatcher.address,
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
@@ -139,8 +139,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetData: encodeERC20ProxyMetadata(rep.address),
-            takerAssetData: encodeERC20ProxyMetadata(dgd.address),
+            makerAssetData: encodeERC20ProxyData(rep.address),
+            takerAssetData: encodeERC20ProxyData(dgd.address),
         };
 
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
@@ -341,7 +341,7 @@ describe('Exchange', () => {
                 makerTokenAddress: zrx.address,
                 makerTokenAmount: makerZRXBalance,
                 makerFee: new BigNumber(1),
-                makerAssetData: encodeERC20ProxyMetadata(zrx.address),
+                makerAssetData: encodeERC20ProxyData(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -354,7 +354,7 @@ describe('Exchange', () => {
                 makerTokenAddress: zrx.address,
                 makerTokenAmount: new BigNumber(makerZRXAllowance),
                 makerFee: new BigNumber(1),
-                makerAssetData: encodeERC20ProxyMetadata(zrx.address),
+                makerAssetData: encodeERC20ProxyData(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -367,7 +367,7 @@ describe('Exchange', () => {
                 takerTokenAddress: zrx.address,
                 takerTokenAmount: takerZRXBalance,
                 takerFee: new BigNumber(1),
-                takerAssetData: encodeERC20ProxyMetadata(zrx.address),
+                takerAssetData: encodeERC20ProxyData(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -380,7 +380,7 @@ describe('Exchange', () => {
                 takerTokenAddress: zrx.address,
                 takerTokenAmount: new BigNumber(takerZRXAllowance),
                 takerFee: new BigNumber(1),
-                takerAssetData: encodeERC20ProxyMetadata(zrx.address),
+                takerAssetData: encodeERC20ProxyData(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
