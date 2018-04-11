@@ -59,8 +59,15 @@ describe('LedgerSubprovider', () => {
                 data,
                 fixtureData.TEST_RPC_ACCOUNT_0,
             );
-            expect(ecSignatureHex.length).to.be.equal(132);
             expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
+        });
+        it('signs a personal message with second address', async () => {
+            const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
+            const ecSignatureHex = await ledgerSubprovider.signPersonalMessageAsync(
+                data,
+                fixtureData.TEST_RPC_ACCOUNT_1,
+            );
+            expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_ACCOUNT_1_SIGNED_RESULT);
         });
         it('signs a transaction', async () => {
             const txHex = await ledgerSubprovider.signTransactionAsync(fixtureData.TX_DATA);
