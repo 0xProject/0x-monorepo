@@ -30,7 +30,7 @@ contract MixinSettlementProxy is
     LibPartialAmount
 {
     IAssetProxy TRANSFER_PROXY;
-    bytes ZRX_PROXY_METADATA;
+    bytes ZRX_PROXY_DATA;
     IToken ZRX_TOKEN;
 
     function transferProxy()
@@ -47,22 +47,22 @@ contract MixinSettlementProxy is
         return ZRX_TOKEN;
     }
 
-    function zrxProxyMetadata()
+    function zrxProxyData()
         external view
         returns (bytes)
     {
-        return ZRX_PROXY_METADATA;
+        return ZRX_PROXY_DATA;
     }
 
     function MixinSettlementProxy(
         IAssetProxy assetProxyDispatcherContract,
         IToken zrxToken,
-        bytes zrxProxyMetadata)
+        bytes zrxProxyData)
         public
     {
         ZRX_TOKEN = zrxToken;
         TRANSFER_PROXY = assetProxyDispatcherContract;
-        ZRX_PROXY_METADATA = zrxProxyMetadata;
+        ZRX_PROXY_DATA = zrxProxyData;
     }
 
     function settleOrder(
@@ -93,7 +93,7 @@ contract MixinSettlementProxy is
             if (order.makerFee > 0) {
                 makerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.makerFee);
                 TRANSFER_PROXY.transferFrom(
-                    ZRX_PROXY_METADATA,
+                    ZRX_PROXY_DATA,
                     order.makerAddress,
                     order.feeRecipientAddress,
                     makerFeePaid
@@ -102,7 +102,7 @@ contract MixinSettlementProxy is
             if (order.takerFee > 0) {
                 takerFeePaid = getPartialAmount(takerTokenFilledAmount, order.takerTokenAmount, order.takerFee);
                 TRANSFER_PROXY.transferFrom(
-                    ZRX_PROXY_METADATA,
+                    ZRX_PROXY_DATA,
                     takerAddress,
                     order.feeRecipientAddress,
                     takerFeePaid
