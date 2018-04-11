@@ -73,6 +73,11 @@ describe('LedgerSubprovider', () => {
             const txHex = await ledgerSubprovider.signTransactionAsync(fixtureData.TX_DATA);
             expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
         });
+        it('signs a transaction with the second address', async () => {
+            const txData = { ...fixtureData.TX_DATA, from: fixtureData.TEST_RPC_ACCOUNT_1 };
+            const txHex = await ledgerSubprovider.signTransactionAsync(txData);
+            expect(txHex).to.be.equal(fixtureData.TX_DATA_ACCOUNT_1_SIGNED_RESULT);
+        });
     });
     describe('calls through a provider', () => {
         let defaultProvider: Web3ProviderEngine;

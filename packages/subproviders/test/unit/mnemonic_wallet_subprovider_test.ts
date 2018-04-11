@@ -48,6 +48,11 @@ describe('MnemonicWalletSubprovider', () => {
                 const txHex = await subprovider.signTransactionAsync(fixtureData.TX_DATA);
                 expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
             });
+            it('signs a transaction with the second address', async () => {
+                const txData = { ...fixtureData.TX_DATA, from: fixtureData.TEST_RPC_ACCOUNT_1 };
+                const txHex = await subprovider.signTransactionAsync(txData);
+                expect(txHex).to.be.equal(fixtureData.TX_DATA_ACCOUNT_1_SIGNED_RESULT);
+            });
         });
         describe('failure cases', () => {
             it('throws an error if account cannot be found', async () => {
