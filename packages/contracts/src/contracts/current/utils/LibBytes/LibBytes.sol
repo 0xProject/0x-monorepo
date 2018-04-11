@@ -48,13 +48,13 @@ contract LibBytes {
     }
 
     /// @dev Writes an address into a specific position in a byte array.
-    /// @param input Address to put into byte array.
     /// @param b Byte array to insert address into.
     /// @param index Index in byte array of address.
+    /// @param input Address to put into byte array.
     function writeAddress(
-        address input,
         bytes b,
-        uint256 index)
+        uint256 index,
+        address input)
         public pure
     {
         require(b.length >= index + 20); // 20 is length of address
@@ -104,13 +104,13 @@ contract LibBytes {
     }
 
     /// @dev Writes a uint256 into a specific position in a byte array.
-    /// @param input uint256 to put into byte array.
     /// @param b Byte array to insert <input> into.
     /// @param index Index in byte array of <input>.
+    /// @param input uint256 to put into byte array.
     function writeUint256(
-        uint256 input,
         bytes b,
-        uint256 index)
+        uint256 index,
+        uint256 input)
         public pure
     {
         require(b.length >= index + 32);

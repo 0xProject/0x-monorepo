@@ -63,7 +63,7 @@ contract ERC20TransferProxy is
         // Encode fields into a byte array
         assetMetadata = new bytes(21);
         assetMetadata[0] = byte(assetProxyId);
-        writeAddress(tokenAddress, assetMetadata, 1);
+        writeAddress(assetMetadata, 1, tokenAddress);
         return assetMetadata;
     }
 
