@@ -22,20 +22,20 @@ pragma experimental ABIEncoderV2;
 import "./mixins/MSettlement.sol";
 import "../../tokens/Token/IToken.sol";
 import "./LibPartialAmount.sol";
-import "../AssetProxyDispatcher/IAssetProxyDispatcher.sol";
+import "../AssetProxyDispatcher/IAssetProxy.sol";
 
 /// @dev Provides MixinSettlement
 contract MixinSettlementProxy is
     MSettlement,
     LibPartialAmount
 {
-    IAssetProxyDispatcher TRANSFER_PROXY;
+    IAssetProxy TRANSFER_PROXY;
     bytes ZRX_PROXY_METADATA;
     IToken ZRX_TOKEN;
 
     function transferProxy()
         public view
-        returns (IAssetProxyDispatcher)
+        returns (IAssetProxy)
     {
         return TRANSFER_PROXY;
     }
@@ -55,7 +55,7 @@ contract MixinSettlementProxy is
     }
 
     function MixinSettlementProxy(
-        IAssetProxyDispatcher assetProxyDispatcherContract,
+        IAssetProxy assetProxyDispatcherContract,
         IToken zrxToken,
         bytes zrxProxyMetadata)
         public
@@ -64,8 +64,6 @@ contract MixinSettlementProxy is
         TRANSFER_PROXY = assetProxyDispatcherContract;
         ZRX_PROXY_METADATA = zrxProxyMetadata;
     }
-
-
 
     function settleOrder(
         Order memory order,
