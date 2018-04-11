@@ -66,7 +66,7 @@ describe('AssetProxyDispatcher', () => {
             provider,
         );
         // Deploy ERC20 V1 Proxy
-        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20Proxy_V1, [
+        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20V1Proxy, [
             tokenTransferProxy.address,
         ]);
         erc20TransferProxyV1 = new ERC20Proxy_v1Contract(
