@@ -1,10 +1,19 @@
 [
     {
-        "version": "0.5.1",
+        "version": "0.5.2",
         "changes": [
             {
                 "note": "Export NULL_BYTES constant",
                 "pr": 500
+            }
+        ]
+    },
+    {
+        "timestamp": 1523462196,
+        "version": "0.5.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

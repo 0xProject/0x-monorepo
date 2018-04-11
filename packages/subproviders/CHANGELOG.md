@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.8.5 - _April 11, 2018_
+
+    * Add private key subprovider and refactor shared functionality into a base wallet subprovider (#506)
+
 ## v0.8.4 - _April 2, 2018_
 
     * Dependencies updated
