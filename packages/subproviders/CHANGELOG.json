@@ -7,7 +7,8 @@
                 "pr": 506
             },
             {
-                "note": "Add mnemonic wallet subprovider, deprecating our truffle-hdwallet-provider fork",
+                "note":
+                    "Add mnemonic wallet subprovider, deprecating our truffle-hdwallet-provider fork. Support multiple addresses in ledger and mnemonic wallets",
                 "pr": 507
             }
         ]

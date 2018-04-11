@@ -19,31 +19,32 @@ const DEFAULT_DERIVATION_PATH = `44'/60'/0'/0`;
  */
 export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     private _addressSearchLimit: number;
-    private _derivationPath: string;
+    private _derivationBasePath: string;
     private _derivedKey: DerivedHDKey;
     /**
      * Instantiates a MnemonicWalletSubprovider. Defaults to derivationPath set to `44'/60'/0'/0`.
      * This is the default in TestRPC/Ganache, this can be overridden if desired.
      * @param mnemonic The mnemonic seed
-     * @param derivationPath The derivation path, defaults to `44'/60'/0'/0`
+     * @param derivationBasePath The derivation path, defaults to `44'/60'/0'/0`
      * @param addressSearchLimit The limit on address search attempts before raising `WalletSubproviderErrors.AddressNotFound`
      * @return MnemonicWalletSubprovider instance
      */
     constructor(
         mnemonic: string,
-        derivationPath: string = DEFAULT_DERIVATION_PATH,
+        derivationBasePath: string = DEFAULT_DERIVATION_PATH,
         addressSearchLimit: number = walletUtils.DEFAULT_ADDRESS_SEARCH_LIMIT,
     ) {
         assert.isString('mnemonic', mnemonic);
-        assert.isString('derivationPath', derivationPath);
+        assert.isString('derivationPath', derivationBasePath);
         assert.isNumber('addressSearchLimit', addressSearchLimit);
         super();
         const seed = bip39.mnemonicToSeed(mnemonic);
         const hdKey = HDNode.fromMasterSeed(seed);
-        this._derivationPath = derivationPath;
+        this._derivationBasePath = derivationBasePath;
         this._derivedKey = {
             address: walletUtils.addressOfHDKey(hdKey),
-            derivationPath: this._derivationPath,
+            derivationBasePath: this._derivationBasePath,
+            derivationPath: `${this._derivationBasePath}/${0}`,
             derivationIndex: 0,
             hdKey,
             isChildKey: false,
@@ -55,17 +56,17 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @returns derivation path
      */
     public getPath(): string {
-        return this._derivationPath;
+        return this._derivationBasePath;
     }
     /**
      * Set a desired derivation path when computing the available user addresses
      * @param derivationPath The desired derivation path (e.g `44'/60'/0'`)
      */
     public setPath(derivationPath: string) {
-        this._derivationPath = derivationPath;
+        this._derivationBasePath = derivationPath;
         this._derivedKey = {
             ...this._derivedKey,
-            derivationPath: this._derivationPath,
+            derivationBasePath: this._derivationBasePath,
         };
     }
     /**

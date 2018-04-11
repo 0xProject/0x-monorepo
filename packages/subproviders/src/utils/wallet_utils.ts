@@ -20,18 +20,19 @@ class DerivedHDKeyIterator implements IterableIterator<DerivedHDKey> {
     }
 
     public next(): IteratorResult<DerivedHDKey> {
-        const derivationPath = this._initialDerivedKey.derivationPath;
+        const derivationBasePath = this._initialDerivedKey.derivationBasePath;
         const derivationIndex = this._index;
         // If the DerivedHDKey is a child then we walk relative, if not we walk the full derivation path
-        const path = this._initialDerivedKey.isChildKey
-            ? `m/${derivationIndex}`
-            : `m/${derivationPath}/${derivationIndex}`;
+        const fullDerivationPath = `m/${derivationBasePath}/${derivationIndex}`;
+        const relativeDerivationPath = `m/${derivationIndex}`;
+        const path = this._initialDerivedKey.isChildKey ? relativeDerivationPath : fullDerivationPath;
         const hdKey = this._initialDerivedKey.hdKey.derive(path);
         const address = walletUtils.addressOfHDKey(hdKey);
         const derivedKey: DerivedHDKey = {
             address,
             hdKey,
-            derivationPath,
+            derivationPath: fullDerivationPath,
+            derivationBasePath: this._initialDerivedKey.derivationBasePath,
             derivationIndex,
             isChildKey: this._initialDerivedKey.isChildKey,
         };

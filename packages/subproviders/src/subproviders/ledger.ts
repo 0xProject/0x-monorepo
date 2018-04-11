@@ -24,7 +24,6 @@ import { BaseWalletSubprovider } from './base_wallet_subprovider';
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'`;
 const ASK_FOR_ON_DEVICE_CONFIRMATION = false;
 const SHOULD_GET_CHAIN_CODE = true;
-const IS_CHILD_KEY = true;
 
 /**
  * Subprovider for interfacing with a user's [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s).
@@ -35,7 +34,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     private _nonceLock = new Lock();
     private _connectionLock = new Lock();
     private _networkId: number;
-    private _derivationPath: string;
+    private _derivationBasePath: string;
     private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
     private _shouldAlwaysAskForConfirmation: boolean;
@@ -50,7 +49,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         super();
         this._networkId = config.networkId;
         this._ledgerEthereumClientFactoryAsync = config.ledgerEthereumClientFactoryAsync;
-        this._derivationPath = config.derivationPath || DEFAULT_DERIVATION_PATH;
+        this._derivationBasePath = config.derivationPath || DEFAULT_DERIVATION_PATH;
         this._shouldAlwaysAskForConfirmation =
             !_.isUndefined(config.accountFetchingConfigs) &&
             !_.isUndefined(config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation)
@@ -67,14 +66,14 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * @returns derivation path
      */
     public getPath(): string {
-        return this._derivationPath;
+        return this._derivationBasePath;
     }
     /**
      * Set a desired derivation path when computing the available user addresses
      * @param derivationPath The desired derivation path (e.g `44'/60'/0'`)
      */
     public setPath(derivationPath: string) {
-        this._derivationPath = derivationPath;
+        this._derivationBasePath = derivationPath;
     }
     /**
      * Retrieve a users Ledger accounts. The accounts are derived from the derivationPath,
@@ -88,8 +87,8 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     public async getAccountsAsync(
         numberOfAccounts: number = walletUtils.DEFAULT_NUM_ADDRESSES_TO_FETCH,
     ): Promise<string[]> {
-        const initialHDerivedKey = await this._initialDerivedKeyAsync();
-        const derivedKeys = walletUtils.calculateDerivedHDKeys(initialHDerivedKey, numberOfAccounts);
+        const initialDerivedKey = await this._initialDerivedKeyAsync();
+        const derivedKeys = walletUtils.calculateDerivedHDKeys(initialDerivedKey, numberOfAccounts);
         const accounts = _.map(derivedKeys, 'address');
         return accounts;
     }
@@ -117,8 +116,8 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
 
         const txHex = tx.serialize().toString('hex');
         try {
-            const derivationPath = `${derivedKey.derivationPath}/${derivedKey.derivationIndex}`;
-            const result = await ledgerClient.signTransaction(derivationPath, txHex);
+            const fullDerivationPath = derivedKey.derivationPath;
+            const result = await ledgerClient.signTransaction(fullDerivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
             tx.s = Buffer.from(result.s, 'hex');
@@ -161,8 +160,8 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
 
         const ledgerClient = await this._createLedgerClientAsync();
         try {
-            const derivationPath = `${derivedKey.derivationPath}/${derivedKey.derivationIndex}`;
-            const result = await ledgerClient.signPersonalMessage(derivationPath, ethUtil.stripHexPrefix(data));
+            const fullDerivationPath = derivedKey.derivationPath;
+            const result = await ledgerClient.signPersonalMessage(fullDerivationPath, ethUtil.stripHexPrefix(data));
             const v = result.v - 27;
             let vHex = v.toString(16);
             if (vHex.length < 2) {
@@ -203,7 +202,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         let ledgerResponse;
         try {
             ledgerResponse = await ledgerClient.getAddress(
-                this._derivationPath,
+                this._derivationBasePath,
                 this._shouldAlwaysAskForConfirmation,
                 SHOULD_GET_CHAIN_CODE,
             );
@@ -217,7 +216,8 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             hdKey,
             address: ledgerResponse.address,
             isChildKey: true,
-            derivationPath: this._derivationPath,
+            derivationBasePath: this._derivationBasePath,
+            derivationPath: `${this._derivationBasePath}/${0}`,
             derivationIndex: 0,
         };
     }

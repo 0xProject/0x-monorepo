@@ -114,8 +114,9 @@ export enum NonceSubproviderErrors {
 }
 export interface DerivedHDKey {
     address: string;
-    derivationPath: string;
     derivationIndex: number;
+    derivationBasePath: string;
+    derivationPath: string;
     hdKey: HDNode;
     isChildKey: boolean;
 }
