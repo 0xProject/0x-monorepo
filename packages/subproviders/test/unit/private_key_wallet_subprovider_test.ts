@@ -32,7 +32,7 @@ describe('PrivateKeyWalletSubprovider', () => {
             });
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
-                const ecSignatureHex = await subprovider.signPersonalMessageAsync(data);
+                const ecSignatureHex = await subprovider.signPersonalMessageAsync(data, fixtureData.TEST_RPC_ACCOUNT_0);
                 expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
             });
             it('signs a transaction', async () => {
@@ -128,6 +128,23 @@ describe('PrivateKeyWalletSubprovider', () => {
                 });
                 provider.sendAsync(payload, callback);
             });
+            it('should throw if `address` param is not an address from private key when calling personal_sign', (done: DoneCallback) => {
+                const nonHexMessage = 'hello world';
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'personal_sign',
+                    params: [nonHexMessage, fixtureData.TEST_RPC_ACCOUNT_1],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                    expect(err).to.not.be.a('null');
+                    expect(err.message).to.be.equal(
+                        `${WalletSubproviderErrors.FromAddressMissingOrInvalid}: ${fixtureData.TEST_RPC_ACCOUNT_1}`,
+                    );
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
             it('should throw if `from` param missing when calling eth_sendTransaction', (done: DoneCallback) => {
                 const tx = {
                     to: '0xafa3f8684e54059998bc3a7b0d2b0da075154d66',
@@ -175,7 +192,7 @@ describe('PrivateKeyWalletSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
-                    expect(err.message).to.be.equal(`${WalletSubproviderErrors.AddressNotFound}: 0x0`);
+                    expect(err.message).to.be.equal(`${WalletSubproviderErrors.FromAddressMissingOrInvalid}: 0x0`);
                     done();
                 });
                 provider.sendAsync(payload, callback);

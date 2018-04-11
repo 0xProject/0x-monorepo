@@ -80,7 +80,7 @@ export interface PartialTxParams {
     gasPrice?: string;
     gas: string;
     to: string;
-    from?: string;
+    from: string;
     value?: string;
     data?: string;
     chainId: number; // EIP 155 chainId - mainnet: 1, ropsten: 3
@@ -101,10 +101,10 @@ export enum WalletSubproviderErrors {
     AddressNotFound = 'ADDRESS_NOT_FOUND',
     DataMissingForSignPersonalMessage = 'DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE',
     SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
+    FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
 }
 export enum LedgerSubproviderErrors {
     TooOldLedgerFirmware = 'TOO_OLD_LEDGER_FIRMWARE',
-    FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
     MultipleOpenConnectionsDisallowed = 'MULTIPLE_OPEN_CONNECTIONS_DISALLOWED',
 }
 

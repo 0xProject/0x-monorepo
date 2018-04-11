@@ -36,7 +36,7 @@ describe('MnemonicWalletSubprovider', () => {
             });
             it('signs a personal message', async () => {
                 const data = ethUtils.bufferToHex(ethUtils.toBuffer(fixtureData.PERSONAL_MESSAGE_STRING));
-                const ecSignatureHex = await subprovider.signPersonalMessageAsync(data);
+                const ecSignatureHex = await subprovider.signPersonalMessageAsync(data, fixtureData.TEST_RPC_ACCOUNT_0);
                 expect(ecSignatureHex).to.be.equal(fixtureData.PERSONAL_MESSAGE_SIGNED_RESULT);
             });
             it('signs a transaction', async () => {

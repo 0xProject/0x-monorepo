@@ -63,15 +63,15 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
      * @param address Address to sign with
      * @return Signature hex string (order: rsv)
      */
-    public async signPersonalMessageAsync(dataIfExists: string, address?: string): Promise<string> {
-        if (_.isUndefined(dataIfExists)) {
+    public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
+        if (_.isUndefined(data)) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
-        if (!_.isUndefined(address) && address !== this._address) {
-            throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
+        if (_.isUndefined(address) || address !== this._address) {
+            throw new Error(`${WalletSubproviderErrors.FromAddressMissingOrInvalid}: ${address}`);
         }
-        assert.isHexString('data', dataIfExists);
-        const dataBuff = ethUtil.toBuffer(dataIfExists);
+        assert.isHexString('data', data);
+        const dataBuff = ethUtil.toBuffer(data);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
         const sig = ethUtil.ecsign(msgHashBuff, this._privateKeyBuffer);
         const rpcSig = ethUtil.toRpcSig(sig.v, sig.r, sig.s);

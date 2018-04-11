@@ -105,11 +105,9 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         LedgerSubprovider._validateTxParams(txParams);
         const initialDerivedKey = await this._initialDerivedKeyAsync();
-        const derivedKey = _.isUndefined(txParams.from)
-            ? walletUtils._firstDerivedKey(initialDerivedKey)
-            : this._findDerivedKeyByPublicAddress(initialDerivedKey, txParams.from);
+        const derivedKey = this._findDerivedKeyByPublicAddress(initialDerivedKey, txParams.from);
 
-        this._ledgerClientIfExists = await this._createLedgerClientAsync();
+        const ledgerClient = await this._createLedgerClientAsync();
 
         const tx = new EthereumTx(txParams);
 
@@ -121,7 +119,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         const txHex = tx.serialize().toString('hex');
         try {
             const derivationPath = `${derivedKey.derivationPath}/${derivedKey.derivationIndex}`;
-            const result = await this._ledgerClientIfExists.signTransaction(derivationPath, txHex);
+            const result = await ledgerClient.signTransaction(derivationPath, txHex);
             // Store signature in transaction
             tx.r = Buffer.from(result.r, 'hex');
             tx.s = Buffer.from(result.s, 'hex');
@@ -145,7 +143,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     }
     /**
      * Sign a personal Ethereum signed message. The signing address will be the one
-     * either the provided address or the first address on the ledger device.
+     * the provided address.
      * The Ledger adds the Ethereum signed message prefix on-device.  If you've added
      * the LedgerSubprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
@@ -154,23 +152,18 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * @param address Address to sign with
      * @return Signature hex string (order: rsv)
      */
-    public async signPersonalMessageAsync(data: string, address?: string): Promise<string> {
+    public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
         if (_.isUndefined(data)) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
         assert.isHexString('data', data);
         const initialDerivedKey = await this._initialDerivedKeyAsync();
-        const derivedKey = _.isUndefined(address)
-            ? walletUtils._firstDerivedKey(initialDerivedKey)
-            : this._findDerivedKeyByPublicAddress(initialDerivedKey, address);
+        const derivedKey = this._findDerivedKeyByPublicAddress(initialDerivedKey, address);
 
-        this._ledgerClientIfExists = await this._createLedgerClientAsync();
+        const ledgerClient = await this._createLedgerClientAsync();
         try {
             const derivationPath = `${derivedKey.derivationPath}/${derivedKey.derivationIndex}`;
-            const result = await this._ledgerClientIfExists.signPersonalMessage(
-                derivationPath,
-                ethUtil.stripHexPrefix(data),
-            );
+            const result = await ledgerClient.signPersonalMessage(derivationPath, ethUtil.stripHexPrefix(data));
             const v = result.v - 27;
             let vHex = v.toString(16);
             if (vHex.length < 2) {
@@ -192,6 +185,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         }
         const ledgerEthereumClient = await this._ledgerEthereumClientFactoryAsync();
         this._connectionLock.release();
+        this._ledgerClientIfExists = ledgerEthereumClient;
         return ledgerEthereumClient;
     }
     private async _destroyLedgerClientAsync() {
@@ -205,11 +199,11 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         this._connectionLock.release();
     }
     private async _initialDerivedKeyAsync(): Promise<DerivedHDKey> {
-        this._ledgerClientIfExists = await this._createLedgerClientAsync();
+        const ledgerClient = await this._createLedgerClientAsync();
 
         let ledgerResponse;
         try {
-            ledgerResponse = await this._ledgerClientIfExists.getAddress(
+            ledgerResponse = await ledgerClient.getAddress(
                 this._derivationPath,
                 this._shouldAlwaysAskForConfirmation,
                 SHOULD_GET_CHAIN_CODE,
@@ -229,6 +223,9 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         };
     }
     private _findDerivedKeyByPublicAddress(initalHDKey: DerivedHDKey, address: string): DerivedHDKey {
+        if (_.isUndefined(address)) {
+            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
+        }
         const matchedDerivedKey = walletUtils.findDerivedKeyByAddress(address, initalHDKey, this._addressSearchLimit);
         if (_.isUndefined(matchedDerivedKey)) {
             throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);

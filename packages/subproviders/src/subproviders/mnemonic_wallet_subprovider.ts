@@ -63,6 +63,10 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      */
     public setPath(derivationPath: string) {
         this._derivationPath = derivationPath;
+        this._derivedKey = {
+            ...this._derivedKey,
+            derivationPath: this._derivationPath,
+        };
     }
     /**
      * Retrieve the accounts associated with the mnemonic.
@@ -88,10 +92,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        const derivedKey = _.isUndefined(txParams.from)
-            ? walletUtils._firstDerivedKey(this._derivedKey)
-            : this._findDerivedKeyByPublicAddress(txParams.from);
-        const privateKeyWallet = new PrivateKeyWalletSubprovider(derivedKey.hdKey.privateKey.toString('hex'));
+        const privateKeyWallet = this._privateKeyWalletFromAddress(txParams.from);
         const signedTx = privateKeyWallet.signTransactionAsync(txParams);
         return signedTx;
     }
@@ -105,15 +106,21 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @param address Address to sign with
      * @return Signature hex string (order: rsv)
      */
-    public async signPersonalMessageAsync(data: string, address?: string): Promise<string> {
-        const derivedKey = _.isUndefined(address)
-            ? walletUtils._firstDerivedKey(this._derivedKey)
-            : this._findDerivedKeyByPublicAddress(address);
-        const privateKeyWallet = new PrivateKeyWalletSubprovider(derivedKey.hdKey.privateKey.toString('hex'));
-        const sig = await privateKeyWallet.signPersonalMessageAsync(data, derivedKey.address);
+    public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
+        const privateKeyWallet = this._privateKeyWalletFromAddress(address);
+        const sig = await privateKeyWallet.signPersonalMessageAsync(data, address);
         return sig;
     }
+    private _privateKeyWalletFromAddress(address: string): PrivateKeyWalletSubprovider {
+        const derivedKey = this._findDerivedKeyByPublicAddress(address);
+        const privateKeyHex = derivedKey.hdKey.privateKey.toString('hex');
+        const privateKeyWallet = new PrivateKeyWalletSubprovider(privateKeyHex);
+        return privateKeyWallet;
+    }
     private _findDerivedKeyByPublicAddress(address: string): DerivedHDKey {
+        if (_.isUndefined(address)) {
+            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
+        }
         const matchedDerivedKey = walletUtils.findDerivedKeyByAddress(
             address,
             this._derivedKey,
