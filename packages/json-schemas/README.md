@@ -2,7 +2,7 @@
 
 Contains 0x-related json schemas
 
-### Read the [Documentation](0xproject.com/docs/json-schemas).
+### Read the [Documentation](https://0xproject.com/docs/json-schemas).
 
 ## Installation
 

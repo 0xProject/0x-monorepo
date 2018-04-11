@@ -21,3 +21,7 @@ export enum SemVerIndex {
     Minor,
     Major,
 }
+
+export interface PackageToVersionChange {
+    [name: string]: string;
+}

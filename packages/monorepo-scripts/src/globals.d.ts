@@ -3,6 +3,11 @@ declare module 'publish-release';
 declare module 'es6-promisify';
 declare module 'semver-diff';
 
+declare module 'prompt' {
+    const start: () => void;
+    const get: (promptMessages: string[], callback: (err: Error, result: string) => void) => void;
+}
+
 // semver-sort declarations
 declare module 'semver-sort' {
     const desc: (versions: string[]) => string[];
@@ -15,6 +20,7 @@ declare interface LernaPackage {
         version: string;
         name: string;
         main?: string;
+        scripts?: { [command: string]: string };
         config?: {
             additionalTsTypings?: string[];
         };

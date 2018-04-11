@@ -1,13 +1,26 @@
-import { ContractAbi, DataItem, Provider, TxData, TxDataPayable } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import {
+    AbiDefinition,
+    AbiType,
+    ContractAbi,
+    DataItem,
+    MethodAbi,
+    Provider,
+    TxData,
+    TxDataPayable,
+} from '@0xproject/types';
+import { abiUtils, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethersContracts from 'ethers-contracts';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
 
+export interface EthersInterfaceByFunctionSignature {
+    [key: string]: ethersContracts.Interface;
+}
+
 export class BaseContract {
-    protected _ethersInterface: ethersContracts.Interface;
+    protected _ethersInterfacesByFunctionSignature: EthersInterfaceByFunctionSignature;
     protected _web3Wrapper: Web3Wrapper;
     public abi: ContractAbi;
     public address: string;
@@ -49,10 +62,37 @@ export class BaseContract {
         }
         return txDataWithDefaults;
     }
+    protected _lookupEthersInterface(functionSignature: string): ethersContracts.Interface {
+        const ethersInterface = this._ethersInterfacesByFunctionSignature[functionSignature];
+        if (_.isUndefined(ethersInterface)) {
+            throw new Error(`Failed to lookup method with function signature '${functionSignature}'`);
+        }
+        return ethersInterface;
+    }
+    protected _lookupAbi(functionSignature: string): MethodAbi {
+        const methodAbi = _.find(this.abi, (abiDefinition: AbiDefinition) => {
+            if (abiDefinition.type !== AbiType.Function) {
+                return false;
+            }
+            const abiFunctionSignature = abiUtils.getFunctionSignature(abiDefinition);
+            if (abiFunctionSignature === functionSignature) {
+                return true;
+            }
+            return false;
+        }) as MethodAbi;
+        return methodAbi;
+    }
     constructor(abi: ContractAbi, address: string, provider: Provider, defaults?: Partial<TxData>) {
         this._web3Wrapper = new Web3Wrapper(provider, defaults);
         this.abi = abi;
         this.address = address;
-        this._ethersInterface = new ethersContracts.Interface(abi);
+        const methodAbis = this.abi.filter(
+            (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Function,
+        ) as MethodAbi[];
+        this._ethersInterfacesByFunctionSignature = {};
+        _.each(methodAbis, methodAbi => {
+            const functionSignature = abiUtils.getFunctionSignature(methodAbi);
+            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethersContracts.Interface([methodAbi]);
+        });
     }
 }
