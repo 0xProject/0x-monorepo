@@ -58,7 +58,7 @@ contract Authorizable is
     {
         authorized[target] = true;
         authorities.push(target);
-        emit LogAuthorizedAddressAdded(target, msg.sender);
+        emit AuthorizedAddressAdded(target, msg.sender);
     }
 
     /// @dev Removes authorizion of an address.
@@ -76,7 +76,7 @@ contract Authorizable is
                 break;
             }
         }
-        emit LogAuthorizedAddressRemoved(target, msg.sender);
+        emit AuthorizedAddressRemoved(target, msg.sender);
     }
 
     /// @dev Removes authorizion of an address.
@@ -90,7 +90,7 @@ contract Authorizable is
         delete authorized[target];
         authorities[index] = authorities[authorities.length - 1];
         authorities.length -= 1;
-        emit LogAuthorizedAddressRemoved(target, msg.sender);
+        emit AuthorizedAddressRemoved(target, msg.sender);
     }
 
     /*

@@ -43,11 +43,11 @@ contract IAuthorizable {
     function removeAuthorizedAddressAtIndex(address target, uint256 index)
         public;
 
-    event LogAuthorizedAddressAdded(
+    event AuthorizedAddressAdded(
         address indexed target,
         address indexed caller);
 
-    event LogAuthorizedAddressRemoved(
+    event AuthorizedAddressRemoved(
         address indexed target,
         address indexed caller);
 }
