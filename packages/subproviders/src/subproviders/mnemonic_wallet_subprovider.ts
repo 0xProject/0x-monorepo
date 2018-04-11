@@ -11,8 +11,6 @@ import { BaseWalletSubprovider } from './base_wallet_subprovider';
 import { PrivateKeyWalletSubprovider } from './private_key_wallet_subprovider';
 
 const DEFAULT_DERIVATION_PATH = `44'/60'/0'/0`;
-const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
-const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -22,7 +20,7 @@ const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     private _addressSearchLimit: number;
     private _derivationPath: string;
-    private _hdKey: HDNode;
+    private _derivedKey: DerivedHDKey;
     /**
      * Instantiates a MnemonicWalletSubprovider. Defaults to derivationPath set to `44'/60'/0'/0`.
      * This is the default in TestRPC/Ganache, this can be overridden if desired.
@@ -34,15 +32,22 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     constructor(
         mnemonic: string,
         derivationPath: string = DEFAULT_DERIVATION_PATH,
-        addressSearchLimit: number = DEFAULT_ADDRESS_SEARCH_LIMIT,
+        addressSearchLimit: number = walletUtils.DEFAULT_ADDRESS_SEARCH_LIMIT,
     ) {
         assert.isString('mnemonic', mnemonic);
         assert.isString('derivationPath', derivationPath);
         assert.isNumber('addressSearchLimit', addressSearchLimit);
         super();
         const seed = bip39.mnemonicToSeed(mnemonic);
-        this._hdKey = HDNode.fromMasterSeed(seed);
+        const hdKey = HDNode.fromMasterSeed(seed);
         this._derivationPath = derivationPath;
+        this._derivedKey = {
+            address: walletUtils.addressOfHDKey(hdKey),
+            derivationPath: this._derivationPath,
+            derivationIndex: 0,
+            hdKey,
+            isChildKey: false,
+        };
         this._addressSearchLimit = addressSearchLimit;
     }
     /**
@@ -66,8 +71,10 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @param numberOfAccounts Number of accounts to retrieve (default: 10)
      * @return An array of accounts
      */
-    public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
-        const derivedKeys = walletUtils._calculateDerivedHDKeys(this._hdKey, this._derivationPath, numberOfAccounts);
+    public async getAccountsAsync(
+        numberOfAccounts: number = walletUtils.DEFAULT_NUM_ADDRESSES_TO_FETCH,
+    ): Promise<string[]> {
+        const derivedKeys = walletUtils.calculateDerivedHDKeys(this._derivedKey, numberOfAccounts);
         const accounts = _.map(derivedKeys, 'address');
         return accounts;
     }
@@ -82,7 +89,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         const derivedKey = _.isUndefined(txParams.from)
-            ? walletUtils._firstDerivedKey(this._hdKey, this._derivationPath)
+            ? walletUtils._firstDerivedKey(this._derivedKey)
             : this._findDerivedKeyByPublicAddress(txParams.from);
         const privateKeyWallet = new PrivateKeyWalletSubprovider(derivedKey.hdKey.privateKey.toString('hex'));
         const signedTx = privateKeyWallet.signTransactionAsync(txParams);
@@ -100,17 +107,16 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      */
     public async signPersonalMessageAsync(data: string, address?: string): Promise<string> {
         const derivedKey = _.isUndefined(address)
-            ? walletUtils._firstDerivedKey(this._hdKey, this._derivationPath)
+            ? walletUtils._firstDerivedKey(this._derivedKey)
             : this._findDerivedKeyByPublicAddress(address);
         const privateKeyWallet = new PrivateKeyWalletSubprovider(derivedKey.hdKey.privateKey.toString('hex'));
         const sig = await privateKeyWallet.signPersonalMessageAsync(data, derivedKey.address);
         return sig;
     }
     private _findDerivedKeyByPublicAddress(address: string): DerivedHDKey {
-        const matchedDerivedKey = walletUtils._findDerivedKeyByAddress(
+        const matchedDerivedKey = walletUtils.findDerivedKeyByAddress(
             address,
-            this._hdKey,
-            this._derivationPath,
+            this._derivedKey,
             this._addressSearchLimit,
         );
         if (_.isUndefined(matchedDerivedKey)) {

@@ -51,6 +51,7 @@ export interface LedgerSubproviderConfigs {
  *                                   before fetching their addresses
  */
 export interface AccountFetchingConfigs {
+    addressSearchLimit?: number;
     numAddressesToReturn?: number;
     shouldAskForOnDeviceConfirmation?: boolean;
 }
@@ -116,6 +117,7 @@ export interface DerivedHDKey {
     derivationPath: string;
     derivationIndex: number;
     hdKey: HDNode;
+    isChildKey: boolean;
 }
 
 export type ErrorCallback = (err: Error | null, data?: any) => void;
