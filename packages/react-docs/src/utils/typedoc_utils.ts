@@ -395,6 +395,7 @@ export const typeDocUtils = {
             name: entity.name,
             comment,
             isOptional,
+            defaultValue: entity.defaultValue,
             type,
         };
         return parameter;

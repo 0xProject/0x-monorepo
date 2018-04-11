@@ -91,6 +91,7 @@ function renderParameters(
 ) {
     const params = _.map(parameters, (p: Parameter) => {
         const isOptional = p.isOptional;
+        const hasDefaultValue = !_.isUndefined(p.defaultValue);
         const type = (
             <Type
                 type={p.type}
@@ -103,6 +104,7 @@ function renderParameters(
             <span key={`param-${p.type}-${p.name}`}>
                 {p.name}
                 {isOptional && '?'}: {type}
+                {hasDefaultValue && ` = ${p.defaultValue}`}
             </span>
         );
     });
