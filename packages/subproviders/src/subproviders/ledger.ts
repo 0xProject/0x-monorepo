@@ -88,9 +88,8 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     public async getAccountsAsync(
         numberOfAccounts: number = walletUtils.DEFAULT_NUM_ADDRESSES_TO_FETCH,
     ): Promise<string[]> {
-        const offset = 0;
         const initialHDerivedKey = await this._initialDerivedKeyAsync();
-        const derivedKeys = walletUtils.calculateDerivedHDKeys(initialHDerivedKey, numberOfAccounts, offset);
+        const derivedKeys = walletUtils.calculateDerivedHDKeys(initialHDerivedKey, numberOfAccounts);
         const accounts = _.map(derivedKeys, 'address');
         return accounts;
     }
