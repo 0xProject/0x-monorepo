@@ -36,7 +36,7 @@ contract IAssetProxyDispatcher is
     /// @param assetProxyId Id of the asset proxy.
     /// @param newAssetProxyAddress Address of the asset proxy contract to register.
     /// @param currentAssetProxyAddress Address of existing asset proxy to overwrite.
-    function setAssetProxy(
+    function addAssetProxy(
         uint8 assetProxyId,
         address newAssetProxyAddress,
         address currentAssetProxyAddress)

@@ -69,13 +69,13 @@ describe('Exchange', () => {
             from: accounts[0],
         });
         const nilAddress = '0x0000000000000000000000000000000000000000';
-        await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+        await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC20_V1,
             erc20TransferProxyV1.address,
             nilAddress,
             { from: accounts[0] },
         );
-        await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+        await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
             AssetProxyId.ERC20,
             erc20TransferProxy.address,
             nilAddress,

@@ -124,9 +124,9 @@ describe('AssetProxyDispatcher', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    describe('setAssetProxy', () => {
+    describe('addAssetProxy', () => {
         it('should record proxy upon registration', async () => {
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
                 nilAddress,
@@ -137,7 +137,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should be able to record multiple proxies', async () => {
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
                 nilAddress,
@@ -146,7 +146,7 @@ describe('AssetProxyDispatcher', () => {
             let proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20TransferProxy.address);
 
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC721,
                 erc721TransferProxy.address,
                 nilAddress,
@@ -157,7 +157,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should replace proxy address upon re-registration', async () => {
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
                 nilAddress,
@@ -176,7 +176,7 @@ describe('AssetProxyDispatcher', () => {
 
             const newAddress = newErc20TransferProxy.address;
             const currentAddress = erc20TransferProxy.address;
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 newAddress,
                 currentAddress,
@@ -187,7 +187,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should throw if registering with incorrect "old_address" field', async () => {
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
                 nilAddress,
@@ -198,7 +198,7 @@ describe('AssetProxyDispatcher', () => {
 
             // The following transaction will throw because the currentAddress is no longer nilAddress
             return expect(
-                assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+                assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20TransferProxy.address,
                     nilAddress,
@@ -208,7 +208,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should be able to reset proxy address to NULL', async () => {
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
                 nilAddress,
@@ -218,7 +218,7 @@ describe('AssetProxyDispatcher', () => {
             expect(proxyAddress).to.be.equal(erc20TransferProxy.address);
 
             // The following transaction will reset the proxy address
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 nilAddress,
                 erc20TransferProxy.address,
@@ -230,7 +230,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if requesting address is not authorized', async () => {
             return expect(
-                assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+                assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                     AssetProxyId.ERC20,
                     erc20TransferProxy.address,
                     nilAddress,
@@ -242,7 +242,7 @@ describe('AssetProxyDispatcher', () => {
 
     describe('getAssetProxy', () => {
         it('should return correct address of registered proxy', async () => {
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
                 nilAddress,
@@ -261,7 +261,7 @@ describe('AssetProxyDispatcher', () => {
     describe('transferFrom', () => {
         it('should dispatch  transfer to registered proxy', async () => {
             // Register ERC20 proxy
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
                 nilAddress,
@@ -312,7 +312,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if requesting address is not authorized', async () => {
             // Register ERC20 proxy
-            await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
                 AssetProxyId.ERC20,
                 erc20TransferProxy.address,
                 nilAddress,
