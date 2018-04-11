@@ -139,8 +139,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
-            makerAssetProxyData: encodeERC20ProxyMetadata(rep.address),
-            takerAssetProxyData: encodeERC20ProxyMetadata(dgd.address),
+            makerAssetData: encodeERC20ProxyMetadata(rep.address),
+            takerAssetData: encodeERC20ProxyMetadata(dgd.address),
         };
 
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
@@ -341,7 +341,7 @@ describe('Exchange', () => {
                 makerTokenAddress: zrx.address,
                 makerTokenAmount: makerZRXBalance,
                 makerFee: new BigNumber(1),
-                makerAssetProxyData: encodeERC20ProxyMetadata(zrx.address),
+                makerAssetData: encodeERC20ProxyMetadata(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -354,7 +354,7 @@ describe('Exchange', () => {
                 makerTokenAddress: zrx.address,
                 makerTokenAmount: new BigNumber(makerZRXAllowance),
                 makerFee: new BigNumber(1),
-                makerAssetProxyData: encodeERC20ProxyMetadata(zrx.address),
+                makerAssetData: encodeERC20ProxyMetadata(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -367,7 +367,7 @@ describe('Exchange', () => {
                 takerTokenAddress: zrx.address,
                 takerTokenAmount: takerZRXBalance,
                 takerFee: new BigNumber(1),
-                takerAssetProxyData: encodeERC20ProxyMetadata(zrx.address),
+                takerAssetData: encodeERC20ProxyMetadata(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -380,7 +380,7 @@ describe('Exchange', () => {
                 takerTokenAddress: zrx.address,
                 takerTokenAmount: new BigNumber(takerZRXAllowance),
                 takerFee: new BigNumber(1),
-                takerAssetProxyData: encodeERC20ProxyMetadata(zrx.address),
+                takerAssetData: encodeERC20ProxyMetadata(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
