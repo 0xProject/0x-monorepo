@@ -54,11 +54,6 @@ contract IExchange {
         bytes32 indexed orderHash
     );
 
-    event LogCancelBefore(
-        address indexed maker,
-        uint256 salt
-    );
-
     function ZRX_TOKEN_CONTRACT()
       public view
       returns (address);

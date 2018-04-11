@@ -6,15 +6,23 @@ import * as chai from 'chai';
 import * as _ from 'lodash';
 import * as Web3 from 'web3';
 
+import { AssetProxyDispatcherContract } from '../../src/contract_wrappers/generated/asset_proxy_dispatcher';
 import { DummyTokenContract } from '../../src/contract_wrappers/generated/dummy_token';
+import { ERC20TransferProxyContract } from '../../src/contract_wrappers/generated/e_r_c20_transfer_proxy';
+import { ERC20TransferProxy_v1Contract } from '../../src/contract_wrappers/generated/erc20transferproxy_v1';
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
 import { TokenRegistryContract } from '../../src/contract_wrappers/generated/token_registry';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
+import {
+    encodeERC20ProxyMetadata,
+    encodeERC20ProxyMetadata_V1,
+    encodeERC721ProxyMetadata,
+} from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { BalancesByOwner, ContractName, SignedOrder } from '../../src/utils/types';
+import { AssetProxyId, BalancesByOwner, ContractName, SignedOrder } from '../../src/utils/types';
 import { chaiSetup } from '../utils/chai_setup';
 import { deployer } from '../utils/deployer';
 import { provider, web3Wrapper } from '../utils/web3_wrapper';
@@ -28,6 +36,7 @@ describe('Exchange', () => {
     let tokenOwner: string;
     let takerAddress: string;
     let feeRecipientAddress: string;
+    let assetProxyManagerAddress: string;
 
     const INITIAL_BALANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
     const INITIAL_ALLOWANCE = ZeroEx.toBaseUnitAmount(new BigNumber(10000), 18);
@@ -38,6 +47,9 @@ describe('Exchange', () => {
     let exchange: ExchangeContract;
     let tokenRegistry: TokenRegistryContract;
     let tokenTransferProxy: TokenTransferProxyContract;
+    let assetProxyDispatcher: AssetProxyDispatcherContract;
+    let erc20TransferProxyV1: ERC20TransferProxy_v1Contract;
+    let erc20TransferProxy: ERC20TransferProxyContract;
 
     let balances: BalancesByOwner;
 
@@ -48,7 +60,7 @@ describe('Exchange', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         tokenOwner = accounts[0];
-        [makerAddress, takerAddress, feeRecipientAddress] = accounts;
+        [makerAddress, takerAddress, feeRecipientAddress, assetProxyManagerAddress] = accounts;
         const [repInstance, dgdInstance, zrxInstance] = await Promise.all([
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
             deployer.deployAsync(ContractName.DummyToken, constants.DUMMY_TOKEN_ARGS),
@@ -65,12 +77,58 @@ describe('Exchange', () => {
             tokenTransferProxyInstance.address,
             provider,
         );
-        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
-            zrx.address,
+        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20TransferProxy_V1, [
             tokenTransferProxy.address,
         ]);
+        erc20TransferProxyV1 = new ERC20TransferProxy_v1Contract(
+            erc20TransferProxyV1Instance.abi,
+            erc20TransferProxyV1Instance.address,
+            provider,
+        );
+        const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20TransferProxy);
+        erc20TransferProxy = new ERC20TransferProxyContract(
+            erc20TransferProxyInstance.abi,
+            erc20TransferProxyInstance.address,
+            provider,
+        );
+        const assetProxyDispatcherInstance = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
+        assetProxyDispatcher = new AssetProxyDispatcherContract(
+            assetProxyDispatcherInstance.abi,
+            assetProxyDispatcherInstance.address,
+            provider,
+        );
+        const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
+            zrx.address,
+            encodeERC20ProxyMetadata(zrx.address),
+            assetProxyDispatcher.address,
+        ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
+        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(assetProxyManagerAddress, {
+            from: accounts[0],
+        });
+        await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
+        await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
+            from: accounts[0],
+        });
+        await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
+            from: accounts[0],
+        });
+        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, {
+            from: accounts[0],
+        });
+        const nilAddress = '0x0000000000000000000000000000000000000000';
+        await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            AssetProxyId.ERC20_V1,
+            erc20TransferProxyV1.address,
+            nilAddress,
+            { from: accounts[0] },
+        );
+        await assetProxyDispatcher.setAssetProxy.sendTransactionAsync(
+            AssetProxyId.ERC20,
+            erc20TransferProxy.address,
+            nilAddress,
+            { from: accounts[0] },
+        );
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
@@ -84,6 +142,8 @@ describe('Exchange', () => {
             takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(200), 18),
             makerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
             takerFee: ZeroEx.toBaseUnitAmount(new BigNumber(1), 18),
+            makerAssetProxyData: encodeERC20ProxyMetadata(rep.address),
+            takerAssetProxyData: encodeERC20ProxyMetadata(dgd.address),
         };
 
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[0];
@@ -92,14 +152,20 @@ describe('Exchange', () => {
         await Promise.all([
             rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: makerAddress }),
             rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: takerAddress }),
+            rep.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, { from: makerAddress }),
+            rep.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, { from: takerAddress }),
             rep.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             rep.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: makerAddress }),
             dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: takerAddress }),
+            dgd.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, { from: makerAddress }),
+            dgd.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, { from: takerAddress }),
             dgd.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             dgd.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: makerAddress }),
             zrx.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, { from: takerAddress }),
+            zrx.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, { from: makerAddress }),
+            zrx.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, { from: takerAddress }),
             zrx.setBalance.sendTransactionAsync(makerAddress, INITIAL_BALANCE, { from: tokenOwner }),
             zrx.setBalance.sendTransactionAsync(takerAddress, INITIAL_BALANCE, { from: tokenOwner }),
         ]);
@@ -246,11 +312,11 @@ describe('Exchange', () => {
 
         it('should not change balances if maker allowances are too low to fill order', async () => {
             const signedOrder = orderFactory.newSignedOrder();
-            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), {
+            await rep.approve.sendTransactionAsync(erc20TransferProxy.address, new BigNumber(0), {
                 from: makerAddress,
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
-            await rep.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await rep.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
                 from: makerAddress,
             });
 
@@ -260,11 +326,11 @@ describe('Exchange', () => {
 
         it('should not change balances if taker allowances are too low to fill order', async () => {
             const signedOrder = orderFactory.newSignedOrder();
-            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, new BigNumber(0), {
+            await dgd.approve.sendTransactionAsync(erc20TransferProxy.address, new BigNumber(0), {
                 from: takerAddress,
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
-            await dgd.approve.sendTransactionAsync(tokenTransferProxy.address, INITIAL_ALLOWANCE, {
+            await dgd.approve.sendTransactionAsync(erc20TransferProxy.address, INITIAL_ALLOWANCE, {
                 from: takerAddress,
             });
 
@@ -278,6 +344,7 @@ describe('Exchange', () => {
                 makerTokenAddress: zrx.address,
                 makerTokenAmount: makerZRXBalance,
                 makerFee: new BigNumber(1),
+                makerAssetProxyData: encodeERC20ProxyMetadata(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -285,11 +352,12 @@ describe('Exchange', () => {
         });
 
         it('should not change balances if makerTokenAddress is ZRX, makerTokenAmount + makerFee > maker allowance', async () => {
-            const makerZRXAllowance = await zrx.allowance.callAsync(makerAddress, tokenTransferProxy.address);
+            const makerZRXAllowance = await zrx.allowance.callAsync(makerAddress, erc20TransferProxy.address);
             const signedOrder = orderFactory.newSignedOrder({
                 makerTokenAddress: zrx.address,
                 makerTokenAmount: new BigNumber(makerZRXAllowance),
                 makerFee: new BigNumber(1),
+                makerAssetProxyData: encodeERC20ProxyMetadata(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -302,6 +370,7 @@ describe('Exchange', () => {
                 takerTokenAddress: zrx.address,
                 takerTokenAmount: takerZRXBalance,
                 takerFee: new BigNumber(1),
+                takerAssetProxyData: encodeERC20ProxyMetadata(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();
@@ -309,11 +378,12 @@ describe('Exchange', () => {
         });
 
         it('should not change balances if takerTokenAddress is ZRX, takerTokenAmount + takerFee > taker allowance', async () => {
-            const takerZRXAllowance = await zrx.allowance.callAsync(takerAddress, tokenTransferProxy.address);
+            const takerZRXAllowance = await zrx.allowance.callAsync(takerAddress, erc20TransferProxy.address);
             const signedOrder = orderFactory.newSignedOrder({
                 takerTokenAddress: zrx.address,
                 takerTokenAmount: new BigNumber(takerZRXAllowance),
                 takerFee: new BigNumber(1),
+                takerAssetProxyData: encodeERC20ProxyMetadata(zrx.address),
             });
             await exWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
             const newBalances = await dmyBalances.getAsync();

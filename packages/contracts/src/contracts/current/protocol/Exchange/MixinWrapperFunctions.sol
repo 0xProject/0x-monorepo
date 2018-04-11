@@ -65,76 +65,163 @@ contract MixinWrapperFunctions is
         // We need to call MExchangeCore.fillOrder using a delegatecall in
         // assembly so that we can intercept a call that throws. For this, we
         // need the input encoded in memory in the Ethereum ABIv2 format [1].
-        
-        // | Offset | Length  | Contents                     |
-        // |--------|---------|------------------------------|
-        // | 0      | 4       | function selector            |
-        // | 4      | 11 * 32 | Order order                  |
-        // | 356    | 32      | uint256 takerTokenFillAmount |
-        // | 388    | 32      | offset to signature (416)    |
-        // | 420    | 32      | len(signature)               |
-        // | 452    | (1)     | signature                    |
-        // | (2)    | (3)     | padding (zero)               |
-        // | (4)    |         | end of input                 |
-        
-        // (1): len(signature)
-        // (2): 452 + len(signature)
-        // (3): (32 - len(signature)) mod 32
-        // (4): 452 + len(signature) + (32 - len(signature)) mod 32
-        
+
+        // | Area     | Offset | Length  | Contents                                    |
+        // | -------- |--------|---------|-------------------------------------------- |
+        // | Header   | 0x00   | 4       | function selector                           |
+        // | Params   |        | 3 * 32  | function parameters:                        |
+        // |          | 0x00   |         |   1. offset to order (*)                    |
+        // |          | 0x20   |         |   2. takerTokenFillAmount                   |
+        // |          | 0x40   |         |   3. offset to signature (*)                |
+        // | Data     |        | 13 * 32 | order:                                      |
+        // |          | 0x000  |         |   1.  makerAddress                          |
+        // |          | 0x020  |         |   2.  takerAddress                          |
+        // |          | 0x040  |         |   3.  makerTokenAddress                     |
+        // |          | 0x060  |         |   4.  takerTokenAddress                     |
+        // |          | 0x080  |         |   5.  feeRecipientAddress                   |
+        // |          | 0x0A0  |         |   6.  makerTokenAmount                      |
+        // |          | 0x0C0  |         |   7.  takerTokenAmount                      |
+        // |          | 0x0E0  |         |   8.  makerFeeAmount                        |
+        // |          | 0x100  |         |   9.  takerFeeAmount                        |
+        // |          | 0x120  |         |   10. expirationTimeSeconds                 |
+        // |          | 0x140  |         |   11. salt                                  |
+        // |          | 0x160  |         |   12. Offset to makerAssetProxyMetadata (*) |
+        // |          | 0x180  |         |   13. Offset to takerAssetProxyMetadata (*  |
+        // |          | 0x1A0  | 32      | makerAssetProxyMetadata Length              |
+        // |          | 0x1C0  | **      | makerAssetProxyMetadata Contents            |
+        // |          | 0x1E0  | 32      | takerAssetProxyMetadata Length              |
+        // |          | 0x200  | **      | takerAssetProxyMetadata Contents            |
+        // |          | 0x220  | 32      | signature Length                            |
+        // |          | 0x240  | **      | signature Contents                          |
+
+        // * Offsets are calculated from the beginning of the current area: Header, Params, Data:
+        //     An offset stored in the Params area is calculated from the beginning of the Params section.
+        //     An offset stored in the Data area is calculated from the beginning of the Data section.
+
+        // ** The length of dynamic array contents are stored in the field immediately preceeding the contents.
+
         // [1]: https://solidity.readthedocs.io/en/develop/abi-spec.html
 
         bytes4 fillOrderSelector = this.fillOrder.selector;
 
         assembly {
+
+            // Areas below may use the following variables:
+            //   1. <area>Start   -- Start of this area in memory
+            //   2. <area>End     -- End of this area in memory. This value may
+            //                       be precomputed (before writing contents),
+            //                       or it may be computed as contents are written.
+            //   3. <area>Offset  -- Current offset into area. If an area's End
+            //                       is precomputed, this variable tracks the
+            //                       offsets of contents as they are written.
+
+            /////// Setup Header Area ///////
             // Load free memory pointer
-            let start := mload(0x40)
+            let headerAreaStart := mload(0x40)
+            mstore(headerAreaStart, fillOrderSelector)
+            let headerAreaEnd := add(headerAreaStart, 0x4)
 
-            // Write function signature
-            mstore(start, fillOrderSelector)
+            /////// Setup Params Area ///////
+            // This area is preallocated and written to later.
+            // This is because we need to fill in offsets that have not yet been calculated.
+            let paramsAreaStart := headerAreaEnd
+            let paramsAreaEnd := add(paramsAreaStart, 0x60)
+            let paramsAreaOffset := paramsAreaStart
 
-            // Write order struct
-            mstore(add(start, 4), mload(order))             // makerAddress
-            mstore(add(start, 36), mload(add(order, 32)))   // takerAddress
-            mstore(add(start, 68), mload(add(order, 64)))   // makerTokenAddress
-            mstore(add(start, 100), mload(add(order, 96)))  // takerTokenAddress
-            mstore(add(start, 132), mload(add(order, 128))) // feeRecipientAddress
-            mstore(add(start, 164), mload(add(order, 160))) // makerTokenAmount
-            mstore(add(start, 196), mload(add(order, 192))) // takerTokenAmount
-            mstore(add(start, 228), mload(add(order, 224))) // makerFeeAmount
-            mstore(add(start, 260), mload(add(order, 256))) // takerFeeAmount
-            mstore(add(start, 292), mload(add(order, 288))) // expirationTimeSeconds
-            mstore(add(start, 324), mload(add(order, 320))) // salt
+            /////// Setup Data Area ///////
+            let dataAreaStart := paramsAreaEnd
+            let dataAreaEnd := dataAreaStart
 
-            // Write takerTokenFillAmount
-            mstore(add(start, 356), takerTokenFillAmount)
+            // Offset from the source data we're reading from
+            let sourceOffset := order
+            // bytesLen and bytesLenPadded track the length of a dynamically-allocated bytes array.
+            let bytesLen := 0
+            let bytesLenPadded := 0
 
-            // Write signature offset
-            mstore(add(start, 388), 416)
+            /////// Write order Struct ///////
+            // Write memory location of Order, relative to the start of the
+            // parameter list, then increment the paramsAreaOffset respectively.
+            mstore(paramsAreaOffset, sub(dataAreaEnd, paramsAreaStart))
+            paramsAreaOffset := add(paramsAreaOffset, 0x20)
 
-            // Write signature length
-            let sigLen := mload(signature)
-            mstore(add(start, 420), sigLen)
+            // Write values for each field in the order
+            for{let i := 0} lt(i, 13) {i := add(i, 1)} {
+                mstore(dataAreaEnd, mload(sourceOffset))
+                dataAreaEnd := add(dataAreaEnd, 0x20)
+                sourceOffset := add(sourceOffset, 0x20)
+            }
 
-            // Calculate signature length with padding
-            let paddingLen := mod(sub(0, sigLen), 32)
-            let sigLenWithPadding := add(sigLen, paddingLen)
+            // Write offset to <order.makerAssetProxyMetadata>
+            mstore(add(dataAreaStart, mul(11, 0x20)), sub(dataAreaEnd, dataAreaStart))
 
-            // Write signature
-            let sigStart := add(signature, 32)
-            for { let curr := 0 } 
-            lt(curr, sigLenWithPadding)
-            { curr := add(curr, 32) }
-            { mstore(add(start, add(452, curr)), mload(add(sigStart, curr))) } // Note: we assume that padding consists of only 0's
+            // Calculate length of <order.makerAssetProxyMetadata>
+            bytesLen := mload(sourceOffset)
+            sourceOffset := add(sourceOffset, 0x20)
+            bytesLenPadded := add(div(bytesLen, 0x20), gt(mod(bytesLen, 0x20), 0))
+
+            // Write length of <order.makerAssetProxyMetadata>
+            mstore(dataAreaEnd, bytesLen)
+            dataAreaEnd := add(dataAreaEnd, 0x20)
+
+            // Write contents of  <order.makerAssetProxyMetadata>
+            for {let i := 0} lt(i, bytesLenPadded) {i := add(i, 1)} {
+                mstore(dataAreaEnd, mload(sourceOffset))
+                dataAreaEnd := add(dataAreaEnd, 0x20)
+                sourceOffset := add(sourceOffset, 0x20)
+            }
+
+            // Write offset to <order.takerAssetProxyMetadata>
+            mstore(add(dataAreaStart, mul(12, 0x20)), sub(dataAreaEnd, dataAreaStart))
+
+            // Calculate length of <order.takerAssetProxyMetadata>
+            bytesLen := mload(sourceOffset)
+            sourceOffset := add(sourceOffset, 0x20)
+            bytesLenPadded := add(div(bytesLen, 0x20), gt(mod(bytesLen, 0x20), 0))
+
+            // Write length of <order.takerAssetProxyMetadata>
+            mstore(dataAreaEnd, bytesLen)
+            dataAreaEnd := add(dataAreaEnd, 0x20)
+
+            // Write contents of  <order.takerAssetProxyMetadata>
+            for {let i := 0} lt(i, bytesLenPadded) {i := add(i, 1)} {
+                mstore(dataAreaEnd, mload(sourceOffset))
+                dataAreaEnd := add(dataAreaEnd, 0x20)
+                sourceOffset := add(sourceOffset, 0x20)
+            }
+
+            /////// Write takerTokenFillAmount ///////
+            mstore(paramsAreaOffset, takerTokenFillAmount)
+            paramsAreaOffset := add(paramsAreaOffset, 0x20)
+
+            /////// Write signature ///////
+            // Write offset to paramsArea
+            mstore(paramsAreaOffset, sub(dataAreaEnd, paramsAreaStart))
+
+            // Calculate length of signature
+            sourceOffset := signature
+            bytesLen := mload(sourceOffset)
+            sourceOffset := add(sourceOffset, 0x20)
+            bytesLenPadded := add(div(bytesLen, 0x20), gt(mod(bytesLen, 0x20), 0))
+
+            // Write length of signature
+            mstore(dataAreaEnd, bytesLen)
+            dataAreaEnd := add(dataAreaEnd, 0x20)
+
+            // Write contents of signature
+            for {let i := 0} lt(i, bytesLenPadded) {i := add(i, 1)} {
+                mstore(dataAreaEnd, mload(sourceOffset))
+                dataAreaEnd := add(dataAreaEnd, 0x20)
+                sourceOffset := add(sourceOffset, 0x20)
+            }
 
             // Execute delegatecall
             let success := delegatecall(
-                gas,                         // forward all gas, TODO: look into gas consumption of assert/throw 
-                address,                     // call address of this contract
-                start,                       // pointer to start of input
-                add(452, sigLenWithPadding), // input length is 420 + signature length + padding length
-                start,                       // write output over input
-                128                          // output size is 128 bytes
+                gas,                                // forward all gas, TODO: look into gas consumption of assert/throw
+                address,                            // call address of this contract
+                headerAreaStart,                    // pointer to start of input
+                sub(dataAreaEnd, headerAreaStart),  // length of input
+                headerAreaStart,                    // write output over input
+                128                                 // output size is 128 bytes
             )
             switch success
             case 0 {
@@ -144,12 +231,11 @@ contract MixinWrapperFunctions is
                 mstore(add(fillResults, 96), 0)
             }
             case 1 {
-                mstore(fillResults, mload(start))
-                mstore(add(fillResults, 32), mload(add(start, 32)))
-                mstore(add(fillResults, 64), mload(add(start, 64)))
-                mstore(add(fillResults, 96), mload(add(start, 96)))
+                mstore(fillResults, mload(headerAreaStart))
+                mstore(add(fillResults, 32), mload(add(headerAreaStart, 32)))
+                mstore(add(fillResults, 64), mload(add(headerAreaStart, 64)))
+                mstore(add(fillResults, 96), mload(add(headerAreaStart, 96)))
             }
-
         }
         return fillResults;
     }
@@ -228,10 +314,10 @@ contract MixinWrapperFunctions is
 
             // Token being sold by taker must be the same for each order
             require(orders[i].takerTokenAddress == orders[0].takerTokenAddress);
-            
+
             // Calculate the remaining amount of takerToken to sell
             uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalFillResults.takerTokenFilledAmount);
-            
+
             // Attempt to sell the remaining amount of takerToken
             FillResults memory singleFillResults = fillOrder(
                 orders[i],
@@ -270,7 +356,7 @@ contract MixinWrapperFunctions is
 
             // Calculate the remaining amount of takerToken to sell
             uint256 remainingTakerTokenFillAmount = safeSub(takerTokenFillAmount, totalFillResults.takerTokenFilledAmount);
-            
+
             // Attempt to sell the remaining amount of takerToken
             FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
@@ -308,7 +394,7 @@ contract MixinWrapperFunctions is
 
             // Calculate the remaining amount of makerToken to buy
             uint256 remainingMakerTokenFillAmount = safeSub(makerTokenFillAmount, totalFillResults.makerTokenFilledAmount);
-            
+
             // Convert the remaining amount of makerToken to buy into remaining amount
             // of takerToken to sell, assuming entire amount can be sold in the current order
             uint256 remainingTakerTokenFillAmount = getPartialAmount(
@@ -405,5 +491,5 @@ contract MixinWrapperFunctions is
         totalFillResults.makerFeePaid = safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);
         totalFillResults.takerFeePaid = safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
     }
-    
+
 }

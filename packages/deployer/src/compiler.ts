@@ -293,6 +293,7 @@ export class Compiler {
             return;
         }
         const sourceHash = ethUtil.sha3(source);
+        console.log('Here: ' + fileId);
         const solcVersionRange = parseSolidityVersionRange(source);
         const dependencies = parseDependencies(source, fileId);
         const sourceTreeHash = this._getSourceTreeHash(fileId, sourceHash, dependencies);

@@ -37,6 +37,13 @@ export interface CancelOrdersBefore {
     salt: BigNumber;
 }
 
+export enum AssetProxyId {
+    INVALID,
+    ERC20_V1,
+    ERC20,
+    ERC721,
+}
+
 export interface DefaultOrderParams {
     exchangeAddress: string;
     makerAddress: string;
@@ -45,8 +52,10 @@ export interface DefaultOrderParams {
     takerTokenAddress: string;
     makerTokenAmount: BigNumber;
     takerTokenAmount: BigNumber;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
+    makerFeeAmount: BigNumber;
+    takerFeeAmount: BigNumber;
+    makerAssetProxyData: string;
+    takerAssetProxyData: string;
 }
 
 export interface TransactionDataParams {
@@ -100,6 +109,11 @@ export enum ContractName {
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
+    AssetProxyDispatcher = 'AssetProxyDispatcher',
+    ERC20TransferProxy = 'ERC20TransferProxy',
+    ERC20TransferProxy_V1 = 'ERC20TransferProxy_v1',
+    ERC721TransferProxy = 'ERC721TransferProxy',
+    DummyERC721Token = 'DummyERC721Token',
 }
 
 export interface Artifact {
@@ -134,6 +148,8 @@ export interface OrderStruct {
     takerFee: BigNumber;
     expirationTimeSeconds: BigNumber;
     salt: BigNumber;
+    makerAssetProxyData: string;
+    takerAssetProxyData: string;
 }
 
 export interface UnsignedOrder extends OrderStruct {
