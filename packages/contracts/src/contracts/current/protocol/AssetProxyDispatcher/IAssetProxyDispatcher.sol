@@ -30,7 +30,7 @@ contract IAssetProxyDispatcher is
         address oldAssetClassAddress
     );
 
-    /// @dev Sets a new asset proxy.
+    /// @dev Adds a new asset proxy.
     /// @param assetProxyId Id of the asset proxy.
     /// @param newAssetProxyAddress Address of the asset proxy contract to register.
     /// @param currentAssetProxyAddress Address of existing asset proxy to overwrite.
