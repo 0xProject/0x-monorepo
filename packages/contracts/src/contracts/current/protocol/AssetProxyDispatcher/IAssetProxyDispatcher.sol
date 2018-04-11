@@ -19,10 +19,8 @@
 pragma solidity ^0.4.21;
 
 import "./IAssetProxy.sol";
-import "../../utils/Authorizable/IAuthorizable.sol";
 
 contract IAssetProxyDispatcher is
-    IAuthorizable,
     IAssetProxy
 {
     // Logs registration of new asset proxy
