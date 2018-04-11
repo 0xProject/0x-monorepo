@@ -15,11 +15,7 @@ import { ERC20Proxy_v1Contract } from '../../src/contract_wrappers/generated/erc
 import { ExchangeContract } from '../../src/contract_wrappers/generated/exchange';
 import { TokenRegistryContract } from '../../src/contract_wrappers/generated/token_registry';
 import { TokenTransferProxyContract } from '../../src/contract_wrappers/generated/token_transfer_proxy';
-import {
-    encodeERC20ProxyData,
-    encodeERC20V1ProxyData,
-    encodeERC721ProxyData,
-} from '../../src/utils/asset_proxy_utils';
+import { encodeERC20ProxyData, encodeERC20V1ProxyData, encodeERC721ProxyData } from '../../src/utils/asset_proxy_utils';
 import { Balances } from '../../src/utils/balances';
 import { constants } from '../../src/utils/constants';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
@@ -78,26 +74,30 @@ describe('Exchange', () => {
             tokenTransferProxyInstance.address,
             provider,
         );
-        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20Proxy_V1, [
-            tokenTransferProxy.address,
-        ]);
-        erc20TransferProxyV1 = new ERC20Proxy_v1Contract(
-            erc20TransferProxyV1Instance.abi,
-            erc20TransferProxyV1Instance.address,
-            provider,
-        );
-        const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
-        erc20TransferProxy = new ERC20ProxyContract(
-            erc20TransferProxyInstance.abi,
-            erc20TransferProxyInstance.address,
-            provider,
-        );
+        // Deploy Asset Proxy Dispatcher
         const assetProxyDispatcherInstance = await deployer.deployAsync(ContractName.AssetProxyDispatcher);
         assetProxyDispatcher = new AssetProxyDispatcherContract(
             assetProxyDispatcherInstance.abi,
             assetProxyDispatcherInstance.address,
             provider,
         );
+        // Deploy ERC20 Proxy
+        const erc20TransferProxyInstance = await deployer.deployAsync(ContractName.ERC20Proxy);
+        erc20TransferProxy = new ERC20ProxyContract(
+            erc20TransferProxyInstance.abi,
+            erc20TransferProxyInstance.address,
+            provider,
+        );
+        await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
+            from: accounts[0],
+        });
+        await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
+            AssetProxyId.ERC20,
+            erc20TransferProxy.address,
+            ZeroEx.NULL_ADDRESS,
+            { from: accounts[0] },
+        );
+        // Deploy and configure Exchange
         const exchangeInstance = await deployer.deployAsync(ContractName.Exchange, [
             zrx.address,
             encodeERC20ProxyData(zrx.address),
@@ -105,27 +105,7 @@ describe('Exchange', () => {
         ]);
         exchange = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
         await assetProxyDispatcher.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: accounts[0] });
-        await erc20TransferProxyV1.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: accounts[0],
-        });
-        await erc20TransferProxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
-            from: accounts[0],
-        });
-        await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(erc20TransferProxyV1.address, {
-            from: accounts[0],
-        });
-        await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
-            AssetProxyId.ERC20_V1,
-            erc20TransferProxyV1.address,
-            ZeroEx.NULL_ADDRESS,
-            { from: accounts[0] },
-        );
-        await assetProxyDispatcher.addAssetProxy.sendTransactionAsync(
-            AssetProxyId.ERC20,
-            erc20TransferProxy.address,
-            ZeroEx.NULL_ADDRESS,
-            { from: accounts[0] },
-        );
+
         const zeroEx = new ZeroEx(provider, { networkId: constants.TESTRPC_NETWORK_ID });
         exWrapper = new ExchangeWrapper(exchange, zeroEx);
 
