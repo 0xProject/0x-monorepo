@@ -2,7 +2,7 @@
 
 A TypeScript/Javascript library for interacting with the 0x protocol.
 
-### Read the [Documentation](0xproject.com/docs/0x.js).
+### Read the [Documentation](https://0xproject.com/docs/0x.js).
 
 ## Installation
 
