@@ -25,7 +25,7 @@ contract LibBytes {
     /// @param index Index in byte array of address.
     /// @return address from byte array.
     function readAddress(
-        bytes b,
+        bytes memory b,
         uint256 index)
         public pure
         returns (address result)
@@ -52,7 +52,7 @@ contract LibBytes {
     /// @param index Index in byte array of address.
     /// @param input Address to put into byte array.
     function writeAddress(
-        bytes b,
+        bytes memory b,
         uint256 index,
         address input)
         public pure
@@ -86,7 +86,7 @@ contract LibBytes {
     /// @param index Index in byte array of bytes32 value.
     /// @return bytes32 value from byte array.
     function readBytes32(
-        bytes b,
+        bytes memory b,
         uint256 index)
         public pure
         returns (bytes32 result)
@@ -108,7 +108,7 @@ contract LibBytes {
     /// @param index Index in byte array of <input>.
     /// @param input bytes32 to put into byte array.
     function writeBytes32(
-        bytes b,
+        bytes memory b,
         uint256 index,
         bytes32 input)
         public pure

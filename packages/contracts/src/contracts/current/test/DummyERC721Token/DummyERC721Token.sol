@@ -32,7 +32,7 @@ contract DummyERC721Token is
     {}
 
     /**
-    * @dev Internal function to mint a new token
+    * @dev Function to mint a new token
     * @dev Reverts if the given token ID already exists
     * @param to address the beneficiary that will own the minted token
     * @param tokenId uint256 ID of the token to be minted by the msg.sender
