@@ -23,7 +23,7 @@ import "../../../utils/LibBytes/LibBytes.sol";
 import "../../../utils/Authorizable/Authorizable.sol";
 import { Token_v1 as ERC20Token } from "../../../../previous/Token/Token_v1.sol";
 
-contract ERC20TransferProxy is
+contract ERC20Proxy is
     LibBytes,
     Authorizable,
     IAssetProxy
