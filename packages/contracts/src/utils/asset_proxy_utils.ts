@@ -25,7 +25,7 @@ export function encodeUint256(value: BigNumber): Buffer {
 }
 
 export function encodeERC20V1ProxyData(tokenAddress: string): string {
-    const encodedAssetProxyId = encodeAssetProxyId(AssetProxyId.ERC20_V1);
+    const encodedAssetProxyId = encodeAssetProxyId(AssetProxyId.ERC20V1);
     const encodedAddress = encodeAddress(tokenAddress);
     const encodedMetadata = Buffer.concat([encodedAssetProxyId, encodedAddress]);
     const encodedMetadataHex = ethUtil.bufferToHex(encodedMetadata);

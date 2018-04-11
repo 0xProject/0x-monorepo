@@ -57,7 +57,7 @@ describe('Asset Transfer Proxies', () => {
             provider,
         );
         // Deploy ERC20 V1 Proxy
-        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20Proxy_V1, [
+        const erc20TransferProxyV1Instance = await deployer.deployAsync(ContractName.ERC20V1Proxy, [
             tokenTransferProxy.address,
         ]);
         erc20TransferProxyV1 = new ERC20Proxy_v1Contract(
@@ -122,9 +122,9 @@ describe('Asset Transfer Proxies', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('Transfer Proxy - ERC20_V1', () => {
+    describe('Transfer Proxy - ERC20V1', () => {
         it('should successfully encode/decode metadata', async () => {
-            const metadata = await erc20TransferProxyV1.encodeMetadata.callAsync(AssetProxyId.ERC20_V1, zrx.address);
+            const metadata = await erc20TransferProxyV1.encodeMetadata.callAsync(AssetProxyId.ERC20V1, zrx.address);
             const address = await erc20TransferProxyV1.decodeMetadata.callAsync(metadata);
             expect(address).to.be.equal(zrx.address);
         });
@@ -137,7 +137,7 @@ describe('Asset Transfer Proxies', () => {
 
         it('should successfully encode/decode metadata padded with zeros', async () => {
             const testAddress = '0x0000000000000000056000000000000000000010';
-            const metadata = await erc20TransferProxyV1.encodeMetadata.callAsync(AssetProxyId.ERC20_V1, testAddress);
+            const metadata = await erc20TransferProxyV1.encodeMetadata.callAsync(AssetProxyId.ERC20V1, testAddress);
             const address = await erc20TransferProxyV1.decodeMetadata.callAsync(metadata);
             expect(address).to.be.equal(testAddress);
         });
