@@ -68,8 +68,6 @@ describe('Exchange', () => {
     let dmyBalances: Balances;
     let orderFactory: OrderFactory;
 
-    let erc721TransferProxyInstance: Web3.ContractInstance;
-
     let zeroEx: ZeroEx;
 
     before(async () => {
